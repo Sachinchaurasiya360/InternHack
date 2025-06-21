@@ -8,12 +8,13 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "description": "",
   "dependencies": {
     "cors": "^2.8.5",
     "express": "^5.1.0",
     "json": "^11.0.0",
     "mongo": "^0.1.0",
     "zod": "^3.25.64"
-  }
+  },
+  "devDependencies": {},
+  "description": ""
 }
