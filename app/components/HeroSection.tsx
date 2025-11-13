@@ -21,10 +21,10 @@ const staggerContainer = {
 
 export function HeroSection() {
   const stats = [
-    { label: "Active Hackathons", value: "250+", icon: Trophy },
-    { label: "Job Opportunities", value: "15,000+", icon: Briefcase },
-    { label: "Registered Users", value: "100K+", icon: Users },
-    { label: "Success Stories", value: "5,000+", icon: Star },
+    { label: "Active Hackathons", value: "50+", icon: Trophy },
+    { label: "Job Opportunities", value: "5,000+", icon: Briefcase },
+    { label: "Registered Users", value: "10K+", icon: Users },
+    { label: "Success Stories", value: "500+", icon: Star },
   ];
 
   return (

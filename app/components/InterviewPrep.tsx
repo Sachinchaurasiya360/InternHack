@@ -106,7 +106,7 @@ export function InterviewPrep() {
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={staggerContainer}
-      className="py-32 px-6 relative bg-white"
+      className="py-15 px-6 relative bg-white"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div variants={fadeInUp} className="text-center mb-16">

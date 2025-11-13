@@ -21,15 +21,7 @@ const staggerContainer = {
 
 export function RecentJobs() {
   const jobs = [
-    {
-      title: "Senior Frontend Developer",
-      company: "TechCorp",
-      location: "Remote",
-      salary: "$120k - $180k",
-      type: "Full-time",
-      posted: "2 days ago",
-      tags: ["React", "TypeScript", "Next.js"],
-    },
+    
     {
       title: "Full Stack Engineer",
       company: "StartupXYZ",
@@ -56,25 +48,8 @@ export function RecentJobs() {
       type: "Full-time",
       posted: "1 week ago",
       tags: ["Kubernetes", "Docker", "AWS"],
-    },
-    {
-      title: "Product Designer",
-      company: "DesignHub",
-      location: "New York",
-      salary: "$110k - $160k",
-      type: "Full-time",
-      posted: "1 week ago",
-      tags: ["Figma", "UI/UX", "Design Systems"],
-    },
-    {
-      title: "Backend Developer",
-      company: "DataFlow Inc",
-      location: "Austin",
-      salary: "$115k - $170k",
-      type: "Full-time",
-      posted: "2 weeks ago",
-      tags: ["Java", "Spring Boot", "PostgreSQL"],
-    },
+    }
+   
   ];
 
   return (
@@ -88,10 +63,7 @@ export function RecentJobs() {
     >
       <div className="max-w-7xl mx-auto">
         <motion.div variants={fadeInUp} className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 border border-white/20 text-sm mb-4">
-            <Briefcase className="w-4 h-4 text-white" />
-            <span className="text-white">Career Opportunities</span>
-          </div>
+          
           <h2 className="text-5xl md:text-6xl font-bold mb-4 text-white">
             Recent{" "}
             <span className="underline decoration-4 underline-offset-8">
@@ -113,8 +85,8 @@ export function RecentJobs() {
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-white group-hover:text-black" />
-                  <span className="text-sm text-gray-400 group-hover:text-gray-600">
+                  <Building2 className="w-5 h-5 text-black" />
+                  <span className="text-sm text-gray-700 group-hover:text-gray-600">
                     {job.company}
                   </span>
                 </div>
@@ -123,7 +95,7 @@ export function RecentJobs() {
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold mb-3 text-white group-hover:text-black">
+              <h3 className="text-xl font-bold mb-3 text-black group-hover:text-black">
                 {job.title}
               </h3>
 
@@ -131,21 +103,21 @@ export function RecentJobs() {
                 {job.tags.map((tag, i) => (
                   <span
                     key={i}
-                    className="px-2 py-1 border border-white/20 group-hover:border-black/20 text-xs text-white group-hover:text-black"
+                    className="px-2 py-1 border border-black/20 group-hover:border-black/20 text-xs text-black group-hover:text-black"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
 
-              <div className="space-y-2 mb-4 text-sm text-gray-400 group-hover:text-gray-600">
+              <div className="space-y-2 mb-4 text-sm text-gray-700 group-hover:text-gray-600">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
                   <span>{job.location}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
-                  <span className="text-white group-hover:text-black font-semibold">
+                  <span className="text-black group-hover:text-black font-semibold">
                     {job.salary}
                   </span>
                 </div>
@@ -158,7 +130,7 @@ export function RecentJobs() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3 bg-white text-black group-hover:bg-black group-hover:text-white font-semibold transition-all border-2 border-white"
+                className="w-full py-3 bg-black text-white group-hover:bg-black group-hover:text-white font-semibold transition-all border-2 border-white"
               >
                 Apply Now
               </motion.button>

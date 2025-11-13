@@ -14,7 +14,7 @@ export function Footer() {
               </div>
               <span className="text-xl font-bold text-black">InternHack</span>
             </div>
-            <p className="text-gray-600">Build. Compete. Get Hired.</p>
+            <p className="text-gray-600">Prepare . Practice . Placed</p>
           </div>
           <div>
             <h3 className="font-bold mb-4 text-black">Platform</h3>

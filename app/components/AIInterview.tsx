@@ -58,22 +58,22 @@ export function AIInterview() {
   const interviewTypes = [
     {
       type: "Technical Coding",
-      duration: "45 min",
+      duration: "15 min",
       topics: ["Algorithms", "Data Structures", "Problem Solving"],
     },
     {
       type: "System Design",
-      duration: "60 min",
+      duration: "30 min",
       topics: ["Architecture", "Scalability", "Trade-offs"],
     },
     {
       type: "Behavioral",
-      duration: "30 min",
+      duration: "10 min",
       topics: ["Leadership", "Teamwork", "Conflict Resolution"],
     },
     {
       type: "Full Mock Interview",
-      duration: "90 min",
+      duration: "30 min",
       topics: ["All Categories", "Comprehensive Feedback"],
     },
   ];
@@ -94,21 +94,16 @@ export function AIInterview() {
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={staggerContainer}
-      className="py-32 px-6 relative bg-black"
+      className="py-15 px-6 relative bg-white"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div variants={fadeInUp} className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 border border-white/20 text-sm mb-4">
-            <Brain className="w-4 h-4 text-white" />
-            <span className="text-white">AI-Powered Practice</span>
-          </div>
-          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-white">
-            AI Interview{" "}
-            <span className="underline decoration-4 underline-offset-8">
-              Simulator
-            </span>
+          
+          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-black">
+             Interview With Advance Ai{" "}
+           
           </h2>
-          <p className="text-xl text-gray-400 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
             Practice with our advanced AI interviewer that provides real-time
             feedback on your technical and soft skills
           </p>
@@ -121,13 +116,13 @@ export function AIInterview() {
               key={idx}
               variants={fadeInUp}
               whileHover={{ scale: 1.05 }}
-              className="border-2 border-white p-6 text-center"
+              className="border-2 border-black bg-gray-50 p-6 text-center rounded-xl hover:shadow-lg transition-all"
             >
-              <feature.icon className="w-12 h-12 text-white mx-auto mb-4" />
-              <h3 className="text-lg font-bold text-white mb-2">
+              <feature.icon className="w-12 h-12 text-black mx-auto mb-4" />
+              <h3 className="text-lg font-bold text-black mb-2">
                 {feature.title}
               </h3>
-              <p className="text-sm text-gray-400">{feature.description}</p>
+              <p className="text-sm text-gray-600">{feature.description}</p>
             </motion.div>
           ))}
         </div>
@@ -136,7 +131,7 @@ export function AIInterview() {
         <div className="grid md:grid-cols-2 gap-12 mb-16">
           {/* Interview Types */}
           <motion.div variants={fadeInUp}>
-            <h3 className="text-3xl font-bold text-white mb-8">
+            <h3 className="text-3xl font-bold text-black mb-8">
               Interview Types
             </h3>
             <div className="space-y-4">
@@ -144,11 +139,13 @@ export function AIInterview() {
                 <motion.div
                   key={idx}
                   whileHover={{ x: 10 }}
-                  className="border-2 border-white p-6 hover:bg-white hover:text-black transition-all group"
+                  className="border-2 border-black bg-white p-6 rounded-xl hover:bg-gray-50 transition-all group"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <h4 className="text-xl font-bold">{interview.type}</h4>
-                    <span className="text-sm px-3 py-1 bg-white text-black group-hover:bg-black group-hover:text-white">
+                    <h4 className="text-xl font-bold text-black">
+                      {interview.type}
+                    </h4>
+                    <span className="text-sm px-3 py-1 bg-black text-white rounded-lg">
                       {interview.duration}
                     </span>
                   </div>
@@ -156,7 +153,7 @@ export function AIInterview() {
                     {interview.topics.map((topic, i) => (
                       <span
                         key={i}
-                        className="text-xs px-2 py-1 border border-white/20 group-hover:border-black/20"
+                        className="text-xs px-2 py-1 border border-black/20 rounded-full text-gray-700"
                       >
                         {topic}
                       </span>
@@ -169,10 +166,10 @@ export function AIInterview() {
 
           {/* Benefits */}
           <motion.div variants={fadeInUp}>
-            <h3 className="text-3xl font-bold text-white mb-8">
+            <h3 className="text-3xl font-bold text-black mb-8">
               Why Choose AI Interview?
             </h3>
-            <div className="border-2 border-white p-8">
+            <div className="border-2 border-black bg-gray-50 p-8 rounded-xl">
               <div className="space-y-4 mb-8">
                 {benefits.map((benefit, idx) => (
                   <motion.div
@@ -182,24 +179,24 @@ export function AIInterview() {
                     transition={{ delay: idx * 0.1 }}
                     className="flex items-start gap-3"
                   >
-                    <CheckCircle className="w-6 h-6 text-white shrink-0" />
-                    <span className="text-white">{benefit}</span>
+                    <CheckCircle className="w-6 h-6 text-black shrink-0" />
+                    <span className="text-black">{benefit}</span>
                   </motion.div>
                 ))}
               </div>
 
-              <div className="border-t-2 border-white/20 pt-6">
+              <div className="border-t-2 border-black/20 pt-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <Zap className="w-8 h-8 text-white" />
+                  <Zap className="w-8 h-8 text-black" />
                   <div>
-                    <div className="text-2xl font-bold text-white">4.9/5</div>
-                    <div className="text-sm text-gray-400">
+                    <div className="text-2xl font-bold text-black">4.9/5</div>
+                    <div className="text-sm text-gray-600">
                       Average User Rating
                     </div>
                   </div>
                 </div>
-                <p className="text-sm text-gray-400">
-                  Join 50,000+ candidates who improved their interview skills
+                <p className="text-sm text-gray-600">
+                  Join 5,000+ candidates who improved their interview skills
                 </p>
               </div>
             </div>
@@ -211,14 +208,12 @@ export function AIInterview() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-white text-black text-lg font-semibold hover:bg-gray-200 transition-all inline-flex items-center gap-2"
+            className="px-8 py-4 bg-black text-white text-lg font-semibold hover:bg-gray-800 transition-all inline-flex items-center gap-2 rounded-xl shadow-lg"
           >
             Start AI Interview Practice
             <Brain className="w-5 h-5" />
           </motion.button>
-          <p className="text-sm text-gray-400 mt-4">
-            First 3 sessions free • No credit card required
-          </p>
+          <p className="text-sm text-gray-600 mt-4">First 1 sessions free</p>
         </motion.div>
       </div>
     </motion.section>

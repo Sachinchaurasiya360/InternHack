@@ -29,16 +29,7 @@ const staggerContainer = {
 
 export function RecentHackathons() {
   const hackathons = [
-    {
-      title: "AI Innovation Challenge 2025",
-      organizer: "TechCorp",
-      prize: "$50,000",
-      participants: 1250,
-      deadline: "15 Days",
-      location: "Online",
-      tags: ["AI", "Machine Learning", "Innovation"],
-      status: "Live",
-    },
+    
     {
       title: "Web3 Builder Fest",
       organizer: "BlockChain Inc",
@@ -68,27 +59,9 @@ export function RecentHackathons() {
       location: "Remote",
       tags: ["Security", "Encryption", "Network"],
       status: "Completed",
-    },
-    {
-      title: "Green Tech Innovation",
-      organizer: "EcoTech Global",
-      prize: "$30,000",
-      participants: 780,
-      deadline: "Ended",
-      location: "Berlin",
-      tags: ["Sustainability", "IoT", "Data"],
-      status: "Completed",
-    },
-    {
-      title: "Mobile App Championship",
-      organizer: "AppDev Pro",
-      prize: "$25,000",
-      participants: 950,
-      deadline: "Ended",
-      location: "Online",
-      tags: ["Mobile", "React Native", "Flutter"],
-      status: "Completed",
-    },
+    }
+   
+    
   ];
 
   return (
@@ -102,10 +75,7 @@ export function RecentHackathons() {
     >
       <div className="max-w-7xl mx-auto">
         <motion.div variants={fadeInUp} className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 border border-black/20 text-sm mb-4">
-            <Trophy className="w-4 h-4 text-black" />
-            <span className="text-black">Live & Recent Events</span>
-          </div>
+          
           <h2 className="text-5xl md:text-6xl font-bold mb-4 text-black">
             Recent{" "}
             <span className="underline decoration-4 underline-offset-8">
@@ -127,8 +97,8 @@ export function RecentHackathons() {
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Code className="w-5 h-5 group-hover:text-white" />
-                  <span className="text-sm text-gray-600 group-hover:text-gray-300">
+                  <Code className="w-5 h-5 " />
+                  <span className="text-sm text-gray-600 group-hover:text-gray-800">
                     {hackathon.organizer}
                   </span>
                 </div>
@@ -136,14 +106,14 @@ export function RecentHackathons() {
                   className={`px-3 py-1 text-xs font-bold ${
                     hackathon.status === "Live"
                       ? "bg-black text-white group-hover:bg-white group-hover:text-black"
-                      : "bg-gray-200 text-gray-600 group-hover:bg-gray-700 group-hover:text-white"
+                      : "bg-gray-200 text-gray-600 "
                   }`}
                 >
                   {hackathon.status}
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold mb-3 group-hover:text-white transition-colors">
+              <h3 className="text-xl font-bold mb-3 group-hover: transition-colors">
                 {hackathon.title}
               </h3>
 
@@ -158,12 +128,12 @@ export function RecentHackathons() {
                 ))}
               </div>
 
-              <div className="space-y-2 mb-4 text-sm text-gray-600 group-hover:text-gray-300">
+              <div className="space-y-2 mb-4 text-sm text-gray-600 group-hover:text-gray-800">
                 <div className="flex items-center gap-2">
                   <Award className="w-4 h-4" />
                   <span>
                     Prize:{" "}
-                    <strong className="text-black group-hover:text-white">
+                    <strong className="text-black ">
                       {hackathon.prize}
                     </strong>
                   </span>
