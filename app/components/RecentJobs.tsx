@@ -59,12 +59,12 @@ export function RecentJobs() {
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={staggerContainer}
-      className="py-32 px-6 relative bg-black"
+      className="py-6 px-6 relative "
     >
       <div className="max-w-7xl mx-auto">
         <motion.div variants={fadeInUp} className="text-center mb-16">
           
-          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-white">
+          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-black">
             Recent{" "}
             <span className="underline decoration-4 underline-offset-8">
               Job Openings
@@ -142,7 +142,7 @@ export function RecentJobs() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-3 border-2 border-white text-white font-semibold hover:bg-white hover:text-black transition-all"
+            className="px-8 py-3 border-2 border-black text-black font-semibold  hover:text-black transition-all"
           >
             View All Jobs →
           </motion.button>

@@ -1,0 +1,22 @@
+model InternshipOrJob {
+  id          String  @id @default(uuid())
+  title       String?
+  description String? @db.Text
+  company     String
+  location    String
+  type        jobType @default(INTERNSHIP)
+  salary      String?
+  duration    String
+  isActive    Boolean @default(true)
+  contactDetails String?
+  applyLink      String?
+  round          Round[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum jobType {
+  INTERNSHIP
+  FULL_TIME
+  PART_TIME
+}

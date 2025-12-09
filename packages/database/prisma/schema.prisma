@@ -1,0 +1,123 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id             String   @id @default(uuid())
+  name           String
+  email          String   @unique
+  password       String
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  bio            String?
+  contactNo      String?
+  collegeName    String?
+  graduationYear String?
+  skills         String[]
+  githubUrl      String?
+  portfolioUrl   String?
+  linkedinUrl    String?
+  resumeUrl      String?
+  isVerified     Boolean  @default(false)
+  isActive       Boolean  @default(true)
+
+  //Relations 
+  createdHackathons     Hackathon[]             @relation("UserCreatedHackathons")
+  hackathonParticipated ParticipatedHackathon[]
+  application           HackathonApplication[]
+  teams                 Team[]
+
+  @@index([email,name])
+}
+
+enum applicationStatus {
+  DRAFT
+  SUBMITTED
+  UNDER_REVIEW
+  SHORTLISTED
+  SELECTED
+  REJECTED
+  WAITLISTED
+}
+
+model Round {
+  id                String           @id @default(uuid())
+  roundNumber       Int
+  RoundsMode        RoundMode
+  roundsTypes       roundsTypes
+  title             String
+  description       String           @db.Text
+  SubmissionUrl     String?
+  totalmarks        Int?
+  gainMarks         Int?
+  startDate         DateTime
+  endDate           DateTime
+  isActive          Boolean          @default(false)
+  opportunity       InternshipOrJob? @relation(fields: [opportunityId], references: [id], onDelete: Cascade)
+  opportunityId     String?
+  createHackathon   Hackathon?       @relation(fields: [createHackathonId], references: [id], onDelete: Cascade)
+  createHackathonId String?
+  quiz              QuizQuestions[]
+}
+
+model QuizQuestions {
+  id            Int    @id @default(autoincrement())
+  question      String
+  option1       String
+  option2       String
+  option3       String
+  option4       String
+  correctAnswer String
+  hint          String?
+  round         Round  @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  roundId       String
+  @@index([question])
+}
+
+model grants {
+  id            String   @id @default(uuid())
+  title         String
+  description   String   @db.Text
+  organisations String
+  amount        Int
+  deadline      DateTime
+  isActive      Boolean  @default(true)
+  applyLink     String?
+
+  @@index([isActive])
+}
+
+enum RoundMode {
+  ONLINE
+  OFFLINE
+  HYBRID
+}
+
+enum prizeType {
+  CASHPRIZE
+  INKIND
+  OTHER
+}
+
+enum hackathonStatus {
+  LIVE
+  ENDED
+}
+
+enum roundsTypes {
+  QUIZ_ROUND
+  RESUME_ROUND
+  PPT_ROUND
+  INTERVIEW_ROUND
+}
+
+enum Visibility {
+  PUBLIC
+  PRIVATE
+  UNLISTED
+}

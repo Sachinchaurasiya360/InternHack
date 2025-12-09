@@ -1,5 +1,4 @@
 "use client";
-import { Analytics } from "@vercel/analytics/next"
 import { Navbar } from "./components/Navbar";
 import { HeroSection } from "./components/HeroSection";
 import { RecentHackathons } from "./components/RecentHackathons";
