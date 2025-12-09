@@ -1,1 +1,5 @@
-//common layout like navbar sidebar
+export function GET(){
+    return Response.json({
+        message:"Hello from recruiter side"
+    })
+}
