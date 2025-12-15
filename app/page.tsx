@@ -1,11 +1,11 @@
 "use client";
-import { Navbar } from "./components/Navbar";
-import { HeroSection } from "./components/HeroSection";
-import { RecentHackathons } from "./components/RecentHackathons";
-import { RecentJobs } from "./components/RecentJobs";
-import { InterviewPrep } from "./components/InterviewPrep";
-import { AIInterview } from "./components/AIInterview";
-import { Footer } from "./components/Footer";
+import { Navbar } from "./_components/Navbar";
+import { HeroSection } from "./_components/HeroSection";
+import { RecentHackathons } from "./_components/RecentHackathons";
+import { RecentJobs } from "./_components/RecentJobs";
+import { InterviewPrep } from "./_components/InterviewPrep";
+import { AIInterview } from "./_components/AIInterview";
+import { Footer } from "./_components/Footer";
 
 export default function Home() {
   return (
