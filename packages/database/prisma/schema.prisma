@@ -5,6 +5,7 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
@@ -12,6 +13,7 @@ model User {
   name           String
   email          String   @unique
   password       String
+  role           UserRole @default(STUDENT)
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
   bio            String?
@@ -31,8 +33,17 @@ model User {
   hackathonParticipated ParticipatedHackathon[]
   application           HackathonApplication[]
   teams                 Team[]
+  postedJobs            InternshipOrJob[]       @relation("RecruiterJobs")
+  jobApplications       JobApplication[]
 
-  @@index([email,name])
+  @@index([email, name])
+  @@index([role])
+}
+
+enum UserRole {
+  STUDENT
+  RECRUITER
+  ADMIN
 }
 
 enum applicationStatus {
@@ -66,7 +77,7 @@ model Round {
 }
 
 model QuizQuestions {
-  id            Int    @id @default(autoincrement())
+  id            Int     @id @default(autoincrement())
   question      String
   option1       String
   option2       String
@@ -74,8 +85,9 @@ model QuizQuestions {
   option4       String
   correctAnswer String
   hint          String?
-  round         Round  @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  round         Round   @relation(fields: [roundId], references: [id], onDelete: Cascade)
   roundId       String
+
   @@index([question])
 }
 
