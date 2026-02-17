@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(test:*)",
+      "Bash(/c/Codes/internhack/server/src/module/auth/auth.service.ts:*)",
+      "Bash(/c/Codes/internhack/server/src/module/recruiter/recruiter.service.ts:*)",
+      "Bash(npx tsc:*)",
+      "Bash(echo:*)",
+      "Bash(npx prisma db push:*)",
+      "Bash(npx prisma generate:*)",
+      "Bash(npm run dev:*)",
+      "Bash(node -e:*)",
+      "WebFetch(domain:pris.ly)",
+      "WebFetch(*)",
+      "Bash(npm install:*)",
+      "Bash(curl:*)",
+      "Bash(python -m json.tool:*)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJyZWNydWl0ZXJAdGVzdC5jb20iLCJyb2xlIjoiUkVDUlVJVEVSIiwiaWF0IjoxNzcxMzMxMjU5LCJleHAiOjE3NzE5MzYwNTl9.MBZvcPvsErjUPn6bCqpccQOytEA3aj5L-dDcjZYLriE\")"
+    ]
+  }
+}

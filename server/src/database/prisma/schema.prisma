@@ -1,0 +1,224 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// ============================================================
+// ENUMS
+// ============================================================
+
+enum UserRole {
+  STUDENT
+  RECRUITER
+}
+
+enum JobStatus {
+  DRAFT
+  PUBLISHED
+  CLOSED
+  ARCHIVED
+}
+
+enum ApplicationStatus {
+  APPLIED
+  IN_PROGRESS
+  SHORTLISTED
+  REJECTED
+  HIRED
+  WITHDRAWN
+}
+
+enum RoundStatus {
+  PENDING
+  IN_PROGRESS
+  COMPLETED
+  SKIPPED
+}
+
+enum FieldType {
+  TEXT
+  TEXTAREA
+  DROPDOWN
+  MULTI_SELECT
+  FILE_UPLOAD
+  BOOLEAN
+  NUMERIC
+  DATE
+  EMAIL
+  URL
+}
+
+// ============================================================
+// USER MODEL
+// ============================================================
+
+model user {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String   @unique
+  password    String
+  role        UserRole @default(STUDENT)
+  contactNo   String?
+  profilePic  String?
+  resume      String?
+  company     String?
+  designation String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  postedJobs   job[]         @relation("RecruiterJobs")
+  applications application[] @relation("StudentApplications")
+}
+
+// ============================================================
+// JOB MODEL
+// ============================================================
+
+model job {
+  id           Int       @id @default(autoincrement())
+  title        String
+  description  String
+  location     String
+  salary       String
+  company      String
+  status       JobStatus @default(DRAFT)
+  customFields Json      @default("[]")
+  deadline     DateTime?
+  tags         String[]  @default([])
+  recruiterId  Int
+  recruiter    user      @relation("RecruiterJobs", fields: [recruiterId], references: [id])
+
+  rounds       round[]
+  applications application[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ============================================================
+// ROUND MODEL
+// ============================================================
+
+model round {
+  id                 Int    @id @default(autoincrement())
+  jobId              Int
+  job                job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  name               String
+  description        String?
+  orderIndex         Int
+  instructions       String?
+  customFields       Json   @default("[]")
+  evaluationCriteria Json   @default("[]")
+
+  roundSubmissions roundSubmission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([jobId, orderIndex])
+}
+
+// ============================================================
+// APPLICATION MODEL
+// ============================================================
+
+model application {
+  id                 Int               @id @default(autoincrement())
+  jobId              Int
+  job                job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  studentId          Int
+  student            user              @relation("StudentApplications", fields: [studentId], references: [id])
+  status             ApplicationStatus @default(APPLIED)
+  currentRoundId     Int?
+  customFieldAnswers Json              @default("{}")
+  resumeUrl          String?
+  coverLetter        String?
+
+  roundSubmissions roundSubmission[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([jobId, studentId])
+}
+
+// ============================================================
+// ROUND SUBMISSION MODEL
+// ============================================================
+
+model roundSubmission {
+  id               Int         @id @default(autoincrement())
+  applicationId    Int
+  application      application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  roundId          Int
+  round            round       @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  status           RoundStatus @default(PENDING)
+  fieldAnswers     Json        @default("{}")
+  attachments      String[]    @default([])
+  evaluationScores Json?
+  recruiterNotes   String?
+  submittedAt      DateTime?
+  evaluatedAt      DateTime?
+  createdAt        DateTime    @default(now())
+  updatedAt        DateTime    @updatedAt
+
+  @@unique([applicationId, roundId])
+}
+
+// ============================================================
+// SCRAPED JOB ENUMS
+// ============================================================
+
+enum ScrapedJobStatus {
+  ACTIVE
+  EXPIRED
+  REMOVED
+}
+
+// ============================================================
+// SCRAPED JOB MODEL
+// ============================================================
+
+model scrapedJob {
+  id             Int              @id @default(autoincrement())
+  title          String
+  description    String
+  company        String
+  location       String
+  salary         String?
+  tags           String[]         @default([])
+  applicationUrl String
+  source         String
+  sourceId       String
+  sourceUrl      String?
+  status         ScrapedJobStatus @default(ACTIVE)
+  scrapedAt      DateTime         @default(now())
+  lastSeenAt     DateTime         @default(now())
+  metadata       Json             @default("{}")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([source, sourceId])
+  @@index([status])
+  @@index([source])
+}
+
+// ============================================================
+// SCRAPE LOG MODEL
+// ============================================================
+
+model scrapeLog {
+  id          Int      @id @default(autoincrement())
+  source      String
+  status      String
+  jobsFound   Int      @default(0)
+  jobsCreated Int      @default(0)
+  jobsUpdated Int      @default(0)
+  error       String?
+  duration    Int
+  createdAt   DateTime @default(now())
+}
