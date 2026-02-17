@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router";
-import { Briefcase, FileText, LogOut, Home } from "lucide-react";
+import { Briefcase, FileText, LogOut, Home, ScanSearch, Map, Building2 } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useNavigate } from "react-router";
 
@@ -33,6 +33,18 @@ export default function StudentLayout() {
           <NavLink to="/student/applications" className={linkClass}>
             <FileText className="w-4 h-4" />
             My Applications
+          </NavLink>
+          <NavLink to="/student/ats" className={linkClass}>
+            <ScanSearch className="w-4 h-4" />
+            ATS Score
+          </NavLink>
+          <NavLink to="/student/careers" className={linkClass}>
+            <Map className="w-4 h-4" />
+            Career Paths
+          </NavLink>
+          <NavLink to="/companies" className={linkClass}>
+            <Building2 className="w-4 h-4" />
+            Explore Companies
           </NavLink>
           <NavLink to="/" className={linkClass}>
             <Home className="w-4 h-4" />

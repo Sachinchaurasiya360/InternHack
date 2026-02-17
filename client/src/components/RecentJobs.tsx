@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Briefcase, Building2, MapPin, DollarSign, Clock } from "lucide-react";
+import { Building2, MapPin, DollarSign, Clock } from "lucide-react";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 60 },

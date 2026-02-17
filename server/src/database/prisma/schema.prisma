@@ -13,6 +13,7 @@ datasource db {
 enum UserRole {
   STUDENT
   RECRUITER
+  ADMIN
 }
 
 enum JobStatus {
@@ -51,6 +52,39 @@ enum FieldType {
   URL
 }
 
+enum CompanySize {
+  STARTUP
+  SMALL
+  MEDIUM
+  LARGE
+  ENTERPRISE
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ContributionStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+enum ContributionType {
+  NEW_COMPANY
+  EDIT_COMPANY
+  ADD_CONTACT
+  ADD_REVIEW
+}
+
+enum AdminTier {
+  SUPER_ADMIN
+  ADMIN
+  MODERATOR
+}
+
 // ============================================================
 // USER MODEL
 // ============================================================
@@ -61,6 +95,7 @@ model user {
   email       String   @unique
   password    String
   role        UserRole @default(STUDENT)
+  isActive    Boolean  @default(true)
   contactNo   String?
   profilePic  String?
   resume      String?
@@ -71,6 +106,52 @@ model user {
 
   postedJobs   job[]         @relation("RecruiterJobs")
   applications application[] @relation("StudentApplications")
+  atsScores    atsScore[]    @relation("StudentAtsScores")
+  careerEnrollments  studentCareer[]        @relation("StudentCareers")
+  skillProgress      studentSkillProgress[] @relation("StudentSkillProgress")
+
+  companyReviews         companyReview[]        @relation("UserReviews")
+  addedContacts          companyContact[]       @relation("UserAddedContacts")
+  contributions          companyContribution[]  @relation("UserContributions")
+  reviewedContributions  companyContribution[]  @relation("AdminReviewedContributions")
+  createdCompanies       company[]              @relation("UserCreatedCompanies")
+
+  adminProfile      adminProfile?      @relation("AdminProfile")
+  adminActivityLogs adminActivityLog[] @relation("AdminActivityLogs")
+}
+
+// ============================================================
+// ADMIN PROFILE MODEL
+// ============================================================
+
+model adminProfile {
+  id        Int       @id @default(autoincrement())
+  userId    Int       @unique
+  user      user      @relation("AdminProfile", fields: [userId], references: [id], onDelete: Cascade)
+  tier      AdminTier @default(ADMIN)
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+// ============================================================
+// ADMIN ACTIVITY LOG MODEL
+// ============================================================
+
+model adminActivityLog {
+  id         Int      @id @default(autoincrement())
+  adminId    Int
+  admin      user     @relation("AdminActivityLogs", fields: [adminId], references: [id])
+  action     String
+  targetType String
+  targetId   Int
+  details    Json     @default("{}")
+  ipAddress  String?
+  createdAt  DateTime @default(now())
+
+  @@index([adminId])
+  @@index([targetType, targetId])
+  @@index([createdAt])
 }
 
 // ============================================================
@@ -172,6 +253,52 @@ model roundSubmission {
 // SCRAPED JOB ENUMS
 // ============================================================
 
+// ============================================================
+// CAREER ROADMAP ENUMS
+// ============================================================
+
+enum CareerDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum ResourceType {
+  ARTICLE
+  VIDEO
+  COURSE
+  BOOK
+  DOCUMENTATION
+  TUTORIAL
+}
+
+enum SkillLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum CareerCategory {
+  ENGINEERING
+  DESIGN
+  DATA
+  PRODUCT
+  MARKETING
+  DEVOPS
+  SECURITY
+  OTHER
+}
+
+enum EnrollmentStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+}
+
+// ============================================================
+// SCRAPED JOB ENUMS
+// ============================================================
+
 enum ScrapedJobStatus {
   ACTIVE
   EXPIRED
@@ -211,6 +338,28 @@ model scrapedJob {
 // SCRAPE LOG MODEL
 // ============================================================
 
+// ============================================================
+// ATS SCORE MODEL
+// ============================================================
+
+model atsScore {
+  id              Int      @id @default(autoincrement())
+  studentId       Int
+  student         user     @relation("StudentAtsScores", fields: [studentId], references: [id])
+  resumeUrl       String
+  jobTitle        String?
+  jobDescription  String?
+  overallScore    Int
+  categoryScores  Json
+  suggestions     Json
+  keywordAnalysis Json
+  rawResponse     Json
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([studentId])
+}
+
 model scrapeLog {
   id          Int      @id @default(autoincrement())
   source      String
@@ -221,4 +370,196 @@ model scrapeLog {
   error       String?
   duration    Int
   createdAt   DateTime @default(now())
+}
+
+// ============================================================
+// CAREER ROADMAP MODELS
+// ============================================================
+
+model career {
+  id          Int              @id @default(autoincrement())
+  title       String           @unique
+  slug        String           @unique
+  description String
+  category    CareerCategory
+  difficulty  CareerDifficulty
+  iconUrl     String?
+  avgSalary   String?
+  demandLevel String?
+  phases      careerPhase[]
+  enrollments studentCareer[]
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+}
+
+model careerPhase {
+  id            Int              @id @default(autoincrement())
+  careerId      Int
+  career        career           @relation(fields: [careerId], references: [id], onDelete: Cascade)
+  title         String
+  description   String?
+  orderIndex    Int
+  durationWeeks Int?
+  skills        careerSkill[]
+  resources     careerResource[]
+  tools         careerTool[]
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@unique([careerId, orderIndex])
+}
+
+model careerSkill {
+  id       Int                    @id @default(autoincrement())
+  phaseId  Int
+  phase    careerPhase            @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  name     String
+  level    SkillLevel
+  progress studentSkillProgress[]
+}
+
+model careerResource {
+  id      Int         @id @default(autoincrement())
+  phaseId Int
+  phase   careerPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  title   String
+  url     String
+  type    ResourceType
+  free    Boolean     @default(true)
+}
+
+model careerTool {
+  id       Int         @id @default(autoincrement())
+  phaseId  Int
+  phase    careerPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  name     String
+  url      String?
+  category String?
+}
+
+model studentCareer {
+  id        Int              @id @default(autoincrement())
+  studentId Int
+  student   user             @relation("StudentCareers", fields: [studentId], references: [id])
+  careerId  Int
+  career    career           @relation(fields: [careerId], references: [id])
+  status    EnrollmentStatus @default(ACTIVE)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+
+  @@unique([studentId, careerId])
+}
+
+model studentSkillProgress {
+  id        Int         @id @default(autoincrement())
+  studentId Int
+  student   user        @relation("StudentSkillProgress", fields: [studentId], references: [id])
+  skillId   Int
+  skill     careerSkill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  completed Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+
+  @@unique([studentId, skillId])
+}
+
+// ============================================================
+// COMPANY EXPLORER MODELS
+// ============================================================
+
+model company {
+  id              Int         @id @default(autoincrement())
+  name            String
+  slug            String      @unique
+  logo            String?
+  description     String
+  mission         String?
+  industry        String
+  size            CompanySize
+  city            String
+  state           String?
+  address         String?
+  officeLocations Json        @default("[]")
+  website         String?
+  socialLinks     Json        @default("{}")
+  technologies    String[]    @default([])
+  hiringStatus    Boolean     @default(false)
+  foundedYear     Int?
+  photos          String[]    @default([])
+  avgRating       Float       @default(0)
+  reviewCount     Int         @default(0)
+  isApproved      Boolean     @default(false)
+  createdById     Int
+  createdBy       user        @relation("UserCreatedCompanies", fields: [createdById], references: [id])
+
+  reviews  companyReview[]
+  contacts companyContact[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([city])
+  @@index([industry])
+  @@index([isApproved])
+}
+
+model companyReview {
+  id                  Int          @id @default(autoincrement())
+  companyId           Int
+  company             company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  userId              Int
+  user                user         @relation("UserReviews", fields: [userId], references: [id])
+  rating              Int
+  title               String
+  content             String
+  pros                String?
+  cons                String?
+  interviewExperience String?
+  workCulture         String?
+  salaryInsights      String?
+  status              ReviewStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+  @@index([status])
+}
+
+model companyContact {
+  id          Int     @id @default(autoincrement())
+  companyId   Int
+  company     company @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  name        String
+  designation String
+  email       String?
+  phone       String?
+  linkedinUrl String?
+  isPublic    Boolean @default(true)
+  addedById   Int
+  addedBy     user    @relation("UserAddedContacts", fields: [addedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([companyId])
+}
+
+model companyContribution {
+  id           Int                @id @default(autoincrement())
+  userId       Int
+  user         user               @relation("UserContributions", fields: [userId], references: [id])
+  type         ContributionType
+  companyId    Int?
+  data         Json
+  status       ContributionStatus @default(PENDING)
+  adminNotes   String?
+  reviewedById Int?
+  reviewedBy   user?              @relation("AdminReviewedContributions", fields: [reviewedById], references: [id])
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([userId])
 }

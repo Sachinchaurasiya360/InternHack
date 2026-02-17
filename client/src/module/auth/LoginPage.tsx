@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { Zap, Eye, EyeOff } from "lucide-react";
+import { GoogleLogin } from "@react-oauth/google";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 
@@ -13,6 +14,29 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
+  const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
+    setError("");
+    setLoading(true);
+    try {
+      const { data } = await api.post("/auth/google", {
+        credential: credentialResponse.credential,
+      });
+      login(data.user, data.token);
+      if (data.user.role === "ADMIN") {
+        navigate("/admin");
+      } else if (data.user.role === "RECRUITER") {
+        navigate("/recruiters");
+      } else {
+        navigate("/jobs");
+      }
+    } catch (err: unknown) {
+      const error = err as { response?: { data?: { message?: string } } };
+      setError(error.response?.data?.message || "Google sign-in failed");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
@@ -21,7 +45,9 @@ export default function LoginPage() {
     try {
       const { data } = await api.post("/auth/login", form);
       login(data.user, data.token);
-      if (data.user.role === "RECRUITER") {
+      if (data.user.role === "ADMIN") {
+        navigate("/admin");
+      } else if (data.user.role === "RECRUITER") {
         navigate("/recruiters");
       } else {
         navigate("/jobs");
@@ -101,6 +127,27 @@ export default function LoginPage() {
           >
             {loading ? "Signing in..." : "Sign In"}
           </motion.button>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <div className="w-full border-t border-gray-200" />
+            </div>
+            <div className="relative flex justify-center text-xs">
+              <span className="bg-white px-3 text-gray-400">or continue with</span>
+            </div>
+          </div>
+
+          <div className="flex justify-center">
+            <GoogleLogin
+              onSuccess={handleGoogleSuccess}
+              onError={() => setError("Google sign-in failed")}
+              size="large"
+              width="100%"
+              text="signin_with"
+              shape="rectangular"
+              theme="outline"
+            />
+          </div>
 
           <p className="text-center text-sm text-gray-500">
             Don't have an account?{" "}

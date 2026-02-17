@@ -41,6 +41,30 @@ export class AuthController {
     }
   }
 
+  async googleAuth(req: Request, res: Response) {
+    try {
+      const { credential, role } = req.body as { credential?: string; role?: string };
+      if (!credential) {
+        return res.status(400).json({ message: "Google credential is required" });
+      }
+
+      const validRole = role === "RECRUITER" ? "RECRUITER" as const : "STUDENT" as const;
+      const data = await this.authService.googleAuth({ credential, role: validRole });
+      return res.status(200).json({ message: "Google authentication successful", ...data });
+    } catch (error) {
+      if (error instanceof Error) {
+        if (error.message === "Invalid Google token") {
+          return res.status(401).json({ message: error.message });
+        }
+        if (error.message === "Account is deactivated") {
+          return res.status(403).json({ message: error.message });
+        }
+      }
+      console.error(error);
+      return res.status(500).json({ message: "Google authentication failed" });
+    }
+  }
+
   async getProfile(req: Request, res: Response) {
     try {
       if (!req.user) {

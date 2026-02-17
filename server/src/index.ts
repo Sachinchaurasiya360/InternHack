@@ -10,6 +10,10 @@ import { recruiterRouter } from "./module/recruiter/recruiter.routes.js";
 import { studentRouter } from "./module/student/student.routes.js";
 import { uploadRouter } from "./module/upload/upload.routes.js";
 import { scraperRouter, scraperController } from "./module/scraper/scraper.routes.js";
+import { atsRouter } from "./module/ats/ats.routes.js";
+import { careerRouter } from "./module/career/career.routes.js";
+import { companyRouter } from "./module/company/company.routes.js";
+import { adminRouter } from "./module/admin/admin.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -29,6 +33,10 @@ app.use("/api/recruiter", recruiterRouter);
 app.use("/api/student", studentRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/scraped-jobs", scraperRouter);
+app.use("/api/ats", atsRouter);
+app.use("/api/careers", careerRouter);
+app.use("/api/companies", companyRouter);
+app.use("/api/admin", adminRouter);
 
 app.use(errorMiddleware);
 

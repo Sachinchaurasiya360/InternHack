@@ -14,7 +14,7 @@ export function Navbar() {
     navigate("/");
   };
 
-  const dashboardLink = user?.role === "RECRUITER" ? "/recruiters" : "/student/applications";
+  const dashboardLink = user?.role === "ADMIN" ? "/admin" : user?.role === "RECRUITER" ? "/recruiters" : "/student/applications";
 
   return (
     <motion.nav
@@ -50,6 +50,7 @@ export function Navbar() {
             <NavItem href="/hackathons">Hackathons</NavItem>
             <NavItem href="/jobs">Jobs</NavItem>
             <NavItem href="/external-jobs">External Jobs</NavItem>
+            <NavItem href="/careers">Careers</NavItem>
             <NavItem href="/interview-prep">Interview Prep</NavItem>
             <NavItem href="/ai-interview">AI Interview</NavItem>
             {!isAuthenticated && <NavItem href="/recruiters">For Recruiters</NavItem>}
@@ -120,6 +121,7 @@ export function Navbar() {
             <MobileNavLink href="/hackathons">Hackathons</MobileNavLink>
             <MobileNavLink href="/jobs">Jobs</MobileNavLink>
             <MobileNavLink href="/external-jobs">External Jobs</MobileNavLink>
+            <MobileNavLink href="/careers">Careers</MobileNavLink>
             <MobileNavLink href="/interview-prep">Interview Prep</MobileNavLink>
             <MobileNavLink href="/ai-interview">AI Interview</MobileNavLink>
             <div className="pt-4 space-y-2">

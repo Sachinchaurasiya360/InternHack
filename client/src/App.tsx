@@ -19,6 +19,26 @@ import MyApplicationsPage from "./module/student/applications/MyApplicationsPage
 import ApplicationProgressPage from "./module/student/applications/ApplicationProgressPage";
 import ScrapedJobsPage from "./module/scraped-jobs/ScrapedJobsPage";
 import ScrapedJobDetailPage from "./module/scraped-jobs/ScrapedJobDetailPage";
+import AtsScorePage from "./module/student/ats/AtsScorePage";
+import AtsHistoryPage from "./module/student/ats/AtsHistoryPage";
+import AtsScoreDetailPage from "./module/student/ats/AtsScoreDetailPage";
+import CareerExplorePage from "./module/career/CareerExplorePage";
+import CareerDetailPage from "./module/career/CareerDetailPage";
+import MyCareerPathsPage from "./module/career/MyCareerPathsPage";
+import CareerProgressPage from "./module/career/CareerProgressPage";
+import CompanyListPage from "./module/student/companies/CompanyListPage";
+import CompanyDetailPage from "./module/student/companies/CompanyDetailPage";
+import AddCompanyPage from "./module/student/companies/AddCompanyPage";
+import AdminLoginPage from "./module/admin/AdminLoginPage";
+import AdminLayout from "./module/admin/AdminLayout";
+import AdminDashboard from "./module/admin/AdminDashboard";
+import UsersListPage from "./module/admin/users/UsersListPage";
+import UserDetailPage from "./module/admin/users/UserDetailPage";
+import AdminJobsListPage from "./module/admin/jobs/AdminJobsListPage";
+import ActivityLogsPage from "./module/admin/activity/ActivityLogsPage";
+import AdminCompaniesPage from "./module/admin/companies/AdminCompaniesPage";
+import AdminReviewsPage from "./module/admin/reviews/AdminReviewsPage";
+import AdminContributionsPage from "./module/admin/contributions/AdminContributionsPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
@@ -34,12 +54,22 @@ function App() {
         <Route path="/jobs/:id" element={<JobDetailPage />} />
         <Route path="/external-jobs" element={<ScrapedJobsPage />} />
         <Route path="/external-jobs/:id" element={<ScrapedJobDetailPage />} />
+        <Route path="/careers" element={<CareerExplorePage />} />
+        <Route path="/careers/:slug" element={<CareerDetailPage />} />
+        <Route path="/companies" element={<CompanyListPage />} />
+        <Route path="/companies/:slug" element={<CompanyDetailPage />} />
 
         {/* Student protected routes */}
         <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyPage /></ProtectedRoute>} />
         <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
           <Route path="applications" element={<MyApplicationsPage />} />
           <Route path="applications/:applicationId" element={<ApplicationProgressPage />} />
+          <Route path="ats" element={<AtsScorePage />} />
+          <Route path="ats/history" element={<AtsHistoryPage />} />
+          <Route path="ats/history/:scoreId" element={<AtsScoreDetailPage />} />
+          <Route path="careers" element={<MyCareerPathsPage />} />
+          <Route path="careers/:slug" element={<CareerProgressPage />} />
+          <Route path="companies/add" element={<AddCompanyPage />} />
         </Route>
 
         {/* Recruiter protected routes */}
@@ -51,6 +81,21 @@ function App() {
           <Route path="jobs/:id/applications" element={<ApplicationsList />} />
           <Route path="jobs/:id/analytics" element={<JobAnalyticsPage />} />
           <Route path="applications/:applicationId" element={<ApplicationDetail />} />
+        </Route>
+
+        {/* Admin login (public) */}
+        <Route path="/admin/login" element={<AdminLoginPage />} />
+
+        {/* Admin protected routes */}
+        <Route path="/admin" element={<ProtectedRoute role="ADMIN"><AdminLayout /></ProtectedRoute>}>
+          <Route index element={<AdminDashboard />} />
+          <Route path="users" element={<UsersListPage />} />
+          <Route path="users/:id" element={<UserDetailPage />} />
+          <Route path="jobs" element={<AdminJobsListPage />} />
+          <Route path="activity" element={<ActivityLogsPage />} />
+          <Route path="companies" element={<AdminCompaniesPage />} />
+          <Route path="reviews" element={<AdminReviewsPage />} />
+          <Route path="contributions" element={<AdminContributionsPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

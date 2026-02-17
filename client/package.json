@@ -11,6 +11,7 @@
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
+    "@react-oauth/google": "^0.13.4",
     "@tailwindcss/vite": "^4.1.18",
     "axios": "^1.13.5",
     "framer-motion": "^12.31.0",

@@ -1,6 +1,22 @@
 import type { Request, Response, NextFunction } from "express";
 import { verifyToken } from "../utils/jwt.utils.js";
 
+export function optionalAuthMiddleware(req: Request, _res: Response, next: NextFunction): void {
+  const authHeader = req.headers.authorization;
+  if (authHeader && authHeader.startsWith("Bearer ")) {
+    const token = authHeader.split(" ")[1];
+    if (token) {
+      try {
+        const decoded = verifyToken(token);
+        req.user = { id: decoded.id, email: decoded.email, role: decoded.role };
+      } catch {
+        // Token invalid, proceed without user
+      }
+    }
+  }
+  next();
+}
+
 export function authMiddleware(req: Request, res: Response, next: NextFunction): void {
   const authHeader = req.headers.authorization;
 

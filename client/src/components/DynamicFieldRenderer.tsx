@@ -158,7 +158,7 @@ function renderField(
             className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 file:cursor-pointer"
             accept={field.validation?.allowedTypes?.join(",")}
           />
-          {value && <p className="mt-1 text-sm text-gray-500">Current: {value as string}</p>}
+          {typeof value === "string" && value && <p className="mt-1 text-sm text-gray-500">Current: {value}</p>}
         </div>
       );
 
