@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Zap, Menu, X, User } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
@@ -18,140 +18,121 @@ export function Navbar() {
 
   return (
     <motion.nav
-      initial={{ y: -100 }}
-      animate={{ y: 0 }}
-      className="fixed top-0 left-0 right-0 z-50 glass border-b border-black/5"
+      initial={{ y: -20, opacity: 0 }}
+      animate={{ y: 0, opacity: 1 }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      className="fixed top-0 left-0 right-0 z-50"
     >
-      <div className="max-w-7xl mx-auto px-6 py-3">
-        <div className="flex items-center justify-between">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-3 no-underline">
-            <motion.div whileHover={{ scale: 1.02 }}>
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-black to-gray-700 flex items-center justify-center rounded-xl shadow-lg">
-                  <Zap className="w-6 h-6 text-white fill-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-green-500 rounded-full border-2 border-white"></div>
+      <div className="mx-auto max-w-6xl px-4 pt-4">
+        <div className="glass rounded-2xl border border-white/60 shadow-lg shadow-black/3 px-5 py-3">
+          <div className="flex items-center justify-between">
+            {/* Logo */}
+            <Link to="/" className="flex items-center gap-2.5 no-underline">
+              <div className="w-9 h-9 bg-gray-950 flex items-center justify-center rounded-xl">
+                <Zap className="w-5 h-5 text-white fill-white" />
               </div>
-            </motion.div>
-            <div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-black to-gray-700 bg-clip-text text-transparent">
+              <span className="font-display text-xl font-bold text-gray-950">
                 InternHack
               </span>
-              <div className="text-[10px] text-gray-500 -mt-1 font-medium tracking-wider">
-                PREPARE &bull; PRACTICE &bull; PLACED
-              </div>
+            </Link>
+
+            {/* Desktop Menu */}
+            <div className="hidden lg:flex items-center gap-0.5">
+              <NavItem href="/">Home</NavItem>
+              <NavItem href="/jobs">Jobs</NavItem>
+              <NavItem href="/external-jobs">External Jobs</NavItem>
+              <NavItem href="/careers">Careers</NavItem>
+              <NavItem href="/companies">Companies</NavItem>
+              {!isAuthenticated && <NavItem href="/recruiters">For Recruiters</NavItem>}
             </div>
-          </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden lg:flex items-center gap-1">
-            <NavItem href="/">Home</NavItem>
-            <NavItem href="/hackathons">Hackathons</NavItem>
-            <NavItem href="/jobs">Jobs</NavItem>
-            <NavItem href="/external-jobs">External Jobs</NavItem>
-            <NavItem href="/careers">Careers</NavItem>
-            <NavItem href="/interview-prep">Interview Prep</NavItem>
-            <NavItem href="/ai-interview">AI Interview</NavItem>
-            {!isAuthenticated && <NavItem href="/recruiters">For Recruiters</NavItem>}
-          </div>
-
-          {/* Desktop Actions */}
-          <div className="hidden lg:flex items-center gap-3">
-            {isAuthenticated ? (
-              <>
-                <Link to={dashboardLink} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:text-black transition-colors font-medium no-underline">
-                  <User className="w-4 h-4" />
-                  {user?.name}
-                </Link>
-                <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleLogout}
-                  className="px-5 py-2 text-sm text-gray-700 hover:text-black transition-colors font-medium"
-                >
-                  Logout
-                </motion.button>
-              </>
-            ) : (
-              <>
-                <Link to="/login">
-                  <motion.button
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-5 py-2 text-sm text-gray-700 hover:text-black transition-colors font-medium"
-                  >
-                    Sign In
-                  </motion.button>
-                </Link>
-                <Link to="/register">
-                  <motion.button
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow: "0 10px 30px rgba(0,0,0,0.15)",
-                    }}
-                    whileTap={{ scale: 0.95 }}
-                    className="px-6 py-2.5 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-all shadow-lg"
-                  >
-                    Get Started Free
-                  </motion.button>
-                </Link>
-              </>
-            )}
-          </div>
-
-          {/* Mobile Menu Button */}
-          <motion.button
-            whileTap={{ scale: 0.95 }}
-            onClick={() => setIsOpen(!isOpen)}
-            className="lg:hidden p-2 text-black hover:bg-black/5 rounded-lg transition-colors"
-          >
-            {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-          </motion.button>
-        </div>
-
-        {/* Mobile Menu */}
-        <motion.div
-          initial={false}
-          animate={{ height: isOpen ? "auto" : 0, opacity: isOpen ? 1 : 0 }}
-          className="overflow-hidden lg:hidden"
-        >
-          <div className="py-4 space-y-1">
-            <MobileNavLink href="/">Home</MobileNavLink>
-            <MobileNavLink href="/hackathons">Hackathons</MobileNavLink>
-            <MobileNavLink href="/jobs">Jobs</MobileNavLink>
-            <MobileNavLink href="/external-jobs">External Jobs</MobileNavLink>
-            <MobileNavLink href="/careers">Careers</MobileNavLink>
-            <MobileNavLink href="/interview-prep">Interview Prep</MobileNavLink>
-            <MobileNavLink href="/ai-interview">AI Interview</MobileNavLink>
-            <div className="pt-4 space-y-2">
+            {/* Desktop Actions */}
+            <div className="hidden lg:flex items-center gap-2">
               {isAuthenticated ? (
                 <>
-                  <Link to={dashboardLink}
-                    className="block px-5 py-2.5 text-sm text-gray-700 hover:text-black transition-colors font-medium text-left rounded-lg hover:bg-black/5 no-underline">
-                    Dashboard
+                  <Link to={dashboardLink} className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:text-gray-950 transition-colors font-medium no-underline rounded-xl hover:bg-gray-50">
+                    <User className="w-4 h-4" />
+                    {user?.name}
                   </Link>
-                  <button onClick={handleLogout}
-                    className="w-full px-5 py-2.5 text-sm text-gray-700 hover:text-black transition-colors font-medium text-left rounded-lg hover:bg-black/5">
+                  <button
+                    onClick={handleLogout}
+                    className="px-4 py-2 text-sm text-gray-600 hover:text-gray-950 transition-colors font-medium rounded-xl hover:bg-gray-50"
+                  >
                     Logout
                   </button>
                 </>
               ) : (
                 <>
-                  <Link to="/login"
-                    className="block px-5 py-2.5 text-sm text-gray-700 hover:text-black transition-colors font-medium text-left rounded-lg hover:bg-black/5 no-underline">
-                    Sign In
+                  <Link to="/login" className="no-underline">
+                    <button className="px-4 py-2 text-sm text-gray-600 hover:text-gray-950 transition-colors font-medium rounded-xl hover:bg-gray-50">
+                      Sign In
+                    </button>
                   </Link>
-                  <Link to="/register" className="block no-underline">
-                    <button className="w-full px-6 py-2.5 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-all shadow-lg">
-                      Get Started Free
+                  <Link to="/register" className="no-underline">
+                    <button className="px-5 py-2 bg-gray-950 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-all shadow-sm">
+                      Get Started
                     </button>
                   </Link>
                 </>
               )}
             </div>
+
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsOpen(!isOpen)}
+              className="lg:hidden p-2 text-gray-700 hover:bg-gray-100 rounded-xl transition-colors"
+            >
+              {isOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+            </button>
           </div>
-        </motion.div>
+
+          {/* Mobile Menu */}
+          <AnimatePresence>
+            {isOpen && (
+              <motion.div
+                initial={{ height: 0, opacity: 0 }}
+                animate={{ height: "auto", opacity: 1 }}
+                exit={{ height: 0, opacity: 0 }}
+                transition={{ duration: 0.2 }}
+                className="overflow-hidden lg:hidden"
+              >
+                <div className="pt-4 pb-2 space-y-1 border-t border-gray-100 mt-3">
+                  <MobileNavLink href="/" onClick={() => setIsOpen(false)}>Home</MobileNavLink>
+                  <MobileNavLink href="/jobs" onClick={() => setIsOpen(false)}>Jobs</MobileNavLink>
+                  <MobileNavLink href="/external-jobs" onClick={() => setIsOpen(false)}>External Jobs</MobileNavLink>
+                  <MobileNavLink href="/careers" onClick={() => setIsOpen(false)}>Careers</MobileNavLink>
+                  <MobileNavLink href="/companies" onClick={() => setIsOpen(false)}>Companies</MobileNavLink>
+                  <div className="pt-3 space-y-2">
+                    {isAuthenticated ? (
+                      <>
+                        <Link to={dashboardLink} onClick={() => setIsOpen(false)}
+                          className="block px-4 py-2.5 text-sm text-gray-600 hover:text-gray-950 font-medium rounded-xl hover:bg-gray-50 no-underline">
+                          Dashboard
+                        </Link>
+                        <button onClick={() => { handleLogout(); setIsOpen(false); }}
+                          className="w-full px-4 py-2.5 text-sm text-gray-600 hover:text-gray-950 font-medium text-left rounded-xl hover:bg-gray-50">
+                          Logout
+                        </button>
+                      </>
+                    ) : (
+                      <>
+                        <Link to="/login" onClick={() => setIsOpen(false)}
+                          className="block px-4 py-2.5 text-sm text-gray-600 hover:text-gray-950 font-medium rounded-xl hover:bg-gray-50 no-underline">
+                          Sign In
+                        </Link>
+                        <Link to="/register" onClick={() => setIsOpen(false)} className="block no-underline">
+                          <button className="w-full px-5 py-2.5 bg-gray-950 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-all">
+                            Get Started
+                          </button>
+                        </Link>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </motion.nav>
   );
@@ -165,13 +146,10 @@ function NavItem({
   children: React.ReactNode;
 }) {
   return (
-    <Link to={href}>
-      <motion.span
-        whileHover={{ scale: 1.05 }}
-        className="block px-4 py-2 text-sm text-gray-700 hover:text-black hover:bg-black/5 rounded-lg transition-all font-medium cursor-pointer"
-      >
+    <Link to={href} className="no-underline">
+      <span className="block px-3 py-1.5 text-sm text-gray-500 hover:text-gray-950 hover:bg-gray-50 rounded-lg transition-all font-medium cursor-pointer">
         {children}
-      </motion.span>
+      </span>
     </Link>
   );
 }
@@ -179,14 +157,17 @@ function NavItem({
 function MobileNavLink({
   href,
   children,
+  onClick,
 }: {
   href: string;
   children: React.ReactNode;
+  onClick?: () => void;
 }) {
   return (
     <Link
       to={href}
-      className="block px-4 py-2.5 text-sm text-gray-700 hover:text-black hover:bg-black/5 rounded-lg transition-all font-medium no-underline"
+      onClick={onClick}
+      className="block px-4 py-2.5 text-sm text-gray-600 hover:text-gray-950 hover:bg-gray-50 rounded-xl transition-all font-medium no-underline"
     >
       {children}
     </Link>

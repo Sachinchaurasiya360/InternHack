@@ -1,17 +1,21 @@
 import { Navbar } from "../../components/Navbar"
 import { Footer } from "../../components/Footer"
 import { HeroSection } from "../../components/HeroSection"
-import { RecentHackathons } from "../../components/RecentHackathons"
-import { InterviewPrep } from "../../components/InterviewPrep"
+import { StatsSection } from "../../components/StatsSection"
+import { FeaturesSection } from "../../components/FeaturesSection"
+import { HowItWorksSection } from "../../components/HowItWorksSection"
+import { CTASection } from "../../components/CTASection"
+
 export default function LandingPage(){
     return(
-        <div>
+        <div className="font-sans">
             <Navbar/>
             <HeroSection/>
-            <RecentHackathons/>
-            <InterviewPrep/>
+            <StatsSection/>
+            <FeaturesSection/>
+            <HowItWorksSection/>
+            <CTASection/>
             <Footer/>
-            
         </div>
     )
 }

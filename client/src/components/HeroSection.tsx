@@ -1,132 +1,148 @@
-"use client";
-
 import { motion } from "framer-motion";
-import { Rocket, Briefcase, Trophy, Users, Star } from "lucide-react";
+import { ArrowRight, Sparkles } from "lucide-react";
+import { Link } from "react-router";
 
 const fadeInUp = {
-  hidden: { opacity: 0, y: 60 },
-  visible: { opacity: 1, y: 0 },
-};
-
-const staggerContainer = {
-  hidden: { opacity: 0 },
-  visible: {
+  hidden: { opacity: 0, y: 40 },
+  visible: (i: number) => ({
     opacity: 1,
-    transition: {
-      staggerChildren: 0.1,
-      delayChildren: 0.3,
-    },
-  },
+    y: 0,
+    transition: { delay: i * 0.15, duration: 0.6, ease: [0.22, 1, 0.36, 1] as const },
+  }),
 };
 
 export function HeroSection() {
-  const stats = [
-    { label: "Active Hackathons", value: "50+", icon: Trophy },
-    { label: "Job Opportunities", value: "5,000+", icon: Briefcase },
-    { label: "Registered Users", value: "10K+", icon: Users },
-    { label: "Success Stories", value: "500+", icon: Star },
-  ];
-
   return (
-    <motion.section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-20 bg-gradient-to-br from-gray-50 via-white to-gray-100">
-      {/* Geometric background pattern */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute top-20 left-10 w-72 h-72 bg-black/5 rounded-full blur-3xl" />
-        <div className="absolute bottom-20 right-10 w-96 h-96 bg-gray-900/5 rounded-full blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] border border-black/5 rounded-full" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] border border-black/5 rounded-full" />
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#fafafa]">
+      {/* Gradient orbs */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 opacity-60 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-slate-100 to-blue-100 opacity-60 blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-black/[0.03]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full border border-black/[0.02]" />
       </div>
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
+      {/* Grid pattern */}
+      <div
+        className="absolute inset-0 opacity-[0.03]"
+        style={{
+          backgroundImage:
+            "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
+          backgroundSize: "64px 64px",
+        }}
+      />
+
+      <div className="relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-20 text-center">
         <motion.div
+          custom={0}
           initial="hidden"
           animate="visible"
-          variants={staggerContainer}
-          className="space-y-8"
+          variants={fadeInUp}
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-black/10 shadow-sm text-sm text-gray-600 mb-8"
         >
-          <motion.div
-            variants={fadeInUp}
-            className="inline-flex items-center gap-2 px-4 py-2 border border-black/20 rounded-full text-sm text-gray-700 bg-white/50 backdrop-blur-sm"
-          >
-            <span>Next-Gen Career Platform</span>
-          </motion.div>
+          <Sparkles className="w-4 h-4 text-indigo-500" />
+          <span>AI-Powered Career Platform</span>
+        </motion.div>
 
-          <motion.h1
-            variants={fadeInUp}
-            className="text-6xl md:text-8xl font-bold leading-tight text-black"
-          >
-            Prepare Practice
-            <br />
-            <span className="text-black underline decoration-4 underline-offset-8">
-              Placed
-            </span>
-          </motion.h1>
+        <motion.h1
+          custom={1}
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+          className="font-display text-5xl sm:text-7xl md:text-[5.5rem] font-bold leading-[1.05] tracking-tight text-gray-950 mb-6"
+        >
+          Your career starts
+          <br />
+          <span className="text-gradient-accent">with the right tools</span>
+        </motion.h1>
 
-          <motion.p
-            variants={fadeInUp}
-            className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto"
-          >
-            Join the ultimate platform connecting talented developers with
-            cutting-edge hackathons and dream career opportunities.
-          </motion.p>
+        <motion.p
+          custom={2}
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+          className="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed"
+        >
+          Browse curated jobs, follow guided career roadmaps, score your resume
+          with AI, and connect directly with recruiters — all in one platform.
+        </motion.p>
 
-          <motion.div
-            variants={fadeInUp}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-          >
+        <motion.div
+          custom={3}
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+          className="flex flex-col sm:flex-row gap-4 justify-center items-center"
+        >
+          <Link to="/register" className="no-underline">
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 bg-black text-white text-lg font-semibold hover:bg-gray-800 transition-all flex items-center gap-2 rounded-lg"
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2"
             >
-              Explore Hackathons
-              <Rocket className="w-5 h-5" />
+              Get Started Free
+              <ArrowRight className="w-4 h-4" />
             </motion.button>
+          </Link>
+          <Link to="/jobs" className="no-underline">
             <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="px-8 py-4 border-2 border-black text-black text-lg font-semibold hover:bg-black hover:text-white transition-all flex items-center gap-2 rounded-lg"
+              whileHover={{ scale: 1.03, y: -2 }}
+              whileTap={{ scale: 0.98 }}
+              className="px-8 py-4 bg-white text-gray-950 text-base font-semibold rounded-2xl border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all"
             >
-              Find Jobs
-              <Briefcase className="w-5 h-5" />
+              Browse Jobs
             </motion.button>
-          </motion.div>
+          </Link>
+        </motion.div>
 
-          <motion.div
-            variants={fadeInUp}
-            className="grid grid-cols-2 md:grid-cols-4 gap-8 mt-16"
-          >
-            {stats.map((stat, idx) => (
-              <motion.div
-                key={idx}
-                whileHover={{ scale: 1.05, y: -5 }}
-                className="border border-black/10 bg-white/80 backdrop-blur-sm p-6 rounded-xl shadow-lg"
+        {/* Floating cards preview */}
+        <motion.div
+          custom={4}
+          initial="hidden"
+          animate="visible"
+          variants={fadeInUp}
+          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
+        >
+          {[
+            { label: "Jobs", value: "Browse & Apply", color: "from-indigo-500 to-indigo-600" },
+            { label: "Careers", value: "8+ Roadmaps", color: "from-violet-500 to-violet-600" },
+            { label: "ATS Score", value: "AI Powered", color: "from-slate-700 to-slate-800" },
+            { label: "Companies", value: "Explore All", color: "from-gray-700 to-gray-800" },
+          ].map((card, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ y: -6, scale: 1.04 }}
+              className="relative bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-lg transition-all cursor-pointer group"
+            >
+              <div
+                className={`w-10 h-10 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-3`}
               >
-                <stat.icon className="w-8 h-8 text-black mx-auto mb-2" />
-                <div className="text-3xl font-bold text-black">
-                  {stat.value}
-                </div>
-                <div className="text-gray-600 text-sm">{stat.label}</div>
-              </motion.div>
-            ))}
-          </motion.div>
+                <span className="text-white text-sm font-bold">{card.label[0]}</span>
+              </div>
+              <div className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">
+                {card.label}
+              </div>
+              <div className="text-sm font-semibold text-gray-900">{card.value}</div>
+            </motion.div>
+          ))}
         </motion.div>
       </div>
 
+      {/* Scroll indicator */}
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ delay: 1.5 }}
-        className="absolute bottom-10 left-1/2 transform -translate-x-1/2"
+        transition={{ delay: 2 }}
+        className="absolute bottom-8 left-1/2 -translate-x-1/2"
       >
         <motion.div
-          animate={{ y: [0, 10, 0] }}
-          transition={{ duration: 1.5, repeat: Infinity }}
-          className="w-6 h-10 border-2 border-black/30 rounded-full flex items-start justify-center p-2"
+          animate={{ y: [0, 8, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+          className="w-5 h-8 border-2 border-gray-300 rounded-full flex items-start justify-center p-1.5"
         >
-          <motion.div className="w-1 h-2 bg-black rounded-full" />
+          <motion.div className="w-1 h-1.5 bg-gray-400 rounded-full" />
         </motion.div>
       </motion.div>
-    </motion.section>
+    </section>
   );
 }
