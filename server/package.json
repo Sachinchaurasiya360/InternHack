@@ -42,6 +42,7 @@
     "@types/node-cron": "^3.0.11",
     "@types/pdf-parse": "^1.1.5",
     "@types/pg": "^8.16.0",
-    "tsx": "^4.21.0"
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3"
   }
 }
