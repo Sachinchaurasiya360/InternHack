@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Toaster } from "react-hot-toast";
 import LandingPage from "./module/LandingPage/landingPage";
 import LoginPage from "./module/auth/LoginPage";
@@ -19,6 +19,7 @@ import MyApplicationsPage from "./module/student/applications/MyApplicationsPage
 import ApplicationProgressPage from "./module/student/applications/ApplicationProgressPage";
 import ScrapedJobsPage from "./module/scraped-jobs/ScrapedJobsPage";
 import ScrapedJobDetailPage from "./module/scraped-jobs/ScrapedJobDetailPage";
+import AtsLandingPage from "./module/student/ats/AtsLandingPage";
 import AtsScorePage from "./module/student/ats/AtsScorePage";
 import AtsHistoryPage from "./module/student/ats/AtsHistoryPage";
 import AtsScoreDetailPage from "./module/student/ats/AtsScoreDetailPage";
@@ -62,9 +63,15 @@ function App() {
         {/* Student protected routes */}
         <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyPage /></ProtectedRoute>} />
         <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
+          <Route index element={<Navigate to="applications" replace />} />
+          <Route path="jobs" element={<JobBrowsePage />} />
+          <Route path="jobs/:id" element={<JobDetailPage />} />
+          <Route path="companies" element={<CompanyListPage />} />
+          <Route path="companies/:slug" element={<CompanyDetailPage />} />
           <Route path="applications" element={<MyApplicationsPage />} />
           <Route path="applications/:applicationId" element={<ApplicationProgressPage />} />
-          <Route path="ats" element={<AtsScorePage />} />
+          <Route path="ats" element={<AtsLandingPage />} />
+          <Route path="ats/score" element={<AtsScorePage />} />
           <Route path="ats/history" element={<AtsHistoryPage />} />
           <Route path="ats/history/:scoreId" element={<AtsScoreDetailPage />} />
           <Route path="careers" element={<MyCareerPathsPage />} />

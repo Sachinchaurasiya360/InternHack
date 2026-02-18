@@ -6,6 +6,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import type { UserRole } from "../../lib/types";
+import { Navbar } from "../../components/Navbar";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ export default function RegisterPage() {
       if (data.user.role === "RECRUITER") {
         navigate("/recruiters");
       } else {
-        navigate("/jobs");
+        navigate("/student/applications");
       }
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -59,7 +60,7 @@ export default function RegisterPage() {
       if (data.user.role === "RECRUITER") {
         navigate("/recruiters");
       } else {
-        navigate("/jobs");
+        navigate("/student/applications");
       }
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -70,7 +71,9 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4 py-12">
+    <div className="min-h-screen flex flex-col bg-gray-50">
+      <Navbar />
+      <div className="flex-1 flex items-center justify-center px-4 pt-24 pb-12">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -225,6 +228,7 @@ export default function RegisterPage() {
           </p>
         </form>
       </motion.div>
+      </div>
     </div>
   );
 }

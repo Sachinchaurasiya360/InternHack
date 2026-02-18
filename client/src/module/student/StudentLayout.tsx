@@ -26,7 +26,7 @@ export default function StudentLayout() {
         </div>
 
         <nav className="flex-1 space-y-1">
-          <NavLink to="/jobs" className={linkClass}>
+          <NavLink to="/student/jobs" className={linkClass}>
             <Briefcase className="w-4 h-4" />
             Browse Jobs
           </NavLink>
@@ -42,7 +42,7 @@ export default function StudentLayout() {
             <Map className="w-4 h-4" />
             Career Paths
           </NavLink>
-          <NavLink to="/companies" className={linkClass}>
+          <NavLink to="/student/companies" className={linkClass}>
             <Building2 className="w-4 h-4" />
             Explore Companies
           </NavLink>

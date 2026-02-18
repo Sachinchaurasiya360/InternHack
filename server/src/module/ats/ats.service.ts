@@ -76,7 +76,7 @@ export class AtsService {
     jobTitle?: string | undefined,
     jobDescription?: string | undefined,
   ): Promise<AtsScoreResult> {
-    const model = this.genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
     const prompt = this.buildPrompt(resumeText, jobTitle, jobDescription);
 
