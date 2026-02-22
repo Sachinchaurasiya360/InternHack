@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, TrendingUp, DollarSign, Layers, Clock, Users, Zap } from "lucide-react";
+import { ArrowLeft, TrendingUp, DollarSign, Layers, Clock, Users, Zap, Sparkles } from "lucide-react";
 import api from "../../lib/axios";
 import type { Career } from "../../lib/types";
 import { useAuthStore } from "../../lib/auth.store";
@@ -9,45 +9,30 @@ import RoadmapTimeline from "./components/RoadmapTimeline";
 import { Navbar } from "../../components/Navbar";
 import toast from "react-hot-toast";
 
-const CATEGORY_CONFIG: Record<string, { bg: string; text: string; border: string; hero: string }> = {
-  ENGINEERING: {
-    bg: "bg-blue-50", text: "text-blue-700", border: "border-blue-100",
-    hero: "from-blue-600 to-blue-900",
-  },
-  DESIGN: {
-    bg: "bg-pink-50", text: "text-pink-700", border: "border-pink-100",
-    hero: "from-pink-500 to-rose-800",
-  },
-  DATA: {
-    bg: "bg-purple-50", text: "text-purple-700", border: "border-purple-100",
-    hero: "from-purple-600 to-purple-900",
-  },
-  PRODUCT: {
-    bg: "bg-orange-50", text: "text-orange-700", border: "border-orange-100",
-    hero: "from-orange-500 to-amber-800",
-  },
-  MARKETING: {
-    bg: "bg-green-50", text: "text-green-700", border: "border-green-100",
-    hero: "from-green-600 to-emerald-900",
-  },
-  DEVOPS: {
-    bg: "bg-cyan-50", text: "text-cyan-700", border: "border-cyan-100",
-    hero: "from-cyan-600 to-teal-900",
-  },
-  SECURITY: {
-    bg: "bg-red-50", text: "text-red-700", border: "border-red-100",
-    hero: "from-red-600 to-red-900",
-  },
-  OTHER: {
-    bg: "bg-gray-50", text: "text-gray-700", border: "border-gray-100",
-    hero: "from-gray-700 to-gray-900",
-  },
+const CATEGORY_CONFIG: Record<string, { pill: string; gradient: string; icon: string }> = {
+  ENGINEERING: { pill: "bg-blue-50 text-blue-700 border-blue-100", gradient: "from-blue-500 to-blue-600", icon: "bg-blue-50 text-blue-600" },
+  DESIGN:      { pill: "bg-pink-50 text-pink-700 border-pink-100", gradient: "from-pink-500 to-rose-600", icon: "bg-pink-50 text-pink-600" },
+  DATA:        { pill: "bg-purple-50 text-purple-700 border-purple-100", gradient: "from-purple-500 to-purple-600", icon: "bg-purple-50 text-purple-600" },
+  PRODUCT:     { pill: "bg-orange-50 text-orange-700 border-orange-100", gradient: "from-orange-400 to-amber-500", icon: "bg-orange-50 text-orange-600" },
+  MARKETING:   { pill: "bg-green-50 text-green-700 border-green-100", gradient: "from-green-500 to-emerald-600", icon: "bg-green-50 text-green-600" },
+  DEVOPS:      { pill: "bg-cyan-50 text-cyan-700 border-cyan-100", gradient: "from-cyan-500 to-teal-600", icon: "bg-cyan-50 text-cyan-600" },
+  SECURITY:    { pill: "bg-red-50 text-red-700 border-red-100", gradient: "from-red-500 to-red-600", icon: "bg-red-50 text-red-600" },
+  OTHER:       { pill: "bg-gray-50 text-gray-700 border-gray-200", gradient: "from-gray-500 to-gray-600", icon: "bg-gray-50 text-gray-600" },
 };
 
 const DIFFICULTY_CONFIG: Record<string, { bg: string; text: string; label: string }> = {
   BEGINNER: { bg: "bg-green-50", text: "text-green-700", label: "Beginner Friendly" },
   INTERMEDIATE: { bg: "bg-amber-50", text: "text-amber-700", label: "Intermediate" },
   ADVANCED: { bg: "bg-red-50", text: "text-red-700", label: "Advanced" },
+};
+
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
+  }),
 };
 
 export default function CareerDetailPage() {
@@ -85,13 +70,13 @@ export default function CareerDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#fafafa]">
         <Navbar />
         <div className="pt-28 max-w-4xl mx-auto px-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-48 bg-gray-200 rounded-2xl" />
-            <div className="h-8 bg-gray-200 rounded w-1/2" />
-            <div className="h-4 bg-gray-200 rounded w-3/4" />
+            <div className="h-48 bg-white rounded-2xl border border-gray-100" />
+            <div className="h-8 bg-gray-100 rounded w-1/2" />
+            <div className="h-4 bg-gray-100 rounded w-3/4" />
           </div>
         </div>
       </div>
@@ -100,7 +85,7 @@ export default function CareerDetailPage() {
 
   if (!career) {
     return (
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-[#fafafa]">
         <Navbar />
         <div className="text-center pt-40 text-gray-500">Career not found</div>
       </div>
@@ -113,92 +98,141 @@ export default function CareerDetailPage() {
   const diffCfg = DIFFICULTY_CONFIG[career.difficulty] ?? { bg: "bg-gray-50", text: "text-gray-600", label: career.difficulty };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-[#fafafa]">
       <Navbar />
 
-      {/* Hero banner */}
-      <div className={`bg-gradient-to-br ${catCfg.hero} pt-24 pb-12 px-6`}>
-        <div className="max-w-4xl mx-auto">
-          <Link
-            to="/careers"
-            className="inline-flex items-center gap-1.5 text-white/60 hover:text-white text-sm mb-6 no-underline transition-colors"
-          >
-            <ArrowLeft className="w-4 h-4" /> Back to Careers
-          </Link>
+      {/* Hero */}
+      <section className="relative overflow-hidden bg-[#fafafa] pt-24 pb-16 px-6">
+        {/* Gradient orbs */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none">
+          <div className="absolute -top-40 -right-40 w-125 h-125 rounded-full bg-linear-to-br from-indigo-100 to-violet-100 opacity-60 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-100 h-100 rounded-full bg-linear-to-tr from-slate-100 to-blue-100 opacity-60 blur-3xl" />
+        </div>
 
-          <div className="flex flex-wrap gap-2 mb-4">
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white border border-white/20`}>
+        {/* Grid pattern */}
+        <div
+          className="absolute inset-0 opacity-[0.03]"
+          style={{
+            backgroundImage:
+              "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+          }}
+        />
+
+        <div className="relative z-10 max-w-4xl mx-auto">
+          <motion.div custom={0} initial="hidden" animate="visible" variants={fadeInUp}>
+            <Link
+              to="/careers"
+              className="inline-flex items-center gap-1.5 text-gray-400 hover:text-gray-700 text-sm mb-6 no-underline transition-colors"
+            >
+              <ArrowLeft className="w-4 h-4" /> Back to Careers
+            </Link>
+          </motion.div>
+
+          <motion.div custom={1} initial="hidden" animate="visible" variants={fadeInUp} className="flex flex-wrap gap-2 mb-5">
+            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${catCfg.pill}`}>
+              <Sparkles className="w-3 h-3" />
               {career.category}
             </span>
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold bg-white/15 text-white border border-white/20`}>
+            <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${diffCfg.bg} ${diffCfg.text}`}>
               {diffCfg.label}
             </span>
-          </div>
+          </motion.div>
 
-          <h1 className="text-3xl font-bold text-white mb-3">{career.title}</h1>
-          <p className="text-white/70 max-w-2xl leading-relaxed mb-6">{career.description}</p>
+          <motion.h1
+            custom={2}
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-gray-950 tracking-tight mb-4"
+          >
+            {career.title}
+          </motion.h1>
+
+          <motion.p
+            custom={3}
+            initial="hidden"
+            animate="visible"
+            variants={fadeInUp}
+            className="text-gray-500 text-lg max-w-2xl leading-relaxed mb-8"
+          >
+            {career.description}
+          </motion.p>
 
           {/* Stat pills */}
-          <div className="flex flex-wrap gap-3 text-sm text-white/80 mb-8">
+          <motion.div custom={4} initial="hidden" animate="visible" variants={fadeInUp} className="flex flex-wrap gap-3 mb-8">
             {career.avgSalary && (
-              <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg border border-white/15">
-                <DollarSign className="w-3.5 h-3.5" /> {career.avgSalary}
+              <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
+                <DollarSign className="w-3.5 h-3.5 text-gray-400" /> {career.avgSalary}
               </span>
             )}
             {career.demandLevel && (
-              <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg border border-white/15">
-                <TrendingUp className="w-3.5 h-3.5" /> {career.demandLevel} demand
+              <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
+                <TrendingUp className="w-3.5 h-3.5 text-gray-400" /> {career.demandLevel} demand
               </span>
             )}
-            <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg border border-white/15">
-              <Layers className="w-3.5 h-3.5" /> {career.phases?.length ?? 0} phases
+            <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
+              <Layers className="w-3.5 h-3.5 text-gray-400" /> {career.phases?.length ?? 0} phases
             </span>
             {totalWeeks > 0 && (
-              <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg border border-white/15">
-                <Clock className="w-3.5 h-3.5" /> ~{totalWeeks} weeks
+              <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
+                <Clock className="w-3.5 h-3.5 text-gray-400" /> ~{totalWeeks} weeks
               </span>
             )}
-            <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg border border-white/15">
-              <Zap className="w-3.5 h-3.5" /> {totalSkills} skills
+            <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
+              <Zap className="w-3.5 h-3.5 text-gray-400" /> {totalSkills} skills
             </span>
             {career._count?.enrollments != null && career._count.enrollments > 0 && (
-              <span className="flex items-center gap-1.5 bg-white/10 px-3 py-1.5 rounded-lg border border-white/15">
-                <Users className="w-3.5 h-3.5" /> {career._count.enrollments} enrolled
+              <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
+                <Users className="w-3.5 h-3.5 text-gray-400" /> {career._count.enrollments} enrolled
               </span>
             )}
-          </div>
+          </motion.div>
 
           {/* CTA */}
-          {isAuthenticated && user?.role === "STUDENT" ? (
-            enrolled ? (
-              <Link
-                to={`/student/careers/${career.slug}`}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-100 transition-colors no-underline shadow-lg"
-              >
-                Continue Learning →
+          <motion.div custom={5} initial="hidden" animate="visible" variants={fadeInUp}>
+            {isAuthenticated && user?.role === "STUDENT" ? (
+              enrolled ? (
+                <Link
+                  to={`/student/careers/${career.slug}`}
+                  className="no-underline"
+                >
+                  <motion.button
+                    whileHover={{ scale: 1.03, y: -2 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2"
+                  >
+                    Continue Learning →
+                  </motion.button>
+                </Link>
+              ) : (
+                <motion.button
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={handleEnroll}
+                  disabled={enrolling}
+                  className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2 disabled:opacity-50"
+                >
+                  {enrolling ? "Enrolling..." : "Start This Path →"}
+                </motion.button>
+              )
+            ) : !isAuthenticated ? (
+              <Link to="/login" className="no-underline">
+                <motion.button
+                  whileHover={{ scale: 1.03, y: -2 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2"
+                >
+                  Sign In to Start →
+                </motion.button>
               </Link>
-            ) : (
-              <button
-                onClick={handleEnroll}
-                disabled={enrolling}
-                className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-100 transition-colors disabled:opacity-50 shadow-lg"
-              >
-                {enrolling ? "Enrolling..." : "Start This Path →"}
-              </button>
-            )
-          ) : !isAuthenticated ? (
-            <Link
-              to="/login"
-              className="inline-flex items-center gap-2 px-6 py-3 bg-white text-gray-900 font-semibold rounded-xl hover:bg-gray-100 transition-colors no-underline shadow-lg"
-            >
-              Sign In to Start →
-            </Link>
-          ) : null}
+            ) : null}
+          </motion.div>
         </div>
-      </div>
+      </section>
 
       {/* Roadmap */}
-      <div className="max-w-4xl mx-auto px-6 py-10">
+      <div className="max-w-6xl mx-auto px-6 py-10">
         {career.phases && career.phases.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
             <div className="flex items-center justify-between mb-6">

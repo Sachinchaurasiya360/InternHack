@@ -1,28 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, CheckCircle, Clock, Circle, Send } from "lucide-react";
 import { motion } from "framer-motion";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DynamicFieldRenderer } from "../../../components/DynamicFieldRenderer";
 import api from "../../../lib/axios";
+import { queryKeys } from "../../../lib/query-keys";
 import type { Application, CustomFieldDefinition } from "../../../lib/types";
 
 export default function ApplicationProgressPage() {
   const { applicationId } = useParams();
   const navigate = useNavigate();
-  const [application, setApplication] = useState<Application | null>(null);
-  const [loading, setLoading] = useState(true);
   const [activeRoundId, setActiveRoundId] = useState<number | null>(null);
   const [fieldAnswers, setFieldAnswers] = useState<Record<string, unknown>>({});
   const [submitting, setSubmitting] = useState(false);
 
-  const fetchDetail = () => {
-    api.get(`/student/applications/${applicationId}`).then((res) => {
-      setApplication(res.data.application);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  };
-
-  useEffect(() => { fetchDetail(); }, [applicationId]);
+  const queryClient = useQueryClient();
+  const { data: application, isLoading: loading } = useQuery({
+    queryKey: queryKeys.applications.progress(applicationId!),
+    queryFn: () => api.get(`/student/applications/${applicationId}`).then((res) => res.data.application as Application),
+    enabled: !!applicationId,
+  });
 
   const handleSubmitRound = async (roundId: number) => {
     setSubmitting(true);
@@ -33,7 +31,7 @@ export default function ApplicationProgressPage() {
       });
       setActiveRoundId(null);
       setFieldAnswers({});
-      fetchDetail();
+      queryClient.invalidateQueries({ queryKey: queryKeys.applications.progress(applicationId!) });
     } catch {
       alert("Failed to submit round");
     } finally {

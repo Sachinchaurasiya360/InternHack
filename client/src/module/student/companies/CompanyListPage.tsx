@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { Link, useSearchParams } from "react-router";
 import { Search, MapPin, Building2, Filter, Star, Users, Loader2, X } from "lucide-react";
+import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import type { Company, CityCount, Pagination } from "../../../lib/types";
 
@@ -148,6 +149,11 @@ export default function CompanyListPage() {
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-8">
+      <SEO
+        title="Explore Companies"
+        description="Discover companies hiring on InternHack. Browse by industry, size, and location. Read reviews, see tech stacks, and find your ideal workplace."
+        keywords="company explorer, companies hiring, company reviews, tech companies, startup jobs, company directory, workplace reviews"
+      />
       {/* Header */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900 flex items-center gap-3">

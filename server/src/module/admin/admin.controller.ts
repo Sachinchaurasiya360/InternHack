@@ -14,6 +14,8 @@ import {
   updateContributionStatusSchema,
   addContactAdminSchema,
   updateContactSchema,
+  createCareerSchema,
+  updateCareerSchema,
 } from "./admin.validation.js";
 
 export class AdminController {
@@ -413,6 +415,83 @@ export class AdminController {
       res.json({ message: "Contact deleted" });
     } catch (err) {
       if (err instanceof Error && err.message === "Contact not found") {
+        res.status(404).json({ message: err.message }); return;
+      }
+      next(err);
+    }
+  }
+
+  // ==================== CAREER MANAGEMENT ====================
+
+  async listCareers(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const careers = await this.adminService.listAdminCareers();
+      res.json({ careers });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getCareer(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid career ID" }); return; }
+
+      const career = await this.adminService.getAdminCareer(id);
+      res.json({ career });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Career not found") {
+        res.status(404).json({ message: err.message }); return;
+      }
+      next(err);
+    }
+  }
+
+  async createCareer(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = createCareerSchema.safeParse(req.body);
+      if (!result.success) {
+        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+        return;
+      }
+
+      const career = await this.adminService.createCareer(result.data);
+      res.status(201).json({ message: "Career created", career });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async updateCareer(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid career ID" }); return; }
+
+      const result = updateCareerSchema.safeParse(req.body);
+      if (!result.success) {
+        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+        return;
+      }
+
+      const career = await this.adminService.updateCareer(id, result.data as Parameters<typeof this.adminService.updateCareer>[1]);
+      res.json({ message: "Career updated", career });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Career not found") {
+        res.status(404).json({ message: err.message }); return;
+      }
+      next(err);
+    }
+  }
+
+  async deleteCareer(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid career ID" }); return; }
+
+      await this.adminService.deleteCareer(id);
+      res.json({ message: "Career deleted" });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Career not found") {
         res.status(404).json({ message: err.message }); return;
       }
       next(err);

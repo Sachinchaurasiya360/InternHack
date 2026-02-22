@@ -85,6 +85,18 @@ enum AdminTier {
   MODERATOR
 }
 
+enum SubscriptionPlan {
+  FREE
+  MONTHLY
+  YEARLY
+}
+
+enum SubscriptionStatus {
+  ACTIVE
+  EXPIRED
+  CANCELLED
+}
+
 // ============================================================
 // USER MODEL
 // ============================================================
@@ -98,11 +110,27 @@ model user {
   isActive    Boolean  @default(true)
   contactNo   String?
   profilePic  String?
-  resume      String?
+  resumes     String[]  @default([])
   company     String?
   designation String?
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
+
+  // ── Subscription fields ──
+  subscriptionPlan      SubscriptionPlan   @default(FREE)
+  subscriptionStatus    SubscriptionStatus @default(EXPIRED)
+  subscriptionStartDate DateTime?
+  subscriptionEndDate   DateTime?
+
+  // ── Student profile fields ──
+  bio          String?
+  college      String?
+  graduationYear Int?
+  skills       String[]  @default([])
+  linkedinUrl  String?
+  githubUrl    String?
+  portfolioUrl String?
+  location     String?
 
   postedJobs   job[]         @relation("RecruiterJobs")
   applications application[] @relation("StudentApplications")
@@ -562,4 +590,10 @@ model companyContribution {
 
   @@index([status])
   @@index([userId])
+}
+
+model newsletterSubscriber {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  createdAt DateTime @default(now())
 }

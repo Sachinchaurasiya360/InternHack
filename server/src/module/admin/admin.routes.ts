@@ -57,3 +57,10 @@ adminRouter.put("/contributions/:id/status", (req, res, next) => adminController
 adminRouter.post("/companies/:id/contacts", (req, res, next) => adminController.addContact(req, res, next));
 adminRouter.put("/contacts/:id", (req, res, next) => adminController.updateContact(req, res, next));
 adminRouter.delete("/contacts/:id", (req, res, next) => adminController.deleteContact(req, res, next));
+
+// Careers
+adminRouter.get("/careers", (req, res, next) => adminController.listCareers(req, res, next));
+adminRouter.get("/careers/:id", (req, res, next) => adminController.getCareer(req, res, next));
+adminRouter.post("/careers", (req, res, next) => adminController.createCareer(req, res, next));
+adminRouter.put("/careers/:id", (req, res, next) => adminController.updateCareer(req, res, next));
+adminRouter.delete("/careers/:id", (req, res, next) => adminController.deleteCareer(req, res, next));

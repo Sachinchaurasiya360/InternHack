@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Compass, ArrowRight, TrendingUp, Zap, CheckCircle2, Clock } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import api from "../../lib/axios";
+import { queryKeys } from "../../lib/query-keys";
 import type { StudentCareerEnrollment } from "../../lib/types";
 
 const CATEGORY_ACCENT: Record<string, string> = {
@@ -56,15 +57,10 @@ function CircularProgress({ progress, category }: { progress: number; category: 
 }
 
 export default function MyCareerPathsPage() {
-  const [paths, setPaths] = useState<StudentCareerEnrollment[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api.get("/careers/my-paths").then((res) => {
-      setPaths(res.data.paths);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, []);
+  const { data: paths = [], isLoading: loading } = useQuery({
+    queryKey: queryKeys.careers.myPaths(),
+    queryFn: () => api.get("/careers/my-paths").then((res) => res.data.paths as StudentCareerEnrollment[]),
+  });
 
   const completed = paths.filter((p) => p.progress === 100).length;
   const inProgress = paths.filter((p) => p.progress > 0 && p.progress < 100).length;

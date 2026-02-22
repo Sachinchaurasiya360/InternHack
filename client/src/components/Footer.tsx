@@ -1,7 +1,8 @@
-import { Zap, Send } from "lucide-react";
+import { Zap, Send, Loader2 } from "lucide-react";
 import { Link } from "react-router";
 import { useState } from "react";
 import { motion } from "framer-motion";
+import api from "../lib/axios";
 
 const linkClass =
   "text-sm text-gray-400 hover:text-gray-200 transition-colors no-underline";
@@ -9,12 +10,22 @@ const linkClass =
 export function Footer() {
   const [email, setEmail] = useState("");
   const [subscribed, setSubscribed] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
+  const [error, setError] = useState("");
 
-  const handleSubscribe = (e: React.FormEvent) => {
+  const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
+    if (!email.trim()) return;
+    setSubmitting(true);
+    setError("");
+    try {
+      await api.post("/newsletter/subscribe", { email: email.trim() });
       setSubscribed(true);
       setEmail("");
+    } catch {
+      setError("Failed to subscribe. Try again.");
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -43,23 +54,27 @@ export function Footer() {
                   Thanks for subscribing!
                 </motion.div>
               ) : (
-                <form onSubmit={handleSubscribe} className="flex gap-2">
-                  <input
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    placeholder="your@email.com"
-                    required
-                    className="px-4 py-2.5 bg-white/10 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-colors w-60"
-                  />
-                  <button
-                    type="submit"
-                    className="px-5 py-2.5 bg-white text-gray-950 text-sm font-semibold rounded-xl hover:bg-gray-100 transition-colors flex items-center gap-2"
-                  >
-                    Subscribe
-                    <Send className="w-3.5 h-3.5" />
-                  </button>
-                </form>
+                <div>
+                  <form onSubmit={handleSubscribe} className="flex gap-2">
+                    <input
+                      type="email"
+                      value={email}
+                      onChange={(e) => { setEmail(e.target.value); setError(""); }}
+                      placeholder="your@email.com"
+                      required
+                      className="px-4 py-2.5 bg-white/10 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-colors w-60"
+                    />
+                    <button
+                      type="submit"
+                      disabled={submitting}
+                      className="px-5 py-2.5 bg-white text-gray-950 text-sm font-semibold rounded-xl hover:bg-gray-100 transition-colors flex items-center gap-2 disabled:opacity-50"
+                    >
+                      {submitting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Send className="w-3.5 h-3.5" />}
+                      Subscribe
+                    </button>
+                  </form>
+                  {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
+                </div>
               )}
             </div>
           </div>

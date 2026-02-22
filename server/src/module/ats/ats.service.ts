@@ -4,6 +4,7 @@ import { fileURLToPath } from "url";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { PDFParse } from "pdf-parse";
 import { prisma } from "../../database/db.js";
+import { getBufferFromS3, getS3KeyFromUrl } from "../../utils/s3.utils.js";
 import type { AtsScoreResult, ScoreResumeInput, AtsCategoryScores, AtsKeywordAnalysis } from "./ats.types.js";
 import type { Prisma } from "@prisma/client";
 
@@ -60,11 +61,18 @@ export class AtsService {
   }
 
   private async extractPdfText(resumeUrl: string): Promise<string> {
-    const uploadsDir = path.join(__dirname, "../../../uploads");
-    const filename = path.basename(resumeUrl);
-    const filePath = path.join(uploadsDir, filename);
+    let buffer: Buffer;
 
-    const buffer = await readFile(filePath);
+    const s3Key = getS3KeyFromUrl(resumeUrl);
+    if (s3Key) {
+      buffer = await getBufferFromS3(s3Key);
+    } else {
+      // Fallback for old local uploads
+      const uploadsDir = path.join(__dirname, "../../../uploads");
+      const filename = path.basename(resumeUrl);
+      buffer = await readFile(path.join(uploadsDir, filename));
+    }
+
     const parser = new PDFParse({ data: buffer });
     const result = await parser.getText();
     await parser.destroy();

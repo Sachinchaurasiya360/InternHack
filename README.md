@@ -135,3 +135,7 @@ cd client && npm run build
 | `/api/upload` | File uploads (resumes) | Authenticated |
 | `/api/admin` | Platform management | Admin |
 | `/api/stats` | Public platform stats | Public |
+
+
+integrate the s3 bucket where student can upload their resume into the resume section
+

@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { Users, Briefcase, Map, Building2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useQuery } from "@tanstack/react-query";
 import api from "../lib/axios";
+import { queryKeys } from "../lib/query-keys";
 
 interface PlatformStats {
   users: number;
@@ -13,11 +14,10 @@ interface PlatformStats {
 const fallback: PlatformStats = { users: 1800, jobs: 0, careers: 0, companies: 0 };
 
 export function StatsSection() {
-  const [stats, setStats] = useState<PlatformStats>(fallback);
-
-  useEffect(() => {
-    api.get<PlatformStats>("/stats").then((r) => setStats(r.data)).catch(() => {});
-  }, []);
+  const { data: stats = fallback } = useQuery({
+    queryKey: queryKeys.stats.landing(),
+    queryFn: () => api.get<PlatformStats>("/stats").then((r) => r.data),
+  });
 
   const items = [
     { icon: Users, value: stats.users, label: "Students", suffix: "+" },

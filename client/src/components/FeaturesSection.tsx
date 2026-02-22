@@ -34,7 +34,7 @@ const features = [
     description:
       "Upload your resume and a job description — AI scores it, highlights gaps, and suggests improvements.",
     icon: FileCheck,
-    href: "/register",
+    href: "/ats-score",
     span: "",
     gradient: "from-emerald-500 to-emerald-600",
   },

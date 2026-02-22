@@ -5,7 +5,6 @@ import { Zap, Eye, EyeOff } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
-import type { UserRole } from "../../lib/types";
 import { Navbar } from "../../components/Navbar";
 
 export default function RegisterPage() {
@@ -15,9 +14,6 @@ export default function RegisterPage() {
     name: "",
     email: "",
     password: "",
-    role: "STUDENT" as UserRole,
-    company: "",
-    designation: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
@@ -29,14 +25,10 @@ export default function RegisterPage() {
     try {
       const { data } = await api.post("/auth/google", {
         credential: credentialResponse.credential,
-        role: form.role,
+        role: "STUDENT",
       });
       login(data.user, data.token);
-      if (data.user.role === "RECRUITER") {
-        navigate("/recruiters");
-      } else {
-        navigate("/student/applications");
-      }
+      navigate("/student/applications");
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Google sign-up failed");
@@ -51,17 +43,9 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const payload = {
-        ...form,
-        ...(form.role !== "RECRUITER" && { company: undefined, designation: undefined }),
-      };
-      const { data } = await api.post("/auth/register", payload);
+      const { data } = await api.post("/auth/register", { ...form, role: "STUDENT" });
       login(data.user, data.token);
-      if (data.user.role === "RECRUITER") {
-        navigate("/recruiters");
-      } else {
-        navigate("/student/applications");
-      }
+      navigate("/student/applications");
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Registration failed");
@@ -96,27 +80,6 @@ export default function RegisterPage() {
               {error}
             </div>
           )}
-
-          {/* Role Selection */}
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-2">I am a</label>
-            <div className="grid grid-cols-2 gap-3">
-              {(["STUDENT", "RECRUITER"] as const).map((role) => (
-                <button
-                  key={role}
-                  type="button"
-                  onClick={() => setForm({ ...form, role })}
-                  className={`py-2.5 px-4 rounded-xl border-2 text-sm font-medium transition-all ${
-                    form.role === role
-                      ? "border-black bg-black text-white"
-                      : "border-gray-200 text-gray-600 hover:border-gray-400"
-                  }`}
-                >
-                  {role === "STUDENT" ? "Student" : "Recruiter"}
-                </button>
-              ))}
-            </div>
-          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
@@ -163,31 +126,6 @@ export default function RegisterPage() {
               </button>
             </div>
           </div>
-
-          {form.role === "RECRUITER" && (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
-                <input
-                  type="text"
-                  value={form.company}
-                  onChange={(e) => setForm({ ...form, company: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black transition-colors"
-                  placeholder="Your company name"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Designation</label>
-                <input
-                  type="text"
-                  value={form.designation}
-                  onChange={(e) => setForm({ ...form, designation: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black transition-colors"
-                  placeholder="e.g. HR Manager"
-                />
-              </div>
-            </>
-          )}
 
           <motion.button
             whileHover={{ scale: 1.01 }}

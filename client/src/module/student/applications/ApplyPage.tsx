@@ -1,28 +1,26 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useParams, useNavigate, Link } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowLeft } from "lucide-react";
 import { Navbar } from "../../../components/Navbar";
 import { DynamicFieldRenderer } from "../../../components/DynamicFieldRenderer";
 import api from "../../../lib/axios";
+import { queryKeys } from "../../../lib/query-keys";
 import type { Job, CustomFieldDefinition } from "../../../lib/types";
 
 export default function ApplyPage() {
   const { jobId } = useParams();
   const navigate = useNavigate();
-  const [job, setJob] = useState<Job | null>(null);
-  const [loading, setLoading] = useState(true);
+  const { data: job, isLoading: loading } = useQuery({
+    queryKey: queryKeys.jobs.detail(jobId!),
+    queryFn: () => api.get(`/jobs/${jobId}`).then((res) => res.data.job as Job),
+    enabled: !!jobId,
+  });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [customFieldAnswers, setCustomFieldAnswers] = useState<Record<string, unknown>>({});
   const [resumeFile, setResumeFile] = useState<File | null>(null);
   const [coverLetter, setCoverLetter] = useState("");
-
-  useEffect(() => {
-    api.get(`/jobs/${jobId}`).then((res) => {
-      setJob(res.data.job);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, [jobId]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();

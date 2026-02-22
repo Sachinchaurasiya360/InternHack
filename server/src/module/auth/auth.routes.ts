@@ -12,3 +12,4 @@ authRouter.post("/register", (req, res) => authController.register(req, res));
 authRouter.post("/login", (req, res) => authController.login(req, res));
 authRouter.post("/google", (req, res) => authController.googleAuth(req, res));
 authRouter.get("/me", authMiddleware, (req, res) => authController.getProfile(req, res));
+authRouter.put("/me", authMiddleware, (req, res) => authController.updateProfile(req, res));

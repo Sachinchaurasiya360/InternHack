@@ -11,7 +11,7 @@ export interface User {
   role: UserRole;
   contactNo?: string;
   profilePic?: string;
-  resume?: string;
+  resumes?: string[];
   company?: string;
   designation?: string;
   createdAt?: string;

@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Link } from "react-router";
+import { useAuthStore } from "../lib/auth.store";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -12,6 +13,16 @@ const fadeInUp = {
 };
 
 export function HeroSection() {
+  const { isAuthenticated, user } = useAuthStore();
+
+  const getStartedHref = isAuthenticated
+    ? user?.role === "ADMIN"
+      ? "/admin"
+      : user?.role === "RECRUITER"
+      ? "/recruiters"
+      : "/student/applications"
+    : "/register";
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#fafafa]">
       {/* Gradient orbs */}
@@ -74,13 +85,13 @@ export function HeroSection() {
           variants={fadeInUp}
           className="flex flex-col sm:flex-row gap-4 justify-center items-center"
         >
-          <Link to="/register" className="no-underline">
+          <Link to={getStartedHref} className="no-underline">
             <motion.button
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.98 }}
               className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2"
             >
-              Get Started Free
+              {isAuthenticated ? "Go to Dashboard" : "Get Started Free"}
               <ArrowRight className="w-4 h-4" />
             </motion.button>
           </Link>

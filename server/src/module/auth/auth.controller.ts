@@ -78,4 +78,32 @@ export class AuthController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
+  async updateProfile(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+
+      const body = req.body as Record<string, string | undefined>;
+
+      if (body.name !== undefined && (!body.name || body.name.trim().length < 2)) {
+        return res.status(400).json({ message: "Name must be at least 2 characters" });
+      }
+
+      const data: Record<string, string> = {};
+      for (const key of ["name", "contactNo", "company", "designation"] as const) {
+        if (body[key] !== undefined) {
+          data[key] = (body[key] as string).trim();
+        }
+      }
+
+      const user = await this.authService.updateProfile(req.user.id, data);
+
+      return res.status(200).json({ message: "Profile updated successfully", user });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
 }

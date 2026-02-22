@@ -1,20 +1,16 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, FileText, Clock } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import api from "../../../lib/axios";
+import { queryKeys } from "../../../lib/query-keys";
 import type { AtsScore } from "../../../lib/types";
 
 export default function AtsHistoryPage() {
-  const [scores, setScores] = useState<AtsScore[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api.get("/ats/history").then((res) => {
-      setScores(res.data.scores);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, []);
+  const { data: scores = [], isLoading: loading } = useQuery({
+    queryKey: queryKeys.ats.history(),
+    queryFn: () => api.get("/ats/history").then((res) => res.data.scores as AtsScore[]),
+  });
 
   const getScoreColor = (score: number) => {
     if (score >= 70) return "text-green-600 bg-green-50";

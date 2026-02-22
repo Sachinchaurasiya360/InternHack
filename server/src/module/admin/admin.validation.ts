@@ -92,3 +92,45 @@ export const addContactAdminSchema = z.object({
 });
 
 export const updateContactSchema = addContactAdminSchema.partial();
+
+// ==================== CAREER MANAGEMENT ====================
+
+const careerSkillSchema = z.object({
+  name: z.string().min(1).max(200),
+  level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).default("BEGINNER"),
+});
+
+const careerResourceSchema = z.object({
+  title: z.string().min(1).max(300),
+  url: z.string().url(),
+  type: z.enum(["ARTICLE", "VIDEO", "COURSE", "BOOK", "DOCUMENTATION", "TUTORIAL"]).default("ARTICLE"),
+  free: z.boolean().default(true),
+});
+
+const careerToolSchema = z.object({
+  name: z.string().min(1).max(200),
+  url: z.string().url().optional().or(z.literal("")),
+  category: z.string().max(100).optional(),
+});
+
+const careerPhaseSchema = z.object({
+  title: z.string().min(1).max(300),
+  description: z.string().max(2000).optional(),
+  orderIndex: z.number().int().min(0),
+  durationWeeks: z.number().int().min(1).max(52).optional(),
+  skills: z.array(careerSkillSchema).default([]),
+  resources: z.array(careerResourceSchema).default([]),
+  tools: z.array(careerToolSchema).default([]),
+});
+
+export const createCareerSchema = z.object({
+  title: z.string().min(1).max(300),
+  description: z.string().min(10).max(5000),
+  category: z.enum(["ENGINEERING", "DESIGN", "DATA", "PRODUCT", "MARKETING", "DEVOPS", "SECURITY", "OTHER"]),
+  difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]),
+  avgSalary: z.string().max(100).optional(),
+  demandLevel: z.string().max(100).optional(),
+  phases: z.array(careerPhaseSchema).default([]),
+});
+
+export const updateCareerSchema = createCareerSchema.partial();
