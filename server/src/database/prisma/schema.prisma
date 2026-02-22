@@ -110,7 +110,7 @@ model user {
   isActive    Boolean  @default(true)
   contactNo   String?
   profilePic  String?
-  resumes     String[]  @default([])
+  resumes     String[] @default([])
   company     String?
   designation String?
   createdAt   DateTime @default(now())
@@ -123,29 +123,30 @@ model user {
   subscriptionEndDate   DateTime?
 
   // ── Student profile fields ──
-  bio          String?
-  college      String?
+  bio            String?
+  college        String?
   graduationYear Int?
-  skills       String[]  @default([])
-  linkedinUrl  String?
-  githubUrl    String?
-  portfolioUrl String?
-  location     String?
+  skills         String[] @default([])
+  linkedinUrl    String?
+  githubUrl      String?
+  portfolioUrl   String?
+  location       String?
 
-  postedJobs   job[]         @relation("RecruiterJobs")
-  applications application[] @relation("StudentApplications")
-  atsScores    atsScore[]    @relation("StudentAtsScores")
-  careerEnrollments  studentCareer[]        @relation("StudentCareers")
-  skillProgress      studentSkillProgress[] @relation("StudentSkillProgress")
+  postedJobs        job[]                  @relation("RecruiterJobs")
+  applications      application[]          @relation("StudentApplications")
+  atsScores         atsScore[]             @relation("StudentAtsScores")
+  careerEnrollments studentCareer[]        @relation("StudentCareers")
+  skillProgress     studentSkillProgress[] @relation("StudentSkillProgress")
 
-  companyReviews         companyReview[]        @relation("UserReviews")
-  addedContacts          companyContact[]       @relation("UserAddedContacts")
-  contributions          companyContribution[]  @relation("UserContributions")
-  reviewedContributions  companyContribution[]  @relation("AdminReviewedContributions")
-  createdCompanies       company[]              @relation("UserCreatedCompanies")
+  companyReviews        companyReview[]       @relation("UserReviews")
+  addedContacts         companyContact[]      @relation("UserAddedContacts")
+  contributions         companyContribution[] @relation("UserContributions")
+  reviewedContributions companyContribution[] @relation("AdminReviewedContributions")
+  createdCompanies      company[]             @relation("UserCreatedCompanies")
 
   adminProfile      adminProfile?      @relation("AdminProfile")
   adminActivityLogs adminActivityLog[] @relation("AdminActivityLogs")
+  payments          payment[]          @relation("UserPayments")
 }
 
 // ============================================================
@@ -212,15 +213,15 @@ model job {
 // ============================================================
 
 model round {
-  id                 Int    @id @default(autoincrement())
+  id                 Int     @id @default(autoincrement())
   jobId              Int
-  job                job    @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  job                job     @relation(fields: [jobId], references: [id], onDelete: Cascade)
   name               String
   description        String?
   orderIndex         Int
   instructions       String?
-  customFields       Json   @default("[]")
-  evaluationCriteria Json   @default("[]")
+  customFields       Json    @default("[]")
+  evaluationCriteria Json    @default("[]")
 
   roundSubmissions roundSubmission[]
 
@@ -447,13 +448,13 @@ model careerSkill {
 }
 
 model careerResource {
-  id      Int         @id @default(autoincrement())
+  id      Int          @id @default(autoincrement())
   phaseId Int
-  phase   careerPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
+  phase   careerPhase  @relation(fields: [phaseId], references: [id], onDelete: Cascade)
   title   String
   url     String
   type    ResourceType
-  free    Boolean     @default(true)
+  free    Boolean      @default(true)
 }
 
 model careerTool {
@@ -596,4 +597,91 @@ model newsletterSubscriber {
   id        Int      @id @default(autoincrement())
   email     String   @unique
   createdAt DateTime @default(now())
+}
+
+// ============================================================
+// PAYMENT ENUMS
+// ============================================================
+
+enum PaymentStatus {
+  PENDING
+  SUCCESS
+  FAILED
+}
+
+// ============================================================
+// PAYMENT MODEL
+// ============================================================
+
+model payment {
+  id                Int              @id @default(autoincrement())
+  userId            Int
+  user              user             @relation("UserPayments", fields: [userId], references: [id])
+  razorpayOrderId   String           @unique
+  razorpayPaymentId String?
+  razorpaySignature String?
+  amount            Int // amount in paise
+  currency          String           @default("INR")
+  plan              SubscriptionPlan
+  billing           String // "monthly" or "yearly"
+  status            PaymentStatus    @default(PENDING)
+  createdAt         DateTime         @default(now())
+  updatedAt         DateTime         @updatedAt
+
+  @@index([userId])
+  @@index([razorpayOrderId])
+}
+
+// ============================================================
+// OPEN SOURCE REPO ENUMS
+// ============================================================
+
+enum RepoDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+enum RepoDomain {
+  AI
+  WEB
+  DEVOPS
+  MOBILE
+  BLOCKCHAIN
+  DATA
+  SECURITY
+  CLOUD
+  GAMING
+  OTHER
+}
+
+// ============================================================
+// OPEN SOURCE REPO MODEL
+// ============================================================
+
+model opensourceRepo {
+  id          Int            @id @default(autoincrement())
+  name        String
+  owner       String
+  description String
+  language    String
+  techStack   String[]       @default([])
+  difficulty  RepoDifficulty @default(BEGINNER)
+  domain      RepoDomain     @default(WEB)
+  issueTypes  String[]       @default([])
+  stars       Int            @default(0)
+  forks       Int            @default(0)
+  openIssues  Int            @default(0)
+  url         String
+  logo        String?
+  tags        String[]       @default([])
+  highlights  String[]       @default([])
+  trending    Boolean        @default(false)
+  lastUpdated DateTime       @default(now())
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+
+  @@index([domain])
+  @@index([difficulty])
+  @@index([language])
 }

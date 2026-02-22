@@ -16,6 +16,9 @@ import {
   updateContactSchema,
   createCareerSchema,
   updateCareerSchema,
+  createRepoSchema,
+  updateRepoSchema,
+  repoQuerySchema,
 } from "./admin.validation.js";
 
 export class AdminController {
@@ -492,6 +495,84 @@ export class AdminController {
       res.json({ message: "Career deleted" });
     } catch (err) {
       if (err instanceof Error && err.message === "Career not found") {
+        res.status(404).json({ message: err.message }); return;
+      }
+      next(err);
+    }
+  }
+
+  // ==================== OPEN SOURCE REPO MANAGEMENT ====================
+
+  async listRepos(req: Request, res: Response, next: NextFunction) {
+    try {
+      const query = repoQuerySchema.parse(req.query);
+      const data = await this.adminService.listRepos(query);
+      res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getRepo(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid repo ID" }); return; }
+
+      const repo = await this.adminService.getRepo(id);
+      res.json({ repo });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Repository not found") {
+        res.status(404).json({ message: err.message }); return;
+      }
+      next(err);
+    }
+  }
+
+  async createRepo(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = createRepoSchema.safeParse(req.body);
+      if (!result.success) {
+        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+        return;
+      }
+
+      const repo = await this.adminService.createRepo(result.data);
+      res.status(201).json({ message: "Repository created", repo });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async updateRepo(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid repo ID" }); return; }
+
+      const result = updateRepoSchema.safeParse(req.body);
+      if (!result.success) {
+        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+        return;
+      }
+
+      const repo = await this.adminService.updateRepo(id, result.data);
+      res.json({ message: "Repository updated", repo });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Repository not found") {
+        res.status(404).json({ message: err.message }); return;
+      }
+      next(err);
+    }
+  }
+
+  async deleteRepo(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid repo ID" }); return; }
+
+      await this.adminService.deleteRepo(id);
+      res.json({ message: "Repository deleted" });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Repository not found") {
         res.status(404).json({ message: err.message }); return;
       }
       next(err);

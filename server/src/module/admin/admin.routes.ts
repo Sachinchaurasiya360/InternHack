@@ -64,3 +64,10 @@ adminRouter.get("/careers/:id", (req, res, next) => adminController.getCareer(re
 adminRouter.post("/careers", (req, res, next) => adminController.createCareer(req, res, next));
 adminRouter.put("/careers/:id", (req, res, next) => adminController.updateCareer(req, res, next));
 adminRouter.delete("/careers/:id", (req, res, next) => adminController.deleteCareer(req, res, next));
+
+// Open Source Repos
+adminRouter.get("/repos", (req, res, next) => adminController.listRepos(req, res, next));
+adminRouter.get("/repos/:id", (req, res, next) => adminController.getRepo(req, res, next));
+adminRouter.post("/repos", (req, res, next) => adminController.createRepo(req, res, next));
+adminRouter.put("/repos/:id", (req, res, next) => adminController.updateRepo(req, res, next));
+adminRouter.delete("/repos/:id", (req, res, next) => adminController.deleteRepo(req, res, next));

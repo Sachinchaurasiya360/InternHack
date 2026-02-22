@@ -33,6 +33,9 @@ import CompanyDetailPage from "./module/student/companies/CompanyDetailPage";
 import AddCompanyPage from "./module/student/companies/AddCompanyPage";
 import StudentProfilePage from "./module/student/profile/StudentProfilePage";
 import GrantsPage from "./module/student/grants/GrantsPage";
+import RepoDiscoveryPage from "./module/student/opensource/RepoDiscoveryPage";
+import PublicOpenSourcePage from "./module/student/opensource/PublicOpenSourcePage";
+import CheckoutPage from "./module/student/checkout/CheckoutPage";
 import AdminLoginPage from "./module/admin/AdminLoginPage";
 import AdminLayout from "./module/admin/AdminLayout";
 import AdminDashboard from "./module/admin/AdminDashboard";
@@ -66,6 +69,7 @@ function App() {
         <Route path="/companies/:slug" element={<CompanyDetailPage />} />
         <Route path="/ats-score" element={<PublicAtsPage />} />
         <Route path="/grants" element={<GrantsPage />} />
+        <Route path="/opensource" element={<PublicOpenSourcePage />} />
 
         {/* Student protected routes */}
         <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyPage /></ProtectedRoute>} />
@@ -85,6 +89,8 @@ function App() {
           <Route path="careers/:slug" element={<CareerProgressPage />} />
           <Route path="companies/add" element={<AddCompanyPage />} />
           <Route path="grants" element={<GrantsPage />} />
+          <Route path="opensource" element={<RepoDiscoveryPage />} />
+          <Route path="checkout" element={<CheckoutPage />} />
           <Route path="profile" element={<StudentProfilePage />} />
         </Route>
 
