@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, CheckCircle, AlertCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import api from "../../../lib/axios";
+import { queryKeys } from "../../../lib/query-keys";
 import type { AtsScore } from "../../../lib/types";
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -48,17 +49,14 @@ function CategoryBar({ label, score }: { label: string; score: number }) {
 
 export default function AtsScoreDetailPage() {
   const { scoreId } = useParams();
-  const [score, setScore] = useState<AtsScore | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api.get(`/ats/history/${scoreId}`).then((res) => {
-      setScore(res.data.score);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, [scoreId]);
+  const { data: score, isLoading } = useQuery({
+    queryKey: queryKeys.ats.detail(scoreId!),
+    queryFn: () => api.get(`/ats/history/${scoreId}`).then((res) => res.data.score as AtsScore),
+    enabled: !!scoreId,
+  });
 
-  if (loading) return <div className="text-center py-16 text-gray-500">Loading...</div>;
+  if (isLoading) return <div className="text-center py-16 text-gray-500">Loading...</div>;
   if (!score) return <div className="text-center py-16 text-gray-500">Score not found</div>;
 
   return (

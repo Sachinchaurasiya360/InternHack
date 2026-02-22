@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Toaster } from "react-hot-toast";
 import LandingPage from "./module/LandingPage/landingPage";
 import LoginPage from "./module/auth/LoginPage";
@@ -19,6 +19,8 @@ import MyApplicationsPage from "./module/student/applications/MyApplicationsPage
 import ApplicationProgressPage from "./module/student/applications/ApplicationProgressPage";
 import ScrapedJobsPage from "./module/scraped-jobs/ScrapedJobsPage";
 import ScrapedJobDetailPage from "./module/scraped-jobs/ScrapedJobDetailPage";
+import AtsLandingPage from "./module/student/ats/AtsLandingPage";
+import PublicAtsPage from "./module/student/ats/PublicAtsPage";
 import AtsScorePage from "./module/student/ats/AtsScorePage";
 import AtsHistoryPage from "./module/student/ats/AtsHistoryPage";
 import AtsScoreDetailPage from "./module/student/ats/AtsScoreDetailPage";
@@ -29,6 +31,8 @@ import CareerProgressPage from "./module/career/CareerProgressPage";
 import CompanyListPage from "./module/student/companies/CompanyListPage";
 import CompanyDetailPage from "./module/student/companies/CompanyDetailPage";
 import AddCompanyPage from "./module/student/companies/AddCompanyPage";
+import StudentProfilePage from "./module/student/profile/StudentProfilePage";
+import GrantsPage from "./module/student/grants/GrantsPage";
 import AdminLoginPage from "./module/admin/AdminLoginPage";
 import AdminLayout from "./module/admin/AdminLayout";
 import AdminDashboard from "./module/admin/AdminDashboard";
@@ -39,6 +43,8 @@ import ActivityLogsPage from "./module/admin/activity/ActivityLogsPage";
 import AdminCompaniesPage from "./module/admin/companies/AdminCompaniesPage";
 import AdminReviewsPage from "./module/admin/reviews/AdminReviewsPage";
 import AdminContributionsPage from "./module/admin/contributions/AdminContributionsPage";
+import AdminSubscribersPage from "./module/admin/AdminSubscribersPage";
+import AdminCareersPage from "./module/admin/careers/AdminCareersPage";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
@@ -58,18 +64,28 @@ function App() {
         <Route path="/careers/:slug" element={<CareerDetailPage />} />
         <Route path="/companies" element={<CompanyListPage />} />
         <Route path="/companies/:slug" element={<CompanyDetailPage />} />
+        <Route path="/ats-score" element={<PublicAtsPage />} />
+        <Route path="/grants" element={<GrantsPage />} />
 
         {/* Student protected routes */}
         <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyPage /></ProtectedRoute>} />
         <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
+          <Route index element={<Navigate to="applications" replace />} />
+          <Route path="jobs" element={<JobBrowsePage />} />
+          <Route path="jobs/:id" element={<JobDetailPage />} />
+          <Route path="companies" element={<CompanyListPage />} />
+          <Route path="companies/:slug" element={<CompanyDetailPage />} />
           <Route path="applications" element={<MyApplicationsPage />} />
           <Route path="applications/:applicationId" element={<ApplicationProgressPage />} />
-          <Route path="ats" element={<AtsScorePage />} />
+          <Route path="ats" element={<AtsLandingPage />} />
+          <Route path="ats/score" element={<AtsScorePage />} />
           <Route path="ats/history" element={<AtsHistoryPage />} />
           <Route path="ats/history/:scoreId" element={<AtsScoreDetailPage />} />
           <Route path="careers" element={<MyCareerPathsPage />} />
           <Route path="careers/:slug" element={<CareerProgressPage />} />
           <Route path="companies/add" element={<AddCompanyPage />} />
+          <Route path="grants" element={<GrantsPage />} />
+          <Route path="profile" element={<StudentProfilePage />} />
         </Route>
 
         {/* Recruiter protected routes */}
@@ -87,7 +103,7 @@ function App() {
         <Route path="/admin/login" element={<AdminLoginPage />} />
 
         {/* Admin protected routes */}
-        <Route path="/admin" element={<ProtectedRoute role="ADMIN"><AdminLayout /></ProtectedRoute>}>
+        <Route path="/admin" element={<ProtectedRoute role="ADMIN" redirectTo="/admin/login"><AdminLayout /></ProtectedRoute>}>
           <Route index element={<AdminDashboard />} />
           <Route path="users" element={<UsersListPage />} />
           <Route path="users/:id" element={<UserDetailPage />} />
@@ -96,6 +112,8 @@ function App() {
           <Route path="companies" element={<AdminCompaniesPage />} />
           <Route path="reviews" element={<AdminReviewsPage />} />
           <Route path="contributions" element={<AdminContributionsPage />} />
+          <Route path="subscribers" element={<AdminSubscribersPage />} />
+          <Route path="careers" element={<AdminCareersPage />} />
         </Route>
       </Routes>
     </BrowserRouter>

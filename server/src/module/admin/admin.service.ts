@@ -192,7 +192,7 @@ export class AdminService {
       where: { id: userId },
       select: {
         id: true, name: true, email: true, role: true, isActive: true,
-        contactNo: true, profilePic: true, resume: true, company: true, designation: true,
+        contactNo: true, profilePic: true, resumes: true, company: true, designation: true,
         createdAt: true, updatedAt: true,
         _count: { select: { applications: true, postedJobs: true, atsScores: true } },
         adminProfile: { select: { tier: true, isActive: true } },
@@ -651,5 +651,235 @@ export class AdminService {
     if (!contact) throw new Error("Contact not found");
 
     return prisma.companyContact.delete({ where: { id: contactId } });
+  }
+
+  // ==================== CAREER MANAGEMENT ====================
+
+  async listAdminCareers() {
+    return prisma.career.findMany({
+      orderBy: { title: "asc" },
+      include: {
+        _count: { select: { phases: true, enrollments: true } },
+      },
+    });
+  }
+
+  async getAdminCareer(careerId: number) {
+    const career = await prisma.career.findUnique({
+      where: { id: careerId },
+      include: {
+        phases: {
+          orderBy: { orderIndex: "asc" },
+          include: {
+            skills: true,
+            resources: true,
+            tools: true,
+          },
+        },
+        _count: { select: { enrollments: true } },
+      },
+    });
+    if (!career) throw new Error("Career not found");
+    return career;
+  }
+
+  async createCareer(input: {
+    title: string;
+    description: string;
+    category: string;
+    difficulty: string;
+    avgSalary?: string | undefined;
+    demandLevel?: string | undefined;
+    phases?: Array<{
+      title: string;
+      description?: string | undefined;
+      orderIndex: number;
+      durationWeeks?: number | undefined;
+      skills?: Array<{ name: string; level?: string | undefined }>;
+      resources?: Array<{ title: string; url: string; type?: string | undefined; free?: boolean | undefined }>;
+      tools?: Array<{ name: string; url?: string | undefined; category?: string | undefined }>;
+    }>;
+  }) {
+    let slug = generateSlug(input.title);
+    const existing = await prisma.career.findUnique({ where: { slug } });
+    if (existing) slug = `${slug}-${Date.now()}`;
+
+    return prisma.career.create({
+      data: {
+        title: input.title,
+        slug,
+        description: input.description,
+        category: input.category as Prisma.EnumCareerCategoryFieldUpdateOperationsInput["set"] & string,
+        difficulty: input.difficulty as Prisma.EnumCareerDifficultyFieldUpdateOperationsInput["set"] & string,
+        avgSalary: input.avgSalary ?? null,
+        demandLevel: input.demandLevel ?? null,
+        phases: {
+          create: (input.phases ?? []).map((phase) => ({
+            title: phase.title,
+            description: phase.description ?? null,
+            orderIndex: phase.orderIndex,
+            durationWeeks: phase.durationWeeks ?? null,
+            skills: {
+              create: (phase.skills ?? []).map((s) => ({
+                name: s.name,
+                level: (s.level ?? "BEGINNER") as Prisma.EnumSkillLevelFieldUpdateOperationsInput["set"] & string,
+              })),
+            },
+            resources: {
+              create: (phase.resources ?? []).map((r) => ({
+                title: r.title,
+                url: r.url,
+                type: (r.type ?? "ARTICLE") as Prisma.EnumResourceTypeFieldUpdateOperationsInput["set"] & string,
+                free: r.free ?? true,
+              })),
+            },
+            tools: {
+              create: (phase.tools ?? []).map((t) => ({
+                name: t.name,
+                url: t.url || null,
+                category: t.category ?? null,
+              })),
+            },
+          })),
+        },
+      },
+      include: {
+        phases: {
+          include: { skills: true, resources: true, tools: true },
+        },
+      },
+    });
+  }
+
+  async updateCareer(careerId: number, input: {
+    title?: string | undefined;
+    description?: string | undefined;
+    category?: string | undefined;
+    difficulty?: string | undefined;
+    avgSalary?: string | undefined;
+    demandLevel?: string | undefined;
+    phases?: Array<{
+      title: string;
+      description?: string | undefined;
+      orderIndex: number;
+      durationWeeks?: number | undefined;
+      skills?: Array<{ name: string; level?: string | undefined }>;
+      resources?: Array<{ title: string; url: string; type?: string | undefined; free?: boolean | undefined }>;
+      tools?: Array<{ name: string; url?: string | undefined; category?: string | undefined }>;
+    }>;
+  }) {
+    const career = await prisma.career.findUnique({ where: { id: careerId } });
+    if (!career) throw new Error("Career not found");
+
+    const data: Prisma.careerUpdateInput = {};
+    if (input.title !== undefined) {
+      data.title = input.title;
+      data.slug = generateSlug(input.title);
+    }
+    if (input.description !== undefined) data.description = input.description;
+    if (input.category !== undefined) data.category = input.category as Prisma.EnumCareerCategoryFieldUpdateOperationsInput["set"] & string;
+    if (input.difficulty !== undefined) data.difficulty = input.difficulty as Prisma.EnumCareerDifficultyFieldUpdateOperationsInput["set"] & string;
+    if (input.avgSalary !== undefined) data.avgSalary = input.avgSalary || null;
+    if (input.demandLevel !== undefined) data.demandLevel = input.demandLevel || null;
+
+    // If phases are provided, replace all phases (transaction)
+    if (input.phases !== undefined) {
+      return prisma.$transaction(async (tx) => {
+        // Get existing skill IDs for this career
+        const existingPhases = await tx.careerPhase.findMany({
+          where: { careerId },
+          include: { skills: { select: { id: true } } },
+        });
+        const existingSkillIds = existingPhases.flatMap((p) => p.skills.map((s) => s.id));
+
+        // Delete student progress for these skills
+        if (existingSkillIds.length > 0) {
+          await tx.studentSkillProgress.deleteMany({
+            where: { skillId: { in: existingSkillIds } },
+          });
+        }
+
+        // Delete existing phases (cascade to skills, resources, tools)
+        await tx.careerPhase.deleteMany({ where: { careerId } });
+
+        // Update career metadata + create new phases
+        return tx.career.update({
+          where: { id: careerId },
+          data: {
+            ...data,
+            phases: {
+              create: input.phases!.map((phase) => ({
+                title: phase.title,
+                description: phase.description ?? null,
+                orderIndex: phase.orderIndex,
+                durationWeeks: phase.durationWeeks ?? null,
+                skills: {
+                  create: (phase.skills ?? []).map((s) => ({
+                    name: s.name,
+                    level: (s.level ?? "BEGINNER") as Prisma.EnumSkillLevelFieldUpdateOperationsInput["set"] & string,
+                  })),
+                },
+                resources: {
+                  create: (phase.resources ?? []).map((r) => ({
+                    title: r.title,
+                    url: r.url,
+                    type: (r.type ?? "ARTICLE") as Prisma.EnumResourceTypeFieldUpdateOperationsInput["set"] & string,
+                    free: r.free ?? true,
+                  })),
+                },
+                tools: {
+                  create: (phase.tools ?? []).map((t) => ({
+                    name: t.name,
+                    url: t.url || null,
+                    category: t.category ?? null,
+                  })),
+                },
+              })),
+            },
+          },
+          include: {
+            phases: {
+              orderBy: { orderIndex: "asc" },
+              include: { skills: true, resources: true, tools: true },
+            },
+          },
+        });
+      });
+    }
+
+    // No phases change, just update metadata
+    return prisma.career.update({
+      where: { id: careerId },
+      data,
+      include: {
+        phases: {
+          orderBy: { orderIndex: "asc" },
+          include: { skills: true, resources: true, tools: true },
+        },
+      },
+    });
+  }
+
+  async deleteCareer(careerId: number) {
+    const career = await prisma.career.findUnique({
+      where: { id: careerId },
+      include: { phases: { include: { skills: { select: { id: true } } } } },
+    });
+    if (!career) throw new Error("Career not found");
+
+    return prisma.$transaction(async (tx) => {
+      const skillIds = career.phases.flatMap((p) => p.skills.map((s) => s.id));
+
+      // Delete student progress
+      if (skillIds.length > 0) {
+        await tx.studentSkillProgress.deleteMany({ where: { skillId: { in: skillIds } } });
+      }
+
+      // Delete enrollments
+      await tx.studentCareer.deleteMany({ where: { careerId } });
+
+      // Delete career (cascades to phases -> skills/resources/tools)
+      await tx.career.delete({ where: { id: careerId } });
+    });
   }
 }

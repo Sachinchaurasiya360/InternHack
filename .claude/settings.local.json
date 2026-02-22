@@ -18,7 +18,9 @@
       "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwiZW1haWwiOiJyZWNydWl0ZXJAdGVzdC5jb20iLCJyb2xlIjoiUkVDUlVJVEVSIiwiaWF0IjoxNzcxMzMxMjU5LCJleHAiOjE3NzE5MzYwNTl9.MBZvcPvsErjUPn6bCqpccQOytEA3aj5L-dDcjZYLriE\")",
       "Bash(npx prisma migrate dev:*)",
       "Bash(npm run seed:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(grep:*)",
+      "Bash(npm run seed:admin:*)"
     ]
   }
 }

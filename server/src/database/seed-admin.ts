@@ -3,8 +3,8 @@ import { prisma } from "./db.js";
 import { hashPassword } from "../utils/password.utils.js";
 
 async function seedAdmin() {
-  const email = process.env["ADMIN_EMAIL"] || "admin@internhack.com";
-  const password = process.env["ADMIN_PASSWORD"] || "Admin@123456";
+  const email = process.env["ADMIN_EMAIL"] || "1mrsachinchaurasiya@gmail.com";
+  const password = process.env["ADMIN_PASSWORD"] || "Admin@123";
   const name = process.env["ADMIN_NAME"] || "Super Admin";
 
   const existing = await prisma.user.findUnique({ where: { email } });

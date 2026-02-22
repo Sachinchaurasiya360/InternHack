@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /student/
+Disallow: /admin/
+Disallow: /recruiters/
+
+Sitemap: https://internhack.xyz/sitemap.xml

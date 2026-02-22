@@ -168,7 +168,7 @@ export class AuthService {
         role: true,
         contactNo: true,
         profilePic: true,
-        resume: true,
+        resumes: true,
         company: true,
         designation: true,
         createdAt: true,
@@ -178,6 +178,33 @@ export class AuthService {
     if (!user) {
       throw new Error("User not found");
     }
+
+    return user;
+  }
+
+  async updateProfile(userId: number, data: Record<string, string>) {
+    const updateData: Record<string, string | null> = {};
+    if ("name" in data && data["name"]) updateData["name"] = data["name"];
+    for (const key of ["contactNo", "company", "designation"]) {
+      if (key in data) updateData[key] = data[key] || null;
+    }
+
+    const user = await prisma.user.update({
+      where: { id: userId },
+      data: updateData,
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        contactNo: true,
+        profilePic: true,
+        resumes: true,
+        company: true,
+        designation: true,
+        createdAt: true,
+      },
+    });
 
     return user;
   }

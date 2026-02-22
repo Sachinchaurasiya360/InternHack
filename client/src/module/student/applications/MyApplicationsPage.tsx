@@ -1,26 +1,25 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Briefcase, MapPin, Building2 } from "lucide-react";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import api from "../../../lib/axios";
+import { queryKeys } from "../../../lib/query-keys";
 import type { Application } from "../../../lib/types";
 
 export default function MyApplicationsPage() {
-  const [applications, setApplications] = useState<Application[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api.get("/student/applications").then((res) => {
-      setApplications(res.data.applications);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, []);
+  const queryClient = useQueryClient();
+  const { data: applications = [], isLoading: loading } = useQuery({
+    queryKey: queryKeys.applications.mine(),
+    queryFn: () => api.get("/student/applications").then((res) => res.data.applications as Application[]),
+  });
 
   const handleWithdraw = async (id: number) => {
     if (!confirm("Are you sure you want to withdraw this application?")) return;
     try {
       await api.delete(`/student/applications/${id}`);
-      setApplications(applications.map((a) => a.id === id ? { ...a, status: "WITHDRAWN" as const } : a));
+      queryClient.setQueryData<Application[]>(queryKeys.applications.mine(), (old) =>
+        (old ?? []).map((a) => a.id === id ? { ...a, status: "WITHDRAWN" as const } : a)
+      );
     } catch {
       alert("Failed to withdraw");
     }

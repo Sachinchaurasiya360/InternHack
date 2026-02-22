@@ -1,20 +1,16 @@
-import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Users, Building2, Briefcase, TrendingUp, FileText, Award } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import api from "../../lib/axios";
+import { queryKeys } from "../../lib/query-keys";
 import type { AdminDashboardData } from "../../lib/types";
 
 export default function AdminDashboard() {
-  const [data, setData] = useState<AdminDashboardData | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    api.get("/admin/platform-dashboard").then((res) => {
-      setData(res.data);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, []);
+  const { data, isLoading: loading } = useQuery({
+    queryKey: queryKeys.admin.dashboard(),
+    queryFn: () => api.get("/admin/platform-dashboard").then((res) => res.data as AdminDashboardData),
+  });
 
   if (loading) {
     return <div className="flex items-center justify-center h-64 text-gray-400">Loading dashboard...</div>;

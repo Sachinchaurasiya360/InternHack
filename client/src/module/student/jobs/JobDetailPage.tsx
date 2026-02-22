@@ -1,26 +1,24 @@
-import { useEffect, useState } from "react";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, DollarSign, Clock, Building2, Users, CheckCircle } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 import { Navbar } from "../../../components/Navbar";
 import api from "../../../lib/axios";
+import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
 import type { Job } from "../../../lib/types";
 
 export default function JobDetailPage() {
   const { id } = useParams();
   const { isAuthenticated, user } = useAuthStore();
-  const [job, setJob] = useState<Job | null>(null);
-  const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    api.get(`/jobs/${id}`).then((res) => {
-      setJob(res.data.job);
-      setLoading(false);
-    }).catch(() => setLoading(false));
-  }, [id]);
+  const { data: job, isLoading } = useQuery({
+    queryKey: queryKeys.jobs.detail(id!),
+    queryFn: () => api.get(`/jobs/${id}`).then((res) => res.data.job as Job),
+    enabled: !!id,
+  });
 
-  if (loading) return <div className="min-h-screen bg-gray-50"><Navbar /><div className="flex items-center justify-center h-64 pt-24 text-gray-500">Loading...</div></div>;
+  if (isLoading) return <div className="min-h-screen bg-gray-50"><Navbar /><div className="flex items-center justify-center h-64 pt-24 text-gray-500">Loading...</div></div>;
   if (!job) return <div className="min-h-screen bg-gray-50"><Navbar /><div className="text-center pt-24 text-gray-500">Job not found</div></div>;
 
   return (

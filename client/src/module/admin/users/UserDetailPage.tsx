@@ -13,7 +13,7 @@ interface UserDetail {
   isActive: boolean;
   contactNo?: string;
   profilePic?: string;
-  resume?: string;
+  resumes?: string[];
   company?: string;
   designation?: string;
   createdAt: string;
@@ -187,10 +187,10 @@ export default function UserDetailPage() {
               <span className="text-gray-500">Last Updated</span>
               <p className="text-gray-300">{new Date(user.updatedAt).toLocaleString()}</p>
             </div>
-            {user.resume && (
+            {user.resumes && user.resumes.length > 0 && (
               <div>
-                <span className="text-gray-500">Resume</span>
-                <p className="text-indigo-400">Uploaded</p>
+                <span className="text-gray-500">Resumes</span>
+                <p className="text-indigo-400">{user.resumes.length} uploaded</p>
               </div>
             )}
           </div>
