@@ -15,6 +15,8 @@ import { careerRouter } from "./module/career/career.routes.js";
 import { companyRouter } from "./module/company/company.routes.js";
 import { adminRouter } from "./module/admin/admin.routes.js";
 import { newsletterRouter } from "./module/newsletter/newsletter.routes.js";
+import { opensourceRouter } from "./module/opensource/opensource.routes.js";
+import { paymentRouter } from "./module/payment/payment.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 
@@ -43,6 +45,8 @@ app.use("/api/careers", careerRouter);
 app.use("/api/companies", companyRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/newsletter", newsletterRouter);
+app.use("/api/opensource", opensourceRouter);
+app.use("/api/payments", paymentRouter);
 
 // Public platform stats for landing page
 app.get("/api/stats", async (_req, res) => {
