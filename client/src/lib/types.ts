@@ -171,6 +171,17 @@ export interface AtsScore {
   updatedAt: string;
 }
 
+// Cover Letter
+export type CoverLetterTone = "professional" | "friendly" | "enthusiastic";
+
+export interface CoverLetterInput {
+  jobDescription: string;
+  jobTitle?: string;
+  companyName?: string;
+  keySkills?: string;
+  tone: CoverLetterTone;
+}
+
 // Company Explorer
 export type CompanySize = "STARTUP" | "SMALL" | "MEDIUM" | "LARGE" | "ENTERPRISE";
 export type ReviewStatus = "PENDING" | "APPROVED" | "REJECTED";

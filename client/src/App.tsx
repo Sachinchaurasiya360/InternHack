@@ -24,6 +24,8 @@ import PublicAtsPage from "./module/student/ats/PublicAtsPage";
 import AtsScorePage from "./module/student/ats/AtsScorePage";
 import AtsHistoryPage from "./module/student/ats/AtsHistoryPage";
 import AtsScoreDetailPage from "./module/student/ats/AtsScoreDetailPage";
+import ResumeBuilderPage from "./module/student/ats/ResumeBuilderPage";
+import CoverLetterPage from "./module/student/ats/CoverLetterPage";
 import CareerExplorePage from "./module/career/CareerExplorePage";
 import CareerDetailPage from "./module/career/CareerDetailPage";
 import MyCareerPathsPage from "./module/career/MyCareerPathsPage";
@@ -85,6 +87,8 @@ function App() {
           <Route path="ats/score" element={<AtsScorePage />} />
           <Route path="ats/history" element={<AtsHistoryPage />} />
           <Route path="ats/history/:scoreId" element={<AtsScoreDetailPage />} />
+          <Route path="ats/templates" element={<ResumeBuilderPage />} />
+          <Route path="ats/cover-letter" element={<CoverLetterPage />} />
           <Route path="careers" element={<MyCareerPathsPage />} />
           <Route path="careers/:slug" element={<CareerProgressPage />} />
           <Route path="companies/add" element={<AddCompanyPage />} />

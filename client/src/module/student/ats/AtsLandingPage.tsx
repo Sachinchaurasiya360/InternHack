@@ -306,8 +306,8 @@ export default function AtsLandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
-              Coming Soon
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-200 text-xs font-medium text-emerald-600 uppercase tracking-wider mb-6">
+              Available Now
             </div>
             <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 tracking-tight mb-4">
               More tools to
@@ -327,29 +327,35 @@ export default function AtsLandingPage() {
               viewport={{ once: true }}
               transition={{ duration: 0.5 }}
             >
-              <motion.div
-                whileHover={{ y: -4 }}
-                className="relative bg-white rounded-2xl border border-gray-100 p-6 md:p-8 overflow-hidden hover:border-gray-200 hover:shadow-xl hover:shadow-gray-200/50 transition-all group h-full"
-              >
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-sky-50 rounded-full blur-3xl pointer-events-none" />
-                <div className="relative z-10">
-                  <div className="w-11 h-11 rounded-xl bg-linear-to-br from-sky-500 to-sky-600 flex items-center justify-center shadow-sm mb-5">
-                    <Layout className="w-5 h-5 text-white" />
+              <Link to={isAuthenticated ? "/student/ats/templates" : "/login"} className="no-underline block h-full">
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  className="relative bg-white rounded-2xl border border-gray-100 p-6 md:p-8 overflow-hidden hover:border-sky-200 hover:shadow-xl hover:shadow-sky-100/50 transition-all group h-full cursor-pointer"
+                >
+                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-sky-50 rounded-full blur-3xl pointer-events-none" />
+                  <div className="relative z-10">
+                    <div className="w-11 h-11 rounded-xl bg-linear-to-br from-sky-500 to-sky-600 flex items-center justify-center shadow-sm mb-5">
+                      <Layout className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-display text-lg font-bold text-gray-900 mb-2">Resume Builder</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed mb-5">
+                      Build your resume with ATS-optimized templates. Fill in your details, pick a design, and download as PDF.
+                    </p>
+                    <ul className="space-y-2.5 mb-5">
+                      {["6 professional templates", "Live preview as you type", "PDF download", "Data saved locally"].map((item) => (
+                        <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
+                          <CheckCircle className="w-4 h-4 text-sky-500 shrink-0" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                    <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-sky-600 group-hover:gap-2.5 transition-all">
+                      Build Your Resume
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
                   </div>
-                  <h3 className="font-display text-lg font-bold text-gray-900 mb-2">Resume Templates</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed mb-5">
-                    Choose from ATS-optimized resume templates crafted by career experts. Instantly download in PDF or DOCX.
-                  </p>
-                  <ul className="space-y-2.5">
-                    {["20+ ATS-friendly templates", "Industry-specific designs", "PDF & DOCX download", "Real-time live preview"].map((item) => (
-                      <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
-                        <CheckCircle className="w-4 h-4 text-sky-500 shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </motion.div>
+                </motion.div>
+              </Link>
             </motion.div>
 
             {/* Cover Letter Builder */}
@@ -359,29 +365,35 @@ export default function AtsLandingPage() {
               viewport={{ once: true }}
               transition={{ delay: 0.08, duration: 0.5 }}
             >
-              <motion.div
-                whileHover={{ y: -4 }}
-                className="relative bg-white rounded-2xl border border-gray-100 p-6 md:p-8 overflow-hidden hover:border-gray-200 hover:shadow-xl hover:shadow-gray-200/50 transition-all group h-full"
-              >
-                <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-rose-50 rounded-full blur-3xl pointer-events-none" />
-                <div className="relative z-10">
-                  <div className="w-11 h-11 rounded-xl bg-linear-to-br from-rose-500 to-rose-600 flex items-center justify-center shadow-sm mb-5">
-                    <PenLine className="w-5 h-5 text-white" />
+              <Link to={isAuthenticated ? "/student/ats/cover-letter" : "/login"} className="no-underline block h-full">
+                <motion.div
+                  whileHover={{ y: -4 }}
+                  className="relative bg-white rounded-2xl border border-gray-100 p-6 md:p-8 overflow-hidden hover:border-rose-200 hover:shadow-xl hover:shadow-rose-100/50 transition-all group h-full cursor-pointer"
+                >
+                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-rose-50 rounded-full blur-3xl pointer-events-none" />
+                  <div className="relative z-10">
+                    <div className="w-11 h-11 rounded-xl bg-linear-to-br from-rose-500 to-rose-600 flex items-center justify-center shadow-sm mb-5">
+                      <PenLine className="w-5 h-5 text-white" />
+                    </div>
+                    <h3 className="font-display text-lg font-bold text-gray-900 mb-2">Cover Letter Builder</h3>
+                    <p className="text-sm text-gray-500 leading-relaxed mb-5">
+                      Generate tailored, professional cover letters in seconds using AI. Paste a job description and get a personalized letter.
+                    </p>
+                    <ul className="space-y-2.5 mb-5">
+                      {["AI-generated in seconds", "Job description matching", "Professional tone options", "Copy or download as PDF"].map((item) => (
+                        <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
+                          <CheckCircle className="w-4 h-4 text-rose-500 shrink-0" />
+                          {item}
+                        </li>
+                      ))}
+                    </ul>
+                    <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-rose-600 group-hover:gap-2.5 transition-all">
+                      Generate Cover Letter
+                      <ArrowRight className="w-4 h-4" />
+                    </span>
                   </div>
-                  <h3 className="font-display text-lg font-bold text-gray-900 mb-2">Cover Letter Builder</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed mb-5">
-                    Generate tailored, professional cover letters in seconds using AI. Paste a job description and get a personalized letter.
-                  </p>
-                  <ul className="space-y-2.5">
-                    {["AI-generated in seconds", "Job description matching", "Professional tone options", "Multiple format export"].map((item) => (
-                      <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
-                        <CheckCircle className="w-4 h-4 text-rose-500 shrink-0" />
-                        {item}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              </motion.div>
+                </motion.div>
+              </Link>
             </motion.div>
           </div>
         </div>
