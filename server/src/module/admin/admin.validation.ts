@@ -134,3 +134,37 @@ export const createCareerSchema = z.object({
 });
 
 export const updateCareerSchema = createCareerSchema.partial();
+
+// ==================== OPEN SOURCE REPO MANAGEMENT ====================
+
+export const createRepoSchema = z.object({
+  name: z.string().min(1).max(300),
+  owner: z.string().min(1).max(200),
+  description: z.string().min(10).max(5000),
+  language: z.string().min(1).max(100),
+  techStack: z.array(z.string()).default([]),
+  difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).default("BEGINNER"),
+  domain: z.enum(["AI", "WEB", "DEVOPS", "MOBILE", "BLOCKCHAIN", "DATA", "SECURITY", "CLOUD", "GAMING", "OTHER"]).default("WEB"),
+  issueTypes: z.array(z.string()).default([]),
+  stars: z.number().int().min(0).default(0),
+  forks: z.number().int().min(0).default(0),
+  openIssues: z.number().int().min(0).default(0),
+  url: z.string().url(),
+  logo: z.string().optional(),
+  tags: z.array(z.string()).default([]),
+  highlights: z.array(z.string()).default([]),
+  trending: z.boolean().default(false),
+});
+
+export const updateRepoSchema = createRepoSchema.partial();
+
+export const repoQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  search: z.string().optional(),
+  language: z.string().optional(),
+  difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
+  domain: z.enum(["AI", "WEB", "DEVOPS", "MOBILE", "BLOCKCHAIN", "DATA", "SECURITY", "CLOUD", "GAMING", "OTHER"]).optional(),
+  sortBy: z.enum(["createdAt", "stars", "forks", "lastUpdated", "name"]).default("createdAt"),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+});

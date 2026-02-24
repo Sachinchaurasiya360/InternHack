@@ -42,10 +42,17 @@ export class AdminService {
     const isValid = await comparePassword(password, user.password);
     if (!isValid) throw new Error("Invalid email or password");
 
-    const adminProfile = await prisma.adminProfile.findUnique({ where: { userId: user.id } });
-    if (!adminProfile || !adminProfile.isActive) throw new Error("Admin account is inactive");
+    const adminProfile = await prisma.adminProfile.findUnique({
+      where: { userId: user.id },
+    });
+    if (!adminProfile || !adminProfile.isActive)
+      throw new Error("Admin account is inactive");
 
-    const token = generateToken({ id: user.id, email: user.email, role: user.role });
+    const token = generateToken({
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    });
 
     return {
       user: {
@@ -61,11 +68,19 @@ export class AdminService {
     };
   }
 
-  async createAdmin(data: { name: string; email: string; password: string; tier: AdminTier }, creatorId: number) {
-    const creatorProfile = await prisma.adminProfile.findUnique({ where: { userId: creatorId } });
-    if (!creatorProfile || creatorProfile.tier !== "SUPER_ADMIN") throw new Error("Only SUPER_ADMIN can create admins");
+  async createAdmin(
+    data: { name: string; email: string; password: string; tier: AdminTier },
+    creatorId: number,
+  ) {
+    const creatorProfile = await prisma.adminProfile.findUnique({
+      where: { userId: creatorId },
+    });
+    if (!creatorProfile || creatorProfile.tier !== "SUPER_ADMIN")
+      throw new Error("Only SUPER_ADMIN can create admins");
 
-    const existing = await prisma.user.findUnique({ where: { email: data.email } });
+    const existing = await prisma.user.findUnique({
+      where: { email: data.email },
+    });
     if (existing) throw new Error("Email already registered");
 
     const hashedPassword = await hashPassword(data.password);
@@ -83,10 +98,17 @@ export class AdminService {
       data: { userId: user.id, tier: data.tier },
     });
 
-    await this.logActivity(creatorId, "ADMIN_CREATED", "user", user.id, { tier: data.tier });
+    await this.logActivity(creatorId, "ADMIN_CREATED", "user", user.id, {
+      tier: data.tier,
+    });
 
     return {
-      user: { id: user.id, name: user.name, email: user.email, role: user.role },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
       adminProfile: { tier: adminProfile.tier },
     };
   }
@@ -116,13 +138,24 @@ export class AdminService {
       prisma.user.findMany({
         take: 10,
         orderBy: { createdAt: "desc" },
-        select: { id: true, name: true, email: true, role: true, isActive: true, createdAt: true },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          isActive: true,
+          createdAt: true,
+        },
       }),
       prisma.job.findMany({
         take: 10,
         orderBy: { createdAt: "desc" },
         select: {
-          id: true, title: true, company: true, status: true, createdAt: true,
+          id: true,
+          title: true,
+          company: true,
+          status: true,
+          createdAt: true,
           recruiter: { select: { id: true, name: true } },
           _count: { select: { applications: true } },
         },
@@ -149,7 +182,14 @@ export class AdminService {
 
   // ==================== USER MANAGEMENT ====================
 
-  async getUsers(query: { page: number; limit: number; search?: string | undefined; role?: string | undefined; sortBy: string; sortOrder: string }) {
+  async getUsers(query: {
+    page: number;
+    limit: number;
+    search?: string | undefined;
+    role?: string | undefined;
+    sortBy: string;
+    sortOrder: string;
+  }) {
     const where: Prisma.userWhereInput = {};
 
     if (query.role) {
@@ -164,7 +204,9 @@ export class AdminService {
     }
 
     const skip = (query.page - 1) * query.limit;
-    const orderBy: Prisma.userOrderByWithRelationInput = { [query.sortBy]: query.sortOrder };
+    const orderBy: Prisma.userOrderByWithRelationInput = {
+      [query.sortBy]: query.sortOrder,
+    };
 
     const [users, total] = await Promise.all([
       prisma.user.findMany({
@@ -173,8 +215,15 @@ export class AdminService {
         take: query.limit,
         orderBy,
         select: {
-          id: true, name: true, email: true, role: true, isActive: true,
-          company: true, designation: true, contactNo: true, createdAt: true,
+          id: true,
+          name: true,
+          email: true,
+          role: true,
+          isActive: true,
+          company: true,
+          designation: true,
+          contactNo: true,
+          createdAt: true,
           _count: { select: { applications: true, postedJobs: true } },
         },
       }),
@@ -183,7 +232,12 @@ export class AdminService {
 
     return {
       users,
-      pagination: { page: query.page, limit: query.limit, total, totalPages: Math.ceil(total / query.limit) },
+      pagination: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        totalPages: Math.ceil(total / query.limit),
+      },
     };
   }
 
@@ -191,10 +245,21 @@ export class AdminService {
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
-        id: true, name: true, email: true, role: true, isActive: true,
-        contactNo: true, profilePic: true, resumes: true, company: true, designation: true,
-        createdAt: true, updatedAt: true,
-        _count: { select: { applications: true, postedJobs: true, atsScores: true } },
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        isActive: true,
+        contactNo: true,
+        profilePic: true,
+        resumes: true,
+        company: true,
+        designation: true,
+        createdAt: true,
+        updatedAt: true,
+        _count: {
+          select: { applications: true, postedJobs: true, atsScores: true },
+        },
         adminProfile: { select: { tier: true, isActive: true } },
       },
     });
@@ -203,7 +268,12 @@ export class AdminService {
     return user;
   }
 
-  async updateUserStatus(userId: number, isActive: boolean, adminId: number, reason?: string) {
+  async updateUserStatus(
+    userId: number,
+    isActive: boolean,
+    adminId: number,
+    reason?: string,
+  ) {
     const user = await prisma.user.findUnique({ where: { id: userId } });
     if (!user) throw new Error("User not found");
     if (userId === adminId) throw new Error("Cannot modify your own status");
@@ -231,17 +301,30 @@ export class AdminService {
     if (userId === adminId) throw new Error("Cannot delete yourself");
 
     if (user.role === "ADMIN") {
-      const adminProfile = await prisma.adminProfile.findUnique({ where: { userId: adminId } });
-      if (!adminProfile || adminProfile.tier !== "SUPER_ADMIN") throw new Error("Only SUPER_ADMIN can delete admin users");
+      const adminProfile = await prisma.adminProfile.findUnique({
+        where: { userId: adminId },
+      });
+      if (!adminProfile || adminProfile.tier !== "SUPER_ADMIN")
+        throw new Error("Only SUPER_ADMIN can delete admin users");
     }
 
     await prisma.user.delete({ where: { id: userId } });
-    await this.logActivity(adminId, "USER_DELETED", "user", userId, { deletedUser: { name: user.name, email: user.email, role: user.role } });
+    await this.logActivity(adminId, "USER_DELETED", "user", userId, {
+      deletedUser: { name: user.name, email: user.email, role: user.role },
+    });
   }
 
   // ==================== JOB MANAGEMENT ====================
 
-  async getAdminJobs(query: { page: number; limit: number; search?: string | undefined; status?: string | undefined; recruiterId?: number | undefined; sortBy: string; sortOrder: string }) {
+  async getAdminJobs(query: {
+    page: number;
+    limit: number;
+    search?: string | undefined;
+    status?: string | undefined;
+    recruiterId?: number | undefined;
+    sortBy: string;
+    sortOrder: string;
+  }) {
     const where: Prisma.jobWhereInput = {};
 
     if (query.status) {
@@ -260,7 +343,9 @@ export class AdminService {
     }
 
     const skip = (query.page - 1) * query.limit;
-    const orderBy: Prisma.jobOrderByWithRelationInput = { [query.sortBy]: query.sortOrder };
+    const orderBy: Prisma.jobOrderByWithRelationInput = {
+      [query.sortBy]: query.sortOrder,
+    };
 
     const [jobs, total] = await Promise.all([
       prisma.job.findMany({
@@ -269,7 +354,12 @@ export class AdminService {
         take: query.limit,
         orderBy,
         select: {
-          id: true, title: true, company: true, location: true, status: true, createdAt: true,
+          id: true,
+          title: true,
+          company: true,
+          location: true,
+          status: true,
+          createdAt: true,
           recruiter: { select: { id: true, name: true, email: true } },
           _count: { select: { applications: true, rounds: true } },
         },
@@ -279,11 +369,21 @@ export class AdminService {
 
     return {
       jobs,
-      pagination: { page: query.page, limit: query.limit, total, totalPages: Math.ceil(total / query.limit) },
+      pagination: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        totalPages: Math.ceil(total / query.limit),
+      },
     };
   }
 
-  async updateJobStatus(jobId: number, status: JobStatus, adminId: number, reason?: string) {
+  async updateJobStatus(
+    jobId: number,
+    status: JobStatus,
+    adminId: number,
+    reason?: string,
+  ) {
     const job = await prisma.job.findUnique({ where: { id: jobId } });
     if (!job) throw new Error("Job not found");
 
@@ -292,7 +392,11 @@ export class AdminService {
       data: { status },
     });
 
-    await this.logActivity(adminId, "JOB_STATUS_CHANGED", "job", jobId, { previousStatus: job.status, newStatus: status, reason });
+    await this.logActivity(adminId, "JOB_STATUS_CHANGED", "job", jobId, {
+      previousStatus: job.status,
+      newStatus: status,
+      reason,
+    });
 
     return updated;
   }
@@ -302,12 +406,21 @@ export class AdminService {
     if (!job) throw new Error("Job not found");
 
     await prisma.job.delete({ where: { id: jobId } });
-    await this.logActivity(adminId, "JOB_DELETED", "job", jobId, { deletedJob: { title: job.title, company: job.company } });
+    await this.logActivity(adminId, "JOB_DELETED", "job", jobId, {
+      deletedJob: { title: job.title, company: job.company },
+    });
   }
 
   // ==================== ACTIVITY LOGS ====================
 
-  async logActivity(adminId: number, action: string, targetType: string, targetId: number, details: object = {}, ipAddress?: string) {
+  async logActivity(
+    adminId: number,
+    action: string,
+    targetType: string,
+    targetId: number,
+    details: object = {},
+    ipAddress?: string,
+  ) {
     await prisma.adminActivityLog.create({
       data: {
         adminId,
@@ -320,11 +433,18 @@ export class AdminService {
     });
   }
 
-  async getActivityLogs(query: { page: number; limit: number; adminId?: number | undefined; action?: string | undefined; targetType?: string | undefined }) {
+  async getActivityLogs(query: {
+    page: number;
+    limit: number;
+    adminId?: number | undefined;
+    action?: string | undefined;
+    targetType?: string | undefined;
+  }) {
     const where: Prisma.adminActivityLogWhereInput = {};
 
     if (query.adminId) where.adminId = query.adminId;
-    if (query.action) where.action = { contains: query.action, mode: "insensitive" };
+    if (query.action)
+      where.action = { contains: query.action, mode: "insensitive" };
     if (query.targetType) where.targetType = query.targetType;
 
     const skip = (query.page - 1) * query.limit;
@@ -344,7 +464,12 @@ export class AdminService {
 
     return {
       logs,
-      pagination: { page: query.page, limit: query.limit, total, totalPages: Math.ceil(total / query.limit) },
+      pagination: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        totalPages: Math.ceil(total / query.limit),
+      },
     };
   }
 
@@ -371,7 +496,14 @@ export class AdminService {
         where: { isApproved: true, reviewCount: { gt: 0 } },
         orderBy: { avgRating: "desc" },
         take: 5,
-        select: { id: true, name: true, slug: true, avgRating: true, reviewCount: true, city: true },
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          avgRating: true,
+          reviewCount: true,
+          city: true,
+        },
       }),
       prisma.company.groupBy({
         by: ["city"],
@@ -409,7 +541,10 @@ export class AdminService {
       prisma.company.count(),
     ]);
 
-    return { companies, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    return {
+      companies,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async createCompany(adminId: number, input: CreateCompanyInput) {
@@ -431,7 +566,9 @@ export class AdminService {
         state: input.state ?? null,
         address: input.address ?? null,
         website: input.website || null,
-        socialLinks: (input.socialLinks ? JSON.parse(JSON.stringify(input.socialLinks)) : {}) as Prisma.InputJsonValue,
+        socialLinks: (input.socialLinks
+          ? JSON.parse(JSON.stringify(input.socialLinks))
+          : {}) as Prisma.InputJsonValue,
         technologies: input.technologies ?? [],
         hiringStatus: input.hiringStatus ?? false,
         foundedYear: input.foundedYear ?? null,
@@ -443,8 +580,15 @@ export class AdminService {
     });
   }
 
-  async updateCompany(companyId: number, input: { [K in keyof CreateCompanyInput]?: CreateCompanyInput[K] | undefined }) {
-    const company = await prisma.company.findUnique({ where: { id: companyId } });
+  async updateCompany(
+    companyId: number,
+    input: {
+      [K in keyof CreateCompanyInput]?: CreateCompanyInput[K] | undefined;
+    },
+  ) {
+    const company = await prisma.company.findUnique({
+      where: { id: companyId },
+    });
     if (!company) throw new Error("Company not found");
 
     const data: Prisma.companyUpdateInput = {};
@@ -457,9 +601,14 @@ export class AdminService {
     if (input.state !== undefined) data.state = input.state || null;
     if (input.address !== undefined) data.address = input.address || null;
     if (input.website !== undefined) data.website = input.website || null;
-    if (input.socialLinks !== undefined) data.socialLinks = JSON.parse(JSON.stringify(input.socialLinks)) as Prisma.InputJsonValue;
-    if (input.technologies !== undefined) data.technologies = input.technologies;
-    if (input.hiringStatus !== undefined) data.hiringStatus = input.hiringStatus;
+    if (input.socialLinks !== undefined)
+      data.socialLinks = JSON.parse(
+        JSON.stringify(input.socialLinks),
+      ) as Prisma.InputJsonValue;
+    if (input.technologies !== undefined)
+      data.technologies = input.technologies;
+    if (input.hiringStatus !== undefined)
+      data.hiringStatus = input.hiringStatus;
     if (input.foundedYear !== undefined) data.foundedYear = input.foundedYear;
     if (input.logo !== undefined) data.logo = input.logo || null;
     if (input.photos !== undefined) data.photos = input.photos;
@@ -468,7 +617,9 @@ export class AdminService {
   }
 
   async approveCompany(companyId: number) {
-    const company = await prisma.company.findUnique({ where: { id: companyId } });
+    const company = await prisma.company.findUnique({
+      where: { id: companyId },
+    });
     if (!company) throw new Error("Company not found");
 
     return prisma.company.update({
@@ -478,18 +629,26 @@ export class AdminService {
   }
 
   async deleteCompany(companyId: number) {
-    const company = await prisma.company.findUnique({ where: { id: companyId } });
+    const company = await prisma.company.findUnique({
+      where: { id: companyId },
+    });
     if (!company) throw new Error("Company not found");
 
     return prisma.company.delete({ where: { id: companyId } });
   }
 
   // Reviews management
-  async listAllReviews(status?: string | undefined, page: number = 1, limit: number = 20) {
+  async listAllReviews(
+    status?: string | undefined,
+    page: number = 1,
+    limit: number = 20,
+  ) {
     const skip = (page - 1) * limit;
     const where: Prisma.companyReviewWhereInput = {};
     if (status && ["PENDING", "APPROVED", "REJECTED"].includes(status)) {
-      where.status = status as NonNullable<Prisma.EnumReviewStatusFilter["equals"]>;
+      where.status = status as NonNullable<
+        Prisma.EnumReviewStatusFilter["equals"]
+      >;
     }
 
     const [reviews, total] = await Promise.all([
@@ -506,11 +665,16 @@ export class AdminService {
       prisma.companyReview.count({ where }),
     ]);
 
-    return { reviews, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    return {
+      reviews,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 
   async updateReviewStatus(reviewId: number, status: "APPROVED" | "REJECTED") {
-    const review = await prisma.companyReview.findUnique({ where: { id: reviewId } });
+    const review = await prisma.companyReview.findUnique({
+      where: { id: reviewId },
+    });
     if (!review) throw new Error("Review not found");
 
     const updated = await prisma.companyReview.update({
@@ -541,11 +705,17 @@ export class AdminService {
   }
 
   // Contributions management
-  async listContributions(status?: string | undefined, page: number = 1, limit: number = 20) {
+  async listContributions(
+    status?: string | undefined,
+    page: number = 1,
+    limit: number = 20,
+  ) {
     const skip = (page - 1) * limit;
     const where: Prisma.companyContributionWhereInput = {};
     if (status && ["PENDING", "APPROVED", "REJECTED"].includes(status)) {
-      where.status = status as NonNullable<Prisma.EnumContributionStatusFilter["equals"]>;
+      where.status = status as NonNullable<
+        Prisma.EnumContributionStatusFilter["equals"]
+      >;
     }
 
     const [contributions, total] = await Promise.all([
@@ -561,11 +731,21 @@ export class AdminService {
       prisma.companyContribution.count({ where }),
     ]);
 
-    return { contributions, pagination: { page, limit, total, totalPages: Math.ceil(total / limit) } };
+    return {
+      contributions,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
   }
 
-  async updateContributionStatus(contributionId: number, adminId: number, status: "APPROVED" | "REJECTED", adminNotes?: string) {
-    const contribution = await prisma.companyContribution.findUnique({ where: { id: contributionId } });
+  async updateContributionStatus(
+    contributionId: number,
+    adminId: number,
+    status: "APPROVED" | "REJECTED",
+    adminNotes?: string,
+  ) {
+    const contribution = await prisma.companyContribution.findUnique({
+      where: { id: contributionId },
+    });
     if (!contribution) throw new Error("Contribution not found");
 
     const updated = await prisma.companyContribution.update({
@@ -594,7 +774,11 @@ export class AdminService {
     }
 
     // If approved and it's an add contact contribution, create the contact
-    if (status === "APPROVED" && contribution.type === "ADD_CONTACT" && contribution.companyId) {
+    if (
+      status === "APPROVED" &&
+      contribution.type === "ADD_CONTACT" &&
+      contribution.companyId
+    ) {
       const data = contribution.data as Record<string, unknown>;
       await prisma.companyContact.create({
         data: {
@@ -613,8 +797,21 @@ export class AdminService {
   }
 
   // Direct contact management
-  async addContact(companyId: number, adminId: number, input: { name: string; designation: string; email?: string | undefined; phone?: string | undefined; linkedinUrl?: string | undefined; isPublic?: boolean | undefined }) {
-    const company = await prisma.company.findUnique({ where: { id: companyId } });
+  async addContact(
+    companyId: number,
+    adminId: number,
+    input: {
+      name: string;
+      designation: string;
+      email?: string | undefined;
+      phone?: string | undefined;
+      linkedinUrl?: string | undefined;
+      isPublic?: boolean | undefined;
+    },
+  ) {
+    const company = await prisma.company.findUnique({
+      where: { id: companyId },
+    });
     if (!company) throw new Error("Company not found");
 
     return prisma.companyContact.create({
@@ -631,8 +828,20 @@ export class AdminService {
     });
   }
 
-  async updateContact(contactId: number, input: Partial<{ name: string | undefined; designation: string | undefined; email: string | undefined; phone: string | undefined; linkedinUrl: string | undefined; isPublic: boolean | undefined }>) {
-    const contact = await prisma.companyContact.findUnique({ where: { id: contactId } });
+  async updateContact(
+    contactId: number,
+    input: Partial<{
+      name: string | undefined;
+      designation: string | undefined;
+      email: string | undefined;
+      phone: string | undefined;
+      linkedinUrl: string | undefined;
+      isPublic: boolean | undefined;
+    }>,
+  ) {
+    const contact = await prisma.companyContact.findUnique({
+      where: { id: contactId },
+    });
     if (!contact) throw new Error("Contact not found");
 
     const data: Prisma.companyContactUpdateInput = {};
@@ -647,7 +856,9 @@ export class AdminService {
   }
 
   async deleteContact(contactId: number) {
-    const contact = await prisma.companyContact.findUnique({ where: { id: contactId } });
+    const contact = await prisma.companyContact.findUnique({
+      where: { id: contactId },
+    });
     if (!contact) throw new Error("Contact not found");
 
     return prisma.companyContact.delete({ where: { id: contactId } });
@@ -696,8 +907,17 @@ export class AdminService {
       orderIndex: number;
       durationWeeks?: number | undefined;
       skills?: Array<{ name: string; level?: string | undefined }>;
-      resources?: Array<{ title: string; url: string; type?: string | undefined; free?: boolean | undefined }>;
-      tools?: Array<{ name: string; url?: string | undefined; category?: string | undefined }>;
+      resources?: Array<{
+        title: string;
+        url: string;
+        type?: string | undefined;
+        free?: boolean | undefined;
+      }>;
+      tools?: Array<{
+        name: string;
+        url?: string | undefined;
+        category?: string | undefined;
+      }>;
     }>;
   }) {
     let slug = generateSlug(input.title);
@@ -709,8 +929,12 @@ export class AdminService {
         title: input.title,
         slug,
         description: input.description,
-        category: input.category as Prisma.EnumCareerCategoryFieldUpdateOperationsInput["set"] & string,
-        difficulty: input.difficulty as Prisma.EnumCareerDifficultyFieldUpdateOperationsInput["set"] & string,
+        category:
+          input.category as Prisma.EnumCareerCategoryFieldUpdateOperationsInput["set"] &
+            string,
+        difficulty:
+          input.difficulty as Prisma.EnumCareerDifficultyFieldUpdateOperationsInput["set"] &
+            string,
         avgSalary: input.avgSalary ?? null,
         demandLevel: input.demandLevel ?? null,
         phases: {
@@ -722,14 +946,18 @@ export class AdminService {
             skills: {
               create: (phase.skills ?? []).map((s) => ({
                 name: s.name,
-                level: (s.level ?? "BEGINNER") as Prisma.EnumSkillLevelFieldUpdateOperationsInput["set"] & string,
+                level: (s.level ??
+                  "BEGINNER") as Prisma.EnumSkillLevelFieldUpdateOperationsInput["set"] &
+                  string,
               })),
             },
             resources: {
               create: (phase.resources ?? []).map((r) => ({
                 title: r.title,
                 url: r.url,
-                type: (r.type ?? "ARTICLE") as Prisma.EnumResourceTypeFieldUpdateOperationsInput["set"] & string,
+                type: (r.type ??
+                  "ARTICLE") as Prisma.EnumResourceTypeFieldUpdateOperationsInput["set"] &
+                  string,
                 free: r.free ?? true,
               })),
             },
@@ -751,23 +979,35 @@ export class AdminService {
     });
   }
 
-  async updateCareer(careerId: number, input: {
-    title?: string | undefined;
-    description?: string | undefined;
-    category?: string | undefined;
-    difficulty?: string | undefined;
-    avgSalary?: string | undefined;
-    demandLevel?: string | undefined;
-    phases?: Array<{
-      title: string;
+  async updateCareer(
+    careerId: number,
+    input: {
+      title?: string | undefined;
       description?: string | undefined;
-      orderIndex: number;
-      durationWeeks?: number | undefined;
-      skills?: Array<{ name: string; level?: string | undefined }>;
-      resources?: Array<{ title: string; url: string; type?: string | undefined; free?: boolean | undefined }>;
-      tools?: Array<{ name: string; url?: string | undefined; category?: string | undefined }>;
-    }>;
-  }) {
+      category?: string | undefined;
+      difficulty?: string | undefined;
+      avgSalary?: string | undefined;
+      demandLevel?: string | undefined;
+      phases?: Array<{
+        title: string;
+        description?: string | undefined;
+        orderIndex: number;
+        durationWeeks?: number | undefined;
+        skills?: Array<{ name: string; level?: string | undefined }>;
+        resources?: Array<{
+          title: string;
+          url: string;
+          type?: string | undefined;
+          free?: boolean | undefined;
+        }>;
+        tools?: Array<{
+          name: string;
+          url?: string | undefined;
+          category?: string | undefined;
+        }>;
+      }>;
+    },
+  ) {
     const career = await prisma.career.findUnique({ where: { id: careerId } });
     if (!career) throw new Error("Career not found");
 
@@ -777,10 +1017,17 @@ export class AdminService {
       data.slug = generateSlug(input.title);
     }
     if (input.description !== undefined) data.description = input.description;
-    if (input.category !== undefined) data.category = input.category as Prisma.EnumCareerCategoryFieldUpdateOperationsInput["set"] & string;
-    if (input.difficulty !== undefined) data.difficulty = input.difficulty as Prisma.EnumCareerDifficultyFieldUpdateOperationsInput["set"] & string;
+    if (input.category !== undefined)
+      data.category =
+        input.category as Prisma.EnumCareerCategoryFieldUpdateOperationsInput["set"] &
+          string;
+    if (input.difficulty !== undefined)
+      data.difficulty =
+        input.difficulty as Prisma.EnumCareerDifficultyFieldUpdateOperationsInput["set"] &
+          string;
     if (input.avgSalary !== undefined) data.avgSalary = input.avgSalary || null;
-    if (input.demandLevel !== undefined) data.demandLevel = input.demandLevel || null;
+    if (input.demandLevel !== undefined)
+      data.demandLevel = input.demandLevel || null;
 
     // If phases are provided, replace all phases (transaction)
     if (input.phases !== undefined) {
@@ -790,7 +1037,9 @@ export class AdminService {
           where: { careerId },
           include: { skills: { select: { id: true } } },
         });
-        const existingSkillIds = existingPhases.flatMap((p) => p.skills.map((s) => s.id));
+        const existingSkillIds = existingPhases.flatMap((p) =>
+          p.skills.map((s) => s.id),
+        );
 
         // Delete student progress for these skills
         if (existingSkillIds.length > 0) {
@@ -816,14 +1065,18 @@ export class AdminService {
                 skills: {
                   create: (phase.skills ?? []).map((s) => ({
                     name: s.name,
-                    level: (s.level ?? "BEGINNER") as Prisma.EnumSkillLevelFieldUpdateOperationsInput["set"] & string,
+                    level: (s.level ??
+                      "BEGINNER") as Prisma.EnumSkillLevelFieldUpdateOperationsInput["set"] &
+                      string,
                   })),
                 },
                 resources: {
                   create: (phase.resources ?? []).map((r) => ({
                     title: r.title,
                     url: r.url,
-                    type: (r.type ?? "ARTICLE") as Prisma.EnumResourceTypeFieldUpdateOperationsInput["set"] & string,
+                    type: (r.type ??
+                      "ARTICLE") as Prisma.EnumResourceTypeFieldUpdateOperationsInput["set"] &
+                      string,
                     free: r.free ?? true,
                   })),
                 },
@@ -872,7 +1125,9 @@ export class AdminService {
 
       // Delete student progress
       if (skillIds.length > 0) {
-        await tx.studentSkillProgress.deleteMany({ where: { skillId: { in: skillIds } } });
+        await tx.studentSkillProgress.deleteMany({
+          where: { skillId: { in: skillIds } },
+        });
       }
 
       // Delete enrollments
@@ -881,5 +1136,176 @@ export class AdminService {
       // Delete career (cascades to phases -> skills/resources/tools)
       await tx.career.delete({ where: { id: careerId } });
     });
+  }
+
+  // ==================== OPEN SOURCE REPO MANAGEMENT ====================
+
+  async listRepos(query: {
+    page: number;
+    limit: number;
+    search?: string | undefined;
+    language?: string | undefined;
+    difficulty?: string | undefined;
+    domain?: string | undefined;
+    sortBy: string;
+    sortOrder: string;
+  }) {
+    const where: Prisma.opensourceRepoWhereInput = {};
+
+    if (query.language) {
+      where.language = { equals: query.language, mode: "insensitive" };
+    }
+    if (query.difficulty) {
+      where.difficulty = query.difficulty as
+        | "BEGINNER"
+        | "INTERMEDIATE"
+        | "ADVANCED";
+    }
+    if (query.domain) {
+      where.domain = query.domain as
+        | "AI"
+        | "WEB"
+        | "DEVOPS"
+        | "MOBILE"
+        | "BLOCKCHAIN"
+        | "DATA"
+        | "SECURITY"
+        | "CLOUD"
+        | "GAMING"
+        | "OTHER";
+    }
+    if (query.search) {
+      where.OR = [
+        { name: { contains: query.search, mode: "insensitive" } },
+        { owner: { contains: query.search, mode: "insensitive" } },
+        { description: { contains: query.search, mode: "insensitive" } },
+      ];
+    }
+
+    const skip = (query.page - 1) * query.limit;
+    const orderBy: Prisma.opensourceRepoOrderByWithRelationInput = {
+      [query.sortBy]: query.sortOrder,
+    };
+
+    const [repos, total] = await Promise.all([
+      prisma.opensourceRepo.findMany({
+        where,
+        skip,
+        take: query.limit,
+        orderBy,
+      }),
+      prisma.opensourceRepo.count({ where }),
+    ]);
+
+    return {
+      repos,
+      pagination: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        totalPages: Math.ceil(total / query.limit),
+      },
+    };
+  }
+
+  async getRepo(repoId: number) {
+    const repo = await prisma.opensourceRepo.findUnique({
+      where: { id: repoId },
+    });
+    if (!repo) throw new Error("Repository not found");
+    return repo;
+  }
+
+  async createRepo(input: {
+    name: string;
+    owner: string;
+    description: string;
+    language: string;
+    techStack?: string[];
+    difficulty?: string;
+    domain?: string;
+    issueTypes?: string[];
+    stars?: number;
+    forks?: number;
+    openIssues?: number;
+    url: string;
+    logo?: string | undefined;
+    tags?: string[];
+    highlights?: string[];
+    trending?: boolean;
+  }) {
+    return prisma.opensourceRepo.create({
+      data: {
+        name: input.name,
+        owner: input.owner,
+        description: input.description,
+        language: input.language,
+        techStack: input.techStack ?? [],
+        difficulty: (input.difficulty ??
+          "BEGINNER") as Prisma.EnumRepoDifficultyFieldUpdateOperationsInput["set"] &
+          string,
+        domain: (input.domain ??
+          "WEB") as Prisma.EnumRepoDomainFieldUpdateOperationsInput["set"] &
+          string,
+        issueTypes: input.issueTypes ?? [],
+        stars: input.stars ?? 0,
+        forks: input.forks ?? 0,
+        openIssues: input.openIssues ?? 0,
+        url: input.url,
+        logo: input.logo ?? null,
+        tags: input.tags ?? [],
+        highlights: input.highlights ?? [],
+        trending: input.trending ?? false,
+      },
+    });
+  }
+
+  async updateRepo(repoId: number, input: Record<string, unknown>) {
+    const repo = await prisma.opensourceRepo.findUnique({
+      where: { id: repoId },
+    });
+    if (!repo) throw new Error("Repository not found");
+
+    const data: Prisma.opensourceRepoUpdateInput = {};
+    if (input["name"] !== undefined) data.name = input["name"] as string;
+    if (input["owner"] !== undefined) data.owner = input["owner"] as string;
+    if (input["description"] !== undefined)
+      data.description = input["description"] as string;
+    if (input["language"] !== undefined)
+      data.language = input["language"] as string;
+    if (input["techStack"] !== undefined)
+      data.techStack = input["techStack"] as string[];
+    if (input["difficulty"] !== undefined)
+      data.difficulty = input[
+        "difficulty"
+      ] as Prisma.EnumRepoDifficultyFieldUpdateOperationsInput["set"] & string;
+    if (input["domain"] !== undefined)
+      data.domain = input[
+        "domain"
+      ] as Prisma.EnumRepoDomainFieldUpdateOperationsInput["set"] & string;
+    if (input["issueTypes"] !== undefined)
+      data.issueTypes = input["issueTypes"] as string[];
+    if (input["stars"] !== undefined) data.stars = input["stars"] as number;
+    if (input["forks"] !== undefined) data.forks = input["forks"] as number;
+    if (input["openIssues"] !== undefined)
+      data.openIssues = input["openIssues"] as number;
+    if (input["url"] !== undefined) data.url = input["url"] as string;
+    if (input["logo"] !== undefined)
+      data.logo = (input["logo"] as string) || null;
+    if (input["tags"] !== undefined) data.tags = input["tags"] as string[];
+    if (input["highlights"] !== undefined)
+      data.highlights = input["highlights"] as string[];
+    if (input["trending"] !== undefined)
+      data.trending = input["trending"] as boolean;
+
+    return prisma.opensourceRepo.update({ where: { id: repoId }, data });
+  }
+
+  async deleteRepo(repoId: number) {
+    const repo = await prisma.opensourceRepo.findUnique({
+      where: { id: repoId },
+    });
+    if (!repo) throw new Error("Repository not found");
+    return prisma.opensourceRepo.delete({ where: { id: repoId } });
   }
 }

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, Home, ScanSearch, Map, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award } from "lucide-react";
+import { Briefcase, FileText, LogOut, Home, ScanSearch, Map, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { Navbar } from "../../components/Navbar";
 
@@ -11,6 +11,8 @@ const NAV_ITEMS = [
   { to: "/student/careers", icon: Map, label: "Career Paths" },
   { to: "/student/companies", icon: Building2, label: "Explore Companies" },
   { to: "/student/grants", icon: Award, label: "Grants" },
+  { to: "/student/opensource", icon: Globe, label: "Open Source" },
+  { to: "/student/checkout", icon: Crown, label: "Upgrade" },
   { to: "/student/profile", icon: UserCircle, label: "My Profile" },
   { to: "/", icon: Home, label: "Home" },
 ];
@@ -43,24 +45,24 @@ export default function StudentLayout() {
       <aside
         className={`${
           collapsed ? "w-18" : "w-64"
-        } fixed top-0 left-0 h-screen bg-white border-r border-gray-200 flex flex-col transition-all duration-300 z-40 pt-20`}
+        } fixed top-0 left-0 h-screen bg-white border-r border-gray-200 flex flex-col transition-all duration-300 z-50`}
       >
         {/* Toggle + User */}
-        <div className={`${collapsed ? "px-3 pt-4 pb-2" : "px-5 pt-5 pb-2"}`}>
+        <div className={`${collapsed ? "px-3 pt-2 pb-1" : "px-5 pt-3 pb-1"}`}>
           <button
             onClick={toggleSidebar}
-            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-700 transition-colors mb-4"
+            className="w-8 h-8 rounded-lg border border-gray-200 flex items-center justify-center text-gray-400 hover:bg-gray-50 hover:text-gray-700 transition-colors mb-2"
             title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
           >
             {collapsed ? <ChevronsRight className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
           </button>
 
           {collapsed ? (
-            <div className="w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center text-sm font-bold mx-auto mb-3">
+            <div className="w-9 h-9 rounded-full bg-gray-900 text-white flex items-center justify-center text-sm font-bold mx-auto mb-2">
               {user?.name?.charAt(0)?.toUpperCase() ?? "U"}
             </div>
           ) : (
-            <div className="mb-4">
+            <div className="mb-2">
               <h2 className="text-sm font-bold text-gray-900 truncate">{user?.name}</h2>
               <p className="text-xs text-gray-500 truncate">{user?.email}</p>
             </div>
@@ -68,7 +70,7 @@ export default function StudentLayout() {
         </div>
 
         {/* Nav */}
-        <nav className={`flex-1 space-y-1 ${collapsed ? "px-2" : "px-3"} overflow-y-auto`}>
+        <nav className={`flex-1 space-y-0.5 ${collapsed ? "px-2" : "px-3"} overflow-y-auto`}>
           {NAV_ITEMS.map((item) => (
             <NavLink
               key={item.to}
@@ -76,7 +78,7 @@ export default function StudentLayout() {
               title={collapsed ? item.label : undefined}
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-lg text-sm font-medium transition-colors ${
-                  collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5"
+                  collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
                 } ${
                   isActive
                     ? "bg-gray-900 text-white"
@@ -96,7 +98,7 @@ export default function StudentLayout() {
             onClick={handleLogout}
             title={collapsed ? "Logout" : undefined}
             className={`flex items-center gap-3 rounded-lg text-sm font-medium text-gray-600 hover:bg-red-50 hover:text-red-600 transition-colors w-full ${
-              collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5"
+              collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
             }`}
           >
             <LogOut className="w-4 h-4 shrink-0" />
@@ -107,7 +109,7 @@ export default function StudentLayout() {
 
       {/* Main Content — offset by sidebar width */}
       <main
-        className={`${collapsed ? "ml-18" : "ml-64"} pt-20 p-8 transition-all duration-300 overflow-auto`}
+        className={`${collapsed ? "ml-18" : "ml-64"} pt-16 p-8 transition-all duration-300 overflow-auto`}
       >
         <Outlet />
       </main>
