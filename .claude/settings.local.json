@@ -20,7 +20,8 @@
       "Bash(npm run seed:*)",
       "Bash(npm run build:*)",
       "Bash(grep:*)",
-      "Bash(npm run seed:admin:*)"
+      "Bash(npm run seed:admin:*)",
+      "Bash(xargs ls -1)"
     ]
   }
 }
