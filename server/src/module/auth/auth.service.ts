@@ -15,6 +15,21 @@ interface RegisterInput {
   contactNo?: string | undefined;
 }
 
+interface UpdateProfileInput {
+  name?: string;
+  contactNo?: string;
+  company?: string;
+  designation?: string;
+  bio?: string;
+  college?: string;
+  graduationYear?: number;
+  skills?: string[];
+  location?: string;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  portfolioUrl?: string;
+}
+
 interface LoginInput {
   email: string;
   password: string;
@@ -158,21 +173,31 @@ export class AuthService {
     };
   }
 
+  private readonly profileSelect = {
+    id: true,
+    name: true,
+    email: true,
+    role: true,
+    contactNo: true,
+    profilePic: true,
+    resumes: true,
+    company: true,
+    designation: true,
+    bio: true,
+    college: true,
+    graduationYear: true,
+    skills: true,
+    location: true,
+    linkedinUrl: true,
+    githubUrl: true,
+    portfolioUrl: true,
+    createdAt: true,
+  } as const;
+
   async getProfile(userId: number) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        contactNo: true,
-        profilePic: true,
-        resumes: true,
-        company: true,
-        designation: true,
-        createdAt: true,
-      },
+      select: this.profileSelect,
     });
 
     if (!user) {
@@ -182,28 +207,24 @@ export class AuthService {
     return user;
   }
 
-  async updateProfile(userId: number, data: Record<string, string>) {
-    const updateData: Record<string, string | null> = {};
-    if ("name" in data && data["name"]) updateData["name"] = data["name"];
-    for (const key of ["contactNo", "company", "designation"]) {
-      if (key in data) updateData[key] = data[key] || null;
+  async updateProfile(userId: number, data: UpdateProfileInput) {
+    const updateData: Record<string, unknown> = {};
+
+    if (data.name && data.name.trim()) updateData.name = data.name.trim();
+    for (const key of ["contactNo", "company", "designation", "bio", "college", "location", "linkedinUrl", "githubUrl", "portfolioUrl"] as const) {
+      if (key in data) updateData[key] = (data[key] as string)?.trim() || null;
+    }
+    if ("graduationYear" in data) {
+      updateData.graduationYear = data.graduationYear ? Number(data.graduationYear) : null;
+    }
+    if ("skills" in data) {
+      updateData.skills = Array.isArray(data.skills) ? data.skills : [];
     }
 
     const user = await prisma.user.update({
       where: { id: userId },
       data: updateData,
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        role: true,
-        contactNo: true,
-        profilePic: true,
-        resumes: true,
-        company: true,
-        designation: true,
-        createdAt: true,
-      },
+      select: this.profileSelect,
     });
 
     return user;

@@ -5,7 +5,7 @@ import OpenSourceLandingPage from "./OpenSourceLandingPage";
 
 export default function PublicOpenSourcePage() {
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
       <SEO
         title="Open Source Discovery"
         description="Discover beginner-friendly open-source repositories, explore GSoC organizations, track programs like LFX, Outreachy, and Hacktoberfest, and make your first contribution — all for free."

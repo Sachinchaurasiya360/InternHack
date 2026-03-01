@@ -49,25 +49,25 @@ export default function ApplicationsList() {
 
   return (
     <div>
-      <Link to="/recruiters/jobs" className="flex items-center gap-2 text-sm text-gray-500 hover:text-black mb-4 no-underline">
+      <Link to="/recruiters/jobs" className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4 no-underline">
         <ArrowLeft className="w-4 h-4" /> Back to Jobs
       </Link>
 
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Applications</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Applications</h1>
 
       {/* Filters */}
       <div className="flex items-center gap-3 mb-6">
         <div className="flex-1 relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
           <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && fetchApplications()}
-            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 text-sm"
+            className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
             placeholder="Search by name or email..." />
         </div>
         <div className="flex items-center gap-2">
-          <Filter className="w-4 h-4 text-gray-400" />
+          <Filter className="w-4 h-4 text-gray-400 dark:text-gray-500" />
           <select value={statusFilter} onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
-            className="px-3 py-2.5 border border-gray-300 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black/20">
+            className="px-3 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white">
             <option value="">All Status</option>
             <option value="APPLIED">Applied</option>
             <option value="IN_PROGRESS">In Progress</option>
@@ -80,30 +80,30 @@ export default function ApplicationsList() {
       </div>
 
       {loading ? (
-        <div className="text-center py-16 text-gray-500">Loading...</div>
+        <div className="text-center py-16 text-gray-500 dark:text-gray-500">Loading...</div>
       ) : applications.length === 0 ? (
-        <div className="text-center py-16 bg-white rounded-xl border border-gray-100 text-gray-500">No applications found</div>
+        <div className="text-center py-16 bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 text-gray-500 dark:text-gray-500">No applications found</div>
       ) : (
         <>
-          <div className="bg-white rounded-xl border border-gray-100 overflow-hidden">
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
             <table className="w-full">
               <thead>
-                <tr className="border-b border-gray-100">
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Candidate</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Status</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Rounds</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Applied</th>
-                  <th className="text-left text-xs font-medium text-gray-500 uppercase px-6 py-3">Actions</th>
+                <tr className="border-b border-gray-100 dark:border-gray-800">
+                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Candidate</th>
+                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Status</th>
+                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Rounds</th>
+                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Applied</th>
+                  <th className="text-left text-xs font-medium text-gray-500 dark:text-gray-500 uppercase px-6 py-3">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-50">
+              <tbody className="divide-y divide-gray-50 dark:divide-gray-800">
                 {applications.map((app, i) => (
                   <motion.tr key={app.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: i * 0.03 }}
-                    className="hover:bg-gray-50 transition-colors">
+                    className="hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                     <td className="px-6 py-4">
                       <Link to={`/recruiters/applications/${app.id}`} className="no-underline">
-                        <p className="font-medium text-gray-900">{app.student?.name}</p>
-                        <p className="text-sm text-gray-500">{app.student?.email}</p>
+                        <p className="font-medium text-gray-900 dark:text-white">{app.student?.name}</p>
+                        <p className="text-sm text-gray-500 dark:text-gray-500">{app.student?.email}</p>
                       </Link>
                     </td>
                     <td className="px-6 py-4">
@@ -116,20 +116,20 @@ export default function ApplicationsList() {
                         <option value="HIRED">Hired</option>
                       </select>
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-500">
                       {app.roundSubmissions?.length || 0} completed
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-500">
+                    <td className="px-6 py-4 text-sm text-gray-500 dark:text-gray-500">
                       {new Date(app.createdAt).toLocaleDateString()}
                     </td>
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-2">
                         <button onClick={() => handleAdvance(app.id)}
-                          className="text-xs px-3 py-1.5 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors">
+                          className="text-xs px-3 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors">
                           Advance
                         </button>
                         <Link to={`/recruiters/applications/${app.id}`}
-                          className="text-xs px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50 text-gray-600 no-underline">
+                          className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 text-gray-600 dark:text-gray-400 no-underline">
                           View
                         </Link>
                       </div>
@@ -144,10 +144,10 @@ export default function ApplicationsList() {
           {pagination && pagination.totalPages > 1 && (
             <div className="flex items-center justify-center gap-2 mt-6">
               <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-30">Prev</button>
-              <span className="text-sm text-gray-500">Page {page} of {pagination.totalPages}</span>
+                className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-30 dark:text-gray-300">Prev</button>
+              <span className="text-sm text-gray-500 dark:text-gray-500">Page {page} of {pagination.totalPages}</span>
               <button onClick={() => setPage(Math.min(pagination.totalPages, page + 1))} disabled={page === pagination.totalPages}
-                className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg disabled:opacity-30">Next</button>
+                className="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-30 dark:text-gray-300">Next</button>
             </div>
           )}
         </>
@@ -158,12 +158,12 @@ export default function ApplicationsList() {
 
 function getStatusColor(status: string) {
   switch (status) {
-    case "APPLIED": return "bg-blue-100 text-blue-700";
-    case "IN_PROGRESS": return "bg-yellow-100 text-yellow-700";
-    case "SHORTLISTED": return "bg-green-100 text-green-700";
-    case "REJECTED": return "bg-red-100 text-red-700";
-    case "HIRED": return "bg-emerald-100 text-emerald-700";
-    case "WITHDRAWN": return "bg-gray-100 text-gray-700";
-    default: return "bg-gray-100 text-gray-700";
+    case "APPLIED": return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+    case "IN_PROGRESS": return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+    case "SHORTLISTED": return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+    case "REJECTED": return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+    case "HIRED": return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+    case "WITHDRAWN": return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+    default: return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
   }
 }

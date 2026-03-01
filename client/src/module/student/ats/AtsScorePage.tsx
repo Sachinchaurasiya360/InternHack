@@ -38,32 +38,32 @@ const CATEGORY_COLORS: Record<
   { pill: string; bar: string; icon: string }
 > = {
   formatting: {
-    pill: "bg-violet-100 text-violet-700",
+    pill: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
     bar: "bg-violet-500",
     icon: "text-violet-500",
   },
   keywords: {
-    pill: "bg-blue-100 text-blue-700",
+    pill: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
     bar: "bg-blue-500",
     icon: "text-blue-500",
   },
   experience: {
-    pill: "bg-emerald-100 text-emerald-700",
+    pill: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
     bar: "bg-emerald-500",
     icon: "text-emerald-500",
   },
   skills: {
-    pill: "bg-amber-100 text-amber-700",
+    pill: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
     bar: "bg-amber-500",
     icon: "text-amber-500",
   },
   education: {
-    pill: "bg-pink-100 text-pink-700",
+    pill: "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
     bar: "bg-pink-500",
     icon: "text-pink-500",
   },
   impact: {
-    pill: "bg-indigo-100 text-indigo-700",
+    pill: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
     bar: "bg-indigo-500",
     icon: "text-indigo-500",
   },
@@ -106,10 +106,10 @@ function ScoreCircle({
         : "text-red-600";
   const badgeCls =
     score >= 70
-      ? "bg-green-50 text-green-700 border-green-200"
+      ? "bg-green-50 text-green-700 border-green-200 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
       : score >= 40
-        ? "bg-yellow-50 text-yellow-700 border-yellow-200"
-        : "bg-red-50 text-red-700 border-red-200";
+        ? "bg-yellow-50 text-yellow-700 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-400 dark:border-yellow-800"
+        : "bg-red-50 text-red-700 border-red-200 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800";
   const label = score >= 70 ? "Excellent" : score >= 40 ? "Needs Work" : "Poor";
 
   return (
@@ -123,6 +123,7 @@ function ScoreCircle({
             fill="none"
             stroke="#f3f4f6"
             strokeWidth={sw}
+            className="dark:stroke-gray-700"
           />
           <motion.circle
             cx={cx}
@@ -148,7 +149,7 @@ function ScoreCircle({
             {score}
           </motion.span>
           {isLg && (
-            <span className="text-gray-400 text-[10px] mt-1 font-medium">
+            <span className="text-gray-400 dark:text-gray-500 text-[10px] mt-1 font-medium">
               / 100
             </span>
           )}
@@ -318,7 +319,7 @@ export default function AtsScorePage() {
       <div className="max-w-5xl mx-auto px-6 pt-6 pb-2 flex items-center justify-end">
         <Link
           to="/student/ats/history"
-          className="flex items-center gap-2 text-sm text-gray-500 hover:text-gray-900 transition-colors no-underline bg-gray-100 hover:bg-gray-200 px-3.5 py-2 rounded-xl font-medium"
+          className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors no-underline bg-gray-100 dark:bg-gray-800 hover:bg-gray-200 dark:hover:bg-gray-700 px-3.5 py-2 rounded-xl font-medium"
         >
           <History className="w-4 h-4" /> History
         </Link>
@@ -340,8 +341,8 @@ export default function AtsScorePage() {
                   className="space-y-4"
                 >
                   {/* Upload Card */}
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                    <h2 className="text-sm font-semibold text-gray-900 mb-4 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
+                    <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                       <Upload className="w-4 h-4 text-violet-500" />
                       Upload Resume
                     </h2>
@@ -354,44 +355,44 @@ export default function AtsScorePage() {
                       onDrop={handleDrop}
                       className={`flex flex-col items-center justify-center gap-3 py-9 px-4 border-2 border-dashed rounded-2xl cursor-pointer transition-all ${
                         isDragging
-                          ? "border-violet-400 bg-violet-50 scale-[1.01]"
+                          ? "border-violet-400 bg-violet-50 dark:bg-violet-900/20 scale-[1.01]"
                           : file
-                            ? "border-green-300 bg-green-50"
-                            : "border-gray-200 bg-gray-50 hover:border-violet-300 hover:bg-violet-50/30"
+                            ? "border-green-300 bg-green-50 dark:border-green-700 dark:bg-green-900/20"
+                            : "border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 hover:border-violet-300 dark:hover:border-violet-700 hover:bg-violet-50/30 dark:hover:bg-violet-900/10"
                       }`}
                     >
                       <div
                         className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors shadow-sm ${
                           file
-                            ? "bg-green-100"
+                            ? "bg-green-100 dark:bg-green-900/40"
                             : isDragging
-                              ? "bg-violet-100"
-                              : "bg-white border border-gray-200"
+                              ? "bg-violet-100 dark:bg-violet-900/40"
+                              : "bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600"
                         }`}
                       >
                         {file ? (
                           <FileText className="w-7 h-7 text-green-600" />
                         ) : (
                           <Upload
-                            className={`w-7 h-7 ${isDragging ? "text-violet-500" : "text-gray-400"}`}
+                            className={`w-7 h-7 ${isDragging ? "text-violet-500" : "text-gray-400 dark:text-gray-500"}`}
                           />
                         )}
                       </div>
                       {file ? (
                         <div className="text-center">
-                          <p className="text-sm font-semibold text-gray-900 max-w-45 truncate mx-auto">
+                          <p className="text-sm font-semibold text-gray-900 dark:text-white max-w-45 truncate mx-auto">
                             {file.name}
                           </p>
-                          <p className="text-xs text-gray-400 mt-0.5">
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                             {(file.size / 1024).toFixed(1)} KB · PDF
                           </p>
                         </div>
                       ) : (
                         <div className="text-center">
-                          <p className="text-sm font-semibold text-gray-700">
+                          <p className="text-sm font-semibold text-gray-700 dark:text-gray-300">
                             {isDragging ? "Drop to upload!" : "Drop PDF here"}
                           </p>
-                          <p className="text-xs text-gray-400 mt-0.5">
+                          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                             or click to browse · Max 10 MB
                           </p>
                         </div>
@@ -406,7 +407,7 @@ export default function AtsScorePage() {
                     {file && (
                       <button
                         onClick={resetAll}
-                        className="mt-3 flex items-center gap-1.5 text-xs text-gray-400 hover:text-red-500 transition-colors"
+                        className="mt-3 flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors"
                       >
                         <X className="w-3 h-3" /> Remove file
                       </button>
@@ -414,15 +415,15 @@ export default function AtsScorePage() {
                   </div>
 
                   {/* Job Context */}
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
-                    <h2 className="text-sm font-semibold text-gray-900 mb-1 flex items-center gap-2">
+                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
+                    <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
                       <Target className="w-4 h-4 text-violet-500" />
                       Target Job
-                      <span className="ml-auto text-xs font-normal text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">
+                      <span className="ml-auto text-xs font-normal text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full">
                         optional
                       </span>
                     </h2>
-                    <p className="text-xs text-gray-400 mb-4">
+                    <p className="text-xs text-gray-400 dark:text-gray-500 mb-4">
                       Add job details for role-specific keyword scoring
                     </p>
                     <div className="space-y-3">
@@ -431,20 +432,20 @@ export default function AtsScorePage() {
                         value={jobTitle}
                         onChange={(e) => setJobTitle(e.target.value)}
                         placeholder="e.g. Frontend Developer"
-                        className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-300 transition-all placeholder-gray-400"
+                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-300 transition-all placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 dark:text-white"
                       />
                       <textarea
                         value={jobDescription}
                         onChange={(e) => setJobDescription(e.target.value)}
                         placeholder="Paste the job description for tailored keyword analysis..."
                         rows={5}
-                        className="w-full px-3.5 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-300 transition-all resize-none placeholder-gray-400"
+                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-300 transition-all resize-none placeholder-gray-400 dark:placeholder-gray-500 bg-white dark:bg-gray-800 dark:text-white"
                       />
                     </div>
                   </div>
 
                   {error && (
-                    <div className="flex items-start gap-2.5 p-4 bg-red-50 text-red-700 rounded-xl text-sm border border-red-100">
+                    <div className="flex items-start gap-2.5 p-4 bg-red-50 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-xl text-sm border border-red-100 dark:border-red-800">
                       <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
                       <span>{error}</span>
                     </div>
@@ -477,37 +478,37 @@ export default function AtsScorePage() {
                   className="space-y-4"
                 >
                   {/* Resume Analyzed */}
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
                     <div className="flex items-center gap-3 mb-4">
-                      <div className="w-12 h-12 bg-green-50 rounded-xl flex items-center justify-center">
-                        <FileText className="w-6 h-6 text-green-600" />
+                      <div className="w-12 h-12 bg-green-50 dark:bg-green-900/30 rounded-xl flex items-center justify-center">
+                        <FileText className="w-6 h-6 text-green-600 dark:text-green-400" />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h2 className="text-sm font-bold text-gray-900">
+                        <h2 className="text-sm font-bold text-gray-900 dark:text-white">
                           Resume Analyzed
                         </h2>
-                        <p className="text-xs text-gray-400 truncate">
+                        <p className="text-xs text-gray-400 dark:text-gray-500 truncate">
                           {analyzedFileName}
                         </p>
                       </div>
                       <CheckCircle className="w-5 h-5 text-green-500 shrink-0" />
                     </div>
 
-                    <div className="bg-gray-50 rounded-xl p-3 mb-4 space-y-1.5">
-                      <div className="flex items-center justify-between text-xs text-gray-500">
+                    <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 mb-4 space-y-1.5">
+                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
                         <span>File size</span>
-                        <span className="font-medium text-gray-700">
+                        <span className="font-medium text-gray-700 dark:text-gray-300">
                           {(analyzedFileSize / 1024).toFixed(1)} KB
                         </span>
                       </div>
-                      <div className="flex items-center justify-between text-xs text-gray-500">
+                      <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
                         <span>Format</span>
-                        <span className="font-medium text-gray-700">PDF</span>
+                        <span className="font-medium text-gray-700 dark:text-gray-300">PDF</span>
                       </div>
                       {jobTitle && (
-                        <div className="flex items-center justify-between text-xs text-gray-500">
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-500">
                           <span>Target role</span>
-                          <span className="font-medium text-gray-700 truncate ml-4 max-w-35">
+                          <span className="font-medium text-gray-700 dark:text-gray-300 truncate ml-4 max-w-35">
                             {jobTitle}
                           </span>
                         </div>
@@ -517,7 +518,7 @@ export default function AtsScorePage() {
                     <div className="flex gap-2">
                       <button
                         onClick={resetAll}
-                        className="flex-1 py-2.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-xl hover:bg-gray-200 transition-colors flex items-center justify-center gap-1.5"
+                        className="flex-1 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center justify-center gap-1.5"
                       >
                         <Upload className="w-3.5 h-3.5" /> Change Resume
                       </button>
@@ -536,10 +537,10 @@ export default function AtsScorePage() {
 
                   {/* Score Quick Summary */}
                   {result && (
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5">
                       <div className="flex items-center gap-2 mb-3">
                         <TrendingUp className="w-4 h-4 text-violet-500" />
-                        <h3 className="text-xs font-bold text-gray-500 uppercase tracking-wider">
+                        <h3 className="text-xs font-bold text-gray-500 dark:text-gray-500 uppercase tracking-wider">
                           Category Scores
                         </h3>
                       </div>
@@ -548,21 +549,19 @@ export default function AtsScorePage() {
                           .slice(0, 6)
                           .map(([key, score]) => {
                             const col = CATEGORY_COLORS[key] ?? {
-                              pill: "bg-gray-100 text-gray-600",
+                              pill: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
                               bar: "bg-gray-400",
                               icon: "text-gray-500",
                             };
                             return (
                               <div
                                 key={key}
-                                className={`text-center p-2.5 rounded-xl ${col.pill.split(" ")[0]} border border-transparent hover:border-gray-200 transition-colors`}
+                                className={`text-center p-2.5 rounded-xl ${col.pill} border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-colors`}
                               >
-                                <p
-                                  className={`text-lg font-bold ${col.pill.split(" ")[1]}`}
-                                >
+                                <p className="text-lg font-bold">
                                   {score}
                                 </p>
-                                <p className="text-[10px] text-gray-500 font-medium mt-0.5">
+                                <p className="text-[10px] text-gray-500 dark:text-gray-500 font-medium mt-0.5">
                                   {CATEGORY_LABELS[key] ?? key}
                                 </p>
                               </div>
@@ -586,20 +585,20 @@ export default function AtsScorePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="min-h-105 flex flex-col items-center justify-center text-center p-10 bg-white rounded-2xl border border-gray-100 shadow-sm relative overflow-hidden"
+                  className="min-h-105 flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm relative overflow-hidden"
                 >
                   {/* Subtle gradient bg */}
-                  <div className="absolute inset-0 bg-linear-to-br from-violet-50/40 via-transparent to-indigo-50/30 pointer-events-none" />
+                  <div className="absolute inset-0 bg-linear-to-br from-violet-50/40 via-transparent to-indigo-50/30 dark:from-violet-900/10 dark:to-indigo-900/10 pointer-events-none" />
                   <div className="relative z-10">
-                    <div className="w-20 h-20 bg-linear-to-br from-violet-100 to-indigo-100 rounded-2xl flex items-center justify-center mb-5 mx-auto shadow-sm">
+                    <div className="w-20 h-20 bg-linear-to-br from-violet-100 to-indigo-100 dark:from-violet-900/40 dark:to-indigo-900/40 rounded-2xl flex items-center justify-center mb-5 mx-auto shadow-sm">
                       <BarChart2 className="w-9 h-9 text-violet-400" />
                     </div>
-                    <h3 className="text-gray-800 font-bold text-lg mb-2">
+                    <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">
                       Your Results Await
                     </h3>
-                    <p className="text-gray-400 text-sm max-w-xs leading-relaxed mx-auto">
+                    <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
                       Upload your resume and click{" "}
-                      <span className="font-semibold text-violet-600">
+                      <span className="font-semibold text-violet-600 dark:text-violet-400">
                         Analyze Resume
                       </span>{" "}
                       to get your ATS score, keyword analysis, and improvement
@@ -622,7 +621,7 @@ export default function AtsScorePage() {
                       ].map((tag) => (
                         <span
                           key={tag.label}
-                          className="flex items-center gap-1.5 text-xs text-gray-400 font-medium"
+                          className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 font-medium"
                         >
                           {tag.icon} {tag.label}
                         </span>
@@ -639,13 +638,13 @@ export default function AtsScorePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="min-h-105 bg-white rounded-2xl border border-gray-100 shadow-sm p-6 relative overflow-hidden"
+                  className="min-h-105 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 relative overflow-hidden"
                 >
-                  <div className="absolute inset-0 bg-linear-to-br from-violet-50/30 via-transparent to-transparent pointer-events-none" />
+                  <div className="absolute inset-0 bg-linear-to-br from-violet-50/30 via-transparent to-transparent dark:from-violet-900/10 pointer-events-none" />
                   <div className="relative z-10">
                     <div className="flex items-center gap-3 mb-6">
                       <div className="relative w-10 h-10">
-                        <div className="absolute inset-0 rounded-full border-3 border-violet-100" />
+                        <div className="absolute inset-0 rounded-full border-3 border-violet-100 dark:border-violet-900/50" />
                         <motion.div
                           className="absolute inset-0 rounded-full border-3 border-violet-500 border-t-transparent"
                           animate={{ rotate: 360 }}
@@ -660,16 +659,16 @@ export default function AtsScorePage() {
                         </div>
                       </div>
                       <div>
-                        <h3 className="text-sm font-bold text-gray-900">
+                        <h3 className="text-sm font-bold text-gray-900 dark:text-white">
                           Analyzing your resume
                         </h3>
-                        <p className="text-xs text-gray-400">
+                        <p className="text-xs text-gray-400 dark:text-gray-500">
                           This usually takes 10–20 seconds
                         </p>
                       </div>
                     </div>
 
-                    <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden mb-6">
+                    <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden mb-6">
                       <motion.div
                         className="h-full bg-linear-to-r from-violet-500 to-indigo-500 rounded-full"
                         initial={{ width: "0%" }}
@@ -697,17 +696,17 @@ export default function AtsScorePage() {
                             transition={{ delay: i * 0.08 }}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                               isCurrent
-                                ? "bg-violet-50 border border-violet-200"
+                                ? "bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800"
                                 : isDone
-                                  ? "bg-green-50/50"
+                                  ? "bg-green-50/50 dark:bg-green-900/10"
                                   : "opacity-50"
                             }`}
                           >
                             <div
-                              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isDone ? "bg-green-100" : isCurrent ? "bg-violet-100" : "bg-gray-100"}`}
+                              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isDone ? "bg-green-100 dark:bg-green-900/40" : isCurrent ? "bg-violet-100 dark:bg-violet-900/40" : "bg-gray-100 dark:bg-gray-800"}`}
                             >
                               {isDone ? (
-                                <CheckCircle className="w-4 h-4 text-green-600" />
+                                <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
                               ) : isCurrent ? (
                                 <motion.div
                                   animate={{ rotate: 360 }}
@@ -717,14 +716,14 @@ export default function AtsScorePage() {
                                     ease: "linear",
                                   }}
                                 >
-                                  <Icon className="w-4 h-4 text-violet-600" />
+                                  <Icon className="w-4 h-4 text-violet-600 dark:text-violet-400" />
                                 </motion.div>
                               ) : (
-                                <Icon className="w-4 h-4 text-gray-400" />
+                                <Icon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                               )}
                             </div>
                             <span
-                              className={`text-sm font-medium flex-1 ${isDone ? "text-green-700" : isCurrent ? "text-violet-700" : "text-gray-400"}`}
+                              className={`text-sm font-medium flex-1 ${isDone ? "text-green-700 dark:text-green-400" : isCurrent ? "text-violet-700 dark:text-violet-400" : "text-gray-400 dark:text-gray-500"}`}
                             >
                               {step.label}
                             </span>
@@ -732,7 +731,7 @@ export default function AtsScorePage() {
                               <motion.span
                                 initial={{ opacity: 0, scale: 0.5 }}
                                 animate={{ opacity: 1, scale: 1 }}
-                                className="text-[10px] font-bold text-green-600 bg-green-100 px-2 py-0.5 rounded-full"
+                                className="text-[10px] font-bold text-green-600 dark:text-green-400 bg-green-100 dark:bg-green-900/40 px-2 py-0.5 rounded-full"
                               >
                                 Done
                               </motion.span>
@@ -757,7 +756,7 @@ export default function AtsScorePage() {
                               </div>
                             )}
                             {isPending && (
-                              <span className="text-[10px] text-gray-300 font-medium">
+                              <span className="text-[10px] text-gray-300 dark:text-gray-600 font-medium">
                                 Pending
                               </span>
                             )}
@@ -779,18 +778,18 @@ export default function AtsScorePage() {
                   className="space-y-4"
                 >
                   {/* Score Header */}
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-linear-to-br from-violet-50/30 via-transparent to-indigo-50/20 pointer-events-none" />
+                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 relative overflow-hidden">
+                    <div className="absolute inset-0 bg-linear-to-br from-violet-50/30 via-transparent to-indigo-50/20 dark:from-violet-900/10 dark:to-indigo-900/10 pointer-events-none" />
                     <div className="relative z-10 flex items-center gap-6">
                       <ScoreCircle score={result.overallScore} />
                       <div className="flex-1 min-w-0">
                         <div className="flex items-center gap-2 mb-1">
                           <TrendingUp className="w-4 h-4 text-violet-500" />
-                          <h2 className="text-sm font-bold text-gray-900 uppercase tracking-wide">
+                          <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wide">
                             Overall ATS Score
                           </h2>
                         </div>
-                        <p className="text-sm text-gray-500 leading-relaxed mb-3">
+                        <p className="text-sm text-gray-500 dark:text-gray-500 leading-relaxed mb-3">
                           {result.overallScore >= 70
                             ? "Great job! Your resume is well-optimized for ATS systems."
                             : result.overallScore >= 40
@@ -802,7 +801,7 @@ export default function AtsScorePage() {
                             .slice(0, 3)
                             .map(([key, score]) => {
                               const col = CATEGORY_COLORS[key] ?? {
-                                pill: "bg-gray-100 text-gray-600",
+                                pill: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
                               };
                               return (
                                 <span
@@ -819,16 +818,16 @@ export default function AtsScorePage() {
                   </div>
 
                   {/* Tabbed Results */}
-                  <div className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
-                    <div className="flex border-b border-gray-100">
+                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden">
+                    <div className="flex border-b border-gray-100 dark:border-gray-800">
                       {TABS.map((tab) => (
                         <button
                           key={tab.id}
                           onClick={() => setActiveTab(tab.id)}
                           className={`flex-1 flex items-center justify-center gap-1.5 px-4 py-3 text-sm font-medium transition-all ${
                             activeTab === tab.id
-                              ? "text-violet-700 border-b-2 border-violet-600 bg-violet-50/40"
-                              : "text-gray-500 hover:text-gray-800 hover:bg-gray-50"
+                              ? "text-violet-700 dark:text-violet-400 border-b-2 border-violet-600 bg-violet-50/40 dark:bg-violet-900/20"
+                              : "text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                           }`}
                         >
                           {tab.icon} {tab.label}
@@ -850,7 +849,7 @@ export default function AtsScorePage() {
                             {Object.entries(result.categoryScores).map(
                               ([key, score]) => {
                                 const col = CATEGORY_COLORS[key] ?? {
-                                  pill: "bg-gray-100 text-gray-600",
+                                  pill: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
                                   bar: "bg-gray-400",
                                   icon: "text-gray-500",
                                 };
@@ -862,14 +861,14 @@ export default function AtsScorePage() {
                                       : "bg-red-500";
                                 const scoreText =
                                   score >= 70
-                                    ? "text-green-600"
+                                    ? "text-green-600 dark:text-green-400"
                                     : score >= 40
-                                      ? "text-yellow-600"
-                                      : "text-red-600";
+                                      ? "text-yellow-600 dark:text-yellow-400"
+                                      : "text-red-600 dark:text-red-400";
                                 return (
                                   <div
                                     key={key}
-                                    className="flex items-center gap-3 p-3.5 bg-gray-50 rounded-xl hover:bg-gray-100/80 transition-colors"
+                                    className="flex items-center gap-3 p-3.5 bg-gray-50 dark:bg-gray-800 rounded-xl hover:bg-gray-100/80 dark:hover:bg-gray-700/80 transition-colors"
                                   >
                                     <div
                                       className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 text-xs font-bold ${col.pill}`}
@@ -878,7 +877,7 @@ export default function AtsScorePage() {
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <div className="flex justify-between items-center mb-1.5">
-                                        <span className="text-sm font-medium text-gray-700">
+                                        <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
                                           {CATEGORY_LABELS[key] ?? key}
                                         </span>
                                         <span
@@ -887,7 +886,7 @@ export default function AtsScorePage() {
                                           {score}/100
                                         </span>
                                       </div>
-                                      <div className="h-1.5 bg-gray-200 rounded-full overflow-hidden">
+                                      <div className="h-1.5 bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden">
                                         <motion.div
                                           initial={{ width: 0 }}
                                           animate={{
@@ -921,8 +920,8 @@ export default function AtsScorePage() {
                             {result.keywordAnalysis.found.length > 0 && (
                               <div>
                                 <div className="flex items-center gap-2 mb-3">
-                                  <CheckCircle className="w-4 h-4 text-green-600" />
-                                  <span className="text-xs font-bold text-green-700 uppercase tracking-wider">
+                                  <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
+                                  <span className="text-xs font-bold text-green-700 dark:text-green-400 uppercase tracking-wider">
                                     Found ({result.keywordAnalysis.found.length}
                                     )
                                   </span>
@@ -931,7 +930,7 @@ export default function AtsScorePage() {
                                   {result.keywordAnalysis.found.map((kw) => (
                                     <span
                                       key={kw}
-                                      className="px-3 py-1 bg-green-50 text-green-700 rounded-full text-xs font-medium border border-green-200"
+                                      className="px-3 py-1 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-full text-xs font-medium border border-green-200 dark:border-green-800"
                                     >
                                       ✓ {kw}
                                     </span>
@@ -943,7 +942,7 @@ export default function AtsScorePage() {
                               <div>
                                 <div className="flex items-center gap-2 mb-3">
                                   <AlertCircle className="w-4 h-4 text-orange-500" />
-                                  <span className="text-xs font-bold text-orange-600 uppercase tracking-wider">
+                                  <span className="text-xs font-bold text-orange-600 dark:text-orange-400 uppercase tracking-wider">
                                     Missing (
                                     {result.keywordAnalysis.missing.length})
                                   </span>
@@ -952,7 +951,7 @@ export default function AtsScorePage() {
                                   {result.keywordAnalysis.missing.map((kw) => (
                                     <span
                                       key={kw}
-                                      className="px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-medium border border-orange-200"
+                                      className="px-3 py-1 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 rounded-full text-xs font-medium border border-orange-200 dark:border-orange-800"
                                     >
                                       + {kw}
                                     </span>
@@ -962,7 +961,7 @@ export default function AtsScorePage() {
                             )}
                             {result.keywordAnalysis.found.length === 0 &&
                               result.keywordAnalysis.missing.length === 0 && (
-                                <p className="text-sm text-gray-400 text-center py-8">
+                                <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-8">
                                   No keyword data available for this analysis.
                                 </p>
                               )}
@@ -985,12 +984,12 @@ export default function AtsScorePage() {
                                   initial={{ opacity: 0, x: -10 }}
                                   animate={{ opacity: 1, x: 0 }}
                                   transition={{ delay: i * 0.06 }}
-                                  className="flex items-start gap-3 p-4 bg-amber-50 rounded-xl border border-amber-100"
+                                  className="flex items-start gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 rounded-xl border border-amber-100 dark:border-amber-800"
                                 >
-                                  <span className="w-6 h-6 bg-amber-200 text-amber-800 rounded-full text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
+                                  <span className="w-6 h-6 bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 rounded-full text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                                     {i + 1}
                                   </span>
-                                  <p className="text-sm text-gray-700 leading-relaxed">
+                                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                                     {s}
                                   </p>
                                 </motion.div>
@@ -998,7 +997,7 @@ export default function AtsScorePage() {
                             ) : (
                               <div className="flex flex-col items-center py-8 text-center">
                                 <CheckCircle className="w-10 h-10 text-green-500 mb-3" />
-                                <p className="text-sm text-gray-500">
+                                <p className="text-sm text-gray-500 dark:text-gray-500">
                                   No major improvements needed. Your resume
                                   looks great!
                                 </p>

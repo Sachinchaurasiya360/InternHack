@@ -157,16 +157,16 @@ function StickyProgramsSection() {
   const x = useTransform(scrollYProgress, [0, 1], ["15%", "-65%"]);
 
   return (
-    <section className="relative bg-white">
+    <section className="relative bg-white dark:bg-gray-900">
       <div ref={containerRef} className="relative h-[200vh]">
         <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
           <div className="max-w-6xl mx-auto w-full px-6 mb-8">
             <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
                 <Globe className="w-3 h-3" />
                 Programs
               </div>
-              <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 tracking-tight mb-3">
+              <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-3">
                 Open-Source <span className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 bg-clip-text text-transparent">Programs</span>
               </h2>
               <p className="text-lg text-gray-500">Apply to top programs and kickstart your open-source career</p>
@@ -178,17 +178,17 @@ function StickyProgramsSection() {
               <motion.div
                 key={prog.name}
                 whileHover={{ y: -4 }}
-                className="min-w-75 max-w-75 p-6 md:p-7 bg-white rounded-2xl border border-gray-100 shadow-sm shrink-0 hover:shadow-xl hover:shadow-gray-200/50 hover:border-gray-200 transition-all"
+                className="min-w-75 max-w-75 p-6 md:p-7 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm shrink-0 hover:shadow-xl hover:shadow-gray-200/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all"
               >
                 <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold mb-4 ${prog.color}`}>
                   <Trophy className="w-3 h-3" />
                   {prog.short}
                 </div>
-                <h3 className="font-display text-base font-bold text-gray-900 mb-2">{prog.name}</h3>
-                <p className="text-sm text-gray-500 mb-4 leading-relaxed">{prog.description}</p>
+                <h3 className="font-display text-base font-bold text-gray-900 dark:text-white mb-2">{prog.name}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 mb-4 leading-relaxed">{prog.description}</p>
                 <ul className="space-y-2.5">
                   {prog.items.map((item) => (
-                    <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600">
+                    <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-400">
                       <CheckCircle className="w-4 h-4 text-green-500 shrink-0" />
                       {item}
                     </li>
@@ -216,7 +216,7 @@ export default function OpenSourceLandingPage() {
   return (
     <div>
       {/* ── Full-Screen Hero ── */}
-      <div className="min-h-screen flex flex-col justify-center relative overflow-hidden bg-[#fafafa]">
+      <div className="min-h-screen flex flex-col justify-center relative overflow-hidden bg-[#fafafa] dark:bg-gray-950">
         {/* Gradient orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-40 -right-40 w-150 h-150 rounded-full bg-gradient-to-br from-purple-100 to-indigo-100 opacity-60 blur-3xl" />
@@ -240,7 +240,7 @@ export default function OpenSourceLandingPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-black/10 shadow-sm rounded-full text-xs font-medium mb-8"
+            className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 border border-black/10 dark:border-gray-700 shadow-sm rounded-full text-xs font-medium mb-8"
           >
             <Sparkles className="w-3.5 h-3.5 text-purple-500" />
             <span className="text-gray-600">Open Source Discovery Platform</span>
@@ -250,7 +250,7 @@ export default function OpenSourceLandingPage() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight tracking-tight text-gray-950"
+            className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight tracking-tight text-gray-950 dark:text-white"
           >
             Discover &amp;{" "}
             <span className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">
@@ -275,14 +275,14 @@ export default function OpenSourceLandingPage() {
           >
             <button
               onClick={handleExplore}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-gray-950 text-white font-semibold rounded-2xl hover:bg-gray-800 transition-colors shadow-lg shadow-black/10 text-base"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-semibold rounded-2xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-lg shadow-black/10 text-base"
             >
               <Rocket className="w-5 h-5" />
               {isAuthenticated ? "Explore Repos" : "Get Started — It's Free"}
             </button>
             <Link
               to={isAuthenticated ? "/student/opensource" : "/register"}
-              className="inline-flex items-center gap-2 px-8 py-4 bg-white text-gray-950 font-medium rounded-2xl border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all no-underline text-base"
+              className="inline-flex items-center gap-2 px-8 py-4 bg-white dark:bg-gray-900 text-gray-950 dark:text-white font-medium rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md transition-all no-underline text-base"
             >
               <GitBranch className="w-4 h-4" />
               {isAuthenticated ? "My Dashboard" : "Create Account"}
@@ -294,7 +294,7 @@ export default function OpenSourceLandingPage() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
-            className="grid grid-cols-4 gap-8 mt-16 pt-10 border-t border-gray-200 max-w-lg"
+            className="grid grid-cols-4 gap-8 mt-16 pt-10 border-t border-gray-200 dark:border-gray-700 max-w-lg"
           >
             {[
               { value: "50+", label: "Curated Repos" },
@@ -303,7 +303,7 @@ export default function OpenSourceLandingPage() {
               { value: "100%", label: "Free to Use" },
             ].map((stat) => (
               <div key={stat.label}>
-                <div className="text-3xl font-bold text-gray-950">{stat.value}</div>
+                <div className="text-3xl font-bold text-gray-950 dark:text-white">{stat.value}</div>
                 <div className="text-gray-400 text-sm mt-0.5">{stat.label}</div>
               </div>
             ))}
@@ -312,7 +312,7 @@ export default function OpenSourceLandingPage() {
       </div>
 
       {/* ── Features Grid ── */}
-      <section className="relative py-24 md:py-32 bg-[#fafafa]">
+      <section className="relative py-24 md:py-32 bg-[#fafafa] dark:bg-gray-950">
         <div
           className="absolute inset-0 opacity-[0.02]"
           style={{
@@ -330,10 +330,10 @@ export default function OpenSourceLandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
               Core Features
             </div>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 tracking-tight mb-4">
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
               Everything you need to
               <br />
               <span className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">start contributing</span>
@@ -354,13 +354,13 @@ export default function OpenSourceLandingPage() {
               >
                 <motion.div
                   whileHover={{ y: -4 }}
-                  className="relative bg-white rounded-2xl p-6 md:p-8 border border-gray-100 hover:border-gray-200 hover:shadow-xl hover:shadow-gray-200/50 transition-all h-full group overflow-hidden"
+                  className="relative bg-white dark:bg-gray-900 rounded-2xl p-6 md:p-8 border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 transition-all h-full group overflow-hidden"
                 >
                   <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center shadow-sm mb-5`}>
                     <span className="text-white">{feature.icon}</span>
                   </div>
-                  <h3 className="font-display text-lg font-bold text-gray-900 mb-2">{feature.title}</h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">{feature.description}</p>
+                  <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-2">{feature.title}</h3>
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{feature.description}</p>
                 </motion.div>
               </motion.div>
             ))}
@@ -369,7 +369,7 @@ export default function OpenSourceLandingPage() {
       </section>
 
       {/* ── GSoC Organizations ── */}
-      <section className="relative py-24 md:py-32 bg-white overflow-hidden">
+      <section className="relative py-24 md:py-32 bg-white dark:bg-gray-900 overflow-hidden">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -378,11 +378,11 @@ export default function OpenSourceLandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-xs font-medium text-amber-600 uppercase tracking-wider mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-700 text-xs font-medium text-amber-600 dark:text-amber-400 uppercase tracking-wider mb-6">
               <Star className="w-3 h-3" />
               GSoC Organizations
             </div>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 tracking-tight mb-4">
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
               Popular <span className="bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 bg-clip-text text-transparent">GSoC Orgs</span>
             </h2>
             <p className="text-lg text-gray-500 max-w-xl mx-auto">
@@ -399,14 +399,14 @@ export default function OpenSourceLandingPage() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.05, duration: 0.4 }}
                 whileHover={{ y: -4 }}
-                className="bg-white rounded-2xl border border-gray-100 p-5 hover:border-amber-200 hover:shadow-lg hover:shadow-amber-100/50 transition-all text-center group"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 hover:border-amber-200 dark:hover:border-amber-700 hover:shadow-lg hover:shadow-amber-100/50 transition-all text-center group"
               >
                 <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-50 to-orange-50 flex items-center justify-center mx-auto mb-3 border border-amber-100 group-hover:scale-110 transition-transform">
                   <span className="text-lg font-bold text-amber-600">{org.name[0]}</span>
                 </div>
-                <h4 className="text-sm font-semibold text-gray-900 mb-1">{org.name}</h4>
+                <h4 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">{org.name}</h4>
                 <p className="text-[11px] text-gray-400 mb-2">{org.domain}</p>
-                <span className="inline-block px-2 py-0.5 text-[10px] font-medium bg-gray-50 text-gray-500 rounded-full">{org.lang}</span>
+                <span className="inline-block px-2 py-0.5 text-[10px] font-medium bg-gray-50 dark:bg-gray-800 text-gray-500 rounded-full">{org.lang}</span>
               </motion.div>
             ))}
           </div>
@@ -414,7 +414,7 @@ export default function OpenSourceLandingPage() {
       </section>
 
       {/* ── How It Works ── */}
-      <section className="relative py-24 md:py-32 bg-[#fafafa] overflow-hidden">
+      <section className="relative py-24 md:py-32 bg-[#fafafa] dark:bg-gray-950 overflow-hidden">
         <div
           className="absolute inset-0 opacity-[0.02]"
           style={{
@@ -432,10 +432,10 @@ export default function OpenSourceLandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
               How it works
             </div>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 tracking-tight mb-4">
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
               Three steps to your
               <br />
               <span className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">first open-source PR</span>
@@ -444,7 +444,7 @@ export default function OpenSourceLandingPage() {
 
           <div className="grid md:grid-cols-3 gap-8 relative max-w-4xl mx-auto">
             {/* Connecting line */}
-            <div className="hidden md:block absolute top-7 left-[16.5%] right-[16.5%] h-px bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200" />
+            <div className="hidden md:block absolute top-7 left-[16.5%] right-[16.5%] h-px bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200 dark:from-gray-700 dark:via-gray-600 dark:to-gray-700" />
 
             {steps.map((step, i) => (
               <motion.div
@@ -461,8 +461,8 @@ export default function OpenSourceLandingPage() {
                     {i + 1}
                   </div>
                 </div>
-                <h3 className="font-display text-base font-bold text-gray-900 mb-2">{step.title}</h3>
-                <p className="text-sm text-gray-500 leading-relaxed">{step.description}</p>
+                <h3 className="font-display text-base font-bold text-gray-900 dark:text-white mb-2">{step.title}</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{step.description}</p>
               </motion.div>
             ))}
           </div>
@@ -473,7 +473,7 @@ export default function OpenSourceLandingPage() {
       <StickyProgramsSection />
 
       {/* ── Why Contribute Section ── */}
-      <section className="py-24 md:py-32 bg-[#fafafa]">
+      <section className="py-24 md:py-32 bg-[#fafafa] dark:bg-gray-950">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
@@ -482,11 +482,11 @@ export default function OpenSourceLandingPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-16"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
               <Heart className="w-3 h-3" />
               Why Open Source
             </div>
-            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 tracking-tight mb-4">
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
               Why you should <span className="bg-gradient-to-r from-pink-600 via-rose-600 to-red-600 bg-clip-text text-transparent">contribute</span>
             </h2>
           </motion.div>
@@ -507,15 +507,15 @@ export default function OpenSourceLandingPage() {
               >
                 <motion.div
                   whileHover={{ y: -4 }}
-                  className="relative bg-white rounded-2xl border border-gray-100 p-6 md:p-8 overflow-hidden hover:border-gray-200 hover:shadow-xl hover:shadow-gray-200/50 transition-all h-full"
+                  className="relative bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 md:p-8 overflow-hidden hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 transition-all h-full"
                 >
-                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-purple-50 rounded-full blur-3xl pointer-events-none" />
+                  <div className="absolute -bottom-10 -right-10 w-40 h-40 bg-purple-50 dark:bg-purple-900/20 rounded-full blur-3xl pointer-events-none" />
                   <div className="relative z-10">
                     <div className={`w-11 h-11 rounded-xl bg-gradient-to-br ${reason.color} flex items-center justify-center shadow-sm mb-5`}>
                       <span className="text-white">{reason.icon}</span>
                     </div>
-                    <h3 className="font-display text-lg font-bold text-gray-900 mb-2">{reason.title}</h3>
-                    <p className="text-sm text-gray-500 leading-relaxed">{reason.desc}</p>
+                    <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-2">{reason.title}</h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed">{reason.desc}</p>
                   </div>
                 </motion.div>
               </motion.div>
@@ -525,7 +525,7 @@ export default function OpenSourceLandingPage() {
       </section>
 
       {/* ── CTA ── */}
-      <section className="relative py-24 md:py-32 bg-[#fafafa] overflow-hidden">
+      <section className="relative py-24 md:py-32 bg-[#fafafa] dark:bg-gray-950 overflow-hidden">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
             initial={{ opacity: 0, y: 30 }}

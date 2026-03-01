@@ -34,8 +34,8 @@ const GENERATION_STEPS = [
 ];
 
 const inputCls =
-  "w-full px-3.5 py-2.5 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-colors bg-white";
-const labelCls = "block text-xs font-medium text-gray-500 mb-1.5";
+  "w-full px-3.5 py-2.5 text-sm border border-gray-200 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-colors bg-white dark:bg-gray-800 dark:text-white";
+const labelCls = "block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1.5";
 
 export default function CoverLetterPage() {
   const [jobDescription, setJobDescription] = useState("");
@@ -118,17 +118,17 @@ export default function CoverLetterPage() {
     <>
       <SEO title="Cover Letter Builder — InternHack" description="Generate AI-powered cover letters tailored to any job" />
 
-      <div className="min-h-screen bg-gray-50">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
         {/* Header */}
-        <div className="bg-white border-b border-gray-100">
+        <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
             <div className="flex items-center gap-3">
-              <Link to="/student/ats" className="p-1.5 rounded-lg hover:bg-gray-100 transition-colors text-gray-500">
+              <Link to="/student/ats" className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400">
                 <ArrowLeft className="w-4 h-4" />
               </Link>
               <div>
-                <h1 className="text-lg font-bold text-gray-900">AI Cover Letter Builder</h1>
-                <p className="text-xs text-gray-400">Generate tailored cover letters in seconds</p>
+                <h1 className="text-lg font-bold text-gray-900 dark:text-white">AI Cover Letter Builder</h1>
+                <p className="text-xs text-gray-400 dark:text-gray-500">Generate tailored cover letters in seconds</p>
               </div>
             </div>
           </div>
@@ -141,9 +141,9 @@ export default function CoverLetterPage() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm"
               >
-                <h2 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <h2 className="text-sm font-bold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
                   <MessageSquare className="w-4 h-4 text-violet-500" />
                   Job Details
                 </h2>
@@ -157,7 +157,7 @@ export default function CoverLetterPage() {
                       value={jobDescription}
                       onChange={(e) => setJobDescription(e.target.value)}
                     />
-                    <p className="text-[10px] text-gray-400 mt-1">
+                    <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">
                       {jobDescription.length}/50 characters minimum
                     </p>
                   </div>
@@ -212,8 +212,8 @@ export default function CoverLetterPage() {
                           onClick={() => setTone(t.id)}
                           className={`flex-1 px-3 py-2.5 rounded-xl border-2 text-xs font-medium transition-all ${
                             tone === t.id
-                              ? "border-violet-500 bg-violet-50 text-violet-700"
-                              : "border-gray-200 text-gray-500 hover:border-gray-300 hover:bg-gray-50"
+                              ? "border-violet-500 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400"
+                              : "border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800"
                           }`}
                         >
                           <div>{t.label}</div>
@@ -228,7 +228,7 @@ export default function CoverLetterPage() {
                   <button
                     onClick={handleGenerate}
                     disabled={loading || jobDescription.trim().length < 50}
-                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-950 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-gray-950 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
                   >
                     {loading ? (
                       <>
@@ -255,7 +255,7 @@ export default function CoverLetterPage() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
-                    className="bg-white rounded-2xl border border-gray-100 p-8 shadow-sm"
+                    className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-8 shadow-sm"
                   >
                     <div className="space-y-4">
                       {GENERATION_STEPS.map((step, i) => {
@@ -270,10 +270,10 @@ export default function CoverLetterPage() {
                             transition={{ delay: i * 0.15 }}
                             className={`flex items-center gap-3 p-3 rounded-xl transition-colors ${
                               isActive
-                                ? "bg-violet-50 border border-violet-200"
+                                ? "bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800"
                                 : isDone
-                                ? "bg-green-50 border border-green-200"
-                                : "bg-gray-50 border border-gray-100"
+                                ? "bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800"
+                                : "bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700"
                             }`}
                           >
                             <div
@@ -282,7 +282,7 @@ export default function CoverLetterPage() {
                                   ? "bg-violet-500 text-white"
                                   : isDone
                                   ? "bg-green-500 text-white"
-                                  : "bg-gray-200 text-gray-400"
+                                  : "bg-gray-200 dark:bg-gray-700 text-gray-400 dark:text-gray-500"
                               }`}
                             >
                               {isDone ? (
@@ -293,7 +293,7 @@ export default function CoverLetterPage() {
                             </div>
                             <span
                               className={`text-sm font-medium ${
-                                isActive ? "text-violet-700" : isDone ? "text-green-700" : "text-gray-400"
+                                isActive ? "text-violet-700 dark:text-violet-400" : isDone ? "text-green-700 dark:text-green-400" : "text-gray-400 dark:text-gray-500"
                               }`}
                             >
                               {step.label}
@@ -319,32 +319,32 @@ export default function CoverLetterPage() {
                     key="result"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden"
+                    className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
                   >
                     {/* Actions bar */}
-                    <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 bg-gray-50">
-                      <span className="text-xs font-semibold text-gray-500 flex items-center gap-1.5">
+                    <div className="flex items-center justify-between px-5 py-3 border-b border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800">
+                      <span className="text-xs font-semibold text-gray-500 dark:text-gray-400 flex items-center gap-1.5">
                         <CheckCircle className="w-3.5 h-3.5 text-green-500" />
                         Generated successfully
                       </span>
                       <div className="flex items-center gap-1.5">
                         <button
                           onClick={handleGenerate}
-                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg transition-colors"
+                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
                           <RefreshCw className="w-3 h-3" />
                           Regenerate
                         </button>
                         <button
                           onClick={handleCopy}
-                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-gray-600 hover:text-gray-900 hover:bg-gray-200 rounded-lg transition-colors"
+                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-700 rounded-lg transition-colors"
                         >
                           <Copy className="w-3 h-3" />
                           Copy
                         </button>
                         <button
                           onClick={handleDownload}
-                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-white bg-gray-950 hover:bg-gray-800 rounded-lg transition-colors"
+                          className="flex items-center gap-1 px-2.5 py-1.5 text-xs font-medium text-white bg-gray-950 hover:bg-gray-800 rounded-lg transition-colors dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
                         >
                           <Download className="w-3 h-3" />
                           PDF
@@ -354,7 +354,7 @@ export default function CoverLetterPage() {
                     {/* Letter content */}
                     <div className="p-6" ref={letterRef}>
                       <textarea
-                        className="w-full min-h-[400px] text-sm text-gray-700 leading-relaxed border-none outline-none resize-y bg-transparent font-serif"
+                        className="w-full min-h-[400px] text-sm text-gray-700 dark:text-gray-300 leading-relaxed border-none outline-none resize-y bg-transparent font-serif"
                         value={coverLetter}
                         onChange={(e) => setCoverLetter(e.target.value)}
                       />
@@ -367,13 +367,13 @@ export default function CoverLetterPage() {
                     key="empty"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
-                    className="bg-white rounded-2xl border border-gray-100 p-10 shadow-sm text-center"
+                    className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-10 shadow-sm text-center"
                   >
-                    <div className="w-14 h-14 rounded-2xl bg-gray-100 flex items-center justify-center mx-auto mb-4">
-                      <FileText className="w-6 h-6 text-gray-400" />
+                    <div className="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center mx-auto mb-4">
+                      <FileText className="w-6 h-6 text-gray-400 dark:text-gray-500" />
                     </div>
-                    <h3 className="text-sm font-bold text-gray-700 mb-1">Your cover letter will appear here</h3>
-                    <p className="text-xs text-gray-400 max-w-xs mx-auto">
+                    <h3 className="text-sm font-bold text-gray-700 dark:text-gray-300 mb-1">Your cover letter will appear here</h3>
+                    <p className="text-xs text-gray-400 dark:text-gray-500 max-w-xs mx-auto">
                       Fill in the job details on the left and click "Generate" to create a tailored cover letter.
                     </p>
                   </motion.div>
@@ -384,16 +384,16 @@ export default function CoverLetterPage() {
                     key="error"
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="bg-white rounded-2xl border border-red-200 p-8 shadow-sm text-center"
+                    className="bg-white dark:bg-gray-900 rounded-2xl border border-red-200 dark:border-red-800 p-8 shadow-sm text-center"
                   >
-                    <div className="w-14 h-14 rounded-2xl bg-red-50 flex items-center justify-center mx-auto mb-4">
+                    <div className="w-14 h-14 rounded-2xl bg-red-50 dark:bg-red-900/30 flex items-center justify-center mx-auto mb-4">
                       <FileText className="w-6 h-6 text-red-400" />
                     </div>
-                    <h3 className="text-sm font-bold text-red-700 mb-1">Generation Failed</h3>
-                    <p className="text-xs text-red-400 mb-4">{error}</p>
+                    <h3 className="text-sm font-bold text-red-700 dark:text-red-400 mb-1">Generation Failed</h3>
+                    <p className="text-xs text-red-400 dark:text-red-500 mb-4">{error}</p>
                     <button
                       onClick={handleGenerate}
-                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-50 text-red-600 text-xs font-medium rounded-lg hover:bg-red-100 transition-colors"
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-xs font-medium rounded-lg hover:bg-red-100 dark:hover:bg-red-900/50 transition-colors"
                     >
                       <RefreshCw className="w-3 h-3" />
                       Try Again

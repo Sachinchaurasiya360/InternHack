@@ -37,7 +37,7 @@ function CircularProgress({ progress, category }: { progress: number; category: 
   return (
     <div className="relative w-16 h-16 shrink-0">
       <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" r={r} fill="none" stroke="#f3f4f6" strokeWidth="5" />
+        <circle cx="32" cy="32" r={r} fill="none" stroke="#f3f4f6" className="dark:stroke-gray-700" strokeWidth="5" />
         <circle
           cx="32" cy="32" r={r}
           fill="none"
@@ -49,7 +49,7 @@ function CircularProgress({ progress, category }: { progress: number; category: 
           style={{ transition: "stroke-dashoffset 0.6s ease" }}
         />
       </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-800">
+      <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-800 dark:text-gray-200">
         {progress}%
       </span>
     </div>
@@ -69,11 +69,11 @@ export default function MyCareerPathsPage() {
     return (
       <div className="max-w-3xl mx-auto space-y-4">
         {[1, 2, 3].map((i) => (
-          <div key={i} className="bg-white rounded-xl border border-gray-100 p-5 animate-pulse flex gap-4">
-            <div className="w-16 h-16 bg-gray-100 rounded-full shrink-0" />
+          <div key={i} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-5 animate-pulse flex gap-4">
+            <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-full shrink-0" />
             <div className="flex-1 space-y-2 pt-1">
-              <div className="h-4 bg-gray-100 rounded w-1/2" />
-              <div className="h-3 bg-gray-100 rounded w-1/3" />
+              <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-1/2" />
+              <div className="h-3 bg-gray-100 dark:bg-gray-800 rounded w-1/3" />
             </div>
           </div>
         ))}
@@ -86,12 +86,12 @@ export default function MyCareerPathsPage() {
       {/* Header */}
       <div className="flex items-start justify-between mb-6">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">My Career Paths</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">My Career Paths</h1>
           <p className="text-sm text-gray-500 mt-1">Track your learning journey</p>
         </div>
         <Link
           to="/careers"
-          className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-700 transition-colors no-underline"
+          className="flex items-center gap-2 px-4 py-2 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-700 transition-colors no-underline dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
         >
           <Compass className="w-4 h-4" /> Explore More
         </Link>
@@ -101,13 +101,13 @@ export default function MyCareerPathsPage() {
       {paths.length > 0 && (
         <div className="grid grid-cols-3 gap-3 mb-6">
           {[
-            { icon: <Zap className="w-4 h-4 text-gray-600" />, value: paths.length, label: "Enrolled" },
+            { icon: <Zap className="w-4 h-4 text-gray-600 dark:text-gray-400" />, value: paths.length, label: "Enrolled" },
             { icon: <TrendingUp className="w-4 h-4 text-amber-500" />, value: inProgress, label: "In Progress" },
             { icon: <CheckCircle2 className="w-4 h-4 text-green-500" />, value: completed, label: "Completed" },
           ].map(({ icon, value, label }) => (
-            <div key={label} className="bg-white rounded-xl border border-gray-100 p-4 text-center shadow-sm">
+            <div key={label} className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 text-center shadow-sm">
               <div className="flex justify-center mb-1">{icon}</div>
-              <div className="text-2xl font-bold text-gray-900">{value}</div>
+              <div className="text-2xl font-bold text-gray-900 dark:text-white">{value}</div>
               <div className="text-xs text-gray-500">{label}</div>
             </div>
           ))}
@@ -116,15 +116,15 @@ export default function MyCareerPathsPage() {
 
       {/* Path list */}
       {paths.length === 0 ? (
-        <div className="text-center py-20 bg-white rounded-2xl border border-gray-100">
-          <div className="w-16 h-16 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-            <Compass className="w-8 h-8 text-gray-400" />
+        <div className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800">
+          <div className="w-16 h-16 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mx-auto mb-4">
+            <Compass className="w-8 h-8 text-gray-400 dark:text-gray-500" />
           </div>
-          <h3 className="text-lg font-semibold text-gray-700 mb-1">No paths yet</h3>
-          <p className="text-sm text-gray-400 mb-4">Start a career path to track your progress here.</p>
+          <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-1">No paths yet</h3>
+          <p className="text-sm text-gray-400 dark:text-gray-500 mb-4">Start a career path to track your progress here.</p>
           <Link
             to="/careers"
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-700 transition-colors no-underline"
+            className="inline-flex items-center gap-2 px-5 py-2.5 bg-gray-900 text-white text-sm font-medium rounded-xl hover:bg-gray-700 transition-colors no-underline dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
           >
             <Compass className="w-4 h-4" /> Explore Career Paths
           </Link>
@@ -144,17 +144,17 @@ export default function MyCareerPathsPage() {
               >
                 <Link
                   to={`/student/careers/${path.career.slug}`}
-                  className={`group flex items-center gap-4 bg-white px-5 py-4 rounded-xl border border-gray-100 border-l-4 ${accent} shadow-sm hover:shadow-md transition-all no-underline`}
+                  className={`group flex items-center gap-4 bg-white dark:bg-gray-900 px-5 py-4 rounded-xl border border-gray-100 dark:border-gray-800 border-l-4 ${accent} shadow-sm hover:shadow-md transition-all no-underline`}
                 >
                   <CircularProgress progress={path.progress} category={path.career.category} />
 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 flex-wrap mb-0.5">
-                      <h3 className="text-sm font-semibold text-gray-900 truncate">
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
                         {path.career.title}
                       </h3>
                       {isCompleted && (
-                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-100 shrink-0">
+                        <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-green-50 text-green-600 border border-green-100 shrink-0 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800">
                           Complete
                         </span>
                       )}
@@ -165,24 +165,24 @@ export default function MyCareerPathsPage() {
                     </p>
 
                     {/* Progress bar */}
-                    <div className="w-full h-1.5 bg-gray-100 rounded-full overflow-hidden">
+                    <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
                       <motion.div
                         initial={{ width: 0 }}
                         animate={{ width: `${path.progress}%` }}
                         transition={{ duration: 0.6, delay: i * 0.05 }}
                         className={`h-full rounded-full ${
-                          isCompleted ? "bg-green-500" : path.progress > 0 ? "bg-amber-400" : "bg-gray-200"
+                          isCompleted ? "bg-green-500" : path.progress > 0 ? "bg-amber-400" : "bg-gray-200 dark:bg-gray-700"
                         }`}
                       />
                     </div>
 
-                    <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400 font-medium uppercase tracking-wide">
+                    <div className="flex items-center gap-3 mt-2 text-[10px] text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wide">
                       <span>{path.career.category}</span>
-                      <span className="w-1 h-1 rounded-full bg-gray-200" />
+                      <span className="w-1 h-1 rounded-full bg-gray-200 dark:bg-gray-700" />
                       <span>{path.career.difficulty}</span>
                       {path.career._count && (
                         <>
-                          <span className="w-1 h-1 rounded-full bg-gray-200" />
+                          <span className="w-1 h-1 rounded-full bg-gray-200 dark:bg-gray-700" />
                           <span className="flex items-center gap-1">
                             <Clock className="w-3 h-3" />
                             {path.career._count.phases} phases
@@ -192,7 +192,7 @@ export default function MyCareerPathsPage() {
                     </div>
                   </div>
 
-                  <ArrowRight className="w-5 h-5 text-gray-300 group-hover:text-gray-600 group-hover:translate-x-0.5 transition-all shrink-0" />
+                  <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-600 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
                 </Link>
               </motion.div>
             );

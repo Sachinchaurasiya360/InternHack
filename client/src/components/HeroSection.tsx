@@ -24,13 +24,13 @@ export function HeroSection() {
     : "/register";
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#fafafa]">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-[#fafafa] dark:bg-gray-950">
       {/* Gradient orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 opacity-60 blur-3xl" />
-        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-slate-100 to-blue-100 opacity-60 blur-3xl" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-black/[0.03]" />
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full border border-black/[0.02]" />
+        <div className="absolute -top-40 -right-40 w-[600px] h-[600px] rounded-full bg-gradient-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/30 dark:to-violet-900/30 opacity-60 blur-3xl" />
+        <div className="absolute -bottom-40 -left-40 w-[500px] h-[500px] rounded-full bg-gradient-to-tr from-slate-100 to-blue-100 dark:from-slate-900/30 dark:to-blue-900/30 opacity-60 blur-3xl" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] rounded-full border border-black/[0.03] dark:border-white/[0.03]" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full border border-black/[0.02] dark:border-white/[0.02]" />
       </div>
 
       {/* Grid pattern */}
@@ -49,7 +49,7 @@ export function HeroSection() {
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-black/10 shadow-sm text-sm text-gray-600 mb-8"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-900 border border-black/10 dark:border-gray-700 shadow-sm text-sm text-gray-600 dark:text-gray-400 mb-8"
         >
           <Sparkles className="w-4 h-4 text-indigo-500" />
           <span>AI-Powered Career Platform</span>
@@ -60,7 +60,7 @@ export function HeroSection() {
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
-          className="font-display text-5xl sm:text-7xl md:text-[5.5rem] font-bold leading-[1.05] tracking-tight text-gray-950 mb-6"
+          className="font-display text-5xl sm:text-7xl md:text-[5.5rem] font-bold leading-[1.05] tracking-tight text-gray-950 dark:text-white mb-6"
         >
           Your career starts
           <br />
@@ -72,7 +72,7 @@ export function HeroSection() {
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
-          className="text-lg sm:text-xl text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed"
+          className="text-lg sm:text-xl text-gray-500 dark:text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed"
         >
           Browse curated jobs, follow guided career roadmaps, score your resume
           with AI, and connect directly with recruiters — all in one platform.
@@ -89,7 +89,7 @@ export function HeroSection() {
             <motion.button
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2"
+              className="px-8 py-4 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-base font-semibold rounded-2xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all shadow-lg shadow-black/10 flex items-center gap-2"
             >
               {isAuthenticated ? "Go to Dashboard" : "Get Started Free"}
               <ArrowRight className="w-4 h-4" />
@@ -99,7 +99,7 @@ export function HeroSection() {
             <motion.button
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.98 }}
-              className="px-8 py-4 bg-white text-gray-950 text-base font-semibold rounded-2xl border border-gray-200 hover:border-gray-300 hover:shadow-md transition-all"
+              className="px-8 py-4 bg-white dark:bg-gray-900 text-gray-950 dark:text-white text-base font-semibold rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-md transition-all"
             >
               Browse Jobs
             </motion.button>
@@ -123,17 +123,17 @@ export function HeroSection() {
             <motion.div
               key={i}
               whileHover={{ y: -6, scale: 1.04 }}
-              className="relative bg-white rounded-2xl p-5 border border-gray-100 shadow-sm hover:shadow-lg transition-all cursor-pointer group"
+              className="relative bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-lg transition-all cursor-pointer group"
             >
               <div
                 className={`w-10 h-10 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-3`}
               >
                 <span className="text-white text-sm font-bold">{card.label[0]}</span>
               </div>
-              <div className="text-xs text-gray-400 font-medium uppercase tracking-wide mb-1">
+              <div className="text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wide mb-1">
                 {card.label}
               </div>
-              <div className="text-sm font-semibold text-gray-900">{card.value}</div>
+              <div className="text-sm font-semibold text-gray-900 dark:text-white">{card.value}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -149,9 +149,9 @@ export function HeroSection() {
         <motion.div
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="w-5 h-8 border-2 border-gray-300 rounded-full flex items-start justify-center p-1.5"
+          className="w-5 h-8 border-2 border-gray-300 dark:border-gray-600 rounded-full flex items-start justify-center p-1.5"
         >
-          <motion.div className="w-1 h-1.5 bg-gray-400 rounded-full" />
+          <motion.div className="w-1 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full" />
         </motion.div>
       </motion.div>
     </section>

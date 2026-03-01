@@ -79,7 +79,7 @@ export default function CreateJobPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900 mb-6">Create Job Posting</h1>
+      <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-6">Create Job Posting</h1>
 
       {/* Step Indicator */}
       <div className="flex items-center gap-2 mb-8">
@@ -88,95 +88,95 @@ export default function CreateJobPage() {
             <button
               onClick={() => setStep(i)}
               className={`flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
-                i === step ? "bg-black text-white" : i < step ? "bg-green-100 text-green-700" : "bg-gray-100 text-gray-500"
+                i === step ? "bg-black dark:bg-white text-white dark:text-gray-950" : i < step ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400" : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-500"
               }`}
             >
               {i < step ? <Check className="w-3 h-3" /> : null}
               {s}
             </button>
-            {i < STEPS.length - 1 && <div className="w-8 h-px bg-gray-300" />}
+            {i < STEPS.length - 1 && <div className="w-8 h-px bg-gray-300 dark:bg-gray-600" />}
           </div>
         ))}
       </div>
 
       {error && (
-        <div className="p-3 bg-red-50 border border-red-200 rounded-lg text-sm text-red-600 mb-4">{error}</div>
+        <div className="p-3 bg-red-50 dark:bg-red-900/30 border border-red-200 dark:border-red-800 rounded-lg text-sm text-red-600 dark:text-red-400 mb-4">{error}</div>
       )}
 
       {/* Step 0: Basic Info */}
       {step === 0 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white p-6 rounded-xl border border-gray-100 space-y-4">
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Job Title</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Job Title</label>
             <input
               type="text"
               value={form.title}
               onChange={(e) => setForm({ ...form, title: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black dark:bg-gray-800 dark:text-white"
               placeholder="e.g. Frontend Developer Intern"
               required
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
             <textarea
               value={form.description}
               onChange={(e) => setForm({ ...form, description: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black min-h-[120px]"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black min-h-[120px] dark:bg-gray-800 dark:text-white"
               placeholder="Describe the role, responsibilities, and requirements..."
               required
             />
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
               <input
                 type="text"
                 value={form.location}
                 onChange={(e) => setForm({ ...form, location: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20"
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                 placeholder="e.g. Remote, Bangalore"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Salary</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Salary</label>
               <input
                 type="text"
                 value={form.salary}
                 onChange={(e) => setForm({ ...form, salary: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20"
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                 placeholder="e.g. 15k-25k/month"
               />
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Company</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company</label>
               <input
                 type="text"
                 value={form.company}
                 onChange={(e) => setForm({ ...form, company: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20"
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                 placeholder="Your company name"
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Deadline</label>
               <input
                 type="date"
                 value={form.deadline}
                 onChange={(e) => setForm({ ...form, deadline: e.target.value })}
-                className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20"
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
               />
             </div>
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Tags (comma-separated)</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Tags (comma-separated)</label>
             <input
               type="text"
               value={form.tags}
               onChange={(e) => setForm({ ...form, tags: e.target.value })}
-              className="w-full px-4 py-2.5 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20"
+              className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
               placeholder="e.g. React, TypeScript, Remote"
             />
           </div>
@@ -185,26 +185,26 @@ export default function CreateJobPage() {
 
       {/* Step 1: Custom Fields */}
       {step === 1 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white p-6 rounded-xl border border-gray-100">
-          <h2 className="text-lg font-semibold mb-1">Custom Application Fields</h2>
-          <p className="text-sm text-gray-500 mb-4">Define additional fields students must fill when applying</p>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800">
+          <h2 className="text-lg font-semibold mb-1 dark:text-white">Custom Application Fields</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">Define additional fields students must fill when applying</p>
           <DynamicFieldBuilder fields={customFields} onChange={setCustomFields} />
         </motion.div>
       )}
 
       {/* Step 2: Rounds */}
       {step === 2 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white p-6 rounded-xl border border-gray-100">
-          <h2 className="text-lg font-semibold mb-1">Hiring Rounds</h2>
-          <p className="text-sm text-gray-500 mb-4">Define the stages of your hiring process</p>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800">
+          <h2 className="text-lg font-semibold mb-1 dark:text-white">Hiring Rounds</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">Define the stages of your hiring process</p>
           <RoundsManager rounds={rounds} onChange={setRounds} />
         </motion.div>
       )}
 
       {/* Step 3: Review */}
       {step === 3 && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white p-6 rounded-xl border border-gray-100 space-y-4">
-          <h2 className="text-lg font-semibold mb-4">Review Job Posting</h2>
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 space-y-4">
+          <h2 className="text-lg font-semibold mb-4 dark:text-white">Review Job Posting</h2>
           <div className="space-y-3">
             <ReviewItem label="Title" value={form.title} />
             <ReviewItem label="Description" value={form.description} />
@@ -216,7 +216,7 @@ export default function CreateJobPage() {
             <ReviewItem label="Custom Fields" value={`${customFields.length} field(s)`} />
             <ReviewItem label="Hiring Rounds" value={`${rounds.length} round(s)`} />
             {rounds.map((r, i) => (
-              <div key={i} className="ml-4 text-sm text-gray-600">
+              <div key={i} className="ml-4 text-sm text-gray-600 dark:text-gray-400">
                 Round {i + 1}: {r.name} ({r.customFields.length} fields, {r.evaluationCriteria.length} criteria)
               </div>
             ))}
@@ -229,7 +229,7 @@ export default function CreateJobPage() {
         <button
           onClick={() => setStep(Math.max(0, step - 1))}
           disabled={step === 0}
-          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-600 hover:text-black disabled:opacity-30 transition-colors"
+          className="flex items-center gap-2 px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white disabled:opacity-30 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           Previous
@@ -238,7 +238,7 @@ export default function CreateJobPage() {
         {step < STEPS.length - 1 ? (
           <button
             onClick={() => setStep(step + 1)}
-            className="flex items-center gap-2 px-6 py-2.5 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors"
+            className="flex items-center gap-2 px-6 py-2.5 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
           >
             Next
             <ArrowRight className="w-4 h-4" />
@@ -247,7 +247,7 @@ export default function CreateJobPage() {
           <button
             onClick={handleSubmit}
             disabled={loading}
-            className="flex items-center gap-2 px-6 py-2.5 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-6 py-2.5 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50"
           >
             {loading ? "Creating..." : "Create Job"}
             <Check className="w-4 h-4" />
@@ -261,8 +261,8 @@ export default function CreateJobPage() {
 function ReviewItem({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex items-start gap-3">
-      <span className="text-sm font-medium text-gray-500 w-32 shrink-0">{label}:</span>
-      <span className="text-sm text-gray-900">{value}</span>
+      <span className="text-sm font-medium text-gray-500 dark:text-gray-500 w-32 shrink-0">{label}:</span>
+      <span className="text-sm text-gray-900 dark:text-white">{value}</span>
     </div>
   );
 }

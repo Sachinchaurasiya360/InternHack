@@ -40,22 +40,22 @@ export default function ApplicationDetail() {
     }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-gray-500">Loading...</div>;
-  if (!application) return <div className="text-center text-gray-500">Application not found</div>;
+  if (loading) return <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-500">Loading...</div>;
+  if (!application) return <div className="text-center text-gray-500 dark:text-gray-500">Application not found</div>;
 
   return (
     <div className="max-w-4xl mx-auto">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-black mb-4">
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-4">
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
 
       {/* Header */}
-      <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm mb-6">
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
         <div className="flex items-start justify-between">
           <div>
-            <h1 className="text-xl font-bold text-gray-900">{application.student?.name}</h1>
-            <p className="text-gray-500">{application.student?.email}</p>
-            {application.student?.contactNo && <p className="text-sm text-gray-400">{application.student.contactNo}</p>}
+            <h1 className="text-xl font-bold text-gray-900 dark:text-white">{application.student?.name}</h1>
+            <p className="text-gray-500 dark:text-gray-500">{application.student?.email}</p>
+            {application.student?.contactNo && <p className="text-sm text-gray-400 dark:text-gray-500">{application.student.contactNo}</p>}
           </div>
           <div className="flex items-center gap-2">
             <select value={application.status} onChange={(e) => handleStatusChange(e.target.value)}
@@ -67,7 +67,7 @@ export default function ApplicationDetail() {
               <option value="HIRED">Hired</option>
             </select>
             <button onClick={handleAdvance}
-              className="px-4 py-1.5 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800">
+              className="px-4 py-1.5 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200">
               Advance
             </button>
           </div>
@@ -77,12 +77,12 @@ export default function ApplicationDetail() {
         <div className="flex items-center gap-4 mt-4">
           {application.resumeUrl && (
             <a href={`http://localhost:3000${application.resumeUrl}`} target="_blank" rel="noopener noreferrer"
-              className="flex items-center gap-2 px-3 py-2 bg-gray-50 rounded-lg text-sm text-gray-700 hover:bg-gray-100 no-underline">
+              className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-950 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline">
               <Download className="w-4 h-4" /> Download Resume
             </a>
           )}
           {application.coverLetter && (
-            <div className="flex items-center gap-2 text-sm text-gray-500">
+            <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500">
               <FileText className="w-4 h-4" /> Cover letter attached
             </div>
           )}
@@ -91,13 +91,13 @@ export default function ApplicationDetail() {
 
       {/* Custom Field Answers */}
       {application.customFieldAnswers && Object.keys(application.customFieldAnswers).length > 0 && (
-        <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm mb-6">
-          <h2 className="text-lg font-semibold mb-4">Application Answers</h2>
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
+          <h2 className="text-lg font-semibold mb-4 dark:text-white">Application Answers</h2>
           <div className="space-y-2">
             {Object.entries(application.customFieldAnswers).map(([key, value]) => (
               <div key={key} className="flex gap-2 text-sm">
-                <span className="font-medium text-gray-500">{key}:</span>
-                <span className="text-gray-900">{String(value)}</span>
+                <span className="font-medium text-gray-500 dark:text-gray-500">{key}:</span>
+                <span className="text-gray-900 dark:text-white">{String(value)}</span>
               </div>
             ))}
           </div>
@@ -105,22 +105,22 @@ export default function ApplicationDetail() {
       )}
 
       {/* Round Progress */}
-      <div className="bg-white p-6 rounded-xl border border-gray-100 shadow-sm">
-        <h2 className="text-lg font-semibold mb-4">Round Progress</h2>
+      <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
+        <h2 className="text-lg font-semibold mb-4 dark:text-white">Round Progress</h2>
         <div className="space-y-4">
           {application.roundSubmissions?.map((sub, i) => (
             <motion.div key={sub.id} initial={{ opacity: 0, x: -10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: i * 0.1 }}
-              className="border border-gray-100 rounded-lg p-4">
+              className="border border-gray-100 dark:border-gray-800 rounded-lg p-4">
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   {getStatusIcon(sub.status)}
-                  <span className="font-medium text-sm">{sub.round?.name || `Round ${i + 1}`}</span>
+                  <span className="font-medium text-sm dark:text-white">{sub.round?.name || `Round ${i + 1}`}</span>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${getRoundStatusColor(sub.status)}`}>{sub.status}</span>
                 </div>
                 <div className="flex items-center gap-2">
-                  {sub.submittedAt && <span className="text-xs text-gray-400">Submitted {new Date(sub.submittedAt).toLocaleDateString()}</span>}
+                  {sub.submittedAt && <span className="text-xs text-gray-400 dark:text-gray-500">Submitted {new Date(sub.submittedAt).toLocaleDateString()}</span>}
                   <button onClick={() => setEvaluatingRoundId(evaluatingRoundId === sub.roundId ? null : sub.roundId)}
-                    className="text-xs px-3 py-1.5 border border-gray-300 rounded-lg hover:bg-gray-50">
+                    className="text-xs px-3 py-1.5 border border-gray-300 dark:border-gray-600 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-800 dark:text-gray-300">
                     {evaluatingRoundId === sub.roundId ? "Close" : "Evaluate"}
                   </button>
                 </div>
@@ -130,7 +130,7 @@ export default function ApplicationDetail() {
               {sub.fieldAnswers && Object.keys(sub.fieldAnswers).length > 0 && (
                 <div className="mt-2 pl-6 text-sm space-y-1">
                   {Object.entries(sub.fieldAnswers).map(([key, val]) => (
-                    <div key={key} className="text-gray-600"><span className="font-medium">{key}:</span> {String(val)}</div>
+                    <div key={key} className="text-gray-600 dark:text-gray-400"><span className="font-medium">{key}:</span> {String(val)}</div>
                   ))}
                 </div>
               )}
@@ -138,16 +138,16 @@ export default function ApplicationDetail() {
               {/* Evaluation scores */}
               {sub.evaluationScores && (
                 <div className="mt-2 pl-6 text-sm">
-                  <span className="font-medium text-gray-500">Scores: </span>
+                  <span className="font-medium text-gray-500 dark:text-gray-500">Scores: </span>
                   {Object.entries(sub.evaluationScores).map(([key, val]) => (
-                    <span key={key} className="mr-3">{key}: {(val as { score: number }).score}</span>
+                    <span key={key} className="mr-3 dark:text-gray-300">{key}: {(val as { score: number }).score}</span>
                   ))}
                 </div>
               )}
 
               {/* Evaluation Form */}
               {evaluatingRoundId === sub.roundId && (
-                <div className="mt-4 pt-4 border-t border-gray-100">
+                <div className="mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
                   <EvaluationForm
                     applicationId={application.id}
                     roundId={sub.roundId}
@@ -175,20 +175,20 @@ function getStatusIcon(status: string) {
 
 function getStatusColor(status: string) {
   switch (status) {
-    case "APPLIED": return "bg-blue-100 text-blue-700";
-    case "IN_PROGRESS": return "bg-yellow-100 text-yellow-700";
-    case "SHORTLISTED": return "bg-green-100 text-green-700";
-    case "REJECTED": return "bg-red-100 text-red-700";
-    case "HIRED": return "bg-emerald-100 text-emerald-700";
-    default: return "bg-gray-100 text-gray-700";
+    case "APPLIED": return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+    case "IN_PROGRESS": return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+    case "SHORTLISTED": return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+    case "REJECTED": return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+    case "HIRED": return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+    default: return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
   }
 }
 
 function getRoundStatusColor(status: string) {
   switch (status) {
-    case "COMPLETED": return "bg-green-100 text-green-700";
-    case "IN_PROGRESS": return "bg-yellow-100 text-yellow-700";
-    case "PENDING": return "bg-gray-100 text-gray-500";
-    default: return "bg-gray-100 text-gray-500";
+    case "COMPLETED": return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+    case "IN_PROGRESS": return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+    case "PENDING": return "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500";
+    default: return "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500";
   }
 }

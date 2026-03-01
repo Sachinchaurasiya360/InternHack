@@ -27,7 +27,7 @@ export function StatsSection() {
   ];
 
   return (
-    <section className="relative py-16 bg-white border-y border-gray-100">
+    <section className="relative py-16 bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800">
       <div className="max-w-5xl mx-auto px-6">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {items.map((item, i) => (
@@ -39,13 +39,13 @@ export function StatsSection() {
               transition={{ delay: i * 0.1, duration: 0.4 }}
               className="text-center"
             >
-              <div className="w-12 h-12 rounded-2xl bg-gray-950 flex items-center justify-center mx-auto mb-3">
-                <item.icon className="w-5 h-5 text-white" />
+              <div className="w-12 h-12 rounded-2xl bg-gray-950 dark:bg-white flex items-center justify-center mx-auto mb-3">
+                <item.icon className="w-5 h-5 text-white dark:text-gray-950" />
               </div>
-              <div className="font-display text-3xl font-bold text-gray-950 mb-1">
+              <div className="font-display text-3xl font-bold text-gray-950 dark:text-white mb-1">
                 {item.value > 0 ? `${item.value}${item.suffix}` : "—"}
               </div>
-              <div className="text-sm text-gray-400 font-medium">{item.label}</div>
+              <div className="text-sm text-gray-400 dark:text-gray-500 font-medium">{item.label}</div>
             </motion.div>
           ))}
         </div>

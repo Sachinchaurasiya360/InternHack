@@ -4,7 +4,7 @@ import { Link } from "react-router";
 
 export function CTASection() {
   return (
-    <section className="relative py-24 md:py-32 bg-[#fafafa] overflow-hidden">
+    <section className="relative py-24 md:py-32 bg-[#fafafa] dark:bg-gray-950 overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -13,7 +13,7 @@ export function CTASection() {
           transition={{ duration: 0.6 }}
           className="relative rounded-3xl bg-gray-950 p-10 md:p-16 text-center overflow-hidden"
         >
-          {/* Background decoration */}
+          {/* Background decoration - inside dark bg, no dark variants needed */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
             <div className="absolute -top-40 -right-40 w-80 h-80 rounded-full bg-indigo-500/20 blur-3xl" />
             <div className="absolute -bottom-40 -left-40 w-80 h-80 rounded-full bg-violet-500/20 blur-3xl" />

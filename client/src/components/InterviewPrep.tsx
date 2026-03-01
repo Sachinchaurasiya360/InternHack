@@ -106,21 +106,21 @@ export function InterviewPrep() {
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={staggerContainer}
-      className="py-15 px-6 relative bg-white"
+      className="py-15 px-6 relative bg-white dark:bg-gray-900"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div variants={fadeInUp} className="text-center mb-16">
-          <div className="inline-flex items-center gap-2 px-4 py-2 border border-black/20 text-sm mb-4">
-            <BookOpen className="w-4 h-4 text-black" />
-            <span className="text-black">Preparation Resources</span>
+          <div className="inline-flex items-center gap-2 px-4 py-2 border border-black/20 dark:border-white/20 text-sm mb-4">
+            <BookOpen className="w-4 h-4 text-black dark:text-white" />
+            <span className="text-black dark:text-white">Preparation Resources</span>
           </div>
-          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-black">
+          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-black dark:text-white">
             Interview{" "}
             <span className="underline decoration-4 underline-offset-8">
               Preparation
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Comprehensive materials to ace your technical interviews
           </p>
         </motion.div>
@@ -134,12 +134,12 @@ export function InterviewPrep() {
             <motion.div
               key={idx}
               whileHover={{ scale: 1.05 }}
-              className="border-2 border-black p-6 text-center"
+              className="border-2 border-black dark:border-white p-6 text-center"
             >
-              <div className="text-4xl font-bold text-black mb-2">
+              <div className="text-4xl font-bold text-black dark:text-white mb-2">
                 {stat.value}
               </div>
-              <div className="text-sm text-gray-600">{stat.label}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-400">{stat.label}</div>
             </motion.div>
           ))}
         </motion.div>
@@ -151,31 +151,31 @@ export function InterviewPrep() {
               key={idx}
               variants={fadeInUp}
               whileHover={{ y: -10 }}
-              className="bg-white border-2 border-gray-200 p-6 hover:border-black hover:shadow-xl transition-all group"
+              className="bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 p-6 hover:border-black dark:hover:border-white hover:shadow-xl transition-all group"
             >
               <div className="flex items-start justify-between mb-4">
-                <material.icon className="w-10 h-10 text-black group-hover:text-white" />
-                <div className="px-3 py-1 bg-black text-white group-hover:bg-white group-hover:text-black text-xs font-bold">
+                <material.icon className="w-10 h-10 text-black dark:text-white group-hover:text-white dark:group-hover:text-black" />
+                <div className="px-3 py-1 bg-black dark:bg-white text-white dark:text-black group-hover:bg-white dark:group-hover:bg-black group-hover:text-black dark:group-hover:text-white text-xs font-bold">
                   {material.type}
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold mb-4">{material.title}</h3>
+              <h3 className="text-xl font-bold mb-4 dark:text-white">{material.title}</h3>
 
               <ul className="space-y-2 mb-6">
                 {material.topics.map((topic, i) => (
-                  <li key={i} className="flex items-start gap-2 text-sm">
+                  <li key={i} className="flex items-start gap-2 text-sm dark:text-gray-300">
                     <CheckCircle className="w-4 h-4 mt-0.5 shrink-0" />
                     <span>{topic}</span>
                   </li>
                 ))}
               </ul>
 
-              <div className="flex items-center justify-between pt-4 border-t border-black/20 group-hover:border-white/20">
-                <span className="text-sm font-semibold">
+              <div className="flex items-center justify-between pt-4 border-t border-black/20 dark:border-white/20 group-hover:border-white/20 dark:group-hover:border-white/20">
+                <span className="text-sm font-semibold dark:text-white">
                   {material.resources}
                 </span>
-                <Download className="w-5 h-5" />
+                <Download className="w-5 h-5 dark:text-white" />
               </div>
             </motion.div>
           ))}
@@ -185,7 +185,7 @@ export function InterviewPrep() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-4 bg-black text-white text-lg font-semibold hover:bg-gray-800 transition-all"
+            className="px-8 py-4 bg-black dark:bg-white text-white dark:text-black text-lg font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-all"
           >
             Access All Materials
           </motion.button>

@@ -69,7 +69,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section className="relative py-24 md:py-32 bg-[#fafafa]">
+    <section className="relative py-24 md:py-32 bg-[#fafafa] dark:bg-gray-950">
       {/* Subtle grid */}
       <div
         className="absolute inset-0 opacity-[0.02]"
@@ -88,15 +88,15 @@ export function FeaturesSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-6">
             Platform Features
           </div>
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-gray-950 tracking-tight mb-4">
+          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
             Everything you need,
             <br />
             <span className="text-gradient-accent">nothing you don't</span>
           </h2>
-          <p className="text-lg text-gray-500 max-w-xl mx-auto">
+          <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
             Tools built for students and recruiters to simplify every step of
             the career journey.
           </p>
@@ -115,7 +115,7 @@ export function FeaturesSection() {
               <Link to={feature.href} className="no-underline block h-full">
                 <motion.div
                   whileHover={{ y: -4 }}
-                  className="relative bg-white rounded-2xl p-6 md:p-8 border border-gray-100 hover:border-gray-200 hover:shadow-xl hover:shadow-gray-200/50 transition-all h-full group overflow-hidden"
+                  className="relative bg-white dark:bg-gray-900 rounded-2xl p-6 md:p-8 border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all h-full group overflow-hidden"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div
@@ -123,12 +123,12 @@ export function FeaturesSection() {
                     >
                       <feature.icon className="w-5 h-5 text-white" />
                     </div>
-                    <ArrowUpRight className="w-4 h-4 text-gray-300 group-hover:text-gray-500 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                    <ArrowUpRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                   </div>
-                  <h3 className="font-display text-lg font-bold text-gray-900 mb-2">
+                  <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-2">
                     {feature.title}
                   </h3>
-                  <p className="text-sm text-gray-500 leading-relaxed">
+                  <p className="text-sm text-gray-500 dark:text-gray-500 leading-relaxed">
                     {feature.description}
                   </p>
                 </motion.div>

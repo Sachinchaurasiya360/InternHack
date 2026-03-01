@@ -14,6 +14,14 @@ export interface User {
   resumes?: string[];
   company?: string;
   designation?: string;
+  bio?: string;
+  college?: string;
+  graduationYear?: number;
+  skills?: string[];
+  location?: string;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  portfolioUrl?: string;
   createdAt?: string;
 }
 
@@ -303,6 +311,8 @@ export interface CareerSkill {
   name: string;
   level: SkillLevel;
   completed?: boolean;
+  hasQuiz?: boolean;
+  verifiedAt?: string | null;
 }
 
 export interface CareerResource {
@@ -369,3 +379,112 @@ export interface ActivityLog {
   ipAddress?: string;
   createdAt: string;
 }
+
+// Talent Search
+export interface TalentSearchResult {
+  id: number;
+  name: string;
+  email: string;
+  profilePic?: string;
+  bio?: string;
+  college?: string;
+  graduationYear?: number;
+  skills: string[];
+  location?: string;
+  linkedinUrl?: string;
+  githubUrl?: string;
+  portfolioUrl?: string;
+  resumes: string[];
+  bestAtsScore: number | null;
+  verifiedSkillCount: number;
+  verifiedSkills: string[];
+}
+
+// Skill Quiz
+export interface Quiz {
+  id: number;
+  title: string;
+  passThreshold: number;
+  timeLimitSecs?: number;
+  questions: QuizQuestion[];
+}
+
+export interface QuizQuestion {
+  id: number;
+  question: string;
+  options: string[];
+  correctIndex?: number;
+  explanation?: string;
+}
+
+export interface QuizAttempt {
+  id: number;
+  score: number;
+  passed: boolean;
+  createdAt: string;
+  quiz: { title: string; skill: { name: string } };
+}
+
+// GSoC Organizations
+export interface GSoCOrganization {
+  id: number;
+  name: string;
+  slug: string;
+  url: string;
+  imageUrl?: string;
+  imageBgColor?: string;
+  description: string;
+  category: string;
+  topics: string[];
+  technologies: string[];
+  yearsParticipated: number[];
+  totalProjects: number;
+  projectsData?: Record<string, {
+    projects_url: string;
+    num_projects: number;
+    projects: {
+      title: string;
+      short_description: string;
+      description: string;
+      student_name: string;
+      code_url: string;
+      project_url: string;
+    }[];
+  }>;
+  contactEmail?: string;
+  mailingList?: string;
+  ideasUrl?: string;
+  guideUrl?: string;
+}
+
+export interface GSoCStats {
+  total: number;
+  categories: { name: string; count: number }[];
+  years: { year: number; count: number }[];
+  technologies: { name: string; count: number }[];
+  topics: { name: string; count: number }[];
+}
+
+// Blog
+export type BlogCategory = "CAREER_ADVICE" | "INTERVIEW_TIPS" | "SALARY_GUIDE" | "INDUSTRY_INSIGHTS" | "RESUME_TIPS" | "TECH_TRENDS";
+export type BlogStatus = "DRAFT" | "PUBLISHED";
+
+export interface BlogPost {
+  id: number;
+  title: string;
+  slug: string;
+  content: string;
+  excerpt?: string;
+  category: BlogCategory;
+  tags: string[];
+  author: { id: number; name: string; profilePic?: string };
+  status: BlogStatus;
+  featuredImage?: string;
+  readingTime: number;
+  viewCount: number;
+  isFeatured: boolean;
+  publishedAt?: string;
+  createdAt: string;
+  updatedAt: string;
+}
+

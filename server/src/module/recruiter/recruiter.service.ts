@@ -1,6 +1,18 @@
 import { prisma } from "../../database/db.js";
 import type { Prisma, ApplicationStatus } from "@prisma/client";
 
+interface TalentSearchFilter {
+  page: number;
+  limit: number;
+  skills?: string;
+  college?: string;
+  graduationYearMin?: number;
+  graduationYearMax?: number;
+  minAtsScore?: number;
+  location?: string;
+  search?: string;
+}
+
 interface CreateRoundData {
   name: string;
   description?: string | null | undefined;
@@ -406,6 +418,107 @@ export class RecruiterService {
       totalApplications,
       statusBreakdown: statusCounts,
       roundAnalytics,
+    };
+  }
+
+  // ==================== TALENT SEARCH ====================
+
+  async searchTalent(filter: TalentSearchFilter) {
+    const where: Prisma.userWhereInput = {
+      role: "STUDENT",
+      isActive: true,
+    };
+
+    if (filter.search) {
+      where.OR = [
+        { name: { contains: filter.search, mode: "insensitive" } },
+        { email: { contains: filter.search, mode: "insensitive" } },
+      ];
+    }
+    if (filter.college) {
+      where.college = { contains: filter.college, mode: "insensitive" };
+    }
+    if (filter.location) {
+      where.location = { contains: filter.location, mode: "insensitive" };
+    }
+    if (filter.graduationYearMin || filter.graduationYearMax) {
+      where.graduationYear = {};
+      if (filter.graduationYearMin) where.graduationYear.gte = filter.graduationYearMin;
+      if (filter.graduationYearMax) where.graduationYear.lte = filter.graduationYearMax;
+    }
+    if (filter.skills) {
+      const skillList = filter.skills.split(",").map((s) => s.trim()).filter(Boolean);
+      if (skillList.length > 0) {
+        where.skills = { hasSome: skillList };
+      }
+    }
+    if (filter.minAtsScore) {
+      where.atsScores = { some: { overallScore: { gte: filter.minAtsScore } } };
+    }
+
+    const skip = (filter.page - 1) * filter.limit;
+
+    const [students, total] = await Promise.all([
+      prisma.user.findMany({
+        where,
+        skip,
+        take: filter.limit,
+        orderBy: { createdAt: "desc" },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          profilePic: true,
+          bio: true,
+          college: true,
+          graduationYear: true,
+          skills: true,
+          location: true,
+          linkedinUrl: true,
+          githubUrl: true,
+          portfolioUrl: true,
+          resumes: true,
+          atsScores: {
+            select: { overallScore: true },
+            orderBy: { overallScore: "desc" },
+            take: 1,
+          },
+          skillProgress: {
+            where: { verifiedAt: { not: null } },
+            select: { skill: { select: { name: true } } },
+          },
+        },
+      }),
+      prisma.user.count({ where }),
+    ]);
+
+    const results = students.map((s) => ({
+      id: s.id,
+      name: s.name,
+      email: s.email,
+      profilePic: s.profilePic,
+      bio: s.bio,
+      college: s.college,
+      graduationYear: s.graduationYear,
+      skills: s.skills,
+      location: s.location,
+      linkedinUrl: s.linkedinUrl,
+      githubUrl: s.githubUrl,
+      portfolioUrl: s.portfolioUrl,
+      resumes: s.resumes,
+      bestAtsScore: s.atsScores[0]?.overallScore ?? null,
+      verifiedSkillCount: s.skillProgress.length,
+      verifiedSkills: s.skillProgress.map((sp) => sp.skill.name),
+    }));
+
+    return {
+      students: results,
+      pagination: {
+        page: filter.page,
+        limit: filter.limit,
+        total,
+        totalPages: Math.ceil(total / filter.limit),
+      },
     };
   }
 }

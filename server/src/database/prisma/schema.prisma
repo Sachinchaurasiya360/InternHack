@@ -147,6 +147,10 @@ model user {
   adminProfile      adminProfile?      @relation("AdminProfile")
   adminActivityLogs adminActivityLog[] @relation("AdminActivityLogs")
   payments          payment[]          @relation("UserPayments")
+
+  // ── Quiz & Blog relations ──
+  quizAttempts  quizAttempt[] @relation("StudentQuizAttempts")
+  blogPosts     blogPost[]    @relation("BlogAuthor")
 }
 
 // ============================================================
@@ -445,6 +449,7 @@ model careerSkill {
   name     String
   level    SkillLevel
   progress studentSkillProgress[]
+  quiz     quiz?
 }
 
 model careerResource {
@@ -485,9 +490,10 @@ model studentSkillProgress {
   student   user        @relation("StudentSkillProgress", fields: [studentId], references: [id])
   skillId   Int
   skill     careerSkill @relation(fields: [skillId], references: [id], onDelete: Cascade)
-  completed Boolean     @default(false)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
+  completed  Boolean   @default(false)
+  verifiedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
 
   @@unique([studentId, skillId])
 }
@@ -684,4 +690,124 @@ model opensourceRepo {
   @@index([domain])
   @@index([difficulty])
   @@index([language])
+}
+
+// ============================================================
+// BLOG ENUMS & MODEL
+// ============================================================
+
+enum BlogCategory {
+  CAREER_ADVICE
+  INTERVIEW_TIPS
+  SALARY_GUIDE
+  INDUSTRY_INSIGHTS
+  RESUME_TIPS
+  TECH_TRENDS
+}
+
+enum BlogStatus {
+  DRAFT
+  PUBLISHED
+}
+
+model blogPost {
+  id            Int           @id @default(autoincrement())
+  title         String
+  slug          String        @unique
+  content       String
+  excerpt       String?
+  category      BlogCategory
+  tags          String[]      @default([])
+  authorId      Int
+  author        user          @relation("BlogAuthor", fields: [authorId], references: [id])
+  status        BlogStatus    @default(DRAFT)
+  featuredImage String?
+  readingTime   Int           @default(0)
+  viewCount     Int           @default(0)
+  isFeatured    Boolean       @default(false)
+  publishedAt   DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([status])
+  @@index([category])
+  @@index([publishedAt])
+}
+
+// ============================================================
+// QUIZ MODELS
+// ============================================================
+
+model quiz {
+  id            Int            @id @default(autoincrement())
+  skillId       Int            @unique
+  skill         careerSkill    @relation(fields: [skillId], references: [id])
+  title         String
+  description   String?
+  passThreshold Int            @default(70)
+  timeLimitSecs Int?
+  questions     quizQuestion[]
+  attempts      quizAttempt[]
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+}
+
+model quizQuestion {
+  id           Int      @id @default(autoincrement())
+  quizId       Int
+  quiz         quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  question     String
+  options      Json
+  correctIndex Int
+  explanation  String?
+  orderIndex   Int      @default(0)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([quizId])
+}
+
+model quizAttempt {
+  id          Int      @id @default(autoincrement())
+  quizId      Int
+  quiz        quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  studentId   Int
+  student     user     @relation("StudentQuizAttempts", fields: [studentId], references: [id])
+  score       Int
+  passed      Boolean
+  answers     Json
+  completedAt DateTime @default(now())
+  createdAt   DateTime @default(now())
+
+  @@index([studentId])
+  @@index([quizId])
+}
+
+// ============================================================
+// GSOC ORGANIZATION MODEL
+// ============================================================
+
+model gsocOrganization {
+  id                Int      @id @default(autoincrement())
+  name              String
+  slug              String   @unique
+  url               String
+  imageUrl          String?
+  imageBgColor      String?
+  description       String
+  category          String
+  topics            String[] @default([])
+  technologies      String[] @default([])
+  yearsParticipated Int[]    @default([])
+  totalProjects     Int      @default(0)
+  projectsData      Json?
+  contactEmail      String?
+  mailingList       String?
+  ideasUrl          String?
+  guideUrl          String?
+  createdAt         DateTime @default(now())
+  updatedAt         DateTime @updatedAt
+
+  @@index([category])
+  @@index([name])
 }

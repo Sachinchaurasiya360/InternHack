@@ -69,64 +69,64 @@ export function RoundsManager({ rounds, onChange }: RoundsManagerProps) {
   return (
     <div className="space-y-3">
       {rounds.map((round, index) => (
-        <div key={index} className="border border-gray-200 rounded-lg overflow-hidden">
+        <div key={index} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
           <div
-            className="flex items-center gap-3 px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-950 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             onClick={() => setExpandedIndex(expandedIndex === index ? null : index)}
           >
             <div className="flex flex-col">
               <button type="button" onClick={(e) => { e.stopPropagation(); moveRound(index, "up"); }} disabled={index === 0}
-                className="text-gray-400 hover:text-gray-600 disabled:opacity-30"><ArrowUp className="w-3 h-3" /></button>
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30"><ArrowUp className="w-3 h-3" /></button>
               <button type="button" onClick={(e) => { e.stopPropagation(); moveRound(index, "down"); }} disabled={index === rounds.length - 1}
-                className="text-gray-400 hover:text-gray-600 disabled:opacity-30"><ArrowDown className="w-3 h-3" /></button>
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30"><ArrowDown className="w-3 h-3" /></button>
             </div>
-            <span className="text-xs font-bold text-gray-400 w-8">R{index + 1}</span>
-            <span className="flex-1 font-medium text-sm">{round.name || "Untitled Round"}</span>
-            {expandedIndex === index ? <ChevronUp className="w-4 h-4 text-gray-400" /> : <ChevronDown className="w-4 h-4 text-gray-400" />}
+            <span className="text-xs font-bold text-gray-400 dark:text-gray-500 w-8">R{index + 1}</span>
+            <span className="flex-1 font-medium text-sm dark:text-white">{round.name || "Untitled Round"}</span>
+            {expandedIndex === index ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />}
             <button type="button" onClick={(e) => { e.stopPropagation(); removeRound(index); }}
               className="p-1 text-red-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
           </div>
 
           {expandedIndex === index && (
-            <div className="p-4 space-y-4 border-t border-gray-200">
+            <div className="p-4 space-y-4 border-t border-gray-200 dark:border-gray-700">
               <div className="grid grid-cols-1 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Round Name</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Round Name</label>
                   <input type="text" value={round.name} onChange={(e) => updateRound(index, { name: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                     placeholder="e.g. Resume Screening, Technical Assessment" />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Description</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Description</label>
                   <textarea value={round.description} onChange={(e) => updateRound(index, { description: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                     placeholder="Brief description of this round" rows={2} />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Instructions for Candidates</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Instructions for Candidates</label>
                   <textarea value={round.instructions} onChange={(e) => updateRound(index, { instructions: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                     placeholder="Instructions candidates will see for this round" rows={2} />
                 </div>
               </div>
 
               {/* Custom Fields for this Round */}
               <div>
-                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Round Fields</h4>
+                <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-2">Round Fields</h4>
                 <DynamicFieldBuilder fields={round.customFields} onChange={(fields) => updateRound(index, { customFields: fields })} />
               </div>
 
               {/* Evaluation Criteria */}
               <div>
-                <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Evaluation Criteria</h4>
+                <h4 className="text-xs font-semibold text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-2">Evaluation Criteria</h4>
                 <div className="space-y-2">
                   {round.evaluationCriteria.map((crit, ci) => (
                     <div key={crit.id} className="flex items-center gap-2">
                       <input type="text" value={crit.criterion} onChange={(e) => updateCriterion(index, ci, { criterion: e.target.value })}
-                        className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20"
+                        className="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                         placeholder="e.g. Communication Skills" />
                       <input type="number" value={crit.maxScore} onChange={(e) => updateCriterion(index, ci, { maxScore: Number(e.target.value) })}
-                        className="w-20 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20"
+                        className="w-20 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                         placeholder="Max" min={1} />
                       <button type="button" onClick={() => removeCriterion(index, ci)} className="p-1 text-red-400 hover:text-red-600">
                         <Trash2 className="w-3 h-3" />
@@ -134,7 +134,7 @@ export function RoundsManager({ rounds, onChange }: RoundsManagerProps) {
                     </div>
                   ))}
                   <button type="button" onClick={() => addCriterion(index)}
-                    className="text-xs text-gray-500 hover:text-black flex items-center gap-1">
+                    className="text-xs text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white flex items-center gap-1">
                     <Plus className="w-3 h-3" /> Add Criterion
                   </button>
                 </div>
@@ -145,7 +145,7 @@ export function RoundsManager({ rounds, onChange }: RoundsManagerProps) {
       ))}
 
       <button type="button" onClick={addRound}
-        className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-black hover:text-black transition-colors flex items-center justify-center gap-2">
+        className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-500 dark:text-gray-500 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-colors flex items-center justify-center gap-2">
         <Plus className="w-4 h-4" /> Add Hiring Round
       </button>
     </div>

@@ -57,7 +57,7 @@ export default function CompanyDetailPage() {
   if (loading) {
     return (
       <div className="flex items-center justify-center py-20">
-        <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
+        <Loader2 className="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500" />
       </div>
     );
   }
@@ -65,8 +65,8 @@ export default function CompanyDetailPage() {
   if (!company) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-8 text-center">
-        <h2 className="text-xl font-semibold text-gray-600">Company not found</h2>
-        <Link to="/companies" className="text-sm text-blue-600 hover:underline mt-2 inline-block">Browse companies</Link>
+        <h2 className="text-xl font-semibold text-gray-600 dark:text-gray-400">Company not found</h2>
+        <Link to="/companies" className="text-sm text-blue-600 dark:text-blue-400 hover:underline mt-2 inline-block">Browse companies</Link>
       </div>
     );
   }
@@ -76,28 +76,28 @@ export default function CompanyDetailPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       {/* Back */}
-      <Link to="/companies" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-black mb-6 no-underline">
+      <Link to="/companies" className="inline-flex items-center gap-1 text-sm text-gray-500 dark:text-gray-500 hover:text-black dark:hover:text-white mb-6 no-underline">
         <ArrowLeft className="w-4 h-4" /> Back to companies
       </Link>
 
       {/* Header */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 mb-6">
         <div className="flex items-start gap-5">
           {company.logo ? (
-            <img src={`http://localhost:3000${company.logo}`} alt={company.name} className="w-20 h-20 rounded-xl object-cover border border-gray-100" />
+            <img src={`http://localhost:3000${company.logo}`} alt={company.name} className="w-20 h-20 rounded-xl object-cover border border-gray-100 dark:border-gray-800" />
           ) : (
-            <div className="w-20 h-20 rounded-xl bg-gray-100 flex items-center justify-center shrink-0">
-              <Building2 className="w-8 h-8 text-gray-400" />
+            <div className="w-20 h-20 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
+              <Building2 className="w-8 h-8 text-gray-400 dark:text-gray-500" />
             </div>
           )}
           <div className="flex-1">
             <div className="flex items-center gap-3">
-              <h1 className="text-2xl font-bold text-gray-900">{company.name}</h1>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{company.name}</h1>
               {company.hiringStatus && (
-                <span className="px-3 py-1 bg-green-50 text-green-700 text-sm font-medium rounded-full">Hiring</span>
+                <span className="px-3 py-1 bg-green-50 text-green-700 dark:bg-green-900/30 dark:text-green-400 text-sm font-medium rounded-full">Hiring</span>
               )}
             </div>
-            <div className="flex items-center gap-4 mt-2 text-sm text-gray-500">
+            <div className="flex items-center gap-4 mt-2 text-sm text-gray-500 dark:text-gray-500">
               <span className="flex items-center gap-1"><MapPin className="w-4 h-4" />{company.city}{company.state ? `, ${company.state}` : ""}</span>
               <span>{company.industry}</span>
               <span className="flex items-center gap-1"><Users className="w-4 h-4" />{SIZE_LABELS[company.size] ?? company.size}</span>
@@ -105,32 +105,32 @@ export default function CompanyDetailPage() {
             </div>
             <div className="flex items-center gap-2 mt-3">
               <StarRating rating={Math.round(company.avgRating)} size="sm" />
-              <span className="text-sm font-medium text-gray-700">{company.avgRating > 0 ? company.avgRating.toFixed(1) : "No ratings"}</span>
-              <span className="text-xs text-gray-400">({company.reviewCount} reviews)</span>
+              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{company.avgRating > 0 ? company.avgRating.toFixed(1) : "No ratings"}</span>
+              <span className="text-xs text-gray-400 dark:text-gray-500">({company.reviewCount} reviews)</span>
             </div>
           </div>
         </div>
       </div>
 
       {/* Overview */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
-        <h2 className="text-lg font-semibold text-gray-900 mb-3">About</h2>
-        <p className="text-sm text-gray-600 leading-relaxed whitespace-pre-line">{company.description}</p>
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 mb-6">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">About</h2>
+        <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-line">{company.description}</p>
         {company.mission && (
           <div className="mt-4">
-            <h3 className="text-sm font-medium text-gray-700 mb-1">Mission</h3>
-            <p className="text-sm text-gray-600">{company.mission}</p>
+            <h3 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Mission</h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400">{company.mission}</p>
           </div>
         )}
       </div>
 
       {/* Technologies */}
       {company.technologies.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Technologies</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Technologies</h2>
           <div className="flex flex-wrap gap-2">
             {company.technologies.map((tech) => (
-              <span key={tech} className="px-3 py-1.5 bg-blue-50 text-blue-700 text-sm rounded-lg font-medium">{tech}</span>
+              <span key={tech} className="px-3 py-1.5 bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 text-sm rounded-lg font-medium">{tech}</span>
             ))}
           </div>
         </div>
@@ -138,16 +138,16 @@ export default function CompanyDetailPage() {
 
       {/* Links */}
       {(company.website || Object.keys(socialLinks).length > 0) && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Links</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Links</h2>
           <div className="flex flex-wrap gap-3">
             {company.website && (
-              <a href={company.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg text-sm text-gray-700 hover:bg-gray-100 no-underline">
+              <a href={company.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline">
                 <Globe className="w-4 h-4" /> Website <ExternalLink className="w-3 h-3" />
               </a>
             )}
             {Object.entries(socialLinks).map(([platform, url]) => (
-              <a key={platform} href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg text-sm text-gray-700 hover:bg-gray-100 no-underline capitalize">
+              <a key={platform} href={url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 px-4 py-2 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline capitalize">
                 {platform} <ExternalLink className="w-3 h-3" />
               </a>
             ))}
@@ -157,8 +157,8 @@ export default function CompanyDetailPage() {
 
       {/* Photos */}
       {company.photos.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Photos</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Photos</h2>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {company.photos.map((photo, i) => (
               <img key={i} src={`http://localhost:3000${photo}`} alt="" className="w-full h-40 object-cover rounded-lg" />
@@ -169,26 +169,26 @@ export default function CompanyDetailPage() {
 
       {/* Contacts */}
       {company.contacts && company.contacts.length > 0 && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Key People</h2>
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 mb-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Key People</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             {company.contacts.map((contact) => (
-              <div key={contact.id} className="p-4 bg-gray-50 rounded-lg">
-                <p className="text-sm font-semibold text-gray-900">{contact.name}</p>
-                <p className="text-xs text-gray-500 mb-2">{contact.designation}</p>
+              <div key={contact.id} className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
+                <p className="text-sm font-semibold text-gray-900 dark:text-white">{contact.name}</p>
+                <p className="text-xs text-gray-500 dark:text-gray-500 mb-2">{contact.designation}</p>
                 <div className="space-y-1">
                   {contact.email && (
-                    <a href={`mailto:${contact.email}`} className="flex items-center gap-2 text-xs text-gray-600 hover:text-black no-underline">
+                    <a href={`mailto:${contact.email}`} className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white no-underline">
                       <Mail className="w-3.5 h-3.5" /> {contact.email}
                     </a>
                   )}
                   {contact.phone && (
-                    <p className="flex items-center gap-2 text-xs text-gray-600">
+                    <p className="flex items-center gap-2 text-xs text-gray-600 dark:text-gray-400">
                       <Phone className="w-3.5 h-3.5" /> {contact.phone}
                     </p>
                   )}
                   {contact.linkedinUrl && (
-                    <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-blue-600 hover:underline no-underline">
+                    <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 text-xs text-blue-600 dark:text-blue-400 hover:underline no-underline">
                       <Linkedin className="w-3.5 h-3.5" /> LinkedIn Profile
                     </a>
                   )}
@@ -200,14 +200,14 @@ export default function CompanyDetailPage() {
       )}
 
       {/* Reviews */}
-      <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6 mb-6">
+      <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 mb-6">
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-lg font-semibold text-gray-900">Reviews ({reviews.length})</h2>
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Reviews ({reviews.length})</h2>
           <div className="flex items-center gap-3">
             <select
               value={sortBy}
               onChange={(e) => setSortBy(e.target.value)}
-              className="px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:outline-none"
+              className="px-3 py-1.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none dark:bg-gray-800 dark:text-white"
             >
               <option value="latest">Latest</option>
               <option value="highest">Highest Rating</option>
@@ -216,7 +216,7 @@ export default function CompanyDetailPage() {
             {isAuthenticated && user?.role === "STUDENT" && (
               <button
                 onClick={() => setShowReviewForm(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-medium rounded-lg hover:bg-gray-800 transition-colors"
+                className="flex items-center gap-2 px-4 py-2 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
               >
                 <MessageSquarePlus className="w-4 h-4" /> Write Review
               </button>
@@ -225,7 +225,7 @@ export default function CompanyDetailPage() {
         </div>
 
         {reviews.length === 0 ? (
-          <p className="text-sm text-gray-400 text-center py-8">No reviews yet. Be the first to share your experience!</p>
+          <p className="text-sm text-gray-400 dark:text-gray-500 text-center py-8">No reviews yet. Be the first to share your experience!</p>
         ) : (
           <div className="space-y-4">
             {reviews.map((review) => (
@@ -237,19 +237,19 @@ export default function CompanyDetailPage() {
 
       {/* Contribute */}
       {isAuthenticated && user?.role === "STUDENT" && (
-        <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-3">Contribute</h2>
-          <p className="text-sm text-gray-500 mb-4">Help keep company information accurate and up-to-date</p>
+        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm p-6">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Contribute</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-500 mb-4">Help keep company information accurate and up-to-date</p>
           <div className="flex gap-3">
             <button
               onClick={() => setShowEditModal(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               <PenLine className="w-4 h-4" /> Suggest Edit
             </button>
             <button
               onClick={() => setShowContactModal(true)}
-              className="flex items-center gap-2 px-4 py-2 border border-gray-200 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50"
+              className="flex items-center gap-2 px-4 py-2 border border-gray-200 dark:border-gray-700 rounded-lg text-sm font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
             >
               <UserPlus className="w-4 h-4" /> Add Contact
             </button>

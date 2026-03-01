@@ -4,6 +4,8 @@ import type { BaseScraper } from "./scrapers/base.scraper.js";
 import type { ScrapedJobData } from "./scrapers/base.scraper.js";
 import { RemotiveScraper } from "./scrapers/remotive.scraper.js";
 import { ArbeitnowScraper } from "./scrapers/arbeitnow.scraper.js";
+import { AdzunaScraper } from "./scrapers/adzuna.scraper.js";
+import { LinkedInScraper } from "./scrapers/linkedin.scraper.js";
 import type { Prisma } from "@prisma/client";
 
 interface ScrapedJobQuery {
@@ -24,6 +26,8 @@ export class ScraperService {
     this.scrapers = [
       new RemotiveScraper(),
       new ArbeitnowScraper(),
+      new AdzunaScraper(),
+      new LinkedInScraper(),
     ];
   }
 

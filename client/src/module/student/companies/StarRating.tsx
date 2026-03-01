@@ -23,7 +23,7 @@ export default function StarRating({ rating, onRate, size = "md" }: StarRatingPr
             className={`${sizeClass} ${
               star <= rating
                 ? "text-yellow-400 fill-yellow-400"
-                : "text-gray-300"
+                : "text-gray-300 dark:text-gray-600"
             }`}
           />
         </button>

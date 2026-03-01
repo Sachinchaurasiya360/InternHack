@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router";
-import { LayoutDashboard, Users, Briefcase, ScrollText, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, Compass } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, ScrollText, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, Compass, BookOpen } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useNavigate } from "react-router";
 
@@ -65,6 +65,10 @@ export default function AdminLayout() {
           <NavLink to="/admin/careers" className={linkClass}>
             <Compass className="w-4 h-4" />
             Careers
+          </NavLink>
+          <NavLink to="/admin/blog" className={linkClass}>
+            <BookOpen className="w-4 h-4" />
+            Blog
           </NavLink>
         </nav>
 

@@ -34,14 +34,14 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
   if (criteria.length === 0) {
     return (
       <div className="space-y-3">
-        <p className="text-sm text-gray-500">No evaluation criteria defined for this round.</p>
+        <p className="text-sm text-gray-500 dark:text-gray-500">No evaluation criteria defined for this round.</p>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Notes</label>
           <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
-            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" rows={3} placeholder="Add evaluation notes..." />
+            className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-800 dark:text-white" rows={3} placeholder="Add evaluation notes..." />
         </div>
         <button onClick={handleSubmit} disabled={loading}
-          className="px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-50">
+          className="px-4 py-2 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-50">
           {loading ? "Saving..." : "Save Notes"}
         </button>
       </div>
@@ -53,8 +53,8 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
       {criteria.map((crit) => (
         <div key={crit.id} className="space-y-2">
           <div className="flex items-center justify-between">
-            <label className="text-sm font-medium text-gray-700">{crit.criterion}</label>
-            <span className="text-xs text-gray-400">Max: {crit.maxScore}</span>
+            <label className="text-sm font-medium text-gray-700 dark:text-gray-300">{crit.criterion}</label>
+            <span className="text-xs text-gray-400 dark:text-gray-500">Max: {crit.maxScore}</span>
           </div>
           <div className="flex items-center gap-3">
             <input
@@ -65,26 +65,26 @@ export function EvaluationForm({ applicationId, roundId, criteria, onComplete }:
               onChange={(e) => setScores({ ...scores, [crit.id]: { ...scores[crit.id]!, score: Number(e.target.value) } })}
               className="flex-1"
             />
-            <span className="text-sm font-bold w-10 text-right">{scores[crit.id]?.score || 0}</span>
+            <span className="text-sm font-bold w-10 text-right dark:text-white">{scores[crit.id]?.score || 0}</span>
           </div>
           <input
             type="text"
             value={scores[crit.id]?.comment || ""}
             onChange={(e) => setScores({ ...scores, [crit.id]: { ...scores[crit.id]!, comment: e.target.value } })}
-            className="w-full px-3 py-1.5 text-xs border border-gray-200 rounded-lg"
+            className="w-full px-3 py-1.5 text-xs border border-gray-200 dark:border-gray-600 rounded-lg dark:bg-gray-800 dark:text-white"
             placeholder="Comment (optional)"
           />
         </div>
       ))}
 
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-1">Overall Notes</label>
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Overall Notes</label>
         <textarea value={notes} onChange={(e) => setNotes(e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm" rows={2} placeholder="Add notes..." />
+          className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg text-sm dark:bg-gray-800 dark:text-white" rows={2} placeholder="Add notes..." />
       </div>
 
       <button onClick={handleSubmit} disabled={loading}
-        className="px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-50">
+        className="px-4 py-2 bg-black dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 disabled:opacity-50">
         {loading ? "Saving..." : "Save Evaluation"}
       </button>
     </div>

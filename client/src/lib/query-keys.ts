@@ -59,4 +59,35 @@ export const queryKeys = {
   stats: {
     landing: () => ["stats", "landing"] as const,
   },
+
+  // Recruiter
+  recruiter: {
+    talentSearch: (params?: Record<string, string | number>) =>
+      ["recruiter", "talent-search", params] as const,
+  },
+
+  // Quiz
+  quiz: {
+    forSkill: (skillId: string | number) => ["quiz", "skill", skillId] as const,
+    myAttempts: () => ["quiz", "my-attempts"] as const,
+  },
+
+  // GSoC
+  gsoc: {
+    list: (params?: Record<string, string | number>) =>
+      ["gsoc", "list", params] as const,
+    detail: (slug: string) => ["gsoc", "detail", slug] as const,
+    stats: () => ["gsoc", "stats"] as const,
+  },
+
+  // Blog
+  blog: {
+    list: (params?: Record<string, string | number>) =>
+      ["blog", "list", params] as const,
+    detail: (slug: string) => ["blog", "detail", slug] as const,
+    featured: () => ["blog", "featured"] as const,
+    admin: (params?: Record<string, string | number>) =>
+      ["blog", "admin", params] as const,
+  },
+
 };

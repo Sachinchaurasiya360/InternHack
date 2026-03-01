@@ -47,12 +47,12 @@ export default function ApplicationProgressPage() {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-black mb-4">
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-black dark:hover:text-white mb-4">
         <ArrowLeft className="w-4 h-4" /> Back
       </button>
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900">{application.job?.title}</h1>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{application.job?.title}</h1>
         <p className="text-gray-500">{application.job?.company}</p>
         <span className={`inline-block mt-2 px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status)}`}>
           {application.status}
@@ -70,8 +70,8 @@ export default function ApplicationProgressPage() {
 
           return (
             <motion.div key={round.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
-              className={`bg-white rounded-xl border shadow-sm overflow-hidden ${
-                isActive ? "border-black" : "border-gray-100"
+              className={`bg-white dark:bg-gray-900 rounded-xl border shadow-sm overflow-hidden ${
+                isActive ? "border-black dark:border-white" : "border-gray-100 dark:border-gray-800"
               }`}>
               <div className="p-6">
                 <div className="flex items-center gap-3 mb-2">
@@ -80,13 +80,13 @@ export default function ApplicationProgressPage() {
                   ) : isActive ? (
                     <Clock className="w-5 h-5 text-yellow-500" />
                   ) : (
-                    <Circle className="w-5 h-5 text-gray-300" />
+                    <Circle className="w-5 h-5 text-gray-300 dark:text-gray-600" />
                   )}
-                  <h3 className="font-semibold text-gray-900">Round {i + 1}: {round.name}</h3>
+                  <h3 className="font-semibold text-gray-900 dark:text-white">Round {i + 1}: {round.name}</h3>
                   <span className={`text-xs px-2 py-0.5 rounded-full ${
-                    isCompleted ? "bg-green-100 text-green-700" :
-                    isActive ? "bg-yellow-100 text-yellow-700" :
-                    "bg-gray-100 text-gray-500"
+                    isCompleted ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" :
+                    isActive ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" :
+                    "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-500"
                   }`}>
                     {isCompleted ? "Completed" : isActive ? "In Progress" : "Pending"}
                   </span>
@@ -94,17 +94,17 @@ export default function ApplicationProgressPage() {
 
                 {round.description && <p className="text-sm text-gray-500 ml-8 mb-2">{round.description}</p>}
                 {round.instructions && (
-                  <div className="ml-8 p-3 bg-blue-50 rounded-lg text-sm text-blue-700 mb-3">
+                  <div className="ml-8 p-3 bg-blue-50 dark:bg-blue-900/30 rounded-lg text-sm text-blue-700 dark:text-blue-400 mb-3">
                     {round.instructions}
                   </div>
                 )}
 
                 {/* Show completed submission data */}
                 {isCompleted && submission?.fieldAnswers && Object.keys(submission.fieldAnswers).length > 0 && (
-                  <div className="ml-8 mt-2 p-3 bg-gray-50 rounded-lg text-sm">
+                  <div className="ml-8 mt-2 p-3 bg-gray-50 dark:bg-gray-800 rounded-lg text-sm">
                     <p className="font-medium text-gray-500 mb-1">Your Submission:</p>
                     {Object.entries(submission.fieldAnswers).map(([key, val]) => (
-                      <div key={key} className="text-gray-600">{key}: {String(val)}</div>
+                      <div key={key} className="text-gray-600 dark:text-gray-400">{key}: {String(val)}</div>
                     ))}
                   </div>
                 )}
@@ -123,17 +123,17 @@ export default function ApplicationProgressPage() {
                         )}
                         <div className="flex items-center gap-3">
                           <button onClick={() => handleSubmitRound(round.id)} disabled={submitting}
-                            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-50">
+                            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-50 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
                             <Send className="w-4 h-4" />
                             {submitting ? "Submitting..." : "Submit Round"}
                           </button>
                           <button onClick={() => setActiveRoundId(null)}
-                            className="px-4 py-2 text-sm text-gray-500 hover:text-black">Cancel</button>
+                            className="px-4 py-2 text-sm text-gray-500 hover:text-black dark:hover:text-white">Cancel</button>
                         </div>
                       </div>
                     ) : (
                       <button onClick={() => setActiveRoundId(round.id)}
-                        className="px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors">
+                        className="px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
                         Start Round
                       </button>
                     )}
@@ -142,7 +142,7 @@ export default function ApplicationProgressPage() {
 
                 {/* Pending round */}
                 {isPending && !isActive && (
-                  <p className="ml-8 text-sm text-gray-400">Complete the previous round to unlock this one.</p>
+                  <p className="ml-8 text-sm text-gray-400 dark:text-gray-500">Complete the previous round to unlock this one.</p>
                 )}
               </div>
             </motion.div>
@@ -155,12 +155,12 @@ export default function ApplicationProgressPage() {
 
 function getStatusColor(status: string) {
   switch (status) {
-    case "APPLIED": return "bg-blue-100 text-blue-700";
-    case "IN_PROGRESS": return "bg-yellow-100 text-yellow-700";
-    case "SHORTLISTED": return "bg-green-100 text-green-700";
-    case "REJECTED": return "bg-red-100 text-red-700";
-    case "HIRED": return "bg-emerald-100 text-emerald-700";
-    case "WITHDRAWN": return "bg-gray-100 text-gray-700";
-    default: return "bg-gray-100 text-gray-700";
+    case "APPLIED": return "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400";
+    case "IN_PROGRESS": return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
+    case "SHORTLISTED": return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
+    case "REJECTED": return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+    case "HIRED": return "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400";
+    case "WITHDRAWN": return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
+    default: return "bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300";
   }
 }

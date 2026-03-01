@@ -34,7 +34,7 @@ export default function JobBrowsePage() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <SEO
         title="Browse Jobs"
         description="Find your next internship or job opportunity. Browse curated listings from top companies, filter by location and role, and apply directly."
@@ -42,27 +42,27 @@ export default function JobBrowsePage() {
       />
       <Navbar />
       <div className="max-w-7xl mx-auto px-6 pt-24 pb-12">
-        <h1 className="text-3xl font-bold text-gray-900 mb-2">Find Your Next Opportunity</h1>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white mb-2">Find Your Next Opportunity</h1>
         <p className="text-gray-500 mb-8">Browse open positions from top companies</p>
 
         {/* Search */}
         <div className="flex items-center gap-3 mb-8">
           <div className="flex-1 relative">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && applySearch()}
-              className="w-full pl-12 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 text-sm"
+              className="w-full pl-12 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
               placeholder="Search jobs by title, company, or description..." />
           </div>
           <div className="relative">
-            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
             <input type="text" value={location} onChange={(e) => setLocation(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && applySearch()}
-              className="pl-10 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 text-sm w-48"
+              className="pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm w-48 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
               placeholder="Location" />
           </div>
           <button onClick={applySearch}
-            className="px-6 py-3 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors">
+            className="px-6 py-3 bg-black text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
             Search
           </button>
         </div>
@@ -76,16 +76,16 @@ export default function JobBrowsePage() {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {(data?.jobs ?? []).map((job, i) => (
                 <motion.div key={job.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.05 }}>
-                  <Link to={`/jobs/${job.id}`} className="block bg-white p-6 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow no-underline">
+                  <Link to={`/jobs/${job.id}`} className="block bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow no-underline">
                     <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-lg font-semibold text-gray-900 line-clamp-1">{job.title}</h3>
+                      <h3 className="text-lg font-semibold text-gray-900 dark:text-white line-clamp-1">{job.title}</h3>
                       {job._count && (
-                        <span className="text-xs text-gray-400 shrink-0 ml-2">{job._count.applications} applied</span>
+                        <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0 ml-2">{job._count.applications} applied</span>
                       )}
                     </div>
                     <div className="flex items-center gap-2 mb-2">
-                      <Building2 className="w-4 h-4 text-gray-400" />
-                      <span className="text-sm text-gray-600">{job.company}</span>
+                      <Building2 className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                      <span className="text-sm text-gray-600 dark:text-gray-400">{job.company}</span>
                     </div>
                     <p className="text-sm text-gray-500 line-clamp-2 mb-4">{job.description}</p>
                     <div className="flex flex-wrap gap-3 text-xs text-gray-500">
@@ -98,7 +98,7 @@ export default function JobBrowsePage() {
                     {job.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mt-3">
                         {job.tags.slice(0, 3).map((tag) => (
-                          <span key={tag} className="px-2 py-0.5 bg-gray-100 text-gray-600 rounded text-xs">{tag}</span>
+                          <span key={tag} className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 rounded text-xs">{tag}</span>
                         ))}
                       </div>
                     )}
@@ -110,10 +110,10 @@ export default function JobBrowsePage() {
             {data?.pagination && data.pagination.totalPages > 1 && (
               <div className="flex items-center justify-center gap-2 mt-8">
                 <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1}
-                  className="px-4 py-2 text-sm border border-gray-300 rounded-lg disabled:opacity-30">Previous</button>
+                  className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-30 dark:text-gray-300">Previous</button>
                 <span className="text-sm text-gray-500">Page {page} of {data.pagination.totalPages}</span>
                 <button onClick={() => setPage(Math.min(data.pagination.totalPages, page + 1))} disabled={page === data.pagination.totalPages}
-                  className="px-4 py-2 text-sm border border-gray-300 rounded-lg disabled:opacity-30">Next</button>
+                  className="px-4 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg disabled:opacity-30 dark:text-gray-300">Next</button>
               </div>
             )}
           </>

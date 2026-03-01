@@ -38,9 +38,9 @@ export function PricingSection() {
   };
 
   return (
-    <section className="relative py-24 md:py-32 bg-white overflow-hidden">
+    <section className="relative py-24 md:py-32 bg-white dark:bg-gray-900 overflow-hidden">
       {/* Background decoration */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-linear-to-br from-indigo-50 to-violet-50 rounded-full blur-3xl opacity-40 pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-linear-to-br from-indigo-50 to-violet-50 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40 pointer-events-none" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-6">
         <motion.div
@@ -50,16 +50,16 @@ export function PricingSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-6">
             <Sparkles className="w-3.5 h-3.5" />
             Pricing
           </div>
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-gray-950 tracking-tight mb-4">
+          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
             Invest in your
             <br />
             <span className="text-gradient-accent">career growth</span>
           </h2>
-          <p className="text-lg text-gray-500 max-w-xl mx-auto">
+          <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
             Unlock premium features to accelerate your placement preparation and stand out from the crowd.
           </p>
         </motion.div>
@@ -74,17 +74,17 @@ export function PricingSection() {
           >
             <motion.div
               whileHover={{ y: -4 }}
-              className="relative rounded-2xl p-8 h-full flex flex-col bg-white border border-gray-200 hover:border-gray-300 hover:shadow-xl hover:shadow-gray-200/50 transition-all"
+              className="relative rounded-2xl p-8 h-full flex flex-col bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all"
             >
               <div className="mb-6">
-                <h3 className="text-lg font-bold text-gray-900 mb-1">Free</h3>
-                <p className="text-sm text-gray-500">Get started with essential features</p>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">Free</h3>
+                <p className="text-sm text-gray-500 dark:text-gray-500">Get started with essential features</p>
               </div>
 
               <div className="flex items-baseline gap-1 mb-8">
-                <span className="text-sm font-medium text-gray-500">₹</span>
-                <span className="text-5xl font-bold tracking-tight text-gray-950">0</span>
-                <span className="text-sm font-medium text-gray-500">/forever</span>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-500">₹</span>
+                <span className="text-5xl font-bold tracking-tight text-gray-950 dark:text-white">0</span>
+                <span className="text-sm font-medium text-gray-500 dark:text-gray-500">/forever</span>
               </div>
 
               <ul className="space-y-3 mb-8 flex-1">
@@ -93,9 +93,9 @@ export function PricingSection() {
                     {feature.included ? (
                       <Check className="w-4 h-4 mt-0.5 shrink-0 text-green-500" />
                     ) : (
-                      <X className="w-4 h-4 mt-0.5 shrink-0 text-gray-300" />
+                      <X className="w-4 h-4 mt-0.5 shrink-0 text-gray-300 dark:text-gray-600" />
                     )}
-                    <span className={`text-sm ${feature.included ? "text-gray-600" : "text-gray-400"}`}>
+                    <span className={`text-sm ${feature.included ? "text-gray-600 dark:text-gray-400" : "text-gray-400 dark:text-gray-500"}`}>
                       {feature.text}
                     </span>
                   </li>
@@ -104,14 +104,14 @@ export function PricingSection() {
 
               <button
                 onClick={() => navigate("/register")}
-                className="block w-full text-center py-3.5 px-6 rounded-xl text-sm font-semibold transition-all bg-gray-100 text-gray-700 hover:bg-gray-200 cursor-pointer border-0"
+                className="block w-full text-center py-3.5 px-6 rounded-xl text-sm font-semibold transition-all bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 cursor-pointer border-0"
               >
                 Sign Up Free
               </button>
             </motion.div>
           </motion.div>
 
-          {/* Pro Monthly Plan */}
+          {/* Pro Monthly Plan - already on dark background, no dark variants needed for inner elements */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -164,7 +164,7 @@ export function PricingSection() {
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ delay: 0.4 }}
-          className="text-center text-sm text-gray-400 mt-8"
+          className="text-center text-sm text-gray-400 dark:text-gray-500 mt-8"
         >
           No hidden fees. Cancel anytime. All prices inclusive of GST.
         </motion.p>

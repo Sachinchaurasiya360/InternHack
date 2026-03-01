@@ -26,7 +26,7 @@ const steps = [
 
 export function HowItWorksSection() {
   return (
-    <section className="relative py-24 md:py-32 bg-white overflow-hidden">
+    <section className="relative py-24 md:py-32 bg-white dark:bg-gray-900 overflow-hidden">
       <div className="max-w-6xl mx-auto px-6">
         <motion.div
           initial={{ opacity: 0, y: 30 }}
@@ -35,10 +35,10 @@ export function HowItWorksSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 border border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-6">
             How it works
           </div>
-          <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 tracking-tight mb-4">
+          <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
             Four steps to your
             <br />
             <span className="text-gradient-accent">next opportunity</span>
@@ -47,7 +47,7 @@ export function HowItWorksSection() {
 
         <div className="grid md:grid-cols-4 gap-8 relative">
           {/* Connecting line */}
-          <div className="hidden md:block absolute top-14 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200" />
+          <div className="hidden md:block absolute top-14 left-[12.5%] right-[12.5%] h-px bg-gradient-to-r from-gray-200 dark:from-gray-700 via-gray-300 dark:via-gray-600 to-gray-200 dark:to-gray-700" />
 
           {steps.map((step, i) => (
             <motion.div
@@ -58,16 +58,16 @@ export function HowItWorksSection() {
               transition={{ delay: i * 0.15, duration: 0.5 }}
               className="relative text-center"
             >
-              <div className="relative z-10 w-14 h-14 rounded-2xl bg-gray-950 flex items-center justify-center mx-auto mb-6 shadow-lg shadow-gray-950/20">
-                <step.icon className="w-6 h-6 text-white" />
+              <div className="relative z-10 w-14 h-14 rounded-2xl bg-gray-950 dark:bg-white flex items-center justify-center mx-auto mb-6 shadow-lg shadow-gray-950/20">
+                <step.icon className="w-6 h-6 text-white dark:text-gray-950" />
                 <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-indigo-500 text-white text-xs font-bold flex items-center justify-center">
                   {i + 1}
                 </div>
               </div>
-              <h3 className="font-display text-base font-bold text-gray-900 mb-2">
+              <h3 className="font-display text-base font-bold text-gray-900 dark:text-white mb-2">
                 {step.title}
               </h3>
-              <p className="text-sm text-gray-500 leading-relaxed">
+              <p className="text-sm text-gray-500 dark:text-gray-500 leading-relaxed">
                 {step.description}
               </p>
             </motion.div>

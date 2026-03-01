@@ -11,7 +11,7 @@ import { SEO } from "../../components/SEO"
 
 export default function LandingPage(){
     return(
-        <div className="font-sans">
+        <div className="font-sans bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
             <SEO
               title="Home"
               description="InternHack is an AI-powered career platform for students. Browse curated internships, score your resume with ATS AI, follow career roadmaps, and connect with recruiters."

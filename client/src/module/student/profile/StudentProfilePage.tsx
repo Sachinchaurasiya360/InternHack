@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Phone, Building2, Briefcase, FileText, Save, Loader2, CheckCircle, Upload, Trash2, Camera, ExternalLink } from "lucide-react";
+import { User, Mail, Phone, Building2, Briefcase, FileText, Save, Loader2, CheckCircle, Upload, Trash2, Camera, ExternalLink, MapPin, GraduationCap, Linkedin, Github, Globe, X, Plus, AlignLeft } from "lucide-react";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
@@ -14,6 +14,14 @@ interface ProfileData {
   designation: string;
   resumes: string[];
   profilePic: string;
+  bio: string;
+  college: string;
+  graduationYear: number | null;
+  skills: string[];
+  location: string;
+  linkedinUrl: string;
+  githubUrl: string;
+  portfolioUrl: string;
 }
 
 function getFileNameFromUrl(url: string): string {
@@ -21,7 +29,6 @@ function getFileNameFromUrl(url: string): string {
     const pathname = new URL(url).pathname;
     const parts = pathname.split("/");
     const full = decodeURIComponent(parts[parts.length - 1] ?? "resume.pdf");
-    // Strip the timestamp suffix: "name-1234567890-1234567.pdf" → "name.pdf"
     const match = full.match(/^(.+)-\d+-\d+(\.\w+)$/);
     return match ? `${match[1]}${match[2]}` : full;
   } catch {
@@ -34,14 +41,12 @@ const MAX_RESUMES = 2;
 export default function StudentProfilePage() {
   const { user, setUser } = useAuthStore();
   const [form, setForm] = useState<ProfileData>({
-    name: "",
-    email: "",
-    contactNo: "",
-    company: "",
-    designation: "",
-    resumes: [],
-    profilePic: "",
+    name: "", email: "", contactNo: "", company: "", designation: "",
+    resumes: [], profilePic: "", bio: "", college: "",
+    graduationYear: null, skills: [], location: "",
+    linkedinUrl: "", githubUrl: "", portfolioUrl: "",
   });
+  const [skillInput, setSkillInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingPic, setUploadingPic] = useState(false);
@@ -55,43 +60,73 @@ export default function StudentProfilePage() {
       .then((res) => {
         const u = res.data.user;
         setForm({
-          name: u.name ?? "",
-          email: u.email ?? "",
-          contactNo: u.contactNo ?? "",
-          company: u.company ?? "",
-          designation: u.designation ?? "",
-          resumes: u.resumes ?? [],
-          profilePic: u.profilePic ?? "",
+          name: u.name ?? "", email: u.email ?? "", contactNo: u.contactNo ?? "",
+          company: u.company ?? "", designation: u.designation ?? "",
+          resumes: u.resumes ?? [], profilePic: u.profilePic ?? "",
+          bio: u.bio ?? "", college: u.college ?? "",
+          graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
+          location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
+          githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
         });
       })
       .catch(() => toast.error("Failed to load profile"))
       .finally(() => setLoading(false));
   }, []);
 
-  const handleChange = (field: "name" | "contactNo" | "company" | "designation", value: string) => {
+  const handleChange = (field: keyof ProfileData, value: string | number | null) => {
     setForm((prev) => ({ ...prev, [field]: value }));
   };
 
   const syncUser = (updated: ProfileData) => {
-    setUser({ ...user!, name: updated.name, contactNo: updated.contactNo, company: updated.company, designation: updated.designation, resumes: updated.resumes, profilePic: updated.profilePic });
+    setUser({
+      ...user!, name: updated.name, contactNo: updated.contactNo,
+      company: updated.company, designation: updated.designation,
+      resumes: updated.resumes, profilePic: updated.profilePic,
+      bio: updated.bio, college: updated.college,
+      graduationYear: updated.graduationYear, skills: updated.skills,
+      location: updated.location, linkedinUrl: updated.linkedinUrl,
+      githubUrl: updated.githubUrl, portfolioUrl: updated.portfolioUrl,
+    });
+  };
+
+  const handleAddSkill = () => {
+    const skill = skillInput.trim();
+    if (!skill) return;
+    if (form.skills.length >= 20) { toast.error("Maximum 20 skills"); return; }
+    if (form.skills.some((s) => s.toLowerCase() === skill.toLowerCase())) { toast.error("Skill already added"); return; }
+    setForm((prev) => ({ ...prev, skills: [...prev.skills, skill] }));
+    setSkillInput("");
+  };
+
+  const handleRemoveSkill = (index: number) => {
+    setForm((prev) => ({ ...prev, skills: prev.skills.filter((_, i) => i !== index) }));
   };
 
   const handleSave = async () => {
     if (!form.name.trim() || form.name.trim().length < 2) {
-      toast.error("Name must be at least 2 characters");
-      return;
+      toast.error("Name must be at least 2 characters"); return;
     }
     setSaving(true);
     try {
       const res = await api.put("/auth/me", {
-        name: form.name.trim(),
-        contactNo: form.contactNo.trim(),
-        company: form.company.trim(),
-        designation: form.designation.trim(),
+        name: form.name.trim(), contactNo: form.contactNo.trim(),
+        company: form.company.trim(), designation: form.designation.trim(),
+        bio: form.bio.trim(), college: form.college.trim(),
+        graduationYear: form.graduationYear || null, skills: form.skills,
+        location: form.location.trim(), linkedinUrl: form.linkedinUrl.trim(),
+        githubUrl: form.githubUrl.trim(), portfolioUrl: form.portfolioUrl.trim(),
       });
       const u = res.data.user;
-      setForm((prev) => ({ ...prev, name: u.name, contactNo: u.contactNo ?? "", company: u.company ?? "", designation: u.designation ?? "" }));
-      syncUser({ ...form, name: u.name, contactNo: u.contactNo ?? "", company: u.company ?? "", designation: u.designation ?? "" });
+      const updated: ProfileData = {
+        ...form, name: u.name, contactNo: u.contactNo ?? "",
+        company: u.company ?? "", designation: u.designation ?? "",
+        bio: u.bio ?? "", college: u.college ?? "",
+        graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
+        location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
+        githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
+      };
+      setForm(updated);
+      syncUser(updated);
       toast.success("Profile updated!");
     } catch {
       toast.error("Failed to update profile");
@@ -123,10 +158,7 @@ export default function StudentProfilePage() {
   const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (form.resumes.length >= MAX_RESUMES) {
-      toast.error(`Maximum ${MAX_RESUMES} resumes allowed`);
-      return;
-    }
+    if (form.resumes.length >= MAX_RESUMES) { toast.error(`Maximum ${MAX_RESUMES} resumes allowed`); return; }
     setUploadingResume(true);
     try {
       const fd = new FormData();
@@ -160,12 +192,14 @@ export default function StudentProfilePage() {
     }
   };
 
+  const inputClass = "w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-300 transition-all dark:bg-gray-800 dark:text-white";
+
   if (loading) {
     return (
       <div className="max-w-2xl mx-auto">
         <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 rounded w-1/3" />
-          <div className="h-64 bg-gray-200 rounded-2xl" />
+          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
+          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-2xl" />
         </div>
       </div>
     );
@@ -176,200 +210,190 @@ export default function StudentProfilePage() {
       <SEO title="My Profile" description="Update your InternHack student profile details." noIndex />
 
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-gray-900 mb-1">My Profile</h1>
-        <p className="text-sm text-gray-500 mb-6">Update your personal information</p>
+        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">My Profile</h1>
+        <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">Update your personal information — a complete profile helps recruiters find you</p>
 
         {/* Avatar with upload */}
         <div className="flex items-center gap-4 mb-8">
           <div className="relative group">
-            <div className="w-16 h-16 rounded-full bg-gray-900 text-white flex items-center justify-center text-2xl font-bold shrink-0 overflow-hidden">
+            <div className="w-16 h-16 rounded-full bg-gray-900 dark:bg-gray-700 text-white flex items-center justify-center text-2xl font-bold shrink-0 overflow-hidden">
               {form.profilePic ? (
                 <img src={form.profilePic} alt={form.name} className="w-16 h-16 rounded-full object-cover" />
-              ) : (
-                form.name.charAt(0).toUpperCase()
-              )}
+              ) : (form.name.charAt(0).toUpperCase())}
             </div>
-            <button
-              type="button"
-              onClick={() => picInputRef.current?.click()}
-              disabled={uploadingPic}
-              className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
-            >
-              {uploadingPic ? (
-                <Loader2 className="w-5 h-5 text-white animate-spin" />
-              ) : (
-                <Camera className="w-5 h-5 text-white" />
-              )}
+            <button type="button" onClick={() => picInputRef.current?.click()} disabled={uploadingPic}
+              className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+              {uploadingPic ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Camera className="w-5 h-5 text-white" />}
             </button>
             <input ref={picInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleProfilePicUpload} className="hidden" />
           </div>
           <div>
-            <h2 className="text-lg font-semibold text-gray-900">{form.name}</h2>
-            <p className="text-sm text-gray-500">{form.email}</p>
-            <button
-              type="button"
-              onClick={() => picInputRef.current?.click()}
-              disabled={uploadingPic}
-              className="text-xs text-violet-600 hover:text-violet-700 font-medium mt-0.5"
-            >
+            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{form.name}</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-500">{form.email}</p>
+            <button type="button" onClick={() => picInputRef.current?.click()} disabled={uploadingPic}
+              className="text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium mt-0.5">
               {uploadingPic ? "Uploading..." : "Change photo"}
             </button>
           </div>
         </div>
 
-        {/* Form */}
-        <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 space-y-5">
-          {/* Name */}
+        {/* Basic Info */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-5">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Basic Information</h3>
+
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
-              <User className="w-4 h-4 text-gray-400" /> Full Name
-            </label>
-            <input
-              type="text"
-              value={form.name}
-              onChange={(e) => handleChange("name", e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-300 transition-all"
-              placeholder="Your full name"
-            />
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><User className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Full Name</label>
+            <input type="text" value={form.name} onChange={(e) => handleChange("name", e.target.value)} className={inputClass} placeholder="Your full name" />
           </div>
 
-          {/* Email (read-only) */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
-              <Mail className="w-4 h-4 text-gray-400" /> Email
-            </label>
-            <input
-              type="email"
-              value={form.email}
-              disabled
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm bg-gray-50 text-gray-500 cursor-not-allowed"
-            />
-            <p className="text-xs text-gray-400 mt-1">Email cannot be changed</p>
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Mail className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Email</label>
+            <input type="email" value={form.email} disabled className={`${inputClass} bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-500 cursor-not-allowed`} />
           </div>
 
-          {/* Phone */}
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
-              <Phone className="w-4 h-4 text-gray-400" /> Phone Number
-            </label>
-            <input
-              type="tel"
-              value={form.contactNo}
-              onChange={(e) => handleChange("contactNo", e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-300 transition-all"
-              placeholder="+91 98765 43210"
-            />
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><AlignLeft className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Bio</label>
+            <textarea value={form.bio} onChange={(e) => handleChange("bio", e.target.value)} rows={3} maxLength={500}
+              className={`${inputClass} resize-none`} placeholder="A brief introduction about yourself..." />
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 text-right">{form.bio.length}/500</p>
           </div>
 
-          {/* Company / College */}
-          <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
-              <Building2 className="w-4 h-4 text-gray-400" /> Company / College
-            </label>
-            <input
-              type="text"
-              value={form.company}
-              onChange={(e) => handleChange("company", e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-300 transition-all"
-              placeholder="e.g. IIT Delhi"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Phone className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Phone</label>
+              <input type="tel" value={form.contactNo} onChange={(e) => handleChange("contactNo", e.target.value)} className={inputClass} placeholder="+91 98765 43210" />
+            </div>
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Location</label>
+              <input type="text" value={form.location} onChange={(e) => handleChange("location", e.target.value)} className={inputClass} placeholder="e.g. Mumbai, India" />
+            </div>
           </div>
-
-          {/* Designation / Role */}
-          <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
-              <Briefcase className="w-4 h-4 text-gray-400" /> Designation / Role
-            </label>
-            <input
-              type="text"
-              value={form.designation}
-              onChange={(e) => handleChange("designation", e.target.value)}
-              className="w-full px-4 py-2.5 border border-gray-200 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-300 transition-all"
-              placeholder="e.g. Computer Science Student"
-            />
-          </div>
-
-          {/* Resumes */}
-          <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-1.5">
-              <FileText className="w-4 h-4 text-gray-400" /> Resumes
-              <span className="ml-auto text-xs font-normal text-gray-400">{form.resumes.length}/{MAX_RESUMES}</span>
-            </label>
-
-            {form.resumes.length > 0 && (
-              <div className="space-y-2 mb-3">
-                {form.resumes.map((url) => (
-                  <div key={url} className="flex items-center gap-3 px-3.5 py-2.5 bg-gray-50 rounded-xl border border-gray-100">
-                    <FileText className="w-4 h-4 text-violet-500 shrink-0" />
-                    <span className="text-sm text-gray-700 truncate flex-1">{getFileNameFromUrl(url)}</span>
-                    <a href={url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-violet-600 transition-colors shrink-0">
-                      <ExternalLink className="w-3.5 h-3.5" />
-                    </a>
-                    <button
-                      type="button"
-                      onClick={() => handleResumeDelete(url)}
-                      disabled={deletingResume === url}
-                      className="text-gray-400 hover:text-red-500 transition-colors shrink-0 disabled:opacity-50"
-                    >
-                      {deletingResume === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
-                    </button>
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {form.resumes.length < MAX_RESUMES && (
-              <button
-                type="button"
-                onClick={() => resumeInputRef.current?.click()}
-                disabled={uploadingResume}
-                className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 rounded-xl text-sm text-gray-500 hover:border-violet-300 hover:text-violet-600 hover:bg-violet-50/30 transition-all disabled:opacity-50"
-              >
-                {uploadingResume ? (
-                  <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</>
-                ) : (
-                  <><Upload className="w-4 h-4" /> Upload Resume (PDF)</>
-                )}
-              </button>
-            )}
-            <input ref={resumeInputRef} type="file" accept=".pdf" onChange={handleResumeUpload} className="hidden" />
-            <p className="text-xs text-gray-400 mt-1.5">Upload up to {MAX_RESUMES} resumes. PDF only, max 10 MB each.</p>
-          </div>
-
-          {/* Save Button */}
-          <button
-            onClick={handleSave}
-            disabled={saving}
-            className="w-full py-3 bg-gray-900 text-white font-semibold rounded-xl hover:bg-gray-800 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {saving ? (
-              <>
-                <Loader2 className="w-4 h-4 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4" />
-                Save Changes
-              </>
-            )}
-          </button>
         </div>
 
+        {/* Education & Work */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-5 mt-4">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Education & Work</h3>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><GraduationCap className="w-4 h-4 text-gray-400 dark:text-gray-500" /> College</label>
+              <input type="text" value={form.college} onChange={(e) => handleChange("college", e.target.value)} className={inputClass} placeholder="e.g. IIT Delhi" />
+            </div>
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><GraduationCap className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Graduation Year</label>
+              <input type="number" value={form.graduationYear ?? ""} onChange={(e) => handleChange("graduationYear", e.target.value ? Number(e.target.value) : null)}
+                className={inputClass} placeholder="e.g. 2026" min={1990} max={2040} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Building2 className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Company</label>
+              <input type="text" value={form.company} onChange={(e) => handleChange("company", e.target.value)} className={inputClass} placeholder="e.g. Google" />
+            </div>
+            <div>
+              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Briefcase className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Role</label>
+              <input type="text" value={form.designation} onChange={(e) => handleChange("designation", e.target.value)} className={inputClass} placeholder="e.g. CS Student" />
+            </div>
+          </div>
+        </div>
+
+        {/* Skills */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-3 mt-4">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Skills <span className="text-xs font-normal text-gray-400 dark:text-gray-500 ml-1">{form.skills.length}/20</span></h3>
+
+          {form.skills.length > 0 && (
+            <div className="flex flex-wrap gap-2">
+              {form.skills.map((skill, i) => (
+                <span key={i} className="inline-flex items-center gap-1 px-3 py-1 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 text-sm rounded-lg">
+                  {skill}
+                  <button type="button" onClick={() => handleRemoveSkill(i)} className="text-violet-400 dark:text-violet-500 hover:text-violet-600 dark:hover:text-violet-300"><X className="w-3 h-3" /></button>
+                </span>
+              ))}
+            </div>
+          )}
+
+          <div className="flex gap-2">
+            <input type="text" value={skillInput} onChange={(e) => setSkillInput(e.target.value)}
+              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddSkill(); } }}
+              className={`${inputClass} flex-1`} placeholder="Type a skill and press Enter" />
+            <button type="button" onClick={handleAddSkill}
+              className="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-1">
+              <Plus className="w-4 h-4" /> Add
+            </button>
+          </div>
+        </div>
+
+        {/* Social Links */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-5 mt-4">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Social Links</h3>
+
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Linkedin className="w-4 h-4 text-gray-400 dark:text-gray-500" /> LinkedIn</label>
+            <input type="url" value={form.linkedinUrl} onChange={(e) => handleChange("linkedinUrl", e.target.value)} className={inputClass} placeholder="https://linkedin.com/in/yourname" />
+          </div>
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Github className="w-4 h-4 text-gray-400 dark:text-gray-500" /> GitHub</label>
+            <input type="url" value={form.githubUrl} onChange={(e) => handleChange("githubUrl", e.target.value)} className={inputClass} placeholder="https://github.com/yourname" />
+          </div>
+          <div>
+            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Globe className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Portfolio</label>
+            <input type="url" value={form.portfolioUrl} onChange={(e) => handleChange("portfolioUrl", e.target.value)} className={inputClass} placeholder="https://yourportfolio.com" />
+          </div>
+        </div>
+
+        {/* Resumes */}
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-3 mt-4">
+          <label className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+            <FileText className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Resumes
+            <span className="ml-auto text-xs font-normal text-gray-400 dark:text-gray-500">{form.resumes.length}/{MAX_RESUMES}</span>
+          </label>
+
+          {form.resumes.length > 0 && (
+            <div className="space-y-2">
+              {form.resumes.map((url) => (
+                <div key={url} className="flex items-center gap-3 px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                  <FileText className="w-4 h-4 text-violet-500 dark:text-violet-400 shrink-0" />
+                  <span className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1">{getFileNameFromUrl(url)}</span>
+                  <a href={url} target="_blank" rel="noopener noreferrer" className="text-gray-400 dark:text-gray-500 hover:text-violet-600 dark:hover:text-violet-400 transition-colors shrink-0"><ExternalLink className="w-3.5 h-3.5" /></a>
+                  <button type="button" onClick={() => handleResumeDelete(url)} disabled={deletingResume === url}
+                    className="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0 disabled:opacity-50">
+                    {deletingResume === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {form.resumes.length < MAX_RESUMES && (
+            <button type="button" onClick={() => resumeInputRef.current?.click()} disabled={uploadingResume}
+              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 dark:text-gray-500 hover:border-violet-300 dark:hover:border-violet-600 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50/30 dark:hover:bg-violet-900/10 transition-all disabled:opacity-50">
+              {uploadingResume ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Resume (PDF)</>}
+            </button>
+          )}
+          <input ref={resumeInputRef} type="file" accept=".pdf" onChange={handleResumeUpload} className="hidden" />
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">Upload up to {MAX_RESUMES} resumes. PDF only, max 10 MB each.</p>
+        </div>
+
+        {/* Save Button */}
+        <button onClick={handleSave} disabled={saving}
+          className="w-full mt-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-950 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+          {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : <><Save className="w-4 h-4" /> Save Changes</>}
+        </button>
+
         {/* Account Info */}
-        <div className="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
-          <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 text-green-500" />
-            Account Information
+        <div className="mt-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 mb-8">
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
+            <CheckCircle className="w-4 h-4 text-green-500" /> Account Information
           </h3>
           <div className="grid grid-cols-2 gap-4 text-sm">
             <div>
-              <span className="text-gray-400">Role</span>
-              <p className="font-medium text-gray-700 mt-0.5">{user?.role}</p>
+              <span className="text-gray-400 dark:text-gray-500">Role</span>
+              <p className="font-medium text-gray-700 dark:text-gray-300 mt-0.5">{user?.role}</p>
             </div>
             <div>
-              <span className="text-gray-400">Member since</span>
-              <p className="font-medium text-gray-700 mt-0.5">
+              <span className="text-gray-400 dark:text-gray-500">Member since</span>
+              <p className="font-medium text-gray-700 dark:text-gray-300 mt-0.5">
                 {user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" }) : "---"}
               </p>
             </div>

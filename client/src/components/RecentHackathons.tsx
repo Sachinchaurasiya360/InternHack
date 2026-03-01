@@ -28,7 +28,7 @@ const staggerContainer = {
 
 export function RecentHackathons() {
   const hackathons = [
-    
+
     {
       title: "Web3 Builder Fest",
       organizer: "BlockChain Inc",
@@ -59,8 +59,8 @@ export function RecentHackathons() {
       tags: ["Security", "Encryption", "Network"],
       status: "Completed",
     }
-   
-    
+
+
   ];
 
   return (
@@ -70,18 +70,18 @@ export function RecentHackathons() {
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={staggerContainer}
-      className="py-32 px-6 relative bg-white"
+      className="py-32 px-6 relative bg-white dark:bg-gray-900"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div variants={fadeInUp} className="text-center mb-16">
-          
-          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-black">
+
+          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-black dark:text-white">
             Recent{" "}
             <span className="underline decoration-4 underline-offset-8">
               Hackathons
             </span>
           </h2>
-          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">
             Join thousands of developers building the future
           </p>
         </motion.div>
@@ -92,27 +92,27 @@ export function RecentHackathons() {
               key={idx}
               variants={fadeInUp}
               whileHover={{ y: -10, scale: 1.02 }}
-              className="bg-white border-2 border-gray-200 p-6 hover:border-black hover:shadow-xl transition-all group"
+              className="bg-white dark:bg-gray-900 border-2 border-gray-200 dark:border-gray-700 p-6 hover:border-black dark:hover:border-white hover:shadow-xl transition-all group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Code className="w-5 h-5 " />
-                  <span className="text-sm text-gray-600 group-hover:text-gray-800">
+                  <Code className="w-5 h-5 dark:text-white" />
+                  <span className="text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200">
                     {hackathon.organizer}
                   </span>
                 </div>
                 <div
                   className={`px-3 py-1 text-xs font-bold ${
                     hackathon.status === "Live"
-                      ? "bg-black text-white group-hover:bg-white group-hover:text-black"
-                      : "bg-gray-200 text-gray-600 "
+                      ? "bg-black dark:bg-white text-white dark:text-black group-hover:bg-white dark:group-hover:bg-black group-hover:text-black dark:group-hover:text-white"
+                      : "bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400"
                   }`}
                 >
                   {hackathon.status}
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold mb-3 group-hover: transition-colors">
+              <h3 className="text-xl font-bold mb-3 dark:text-white group-hover: transition-colors">
                 {hackathon.title}
               </h3>
 
@@ -120,19 +120,19 @@ export function RecentHackathons() {
                 {hackathon.tags.map((tag, i) => (
                   <span
                     key={i}
-                    className="px-2 py-1 border border-black/20 group-hover:border-white/20 text-xs"
+                    className="px-2 py-1 border border-black/20 dark:border-white/20 group-hover:border-white/20 dark:group-hover:border-white/20 text-xs dark:text-white"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
 
-              <div className="space-y-2 mb-4 text-sm text-gray-600 group-hover:text-gray-800">
+              <div className="space-y-2 mb-4 text-sm text-gray-600 dark:text-gray-400 group-hover:text-gray-800 dark:group-hover:text-gray-200">
                 <div className="flex items-center gap-2">
                   <Award className="w-4 h-4" />
                   <span>
                     Prize:{" "}
-                    <strong className="text-black ">
+                    <strong className="text-black dark:text-white">
                       {hackathon.prize}
                     </strong>
                   </span>
@@ -154,7 +154,7 @@ export function RecentHackathons() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3 bg-black text-white group-hover:bg-white group-hover:text-black font-semibold transition-all flex items-center justify-center gap-2 border-2 border-black"
+                className="w-full py-3 bg-black dark:bg-white text-white dark:text-black group-hover:bg-white dark:group-hover:bg-black group-hover:text-black dark:group-hover:text-white font-semibold transition-all flex items-center justify-center gap-2 border-2 border-black dark:border-white"
               >
                 {hackathon.status === "Live" ? "Register Now" : "View Details"}
                 <ArrowRight className="w-4 h-4" />
@@ -167,7 +167,7 @@ export function RecentHackathons() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-3 border-2 border-black text-black font-semibold hover:bg-black hover:text-white transition-all"
+            className="px-8 py-3 border-2 border-black dark:border-white text-black dark:text-white font-semibold hover:bg-black dark:hover:bg-white hover:text-white dark:hover:text-black transition-all"
           >
             View All Hackathons →
           </motion.button>

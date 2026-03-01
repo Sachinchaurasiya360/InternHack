@@ -10,20 +10,20 @@ import { Navbar } from "../../components/Navbar";
 import toast from "react-hot-toast";
 
 const CATEGORY_CONFIG: Record<string, { pill: string; gradient: string; icon: string }> = {
-  ENGINEERING: { pill: "bg-blue-50 text-blue-700 border-blue-100", gradient: "from-blue-500 to-blue-600", icon: "bg-blue-50 text-blue-600" },
-  DESIGN:      { pill: "bg-pink-50 text-pink-700 border-pink-100", gradient: "from-pink-500 to-rose-600", icon: "bg-pink-50 text-pink-600" },
-  DATA:        { pill: "bg-purple-50 text-purple-700 border-purple-100", gradient: "from-purple-500 to-purple-600", icon: "bg-purple-50 text-purple-600" },
-  PRODUCT:     { pill: "bg-orange-50 text-orange-700 border-orange-100", gradient: "from-orange-400 to-amber-500", icon: "bg-orange-50 text-orange-600" },
-  MARKETING:   { pill: "bg-green-50 text-green-700 border-green-100", gradient: "from-green-500 to-emerald-600", icon: "bg-green-50 text-green-600" },
-  DEVOPS:      { pill: "bg-cyan-50 text-cyan-700 border-cyan-100", gradient: "from-cyan-500 to-teal-600", icon: "bg-cyan-50 text-cyan-600" },
-  SECURITY:    { pill: "bg-red-50 text-red-700 border-red-100", gradient: "from-red-500 to-red-600", icon: "bg-red-50 text-red-600" },
-  OTHER:       { pill: "bg-gray-50 text-gray-700 border-gray-200", gradient: "from-gray-500 to-gray-600", icon: "bg-gray-50 text-gray-600" },
+  ENGINEERING: { pill: "bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800", gradient: "from-blue-500 to-blue-600", icon: "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" },
+  DESIGN:      { pill: "bg-pink-50 text-pink-700 border-pink-100 dark:bg-pink-900/30 dark:text-pink-400 dark:border-pink-800", gradient: "from-pink-500 to-rose-600", icon: "bg-pink-50 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400" },
+  DATA:        { pill: "bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800", gradient: "from-purple-500 to-purple-600", icon: "bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400" },
+  PRODUCT:     { pill: "bg-orange-50 text-orange-700 border-orange-100 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800", gradient: "from-orange-400 to-amber-500", icon: "bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400" },
+  MARKETING:   { pill: "bg-green-50 text-green-700 border-green-100 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800", gradient: "from-green-500 to-emerald-600", icon: "bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400" },
+  DEVOPS:      { pill: "bg-cyan-50 text-cyan-700 border-cyan-100 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-800", gradient: "from-cyan-500 to-teal-600", icon: "bg-cyan-50 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400" },
+  SECURITY:    { pill: "bg-red-50 text-red-700 border-red-100 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800", gradient: "from-red-500 to-red-600", icon: "bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400" },
+  OTHER:       { pill: "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700", gradient: "from-gray-500 to-gray-600", icon: "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400" },
 };
 
 const DIFFICULTY_CONFIG: Record<string, { bg: string; text: string; label: string }> = {
-  BEGINNER: { bg: "bg-green-50", text: "text-green-700", label: "Beginner Friendly" },
-  INTERMEDIATE: { bg: "bg-amber-50", text: "text-amber-700", label: "Intermediate" },
-  ADVANCED: { bg: "bg-red-50", text: "text-red-700", label: "Advanced" },
+  BEGINNER: { bg: "bg-green-50 dark:bg-green-900/30", text: "text-green-700 dark:text-green-400", label: "Beginner Friendly" },
+  INTERMEDIATE: { bg: "bg-amber-50 dark:bg-amber-900/30", text: "text-amber-700 dark:text-amber-400", label: "Intermediate" },
+  ADVANCED: { bg: "bg-red-50 dark:bg-red-900/30", text: "text-red-700 dark:text-red-400", label: "Advanced" },
 };
 
 const fadeInUp = {
@@ -70,13 +70,13 @@ export default function CareerDetailPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#fafafa]">
+      <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
         <Navbar />
         <div className="pt-28 max-w-4xl mx-auto px-6">
           <div className="animate-pulse space-y-4">
-            <div className="h-48 bg-white rounded-2xl border border-gray-100" />
-            <div className="h-8 bg-gray-100 rounded w-1/2" />
-            <div className="h-4 bg-gray-100 rounded w-3/4" />
+            <div className="h-48 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800" />
+            <div className="h-8 bg-gray-100 dark:bg-gray-800 rounded w-1/2" />
+            <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-3/4" />
           </div>
         </div>
       </div>
@@ -85,7 +85,7 @@ export default function CareerDetailPage() {
 
   if (!career) {
     return (
-      <div className="min-h-screen bg-[#fafafa]">
+      <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
         <Navbar />
         <div className="text-center pt-40 text-gray-500">Career not found</div>
       </div>
@@ -95,23 +95,23 @@ export default function CareerDetailPage() {
   const totalWeeks = career.phases?.reduce((sum, p) => sum + (p.durationWeeks ?? 0), 0) ?? 0;
   const totalSkills = career.phases?.reduce((sum, p) => sum + p.skills.length, 0) ?? 0;
   const catCfg = CATEGORY_CONFIG[career.category] ?? CATEGORY_CONFIG["OTHER"];
-  const diffCfg = DIFFICULTY_CONFIG[career.difficulty] ?? { bg: "bg-gray-50", text: "text-gray-600", label: career.difficulty };
+  const diffCfg = DIFFICULTY_CONFIG[career.difficulty] ?? { bg: "bg-gray-50 dark:bg-gray-800", text: "text-gray-600 dark:text-gray-400", label: career.difficulty };
 
   return (
-    <div className="min-h-screen bg-[#fafafa]">
+    <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
       <Navbar />
 
       {/* Hero */}
-      <section className="relative overflow-hidden bg-[#fafafa] pt-24 pb-16 px-6">
+      <section className="relative overflow-hidden bg-[#fafafa] dark:bg-gray-950 pt-24 pb-16 px-6">
         {/* Gradient orbs */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-125 h-125 rounded-full bg-linear-to-br from-indigo-100 to-violet-100 opacity-60 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-100 h-100 rounded-full bg-linear-to-tr from-slate-100 to-blue-100 opacity-60 blur-3xl" />
+          <div className="absolute -top-40 -right-40 w-125 h-125 rounded-full bg-linear-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/30 dark:to-violet-900/30 opacity-60 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-100 h-100 rounded-full bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/30 dark:to-blue-900/30 opacity-60 blur-3xl" />
         </div>
 
         {/* Grid pattern */}
         <div
-          className="absolute inset-0 opacity-[0.03]"
+          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05]"
           style={{
             backgroundImage:
               "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
@@ -123,7 +123,7 @@ export default function CareerDetailPage() {
           <motion.div custom={0} initial="hidden" animate="visible" variants={fadeInUp}>
             <Link
               to="/careers"
-              className="inline-flex items-center gap-1.5 text-gray-400 hover:text-gray-700 text-sm mb-6 no-underline transition-colors"
+              className="inline-flex items-center gap-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm mb-6 no-underline transition-colors"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Careers
             </Link>
@@ -144,7 +144,7 @@ export default function CareerDetailPage() {
             initial="hidden"
             animate="visible"
             variants={fadeInUp}
-            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-gray-950 tracking-tight mb-4"
+            className="font-display text-3xl sm:text-4xl md:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4"
           >
             {career.title}
           </motion.h1>
@@ -162,29 +162,29 @@ export default function CareerDetailPage() {
           {/* Stat pills */}
           <motion.div custom={4} initial="hidden" animate="visible" variants={fadeInUp} className="flex flex-wrap gap-3 mb-8">
             {career.avgSalary && (
-              <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
-                <DollarSign className="w-3.5 h-3.5 text-gray-400" /> {career.avgSalary}
+              <span className="flex items-center gap-1.5 bg-white dark:bg-gray-900 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400 shadow-sm">
+                <DollarSign className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> {career.avgSalary}
               </span>
             )}
             {career.demandLevel && (
-              <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
-                <TrendingUp className="w-3.5 h-3.5 text-gray-400" /> {career.demandLevel} demand
+              <span className="flex items-center gap-1.5 bg-white dark:bg-gray-900 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400 shadow-sm">
+                <TrendingUp className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> {career.demandLevel} demand
               </span>
             )}
-            <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
-              <Layers className="w-3.5 h-3.5 text-gray-400" /> {career.phases?.length ?? 0} phases
+            <span className="flex items-center gap-1.5 bg-white dark:bg-gray-900 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400 shadow-sm">
+              <Layers className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> {career.phases?.length ?? 0} phases
             </span>
             {totalWeeks > 0 && (
-              <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
-                <Clock className="w-3.5 h-3.5 text-gray-400" /> ~{totalWeeks} weeks
+              <span className="flex items-center gap-1.5 bg-white dark:bg-gray-900 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400 shadow-sm">
+                <Clock className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> ~{totalWeeks} weeks
               </span>
             )}
-            <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
-              <Zap className="w-3.5 h-3.5 text-gray-400" /> {totalSkills} skills
+            <span className="flex items-center gap-1.5 bg-white dark:bg-gray-900 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400 shadow-sm">
+              <Zap className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> {totalSkills} skills
             </span>
             {career._count?.enrollments != null && career._count.enrollments > 0 && (
-              <span className="flex items-center gap-1.5 bg-white px-3.5 py-2 rounded-xl border border-gray-200 text-sm text-gray-600 shadow-sm">
-                <Users className="w-3.5 h-3.5 text-gray-400" /> {career._count.enrollments} enrolled
+              <span className="flex items-center gap-1.5 bg-white dark:bg-gray-900 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400 shadow-sm">
+                <Users className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> {career._count.enrollments} enrolled
               </span>
             )}
           </motion.div>
@@ -200,7 +200,7 @@ export default function CareerDetailPage() {
                   <motion.button
                     whileHover={{ scale: 1.03, y: -2 }}
                     whileTap={{ scale: 0.98 }}
-                    className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2"
+                    className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
                   >
                     Continue Learning →
                   </motion.button>
@@ -211,7 +211,7 @@ export default function CareerDetailPage() {
                   whileTap={{ scale: 0.98 }}
                   onClick={handleEnroll}
                   disabled={enrolling}
-                  className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2 disabled:opacity-50"
+                  className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2 disabled:opacity-50 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
                 >
                   {enrolling ? "Enrolling..." : "Start This Path →"}
                 </motion.button>
@@ -221,7 +221,7 @@ export default function CareerDetailPage() {
                 <motion.button
                   whileHover={{ scale: 1.03, y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2"
+                  className="px-8 py-4 bg-gray-950 text-white text-base font-semibold rounded-2xl hover:bg-gray-800 transition-all shadow-lg shadow-black/10 flex items-center gap-2 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
                 >
                   Sign In to Start →
                 </motion.button>
@@ -237,7 +237,7 @@ export default function CareerDetailPage() {
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
             <div className="flex items-center justify-between mb-6">
               <div>
-                <h2 className="text-xl font-bold text-gray-900">Learning Roadmap</h2>
+                <h2 className="text-xl font-bold text-gray-900 dark:text-white">Learning Roadmap</h2>
                 <p className="text-sm text-gray-500 mt-0.5">
                   Click any skill to see its subtopics. Enroll to track progress.
                 </p>

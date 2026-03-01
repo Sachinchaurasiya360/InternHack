@@ -4,7 +4,6 @@ import {
   Check,
   Sparkles,
   Zap,
-  Crown,
   Shield,
   Rocket,
   ArrowRight,
@@ -51,7 +50,7 @@ function loadRazorpayScript(): Promise<boolean> {
 }
 
 // ─── Plan Data ────────────────────────────────────────────────
-type PlanKey = "free" | "pro" | "premium";
+type PlanKey = "free" | "pro";
 
 interface Plan {
   key: PlanKey;
@@ -108,29 +107,6 @@ const plans: Plan[] = [
       "Grant deadline notifications",
       "Score history & tracking",
       "Email support",
-    ],
-  },
-  {
-    key: "premium",
-    name: "Premium",
-    price: 969,
-    yearlyPrice: 7769,
-    badge: "Best Value",
-    description: "The ultimate career toolkit for serious job seekers and builders.",
-    gradient: "from-amber-50 to-orange-50",
-    iconGradient: "from-amber-600 to-orange-600",
-    icon: <Crown className="w-5 h-5" />,
-    features: [
-      "Everything in Pro",
-      "1-on-1 career mentorship sessions",
-      "AI cover letter generator",
-      "Resume templates library",
-      "Company insider insights",
-      "Interview prep AI assistant",
-      "GSoC proposal review",
-      "Priority recruiter visibility",
-      "Direct company referrals",
-      "Dedicated support channel",
     ],
   },
 ];
@@ -236,13 +212,13 @@ export default function CheckoutPage() {
             exit={{ opacity: 0, y: -20 }}
             className={`mb-6 p-4 rounded-xl border text-sm font-medium text-center ${
               paymentStatus === "success"
-                ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                : "bg-red-50 border-red-200 text-red-700"
+                ? "bg-emerald-50 dark:bg-emerald-900/30 border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-400"
+                : "bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-800 text-red-700 dark:text-red-400"
             }`}
           >
             {paymentStatus === "success"
-              ? "🎉 Payment successful! Your subscription is now active."
-              : "❌ Payment failed. Please try again or contact support."}
+              ? "Payment successful! Your subscription is now active."
+              : "Payment failed. Please try again or contact support."}
           </motion.div>
         )}
       </AnimatePresence>
@@ -252,7 +228,7 @@ export default function CheckoutPage() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-50 to-indigo-50 border border-purple-100 text-sm text-purple-700 font-medium mb-6"
+          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-gradient-to-r from-purple-50 to-indigo-50 dark:from-purple-900/30 dark:to-indigo-900/30 border border-purple-100 dark:border-purple-800 text-sm text-purple-700 dark:text-purple-400 font-medium mb-6"
         >
           <Sparkles className="w-4 h-4" />
           Upgrade your career toolkit
@@ -262,7 +238,7 @@ export default function CheckoutPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
-          className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-950 tracking-tight mb-4"
+          className="text-3xl sm:text-4xl md:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4"
         >
           Choose Your{" "}
           <span className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">
@@ -274,7 +250,7 @@ export default function CheckoutPage() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
-          className="text-gray-500 text-lg max-w-xl mx-auto mb-8"
+          className="text-gray-500 dark:text-gray-500 text-lg max-w-xl mx-auto mb-8"
         >
           Unlock unlimited ATS scans, AI-powered insights, priority visibility, and more.
         </motion.p>
@@ -284,14 +260,14 @@ export default function CheckoutPage() {
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.3 }}
-          className="inline-flex items-center gap-1 bg-gray-100 rounded-xl p-1"
+          className="inline-flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1"
         >
           <button
             onClick={() => setBilling("monthly")}
             className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
               billing === "monthly"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm"
+                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             Monthly
@@ -300,12 +276,12 @@ export default function CheckoutPage() {
             onClick={() => setBilling("yearly")}
             className={`px-5 py-2 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
               billing === "yearly"
-                ? "bg-white text-gray-900 shadow-sm"
-                : "text-gray-500 hover:text-gray-700"
+                ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm"
+                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
             Yearly
-            <span className="px-2 py-0.5 bg-emerald-50 text-emerald-700 text-[10px] font-bold rounded-full border border-emerald-100">
+            <span className="px-2 py-0.5 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-100 dark:border-emerald-800">
               Save 33%
             </span>
           </button>
@@ -313,7 +289,7 @@ export default function CheckoutPage() {
       </div>
 
       {/* ── Pricing Cards ─────────────────────────── */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-20">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5 mb-20 max-w-3xl mx-auto">
         {plans.map((plan, i) => (
           <motion.div
             key={plan.key}
@@ -322,8 +298,8 @@ export default function CheckoutPage() {
             transition={{ delay: 0.15 + i * 0.1 }}
             className={`relative rounded-2xl border p-6 md:p-7 transition-all ${
               plan.highlighted
-                ? "border-purple-200 bg-white shadow-lg shadow-purple-100/50 ring-1 ring-purple-100 scale-[1.02]"
-                : "border-gray-100 bg-white shadow-sm hover:shadow-md hover:border-gray-200"
+                ? "border-purple-200 dark:border-purple-800 bg-white dark:bg-gray-900 shadow-lg shadow-purple-100/50 dark:shadow-purple-900/20 ring-1 ring-purple-100 dark:ring-purple-800 scale-[1.02]"
+                : "border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 shadow-sm hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700"
             }`}
           >
             {/* Badge */}
@@ -345,30 +321,30 @@ export default function CheckoutPage() {
                 <span className="text-white">{plan.icon}</span>
               </div>
               <div>
-                <h3 className="text-lg font-bold text-gray-900">{plan.name}</h3>
+                <h3 className="text-lg font-bold text-gray-900 dark:text-white">{plan.name}</h3>
               </div>
             </div>
 
             {/* Price */}
             <div className="mb-4">
               <div className="flex items-baseline gap-1">
-                <span className="text-4xl font-bold text-gray-950">
+                <span className="text-4xl font-bold text-gray-950 dark:text-white">
                   {plan.price === 0 ? "Free" : `₹${billing === "monthly" ? plan.price : plan.yearlyPrice}`}
                 </span>
                 {plan.price > 0 && (
-                  <span className="text-sm text-gray-400">
+                  <span className="text-sm text-gray-400 dark:text-gray-500">
                     /{billing === "monthly" ? "mo" : "yr"}
                   </span>
                 )}
               </div>
               {billing === "yearly" && plan.price > 0 && (
-                <p className="text-xs text-emerald-600 mt-1 font-medium">
+                <p className="text-xs text-emerald-600 dark:text-emerald-400 mt-1 font-medium">
                   Save ₹{plan.price * 12 - plan.yearlyPrice}/year
                 </p>
               )}
             </div>
 
-            <p className="text-sm text-gray-500 mb-6 leading-relaxed">{plan.description}</p>
+            <p className="text-sm text-gray-500 dark:text-gray-500 mb-6 leading-relaxed">{plan.description}</p>
 
             {/* CTA */}
             <button
@@ -376,10 +352,8 @@ export default function CheckoutPage() {
               disabled={loading !== null}
               className={`w-full py-3 rounded-xl text-sm font-semibold transition-all flex items-center justify-center gap-2 mb-6 disabled:opacity-60 disabled:cursor-not-allowed ${
                 plan.highlighted
-                  ? "bg-gray-950 text-white hover:bg-gray-800 shadow-lg shadow-gray-950/10"
-                  : plan.key === "premium"
-                    ? "bg-gradient-to-r from-amber-500 to-orange-500 text-white hover:from-amber-600 hover:to-orange-600 shadow-lg shadow-amber-200/50"
-                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                  ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 hover:bg-gray-800 dark:hover:bg-gray-200 shadow-lg shadow-gray-950/10 dark:shadow-white/10"
+                  : "bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700"
               }`}
             >
               {loading === plan.key ? (
@@ -397,9 +371,9 @@ export default function CheckoutPage() {
             {/* Feature list */}
             <ul className="space-y-2.5">
               {plan.features.map((f) => (
-                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-600">
+                <li key={f} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
                   <Check className={`w-4 h-4 shrink-0 mt-0.5 ${
-                    plan.highlighted ? "text-purple-500" : plan.key === "premium" ? "text-amber-500" : "text-gray-400"
+                    plan.highlighted ? "text-purple-500" : plan.key === "premium" ? "text-amber-500" : "text-gray-400 dark:text-gray-500"
                   }`} />
                   {f}
                 </li>
@@ -417,27 +391,27 @@ export default function CheckoutPage() {
         className="mb-20"
       >
         <div className="text-center mb-10">
-          <h2 className="text-2xl font-bold text-gray-950 mb-2">What you unlock with Pro</h2>
-          <p className="text-gray-500 text-sm">Tools designed to give you an unfair advantage</p>
+          <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-2">What you unlock with Pro</h2>
+          <p className="text-gray-500 dark:text-gray-500 text-sm">Tools designed to give you an unfair advantage</p>
         </div>
 
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
           {[
-            { icon: <ScanSearch className="w-5 h-5" />, label: "Unlimited ATS", color: "text-purple-600 bg-purple-50" },
-            { icon: <Briefcase className="w-5 h-5" />, label: "Unlimited Apply", color: "text-blue-600 bg-blue-50" },
-            { icon: <FileText className="w-5 h-5" />, label: "AI Resume Tips", color: "text-emerald-600 bg-emerald-50" },
-            { icon: <Building2 className="w-5 h-5" />, label: "Company Search", color: "text-amber-600 bg-amber-50" },
-            { icon: <Globe className="w-5 h-5" />, label: "OS Repo Picks", color: "text-indigo-600 bg-indigo-50" },
-            { icon: <Map className="w-5 h-5" />, label: "Grant Alerts", color: "text-pink-600 bg-pink-50" },
+            { icon: <ScanSearch className="w-5 h-5" />, label: "Unlimited ATS", color: "text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-900/30" },
+            { icon: <Briefcase className="w-5 h-5" />, label: "Unlimited Apply", color: "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30" },
+            { icon: <FileText className="w-5 h-5" />, label: "AI Resume Tips", color: "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-900/30" },
+            { icon: <Building2 className="w-5 h-5" />, label: "Company Search", color: "text-amber-600 bg-amber-50 dark:text-amber-400 dark:bg-amber-900/30" },
+            { icon: <Globe className="w-5 h-5" />, label: "OS Repo Picks", color: "text-indigo-600 bg-indigo-50 dark:text-indigo-400 dark:bg-indigo-900/30" },
+            { icon: <Map className="w-5 h-5" />, label: "Grant Alerts", color: "text-pink-600 bg-pink-50 dark:text-pink-400 dark:bg-pink-900/30" },
           ].map((item) => (
             <div
               key={item.label}
-              className="rounded-xl border border-gray-100 bg-white p-4 text-center hover:shadow-md hover:border-gray-200 transition-all"
+              className="rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-4 text-center hover:shadow-md hover:border-gray-200 dark:hover:border-gray-700 transition-all"
             >
               <div className={`w-10 h-10 rounded-lg ${item.color} flex items-center justify-center mx-auto mb-2`}>
                 {item.icon}
               </div>
-              <p className="text-xs font-medium text-gray-700">{item.label}</p>
+              <p className="text-xs font-medium text-gray-700 dark:text-gray-300">{item.label}</p>
             </div>
           ))}
         </div>
@@ -451,8 +425,8 @@ export default function CheckoutPage() {
         className="mb-20"
       >
         <div className="text-center mb-10">
-          <h2 className="text-2xl font-bold text-gray-950 mb-2">Loved by students</h2>
-          <p className="text-gray-500 text-sm">See what our users have to say</p>
+          <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-2">Loved by students</h2>
+          <p className="text-gray-500 dark:text-gray-500 text-sm">See what our users have to say</p>
         </div>
 
         <div className="grid md:grid-cols-3 gap-4">
@@ -463,21 +437,21 @@ export default function CheckoutPage() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6 shadow-sm"
             >
               <div className="flex items-center gap-1 mb-3">
                 {Array(5).fill(0).map((_, j) => (
                   <Star key={j} className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
                 ))}
               </div>
-              <p className="text-sm text-gray-600 mb-4 leading-relaxed">"{t.text}"</p>
+              <p className="text-sm text-gray-600 dark:text-gray-400 mb-4 leading-relaxed">"{t.text}"</p>
               <div className="flex items-center gap-3">
                 <div className="w-9 h-9 rounded-full bg-gradient-to-br from-purple-500 to-indigo-500 text-white flex items-center justify-center text-sm font-bold">
                   {t.avatar}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-gray-900">{t.name}</p>
-                  <p className="text-xs text-gray-400">{t.role}</p>
+                  <p className="text-sm font-semibold text-gray-900 dark:text-white">{t.name}</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">{t.role}</p>
                 </div>
               </div>
             </motion.div>
@@ -493,7 +467,7 @@ export default function CheckoutPage() {
           { icon: <CreditCard className="w-4 h-4" />, text: "Razorpay Powered" },
           { icon: <Gift className="w-4 h-4" />, text: "7-Day Money Back" },
         ].map((badge) => (
-          <div key={badge.text} className="flex items-center gap-2 text-xs text-gray-400 font-medium">
+          <div key={badge.text} className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 font-medium">
             {badge.icon}
             {badge.text}
           </div>
@@ -508,22 +482,22 @@ export default function CheckoutPage() {
         className="max-w-2xl mx-auto mb-16"
       >
         <div className="text-center mb-8">
-          <h2 className="text-2xl font-bold text-gray-950 mb-2">Frequently Asked Questions</h2>
+          <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-2">Frequently Asked Questions</h2>
         </div>
 
         <div className="space-y-2">
           {faqs.map((faq, i) => (
             <div
               key={i}
-              className="rounded-xl border border-gray-100 bg-white overflow-hidden"
+              className="rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden"
             >
               <button
                 onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
-                className="w-full flex items-center justify-between px-5 py-4 text-left text-sm font-medium text-gray-900 hover:bg-gray-50 transition-colors"
+                className="w-full flex items-center justify-between px-5 py-4 text-left text-sm font-medium text-gray-900 dark:text-white hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
               >
                 {faq.q}
                 <ChevronDown
-                  className={`w-4 h-4 text-gray-400 shrink-0 transition-transform ${
+                  className={`w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0 transition-transform ${
                     expandedFaq === i ? "rotate-180" : ""
                   }`}
                 />
@@ -537,7 +511,7 @@ export default function CheckoutPage() {
                     transition={{ duration: 0.2 }}
                     className="overflow-hidden"
                   >
-                    <p className="px-5 pb-4 text-sm text-gray-500 leading-relaxed">{faq.a}</p>
+                    <p className="px-5 pb-4 text-sm text-gray-500 dark:text-gray-500 leading-relaxed">{faq.a}</p>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -551,7 +525,7 @@ export default function CheckoutPage() {
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="relative rounded-3xl bg-gray-950 p-8 md:p-12 text-center overflow-hidden mb-8"
+        className="relative rounded-3xl bg-gray-950 dark:bg-gray-900 p-8 md:p-12 text-center overflow-hidden mb-8"
       >
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute -top-32 -right-32 w-64 h-64 rounded-full bg-purple-500/20 blur-3xl" />

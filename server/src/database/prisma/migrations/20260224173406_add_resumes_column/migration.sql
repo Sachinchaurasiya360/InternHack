@@ -1,9 +1,3 @@
-/*
-  Warnings:
-
-  - You are about to drop the column `resume` on the `user` table. All the data in the column will be lost.
-
-*/
--- AlterTable
-ALTER TABLE "user" DROP COLUMN "resume",
-ADD COLUMN     "resumes" TEXT[] DEFAULT ARRAY[]::TEXT[];
+-- This migration is a no-op because the resume->resumes change
+-- was already applied in migration 20260222180400_s.
+-- Kept as empty migration to preserve migration history.

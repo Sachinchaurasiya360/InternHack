@@ -107,9 +107,9 @@ export default function CareerProgressPage() {
   if (loading) {
     return (
       <div className="max-w-6xl mx-auto animate-pulse space-y-4">
-        <div className="h-10 bg-gray-100 rounded-xl w-1/3" />
-        <div className="h-24 bg-gray-100 rounded-2xl" />
-        <div className="h-48 bg-gray-100 rounded-xl" />
+        <div className="h-10 bg-gray-100 dark:bg-gray-800 rounded-xl w-1/3" />
+        <div className="h-24 bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+        <div className="h-48 bg-gray-100 dark:bg-gray-800 rounded-xl" />
       </div>
     );
   }
@@ -132,7 +132,7 @@ export default function CareerProgressPage() {
     <div className="max-w-6xl mx-auto">
       <Link
         to="/student/careers"
-        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-black mb-5 no-underline transition-colors"
+        className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-black dark:hover:text-white mb-5 no-underline transition-colors"
       >
         <ArrowLeft className="w-4 h-4" /> My Career Paths
       </Link>
@@ -142,57 +142,57 @@ export default function CareerProgressPage() {
         {/* Title + Description */}
         <div>
           <div className={`h-1.5 w-16 rounded-full bg-linear-to-r ${gradient} mb-3`} />
-          <h1 className="text-2xl font-bold text-gray-900 mb-1">{detail.title}</h1>
+          <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">{detail.title}</h1>
           <p className="text-sm text-gray-500 leading-relaxed max-w-2xl">{detail.description}</p>
         </div>
 
         {/* Overall Progress Card */}
-        <div className="bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5">
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm hover:shadow-md transition-shadow p-5">
           <div className="flex items-center justify-between mb-3">
-            <h2 className="text-sm font-bold text-gray-900">Overall Progress</h2>
-            <span className="text-sm font-bold text-gray-900 tabular-nums">
+            <h2 className="text-sm font-bold text-gray-900 dark:text-white">Overall Progress</h2>
+            <span className="text-sm font-bold text-gray-900 dark:text-white tabular-nums">
               {overallCompleted}/{overallTotal}
             </span>
           </div>
 
           {/* Progress bar */}
-          <div className="w-full h-3 bg-gray-100 rounded-full overflow-hidden mb-4">
+          <div className="w-full h-3 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden mb-4">
             <motion.div
               initial={{ width: 0 }}
               animate={{ width: `${overallPct}%` }}
               transition={{ duration: 0.8, ease: "easeOut" }}
               className={`h-full rounded-full ${
-                overallPct === 100 ? "bg-green-500" : overallPct > 0 ? "bg-violet-500" : "bg-gray-200"
+                overallPct === 100 ? "bg-green-500" : overallPct > 0 ? "bg-violet-500" : "bg-gray-200 dark:bg-gray-700"
               }`}
             />
           </div>
 
           {/* Stats row */}
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            <div className="bg-gray-50 rounded-xl px-3.5 py-2.5 text-center">
-              <p className="text-lg font-bold text-gray-900 tabular-nums">
-                {detail.completedSkills}<span className="text-gray-400 font-medium text-sm">/{detail.totalSkills}</span>
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl px-3.5 py-2.5 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white tabular-nums">
+                {detail.completedSkills}<span className="text-gray-400 dark:text-gray-500 font-medium text-sm">/{detail.totalSkills}</span>
               </p>
-              <p className="text-[11px] text-gray-400 font-medium">Skills</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">Skills</p>
             </div>
-            <div className="bg-gray-50 rounded-xl px-3.5 py-2.5 text-center">
-              <p className="text-lg font-bold text-gray-900 tabular-nums">
-                {topicStats.completed}<span className="text-gray-400 font-medium text-sm">/{topicStats.total}</span>
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl px-3.5 py-2.5 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white tabular-nums">
+                {topicStats.completed}<span className="text-gray-400 dark:text-gray-500 font-medium text-sm">/{topicStats.total}</span>
               </p>
-              <p className="text-[11px] text-gray-400 font-medium">Topics</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">Topics</p>
             </div>
-            <div className="bg-gray-50 rounded-xl px-3.5 py-2.5 text-center">
-              <p className="text-lg font-bold text-gray-900">{detail.phases?.length ?? 0}</p>
-              <p className="text-[11px] text-gray-400 font-medium">Phases</p>
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl px-3.5 py-2.5 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white">{detail.phases?.length ?? 0}</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">Phases</p>
             </div>
-            <div className="bg-gray-50 rounded-xl px-3.5 py-2.5 text-center">
-              <p className="text-lg font-bold text-gray-900">{totalWeeks > 0 ? `~${totalWeeks}` : "—"}</p>
-              <p className="text-[11px] text-gray-400 font-medium">Weeks</p>
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl px-3.5 py-2.5 text-center">
+              <p className="text-lg font-bold text-gray-900 dark:text-white">{totalWeeks > 0 ? `~${totalWeeks}` : "—"}</p>
+              <p className="text-[11px] text-gray-400 dark:text-gray-500 font-medium">Weeks</p>
             </div>
           </div>
 
           {overallPct === 100 && (
-            <div className="mt-3 flex items-center gap-2 text-sm text-green-600 font-semibold">
+            <div className="mt-3 flex items-center gap-2 text-sm text-green-600 dark:text-green-400 font-semibold">
               <CheckCircle2 className="w-4 h-4" />
               Congratulations! You've completed this learning path!
             </div>
@@ -202,27 +202,27 @@ export default function CareerProgressPage() {
         {/* Meta pills */}
         <div className="flex flex-wrap gap-2 text-xs text-gray-500">
           {detail.avgSalary && (
-            <span className="flex items-center gap-1 bg-white border border-gray-100 px-2.5 py-1.5 rounded-lg shadow-sm">
+            <span className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 px-2.5 py-1.5 rounded-lg shadow-sm">
               <DollarSign className="w-3.5 h-3.5" /> {detail.avgSalary}
             </span>
           )}
           {detail.demandLevel && (
-            <span className="flex items-center gap-1 bg-white border border-gray-100 px-2.5 py-1.5 rounded-lg shadow-sm">
+            <span className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 px-2.5 py-1.5 rounded-lg shadow-sm">
               <TrendingUp className="w-3.5 h-3.5" /> {detail.demandLevel} demand
             </span>
           )}
-          <span className="flex items-center gap-1 bg-white border border-gray-100 px-2.5 py-1.5 rounded-lg shadow-sm">
+          <span className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 px-2.5 py-1.5 rounded-lg shadow-sm">
             <Layers className="w-3.5 h-3.5" /> {detail.phases?.length ?? 0} phases
           </span>
           {totalWeeks > 0 && (
-            <span className="flex items-center gap-1 bg-white border border-gray-100 px-2.5 py-1.5 rounded-lg shadow-sm">
+            <span className="flex items-center gap-1 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 px-2.5 py-1.5 rounded-lg shadow-sm">
               <Clock className="w-3.5 h-3.5" /> ~{totalWeeks} weeks
             </span>
           )}
         </div>
 
         {/* Tip */}
-        <div className="bg-violet-50 border border-violet-100 rounded-xl px-4 py-3 text-sm text-violet-700 flex items-start gap-2">
+        <div className="bg-violet-50 dark:bg-violet-900/30 border border-violet-100 dark:border-violet-800 rounded-xl px-4 py-3 text-sm text-violet-700 dark:text-violet-400 flex items-start gap-2">
           <BookOpen className="w-4 h-4 shrink-0 mt-0.5" />
           <span>
             <strong>How it works:</strong> Click the checkbox to mark a skill as complete. Click the skill name to expand its subtopics — check off each topic as you learn it. Your topic progress is saved in your browser.
@@ -232,20 +232,21 @@ export default function CareerProgressPage() {
         {/* Learning Guide / Roadmap */}
         {detail.phases && detail.phases.length > 0 && (
           <div>
-            <h2 className="text-lg font-bold text-gray-900 mb-4">Learning Guide</h2>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-white mb-4">Learning Guide</h2>
             <RoadmapTimeline
               phases={detail.phases}
               interactive
               onToggleSkill={handleToggleSkill}
+              careerSlug={slug}
             />
           </div>
         )}
 
         {/* Unenroll */}
-        <div className="pt-2 border-t border-gray-100">
+        <div className="pt-2 border-t border-gray-100 dark:border-gray-800">
           <button
             onClick={handleUnenroll}
-            className="flex items-center gap-2 text-sm text-gray-400 hover:text-red-500 transition-colors"
+            className="flex items-center gap-2 text-sm text-gray-400 dark:text-gray-500 hover:text-red-500 transition-colors"
           >
             <Trash2 className="w-4 h-4" /> Unenroll from this path
           </button>

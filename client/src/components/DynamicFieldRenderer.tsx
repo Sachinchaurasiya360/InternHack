@@ -12,7 +12,7 @@ export function DynamicFieldRenderer({ fields, values, onChange, disabled }: Dyn
     <div className="space-y-4">
       {fields.map((field) => (
         <div key={field.id}>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </label>
@@ -30,7 +30,7 @@ function renderField(
   disabled?: boolean,
 ) {
   const baseInputClass =
-    "w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 focus:border-black transition-colors disabled:bg-gray-100 disabled:cursor-not-allowed";
+    "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black dark:focus:border-white transition-colors disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-white";
 
   switch (field.fieldType) {
     case "TEXT":
@@ -96,9 +96,9 @@ function renderField(
             checked={!!value}
             onChange={(e) => onChange(e.target.checked)}
             disabled={disabled}
-            className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black"
+            className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-black dark:text-white focus:ring-black dark:focus:ring-white"
           />
-          <span className="text-sm text-gray-600">{field.placeholder || "Yes"}</span>
+          <span className="text-sm text-gray-600 dark:text-gray-400">{field.placeholder || "Yes"}</span>
         </label>
       );
 
@@ -137,9 +137,9 @@ function renderField(
                   }
                 }}
                 disabled={disabled}
-                className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black"
+                className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-black dark:text-white focus:ring-black dark:focus:ring-white"
               />
-              <span className="text-sm text-gray-600">{opt}</span>
+              <span className="text-sm text-gray-600 dark:text-gray-400">{opt}</span>
             </label>
           ))}
         </div>
@@ -155,7 +155,7 @@ function renderField(
               if (file) onChange(file.name);
             }}
             disabled={disabled}
-            className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white hover:file:bg-gray-800 file:cursor-pointer"
+            className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white dark:file:bg-white dark:file:text-gray-950 hover:file:bg-gray-800 dark:hover:file:bg-gray-200 file:cursor-pointer"
             accept={field.validation?.allowedTypes?.join(",")}
           />
           {typeof value === "string" && value && <p className="mt-1 text-sm text-gray-500">Current: {value}</p>}

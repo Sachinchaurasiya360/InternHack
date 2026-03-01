@@ -17,7 +17,9 @@ export class CareerService {
         phases: {
           orderBy: { orderIndex: "asc" },
           include: {
-            skills: true,
+            skills: {
+              include: { quiz: { select: { id: true } } },
+            },
             resources: true,
             tools: true,
           },
@@ -137,22 +139,26 @@ export class CareerService {
 
     const allSkillIds = career.phases.flatMap((p) => p.skills.map((s) => s.id));
 
-    const completedSkills = allSkillIds.length > 0
+    const skillProgress = allSkillIds.length > 0
       ? await prisma.studentSkillProgress.findMany({
-          where: { studentId, skillId: { in: allSkillIds }, completed: true },
-          select: { skillId: true },
+          where: { studentId, skillId: { in: allSkillIds } },
+          select: { skillId: true, completed: true, verifiedAt: true },
         })
       : [];
 
-    const completedSet = new Set(completedSkills.map((s) => s.skillId));
+    const progressMap = new Map(skillProgress.map((s) => [s.skillId, s]));
 
     const phases = career.phases.map((phase) => ({
       ...phase,
       skills: phase.skills.map((skill) => ({
         ...skill,
-        completed: completedSet.has(skill.id),
+        completed: progressMap.get(skill.id)?.completed ?? false,
+        verifiedAt: progressMap.get(skill.id)?.verifiedAt ?? null,
+        hasQuiz: !!skill.quiz,
       })),
     }));
+
+    const completedSkills = skillProgress.filter((s) => s.completed);
 
     const totalSkills = allSkillIds.length;
     const completed = completedSkills.length;

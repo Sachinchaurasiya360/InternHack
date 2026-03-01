@@ -35,8 +35,8 @@ const FEATURED_GRANTS = [
 
 export function GrantsSection() {
   return (
-    <section className="relative py-24 md:py-32 bg-[#fafafa] overflow-hidden">
-      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-linear-to-bl from-amber-50 to-orange-50 rounded-full blur-3xl opacity-40 pointer-events-none" />
+    <section className="relative py-24 md:py-32 bg-[#fafafa] dark:bg-gray-950 overflow-hidden">
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-linear-to-bl from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-full blur-3xl opacity-40 pointer-events-none" />
 
       <div className="relative z-10 max-w-5xl mx-auto px-6">
         <motion.div
@@ -46,16 +46,16 @@ export function GrantsSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white border border-gray-200 text-xs font-medium text-gray-500 uppercase tracking-wider mb-6">
+          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-6">
             <Award className="w-3.5 h-3.5" />
             Web3 Grants
           </div>
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-gray-950 tracking-tight mb-4">
+          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
             Fund your
             <br />
             <span className="text-gradient-accent">Web3 project</span>
           </h2>
-          <p className="text-lg text-gray-500 max-w-xl mx-auto">
+          <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
             Explore 50+ grants from top blockchain foundations and DAOs. Get funding for DeFi, infrastructure, gaming, and more.
           </p>
         </motion.div>
@@ -74,8 +74,8 @@ export function GrantsSection() {
             { label: "Total Funding", value: "$5B+" },
           ].map((stat) => (
             <div key={stat.label} className="text-center">
-              <p className="text-2xl font-bold text-gray-950">{stat.value}</p>
-              <p className="text-xs text-gray-400 mt-0.5">{stat.label}</p>
+              <p className="text-2xl font-bold text-gray-950 dark:text-white">{stat.value}</p>
+              <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{stat.label}</p>
             </div>
           ))}
         </motion.div>
@@ -90,20 +90,20 @@ export function GrantsSection() {
               viewport={{ once: true }}
               transition={{ delay: 0.1 + i * 0.08, duration: 0.5 }}
             >
-              <div className="group flex items-center gap-4 p-4 bg-white rounded-2xl border border-gray-200 hover:border-gray-300 hover:shadow-lg hover:shadow-gray-100 transition-all">
-                <div className="w-12 h-12 rounded-xl bg-gray-50 border border-gray-100 flex items-center justify-center shrink-0">
+              <div className="group flex items-center gap-4 p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:shadow-gray-100 dark:hover:shadow-gray-900/50 transition-all">
+                <div className="w-12 h-12 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-800 flex items-center justify-center shrink-0">
                   <img src={grant.logo} alt={grant.org} className="w-7 h-7 object-contain" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="text-sm font-bold text-gray-900 truncate">{grant.name}</h3>
-                  <p className="text-xs text-gray-500">{grant.org}</p>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white truncate">{grant.name}</h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-500">{grant.org}</p>
                 </div>
                 <div className="text-right shrink-0">
-                  <div className="flex items-center gap-1 text-sm font-semibold text-gray-900">
-                    <DollarSign className="w-3.5 h-3.5 text-gray-400" />
+                  <div className="flex items-center gap-1 text-sm font-semibold text-gray-900 dark:text-white">
+                    <DollarSign className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" />
                     {grant.amount}
                   </div>
-                  <div className="flex items-center gap-1 text-xs text-gray-400 mt-0.5">
+                  <div className="flex items-center gap-1 text-xs text-gray-400 dark:text-gray-500 mt-0.5">
                     <Globe className="w-3 h-3" />
                     {grant.ecosystem}
                   </div>
@@ -122,7 +122,7 @@ export function GrantsSection() {
           className="flex flex-wrap items-center justify-center gap-6 mb-10"
         >
           {["Non-dilutive funding", "Multiple ecosystems", "Beginner-friendly options", "Apply directly"].map((text) => (
-            <div key={text} className="flex items-center gap-1.5 text-sm text-gray-500">
+            <div key={text} className="flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-500">
               <CheckCircle2 className="w-4 h-4 text-emerald-500" />
               {text}
             </div>
@@ -139,7 +139,7 @@ export function GrantsSection() {
         >
           <Link
             to="/grants"
-            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gray-950 text-white text-sm font-semibold hover:bg-gray-800 transition-colors no-underline shadow-sm"
+            className="inline-flex items-center gap-2 px-8 py-3.5 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline shadow-sm"
           >
             Explore All Grants
             <ArrowRight className="w-4 h-4" />

@@ -21,7 +21,7 @@ const staggerContainer = {
 
 export function RecentJobs() {
   const jobs = [
-    
+
     {
       title: "Full Stack Engineer",
       company: "StartupXYZ",
@@ -49,7 +49,7 @@ export function RecentJobs() {
       posted: "1 week ago",
       tags: ["Kubernetes", "Docker", "AWS"],
     }
-   
+
   ];
 
   return (
@@ -59,18 +59,18 @@ export function RecentJobs() {
       whileInView="visible"
       viewport={{ once: true, margin: "-100px" }}
       variants={staggerContainer}
-      className="py-6 px-6 relative "
+      className="py-6 px-6 relative dark:bg-gray-900"
     >
       <div className="max-w-7xl mx-auto">
         <motion.div variants={fadeInUp} className="text-center mb-16">
-          
-          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-black">
+
+          <h2 className="text-5xl md:text-6xl font-bold mb-4 text-black dark:text-white">
             Recent{" "}
             <span className="underline decoration-4 underline-offset-8">
               Job Openings
             </span>
           </h2>
-          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+          <p className="text-xl text-gray-400 dark:text-gray-500 max-w-2xl mx-auto">
             Land your perfect role with top companies
           </p>
         </motion.div>
@@ -81,21 +81,21 @@ export function RecentJobs() {
               key={idx}
               variants={fadeInUp}
               whileHover={{ y: -10, scale: 1.02 }}
-              className="bg-gray-50 border-2 border-gray-200 p-6 hover:border-black hover:shadow-xl transition-all group"
+              className="bg-gray-50 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 p-6 hover:border-black dark:hover:border-white hover:shadow-xl transition-all group"
             >
               <div className="flex items-start justify-between mb-4">
                 <div className="flex items-center gap-2">
-                  <Building2 className="w-5 h-5 text-black" />
-                  <span className="text-sm text-gray-700 group-hover:text-gray-600">
+                  <Building2 className="w-5 h-5 text-black dark:text-white" />
+                  <span className="text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-600 dark:group-hover:text-gray-400">
                     {job.company}
                   </span>
                 </div>
-                <div className="px-3 py-1 bg-white text-black group-hover:bg-black group-hover:text-white text-xs font-bold">
+                <div className="px-3 py-1 bg-white dark:bg-gray-900 text-black dark:text-white group-hover:bg-black dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-black text-xs font-bold">
                   {job.type}
                 </div>
               </div>
 
-              <h3 className="text-xl font-bold mb-3 text-black group-hover:text-black">
+              <h3 className="text-xl font-bold mb-3 text-black dark:text-white group-hover:text-black dark:group-hover:text-white">
                 {job.title}
               </h3>
 
@@ -103,21 +103,21 @@ export function RecentJobs() {
                 {job.tags.map((tag, i) => (
                   <span
                     key={i}
-                    className="px-2 py-1 border border-black/20 group-hover:border-black/20 text-xs text-black group-hover:text-black"
+                    className="px-2 py-1 border border-black/20 dark:border-white/20 group-hover:border-black/20 dark:group-hover:border-white/20 text-xs text-black dark:text-white group-hover:text-black dark:group-hover:text-white"
                   >
                     {tag}
                   </span>
                 ))}
               </div>
 
-              <div className="space-y-2 mb-4 text-sm text-gray-700 group-hover:text-gray-600">
+              <div className="space-y-2 mb-4 text-sm text-gray-700 dark:text-gray-300 group-hover:text-gray-600 dark:group-hover:text-gray-400">
                 <div className="flex items-center gap-2">
                   <MapPin className="w-4 h-4" />
                   <span>{job.location}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <DollarSign className="w-4 h-4" />
-                  <span className="text-black group-hover:text-black font-semibold">
+                  <span className="text-black dark:text-white group-hover:text-black dark:group-hover:text-white font-semibold">
                     {job.salary}
                   </span>
                 </div>
@@ -130,7 +130,7 @@ export function RecentJobs() {
               <motion.button
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
-                className="w-full py-3 bg-black text-white group-hover:bg-black group-hover:text-white font-semibold transition-all border-2 border-white"
+                className="w-full py-3 bg-black dark:bg-white text-white dark:text-black group-hover:bg-black dark:group-hover:bg-white group-hover:text-white dark:group-hover:text-black font-semibold transition-all border-2 border-white dark:border-gray-800"
               >
                 Apply Now
               </motion.button>
@@ -142,7 +142,7 @@ export function RecentJobs() {
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            className="px-8 py-3 border-2 border-black text-black font-semibold  hover:text-black transition-all"
+            className="px-8 py-3 border-2 border-black dark:border-white text-black dark:text-white font-semibold  hover:text-black dark:hover:text-white transition-all"
           >
             View All Jobs →
           </motion.button>

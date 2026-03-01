@@ -36,6 +36,11 @@ import AddCompanyPage from "./module/student/companies/AddCompanyPage";
 import StudentProfilePage from "./module/student/profile/StudentProfilePage";
 import GrantsPage from "./module/student/grants/GrantsPage";
 import RepoDiscoveryPage from "./module/student/opensource/RepoDiscoveryPage";
+import OpenSourceGuidancePage from "./module/student/opensource/OpenSourceGuidancePage";
+import GSoCReposPage from "./module/student/opensource/GSoCReposPage";
+import ProgramTrackerPage from "./module/student/opensource/ProgramTrackerPage";
+import FirstPRRoadmapPage from "./module/student/opensource/FirstPRRoadmapPage";
+import GSoCProposalPage from "./module/student/opensource/GSoCProposalPage";
 import PublicOpenSourcePage from "./module/student/opensource/PublicOpenSourcePage";
 import CheckoutPage from "./module/student/checkout/CheckoutPage";
 import AdminLoginPage from "./module/admin/AdminLoginPage";
@@ -50,6 +55,12 @@ import AdminReviewsPage from "./module/admin/reviews/AdminReviewsPage";
 import AdminContributionsPage from "./module/admin/contributions/AdminContributionsPage";
 import AdminSubscribersPage from "./module/admin/AdminSubscribersPage";
 import AdminCareersPage from "./module/admin/careers/AdminCareersPage";
+import TalentSearchPage from "./module/recruiter/talent/TalentSearchPage";
+import SkillQuizPage from "./module/career/quiz/SkillQuizPage";
+import BlogListPage from "./module/blog/BlogListPage";
+import BlogPostPage from "./module/blog/BlogPostPage";
+import AdminBlogPage from "./module/admin/blog/AdminBlogPage";
+import AdminBlogEditor from "./module/admin/blog/AdminBlogEditor";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 function App() {
@@ -72,6 +83,8 @@ function App() {
         <Route path="/ats-score" element={<PublicAtsPage />} />
         <Route path="/grants" element={<GrantsPage />} />
         <Route path="/opensource" element={<PublicOpenSourcePage />} />
+        <Route path="/blog" element={<BlogListPage />} />
+        <Route path="/blog/:slug" element={<BlogPostPage />} />
 
         {/* Student protected routes */}
         <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyPage /></ProtectedRoute>} />
@@ -91,9 +104,15 @@ function App() {
           <Route path="ats/cover-letter" element={<CoverLetterPage />} />
           <Route path="careers" element={<MyCareerPathsPage />} />
           <Route path="careers/:slug" element={<CareerProgressPage />} />
+          <Route path="careers/:slug/quiz/:skillId" element={<SkillQuizPage />} />
           <Route path="companies/add" element={<AddCompanyPage />} />
           <Route path="grants" element={<GrantsPage />} />
           <Route path="opensource" element={<RepoDiscoveryPage />} />
+          <Route path="opensource/guidance" element={<OpenSourceGuidancePage />} />
+          <Route path="opensource/gsoc" element={<GSoCReposPage />} />
+          <Route path="opensource/programs" element={<ProgramTrackerPage />} />
+          <Route path="opensource/first-pr" element={<FirstPRRoadmapPage />} />
+          <Route path="opensource/gsoc-proposal" element={<GSoCProposalPage />} />
           <Route path="checkout" element={<CheckoutPage />} />
           <Route path="profile" element={<StudentProfilePage />} />
         </Route>
@@ -107,6 +126,7 @@ function App() {
           <Route path="jobs/:id/applications" element={<ApplicationsList />} />
           <Route path="jobs/:id/analytics" element={<JobAnalyticsPage />} />
           <Route path="applications/:applicationId" element={<ApplicationDetail />} />
+          <Route path="talent-search" element={<TalentSearchPage />} />
         </Route>
 
         {/* Admin login (public) */}
@@ -124,6 +144,9 @@ function App() {
           <Route path="contributions" element={<AdminContributionsPage />} />
           <Route path="subscribers" element={<AdminSubscribersPage />} />
           <Route path="careers" element={<AdminCareersPage />} />
+          <Route path="blog" element={<AdminBlogPage />} />
+          <Route path="blog/editor" element={<AdminBlogEditor />} />
+          <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
         </Route>
       </Routes>
     </BrowserRouter>

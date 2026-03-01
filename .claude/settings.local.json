@@ -21,7 +21,11 @@
       "Bash(npm run build:*)",
       "Bash(grep:*)",
       "Bash(npm run seed:admin:*)",
-      "Bash(xargs ls -1)"
+      "Bash(xargs ls -1)",
+      "Bash(npx tsx src/module/career/career.seed.ts)",
+      "Bash(npx vite build)",
+      "Bash(python3:*)",
+      "Bash(npx prisma db pull:*)"
     ]
   }
 }

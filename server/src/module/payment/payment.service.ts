@@ -5,16 +5,14 @@ import { prisma } from "../../database/db.js";
 // ── Price table (amounts in paise) ────────────────────────────
 const PRICE_TABLE = {
   MONTHLY: {
-    pro: 469_00,     // ₹469
-    premium: 969_00, // ₹969
+    pro: 469_00, // ₹469
   },
   YEARLY: {
-    pro: 3769_00,    // ₹3,769
-    premium: 7769_00, // ₹7,769
+    pro: 3769_00, // ₹3,769
   },
 } as const;
 
-type PlanKey = "pro" | "premium";
+type PlanKey = "pro";
 type BillingKey = "monthly" | "yearly";
 
 export class PaymentService {

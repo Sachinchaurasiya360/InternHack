@@ -29,6 +29,9 @@ recruiterRouter.patch("/applications/:applicationId/advance", (req, res) => recr
 recruiterRouter.get("/applications/:applicationId/rounds/:roundId", (req, res) => recruiterController.getSubmission(req, res));
 recruiterRouter.put("/applications/:applicationId/rounds/:roundId/evaluate", (req, res) => recruiterController.evaluateSubmission(req, res));
 
+// Talent Search
+recruiterRouter.get("/talent-search", (req, res) => recruiterController.searchTalent(req, res));
+
 // Dashboard & Analytics
 recruiterRouter.get("/dashboard", (req, res) => recruiterController.getDashboard(req, res));
 recruiterRouter.get("/jobs/:jobId/analytics", (req, res) => recruiterController.getJobAnalytics(req, res));

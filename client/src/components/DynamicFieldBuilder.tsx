@@ -56,9 +56,9 @@ export function DynamicFieldBuilder({ fields, onChange }: DynamicFieldBuilderPro
   return (
     <div className="space-y-3">
       {fields.map((field, index) => (
-        <div key={field.id} className="border border-gray-200 rounded-lg overflow-hidden">
+        <div key={field.id} className="border border-gray-200 dark:border-gray-700 rounded-lg overflow-hidden">
           <div
-            className="flex items-center gap-3 px-4 py-3 bg-gray-50 cursor-pointer hover:bg-gray-100 transition-colors"
+            className="flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
             onClick={() => setExpandedId(expandedId === field.id ? null : field.id)}
           >
             <div className="flex flex-col gap-1">
@@ -66,16 +66,16 @@ export function DynamicFieldBuilder({ fields, onChange }: DynamicFieldBuilderPro
                 type="button"
                 onClick={(e) => { e.stopPropagation(); moveField(index, "up"); }}
                 disabled={index === 0}
-                className="text-gray-400 hover:text-gray-600 disabled:opacity-30"
+                className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30"
               >
                 <GripVertical className="w-4 h-4" />
               </button>
             </div>
             <div className="flex-1">
-              <span className="font-medium text-sm">
+              <span className="font-medium text-sm dark:text-gray-200">
                 {field.label || "Untitled Field"}
               </span>
-              <span className="ml-2 text-xs text-gray-500 bg-gray-200 px-2 py-0.5 rounded">
+              <span className="ml-2 text-xs text-gray-500 bg-gray-200 dark:bg-gray-700 dark:text-gray-400 px-2 py-0.5 rounded">
                 {FIELD_TYPES.find((t) => t.value === field.fieldType)?.label}
               </span>
               {field.required && (
@@ -92,24 +92,24 @@ export function DynamicFieldBuilder({ fields, onChange }: DynamicFieldBuilderPro
           </div>
 
           {expandedId === field.id && (
-            <div className="p-4 space-y-3 border-t border-gray-200">
+            <div className="p-4 space-y-3 border-t border-gray-200 dark:border-gray-700 dark:bg-gray-900">
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Label</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Label</label>
                   <input
                     type="text"
                     value={field.label}
                     onChange={(e) => updateField(field.id, { label: e.target.value })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                     placeholder="Field label"
                   />
                 </div>
                 <div>
-                  <label className="block text-xs font-medium text-gray-600 mb-1">Type</label>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Type</label>
                   <select
                     value={field.fieldType}
                     onChange={(e) => updateField(field.id, { fieldType: e.target.value as FieldType })}
-                    className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20"
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                   >
                     {FIELD_TYPES.map((t) => (
                       <option key={t.value} value={t.value}>{t.label}</option>
@@ -119,12 +119,12 @@ export function DynamicFieldBuilder({ fields, onChange }: DynamicFieldBuilderPro
               </div>
 
               <div>
-                <label className="block text-xs font-medium text-gray-600 mb-1">Placeholder</label>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Placeholder</label>
                 <input
                   type="text"
                   value={field.placeholder || ""}
                   onChange={(e) => updateField(field.id, { placeholder: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20"
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                   placeholder="Placeholder text"
                 />
               </div>
@@ -134,9 +134,9 @@ export function DynamicFieldBuilder({ fields, onChange }: DynamicFieldBuilderPro
                   type="checkbox"
                   checked={field.required}
                   onChange={(e) => updateField(field.id, { required: e.target.checked })}
-                  className="w-4 h-4 rounded border-gray-300 text-black focus:ring-black"
+                  className="w-4 h-4 rounded border-gray-300 dark:border-gray-600 text-black dark:text-white focus:ring-black dark:focus:ring-white"
                 />
-                <span className="text-sm text-gray-600">Required field</span>
+                <span className="text-sm text-gray-600 dark:text-gray-400">Required field</span>
               </label>
 
               {(field.fieldType === "DROPDOWN" || field.fieldType === "MULTI_SELECT") && (
@@ -153,7 +153,7 @@ export function DynamicFieldBuilder({ fields, onChange }: DynamicFieldBuilderPro
       <button
         type="button"
         onClick={addField}
-        className="w-full py-3 border-2 border-dashed border-gray-300 rounded-lg text-sm text-gray-500 hover:border-black hover:text-black transition-colors flex items-center justify-center gap-2"
+        className="w-full py-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg text-sm text-gray-500 hover:border-black dark:hover:border-white hover:text-black dark:hover:text-white transition-colors flex items-center justify-center gap-2"
       >
         <Plus className="w-4 h-4" />
         Add Custom Field
@@ -173,14 +173,14 @@ function OptionsEditor({ options, onChange }: { options: string[]; onChange: (op
 
   return (
     <div className="space-y-2">
-      <label className="block text-xs font-medium text-gray-600">Options</label>
+      <label className="block text-xs font-medium text-gray-600 dark:text-gray-400">Options</label>
       {options.map((opt, index) => (
         <div key={index} className="flex items-center gap-2">
           <input
             type="text"
             value={opt}
             onChange={(e) => updateOption(index, e.target.value)}
-            className="flex-1 px-3 py-1.5 text-sm border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20"
+            className="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
             placeholder={`Option ${index + 1}`}
           />
           <button
@@ -195,7 +195,7 @@ function OptionsEditor({ options, onChange }: { options: string[]; onChange: (op
       <button
         type="button"
         onClick={addOption}
-        className="text-xs text-gray-500 hover:text-black transition-colors flex items-center gap-1"
+        className="text-xs text-gray-500 hover:text-black dark:hover:text-white transition-colors flex items-center gap-1"
       >
         <Plus className="w-3 h-3" />
         Add Option
