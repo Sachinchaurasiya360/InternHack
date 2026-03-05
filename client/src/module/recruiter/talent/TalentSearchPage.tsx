@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
   SlidersHorizontal,
@@ -10,6 +10,7 @@ import {
   ChevronRight,
 } from "lucide-react";
 import api from "../../../lib/axios";
+import { queryKeys } from "../../../lib/query-keys";
 import type { Pagination } from "../../../lib/types";
 import TalentCard, { type TalentResult } from "./TalentCard";
 
@@ -45,7 +46,7 @@ export default function TalentSearchPage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const { data, isLoading } = useQuery({
-    queryKey: ["recruiter", "talent-search", appliedFilters, page],
+    queryKey: queryKeys.recruiter.talentSearch({ ...appliedFilters, page }),
     queryFn: async () => {
       const params = new URLSearchParams({ page: String(page), limit: "12" });
 
@@ -63,6 +64,7 @@ export default function TalentSearchPage() {
       const res = await api.get(`/recruiter/talent-search?${params}`);
       return res.data as TalentSearchResponse;
     },
+    placeholderData: keepPreviousData,
   });
 
   const applyFilters = useCallback(() => {

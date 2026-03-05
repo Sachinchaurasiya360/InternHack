@@ -1,23 +1,36 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
 import { Zap, Eye, EyeOff } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { Navbar } from "../../components/Navbar";
+import { SEO } from "../../components/SEO";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const login = useAuthStore((s) => s.login);
+  const initialRole = searchParams.get("role") === "RECRUITER" ? "RECRUITER" : "STUDENT";
+  const [role, setRole] = useState<"STUDENT" | "RECRUITER">(initialRole);
   const [form, setForm] = useState({
     name: "",
     email: "",
     password: "",
+    company: "",
   });
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+
+  const redirectAfterAuth = (userRole: string) => {
+    if (userRole === "RECRUITER") {
+      navigate("/recruiters");
+    } else {
+      navigate("/student/applications");
+    }
+  };
 
   const handleGoogleSuccess = async (credentialResponse: { credential?: string }) => {
     setError("");
@@ -25,10 +38,10 @@ export default function RegisterPage() {
     try {
       const { data } = await api.post("/auth/google", {
         credential: credentialResponse.credential,
-        role: "STUDENT",
+        role,
       });
       login(data.user, data.token);
-      navigate("/student/applications");
+      redirectAfterAuth(data.user.role);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Google sign-up failed");
@@ -43,9 +56,11 @@ export default function RegisterPage() {
     setLoading(true);
 
     try {
-      const { data } = await api.post("/auth/register", { ...form, role: "STUDENT" });
+      const payload: Record<string, string> = { name: form.name, email: form.email, password: form.password, role };
+      if (role === "RECRUITER" && form.company) payload.company = form.company;
+      const { data } = await api.post("/auth/register", payload);
       login(data.user, data.token);
-      navigate("/student/applications");
+      redirectAfterAuth(data.user.role);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Registration failed");
@@ -56,6 +71,11 @@ export default function RegisterPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950">
+      <SEO
+        title="Create Account"
+        description="Join InternHack for free. Create a student or recruiter account to access AI-powered career tools, job listings, and career roadmaps."
+        keywords="register, sign up, create account, InternHack, student registration, recruiter registration"
+      />
       <Navbar />
       <div className="flex-1 flex items-center justify-center px-4 pt-24 pb-12">
       <motion.div
@@ -80,6 +100,34 @@ export default function RegisterPage() {
               {error}
             </div>
           )}
+
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">I am a</label>
+            <div className="flex gap-2">
+              <button
+                type="button"
+                onClick={() => setRole("STUDENT")}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
+                  role === "STUDENT"
+                    ? "bg-black text-white border-black dark:bg-white dark:text-gray-950 dark:border-white"
+                    : "bg-white text-gray-600 border-gray-300 hover:border-gray-400 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:border-gray-500"
+                }`}
+              >
+                Student
+              </button>
+              <button
+                type="button"
+                onClick={() => setRole("RECRUITER")}
+                className={`flex-1 py-2.5 rounded-xl text-sm font-medium border transition-colors ${
+                  role === "RECRUITER"
+                    ? "bg-black text-white border-black dark:bg-white dark:text-gray-950 dark:border-white"
+                    : "bg-white text-gray-600 border-gray-300 hover:border-gray-400 dark:bg-gray-800 dark:text-gray-400 dark:border-gray-600 dark:hover:border-gray-500"
+                }`}
+              >
+                Recruiter
+              </button>
+            </div>
+          </div>
 
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Full Name</label>
@@ -126,6 +174,20 @@ export default function RegisterPage() {
               </button>
             </div>
           </div>
+
+          {role === "RECRUITER" && (
+            <div>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company Name</label>
+              <input
+                type="text"
+                value={form.company}
+                onChange={(e) => setForm({ ...form, company: e.target.value })}
+                className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
+                placeholder="Your company name"
+                required
+              />
+            </div>
+          )}
 
           <motion.button
             whileHover={{ scale: 1.01 }}

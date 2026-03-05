@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
 import { ArrowLeft, Download, CheckCircle, XCircle, Clock, FileText } from "lucide-react";
 import { motion } from "framer-motion";
-import api from "../../../lib/axios";
+import api, { SERVER_URL } from "../../../lib/axios";
 import { EvaluationForm } from "./EvaluationForm";
 import type { Application } from "../../../lib/types";
 
@@ -76,7 +76,7 @@ export default function ApplicationDetail() {
         {/* Resume & Cover Letter */}
         <div className="flex items-center gap-4 mt-4">
           {application.resumeUrl && (
-            <a href={`http://localhost:3000${application.resumeUrl}`} target="_blank" rel="noopener noreferrer"
+            <a href={`${SERVER_URL}${application.resumeUrl}`} target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-950 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline">
               <Download className="w-4 h-4" /> Download Resume
             </a>

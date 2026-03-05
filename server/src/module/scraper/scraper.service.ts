@@ -152,56 +152,76 @@ export class ScraperService {
     return { results };
   }
 
-  /** Upsert scraped jobs with deduplication */
+  /** Upsert scraped jobs with batch deduplication */
   private async upsertJobs(
     source: string,
     jobs: ScrapedJobData[]
   ): Promise<{ created: number; updated: number }> {
+    if (jobs.length === 0) return { created: 0, updated: 0 };
+
+    // Batch-fetch all existing jobs for this source in one query
+    const sourceIds = jobs.map((j) => j.sourceId);
+    const existing = await prisma.scrapedJob.findMany({
+      where: { source, sourceId: { in: sourceIds } },
+      select: { id: true, sourceId: true },
+    });
+    const existingMap = new Map(existing.map((e) => [e.sourceId, e.id]));
+
     let created = 0;
     let updated = 0;
 
-    for (const job of jobs) {
-      const existing = await prisma.scrapedJob.findUnique({
-        where: { source_sourceId: { source, sourceId: job.sourceId } },
-      });
+    // Process in batches of 50 to avoid oversized transactions
+    const BATCH_SIZE = 50;
+    for (let i = 0; i < jobs.length; i += BATCH_SIZE) {
+      const batch = jobs.slice(i, i + BATCH_SIZE);
+      const ops: Prisma.PrismaPromise<unknown>[] = [];
 
-      if (existing) {
-        await prisma.scrapedJob.update({
-          where: { id: existing.id },
-          data: {
-            title: job.title,
-            description: job.description,
-            company: job.company,
-            location: job.location,
-            salary: job.salary ?? null,
-            tags: job.tags,
-            applicationUrl: job.applicationUrl,
-            sourceUrl: job.sourceUrl ?? null,
-            status: "ACTIVE",
-            lastSeenAt: new Date(),
-            metadata: (job.metadata as Prisma.InputJsonValue) ?? {},
-          },
-        });
-        updated++;
-      } else {
-        await prisma.scrapedJob.create({
-          data: {
-            title: job.title,
-            description: job.description,
-            company: job.company,
-            location: job.location,
-            salary: job.salary ?? null,
-            tags: job.tags,
-            applicationUrl: job.applicationUrl,
-            source,
-            sourceId: job.sourceId,
-            sourceUrl: job.sourceUrl ?? null,
-            status: "ACTIVE",
-            metadata: (job.metadata as Prisma.InputJsonValue) ?? {},
-          },
-        });
-        created++;
+      for (const job of batch) {
+        const existingId = existingMap.get(job.sourceId);
+        if (existingId) {
+          ops.push(
+            prisma.scrapedJob.update({
+              where: { id: existingId },
+              data: {
+                title: job.title,
+                description: job.description,
+                company: job.company,
+                location: job.location,
+                salary: job.salary ?? null,
+                tags: job.tags,
+                applicationUrl: job.applicationUrl,
+                sourceUrl: job.sourceUrl ?? null,
+                status: "ACTIVE",
+                lastSeenAt: new Date(),
+                metadata: (job.metadata as Prisma.InputJsonValue) ?? {},
+              },
+            })
+          );
+          updated++;
+        } else {
+          ops.push(
+            prisma.scrapedJob.create({
+              data: {
+                title: job.title,
+                description: job.description,
+                company: job.company,
+                location: job.location,
+                salary: job.salary ?? null,
+                tags: job.tags,
+                applicationUrl: job.applicationUrl,
+                source,
+                sourceId: job.sourceId,
+                sourceUrl: job.sourceUrl ?? null,
+                status: "ACTIVE",
+                metadata: (job.metadata as Prisma.InputJsonValue) ?? {},
+              },
+            })
+          );
+          created++;
+        }
       }
+
+      await prisma.$transaction(ops);
     }
 
     return { created, updated };

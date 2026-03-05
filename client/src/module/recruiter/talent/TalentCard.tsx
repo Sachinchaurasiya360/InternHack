@@ -7,6 +7,7 @@ import {
   Globe,
   FileText,
   CheckCircle,
+  Mail,
 } from "lucide-react";
 
 export interface TalentResult {
@@ -57,7 +58,8 @@ export default function TalentCard({ student, index = 0 }: TalentCardProps) {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
-      className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 flex flex-col"
+      whileHover={{ y: -2 }}
+      className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 p-6 flex flex-col transition-all"
     >
       {/* Header: Avatar + Name + Meta */}
       <div className="flex items-start gap-4 mb-4">
@@ -76,9 +78,11 @@ export default function TalentCard({ student, index = 0 }: TalentCardProps) {
         )}
 
         <div className="min-w-0 flex-1">
-          <h3 className="font-semibold text-gray-900 dark:text-white truncate">
-            {student.name}
-          </h3>
+          <a href={`mailto:${student.email}`} className="no-underline group/name">
+            <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover/name:text-blue-600 dark:group-hover/name:text-blue-400 transition-colors cursor-pointer">
+              {student.name}
+            </h3>
+          </a>
           {student.college && (
             <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1 truncate">
               <GraduationCap className="w-3.5 h-3.5 flex-shrink-0" />
@@ -148,6 +152,13 @@ export default function TalentCard({ student, index = 0 }: TalentCardProps) {
       {/* Social Links */}
       <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
         <div className="flex items-center gap-2">
+          <a
+            href={`mailto:${student.email}`}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-900/20 transition-colors"
+            title={`Email ${student.name}`}
+          >
+            <Mail className="w-4 h-4" />
+          </a>
           {student.linkedinUrl && (
             <a
               href={student.linkedinUrl}

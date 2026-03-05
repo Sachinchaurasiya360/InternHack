@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsx:*)"
+      "Bash(npx tsx:*)",
+      "Bash(gh api:*)",
+      "Bash(ls:*)"
     ]
   }
 }

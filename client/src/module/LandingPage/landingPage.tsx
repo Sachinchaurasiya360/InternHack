@@ -5,7 +5,6 @@ import { StatsSection } from "../../components/StatsSection"
 import { FeaturesSection } from "../../components/FeaturesSection"
 import { HowItWorksSection } from "../../components/HowItWorksSection"
 import { PricingSection } from "../../components/PricingSection"
-import { GrantsSection } from "../../components/GrantsSection"
 import { CTASection } from "../../components/CTASection"
 import { SEO } from "../../components/SEO"
 
@@ -23,7 +22,6 @@ export default function LandingPage(){
             <FeaturesSection/>
             <HowItWorksSection/>
             <PricingSection/>
-            <GrantsSection/>
             <CTASection/>
             <Footer/>
         </div>

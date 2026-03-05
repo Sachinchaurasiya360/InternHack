@@ -1,6 +1,10 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
-import { User, Mail, Phone, Building2, Briefcase, FileText, Save, Loader2, CheckCircle, Upload, Trash2, Camera, ExternalLink, MapPin, GraduationCap, Linkedin, Github, Globe, X, Plus, AlignLeft } from "lucide-react";
+import {
+  User, Mail, Phone, Building2, Briefcase, FileText, Save, Loader2,
+  CheckCircle, Upload, Trash2, Camera, ExternalLink, MapPin, GraduationCap,
+  Linkedin, Github, Globe, X, Plus, AlignLeft, Shield, Calendar,
+} from "lucide-react";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
@@ -22,6 +26,14 @@ interface ProfileData {
   linkedinUrl: string;
   githubUrl: string;
   portfolioUrl: string;
+}
+
+interface CollegeSuggestion {
+  id: number;
+  name: string;
+  city: string;
+  state: string;
+  type: string;
 }
 
 function getFileNameFromUrl(url: string): string {
@@ -46,6 +58,7 @@ export default function StudentProfilePage() {
     graduationYear: null, skills: [], location: "",
     linkedinUrl: "", githubUrl: "", portfolioUrl: "",
   });
+  const [memberSince, setMemberSince] = useState<string | null>(null);
   const [skillInput, setSkillInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -54,6 +67,14 @@ export default function StudentProfilePage() {
   const [deletingResume, setDeletingResume] = useState<string | null>(null);
   const picInputRef = useRef<HTMLInputElement>(null);
   const resumeInputRef = useRef<HTMLInputElement>(null);
+
+  // College autocomplete state
+  const [collegeSuggestions, setCollegeSuggestions] = useState<CollegeSuggestion[]>([]);
+  const [collegeLoading, setCollegeLoading] = useState(false);
+  const [showCollegeSuggestions, setShowCollegeSuggestions] = useState(false);
+  const collegeTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const collegeInputRef = useRef<HTMLInputElement>(null);
+  const collegeDropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     api.get("/auth/me")
@@ -68,13 +89,56 @@ export default function StudentProfilePage() {
           location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
           githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
         });
+        setMemberSince(u.createdAt ?? null);
       })
       .catch(() => toast.error("Failed to load profile"))
       .finally(() => setLoading(false));
   }, []);
 
+  // Close college suggestions on outside click
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (
+        collegeInputRef.current && !collegeInputRef.current.contains(e.target as Node) &&
+        collegeDropdownRef.current && !collegeDropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowCollegeSuggestions(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const searchColleges = useCallback((query: string) => {
+    if (collegeTimerRef.current) clearTimeout(collegeTimerRef.current);
+    if (query.length < 2) { setCollegeSuggestions([]); setShowCollegeSuggestions(false); return; }
+    collegeTimerRef.current = setTimeout(async () => {
+      setCollegeLoading(true);
+      try {
+        const res = await api.get(`/colleges?search=${encodeURIComponent(query)}&limit=8`);
+        setCollegeSuggestions(res.data.colleges ?? []);
+        setShowCollegeSuggestions(true);
+      } catch {
+        setCollegeSuggestions([]);
+      } finally {
+        setCollegeLoading(false);
+      }
+    }, 300);
+  }, []);
+
   const handleChange = (field: keyof ProfileData, value: string | number | null) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleCollegeChange = (value: string) => {
+    handleChange("college", value);
+    searchColleges(value);
+  };
+
+  const selectCollege = (name: string) => {
+    handleChange("college", name);
+    setShowCollegeSuggestions(false);
+    setCollegeSuggestions([]);
   };
 
   const syncUser = (updated: ProfileData) => {
@@ -192,11 +256,15 @@ export default function StudentProfilePage() {
     }
   };
 
-  const inputClass = "w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-300 transition-all dark:bg-gray-800 dark:text-white";
+  const inputClass = "w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all dark:bg-gray-800 dark:text-white bg-gray-50/50 dark:bg-gray-800/50";
+  const labelClass = "flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5";
+  const sectionClass = "bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden";
+
+  const displayDate = memberSince || user?.createdAt;
 
   if (loading) {
     return (
-      <div className="max-w-2xl mx-auto">
+      <div className="max-w-3xl mx-auto">
         <div className="animate-pulse space-y-4">
           <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
           <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-2xl" />
@@ -206,53 +274,91 @@ export default function StudentProfilePage() {
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
+    <div className="max-w-3xl mx-auto pb-12">
       <SEO title="My Profile" description="Update your InternHack student profile details." noIndex />
 
       <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white mb-1">My Profile</h1>
-        <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">Update your personal information — a complete profile helps recruiters find you</p>
-
-        {/* Avatar with upload */}
-        <div className="flex items-center gap-4 mb-8">
-          <div className="relative group">
-            <div className="w-16 h-16 rounded-full bg-gray-900 dark:bg-gray-700 text-white flex items-center justify-center text-2xl font-bold shrink-0 overflow-hidden">
-              {form.profilePic ? (
-                <img src={form.profilePic} alt={form.name} className="w-16 h-16 rounded-full object-cover" />
-              ) : (form.name.charAt(0).toUpperCase())}
-            </div>
-            <button type="button" onClick={() => picInputRef.current?.click()} disabled={uploadingPic}
-              className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
-              {uploadingPic ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Camera className="w-5 h-5 text-white" />}
-            </button>
-            <input ref={picInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleProfilePicUpload} className="hidden" />
+        {/* Profile Header Card */}
+        <div className={`${sectionClass} mb-6`}>
+          {/* Gradient banner */}
+          <div className="h-24 bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 relative">
+            <div className="absolute inset-0 opacity-20"
+              style={{
+                backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+                backgroundSize: "32px 32px",
+              }}
+            />
           </div>
-          <div>
-            <h2 className="text-lg font-semibold text-gray-900 dark:text-white">{form.name}</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-500">{form.email}</p>
-            <button type="button" onClick={() => picInputRef.current?.click()} disabled={uploadingPic}
-              className="text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium mt-0.5">
-              {uploadingPic ? "Uploading..." : "Change photo"}
-            </button>
+
+          <div className="px-6 pb-6 -mt-10 relative">
+            <div className="flex items-end gap-4">
+              {/* Avatar */}
+              <div className="relative group">
+                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-900 shadow-lg text-gray-900 dark:text-white flex items-center justify-center text-2xl font-bold shrink-0 overflow-hidden">
+                  {form.profilePic ? (
+                    <img src={form.profilePic} alt={form.name} className="w-20 h-20 rounded-2xl object-cover" />
+                  ) : (form.name.charAt(0).toUpperCase())}
+                </div>
+                <button type="button" onClick={() => picInputRef.current?.click()} disabled={uploadingPic}
+                  className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  {uploadingPic ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Camera className="w-5 h-5 text-white" />}
+                </button>
+                <input ref={picInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleProfilePicUpload} className="hidden" />
+              </div>
+
+              <div className="flex-1 min-w-0 pb-1">
+                <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate">{form.name || "Your Name"}</h1>
+                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{form.email}</p>
+              </div>
+
+              <button type="button" onClick={() => picInputRef.current?.click()} disabled={uploadingPic}
+                className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium shrink-0">
+                {uploadingPic ? "Uploading..." : "Change photo"}
+              </button>
+            </div>
+
+            {/* Quick stats */}
+            <div className="flex flex-wrap gap-3 mt-4">
+              {form.college && (
+                <span className="inline-flex items-center gap-1.5 text-xs bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 px-3 py-1.5 rounded-lg font-medium">
+                  <GraduationCap className="w-3.5 h-3.5" /> {form.college}
+                </span>
+              )}
+              {form.location && (
+                <span className="inline-flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-3 py-1.5 rounded-lg">
+                  <MapPin className="w-3.5 h-3.5" /> {form.location}
+                </span>
+              )}
+              {form.skills.length > 0 && (
+                <span className="inline-flex items-center gap-1.5 text-xs bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 px-3 py-1.5 rounded-lg">
+                  {form.skills.length} skill{form.skills.length !== 1 ? "s" : ""}
+                </span>
+              )}
+            </div>
           </div>
         </div>
 
+        <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">Update your personal information — a complete profile helps recruiters find you</p>
+
         {/* Basic Info */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-5">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Basic Information</h3>
+        <div className={`${sectionClass} p-6 space-y-5`}>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
+            Basic Information
+          </h3>
 
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><User className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Full Name</label>
+            <label className={labelClass}><User className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Full Name</label>
             <input type="text" value={form.name} onChange={(e) => handleChange("name", e.target.value)} className={inputClass} placeholder="Your full name" />
           </div>
 
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Mail className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Email</label>
-            <input type="email" value={form.email} disabled className={`${inputClass} bg-gray-50 dark:bg-gray-950 text-gray-500 dark:text-gray-500 cursor-not-allowed`} />
+            <label className={labelClass}><Mail className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Email</label>
+            <input type="email" value={form.email} disabled className={`${inputClass} !bg-gray-100 dark:!bg-gray-900 text-gray-500 dark:text-gray-500 cursor-not-allowed`} />
           </div>
 
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><AlignLeft className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Bio</label>
+            <label className={labelClass}><AlignLeft className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Bio</label>
             <textarea value={form.bio} onChange={(e) => handleChange("bio", e.target.value)} rows={3} maxLength={500}
               className={`${inputClass} resize-none`} placeholder="A brief introduction about yourself..." />
             <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 text-right">{form.bio.length}/500</p>
@@ -260,27 +366,64 @@ export default function StudentProfilePage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Phone className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Phone</label>
+              <label className={labelClass}><Phone className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Phone</label>
               <input type="tel" value={form.contactNo} onChange={(e) => handleChange("contactNo", e.target.value)} className={inputClass} placeholder="+91 98765 43210" />
             </div>
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Location</label>
+              <label className={labelClass}><MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Location</label>
               <input type="text" value={form.location} onChange={(e) => handleChange("location", e.target.value)} className={inputClass} placeholder="e.g. Mumbai, India" />
             </div>
           </div>
         </div>
 
         {/* Education & Work */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-5 mt-4">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Education & Work</h3>
+        <div className={`${sectionClass} p-6 space-y-5 mt-4`}>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
+            Education & Work
+          </h3>
 
           <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><GraduationCap className="w-4 h-4 text-gray-400 dark:text-gray-500" /> College</label>
-              <input type="text" value={form.college} onChange={(e) => handleChange("college", e.target.value)} className={inputClass} placeholder="e.g. IIT Delhi" />
+            {/* College with autocomplete */}
+            <div className="relative">
+              <label className={labelClass}><GraduationCap className="w-4 h-4 text-gray-400 dark:text-gray-500" /> College</label>
+              <input
+                ref={collegeInputRef}
+                type="text"
+                value={form.college}
+                onChange={(e) => handleCollegeChange(e.target.value)}
+                onFocus={() => { if (collegeSuggestions.length > 0) setShowCollegeSuggestions(true); }}
+                className={inputClass}
+                placeholder="Start typing college name..."
+                autoComplete="off"
+              />
+              {collegeLoading && (
+                <Loader2 className="absolute right-3 top-9 w-4 h-4 text-gray-400 animate-spin" />
+              )}
+
+              {/* Suggestions dropdown */}
+              {showCollegeSuggestions && collegeSuggestions.length > 0 && (
+                <div
+                  ref={collegeDropdownRef}
+                  className="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl max-h-56 overflow-y-auto"
+                >
+                  {collegeSuggestions.map((c) => (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => selectCollege(c.name)}
+                      className="w-full text-left px-4 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors first:rounded-t-xl last:rounded-b-xl"
+                    >
+                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{c.name}</p>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">{c.city}, {c.state} · {c.type}</p>
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
+
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><GraduationCap className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Graduation Year</label>
+              <label className={labelClass}><GraduationCap className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Graduation Year</label>
               <input type="number" value={form.graduationYear ?? ""} onChange={(e) => handleChange("graduationYear", e.target.value ? Number(e.target.value) : null)}
                 className={inputClass} placeholder="e.g. 2026" min={1990} max={2040} />
             </div>
@@ -288,26 +431,29 @@ export default function StudentProfilePage() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Building2 className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Company</label>
+              <label className={labelClass}><Building2 className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Company</label>
               <input type="text" value={form.company} onChange={(e) => handleChange("company", e.target.value)} className={inputClass} placeholder="e.g. Google" />
             </div>
             <div>
-              <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Briefcase className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Role</label>
+              <label className={labelClass}><Briefcase className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Role</label>
               <input type="text" value={form.designation} onChange={(e) => handleChange("designation", e.target.value)} className={inputClass} placeholder="e.g. CS Student" />
             </div>
           </div>
         </div>
 
         {/* Skills */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-3 mt-4">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Skills <span className="text-xs font-normal text-gray-400 dark:text-gray-500 ml-1">{form.skills.length}/20</span></h3>
+        <div className={`${sectionClass} p-6 space-y-3 mt-4`}>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
+            Skills <span className="text-xs font-normal text-gray-400 dark:text-gray-500 ml-1">{form.skills.length}/20</span>
+          </h3>
 
           {form.skills.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {form.skills.map((skill, i) => (
-                <span key={i} className="inline-flex items-center gap-1 px-3 py-1 bg-violet-50 dark:bg-violet-900/30 text-violet-700 dark:text-violet-400 text-sm rounded-lg">
+                <span key={i} className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 text-sm rounded-lg font-medium">
                   {skill}
-                  <button type="button" onClick={() => handleRemoveSkill(i)} className="text-violet-400 dark:text-violet-500 hover:text-violet-600 dark:hover:text-violet-300"><X className="w-3 h-3" /></button>
+                  <button type="button" onClick={() => handleRemoveSkill(i)} className="text-indigo-400 dark:text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300"><X className="w-3 h-3" /></button>
                 </span>
               ))}
             </div>
@@ -318,33 +464,37 @@ export default function StudentProfilePage() {
               onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddSkill(); } }}
               className={`${inputClass} flex-1`} placeholder="Type a skill and press Enter" />
             <button type="button" onClick={handleAddSkill}
-              className="px-4 py-2.5 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-xl text-sm font-medium hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors flex items-center gap-1">
+              className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors flex items-center gap-1">
               <Plus className="w-4 h-4" /> Add
             </button>
           </div>
         </div>
 
         {/* Social Links */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-5 mt-4">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-1">Social Links</h3>
+        <div className={`${sectionClass} p-6 space-y-5 mt-4`}>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
+            Social Links
+          </h3>
 
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Linkedin className="w-4 h-4 text-gray-400 dark:text-gray-500" /> LinkedIn</label>
+            <label className={labelClass}><Linkedin className="w-4 h-4 text-gray-400 dark:text-gray-500" /> LinkedIn</label>
             <input type="url" value={form.linkedinUrl} onChange={(e) => handleChange("linkedinUrl", e.target.value)} className={inputClass} placeholder="https://linkedin.com/in/yourname" />
           </div>
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Github className="w-4 h-4 text-gray-400 dark:text-gray-500" /> GitHub</label>
+            <label className={labelClass}><Github className="w-4 h-4 text-gray-400 dark:text-gray-500" /> GitHub</label>
             <input type="url" value={form.githubUrl} onChange={(e) => handleChange("githubUrl", e.target.value)} className={inputClass} placeholder="https://github.com/yourname" />
           </div>
           <div>
-            <label className="flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5"><Globe className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Portfolio</label>
+            <label className={labelClass}><Globe className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Portfolio</label>
             <input type="url" value={form.portfolioUrl} onChange={(e) => handleChange("portfolioUrl", e.target.value)} className={inputClass} placeholder="https://yourportfolio.com" />
           </div>
         </div>
 
         {/* Resumes */}
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 space-y-3 mt-4">
+        <div className={`${sectionClass} p-6 space-y-3 mt-4`}>
           <label className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
+            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
             <FileText className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Resumes
             <span className="ml-auto text-xs font-normal text-gray-400 dark:text-gray-500">{form.resumes.length}/{MAX_RESUMES}</span>
           </label>
@@ -352,10 +502,12 @@ export default function StudentProfilePage() {
           {form.resumes.length > 0 && (
             <div className="space-y-2">
               {form.resumes.map((url) => (
-                <div key={url} className="flex items-center gap-3 px-3.5 py-2.5 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                  <FileText className="w-4 h-4 text-violet-500 dark:text-violet-400 shrink-0" />
+                <div key={url} className="flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                  <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center shrink-0">
+                    <FileText className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                  </div>
                   <span className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1">{getFileNameFromUrl(url)}</span>
-                  <a href={url} target="_blank" rel="noopener noreferrer" className="text-gray-400 dark:text-gray-500 hover:text-violet-600 dark:hover:text-violet-400 transition-colors shrink-0"><ExternalLink className="w-3.5 h-3.5" /></a>
+                  <a href={url} target="_blank" rel="noopener noreferrer" className="text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shrink-0"><ExternalLink className="w-3.5 h-3.5" /></a>
                   <button type="button" onClick={() => handleResumeDelete(url)} disabled={deletingResume === url}
                     className="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0 disabled:opacity-50">
                     {deletingResume === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
@@ -367,7 +519,7 @@ export default function StudentProfilePage() {
 
           {form.resumes.length < MAX_RESUMES && (
             <button type="button" onClick={() => resumeInputRef.current?.click()} disabled={uploadingResume}
-              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 dark:text-gray-500 hover:border-violet-300 dark:hover:border-violet-600 hover:text-violet-600 dark:hover:text-violet-400 hover:bg-violet-50/30 dark:hover:bg-violet-900/10 transition-all disabled:opacity-50">
+              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 dark:text-gray-500 hover:border-indigo-300 dark:hover:border-indigo-600 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all disabled:opacity-50">
               {uploadingResume ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Resume (PDF)</>}
             </button>
           )}
@@ -377,25 +529,38 @@ export default function StudentProfilePage() {
 
         {/* Save Button */}
         <button onClick={handleSave} disabled={saving}
-          className="w-full mt-6 py-3 bg-gray-900 dark:bg-white text-white dark:text-gray-950 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 flex items-center justify-center gap-2">
+          className="w-full mt-6 py-3.5 bg-gradient-to-r from-indigo-500 to-violet-500 text-white font-semibold rounded-xl hover:from-indigo-600 hover:to-violet-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20">
           {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : <><Save className="w-4 h-4" /> Save Changes</>}
         </button>
 
         {/* Account Info */}
-        <div className="mt-6 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6 mb-8">
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-3 flex items-center gap-2">
-            <CheckCircle className="w-4 h-4 text-green-500" /> Account Information
+        <div className={`${sectionClass} p-6 mt-6 mb-8`}>
+          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
+            <Shield className="w-4 h-4 text-indigo-500" /> Account Information
           </h3>
-          <div className="grid grid-cols-2 gap-4 text-sm">
-            <div>
-              <span className="text-gray-400 dark:text-gray-500">Role</span>
-              <p className="font-medium text-gray-700 dark:text-gray-300 mt-0.5">{user?.role}</p>
+          <div className="grid grid-cols-3 gap-4">
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+              <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 mb-1">
+                <CheckCircle className="w-3.5 h-3.5 text-green-500" /> Role
+              </span>
+              <p className="font-semibold text-gray-700 dark:text-gray-300 text-sm">{user?.role}</p>
             </div>
-            <div>
-              <span className="text-gray-400 dark:text-gray-500">Member since</span>
-              <p className="font-medium text-gray-700 dark:text-gray-300 mt-0.5">
-                {user?.createdAt ? new Date(user.createdAt).toLocaleDateString("en-IN", { month: "long", year: "numeric" }) : "---"}
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+              <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 mb-1">
+                <Calendar className="w-3.5 h-3.5 text-indigo-400" /> Member since
+              </span>
+              <p className="font-semibold text-gray-700 dark:text-gray-300 text-sm">
+                {displayDate
+                  ? new Date(displayDate).toLocaleDateString("en-IN", { month: "long", year: "numeric" })
+                  : "---"}
               </p>
+            </div>
+            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
+              <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 mb-1">
+                <FileText className="w-3.5 h-3.5 text-violet-400" /> Resumes
+              </span>
+              <p className="font-semibold text-gray-700 dark:text-gray-300 text-sm">{form.resumes.length} / {MAX_RESUMES}</p>
             </div>
           </div>
         </div>

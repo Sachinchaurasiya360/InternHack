@@ -3,6 +3,7 @@ import { useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 import api from "../../../lib/axios";
+import { useAuthStore } from "../../../lib/auth.store";
 import { DynamicFieldBuilder } from "../../../components/DynamicFieldBuilder";
 import { RoundsManager } from "../rounds/RoundsManager";
 import type { CustomFieldDefinition } from "../../../lib/types";
@@ -19,6 +20,7 @@ const STEPS = ["Basic Info", "Custom Fields", "Hiring Rounds", "Review"];
 
 export default function CreateJobPage() {
   const navigate = useNavigate();
+  const user = useAuthStore((s) => s.user);
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -28,7 +30,7 @@ export default function CreateJobPage() {
     description: "",
     location: "",
     salary: "",
-    company: "",
+    company: user?.company || "",
     deadline: "",
     tags: "",
   });
@@ -70,8 +72,16 @@ export default function CreateJobPage() {
 
       navigate("/recruiters/jobs");
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
-      setError(error.response?.data?.message || "Failed to create job");
+      const error = err as { response?: { data?: { message?: string; errors?: { fieldErrors?: Record<string, string[]> } } } };
+      const fieldErrors = error.response?.data?.errors?.fieldErrors;
+      if (fieldErrors && Object.keys(fieldErrors).length > 0) {
+        const messages = Object.entries(fieldErrors)
+          .map(([field, msgs]) => `${field}: ${(msgs as string[]).join(", ")}`)
+          .join("; ");
+        setError(messages);
+      } else {
+        setError(error.response?.data?.message || "Failed to create job");
+      }
     } finally {
       setLoading(false);
     }

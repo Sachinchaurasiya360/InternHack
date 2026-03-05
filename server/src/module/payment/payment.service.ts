@@ -121,17 +121,7 @@ export class PaymentService {
       throw new Error("Invalid payment signature");
     }
 
-    // 3. Update payment record to SUCCESS
-    await prisma.payment.update({
-      where: { razorpayOrderId },
-      data: {
-        razorpayPaymentId,
-        razorpaySignature,
-        status: "SUCCESS",
-      },
-    });
-
-    // 4. Activate subscription on user
+    // 3. Atomically update payment + activate subscription
     const now = new Date();
     const endDate = new Date(now);
     if (payment.billing === "yearly") {
@@ -140,22 +130,32 @@ export class PaymentService {
       endDate.setMonth(endDate.getMonth() + 1);
     }
 
-    const updatedUser = await prisma.user.update({
-      where: { id: userId },
-      data: {
-        subscriptionPlan: payment.plan,
-        subscriptionStatus: "ACTIVE",
-        subscriptionStartDate: now,
-        subscriptionEndDate: endDate,
-      },
-      select: {
-        id: true,
-        subscriptionPlan: true,
-        subscriptionStatus: true,
-        subscriptionStartDate: true,
-        subscriptionEndDate: true,
-      },
-    });
+    const [, updatedUser] = await prisma.$transaction([
+      prisma.payment.update({
+        where: { razorpayOrderId },
+        data: {
+          razorpayPaymentId,
+          razorpaySignature,
+          status: "SUCCESS",
+        },
+      }),
+      prisma.user.update({
+        where: { id: userId },
+        data: {
+          subscriptionPlan: payment.plan,
+          subscriptionStatus: "ACTIVE",
+          subscriptionStartDate: now,
+          subscriptionEndDate: endDate,
+        },
+        select: {
+          id: true,
+          subscriptionPlan: true,
+          subscriptionStatus: true,
+          subscriptionStartDate: true,
+          subscriptionEndDate: true,
+        },
+      }),
+    ]);
 
     return { success: true, subscription: updatedUser };
   }

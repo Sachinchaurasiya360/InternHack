@@ -98,6 +98,58 @@ enum SubscriptionStatus {
 }
 
 // ============================================================
+// COLLEGE DISCOVERY ENUMS
+// ============================================================
+
+enum CollegeType {
+  GOVERNMENT
+  PRIVATE
+  DEEMED
+  AUTONOMOUS
+  CENTRAL
+  STATE
+}
+
+enum DegreeLevel {
+  DIPLOMA
+  BACHELOR
+  MASTER
+  DOCTORAL
+  CERTIFICATE
+}
+
+enum CourseMode {
+  FULL_TIME
+  PART_TIME
+  DISTANCE
+  ONLINE
+}
+
+enum NaacGrade {
+  A_PLUS_PLUS
+  A_PLUS
+  A
+  B_PLUS_PLUS
+  B_PLUS
+  B
+  C
+  UNGRADED
+}
+
+enum ExamType {
+  NATIONAL
+  STATE
+  UNIVERSITY
+  PRIVATE
+}
+
+enum CollegeReviewStatus {
+  PENDING
+  APPROVED
+  REJECTED
+}
+
+// ============================================================
 // USER MODEL
 // ============================================================
 
@@ -151,6 +203,12 @@ model user {
   // ── Quiz & Blog relations ──
   quizAttempts  quizAttempt[] @relation("StudentQuizAttempts")
   blogPosts     blogPost[]    @relation("BlogAuthor")
+
+  // ── College discovery relations ──
+  collegeReviews collegeReview[] @relation("UserCollegeReviews")
+
+  @@index([role])
+  @@index([role, isActive])
 }
 
 // ============================================================
@@ -174,7 +232,7 @@ model adminProfile {
 model adminActivityLog {
   id         Int      @id @default(autoincrement())
   adminId    Int
-  admin      user     @relation("AdminActivityLogs", fields: [adminId], references: [id])
+  admin      user     @relation("AdminActivityLogs", fields: [adminId], references: [id], onDelete: Cascade)
   action     String
   targetType String
   targetId   Int
@@ -210,6 +268,10 @@ model job {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  @@index([recruiterId])
+  @@index([status])
+  @@index([status, createdAt])
 }
 
 // ============================================================
@@ -232,6 +294,7 @@ model round {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([jobId])
   @@unique([jobId, orderIndex])
 }
 
@@ -256,6 +319,8 @@ model application {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
+  @@index([jobId])
+  @@index([studentId])
   @@unique([jobId, studentId])
 }
 
@@ -809,5 +874,232 @@ model gsocOrganization {
   updatedAt         DateTime @updatedAt
 
   @@index([category])
+  @@index([name])
+}
+
+// ============================================================
+// COLLEGE DISCOVERY MODELS
+// ============================================================
+
+model college {
+  id              Int          @id @default(autoincrement())
+  name            String
+  slug            String       @unique
+  logo            String?
+  coverImage      String?
+  description     String
+  type            CollegeType
+  affiliation     String?
+  naacGrade       NaacGrade?
+  nirfRanking     Int?
+  nirfYear        Int?
+  website         String?
+  establishedYear Int?
+  campusSize      String?
+  state           String
+  city            String
+  address         String?
+  pincode         String?
+  latitude        Float?
+  longitude       Float?
+  totalStudents   Int?
+  totalFaculty    Int?
+  acceptedExams   String[]     @default([])
+  facilities      String[]     @default([])
+  streams         String[]     @default([])
+  socialLinks     Json         @default("{}")
+  photos          String[]     @default([])
+  avgRating       Float        @default(0)
+  reviewCount     Int          @default(0)
+  isApproved      Boolean      @default(true)
+  sourceId        String?
+  source          String?
+
+  courses    collegeCourse[]
+  placements collegePlacement[]
+  cutoffs    collegeCutoff[]
+  reviews    collegeReview[]
+  galleries  collegeGallery[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([source, sourceId])
+  @@index([state])
+  @@index([city])
+  @@index([type])
+  @@index([naacGrade])
+  @@index([nirfRanking])
+  @@index([isApproved])
+}
+
+model collegeCourse {
+  id             Int         @id @default(autoincrement())
+  collegeId      Int
+  college        college     @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  name           String
+  degree         String
+  degreeLevel    DegreeLevel
+  specialization String?
+  stream         String
+  durationYears  Float
+  mode           CourseMode  @default(FULL_TIME)
+  totalFees      Int?
+  feesPerYear    Int?
+  eligibility    String?
+  seats          Int?
+  isPopular      Boolean     @default(false)
+
+  cutoffs collegeCutoff[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([collegeId])
+  @@index([stream])
+  @@index([degree])
+  @@index([degreeLevel])
+}
+
+model collegePlacement {
+  id                Int      @id @default(autoincrement())
+  collegeId         Int
+  college           college  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  year              Int
+  avgPackageLPA     Float?
+  highestPackageLPA Float?
+  medianPackageLPA  Float?
+  placementRate     Float?
+  studentsPlaced    Int?
+  totalStudents     Int?
+  topRecruiters     String[] @default([])
+  sectorWise        Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([collegeId, year])
+  @@index([collegeId])
+}
+
+model entranceExam {
+  id                Int      @id @default(autoincrement())
+  name              String   @unique
+  slug              String   @unique
+  fullName          String?
+  type              ExamType
+  conductingBody    String?
+  applicableStreams String[] @default([])
+  frequency         String?
+  website           String?
+  description       String?
+
+  cutoffs collegeCutoff[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model collegeCutoff {
+  id           Int            @id @default(autoincrement())
+  collegeId    Int
+  college      college        @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  courseId     Int?
+  course       collegeCourse? @relation(fields: [courseId], references: [id], onDelete: Cascade)
+  examId       Int
+  exam         entranceExam   @relation(fields: [examId], references: [id], onDelete: Cascade)
+  year         Int
+  category     String
+  gender       String?
+  openingRank  Int?
+  closingRank  Int?
+  openingScore Float?
+  closingScore Float?
+  round        String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([collegeId])
+  @@index([examId])
+  @@index([year])
+  @@index([category])
+}
+
+model collegeReview {
+  id                   Int                 @id @default(autoincrement())
+  collegeId            Int
+  college              college             @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  userId               Int
+  user                 user                @relation("UserCollegeReviews", fields: [userId], references: [id])
+  overallRating        Int
+  placementsRating     Int?
+  infrastructureRating Int?
+  facultyRating        Int?
+  campusLifeRating     Int?
+  valueForMoneyRating  Int?
+  title                String
+  content              String
+  pros                 String?
+  cons                 String?
+  courseStudied         String?
+  graduationYear       Int?
+  status               CollegeReviewStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([collegeId])
+  @@index([status])
+}
+
+model collegeGallery {
+  id        Int     @id @default(autoincrement())
+  collegeId Int
+  college   college @relation(fields: [collegeId], references: [id], onDelete: Cascade)
+  imageUrl  String
+  caption   String?
+  category  String?
+
+  createdAt DateTime @default(now())
+}
+
+// ============================================================
+// YC COMPANIES MODEL
+// ============================================================
+
+model ycCompany {
+  id              Int       @id @default(autoincrement())
+  ycId            Int       @unique
+  name            String
+  slug            String
+  oneLiner        String?
+  longDescription String?
+  batch           String?
+  batchShort      String?
+  status          String?
+  website         String?
+  smallLogoUrl    String?
+  allLocations    String?
+  teamSize        Int?
+  industry        String?
+  subindustry     String?
+  tags            String[]  @default([])
+  industries      String[]  @default([])
+  regions         String[]  @default([])
+  stage           String?
+  isHiring        Boolean   @default(false)
+  topCompany      Boolean   @default(false)
+  ycUrl           String?
+  launchedAt      DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([batchShort])
+  @@index([industry])
+  @@index([status])
+  @@index([isHiring])
+  @@index([topCompany])
   @@index([name])
 }

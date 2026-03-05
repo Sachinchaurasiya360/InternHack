@@ -1,6 +1,19 @@
 import multer from "multer";
+import os from "os";
+import path from "path";
 
-const storage = multer.memoryStorage();
+// Use OS temp directory for disk storage — files are streamed to disk
+// instead of being held entirely in memory, preventing OOM on concurrent uploads.
+const storage = multer.diskStorage({
+  destination: (_req, _file, cb) => {
+    cb(null, os.tmpdir());
+  },
+  filename: (_req, file, cb) => {
+    const ext = path.extname(file.originalname);
+    const safeName = path.basename(file.originalname, ext).replace(/[^a-zA-Z0-9_-]/g, "_");
+    cb(null, `${safeName}-${Date.now()}-${Math.round(Math.random() * 1e7)}${ext}`);
+  },
+});
 
 const resumeFilter = (_req: Express.Request, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
   const allowed = [

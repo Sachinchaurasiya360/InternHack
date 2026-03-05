@@ -71,3 +71,12 @@ adminRouter.get("/repos/:id", (req, res, next) => adminController.getRepo(req, r
 adminRouter.post("/repos", (req, res, next) => adminController.createRepo(req, res, next));
 adminRouter.put("/repos/:id", (req, res, next) => adminController.updateRepo(req, res, next));
 adminRouter.delete("/repos/:id", (req, res, next) => adminController.deleteRepo(req, res, next));
+
+// Colleges
+adminRouter.get("/colleges", (req, res, next) => adminController.listColleges(req, res, next));
+adminRouter.put("/colleges/:id/approve", (req, res, next) => adminController.approveCollege(req, res, next));
+adminRouter.delete("/colleges/:id", (req, res, next) => adminController.deleteCollege(req, res, next));
+
+// College Reviews
+adminRouter.get("/college-reviews", (req, res, next) => adminController.listCollegeReviews(req, res, next));
+adminRouter.put("/college-reviews/:id/status", (req, res, next) => adminController.updateCollegeReviewStatus(req, res, next));

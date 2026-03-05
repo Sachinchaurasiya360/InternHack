@@ -80,6 +80,40 @@ export const queryKeys = {
     stats: () => ["gsoc", "stats"] as const,
   },
 
+  // Colleges
+  colleges: {
+    all: ["colleges"] as const,
+    list: (params?: Record<string, string | number>) =>
+      ["colleges", "list", params] as const,
+    states: () => ["colleges", "states"] as const,
+    stats: () => ["colleges", "stats"] as const,
+    detail: (slug: string) => ["colleges", "detail", slug] as const,
+    courses: (slug: string) => ["colleges", "courses", slug] as const,
+    placements: (slug: string) => ["colleges", "placements", slug] as const,
+    cutoffs: (slug: string, params?: Record<string, string | number>) =>
+      ["colleges", "cutoffs", slug, params] as const,
+    reviews: (slug: string) => ["colleges", "reviews", slug] as const,
+    compare: (ids: number[]) => ["colleges", "compare", ids] as const,
+    byExam: (examSlug: string, params?: Record<string, string | number>) =>
+      ["colleges", "exam", examSlug, params] as const,
+  },
+
+  // YC Companies
+  yc: {
+    list: (params?: Record<string, string | number>) =>
+      ["yc", "list", params] as const,
+    detail: (slug: string) => ["yc", "detail", slug] as const,
+    stats: () => ["yc", "stats"] as const,
+  },
+
+  // Open Source
+  opensource: {
+    all: ["opensource"] as const,
+    list: (params?: Record<string, string | number>) =>
+      ["opensource", "list", params] as const,
+    detail: (id: number) => ["opensource", "detail", id] as const,
+  },
+
   // Blog
   blog: {
     list: (params?: Record<string, string | number>) =>

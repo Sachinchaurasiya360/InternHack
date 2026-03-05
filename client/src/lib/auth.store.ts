@@ -1,5 +1,12 @@
 import { create } from "zustand";
+import { QueryClient } from "@tanstack/react-query";
 import type { User } from "./types";
+
+// Shared query client reference for cache invalidation on auth changes
+let _queryClient: QueryClient | null = null;
+export function setAuthQueryClient(qc: QueryClient) {
+  _queryClient = qc;
+}
 
 interface AuthState {
   user: User | null;
@@ -23,12 +30,14 @@ export const useAuthStore = create<AuthState>((set) => {
       localStorage.setItem("token", token);
       localStorage.setItem("user", JSON.stringify(user));
       set({ user, token, isAuthenticated: true });
+      _queryClient?.clear();
     },
 
     logout: () => {
       localStorage.removeItem("token");
       localStorage.removeItem("user");
       set({ user: null, token: null, isAuthenticated: false });
+      _queryClient?.clear();
     },
 
     setUser: (user) => {

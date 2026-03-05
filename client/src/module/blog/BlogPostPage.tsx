@@ -12,7 +12,9 @@ import {
   FileText,
 } from "lucide-react";
 import api from "../../lib/axios";
+import { queryKeys } from "../../lib/query-keys";
 import { Navbar } from "../../components/Navbar";
+import { SEO } from "../../components/SEO";
 import { CATEGORY_LABELS, CATEGORY_COLORS } from "./components/BlogCard";
 import type { BlogPost } from "./components/BlogCard";
 
@@ -92,7 +94,7 @@ export default function BlogPostPage() {
   const { slug } = useParams<{ slug: string }>();
 
   const { data, isLoading, isError } = useQuery<{ post: BlogPost }>({
-    queryKey: ["blog", "post", slug],
+    queryKey: queryKeys.blog.detail(slug!),
     queryFn: async () => {
       const res = await api.get(`/blog/${slug}`);
       return res.data;
@@ -105,6 +107,14 @@ export default function BlogPostPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+      {post && (
+        <SEO
+          title={post.title}
+          description={post.excerpt || post.content.slice(0, 160)}
+          keywords={post.tags.join(", ")}
+          ogImage={post.featuredImage}
+        />
+      )}
       <Navbar />
 
       <div className="pt-24 pb-16 px-6">

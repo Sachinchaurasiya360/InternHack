@@ -66,8 +66,12 @@ export class AtsService {
     const s3Key = getS3KeyFromUrl(resumeUrl);
     if (s3Key) {
       buffer = await getBufferFromS3(s3Key);
+    } else if (resumeUrl.startsWith("/uploads/")) {
+      // Local uploads (new nested structure or old flat structure)
+      const localPath = path.join(__dirname, "../../..", resumeUrl);
+      buffer = await readFile(localPath);
     } else {
-      // Fallback for old local uploads
+      // Legacy fallback: bare filename
       const uploadsDir = path.join(__dirname, "../../../uploads");
       const filename = path.basename(resumeUrl);
       buffer = await readFile(path.join(uploadsDir, filename));
@@ -84,6 +88,11 @@ export class AtsService {
     jobTitle?: string | undefined,
     jobDescription?: string | undefined,
   ): Promise<AtsScoreResult> {
+    const apiKey = process.env["GEMINI_API_KEY"];
+    if (!apiKey) {
+      throw new Error("GEMINI_API_KEY is not configured. Add it to your server .env file.");
+    }
+
     const model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
 
     const prompt = this.buildPrompt(resumeText, jobTitle, jobDescription);
@@ -194,7 +203,22 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explana
       jsonStr = jsonMatch[1].trim();
     }
 
-    const parsed: unknown = JSON.parse(jsonStr);
+    // Strip trailing commas before ] or } (common Gemini quirk)
+    jsonStr = jsonStr.replace(/,\s*([\]}])/g, "$1");
+
+    let parsed: unknown;
+    try {
+      parsed = JSON.parse(jsonStr);
+    } catch {
+      // Try to extract just the JSON object if there's surrounding text
+      const objMatch = jsonStr.match(/\{[\s\S]*\}/);
+      if (objMatch) {
+        const cleaned = objMatch[0].replace(/,\s*([\]}])/g, "$1");
+        parsed = JSON.parse(cleaned);
+      } else {
+        throw new Error("Could not parse Gemini response as JSON");
+      }
+    }
 
     if (!parsed || typeof parsed !== "object") {
       throw new Error("Invalid response format from Gemini");

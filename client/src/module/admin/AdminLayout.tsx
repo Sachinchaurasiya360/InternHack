@@ -1,7 +1,8 @@
 import { NavLink, Outlet } from "react-router";
-import { LayoutDashboard, Users, Briefcase, ScrollText, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, Compass, BookOpen } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, ScrollText, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, Compass, BookOpen, GraduationCap } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useNavigate } from "react-router";
+import { SEO } from "../../components/SEO";
 
 export default function AdminLayout() {
   const { user, logout } = useAuthStore();
@@ -19,6 +20,7 @@ export default function AdminLayout() {
 
   return (
     <div className="min-h-screen bg-gray-950 flex">
+      <SEO title="Admin Panel" noIndex />
       {/* Sidebar */}
       <aside className="w-64 bg-gray-900 border-r border-gray-800 p-6 flex flex-col">
         <div className="mb-8">
@@ -65,6 +67,14 @@ export default function AdminLayout() {
           <NavLink to="/admin/careers" className={linkClass}>
             <Compass className="w-4 h-4" />
             Careers
+          </NavLink>
+          <NavLink to="/admin/colleges" className={linkClass}>
+            <GraduationCap className="w-4 h-4" />
+            Colleges
+          </NavLink>
+          <NavLink to="/admin/college-reviews" className={linkClass}>
+            <MessageSquare className="w-4 h-4" />
+            College Reviews
           </NavLink>
           <NavLink to="/admin/blog" className={linkClass}>
             <BookOpen className="w-4 h-4" />

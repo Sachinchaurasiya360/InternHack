@@ -1,9 +1,15 @@
 import type { Request, Response } from "express";
 import path from "path";
+import fs from "fs";
+import { fileURLToPath } from "url";
 import { uploadToS3, deleteFromS3, getS3KeyFromUrl } from "../../utils/s3.utils.js";
 import { prisma } from "../../database/db.js";
 
 const MAX_RESUMES = 2;
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const UPLOADS_DIR = path.join(__dirname, "../../../uploads");
 
 function buildS3Key(folder: string, userId: number, originalName: string): string {
   const ext = path.extname(originalName);
@@ -12,17 +18,65 @@ function buildS3Key(folder: string, userId: number, originalName: string): strin
   return `${folder}/${userId}/${safeName}-${uniqueSuffix}${ext}`;
 }
 
+/** Save file locally as fallback when S3 is unavailable */
+function saveLocally(buffer: Buffer, folder: string, userId: number, originalName: string): string {
+  const ext = path.extname(originalName);
+  const safeName = path.basename(originalName, ext).replace(/[^a-zA-Z0-9_-]/g, "_");
+  const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e7)}`;
+  const relDir = path.join(folder, String(userId));
+  const absDir = path.join(UPLOADS_DIR, relDir);
+
+  fs.mkdirSync(absDir, { recursive: true });
+
+  const filename = `${safeName}-${uniqueSuffix}${ext}`;
+  fs.writeFileSync(path.join(absDir, filename), buffer);
+
+  return `/uploads/${relDir}/${filename}`.replace(/\\/g, "/");
+}
+
+/** Read file from disk (multer disk storage) and clean up temp file */
+function readAndCleanup(filePath: string): Buffer {
+  const buffer = fs.readFileSync(filePath);
+  fs.unlink(filePath, () => {});
+  return buffer;
+}
+
+/** Try S3 first, fall back to local storage */
+async function uploadWithFallback(buffer: Buffer, folder: string, userId: number, originalName: string, mimeType: string): Promise<string> {
+  try {
+    const key = buildS3Key(folder, userId, originalName);
+    return await uploadToS3(buffer, key, mimeType);
+  } catch (err) {
+    console.warn("S3 upload failed, falling back to local storage:", (err as Error).message);
+    return saveLocally(buffer, folder, userId, originalName);
+  }
+}
+
+/** Delete a file — handles both S3 URLs and local paths */
+function deleteFile(url: string): void {
+  const s3Key = getS3KeyFromUrl(url);
+  if (s3Key) {
+    deleteFromS3(s3Key).catch((err) => console.error("Failed to delete from S3:", err));
+  } else if (url.startsWith("/uploads/")) {
+    const absPath = path.join(UPLOADS_DIR, "..", url);
+    fs.unlink(absPath, (err) => { if (err) console.error("Failed to delete local file:", err); });
+  }
+}
+
 export class UploadController {
-  /** Generic file upload to S3 (used by ATS etc.) */
+  /** Generic file upload — S3 with local fallback (used by ATS etc.) */
   async uploadFile(req: Request, res: Response) {
     try {
       if (!req.file) {
         return res.status(400).json({ message: "No file uploaded" });
       }
+      if (!req.user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
 
-      const userId = req.user?.id ?? 0;
-      const key = buildS3Key("uploads", userId, req.file.originalname);
-      const url = await uploadToS3(req.file.buffer, key, req.file.mimetype);
+      const userId = req.user.id;
+      const buffer = readAndCleanup(req.file.path);
+      const url = await uploadWithFallback(buffer, "uploads", userId, req.file.originalname, req.file.mimetype);
 
       return res.status(200).json({
         message: "File uploaded successfully",
@@ -39,32 +93,26 @@ export class UploadController {
     }
   }
 
-  /** Upload profile picture to S3, delete old one if it was on S3 */
+  /** Upload profile picture — S3 with local fallback */
   async uploadProfilePic(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       if (!req.file) return res.status(400).json({ message: "No image uploaded" });
 
       const userId = req.user.id;
-
-      // Get current profile pic to delete old S3 file
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { profilePic: true } });
-      const oldKey = current?.profilePic ? getS3KeyFromUrl(current.profilePic) : null;
 
-      // Upload new pic
-      const key = buildS3Key("profile-pics", userId, req.file.originalname);
-      const url = await uploadToS3(req.file.buffer, key, req.file.mimetype);
+      const buffer = readAndCleanup(req.file.path);
+      const url = await uploadWithFallback(buffer, "profile-pics", userId, req.file.originalname, req.file.mimetype);
 
-      // Update user
       const user = await prisma.user.update({
         where: { id: userId },
         data: { profilePic: url },
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
       });
 
-      // Delete old S3 file (after successful update)
-      if (oldKey) {
-        deleteFromS3(oldKey).catch((err) => console.error("Failed to delete old profile pic:", err));
+      if (current?.profilePic) {
+        deleteFile(current.profilePic);
       }
 
       return res.status(200).json({ message: "Profile picture updated", user });
@@ -74,21 +122,21 @@ export class UploadController {
     }
   }
 
-  /** Upload resume to S3, max 2 per student */
+  /** Upload resume — S3 with local fallback, max 2 per student */
   async uploadProfileResume(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
       if (!req.file) return res.status(400).json({ message: "No file uploaded" });
 
       const userId = req.user.id;
-
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { resumes: true } });
       if (current && current.resumes.length >= MAX_RESUMES) {
+        if (req.file.path) fs.unlink(req.file.path, () => {});
         return res.status(400).json({ message: `Maximum ${MAX_RESUMES} resumes allowed. Delete one before uploading a new one.` });
       }
 
-      const key = buildS3Key("resumes", userId, req.file.originalname);
-      const url = await uploadToS3(req.file.buffer, key, req.file.mimetype);
+      const buffer = readAndCleanup(req.file.path);
+      const url = await uploadWithFallback(buffer, "resumes", userId, req.file.originalname, req.file.mimetype);
 
       const user = await prisma.user.update({
         where: { id: userId },
@@ -103,7 +151,7 @@ export class UploadController {
     }
   }
 
-  /** Delete a resume from S3 and user profile */
+  /** Delete a resume from S3/local and user profile */
   async deleteProfileResume(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -118,7 +166,6 @@ export class UploadController {
         return res.status(404).json({ message: "Resume not found" });
       }
 
-      // Remove from array
       const updatedResumes = current.resumes.filter((r) => r !== url);
       const user = await prisma.user.update({
         where: { id: userId },
@@ -126,11 +173,7 @@ export class UploadController {
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
       });
 
-      // Delete from S3
-      const s3Key = getS3KeyFromUrl(url);
-      if (s3Key) {
-        deleteFromS3(s3Key).catch((err) => console.error("Failed to delete resume from S3:", err));
-      }
+      deleteFile(url);
 
       return res.status(200).json({ message: "Resume deleted", user });
     } catch (error) {

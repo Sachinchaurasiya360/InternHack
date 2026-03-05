@@ -6,6 +6,7 @@ import { GoogleLogin } from "@react-oauth/google";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
 import { Navbar } from "../../components/Navbar";
+import { SEO } from "../../components/SEO";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -63,6 +64,11 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-50 dark:bg-gray-950">
+      <SEO
+        title="Login"
+        description="Sign in to InternHack to browse jobs, track applications, score your resume with AI, and connect with recruiters."
+        keywords="login, sign in, InternHack, student login, recruiter login"
+      />
       <Navbar />
       <div className="flex-1 flex items-center justify-center px-4 pt-24 pb-8">
       <motion.div

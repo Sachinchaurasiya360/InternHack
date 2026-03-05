@@ -306,6 +306,18 @@ export class AdminService {
       });
       if (!adminProfile || adminProfile.tier !== "SUPER_ADMIN")
         throw new Error("Only SUPER_ADMIN can delete admin users");
+
+      // Prevent deleting the last SUPER_ADMIN
+      const targetProfile = await prisma.adminProfile.findUnique({
+        where: { userId },
+      });
+      if (targetProfile?.tier === "SUPER_ADMIN") {
+        const superAdminCount = await prisma.adminProfile.count({
+          where: { tier: "SUPER_ADMIN", isActive: true },
+        });
+        if (superAdminCount <= 1)
+          throw new Error("Cannot delete the last SUPER_ADMIN");
+      }
     }
 
     await prisma.user.delete({ where: { id: userId } });
@@ -748,52 +760,63 @@ export class AdminService {
     });
     if (!contribution) throw new Error("Contribution not found");
 
-    const updated = await prisma.companyContribution.update({
-      where: { id: contributionId },
-      data: { status, adminNotes: adminNotes ?? null, reviewedById: adminId },
+    // Wrap approval + side-effects in a transaction for atomicity
+    return prisma.$transaction(async (tx) => {
+      const updated = await tx.companyContribution.update({
+        where: { id: contributionId },
+        data: { status, adminNotes: adminNotes ?? null, reviewedById: adminId },
+      });
+
+      if (status === "APPROVED" && contribution.type === "NEW_COMPANY") {
+        const data = contribution.data as Record<string, unknown>;
+        let slug = generateSlug(data["name"] as string);
+        const existing = await tx.company.findUnique({ where: { slug } });
+        if (existing) slug = `${slug}-${Date.now()}`;
+
+        await tx.company.create({
+          data: {
+            name: data["name"] as string,
+            slug,
+            description: data["description"] as string,
+            mission: (data["mission"] as string) ?? null,
+            industry: data["industry"] as string,
+            size: data["size"] as CreateCompanyInput["size"],
+            city: data["city"] as string,
+            state: (data["state"] as string) ?? null,
+            address: (data["address"] as string) ?? null,
+            website: (data["website"] as string) || null,
+            technologies: (data["technologies"] as string[]) ?? [],
+            hiringStatus: (data["hiringStatus"] as boolean) ?? false,
+            foundedYear: (data["foundedYear"] as number) ?? null,
+            logo: (data["logo"] as string) ?? null,
+            photos: [],
+            isApproved: true,
+            createdById: adminId,
+          },
+        });
+      }
+
+      if (
+        status === "APPROVED" &&
+        contribution.type === "ADD_CONTACT" &&
+        contribution.companyId
+      ) {
+        const data = contribution.data as Record<string, unknown>;
+        await tx.companyContact.create({
+          data: {
+            companyId: contribution.companyId,
+            name: data["name"] as string,
+            designation: data["designation"] as string,
+            email: (data["email"] as string) || null,
+            phone: (data["phone"] as string) || null,
+            linkedinUrl: (data["linkedinUrl"] as string) || null,
+            addedById: contribution.userId,
+          },
+        });
+      }
+
+      return updated;
     });
-
-    // If approved and it's a new company contribution, create the company
-    if (status === "APPROVED" && contribution.type === "NEW_COMPANY") {
-      const data = contribution.data as Record<string, unknown>;
-      await this.createCompany(adminId, {
-        name: data["name"] as string,
-        description: data["description"] as string,
-        mission: data["mission"] as string | undefined,
-        industry: data["industry"] as string,
-        size: data["size"] as CreateCompanyInput["size"],
-        city: data["city"] as string,
-        state: data["state"] as string | undefined,
-        address: data["address"] as string | undefined,
-        website: data["website"] as string | undefined,
-        technologies: data["technologies"] as string[] | undefined,
-        hiringStatus: data["hiringStatus"] as boolean | undefined,
-        foundedYear: data["foundedYear"] as number | undefined,
-        logo: data["logo"] as string | undefined,
-      });
-    }
-
-    // If approved and it's an add contact contribution, create the contact
-    if (
-      status === "APPROVED" &&
-      contribution.type === "ADD_CONTACT" &&
-      contribution.companyId
-    ) {
-      const data = contribution.data as Record<string, unknown>;
-      await prisma.companyContact.create({
-        data: {
-          companyId: contribution.companyId,
-          name: data["name"] as string,
-          designation: data["designation"] as string,
-          email: (data["email"] as string) || null,
-          phone: (data["phone"] as string) || null,
-          linkedinUrl: (data["linkedinUrl"] as string) || null,
-          addedById: contribution.userId,
-        },
-      });
-    }
-
-    return updated;
   }
 
   // Direct contact management
@@ -1307,5 +1330,125 @@ export class AdminService {
     });
     if (!repo) throw new Error("Repository not found");
     return prisma.opensourceRepo.delete({ where: { id: repoId } });
+  }
+
+  // ==================== COLLEGE MANAGEMENT ====================
+
+  async listAllColleges(query: {
+    page: number;
+    limit: number;
+    search?: string | undefined;
+    state?: string | undefined;
+    isApproved?: string | undefined;
+  }) {
+    const where: Prisma.collegeWhereInput = {};
+    if (query.search) {
+      where.OR = [
+        { name: { contains: query.search, mode: "insensitive" } },
+        { city: { contains: query.search, mode: "insensitive" } },
+      ];
+    }
+    if (query.state) where.state = { equals: query.state, mode: "insensitive" };
+    if (query.isApproved !== undefined) where.isApproved = query.isApproved === "true";
+
+    const skip = (query.page - 1) * query.limit;
+    const [colleges, total] = await Promise.all([
+      prisma.college.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: query.limit,
+        select: {
+          id: true,
+          name: true,
+          slug: true,
+          type: true,
+          state: true,
+          city: true,
+          isApproved: true,
+          nirfRanking: true,
+          naacGrade: true,
+          avgRating: true,
+          reviewCount: true,
+          createdAt: true,
+          _count: { select: { courses: true, reviews: true } },
+        },
+      }),
+      prisma.college.count({ where }),
+    ]);
+
+    return {
+      colleges,
+      pagination: { page: query.page, limit: query.limit, total, totalPages: Math.ceil(total / query.limit) },
+    };
+  }
+
+  async approveCollege(collegeId: number) {
+    const college = await prisma.college.findUnique({ where: { id: collegeId } });
+    if (!college) throw new Error("College not found");
+    return prisma.college.update({ where: { id: collegeId }, data: { isApproved: true } });
+  }
+
+  async deleteCollege(collegeId: number) {
+    const college = await prisma.college.findUnique({ where: { id: collegeId } });
+    if (!college) throw new Error("College not found");
+    return prisma.college.delete({ where: { id: collegeId } });
+  }
+
+  async listCollegeReviews(
+    status?: string | undefined,
+    page: number = 1,
+    limit: number = 20,
+  ) {
+    const skip = (page - 1) * limit;
+    const where: Prisma.collegeReviewWhereInput = {};
+    if (status && ["PENDING", "APPROVED", "REJECTED"].includes(status)) {
+      where.status = status as "PENDING" | "APPROVED" | "REJECTED";
+    }
+
+    const [reviews, total] = await Promise.all([
+      prisma.collegeReview.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip,
+        take: limit,
+        include: {
+          user: { select: { id: true, name: true, email: true } },
+          college: { select: { id: true, name: true, slug: true } },
+        },
+      }),
+      prisma.collegeReview.count({ where }),
+    ]);
+
+    return {
+      reviews,
+      pagination: { page, limit, total, totalPages: Math.ceil(total / limit) },
+    };
+  }
+
+  async updateCollegeReviewStatus(reviewId: number, status: "APPROVED" | "REJECTED") {
+    const review = await prisma.collegeReview.findUnique({ where: { id: reviewId } });
+    if (!review) throw new Error("College review not found");
+
+    const updated = await prisma.collegeReview.update({
+      where: { id: reviewId },
+      data: { status },
+    });
+
+    const result = await prisma.collegeReview.aggregate({
+      where: { collegeId: review.collegeId, status: "APPROVED" },
+      _avg: { overallRating: true },
+      _count: { overallRating: true },
+    });
+
+    await prisma.college.update({
+      where: { id: review.collegeId },
+      data: {
+        avgRating: Math.round((result._avg.overallRating ?? 0) * 10) / 10,
+        reviewCount: result._count.overallRating,
+      },
+    });
+
+    return updated;
   }
 }

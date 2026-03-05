@@ -137,6 +137,7 @@ export class AuthService {
         company: user.company,
         designation: user.designation,
         profilePic: user.profilePic,
+        createdAt: user.createdAt,
       },
       token,
       isNewUser: !user.createdAt || (Date.now() - user.createdAt.getTime()) < 5000,
@@ -168,6 +169,7 @@ export class AuthService {
         role: user.role,
         company: user.company,
         designation: user.designation,
+        createdAt: user.createdAt,
       },
       token,
     };

@@ -7,6 +7,7 @@ import type { Career } from "../../lib/types";
 import { useAuthStore } from "../../lib/auth.store";
 import RoadmapTimeline from "./components/RoadmapTimeline";
 import { Navbar } from "../../components/Navbar";
+import { SEO } from "../../components/SEO";
 import toast from "react-hot-toast";
 
 const CATEGORY_CONFIG: Record<string, { pill: string; gradient: string; icon: string }> = {
@@ -99,6 +100,11 @@ export default function CareerDetailPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+      <SEO
+        title={`${career.title} Career Roadmap`}
+        description={career.description?.slice(0, 160) || `Explore the ${career.title} career roadmap with step-by-step learning phases, skills, and resources.`}
+        keywords={`${career.title}, career roadmap, ${career.category}, learning path, skill development`}
+      />
       <Navbar />
 
       {/* Hero */}

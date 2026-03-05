@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Users, Briefcase, Map, Building2 } from "lucide-react";
+import { Users, Briefcase, Map, Building2, GraduationCap } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import api from "../lib/axios";
 import { queryKeys } from "../lib/query-keys";
@@ -9,9 +9,10 @@ interface PlatformStats {
   jobs: number;
   careers: number;
   companies: number;
+  colleges: number;
 }
 
-const fallback: PlatformStats = { users: 1800, jobs: 0, careers: 0, companies: 0 };
+const fallback: PlatformStats = { users: 1800, jobs: 20, careers: 8, companies: 49, colleges: 39000 };
 
 export function StatsSection() {
   const { data: stats = fallback } = useQuery({
@@ -24,12 +25,13 @@ export function StatsSection() {
     { icon: Briefcase, value: stats.jobs, label: "Active Jobs", suffix: "+" },
     { icon: Map, value: stats.careers, label: "Career Roadmaps", suffix: "" },
     { icon: Building2, value: stats.companies, label: "Companies", suffix: "+" },
+    { icon: GraduationCap, value: stats.colleges, label: "Colleges", suffix: "+" },
   ];
 
   return (
     <section className="relative py-16 bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800">
       <div className="max-w-5xl mx-auto px-6">
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8">
           {items.map((item, i) => (
             <motion.div
               key={i}

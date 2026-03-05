@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient, keepPreviousData } from "@tanstack/react-query";
 import { useNavigate } from "react-router";
 import {
   FileText,
@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../../../lib/axios";
+import { queryKeys } from "../../../lib/query-keys";
 import type { Pagination } from "../../../lib/types";
 import type { BlogPost, BlogCategory } from "../../blog/components/BlogCard";
 import { CATEGORY_LABELS } from "../../blog/components/BlogCard";
@@ -49,7 +50,7 @@ export default function AdminBlogPage() {
 
   // Fetch posts
   const { data, isLoading } = useQuery<{ posts: BlogPost[]; pagination: Pagination }>({
-    queryKey: ["admin", "blog", page, limit, statusFilter, debouncedSearch],
+    queryKey: queryKeys.blog.admin({ page, limit, status: statusFilter, search: debouncedSearch }),
     queryFn: async () => {
       const params: Record<string, string | number> = { page, limit };
       if (statusFilter !== "ALL") params.status = statusFilter;
@@ -57,6 +58,7 @@ export default function AdminBlogPage() {
       const res = await api.get("/blog/admin/posts", { params });
       return res.data;
     },
+    placeholderData: keepPreviousData,
   });
 
   const posts = data?.posts ?? [];
@@ -67,7 +69,7 @@ export default function AdminBlogPage() {
     mutationFn: (id: number) => api.patch(`/blog/admin/posts/${id}/publish`),
     onSuccess: () => {
       toast.success("Status updated");
-      queryClient.invalidateQueries({ queryKey: ["admin", "blog"] });
+      queryClient.invalidateQueries({ queryKey: ["blog"] });
     },
     onError: () => toast.error("Failed to update status"),
   });
@@ -76,7 +78,7 @@ export default function AdminBlogPage() {
     mutationFn: (id: number) => api.patch(`/blog/admin/posts/${id}/feature`),
     onSuccess: () => {
       toast.success("Featured status updated");
-      queryClient.invalidateQueries({ queryKey: ["admin", "blog"] });
+      queryClient.invalidateQueries({ queryKey: ["blog"] });
     },
     onError: () => toast.error("Failed to update featured status"),
   });
@@ -85,7 +87,7 @@ export default function AdminBlogPage() {
     mutationFn: (id: number) => api.delete(`/blog/admin/posts/${id}`),
     onSuccess: () => {
       toast.success("Post deleted");
-      queryClient.invalidateQueries({ queryKey: ["admin", "blog"] });
+      queryClient.invalidateQueries({ queryKey: ["blog"] });
     },
     onError: () => toast.error("Failed to delete post"),
   });

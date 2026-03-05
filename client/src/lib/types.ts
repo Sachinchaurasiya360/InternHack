@@ -465,6 +465,202 @@ export interface GSoCStats {
   topics: { name: string; count: number }[];
 }
 
+// College Discovery
+export type CollegeType = "GOVERNMENT" | "PRIVATE" | "DEEMED" | "AUTONOMOUS" | "CENTRAL" | "STATE";
+export type DegreeLevel = "DIPLOMA" | "BACHELOR" | "MASTER" | "DOCTORAL" | "CERTIFICATE";
+export type CourseMode = "FULL_TIME" | "PART_TIME" | "DISTANCE" | "ONLINE";
+export type NaacGrade = "A_PLUS_PLUS" | "A_PLUS" | "A" | "B_PLUS_PLUS" | "B_PLUS" | "B" | "C" | "UNGRADED";
+export type CollegeReviewStatus = "PENDING" | "APPROVED" | "REJECTED";
+
+export interface College {
+  id: number;
+  name: string;
+  slug: string;
+  logo?: string;
+  coverImage?: string;
+  description: string;
+  type: CollegeType;
+  affiliation?: string;
+  naacGrade?: NaacGrade;
+  nirfRanking?: number;
+  nirfYear?: number;
+  website?: string;
+  establishedYear?: number;
+  campusSize?: string;
+  state: string;
+  city: string;
+  address?: string;
+  pincode?: string;
+  totalStudents?: number;
+  totalFaculty?: number;
+  acceptedExams: string[];
+  facilities: string[];
+  streams: string[];
+  socialLinks: Record<string, string>;
+  photos: string[];
+  avgRating: number;
+  reviewCount: number;
+  courses?: CollegeCourse[];
+  placements?: CollegePlacement[];
+  _count?: { reviews: number; courses: number };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CollegeCourse {
+  id: number;
+  collegeId: number;
+  name: string;
+  degree: string;
+  degreeLevel: DegreeLevel;
+  specialization?: string;
+  stream: string;
+  durationYears: number;
+  mode: CourseMode;
+  totalFees?: number;
+  feesPerYear?: number;
+  eligibility?: string;
+  seats?: number;
+  isPopular: boolean;
+}
+
+export interface CollegePlacement {
+  id: number;
+  collegeId: number;
+  year: number;
+  avgPackageLPA?: number;
+  highestPackageLPA?: number;
+  medianPackageLPA?: number;
+  placementRate?: number;
+  studentsPlaced?: number;
+  totalStudents?: number;
+  topRecruiters: string[];
+  sectorWise?: Record<string, number>;
+}
+
+export interface CollegeCutoff {
+  id: number;
+  collegeId: number;
+  courseId?: number;
+  examId: number;
+  year: number;
+  category: string;
+  gender?: string;
+  openingRank?: number;
+  closingRank?: number;
+  openingScore?: number;
+  closingScore?: number;
+  round?: string;
+  exam?: EntranceExam;
+  course?: CollegeCourse;
+}
+
+export interface EntranceExam {
+  id: number;
+  name: string;
+  slug: string;
+  fullName?: string;
+  type: string;
+  conductingBody?: string;
+  applicableStreams: string[];
+}
+
+export interface CollegeReview {
+  id: number;
+  collegeId: number;
+  userId: number;
+  overallRating: number;
+  placementsRating?: number;
+  infrastructureRating?: number;
+  facultyRating?: number;
+  campusLifeRating?: number;
+  valueForMoneyRating?: number;
+  title: string;
+  content: string;
+  pros?: string;
+  cons?: string;
+  courseStudied?: string;
+  graduationYear?: number;
+  status: CollegeReviewStatus;
+  user?: { id: number; name: string; profilePic?: string };
+  createdAt: string;
+}
+
+export interface CollegeFilterStats {
+  total: number;
+  states: { name: string; count: number }[];
+  streams: { name: string; count: number }[];
+  exams: { name: string; count: number }[];
+  types: { name: string; count: number }[];
+  naacGrades: { name: string; count: number }[];
+}
+
+export interface StateCount {
+  state: string;
+  count: number;
+}
+
+// YC Companies
+export interface YCCompany {
+  id: number;
+  ycId: number;
+  name: string;
+  slug: string;
+  oneLiner?: string;
+  longDescription?: string;
+  batch?: string;
+  batchShort?: string;
+  status?: string;
+  website?: string;
+  smallLogoUrl?: string;
+  allLocations?: string;
+  teamSize?: number;
+  industry?: string;
+  subindustry?: string;
+  tags: string[];
+  industries: string[];
+  regions: string[];
+  stage?: string;
+  isHiring: boolean;
+  topCompany: boolean;
+  ycUrl?: string;
+  launchedAt?: string;
+}
+
+export interface YCStats {
+  total: number;
+  batches: { name: string; count: number }[];
+  industries: { name: string; count: number }[];
+  statuses: { name: string; count: number }[];
+}
+
+// Open Source Repos
+export type RepoDifficulty = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+export type RepoDomain = "AI" | "WEB" | "DEVOPS" | "MOBILE" | "BLOCKCHAIN" | "DATA" | "SECURITY" | "CLOUD" | "GAMING" | "OTHER";
+
+export interface OpenSourceRepo {
+  id: number;
+  name: string;
+  owner: string;
+  description: string;
+  language: string;
+  techStack: string[];
+  difficulty: RepoDifficulty;
+  domain: RepoDomain;
+  issueTypes: string[];
+  stars: number;
+  forks: number;
+  openIssues: number;
+  url: string;
+  logo?: string;
+  tags: string[];
+  highlights: string[];
+  trending: boolean;
+  lastUpdated: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
 // Blog
 export type BlogCategory = "CAREER_ADVICE" | "INTERVIEW_TIPS" | "SALARY_GUIDE" | "INDUSTRY_INSIGHTS" | "RESUME_TIPS" | "TECH_TRENDS";
 export type BlogStatus = "DRAFT" | "PUBLISHED";

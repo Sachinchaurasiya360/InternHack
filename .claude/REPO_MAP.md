@@ -12,8 +12,8 @@
 | Backend | Express 5, TypeScript 5, Prisma 7, Node Cron |
 | Database | PostgreSQL (via Prisma + `@prisma/adapter-pg`) |
 | Auth | JWT + Google OAuth |
-| AI | Google Gemini (ATS resume scoring) |
-| Storage | AWS S3 |
+| AI | Google Gemini (ATS resume scoring, cover letters) |
+| Storage | AWS S3 (with local fallback to `server/uploads/`) |
 | State | Zustand (auth) + React Query (server state) |
 
 ---
@@ -40,10 +40,21 @@ InternHack/
 | `src/database/prisma/schema.prisma` | All Prisma models & enums |
 | `src/database/prisma.config.ts` | Prisma config (schema path, DB url from env) |
 | `src/database/prisma/migrations/` | Migration SQL files |
-| `src/database/seed.ts` | Seeds career roadmap data |
-| `src/database/seed-admin.ts` | Seeds admin accounts |
 
 **Run migrations from:** `server/src/database/` (not server root) — uses `prisma.config.ts`
+
+### Seed Scripts
+
+| File | Purpose |
+|---|---|
+| `src/database/seed.ts` | General seed runner |
+| `src/database/seed-admin.ts` | Seeds Super Admin account |
+| `src/database/seed-jobs.ts` | Seeds 20 published job listings |
+| `src/database/seed-colleges.ts` | Fetches AICTE college data from GitHub (state-wise JSON) |
+| `src/database/seed-exams.ts` | Seeds entrance exams (JEE, NEET, CAT, etc.) |
+| `src/database/seed-pune-companies.ts` | Seeds 49 Pune tech companies |
+| `src/database/seed-gsoc.ts` | Fetches 520+ GSoC organizations from API |
+| `src/module/career/career.seed.ts` | Seeds 8 career roadmaps with phases/skills/resources |
 
 ### Middleware — `src/middleware/`
 
@@ -64,13 +75,34 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `job` | `/api/jobs` | Job CRUD, status changes (public read, recruiter write) |
 | `recruiter` | `/api/recruiter` | Rounds mgmt, application review, evaluation, analytics |
 | `student` | `/api/student` | Apply, track applications, submit round responses |
-| `ats` | `/api/ats` | AI resume scoring via Gemini, score history |
+| `ats` | `/api/ats` | AI resume scoring via Gemini, score history, cover letters |
 | `career` | `/api/careers` | Career roadmaps, enroll, skill progress |
 | `company` | `/api/companies` | Company directory, reviews, contacts, contributions |
+| `college` | `/api/colleges` | College discovery, search/filter, courses, placements, reviews, cutoffs |
 | `scraper` | `/api/scraped-jobs` | External job aggregation, cron-based scraping |
-| `admin` | `/api/admin` | Platform management, user/job/company moderation |
-| `upload` | `/api/upload` | S3 resume/attachment/profile-pic uploads |
+| `admin` | `/api/admin` | Platform management, user/job/company/college moderation |
+| `upload` | `/api/upload` | S3 uploads with local fallback (`server/uploads/`) |
 | `newsletter` | `/api/newsletter` | Email subscription management |
+
+### Admin Sub-Routes — `/api/admin/...`
+
+| Route | Method | Purpose |
+|---|---|---|
+| `/colleges` | GET | List all colleges (search, filter by state/approval) |
+| `/colleges/:id/approve` | PUT | Approve a college |
+| `/colleges/:id` | DELETE | Delete a college |
+| `/college-reviews` | GET | List college reviews (filter by status) |
+| `/college-reviews/:id/status` | PUT | Approve/reject a college review |
+
+### College Sub-Routes — `/api/colleges/...`
+
+| Route | Method | Purpose |
+|---|---|---|
+| `/` | GET | Search/filter colleges (stream, state, exam, type, NAAC) |
+| `/:slug` | GET | College detail with courses, placements, reviews |
+| `/:slug/reviews` | GET/POST | College reviews |
+| `/compare` | GET | Compare multiple colleges |
+| `/exam/:examSlug` | GET | Colleges accepting a specific exam |
 
 ### Utilities — `src/utils/`
 
@@ -78,7 +110,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 |---|---|
 | `jwt.utils.ts` | `generateToken()`, `verifyToken()` |
 | `password.utils.ts` | `hashPassword()`, `comparePassword()` |
-| `s3.utils.ts` | `uploadToS3()`, `deleteFromS3()`, `getS3KeyFromUrl()` |
+| `s3.utils.ts` | `uploadToS3()`, `deleteFromS3()`, `getS3KeyFromUrl()`, `getBufferFromS3()` |
 
 ### Types — `src/types/`
 
@@ -105,6 +137,12 @@ ContributionType:   NEW_COMPANY | EDIT_COMPANY | ADD_CONTACT | ADD_REVIEW
 AdminTier:          SUPER_ADMIN | ADMIN | MODERATOR
 SubscriptionPlan:   FREE | MONTHLY | YEARLY
 SubscriptionStatus: ACTIVE | EXPIRED | CANCELLED
+CollegeType:        GOVERNMENT | PRIVATE | DEEMED | AUTONOMOUS | IIT | NIT | IIIT
+DegreeLevel:        UG | PG | DIPLOMA | PHD | INTEGRATED
+CourseMode:         FULL_TIME | PART_TIME | DISTANCE | ONLINE
+NaacGrade:          A_PLUS_PLUS | A_PLUS | A | B_PLUS | B | C
+ExamType:           NATIONAL | STATE | UNIVERSITY | PRIVATE
+CollegeReviewStatus: PENDING | APPROVED | REJECTED
 ```
 
 ### Model → Key Fields Quick Ref
@@ -133,6 +171,20 @@ SubscriptionStatus: ACTIVE | EXPIRED | CANCELLED
 | `companyContact` | id, companyId(FK), name, designation, email, phone, linkedinUrl, isPublic, addedById(FK) |
 | `companyContribution` | id, userId(FK), type, companyId, data(JSON), status, adminNotes, reviewedById(FK) |
 | `newsletterSubscriber` | id, email(unique) |
+| `gsocOrganization` | id, name, slug(unique), url, imageUrl, imageBgColor, description, category, topics(String[]), technologies(String[]), yearsParticipated(Int[]), totalProjects, projectsData(JSON), contactEmail, mailingList, ideasUrl, guideUrl |
+| `college` | id, name, slug(unique), aicteId, type(CollegeType), city, state, address, website, phone, email, description, logo, coverImage, establishedYear, nirfRanking, naacGrade, streams(String[]), facilities(String[]), avgPackage, highestPackage, avgRating, reviewCount, isApproved |
+| `collegeCourse` | id, collegeId(FK), name, slug, degreeLevel, stream, duration, mode, fees, seats, eligibility, description |
+| `collegePlacement` | id, collegeId(FK), year, totalStudents, studentsPlaced, highestPackage, avgPackage, medianPackage, topRecruiters(String[]) |
+| `entranceExam` | id, name, slug(unique), type(ExamType), description, conductedBy, eligibility, frequency, website, streams(String[]) |
+| `collegeCutoff` | id, collegeId(FK), examId(FK), courseId(FK?), year, generalCutoff, obcCutoff, scCutoff, stCutoff, round |
+| `collegeReview` | id, collegeId(FK), userId(FK), overallRating, academicsRating, facultyRating, infrastructureRating, placementRating, campusLifeRating, title, content, pros, cons, status(CollegeReviewStatus) |
+| `collegeGallery` | id, collegeId(FK), imageUrl, caption, category |
+| `opensourceRepo` | id, name, slug(unique), fullName, description, url, language, stars, forks, topics(String[]), difficulty, domain, goodFirstIssues |
+| `blogPost` | id, title, slug(unique), content, excerpt, coverImage, category(BlogCategory), status(BlogStatus), authorId(FK), tags(String[]), viewCount |
+| `quiz` | id, title, description, category, difficulty, timeMinutes |
+| `quizQuestion` | id, quizId(FK), question, options(String[]), correctOption, explanation |
+| `quizAttempt` | id, quizId(FK), userId(FK), score, totalQuestions, answers(JSON) |
+| `payment` | id, userId(FK), plan, amount, currency, status(PaymentStatus), razorpayOrderId, razorpayPaymentId |
 
 ---
 
@@ -153,23 +205,24 @@ SubscriptionStatus: ACTIVE | EXPIRED | CANCELLED
 
 | Component | Use |
 |---|---|
-| `Navbar.tsx`, `Footer.tsx` | Shared layout |
+| `Navbar.tsx`, `Footer.tsx` | Shared layout (Navbar includes Colleges link) |
 | `ProtectedRoute.tsx` | Route guard by role |
 | `DynamicFieldBuilder.tsx` | Build custom form field definitions (recruiter) |
 | `DynamicFieldRenderer.tsx` | Render custom fields for user input (student) |
 | `SEO.tsx` | Helmet-based SEO tags |
+| `CollegeDiscoverySection.tsx` | Landing page college search with exam/stream chips |
 | `HeroSection`, `FeaturesSection`, `StatsSection`, `CTASection`, `HowItWorksSection`, `PricingSection`, `RecentJobs`, `GrantsSection`, `AIInterview` | Landing page sections |
 
-### Page Modules — `src/`
+### Page Modules — `src/module/`
 
 #### Auth — `src/auth/`
 - `LoginPage.tsx` — Email/password + Google OAuth
 - `RegisterPage.tsx` — Registration
 
-#### Student — `src/student/`
+#### Student — `src/module/student/`
 | File | Route |
 |---|---|
-| `StudentLayout.tsx` | Sidebar wrapper |
+| `StudentLayout.tsx` | Sidebar wrapper (includes Colleges nav item) |
 | `jobs/JobBrowsePage.tsx` | Browse/search jobs |
 | `jobs/JobDetailPage.tsx` | Job detail + apply CTA |
 | `applications/MyApplicationsPage.tsx` | Track own applications |
@@ -181,10 +234,20 @@ SubscriptionStatus: ACTIVE | EXPIRED | CANCELLED
 | `companies/CompanyListPage.tsx` | Browse companies |
 | `companies/CompanyDetailPage.tsx` | Company + reviews + contacts |
 | `companies/AddCompanyPage.tsx` | Contribute new company |
+| `colleges/CollegeListPage.tsx` | Search/filter colleges (stream, state, exam, type) |
+| `colleges/CollegeDetailPage.tsx` | College detail with tabs |
+| `colleges/CollegeComparePage.tsx` | Side-by-side college comparison |
+| `colleges/ExamCollegesPage.tsx` | Colleges accepting a specific entrance exam |
+| `colleges/CollegeCard.tsx` | Reusable college card component |
+| `colleges/tabs/OverviewTab.tsx` | College overview |
+| `colleges/tabs/CoursesTab.tsx` | Available courses |
+| `colleges/tabs/CutoffsTab.tsx` | Admission cutoff info |
+| `colleges/tabs/PlacementsTab.tsx` | Placement statistics |
+| `colleges/tabs/ReviewsTab.tsx` | Student reviews |
 | `profile/StudentProfilePage.tsx` | Edit profile |
 | `grants/GrantsPage.tsx` | Grants & opportunities |
 
-#### Recruiter — `src/recruiter/`
+#### Recruiter — `src/module/recruiter/`
 | File | Purpose |
 |---|---|
 | `RecruiterDashboard.tsx` | Metrics overview |
@@ -198,7 +261,7 @@ SubscriptionStatus: ACTIVE | EXPIRED | CANCELLED
 | `rounds/RoundForm.tsx` | Create/edit round |
 | `analytics/JobAnalyticsPage.tsx` | Job performance analytics |
 
-#### Admin — `src/admin/`
+#### Admin — `src/module/admin/`
 | File | Purpose |
 |---|---|
 | `AdminLoginPage.tsx` | Admin auth |
@@ -206,13 +269,15 @@ SubscriptionStatus: ACTIVE | EXPIRED | CANCELLED
 | `users/UsersListPage.tsx` | User management |
 | `jobs/AdminJobsListPage.tsx` | Job moderation |
 | `companies/AdminCompaniesPage.tsx` | Company management |
-| `reviews/AdminReviewsPage.tsx` | Review approval |
+| `colleges/AdminCollegesPage.tsx` | College management (approve/delete) |
+| `colleges/AdminCollegeReviewsPage.tsx` | College review moderation (status tabs) |
+| `reviews/AdminReviewsPage.tsx` | Company review approval |
 | `contributions/AdminContributionsPage.tsx` | Contribution moderation |
 | `activity/ActivityLogsPage.tsx` | Audit logs |
 | `careers/AdminCareersPage.tsx` | Career roadmap management |
 | `AdminSubscribersPage.tsx` | Newsletter subscribers |
 
-#### Career — `src/career/`
+#### Career — `src/module/career/`
 | File | Purpose |
 |---|---|
 | `CareerExplorePage.tsx` | Browse all career roadmaps |
@@ -222,9 +287,51 @@ SubscriptionStatus: ACTIVE | EXPIRED | CANCELLED
 | `components/CareerCard.tsx` | Career card component |
 | `components/RoadmapTimeline.tsx` | Phase visualization |
 
-#### Scraped Jobs — `src/scraped-jobs/`
+#### Scraped Jobs — `src/module/scraped-jobs/`
 - `ScrapedJobsPage.tsx` — External job listings
 - `ScrapedJobDetailPage.tsx` — External job detail + apply link
+
+---
+
+## Client Routes Summary
+
+### Public Routes
+| Path | Component |
+|---|---|
+| `/colleges` | CollegeListPage |
+| `/colleges/compare` | CollegeComparePage |
+| `/colleges/exam/:examSlug` | ExamCollegesPage |
+| `/colleges/:slug` | CollegeDetailPage |
+
+### Student Routes (`/student/...`)
+| Path | Component |
+|---|---|
+| `colleges` | CollegeListPage |
+| `colleges/compare` | CollegeComparePage |
+| `colleges/exam/:examSlug` | ExamCollegesPage |
+| `colleges/:slug` | CollegeDetailPage |
+
+### Admin Routes (`/admin/...`)
+| Path | Component |
+|---|---|
+| `colleges` | AdminCollegesPage |
+| `college-reviews` | AdminCollegeReviewsPage |
+
+---
+
+## Upload Flow
+
+```
+File buffer (multer memory storage)
+         ↓
+  uploadWithFallback()
+         ↓
+  Try S3 → if fails → saveLocally() to server/uploads/
+         ↓
+  Returns URL (S3 URL or /uploads/... path)
+```
+
+Both S3 and local URLs are handled transparently by the ATS service and delete operations.
 
 ---
 
@@ -235,10 +342,11 @@ SubscriptionStatus: ACTIVE | EXPIRED | CANCELLED
 DATABASE_URL          # PostgreSQL connection string
 JWT_SECRET            # JWT signing key
 GOOGLE_CLIENT_ID      # Google OAuth
-GEMINI_API_KEY        # Google Gemini for ATS
+GEMINI_API_KEY        # Google Gemini for ATS & cover letters
 AWS_ACCESS_KEY_ID     # S3 uploads
 AWS_SECRET_ACCESS_KEY
 AWS_REGION
+AWS_BUCKET_NAME       # S3 bucket name
 PORT                  # default 3000
 SCRAPER_CRON          # default: 0 */6 * * *
 NODE_ENV
@@ -278,6 +386,7 @@ Token stored in localStorage via Zustand auth store. Axios auto-injects it on ev
 | ATS resume scoring | ✓ | — | — |
 | Career roadmaps | ✓ (enroll) | — | ✓ (manage) |
 | Company explorer | ✓ (reviews) | — | ✓ (manage) |
+| College discovery | ✓ (browse/review) | — | ✓ (approve/moderate) |
 | Platform moderation | — | — | ✓ |
 
 ---
@@ -290,12 +399,12 @@ Token stored in localStorage via Zustand auth store. Axios auto-injects it on ev
 | Add a DB column | `schema.prisma` → run migration from `server/src/database/` |
 | Change validation rules | `server/src/module/<name>/<name>.validation.ts` |
 | Change auth logic | `server/src/middleware/auth.middleware.ts` + `server/src/utils/jwt.utils.ts` |
-| Fix upload logic | `server/src/middleware/upload.middleware.ts` + `server/src/utils/s3.utils.ts` |
-| Change a client page | `client/src/<module>/<PageName>.tsx` |
+| Fix upload logic | `server/src/module/upload/upload.controller.ts` + `server/src/utils/s3.utils.ts` |
+| Change a client page | `client/src/module/<module>/<PageName>.tsx` |
 | Add a new client route | `client/src/App.tsx` |
 | Change global API config | `client/src/lib/axios.ts` |
 | Change auth state | `client/src/lib/auth.store.ts` |
 | Add React Query cache key | `client/src/lib/query-keys.ts` |
 | Change shared types (client) | `client/src/lib/types.ts` |
-| Seed data | `server/src/database/seed.ts` or `seed-admin.ts` |
+| Seed data | `server/src/database/seed-*.ts` or `server/src/module/career/career.seed.ts` |
 | Cron/scraper config | `server/src/module/scraper/` |

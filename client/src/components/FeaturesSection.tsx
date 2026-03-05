@@ -7,6 +7,8 @@ import {
   Globe,
   Users,
   ArrowUpRight,
+  GraduationCap,
+  GitBranch,
 } from "lucide-react";
 import { Link } from "react-router";
 
@@ -39,21 +41,30 @@ const features = [
     gradient: "from-emerald-500 to-emerald-600",
   },
   {
-    title: "External Jobs",
+    title: "College Discovery",
     description:
-      "Aggregated listings from top platforms, automatically refreshed every 6 hours so you never miss an opportunity.",
-    icon: Globe,
-    href: "/external-jobs",
-    span: "md:col-span-2",
+      "Search and compare colleges across India. Filter by stream, entrance exam, NAAC grade, and explore placements, courses, and cutoffs.",
+    icon: GraduationCap,
+    href: "/colleges",
+    span: "",
     gradient: "from-amber-500 to-orange-500",
+  },
+  {
+    title: "Open Source & GSoC",
+    description:
+      "Discover beginner-friendly repos, track GSoC organizations, build your first PR, and get guidance on open source contributions.",
+    icon: GitBranch,
+    href: "/opensource",
+    span: "",
+    gradient: "from-teal-500 to-cyan-500",
   },
   {
     title: "Company Explorer",
     description:
-      "Discover companies hiring on InternHack. See open positions, details, and find your ideal workplace.",
+      "Discover companies hiring on InternHack. See open positions, reviews, tech stacks, and find your ideal workplace.",
     icon: Building2,
     href: "/companies",
-    span: "",
+    span: "md:col-span-2",
     gradient: "from-sky-500 to-sky-600",
   },
   {
@@ -61,9 +72,18 @@ const features = [
     description:
       "Post jobs, manage multi-round hiring, review applications, and screen resumes from one powerful dashboard.",
     icon: Users,
-    href: "/register",
-    span: "md:col-span-2",
+    href: "/register?role=RECRUITER",
+    span: "lg:col-span-2",
     gradient: "from-rose-500 to-rose-600",
+  },
+  {
+    title: "Web3 & Grants",
+    description:
+      "Explore blockchain grants, hackathons, and Web3 opportunities. Stay ahead with curated funding and fellowship programs.",
+    icon: Globe,
+    href: "/grants",
+    span: "lg:col-span-2",
+    gradient: "from-purple-500 to-fuchsia-500",
   },
 ];
 
@@ -102,7 +122,7 @@ export function FeaturesSection() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
           {features.map((feature, i) => (
             <motion.div
               key={i}

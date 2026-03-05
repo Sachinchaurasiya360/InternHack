@@ -1,5 +1,6 @@
-import { useState, useEffect, useCallback, useMemo } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { Link, useSearchParams } from "react-router";
+import { useQuery } from "@tanstack/react-query";
 import {
   Search,
   MapPin,
@@ -12,14 +13,21 @@ import {
   Rocket,
   ExternalLink,
   ChevronDown,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import api from "../../../lib/axios";
-import type { Company, CityCount, Pagination } from "../../../lib/types";
-import { ycCompaniesData, YC_BATCHES } from "./ycCompaniesData";
-import type { YCCompany } from "./ycCompaniesData";
+import { queryKeys } from "../../../lib/query-keys";
+import type {
+  Company,
+  CityCount,
+  Pagination,
+  YCCompany,
+  YCStats,
+} from "../../../lib/types";
 
 const SIZE_LABELS: Record<string, string> = {
   STARTUP: "Startup",
@@ -33,6 +41,7 @@ const STATUS_COLORS: Record<string, string> = {
   Active: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
   Acquired: "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
   Public: "bg-purple-50 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400",
+  Inactive: "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
 };
 
 function CompanyCard({ company }: { company: Company }) {
@@ -121,36 +130,84 @@ function YCCard({ company }: { company: YCCompany }) {
     <div className="block bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all p-5 group">
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-3 min-w-0">
-          <div className="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center shrink-0">
-            <span className="text-orange-600 dark:text-orange-400 font-bold text-sm">
-              {company.name.charAt(0)}
-            </span>
-          </div>
+          {company.smallLogoUrl ? (
+            <img
+              src={company.smallLogoUrl}
+              alt={company.name}
+              className="w-10 h-10 rounded-lg object-contain bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-800"
+            />
+          ) : (
+            <div className="w-10 h-10 rounded-lg bg-orange-50 dark:bg-orange-900/30 flex items-center justify-center shrink-0">
+              <span className="text-orange-600 dark:text-orange-400 font-bold text-sm">
+                {company.name.charAt(0)}
+              </span>
+            </div>
+          )}
           <div className="min-w-0">
             <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
               {company.name}
             </h4>
-            <p className="text-xs text-gray-400 dark:text-gray-500">{company.industry}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500">
+              {company.industry || company.subindustry || "—"}
+            </p>
           </div>
         </div>
         <div className="flex items-center gap-2 shrink-0">
-          <span className="px-2 py-0.5 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-[10px] font-bold rounded-full border border-orange-100 dark:border-orange-800">
-            {company.batch}
-          </span>
-          <span
-            className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${STATUS_COLORS[company.status] ?? "bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400"}`}
-          >
-            {company.status}
-          </span>
+          {company.batchShort && (
+            <span className="px-2 py-0.5 bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 text-[10px] font-bold rounded-full border border-orange-100 dark:border-orange-800">
+              {company.batchShort}
+            </span>
+          )}
+          {company.isHiring && (
+            <span className="px-2 py-0.5 bg-green-50 dark:bg-green-900/30 text-green-700 dark:text-green-400 text-[10px] font-medium rounded-full">
+              Hiring
+            </span>
+          )}
+          {company.status && (
+            <span
+              className={`px-2 py-0.5 text-[10px] font-medium rounded-full ${STATUS_COLORS[company.status] ?? "bg-gray-50 dark:bg-gray-950 text-gray-600 dark:text-gray-400"}`}
+            >
+              {company.status}
+            </span>
+          )}
         </div>
       </div>
 
       <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
-        {company.description}
+        {company.oneLiner || "—"}
       </p>
 
       <div className="flex items-center justify-between">
-        <div className="flex flex-wrap gap-1">
+        <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
+          {company.allLocations && (
+            <span className="flex items-center gap-1 truncate max-w-[160px]">
+              <MapPin className="w-3 h-3 shrink-0" />
+              {company.allLocations}
+            </span>
+          )}
+          {company.teamSize && (
+            <span className="flex items-center gap-1">
+              <Users className="w-3 h-3" />
+              {company.teamSize}
+            </span>
+          )}
+        </div>
+        {company.website && (
+          <a
+            href={company.website}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-gray-300 dark:text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
+            onClick={(e) => e.stopPropagation()}
+            title="Visit website"
+          >
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        )}
+      </div>
+
+      {company.tags.length > 0 && (
+        <div className="mt-3 flex flex-wrap gap-1">
           {company.tags.slice(0, 3).map((tag) => (
             <span
               key={tag}
@@ -160,17 +217,7 @@ function YCCard({ company }: { company: YCCompany }) {
             </span>
           ))}
         </div>
-        <a
-          href={company.url}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-gray-300 dark:text-gray-600 hover:text-orange-500 dark:hover:text-orange-400 transition-colors"
-          onClick={(e) => e.stopPropagation()}
-          title="Visit website"
-        >
-          <ExternalLink className="w-3.5 h-3.5" />
-        </a>
-      </div>
+      )}
     </div>
   );
 }
@@ -189,9 +236,21 @@ export default function CompanyListPage() {
   // Active tab
   const [activeTab, setActiveTab] = useState<Tab>("all");
 
-  // YC filters
+  // YC filters (local state, debounced before query)
+  const [ycSearchInput, setYcSearchInput] = useState("");
   const [ycSearch, setYcSearch] = useState("");
-  const [ycBatch, setYcBatch] = useState("All");
+  const [ycBatch, setYcBatch] = useState("");
+  const [ycIndustry, setYcIndustry] = useState("");
+  const [ycPage, setYcPage] = useState(1);
+
+  // Debounce YC search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setYcSearch(ycSearchInput);
+      setYcPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [ycSearchInput]);
 
   const selectedCity = searchParams.get("city") || "";
   const search = searchParams.get("search") || "";
@@ -251,24 +310,30 @@ export default function CompanyListPage() {
   const hasActiveFilters =
     selectedCity || industry || size || hiring || minRating || search;
 
-  // Filtered YC companies
-  const filteredYC = useMemo(() => {
-    let list = [...ycCompaniesData];
-    if (ycBatch !== "All") {
-      list = list.filter((c) => c.batch === ycBatch);
-    }
-    if (ycSearch.trim()) {
-      const q = ycSearch.toLowerCase();
-      list = list.filter(
-        (c) =>
-          c.name.toLowerCase().includes(q) ||
-          c.description.toLowerCase().includes(q) ||
-          c.industry.toLowerCase().includes(q) ||
-          c.tags.some((t) => t.toLowerCase().includes(q)),
-      );
-    }
-    return list;
-  }, [ycSearch, ycBatch]);
+  // ── YC Stats query ──
+  const { data: ycStats } = useQuery<YCStats>({
+    queryKey: queryKeys.yc.stats(),
+    queryFn: () => api.get("/yc/stats").then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // ── YC Companies query ──
+  const ycQueryParams: Record<string, string | number> = { page: ycPage, limit: 24 };
+  if (ycSearch) ycQueryParams["search"] = ycSearch;
+  if (ycBatch) ycQueryParams["batch"] = ycBatch;
+  if (ycIndustry) ycQueryParams["industry"] = ycIndustry;
+
+  const { data: ycData, isLoading: ycLoading } = useQuery<{
+    companies: YCCompany[];
+    pagination: Pagination;
+  }>({
+    queryKey: queryKeys.yc.list(ycQueryParams),
+    queryFn: () => api.get("/yc/companies", { params: ycQueryParams }).then((r) => r.data),
+    enabled: activeTab === "yc",
+  });
+
+  const ycCompanies = ycData?.companies ?? [];
+  const ycPagination = ycData?.pagination ?? null;
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
@@ -315,7 +380,7 @@ export default function CompanyListPage() {
             <Rocket className="w-4 h-4" />
             YC Companies
             <span className="px-1.5 py-0.5 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-[10px] font-bold rounded-full border border-orange-100 dark:border-orange-800">
-              {ycCompaniesData.length}
+              {ycStats?.total ?? "..."}
             </span>
           </button>
         </div>
@@ -508,8 +573,8 @@ export default function CompanyListPage() {
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
                   type="text"
-                  value={ycSearch}
-                  onChange={(e) => setYcSearch(e.target.value)}
+                  value={ycSearchInput}
+                  onChange={(e) => setYcSearchInput(e.target.value)}
                   placeholder="Search YC companies..."
                   className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-orange-500/20 focus:border-orange-300 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
                 />
@@ -520,29 +585,92 @@ export default function CompanyListPage() {
                 <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   <Rocket className="w-4 h-4" />
                   Batch:{" "}
-                  <span className="font-medium text-gray-900 dark:text-white">{ycBatch}</span>
+                  <span className="font-medium text-gray-900 dark:text-white">
+                    {ycBatch || "All"}
+                  </span>
                   <ChevronDown className="w-3.5 h-3.5" />
                 </button>
                 <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[160px] max-h-[240px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl group-hover:block">
-                  {YC_BATCHES.map((batch) => (
+                  <button
+                    onClick={() => { setYcBatch(""); setYcPage(1); }}
+                    className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                      !ycBatch
+                        ? "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-medium"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {(ycStats?.batches ?? []).map((b) => (
                     <button
-                      key={batch}
-                      onClick={() => setYcBatch(batch)}
+                      key={b.name}
+                      onClick={() => { setYcBatch(b.name); setYcPage(1); }}
                       className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
-                        ycBatch === batch
+                        ycBatch === b.name
                           ? "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-medium"
                           : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
                       }`}
                     >
-                      {batch}
+                      {b.name} ({b.count})
                     </button>
                   ))}
                 </div>
               </div>
+
+              {/* Industry dropdown */}
+              <div className="relative group">
+                <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                  <Filter className="w-4 h-4" />
+                  Industry:{" "}
+                  <span className="font-medium text-gray-900 dark:text-white truncate max-w-[100px]">
+                    {ycIndustry || "All"}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+                <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[200px] max-h-[280px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl group-hover:block">
+                  <button
+                    onClick={() => { setYcIndustry(""); setYcPage(1); }}
+                    className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                      !ycIndustry
+                        ? "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-medium"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {(ycStats?.industries ?? []).slice(0, 30).map((ind) => (
+                    <button
+                      key={ind.name}
+                      onClick={() => { setYcIndustry(ind.name); setYcPage(1); }}
+                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                        ycIndustry === ind.name
+                          ? "bg-orange-50 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 font-medium"
+                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      }`}
+                    >
+                      {ind.name} ({ind.count})
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Clear YC filters */}
+              {(ycSearch || ycBatch || ycIndustry) && (
+                <button
+                  onClick={() => { setYcSearchInput(""); setYcSearch(""); setYcBatch(""); setYcIndustry(""); setYcPage(1); }}
+                  className="flex items-center gap-1 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
+                >
+                  <X className="w-4 h-4" /> Clear
+                </button>
+              )}
             </div>
 
             {/* YC Results */}
-            {filteredYC.length === 0 ? (
+            {ycLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500" />
+              </div>
+            ) : ycCompanies.length === 0 ? (
               <div className="text-center py-16 bg-gray-50 dark:bg-gray-950 rounded-xl">
                 <Building2 className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
                 <p className="text-sm text-gray-500 dark:text-gray-500">
@@ -550,11 +678,36 @@ export default function CompanyListPage() {
                 </p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {filteredYC.map((company) => (
-                  <YCCard key={company.name} company={company} />
-                ))}
-              </div>
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {ycCompanies.map((company) => (
+                    <YCCard key={company.id} company={company} />
+                  ))}
+                </div>
+
+                {/* YC Pagination */}
+                {ycPagination && ycPagination.totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-3 mt-8">
+                    <button
+                      onClick={() => setYcPage((p) => Math.max(1, p - 1))}
+                      disabled={ycPage <= 1}
+                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" /> Prev
+                    </button>
+                    <span className="text-sm text-gray-500 dark:text-gray-500">
+                      Page {ycPagination.page} of {ycPagination.totalPages}
+                    </span>
+                    <button
+                      onClick={() => setYcPage((p) => Math.min(ycPagination.totalPages, p + 1))}
+                      disabled={ycPage >= ycPagination.totalPages}
+                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </>
         )}

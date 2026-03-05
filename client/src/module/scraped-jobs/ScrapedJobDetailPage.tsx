@@ -3,6 +3,7 @@ import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, DollarSign, Building2, ExternalLink, Globe, Clock } from "lucide-react";
 import { Navbar } from "../../components/Navbar";
+import { SEO } from "../../components/SEO";
 import api from "../../lib/axios";
 import type { ScrapedJob } from "../../lib/types";
 
@@ -31,6 +32,11 @@ export default function ScrapedJobDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <SEO
+        title={`${job.title} at ${job.company}`}
+        description={`${job.title} at ${job.company} in ${job.location}. Found on ${job.source}. Apply now on InternHack.`}
+        keywords={`${job.title}, ${job.company}, ${job.location}, ${job.source}, job listing`}
+      />
       <Navbar />
       <div className="max-w-4xl mx-auto px-6 pt-24 pb-12">
         <Link to="/external-jobs" className="flex items-center gap-2 text-sm text-gray-500 hover:text-black dark:hover:text-white mb-6 no-underline">

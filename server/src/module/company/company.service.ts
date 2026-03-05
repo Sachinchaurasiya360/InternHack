@@ -1,5 +1,8 @@
 import { prisma } from "../../database/db.js";
 import type { Prisma } from "@prisma/client";
+import DOMPurify from "isomorphic-dompurify";
+
+const sanitize = (s: string) => DOMPurify.sanitize(s, { ALLOWED_TAGS: [] });
 
 interface ListCompaniesParams {
   city?: string | undefined;
@@ -194,13 +197,13 @@ export class CompanyService {
         companyId: company.id,
         userId,
         rating: input.rating,
-        title: input.title,
-        content: input.content,
-        pros: input.pros ?? null,
-        cons: input.cons ?? null,
-        interviewExperience: input.interviewExperience ?? null,
-        workCulture: input.workCulture ?? null,
-        salaryInsights: input.salaryInsights ?? null,
+        title: sanitize(input.title),
+        content: sanitize(input.content),
+        pros: input.pros ? sanitize(input.pros) : null,
+        cons: input.cons ? sanitize(input.cons) : null,
+        interviewExperience: input.interviewExperience ? sanitize(input.interviewExperience) : null,
+        workCulture: input.workCulture ? sanitize(input.workCulture) : null,
+        salaryInsights: input.salaryInsights ? sanitize(input.salaryInsights) : null,
       },
     });
   }

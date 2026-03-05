@@ -180,7 +180,7 @@ export default function AdminBlogEditor() {
     },
     onSuccess: (_, publish) => {
       toast.success(publish ? "Post published!" : "Draft saved!");
-      queryClient.invalidateQueries({ queryKey: ["admin", "blog"] });
+      queryClient.invalidateQueries({ queryKey: ["blog"] });
       navigate("/admin/blog");
     },
     onError: () => toast.error("Failed to save post"),

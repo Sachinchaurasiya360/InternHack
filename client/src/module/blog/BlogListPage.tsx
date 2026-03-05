@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
   BookOpen,
@@ -11,7 +11,9 @@ import {
   FileText,
 } from "lucide-react";
 import api from "../../lib/axios";
+import { queryKeys } from "../../lib/query-keys";
 import { Navbar } from "../../components/Navbar";
+import { SEO } from "../../components/SEO";
 import BlogCard, { CATEGORY_LABELS } from "./components/BlogCard";
 import type { BlogPost, BlogCategory } from "./components/BlogCard";
 import type { Pagination } from "../../lib/types";
@@ -56,7 +58,7 @@ export default function BlogListPage() {
 
   // Fetch blog posts
   const { data, isLoading } = useQuery<{ posts: BlogPost[]; pagination: Pagination }>({
-    queryKey: ["blog", "list", page, limit, category, debouncedSearch],
+    queryKey: queryKeys.blog.list({ page, limit, category, search: debouncedSearch }),
     queryFn: async () => {
       const params: Record<string, string | number> = { page, limit };
       if (category !== "ALL") params.category = category;
@@ -64,11 +66,12 @@ export default function BlogListPage() {
       const res = await api.get("/blog", { params });
       return res.data;
     },
+    placeholderData: keepPreviousData,
   });
 
   // Fetch featured posts
   const { data: featuredData } = useQuery<{ posts: BlogPost[] }>({
-    queryKey: ["blog", "featured"],
+    queryKey: queryKeys.blog.featured(),
     queryFn: async () => {
       const res = await api.get("/blog/featured");
       return res.data;
@@ -81,6 +84,11 @@ export default function BlogListPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+      <SEO
+        title="Blog & Resources"
+        description="Career tips, interview strategies, salary insights, and industry trends to help you land your dream role. Read expert articles on InternHack."
+        keywords="career blog, interview tips, salary guide, resume tips, tech trends, career advice, industry insights"
+      />
       <Navbar />
 
       {/* Hero */}

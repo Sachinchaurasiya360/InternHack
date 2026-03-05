@@ -1,8 +1,9 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, Home, ScanSearch, Map, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown } from "lucide-react";
+import { Briefcase, FileText, LogOut, Home, ScanSearch, Map, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, GraduationCap } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { Navbar } from "../../components/Navbar";
+import { SEO } from "../../components/SEO";
 
 const NAV_ITEMS = [
   { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
@@ -10,6 +11,7 @@ const NAV_ITEMS = [
   { to: "/student/ats/score", icon: ScanSearch, label: "ATS Score" },
   { to: "/student/careers", icon: Map, label: "Career Paths" },
   { to: "/student/companies", icon: Building2, label: "Explore Companies" },
+  { to: "/student/colleges", icon: GraduationCap, label: "Colleges" },
   { to: "/student/grants", icon: Award, label: "Grants" },
   { to: "/student/opensource", icon: Globe, label: "Open Source" },
   { to: "/student/checkout", icon: Crown, label: "Upgrade" },
@@ -41,6 +43,7 @@ export default function StudentLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
+      <SEO title="Student Dashboard" noIndex />
       {/* Top Navbar — shifts right to clear the sidebar */}
       <Navbar sidebarOffset={sidebarWidth} />
 

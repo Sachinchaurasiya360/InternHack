@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { Building2, Check, Trash2, Loader2, Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
-import api from "../../../lib/axios";
+import api, { SERVER_URL } from "../../../lib/axios";
 import type { Company, Pagination } from "../../../lib/types";
 
 export default function AdminCompaniesPage() {
@@ -72,7 +72,7 @@ export default function AdminCompaniesPage() {
               <div className="flex items-center gap-4 flex-1 min-w-0">
                 <div className="w-12 h-12 rounded-lg bg-gray-800 flex items-center justify-center shrink-0">
                   {company.logo ? (
-                    <img src={`http://localhost:3000${company.logo}`} alt="" className="w-12 h-12 rounded-lg object-cover" />
+                    <img src={`${SERVER_URL}${company.logo}`} alt="" className="w-12 h-12 rounded-lg object-cover" />
                   ) : (
                     <Building2 className="w-5 h-5 text-gray-500" />
                   )}
