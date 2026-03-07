@@ -1,9 +1,13 @@
 {
   "permissions": {
     "allow": [
-      "Bash(npx tsx:*)",
-      "Bash(gh api:*)",
-      "Bash(ls:*)"
+      "Bash(*)",
+      "Read",
+      "Edit",
+      "Write",
+      "WebFetch",
+      "Grep",
+      "Glob"
     ]
   }
 }

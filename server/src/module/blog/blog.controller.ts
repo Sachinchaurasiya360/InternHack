@@ -125,11 +125,16 @@ export class BlogController {
         return;
       }
 
-      const post = await this.blogService.update(id, result.data);
+      const isAdmin = req.user.role === "ADMIN";
+      const post = await this.blogService.update(id, result.data, req.user.id, isAdmin);
       res.json({ message: "Post updated", post });
     } catch (err) {
       if (err instanceof Error && err.message === "Post not found") {
         res.status(404).json({ message: err.message });
+        return;
+      }
+      if (err instanceof Error && err.message === "Not authorized to modify this post") {
+        res.status(403).json({ message: err.message });
         return;
       }
       next(err);
@@ -138,17 +143,27 @@ export class BlogController {
 
   async togglePublish(req: Request, res: Response, next: NextFunction) {
     try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+
       const id = parseInt(req.params["id"] || "", 10);
       if (isNaN(id)) {
         res.status(400).json({ message: "Valid post ID is required" });
         return;
       }
 
-      const post = await this.blogService.togglePublish(id);
+      const isAdmin = req.user.role === "ADMIN";
+      const post = await this.blogService.togglePublish(id, req.user.id, isAdmin);
       res.json({ message: `Post ${post.status === "PUBLISHED" ? "published" : "unpublished"}`, post });
     } catch (err) {
       if (err instanceof Error && err.message === "Post not found") {
         res.status(404).json({ message: err.message });
+        return;
+      }
+      if (err instanceof Error && err.message === "Not authorized to modify this post") {
+        res.status(403).json({ message: err.message });
         return;
       }
       next(err);
@@ -157,17 +172,27 @@ export class BlogController {
 
   async toggleFeatured(req: Request, res: Response, next: NextFunction) {
     try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+
       const id = parseInt(req.params["id"] || "", 10);
       if (isNaN(id)) {
         res.status(400).json({ message: "Valid post ID is required" });
         return;
       }
 
-      const post = await this.blogService.toggleFeatured(id);
+      const isAdmin = req.user.role === "ADMIN";
+      const post = await this.blogService.toggleFeatured(id, req.user.id, isAdmin);
       res.json({ message: `Post ${post.isFeatured ? "featured" : "unfeatured"}`, post });
     } catch (err) {
       if (err instanceof Error && err.message === "Post not found") {
         res.status(404).json({ message: err.message });
+        return;
+      }
+      if (err instanceof Error && err.message === "Not authorized to modify this post") {
+        res.status(403).json({ message: err.message });
         return;
       }
       next(err);
@@ -176,17 +201,27 @@ export class BlogController {
 
   async delete(req: Request, res: Response, next: NextFunction) {
     try {
+      if (!req.user) {
+        res.status(401).json({ message: "Authentication required" });
+        return;
+      }
+
       const id = parseInt(req.params["id"] || "", 10);
       if (isNaN(id)) {
         res.status(400).json({ message: "Valid post ID is required" });
         return;
       }
 
-      await this.blogService.delete(id);
+      const isAdmin = req.user.role === "ADMIN";
+      await this.blogService.delete(id, req.user.id, isAdmin);
       res.json({ message: "Post deleted" });
     } catch (err) {
       if (err instanceof Error && err.message === "Post not found") {
         res.status(404).json({ message: err.message });
+        return;
+      }
+      if (err instanceof Error && err.message === "Not authorized to modify this post") {
+        res.status(403).json({ message: err.message });
         return;
       }
       next(err);

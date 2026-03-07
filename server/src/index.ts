@@ -22,8 +22,10 @@ import { paymentRouter } from "./module/payment/payment.routes.js";
 import { quizRouter } from "./module/quiz/quiz.routes.js";
 import { blogRouter } from "./module/blog/blog.routes.js";
 import { gsocRouter } from "./module/gsoc/gsoc.routes.js";
-import { collegeRouter } from "./module/college/college.routes.js";
 import { ycRouter } from "./module/yc/yc.routes.js";
+import { dsaRouter } from "./module/dsa/dsa.routes.js";
+import { aptitudeRouter } from "./module/aptitude/aptitude.routes.js";
+import { latexRouter } from "./module/latex/latex.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 
@@ -78,6 +80,13 @@ const atsLimiter = rateLimit({
 });
 app.use("/api/ats/score", atsLimiter);
 
+const latexLimiter = rateLimit({
+  windowMs: 60 * 60 * 1000,
+  max: 20,
+  message: { message: "LaTeX compilation limit reached. Try again later." },
+});
+app.use("/api/latex/compile", latexLimiter);
+
 // ── Routes ──
 app.use("/api/auth", authRouter);
 app.use("/api/jobs", jobRouter);
@@ -95,12 +104,14 @@ app.use("/api/payments", paymentRouter);
 app.use("/api/quiz", quizRouter);
 app.use("/api/blog", blogRouter);
 app.use("/api/gsoc", gsocRouter);
-app.use("/api/colleges", collegeRouter);
 app.use("/api/yc", ycRouter);
+app.use("/api/dsa", dsaRouter);
+app.use("/api/aptitude", aptitudeRouter);
+app.use("/api/latex", latexRouter);
 
-// ── Public platform stats with in-memory cache (5 min TTL) ──
+// ── Public platform stats with in-memory cache (30 min TTL) ──
 let statsCache: { data: unknown; expiresAt: number } | null = null;
-const STATS_TTL = 5 * 60 * 1000;
+const STATS_TTL = 30 * 60 * 1000;
 
 app.get("/api/stats", async (_req, res) => {
   try {
@@ -108,19 +119,18 @@ app.get("/api/stats", async (_req, res) => {
       return res.json(statsCache.data);
     }
 
-    const [users, jobs, careers, companies, colleges] = await Promise.all([
+    const [users, jobs, careers, companies] = await Promise.all([
       prisma.user.count({ where: { role: "STUDENT" } }),
       prisma.job.count({ where: { status: "PUBLISHED" } }),
       prisma.career.count(),
       prisma.company.count(),
-      prisma.college.count({ where: { isApproved: true } }),
     ]);
 
-    const data = { users, jobs, careers, companies, colleges };
+    const data = { users, jobs, careers, companies };
     statsCache = { data, expiresAt: Date.now() + STATS_TTL };
     return res.json(data);
   } catch {
-    return res.json({ users: 0, jobs: 0, careers: 0, companies: 0, colleges: 0 });
+    return res.json({ users: 0, jobs: 0, careers: 0, companies: 0 });
   }
 });
 

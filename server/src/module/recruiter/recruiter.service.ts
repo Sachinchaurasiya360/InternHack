@@ -232,51 +232,53 @@ export class RecruiterService {
   }
 
   async advanceApplication(applicationId: number, recruiterId: number) {
-    const application = await prisma.application.findUnique({
-      where: { id: applicationId },
-      include: {
-        job: { select: { id: true, recruiterId: true } },
-        roundSubmissions: { include: { round: true } },
-      },
-    });
-
-    if (!application) throw new Error("Application not found");
-    if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
-
-    const rounds = await prisma.round.findMany({
-      where: { jobId: application.jobId },
-      orderBy: { orderIndex: "asc" },
-    });
-
-    if (rounds.length === 0) throw new Error("No rounds defined for this job");
-
-    // Find current round index
-    let currentIndex = -1;
-    if (application.currentRoundId) {
-      currentIndex = rounds.findIndex((r) => r.id === application.currentRoundId);
-    }
-
-    const nextIndex = currentIndex + 1;
-    if (nextIndex >= rounds.length) {
-      // All rounds completed
-      return prisma.application.update({
+    return prisma.$transaction(async (tx) => {
+      const application = await tx.application.findUnique({
         where: { id: applicationId },
-        data: { status: "SHORTLISTED" },
+        include: {
+          job: { select: { id: true, recruiterId: true } },
+          roundSubmissions: { include: { round: true } },
+        },
       });
-    }
 
-    const nextRound = rounds[nextIndex]!;
+      if (!application) throw new Error("Application not found");
+      if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    // Create submission record for next round if not exists
-    await prisma.roundSubmission.upsert({
-      where: { applicationId_roundId: { applicationId, roundId: nextRound.id } },
-      update: { status: "IN_PROGRESS" },
-      create: { applicationId, roundId: nextRound.id, status: "IN_PROGRESS" },
-    });
+      const rounds = await tx.round.findMany({
+        where: { jobId: application.jobId },
+        orderBy: { orderIndex: "asc" },
+      });
 
-    return prisma.application.update({
-      where: { id: applicationId },
-      data: { currentRoundId: nextRound.id, status: "IN_PROGRESS" },
+      if (rounds.length === 0) throw new Error("No rounds defined for this job");
+
+      // Find current round index
+      let currentIndex = -1;
+      if (application.currentRoundId) {
+        currentIndex = rounds.findIndex((r) => r.id === application.currentRoundId);
+      }
+
+      const nextIndex = currentIndex + 1;
+      if (nextIndex >= rounds.length) {
+        // All rounds completed
+        return tx.application.update({
+          where: { id: applicationId },
+          data: { status: "SHORTLISTED" },
+        });
+      }
+
+      const nextRound = rounds[nextIndex]!;
+
+      // Create submission record for next round if not exists
+      await tx.roundSubmission.upsert({
+        where: { applicationId_roundId: { applicationId, roundId: nextRound.id } },
+        update: { status: "IN_PROGRESS" },
+        create: { applicationId, roundId: nextRound.id, status: "IN_PROGRESS" },
+      });
+
+      return tx.application.update({
+        where: { id: applicationId },
+        data: { currentRoundId: nextRound.id, status: "IN_PROGRESS" },
+      });
     });
   }
 

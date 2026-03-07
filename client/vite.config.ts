@@ -5,6 +5,11 @@ import tailwindcss from '@tailwindcss/vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react(), tailwindcss()],
+  optimizeDeps: {
+    esbuildOptions: {
+      loader: { '.keep': 'text' },
+    },
+  },
   build: {
     chunkSizeWarningLimit: 600,
     rollupOptions: {

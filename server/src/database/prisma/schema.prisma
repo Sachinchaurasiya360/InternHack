@@ -98,58 +98,6 @@ enum SubscriptionStatus {
 }
 
 // ============================================================
-// COLLEGE DISCOVERY ENUMS
-// ============================================================
-
-enum CollegeType {
-  GOVERNMENT
-  PRIVATE
-  DEEMED
-  AUTONOMOUS
-  CENTRAL
-  STATE
-}
-
-enum DegreeLevel {
-  DIPLOMA
-  BACHELOR
-  MASTER
-  DOCTORAL
-  CERTIFICATE
-}
-
-enum CourseMode {
-  FULL_TIME
-  PART_TIME
-  DISTANCE
-  ONLINE
-}
-
-enum NaacGrade {
-  A_PLUS_PLUS
-  A_PLUS
-  A
-  B_PLUS_PLUS
-  B_PLUS
-  B
-  C
-  UNGRADED
-}
-
-enum ExamType {
-  NATIONAL
-  STATE
-  UNIVERSITY
-  PRIVATE
-}
-
-enum CollegeReviewStatus {
-  PENDING
-  APPROVED
-  REJECTED
-}
-
-// ============================================================
 // USER MODEL
 // ============================================================
 
@@ -204,11 +152,13 @@ model user {
   quizAttempts  quizAttempt[] @relation("StudentQuizAttempts")
   blogPosts     blogPost[]    @relation("BlogAuthor")
 
-  // ── College discovery relations ──
-  collegeReviews collegeReview[] @relation("UserCollegeReviews")
+  dsaProgress       studentDsaProgress[] @relation("StudentDsaProgress")
+  dsaBookmarks      dsaBookmark[]        @relation("StudentDsaBookmarks")
+  aptitudeProgress  studentAptitudeProgress[] @relation("StudentAptitudeProgress")
 
   @@index([role])
   @@index([role, isActive])
+  @@index([createdAt])
 }
 
 // ============================================================
@@ -260,8 +210,8 @@ model job {
   customFields Json      @default("[]")
   deadline     DateTime?
   tags         String[]  @default([])
-  recruiterId  Int
-  recruiter    user      @relation("RecruiterJobs", fields: [recruiterId], references: [id])
+  recruiterId  Int?
+  recruiter    user?     @relation("RecruiterJobs", fields: [recruiterId], references: [id], onDelete: SetNull)
 
   rounds       round[]
   applications application[]
@@ -272,6 +222,8 @@ model job {
   @@index([recruiterId])
   @@index([status])
   @@index([status, createdAt])
+  @@index([deadline])
+  @@index([createdAt])
 }
 
 // ============================================================
@@ -307,7 +259,7 @@ model application {
   jobId              Int
   job                job               @relation(fields: [jobId], references: [id], onDelete: Cascade)
   studentId          Int
-  student            user              @relation("StudentApplications", fields: [studentId], references: [id])
+  student            user              @relation("StudentApplications", fields: [studentId], references: [id], onDelete: Cascade)
   status             ApplicationStatus @default(APPLIED)
   currentRoundId     Int?
   customFieldAnswers Json              @default("{}")
@@ -321,6 +273,8 @@ model application {
 
   @@index([jobId])
   @@index([studentId])
+  @@index([status])
+  @@index([createdAt])
   @@unique([jobId, studentId])
 }
 
@@ -430,6 +384,7 @@ model scrapedJob {
   @@unique([source, sourceId])
   @@index([status])
   @@index([source])
+  @@index([createdAt])
 }
 
 // ============================================================
@@ -443,7 +398,7 @@ model scrapedJob {
 model atsScore {
   id              Int      @id @default(autoincrement())
   studentId       Int
-  student         user     @relation("StudentAtsScores", fields: [studentId], references: [id])
+  student         user     @relation("StudentAtsScores", fields: [studentId], references: [id], onDelete: Cascade)
   resumeUrl       String
   jobTitle        String?
   jobDescription  String?
@@ -456,6 +411,7 @@ model atsScore {
   updatedAt       DateTime @updatedAt
 
   @@index([studentId])
+  @@index([createdAt])
 }
 
 model scrapeLog {
@@ -539,9 +495,9 @@ model careerTool {
 model studentCareer {
   id        Int              @id @default(autoincrement())
   studentId Int
-  student   user             @relation("StudentCareers", fields: [studentId], references: [id])
+  student   user             @relation("StudentCareers", fields: [studentId], references: [id], onDelete: Cascade)
   careerId  Int
-  career    career           @relation(fields: [careerId], references: [id])
+  career    career           @relation(fields: [careerId], references: [id], onDelete: Cascade)
   status    EnrollmentStatus @default(ACTIVE)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
@@ -552,7 +508,7 @@ model studentCareer {
 model studentSkillProgress {
   id        Int         @id @default(autoincrement())
   studentId Int
-  student   user        @relation("StudentSkillProgress", fields: [studentId], references: [id])
+  student   user        @relation("StudentSkillProgress", fields: [studentId], references: [id], onDelete: Cascade)
   skillId   Int
   skill     careerSkill @relation(fields: [skillId], references: [id], onDelete: Cascade)
   completed  Boolean   @default(false)
@@ -601,6 +557,7 @@ model company {
   @@index([city])
   @@index([industry])
   @@index([isApproved])
+  @@index([createdById])
 }
 
 model companyReview {
@@ -608,7 +565,7 @@ model companyReview {
   companyId           Int
   company             company      @relation(fields: [companyId], references: [id], onDelete: Cascade)
   userId              Int
-  user                user         @relation("UserReviews", fields: [userId], references: [id])
+  user                user         @relation("UserReviews", fields: [userId], references: [id], onDelete: Cascade)
   rating              Int
   title               String
   content             String
@@ -623,7 +580,9 @@ model companyReview {
   updatedAt DateTime @updatedAt
 
   @@index([companyId])
+  @@index([userId])
   @@index([status])
+  @@index([createdAt])
 }
 
 model companyContact {
@@ -636,8 +595,8 @@ model companyContact {
   phone       String?
   linkedinUrl String?
   isPublic    Boolean @default(true)
-  addedById   Int
-  addedBy     user    @relation("UserAddedContacts", fields: [addedById], references: [id])
+  addedById   Int?
+  addedBy     user?   @relation("UserAddedContacts", fields: [addedById], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -648,14 +607,14 @@ model companyContact {
 model companyContribution {
   id           Int                @id @default(autoincrement())
   userId       Int
-  user         user               @relation("UserContributions", fields: [userId], references: [id])
+  user         user               @relation("UserContributions", fields: [userId], references: [id], onDelete: Cascade)
   type         ContributionType
   companyId    Int?
   data         Json
   status       ContributionStatus @default(PENDING)
   adminNotes   String?
   reviewedById Int?
-  reviewedBy   user?              @relation("AdminReviewedContributions", fields: [reviewedById], references: [id])
+  reviewedBy   user?              @relation("AdminReviewedContributions", fields: [reviewedById], references: [id], onDelete: SetNull)
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -687,7 +646,7 @@ enum PaymentStatus {
 model payment {
   id                Int              @id @default(autoincrement())
   userId            Int
-  user              user             @relation("UserPayments", fields: [userId], references: [id])
+  user              user             @relation("UserPayments", fields: [userId], references: [id], onDelete: Cascade)
   razorpayOrderId   String           @unique
   razorpayPaymentId String?
   razorpaySignature String?
@@ -700,6 +659,7 @@ model payment {
   updatedAt         DateTime         @updatedAt
 
   @@index([userId])
+  @@index([status])
   @@index([razorpayOrderId])
 }
 
@@ -784,7 +744,7 @@ model blogPost {
   category      BlogCategory
   tags          String[]      @default([])
   authorId      Int
-  author        user          @relation("BlogAuthor", fields: [authorId], references: [id])
+  author        user          @relation("BlogAuthor", fields: [authorId], references: [id], onDelete: Cascade)
   status        BlogStatus    @default(DRAFT)
   featuredImage String?
   readingTime   Int           @default(0)
@@ -794,6 +754,7 @@ model blogPost {
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
+  @@index([authorId])
   @@index([status])
   @@index([category])
   @@index([publishedAt])
@@ -837,7 +798,7 @@ model quizAttempt {
   quizId      Int
   quiz        quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
   studentId   Int
-  student     user     @relation("StudentQuizAttempts", fields: [studentId], references: [id])
+  student     user     @relation("StudentQuizAttempts", fields: [studentId], references: [id], onDelete: Cascade)
   score       Int
   passed      Boolean
   answers     Json
@@ -878,193 +839,6 @@ model gsocOrganization {
 }
 
 // ============================================================
-// COLLEGE DISCOVERY MODELS
-// ============================================================
-
-model college {
-  id              Int          @id @default(autoincrement())
-  name            String
-  slug            String       @unique
-  logo            String?
-  coverImage      String?
-  description     String
-  type            CollegeType
-  affiliation     String?
-  naacGrade       NaacGrade?
-  nirfRanking     Int?
-  nirfYear        Int?
-  website         String?
-  establishedYear Int?
-  campusSize      String?
-  state           String
-  city            String
-  address         String?
-  pincode         String?
-  latitude        Float?
-  longitude       Float?
-  totalStudents   Int?
-  totalFaculty    Int?
-  acceptedExams   String[]     @default([])
-  facilities      String[]     @default([])
-  streams         String[]     @default([])
-  socialLinks     Json         @default("{}")
-  photos          String[]     @default([])
-  avgRating       Float        @default(0)
-  reviewCount     Int          @default(0)
-  isApproved      Boolean      @default(true)
-  sourceId        String?
-  source          String?
-
-  courses    collegeCourse[]
-  placements collegePlacement[]
-  cutoffs    collegeCutoff[]
-  reviews    collegeReview[]
-  galleries  collegeGallery[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([source, sourceId])
-  @@index([state])
-  @@index([city])
-  @@index([type])
-  @@index([naacGrade])
-  @@index([nirfRanking])
-  @@index([isApproved])
-}
-
-model collegeCourse {
-  id             Int         @id @default(autoincrement())
-  collegeId      Int
-  college        college     @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-  name           String
-  degree         String
-  degreeLevel    DegreeLevel
-  specialization String?
-  stream         String
-  durationYears  Float
-  mode           CourseMode  @default(FULL_TIME)
-  totalFees      Int?
-  feesPerYear    Int?
-  eligibility    String?
-  seats          Int?
-  isPopular      Boolean     @default(false)
-
-  cutoffs collegeCutoff[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([collegeId])
-  @@index([stream])
-  @@index([degree])
-  @@index([degreeLevel])
-}
-
-model collegePlacement {
-  id                Int      @id @default(autoincrement())
-  collegeId         Int
-  college           college  @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-  year              Int
-  avgPackageLPA     Float?
-  highestPackageLPA Float?
-  medianPackageLPA  Float?
-  placementRate     Float?
-  studentsPlaced    Int?
-  totalStudents     Int?
-  topRecruiters     String[] @default([])
-  sectorWise        Json?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@unique([collegeId, year])
-  @@index([collegeId])
-}
-
-model entranceExam {
-  id                Int      @id @default(autoincrement())
-  name              String   @unique
-  slug              String   @unique
-  fullName          String?
-  type              ExamType
-  conductingBody    String?
-  applicableStreams String[] @default([])
-  frequency         String?
-  website           String?
-  description       String?
-
-  cutoffs collegeCutoff[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-}
-
-model collegeCutoff {
-  id           Int            @id @default(autoincrement())
-  collegeId    Int
-  college      college        @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-  courseId     Int?
-  course       collegeCourse? @relation(fields: [courseId], references: [id], onDelete: Cascade)
-  examId       Int
-  exam         entranceExam   @relation(fields: [examId], references: [id], onDelete: Cascade)
-  year         Int
-  category     String
-  gender       String?
-  openingRank  Int?
-  closingRank  Int?
-  openingScore Float?
-  closingScore Float?
-  round        String?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([collegeId])
-  @@index([examId])
-  @@index([year])
-  @@index([category])
-}
-
-model collegeReview {
-  id                   Int                 @id @default(autoincrement())
-  collegeId            Int
-  college              college             @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-  userId               Int
-  user                 user                @relation("UserCollegeReviews", fields: [userId], references: [id])
-  overallRating        Int
-  placementsRating     Int?
-  infrastructureRating Int?
-  facultyRating        Int?
-  campusLifeRating     Int?
-  valueForMoneyRating  Int?
-  title                String
-  content              String
-  pros                 String?
-  cons                 String?
-  courseStudied         String?
-  graduationYear       Int?
-  status               CollegeReviewStatus @default(PENDING)
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-
-  @@index([collegeId])
-  @@index([status])
-}
-
-model collegeGallery {
-  id        Int     @id @default(autoincrement())
-  collegeId Int
-  college   college @relation(fields: [collegeId], references: [id], onDelete: Cascade)
-  imageUrl  String
-  caption   String?
-  category  String?
-
-  createdAt DateTime @default(now())
-}
-
-// ============================================================
 // YC COMPANIES MODEL
 // ============================================================
 
@@ -1092,6 +866,9 @@ model ycCompany {
   topCompany      Boolean   @default(false)
   ycUrl           String?
   launchedAt      DateTime?
+  founders        Json?
+  socialLinks     Json?
+  scrapedAt       DateTime?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -1102,4 +879,139 @@ model ycCompany {
   @@index([isHiring])
   @@index([topCompany])
   @@index([name])
+}
+
+// ============================================================
+// DSA PRACTICE MODELS
+// ============================================================
+
+model dsaTopic {
+  id          Int           @id @default(autoincrement())
+  name        String
+  slug        String        @unique
+  description String?
+  orderIndex  Int           @unique
+  subTopics   dsaSubTopic[]
+  createdAt   DateTime      @default(now())
+}
+
+model dsaSubTopic {
+  id         Int          @id @default(autoincrement())
+  name       String
+  orderIndex Int
+  topicId    Int
+  topic      dsaTopic     @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  problems   dsaProblem[]
+
+  @@unique([topicId, orderIndex])
+}
+
+model dsaProblem {
+  id            Int                  @id @default(autoincrement())
+  title         String
+  difficulty    String
+  leetcodeUrl   String?
+  gfgUrl        String?
+  articleUrl    String?
+  videoUrl      String?
+  hackerrankUrl String?
+  codechefUrl   String?
+  tags          String[]             @default([])
+  companies     String[]             @default([])
+  hints         String?
+  sheets        String[]             @default([])
+  orderIndex    Int
+  subTopicId    Int
+  subTopic      dsaSubTopic          @relation(fields: [subTopicId], references: [id], onDelete: Cascade)
+  progress      studentDsaProgress[]
+  bookmarks     dsaBookmark[]
+
+  @@unique([subTopicId, orderIndex])
+  @@index([difficulty])
+}
+
+model studentDsaProgress {
+  id        Int        @id @default(autoincrement())
+  studentId Int
+  problemId Int
+  solved    Boolean    @default(true)
+  notes     String?
+  solvedAt  DateTime   @default(now())
+  student   user       @relation("StudentDsaProgress", fields: [studentId], references: [id], onDelete: Cascade)
+  problem   dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, problemId])
+  @@index([studentId])
+}
+
+model dsaBookmark {
+  id        Int        @id @default(autoincrement())
+  studentId Int
+  problemId Int
+  student   user       @relation("StudentDsaBookmarks", fields: [studentId], references: [id], onDelete: Cascade)
+  problem   dsaProblem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+  createdAt DateTime   @default(now())
+
+  @@unique([studentId, problemId])
+  @@index([studentId])
+}
+
+// ============================================================
+// APTITUDE PRACTICE MODELS
+// ============================================================
+
+model aptitudeCategory {
+  id          Int             @id @default(autoincrement())
+  name        String          @unique
+  slug        String          @unique
+  description String?
+  orderIndex  Int             @default(0)
+  topics      aptitudeTopic[]
+  createdAt   DateTime        @default(now())
+}
+
+model aptitudeTopic {
+  id          Int                @id @default(autoincrement())
+  categoryId  Int
+  category    aptitudeCategory   @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  name        String
+  slug        String             @unique
+  description String?
+  orderIndex  Int                @default(0)
+  sourceUrl   String?
+  questions   aptitudeQuestion[]
+  createdAt   DateTime           @default(now())
+}
+
+model aptitudeQuestion {
+  id            Int                       @id @default(autoincrement())
+  topicId       Int
+  topic         aptitudeTopic             @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  question      String
+  optionA       String
+  optionB       String
+  optionC       String
+  optionD       String
+  optionE       String?
+  correctAnswer String
+  explanation   String?
+  difficulty    String                    @default("MEDIUM")
+  companies     String[]                  @default([])
+  sourceUrl     String?
+  progress      studentAptitudeProgress[]
+  createdAt     DateTime                  @default(now())
+}
+
+model studentAptitudeProgress {
+  id         Int              @id @default(autoincrement())
+  studentId  Int
+  student    user             @relation("StudentAptitudeProgress", fields: [studentId], references: [id], onDelete: Cascade)
+  questionId Int
+  question   aptitudeQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  answered   Boolean          @default(false)
+  correct    Boolean          @default(false)
+  createdAt  DateTime         @default(now())
+
+  @@unique([studentId, questionId])
+  @@index([studentId])
 }

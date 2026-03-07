@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
@@ -45,16 +45,22 @@ export default function BlogListPage() {
   const limit = 9;
 
   // Debounce search
-  const [timer, setTimer] = useState<ReturnType<typeof setTimeout> | null>(null);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const handleSearchChange = (value: string) => {
     setSearch(value);
-    if (timer) clearTimeout(timer);
-    const t = setTimeout(() => {
+    if (timerRef.current) clearTimeout(timerRef.current);
+    timerRef.current = setTimeout(() => {
       setDebouncedSearch(value);
       setPage(1);
     }, 400);
-    setTimer(t);
   };
+
+  // Cleanup debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, []);
 
   // Fetch blog posts
   const { data, isLoading } = useQuery<{ posts: BlogPost[]; pagination: Pagination }>({

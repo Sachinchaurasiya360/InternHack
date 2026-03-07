@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link, useSearchParams } from "react-router";
+import { Link, useSearchParams, useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
 import {
   Search,
@@ -19,7 +19,7 @@ import {
 import { SEO } from "../../../components/SEO";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
-import api from "../../../lib/axios";
+import api, { SERVER_URL } from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type {
   Company,
@@ -53,7 +53,7 @@ function CompanyCard({ company }: { company: Company }) {
       <div className="flex items-start gap-4">
         {company.logo ? (
           <img
-            src={`http://localhost:3000${company.logo}`}
+            src={company.logo.startsWith('http') ? company.logo : `${SERVER_URL}${company.logo}`}
             alt={company.name}
             className="w-14 h-14 rounded-lg object-cover border border-gray-100 dark:border-gray-800"
           />
@@ -127,7 +127,7 @@ function CompanyCard({ company }: { company: Company }) {
 
 function YCCard({ company }: { company: YCCompany }) {
   return (
-    <div className="block bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all p-5 group">
+    <Link to={`/yc/${company.slug}`} className="block bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all p-5 group no-underline">
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-3 min-w-0">
           {company.smallLogoUrl ? (
@@ -218,7 +218,7 @@ function YCCard({ company }: { company: YCCompany }) {
           ))}
         </div>
       )}
-    </div>
+    </Link>
   );
 }
 
@@ -226,6 +226,7 @@ function YCCard({ company }: { company: YCCompany }) {
 type Tab = "all" | "yc";
 
 export default function CompanyListPage() {
+  const isInsideLayout = useLocation().pathname.startsWith("/student/");
   const [searchParams, setSearchParams] = useSearchParams();
   const [companies, setCompanies] = useState<Company[]>([]);
   const [cities, setCities] = useState<CityCount[]>([]);
@@ -337,7 +338,7 @@ export default function CompanyListPage() {
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
-      <Navbar />
+      {!isInsideLayout && <Navbar />}
       <div className="max-w-7xl mx-auto px-4 py-8 pt-24">
         <SEO
           title="Explore Companies"
@@ -712,7 +713,7 @@ export default function CompanyListPage() {
           </>
         )}
       </div>
-      <Footer />
+      {!isInsideLayout && <Footer />}
     </div>
   );
 }

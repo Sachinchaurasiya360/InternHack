@@ -13,8 +13,8 @@ const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID as string || ''
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
-      staleTime: 5 * 60 * 1000,     // 5 minutes
-      gcTime: 10 * 60 * 1000,       // 10 minutes (formerly cacheTime)
+      staleTime: 15 * 60 * 1000,    // 15 minutes
+      gcTime: 30 * 60 * 1000,       // 30 minutes (formerly cacheTime)
       refetchOnWindowFocus: false,
       retry: 1,
     },

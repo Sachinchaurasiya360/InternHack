@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from "framer-motion";
-import { Zap, Menu, X, User, Sun, Moon } from "lucide-react";
+import { Menu, X, User, Sun, Moon } from "lucide-react";
 import { useState } from "react";
 import { Link, useNavigate } from "react-router";
 import { useAuthStore } from "../lib/auth.store";
@@ -31,9 +31,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
           <div className="flex items-center justify-between">
             {/* Logo */}
             <Link to="/" className="flex items-center gap-2.5 no-underline">
-              <div className="w-9 h-9 bg-gray-950 dark:bg-white flex items-center justify-center rounded-xl">
-                <Zap className="w-5 h-5 text-white dark:text-gray-950 fill-white dark:fill-gray-950" />
-              </div>
+              <img src="/logo.png" alt="InternHack" className="h-9 w-9 rounded-xl object-contain" />
               <span className="font-display text-xl font-bold text-gray-950 dark:text-white">
                 InternHack
               </span>
@@ -45,7 +43,6 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               <NavItem href="/jobs">Jobs</NavItem>
               <NavItem href="/careers">Careers</NavItem>
               <NavItem href="/companies">Companies</NavItem>
-              <NavItem href="/colleges">Colleges</NavItem>
               <NavItem href="/blog">Blog</NavItem>
               {!isAuthenticated && <NavItem href="/recruiters">For Recruiters</NavItem>}
             </div>
@@ -122,7 +119,6 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                   <MobileNavLink href="/jobs" onClick={() => setIsOpen(false)}>Jobs</MobileNavLink>
                   <MobileNavLink href="/careers" onClick={() => setIsOpen(false)}>Careers</MobileNavLink>
                   <MobileNavLink href="/companies" onClick={() => setIsOpen(false)}>Companies</MobileNavLink>
-                  <MobileNavLink href="/colleges" onClick={() => setIsOpen(false)}>Colleges</MobileNavLink>
                   <MobileNavLink href="/blog" onClick={() => setIsOpen(false)}>Blog</MobileNavLink>
                   <div className="pt-3 space-y-2">
                     {isAuthenticated ? (

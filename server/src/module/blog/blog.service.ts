@@ -203,10 +203,14 @@ export class BlogService {
     tags?: string[];
     featuredImage?: string;
     status?: string;
-  }) {
+  }, userId?: number, isAdmin?: boolean) {
     const existing = await prisma.blogPost.findUnique({ where: { id } });
     if (!existing) {
       throw new Error("Post not found");
+    }
+
+    if (!isAdmin && userId !== undefined && existing.authorId !== userId) {
+      throw new Error("Not authorized to modify this post");
     }
 
     const updateData: Prisma.blogPostUpdateInput = {};
@@ -240,10 +244,14 @@ export class BlogService {
     });
   }
 
-  async togglePublish(id: number) {
+  async togglePublish(id: number, userId?: number, isAdmin?: boolean) {
     const post = await prisma.blogPost.findUnique({ where: { id } });
     if (!post) {
       throw new Error("Post not found");
+    }
+
+    if (!isAdmin && userId !== undefined && post.authorId !== userId) {
+      throw new Error("Not authorized to modify this post");
     }
 
     const newStatus = post.status === "PUBLISHED" ? "DRAFT" : "PUBLISHED";
@@ -256,10 +264,14 @@ export class BlogService {
     });
   }
 
-  async toggleFeatured(id: number) {
+  async toggleFeatured(id: number, userId?: number, isAdmin?: boolean) {
     const post = await prisma.blogPost.findUnique({ where: { id } });
     if (!post) {
       throw new Error("Post not found");
+    }
+
+    if (!isAdmin && userId !== undefined && post.authorId !== userId) {
+      throw new Error("Not authorized to modify this post");
     }
 
     return prisma.blogPost.update({
@@ -269,10 +281,14 @@ export class BlogService {
     });
   }
 
-  async delete(id: number) {
+  async delete(id: number, userId?: number, isAdmin?: boolean) {
     const post = await prisma.blogPost.findUnique({ where: { id } });
     if (!post) {
       throw new Error("Post not found");
+    }
+
+    if (!isAdmin && userId !== undefined && post.authorId !== userId) {
+      throw new Error("Not authorized to modify this post");
     }
 
     return prisma.blogPost.delete({ where: { id } });

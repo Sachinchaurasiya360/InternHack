@@ -1,4 +1,5 @@
 import { prisma } from "../../database/db.js";
+import { Prisma } from "@prisma/client";
 
 interface ApplyData {
   customFieldAnswers: Record<string, unknown>;
@@ -22,40 +23,42 @@ export class StudentService {
     if (job.status !== "PUBLISHED") throw new Error("Job is not accepting applications");
     if (job.deadline && new Date(job.deadline) < new Date()) throw new Error("Application deadline has passed");
 
-    const existing = await prisma.application.findUnique({
-      where: { jobId_studentId: { jobId, studentId } },
-    });
-    if (existing) throw new Error("Already applied to this job");
-
     const firstRound = job.rounds[0];
 
-    const application = await prisma.application.create({
-      data: {
-        jobId,
-        studentId,
-        customFieldAnswers: JSON.parse(JSON.stringify(data.customFieldAnswers)),
-        resumeUrl: data.resumeUrl ?? null,
-        coverLetter: data.coverLetter ?? null,
-        currentRoundId: firstRound?.id ?? null,
-        status: "APPLIED",
-      },
-      include: {
-        job: { select: { id: true, title: true, company: true } },
-      },
-    });
-
-    // Create first round submission if rounds exist
-    if (firstRound) {
-      await prisma.roundSubmission.create({
+    try {
+      const application = await prisma.application.create({
         data: {
-          applicationId: application.id,
-          roundId: firstRound.id,
-          status: "IN_PROGRESS",
+          jobId,
+          studentId,
+          customFieldAnswers: JSON.parse(JSON.stringify(data.customFieldAnswers)),
+          resumeUrl: data.resumeUrl ?? null,
+          coverLetter: data.coverLetter ?? null,
+          currentRoundId: firstRound?.id ?? null,
+          status: "APPLIED",
+        },
+        include: {
+          job: { select: { id: true, title: true, company: true } },
         },
       });
-    }
 
-    return application;
+      // Create first round submission if rounds exist
+      if (firstRound) {
+        await prisma.roundSubmission.create({
+          data: {
+            applicationId: application.id,
+            roundId: firstRound.id,
+            status: "IN_PROGRESS",
+          },
+        });
+      }
+
+      return application;
+    } catch (err) {
+      if (err instanceof Prisma.PrismaClientKnownRequestError && err.code === 'P2002') {
+        throw new Error("You have already applied to this job");
+      }
+      throw err;
+    }
   }
 
   async getMyApplications(studentId: number) {

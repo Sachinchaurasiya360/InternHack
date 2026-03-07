@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Navigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
@@ -88,8 +89,8 @@ const plans: Plan[] = [
   {
     key: "pro",
     name: "Pro",
-    price: 469,
-    yearlyPrice: 3769,
+    price: 333,
+    yearlyPrice: 2677,
     badge: "Most Popular",
     description: "Unlock powerful tools to stand out and land your dream internship.",
     gradient: "from-purple-50 to-indigo-50",
@@ -128,6 +129,12 @@ const faqs = [
 // ─── Component ────────────────────────────────────────────────
 export default function CheckoutPage() {
   const { user } = useAuthStore();
+
+  // Redirect premium users — they already have an active subscription
+  if (user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE") {
+    return <Navigate to="/student/profile" replace />;
+  }
+
   const [billing, setBilling] = useState<"monthly" | "yearly">("monthly");
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [loading, setLoading] = useState<PlanKey | null>(null);

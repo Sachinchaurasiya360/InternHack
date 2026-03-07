@@ -194,6 +194,9 @@ export class AuthService {
     githubUrl: true,
     portfolioUrl: true,
     createdAt: true,
+    subscriptionPlan: true,
+    subscriptionStatus: true,
+    subscriptionEndDate: true,
   } as const;
 
   async getProfile(userId: number) {

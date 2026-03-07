@@ -5,10 +5,10 @@ import { prisma } from "../../database/db.js";
 // ── Price table (amounts in paise) ────────────────────────────
 const PRICE_TABLE = {
   MONTHLY: {
-    pro: 469_00, // ₹469
+    pro: 333_00, // ₹333
   },
   YEARLY: {
-    pro: 3769_00, // ₹3,769
+    pro: 2677_00, // ₹2,677
   },
 } as const;
 

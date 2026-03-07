@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router";
+import { Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Search, MapPin, DollarSign, Clock, Building2, Briefcase } from "lucide-react";
@@ -10,6 +10,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { Job, Pagination } from "../../../lib/types";
 
 export default function JobBrowsePage() {
+  const isInsideLayout = useLocation().pathname.startsWith("/student/");
   const [search, setSearch] = useState("");
   const [location, setLocation] = useState("");
   const [appliedSearch, setAppliedSearch] = useState("");
@@ -56,7 +57,7 @@ export default function JobBrowsePage() {
         }}
       />
 
-      <Navbar />
+      {!isInsideLayout && <Navbar />}
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-16">
         {/* Hero header */}

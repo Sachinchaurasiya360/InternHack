@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
 import { ArrowLeft, Search, Filter } from "lucide-react";
@@ -11,13 +11,27 @@ export default function ApplicationsList() {
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("");
   const [page, setPage] = useState(1);
+  const searchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Debounce search input
+  useEffect(() => {
+    if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    searchTimerRef.current = setTimeout(() => {
+      setDebouncedSearch(search);
+      setPage(1);
+    }, 400);
+    return () => {
+      if (searchTimerRef.current) clearTimeout(searchTimerRef.current);
+    };
+  }, [search]);
 
   const fetchApplications = () => {
     setLoading(true);
     const params = new URLSearchParams({ page: String(page), limit: "10" });
-    if (search) params.set("search", search);
+    if (debouncedSearch) params.set("search", debouncedSearch);
     if (statusFilter) params.set("status", statusFilter);
 
     api.get(`/recruiter/jobs/${jobId}/applications?${params}`).then((res) => {
@@ -27,7 +41,7 @@ export default function ApplicationsList() {
     }).catch(() => setLoading(false));
   };
 
-  useEffect(() => { fetchApplications(); }, [jobId, page, statusFilter]);
+  useEffect(() => { fetchApplications(); }, [jobId, page, statusFilter, debouncedSearch]);
 
   const handleStatusChange = async (appId: number, status: string) => {
     try {
@@ -60,7 +74,6 @@ export default function ApplicationsList() {
         <div className="flex-1 relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
           <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
-            onKeyDown={(e) => e.key === "Enter" && fetchApplications()}
             className="w-full pl-10 pr-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
             placeholder="Search by name or email..." />
         </div>

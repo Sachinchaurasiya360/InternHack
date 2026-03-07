@@ -24,17 +24,36 @@ const CATEGORY_OPTIONS: { value: BlogCategory; label: string }[] = [
   { value: "TECH_TRENDS", label: "Tech Trends" },
 ];
 
+// ─── HTML escaping helper ───────────────────────────────────────
+function escapeHtml(str: string): string {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#039;');
+}
+
 // ─── Simple markdown preview renderer ───────────────────────────
 function renderPreview(md: string): string {
   let html = md;
 
-  // Code blocks
+  // Step 1: Extract code blocks into placeholders (so they aren't double-escaped)
+  const codeBlocks: string[] = [];
   html = html.replace(/```(\w*)\n([\s\S]*?)```/g, (_m, _lang, code) => {
-    return `<pre class="bg-gray-800 rounded-lg p-4 overflow-x-auto text-sm my-4 text-gray-300"><code>${code
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .trim()}</code></pre>`;
+    const placeholder = `%%CODEBLOCK_${codeBlocks.length}%%`;
+    codeBlocks.push(
+      `<pre class="bg-gray-800 rounded-lg p-4 overflow-x-auto text-sm my-4 text-gray-300"><code>${escapeHtml(code.trim())}</code></pre>`
+    );
+    return placeholder;
+  });
+
+  // Step 2: Escape HTML in the remaining content to prevent XSS
+  html = escapeHtml(html);
+
+  // Restore code block placeholders
+  codeBlocks.forEach((block, i) => {
+    html = html.replace(`%%CODEBLOCK_${i}%%`, block);
   });
 
   // Inline code

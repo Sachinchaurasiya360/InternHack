@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, Home, ScanSearch, Map, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, GraduationCap } from "lucide-react";
+import { Briefcase, FileText, LogOut, Home, ScanSearch, Map, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, Code2, Database, Brain } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
@@ -8,11 +8,13 @@ import { SEO } from "../../components/SEO";
 const NAV_ITEMS = [
   { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
   { to: "/student/applications", icon: FileText, label: "My Applications" },
-  { to: "/student/ats/score", icon: ScanSearch, label: "ATS Score" },
+  { to: "/student/ats/score", icon: ScanSearch, label: "Resume" },
   { to: "/student/careers", icon: Map, label: "Career Paths" },
+  { to: "/student/dsa", icon: Code2, label: "DSA Practice" },
+  { to: "/student/sql", icon: Database, label: "SQL Practice" },
+  { to: "/student/aptitude", icon: Brain, label: "Aptitude" },
   { to: "/student/companies", icon: Building2, label: "Explore Companies" },
-  { to: "/student/colleges", icon: GraduationCap, label: "Colleges" },
-  { to: "/student/grants", icon: Award, label: "Grants" },
+{ to: "/student/grants", icon: Award, label: "Grants" },
   { to: "/student/opensource", icon: Globe, label: "Open Source" },
   { to: "/student/checkout", icon: Crown, label: "Upgrade" },
   { to: "/student/profile", icon: UserCircle, label: "My Profile" },
@@ -115,7 +117,7 @@ export default function StudentLayout() {
 
       {/* Main Content — offset by sidebar width */}
       <main
-        className={`${collapsed ? "ml-18" : "ml-64"} pt-16 p-8 transition-all duration-300 overflow-auto`}
+        className={`${collapsed ? "ml-18" : "ml-64"} pt-24 p-8 transition-all duration-300 overflow-auto`}
       >
         <Outlet />
       </main>

@@ -3,7 +3,7 @@ import { motion } from "framer-motion";
 import {
   User, Mail, Phone, Building2, Briefcase, FileText, Save, Loader2,
   CheckCircle, Upload, Trash2, Camera, ExternalLink, MapPin, GraduationCap,
-  Linkedin, Github, Globe, X, Plus, AlignLeft, Shield, Calendar,
+  Linkedin, Github, Globe, X, Plus, AlignLeft, Shield, Calendar, Crown,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -124,6 +124,13 @@ export default function StudentProfilePage() {
         setCollegeLoading(false);
       }
     }, 300);
+  }, []);
+
+  // Cleanup college search debounce timer on unmount
+  useEffect(() => {
+    return () => {
+      if (collegeTimerRef.current) clearTimeout(collegeTimerRef.current);
+    };
   }, []);
 
   const handleChange = (field: keyof ProfileData, value: string | number | null) => {
@@ -539,7 +546,7 @@ export default function StudentProfilePage() {
             <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
             <Shield className="w-4 h-4 text-indigo-500" /> Account Information
           </h3>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
               <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 mb-1">
                 <CheckCircle className="w-3.5 h-3.5 text-green-500" /> Role
@@ -561,6 +568,18 @@ export default function StudentProfilePage() {
                 <FileText className="w-3.5 h-3.5 text-violet-400" /> Resumes
               </span>
               <p className="font-semibold text-gray-700 dark:text-gray-300 text-sm">{form.resumes.length} / {MAX_RESUMES}</p>
+            </div>
+            <div className={`rounded-xl p-4 ${user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE" ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800" : "bg-gray-50 dark:bg-gray-800"}`}>
+              <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 mb-1">
+                <Crown className={`w-3.5 h-3.5 ${user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE" ? "text-amber-500" : "text-gray-400"}`} /> Plan
+              </span>
+              {user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE" ? (
+                <p className="font-semibold text-amber-700 dark:text-amber-400 text-sm flex items-center gap-1.5">
+                  Pro <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase bg-amber-500 text-white rounded-full">Premium</span>
+                </p>
+              ) : (
+                <p className="font-semibold text-gray-700 dark:text-gray-300 text-sm">Free</p>
+              )}
             </div>
           </div>
         </div>

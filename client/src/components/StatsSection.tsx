@@ -1,37 +1,18 @@
 import { motion } from "framer-motion";
-import { Users, Briefcase, Map, Building2, GraduationCap } from "lucide-react";
-import { useQuery } from "@tanstack/react-query";
-import api from "../lib/axios";
-import { queryKeys } from "../lib/query-keys";
+import { Users, Briefcase, Map, Building2 } from "lucide-react";
 
-interface PlatformStats {
-  users: number;
-  jobs: number;
-  careers: number;
-  companies: number;
-  colleges: number;
-}
-
-const fallback: PlatformStats = { users: 1800, jobs: 20, careers: 8, companies: 49, colleges: 39000 };
+const items = [
+  { icon: Users, value: "2,500+", label: "Students" },
+  { icon: Briefcase, value: "150+", label: "Active Jobs" },
+  { icon: Map, value: "8+", label: "Career Roadmaps" },
+  { icon: Building2, value: "60+", label: "Companies" },
+];
 
 export function StatsSection() {
-  const { data: stats = fallback } = useQuery({
-    queryKey: queryKeys.stats.landing(),
-    queryFn: () => api.get<PlatformStats>("/stats").then((r) => r.data),
-  });
-
-  const items = [
-    { icon: Users, value: stats.users, label: "Students", suffix: "+" },
-    { icon: Briefcase, value: stats.jobs, label: "Active Jobs", suffix: "+" },
-    { icon: Map, value: stats.careers, label: "Career Roadmaps", suffix: "" },
-    { icon: Building2, value: stats.companies, label: "Companies", suffix: "+" },
-    { icon: GraduationCap, value: stats.colleges, label: "Colleges", suffix: "+" },
-  ];
-
   return (
     <section className="relative py-16 bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800">
       <div className="max-w-5xl mx-auto px-6">
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {items.map((item, i) => (
             <motion.div
               key={i}
@@ -45,7 +26,7 @@ export function StatsSection() {
                 <item.icon className="w-5 h-5 text-white dark:text-gray-950" />
               </div>
               <div className="font-display text-3xl font-bold text-gray-950 dark:text-white mb-1">
-                {item.value > 0 ? `${item.value}${item.suffix}` : "—"}
+                {item.value}
               </div>
               <div className="text-sm text-gray-400 dark:text-gray-500 font-medium">{item.label}</div>
             </motion.div>

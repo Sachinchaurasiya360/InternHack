@@ -80,24 +80,6 @@ export const queryKeys = {
     stats: () => ["gsoc", "stats"] as const,
   },
 
-  // Colleges
-  colleges: {
-    all: ["colleges"] as const,
-    list: (params?: Record<string, string | number>) =>
-      ["colleges", "list", params] as const,
-    states: () => ["colleges", "states"] as const,
-    stats: () => ["colleges", "stats"] as const,
-    detail: (slug: string) => ["colleges", "detail", slug] as const,
-    courses: (slug: string) => ["colleges", "courses", slug] as const,
-    placements: (slug: string) => ["colleges", "placements", slug] as const,
-    cutoffs: (slug: string, params?: Record<string, string | number>) =>
-      ["colleges", "cutoffs", slug, params] as const,
-    reviews: (slug: string) => ["colleges", "reviews", slug] as const,
-    compare: (ids: number[]) => ["colleges", "compare", ids] as const,
-    byExam: (examSlug: string, params?: Record<string, string | number>) =>
-      ["colleges", "exam", examSlug, params] as const,
-  },
-
   // YC Companies
   yc: {
     list: (params?: Record<string, string | number>) =>
@@ -124,4 +106,25 @@ export const queryKeys = {
       ["blog", "admin", params] as const,
   },
 
+  // Aptitude
+  aptitude: {
+    categories: () => ["aptitude", "categories"] as const,
+    topic: (slug: string) => ["aptitude", "topic", slug] as const,
+    companies: () => ["aptitude", "companies"] as const,
+    company: (name: string) => ["aptitude", "company", name] as const,
+    progress: () => ["aptitude", "progress"] as const,
+  },
+
+  // DSA Practice
+  dsa: {
+    topics: (sheet?: string) => ["dsa", "topics", sheet] as const,
+    topic: (slug: string) => ["dsa", "topic", slug] as const,
+    progress: () => ["dsa", "progress"] as const,
+    bookmarks: () => ["dsa", "bookmarks"] as const,
+    companies: () => ["dsa", "companies"] as const,
+    company: (name: string) => ["dsa", "company", name] as const,
+    patterns: () => ["dsa", "patterns"] as const,
+    pattern: (name: string) => ["dsa", "pattern", name] as const,
+    sheets: () => ["dsa", "sheets"] as const,
+  },
 };

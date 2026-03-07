@@ -2,6 +2,7 @@ import { lazy, Suspense } from "react";
 import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Toaster } from "react-hot-toast";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { ErrorBoundary } from "./components/ErrorBoundary";
 
 // Public pages
 const LandingPage = lazy(() => import("./module/LandingPage/landingPage"));
@@ -18,13 +19,17 @@ const CompanyDetailPage = lazy(() => import("./module/student/companies/CompanyD
 const PublicAtsPage = lazy(() => import("./module/student/ats/PublicAtsPage"));
 const GrantsPage = lazy(() => import("./module/student/grants/GrantsPage"));
 const PublicOpenSourcePage = lazy(() => import("./module/student/opensource/PublicOpenSourcePage"));
-const CollegeLandingPage = lazy(() => import("./module/student/colleges/CollegeLandingPage"));
-const CollegeListPage = lazy(() => import("./module/student/colleges/CollegeListPage"));
-const CollegeComparePage = lazy(() => import("./module/student/colleges/CollegeComparePage"));
-const ExamCollegesPage = lazy(() => import("./module/student/colleges/ExamCollegesPage"));
-const CollegeDetailPage = lazy(() => import("./module/student/colleges/CollegeDetailPage"));
 const BlogListPage = lazy(() => import("./module/blog/BlogListPage"));
 const BlogPostPage = lazy(() => import("./module/blog/BlogPostPage"));
+const AptitudeCategoriesPage = lazy(() => import("./module/student/aptitude/AptitudeCategoriesPage"));
+const AptitudeTopicPage = lazy(() => import("./module/student/aptitude/AptitudeTopicPage"));
+const AptitudeCompaniesPage = lazy(() => import("./module/student/aptitude/AptitudeCompaniesPage"));
+const DsaTopicsPage = lazy(() => import("./module/student/dsa/DsaTopicsPage"));
+const DsaTopicDetailPage = lazy(() => import("./module/student/dsa/DsaTopicDetailPage"));
+const DsaCompaniesPage = lazy(() => import("./module/student/dsa/DsaCompaniesPage"));
+const DsaPatternsPage = lazy(() => import("./module/student/dsa/DsaPatternsPage"));
+const DsaBookmarksPage = lazy(() => import("./module/student/dsa/DsaBookmarksPage"));
+const YCCompanyDetailPage = lazy(() => import("./module/student/companies/YCCompanyDetailPage"));
 
 // Student pages
 const ApplyPage = lazy(() => import("./module/student/applications/ApplyPage"));
@@ -37,6 +42,7 @@ const AtsHistoryPage = lazy(() => import("./module/student/ats/AtsHistoryPage"))
 const AtsScoreDetailPage = lazy(() => import("./module/student/ats/AtsScoreDetailPage"));
 const ResumeBuilderPage = lazy(() => import("./module/student/ats/ResumeBuilderPage"));
 const CoverLetterPage = lazy(() => import("./module/student/ats/CoverLetterPage"));
+const LatexResumeEditor = lazy(() => import("./module/student/ats/LatexResumeEditor"));
 const MyCareerPathsPage = lazy(() => import("./module/career/MyCareerPathsPage"));
 const CareerProgressPage = lazy(() => import("./module/career/CareerProgressPage"));
 const AddCompanyPage = lazy(() => import("./module/student/companies/AddCompanyPage"));
@@ -49,6 +55,9 @@ const FirstPRRoadmapPage = lazy(() => import("./module/student/opensource/FirstP
 const GSoCProposalPage = lazy(() => import("./module/student/opensource/GSoCProposalPage"));
 const CheckoutPage = lazy(() => import("./module/student/checkout/CheckoutPage"));
 const SkillQuizPage = lazy(() => import("./module/career/quiz/SkillQuizPage"));
+const SqlPracticePage = lazy(() => import("./module/student/sql/SqlPracticePage"));
+const SqlExercisePage = lazy(() => import("./module/student/sql/SqlExercisePage"));
+const SqlPlaygroundPage = lazy(() => import("./module/student/sql/SqlPlaygroundPage"));
 
 // Recruiter pages
 const RecruiterLayout = lazy(() => import("./module/recruiter/RecruiterLayout"));
@@ -74,8 +83,6 @@ const AdminReviewsPage = lazy(() => import("./module/admin/reviews/AdminReviewsP
 const AdminContributionsPage = lazy(() => import("./module/admin/contributions/AdminContributionsPage"));
 const AdminSubscribersPage = lazy(() => import("./module/admin/AdminSubscribersPage"));
 const AdminCareersPage = lazy(() => import("./module/admin/careers/AdminCareersPage"));
-const AdminCollegesPage = lazy(() => import("./module/admin/colleges/AdminCollegesPage"));
-const AdminCollegeReviewsPage = lazy(() => import("./module/admin/colleges/AdminCollegeReviewsPage"));
 const AdminBlogPage = lazy(() => import("./module/admin/blog/AdminBlogPage"));
 const AdminBlogEditor = lazy(() => import("./module/admin/blog/AdminBlogEditor"));
 
@@ -83,6 +90,7 @@ function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
+      <ErrorBoundary>
       <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" /></div>}>
         <Routes>
           {/* Public routes */}
@@ -97,16 +105,21 @@ function App() {
           <Route path="/careers/:slug" element={<CareerDetailPage />} />
           <Route path="/companies" element={<CompanyListPage />} />
           <Route path="/companies/:slug" element={<CompanyDetailPage />} />
+          <Route path="/yc/:slug" element={<YCCompanyDetailPage />} />
           <Route path="/ats-score" element={<PublicAtsPage />} />
           <Route path="/grants" element={<GrantsPage />} />
           <Route path="/opensource" element={<PublicOpenSourcePage />} />
-          <Route path="/colleges" element={<CollegeLandingPage />} />
-          <Route path="/colleges/explore" element={<CollegeListPage />} />
-          <Route path="/colleges/compare" element={<CollegeComparePage />} />
-          <Route path="/colleges/exam/:examSlug" element={<ExamCollegesPage />} />
-          <Route path="/colleges/:slug" element={<CollegeDetailPage />} />
           <Route path="/blog" element={<BlogListPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
+          <Route path="/dsa" element={<DsaTopicsPage />} />
+          <Route path="/dsa/:slug" element={<DsaTopicDetailPage />} />
+          <Route path="/sql" element={<SqlPracticePage />} />
+          <Route path="/sql/playground" element={<SqlPlaygroundPage />} />
+          <Route path="/sql/:sectionSlug" element={<SqlExercisePage />} />
+          <Route path="/sql/:sectionSlug/:exerciseId" element={<SqlExercisePage />} />
+          <Route path="/aptitude" element={<AptitudeCategoriesPage />} />
+          <Route path="/aptitude/companies" element={<AptitudeCompaniesPage />} />
+          <Route path="/aptitude/:slug" element={<AptitudeTopicPage />} />
 
           {/* Student protected routes */}
           <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyPage /></ProtectedRoute>} />
@@ -116,6 +129,7 @@ function App() {
             <Route path="jobs/:id" element={<JobDetailPage />} />
             <Route path="companies" element={<CompanyListPage />} />
             <Route path="companies/:slug" element={<CompanyDetailPage />} />
+            <Route path="yc/:slug" element={<YCCompanyDetailPage />} />
             <Route path="applications" element={<MyApplicationsPage />} />
             <Route path="applications/:applicationId" element={<ApplicationProgressPage />} />
             <Route path="ats" element={<AtsLandingPage />} />
@@ -124,14 +138,22 @@ function App() {
             <Route path="ats/history/:scoreId" element={<AtsScoreDetailPage />} />
             <Route path="ats/templates" element={<ResumeBuilderPage />} />
             <Route path="ats/cover-letter" element={<CoverLetterPage />} />
+            <Route path="ats/latex-editor" element={<LatexResumeEditor />} />
             <Route path="careers" element={<MyCareerPathsPage />} />
             <Route path="careers/:slug" element={<CareerProgressPage />} />
             <Route path="careers/:slug/quiz/:skillId" element={<SkillQuizPage />} />
-            <Route path="colleges" element={<CollegeListPage />} />
-            <Route path="colleges/explore" element={<CollegeListPage />} />
-            <Route path="colleges/compare" element={<CollegeComparePage />} />
-            <Route path="colleges/exam/:examSlug" element={<ExamCollegesPage />} />
-            <Route path="colleges/:slug" element={<CollegeDetailPage />} />
+            <Route path="dsa" element={<DsaTopicsPage />} />
+            <Route path="dsa/companies" element={<DsaCompaniesPage />} />
+            <Route path="dsa/patterns" element={<DsaPatternsPage />} />
+            <Route path="dsa/bookmarks" element={<DsaBookmarksPage />} />
+            <Route path="dsa/:slug" element={<DsaTopicDetailPage />} />
+            <Route path="sql" element={<SqlPracticePage />} />
+            <Route path="sql/playground" element={<SqlPlaygroundPage />} />
+            <Route path="sql/:sectionSlug" element={<SqlExercisePage />} />
+            <Route path="sql/:sectionSlug/:exerciseId" element={<SqlExercisePage />} />
+            <Route path="aptitude" element={<AptitudeCategoriesPage />} />
+            <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
+            <Route path="aptitude/:slug" element={<AptitudeTopicPage />} />
             <Route path="companies/add" element={<AddCompanyPage />} />
             <Route path="grants" element={<GrantsPage />} />
             <Route path="opensource" element={<RepoDiscoveryPage />} />
@@ -171,14 +193,13 @@ function App() {
             <Route path="contributions" element={<AdminContributionsPage />} />
             <Route path="subscribers" element={<AdminSubscribersPage />} />
             <Route path="careers" element={<AdminCareersPage />} />
-            <Route path="colleges" element={<AdminCollegesPage />} />
-            <Route path="college-reviews" element={<AdminCollegeReviewsPage />} />
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="blog/editor" element={<AdminBlogEditor />} />
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
           </Route>
         </Routes>
       </Suspense>
+      </ErrorBoundary>
     </BrowserRouter>
   );
 }

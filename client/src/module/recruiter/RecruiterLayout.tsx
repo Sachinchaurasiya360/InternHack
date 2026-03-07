@@ -108,7 +108,7 @@ export default function RecruiterLayout() {
 
       {/* Main Content */}
       <main
-        className={`${collapsed ? "ml-18" : "ml-64"} pt-16 p-8 transition-all duration-300 overflow-auto`}
+        className={`${collapsed ? "ml-18" : "ml-64"} pt-24 p-8 transition-all duration-300 overflow-auto`}
       >
         <Outlet />
       </main>

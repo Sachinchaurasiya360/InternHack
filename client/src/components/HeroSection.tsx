@@ -106,37 +106,6 @@ export function HeroSection() {
           </Link>
         </motion.div>
 
-        {/* Floating cards preview */}
-        <motion.div
-          custom={4}
-          initial="hidden"
-          animate="visible"
-          variants={fadeInUp}
-          className="mt-20 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto"
-        >
-          {[
-            { label: "Jobs", value: "Browse & Apply", color: "from-indigo-500 to-indigo-600" },
-            { label: "Careers", value: "8+ Roadmaps", color: "from-violet-500 to-violet-600" },
-            { label: "ATS Score", value: "AI Powered", color: "from-slate-700 to-slate-800" },
-            { label: "Companies", value: "Explore All", color: "from-gray-700 to-gray-800" },
-          ].map((card, i) => (
-            <motion.div
-              key={i}
-              whileHover={{ y: -6, scale: 1.04 }}
-              className="relative bg-white dark:bg-gray-900 rounded-2xl p-5 border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-lg transition-all cursor-pointer group"
-            >
-              <div
-                className={`w-10 h-10 rounded-xl bg-gradient-to-br ${card.color} flex items-center justify-center mb-3`}
-              >
-                <span className="text-white text-sm font-bold">{card.label[0]}</span>
-              </div>
-              <div className="text-xs text-gray-400 dark:text-gray-500 font-medium uppercase tracking-wide mb-1">
-                {card.label}
-              </div>
-              <div className="text-sm font-semibold text-gray-900 dark:text-white">{card.value}</div>
-            </motion.div>
-          ))}
-        </motion.div>
       </div>
 
       {/* Scroll indicator */}

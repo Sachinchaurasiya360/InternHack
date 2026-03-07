@@ -7,16 +7,15 @@ import {
   Globe,
   Users,
   ArrowUpRight,
-  GraduationCap,
   GitBranch,
 } from "lucide-react";
 import { Link } from "react-router";
 
 const features = [
   {
-    title: "Job Board",
+    title: "Smart Job Board",
     description:
-      "Browse curated listings posted directly by recruiters. Apply in one click and track every application in real time.",
+      "Curated internships and full-time roles posted by verified recruiters. One-click apply, real-time tracking, and personalized recommendations.",
     icon: Briefcase,
     href: "/jobs",
     span: "md:col-span-2",
@@ -25,34 +24,25 @@ const features = [
   {
     title: "Career Roadmaps",
     description:
-      "Follow step-by-step paths from beginner to expert. Track progress with skill checklists across 8+ career tracks.",
+      "Step-by-step learning paths across 8+ career tracks — from frontend to data science. Track your progress and never feel lost.",
     icon: Map,
     href: "/careers",
     span: "",
     gradient: "from-violet-500 to-violet-600",
   },
   {
-    title: "ATS Resume Scoring",
+    title: "AI Resume Scorer",
     description:
-      "Upload your resume and a job description — AI scores it, highlights gaps, and suggests improvements.",
+      "Paste any job description, upload your resume, and get an instant ATS compatibility score with actionable improvement tips.",
     icon: FileCheck,
     href: "/ats-score",
     span: "",
     gradient: "from-emerald-500 to-emerald-600",
   },
   {
-    title: "College Discovery",
-    description:
-      "Search and compare colleges across India. Filter by stream, entrance exam, NAAC grade, and explore placements, courses, and cutoffs.",
-    icon: GraduationCap,
-    href: "/colleges",
-    span: "",
-    gradient: "from-amber-500 to-orange-500",
-  },
-  {
     title: "Open Source & GSoC",
     description:
-      "Discover beginner-friendly repos, track GSoC organizations, build your first PR, and get guidance on open source contributions.",
+      "Find beginner-friendly repos, explore GSoC organizations, and get guidance to land your first meaningful open-source contribution.",
     icon: GitBranch,
     href: "/opensource",
     span: "",
@@ -61,7 +51,7 @@ const features = [
   {
     title: "Company Explorer",
     description:
-      "Discover companies hiring on InternHack. See open positions, reviews, tech stacks, and find your ideal workplace.",
+      "Research companies before you apply. Browse tech stacks, funding stages, team sizes, and open roles — including 4,000+ Y Combinator startups.",
     icon: Building2,
     href: "/companies",
     span: "md:col-span-2",
@@ -70,16 +60,16 @@ const features = [
   {
     title: "Recruiter Dashboard",
     description:
-      "Post jobs, manage multi-round hiring, review applications, and screen resumes from one powerful dashboard.",
+      "Post jobs, design multi-round hiring pipelines, review applications, and shortlist candidates — all from one clean dashboard.",
     icon: Users,
     href: "/register?role=RECRUITER",
     span: "lg:col-span-2",
     gradient: "from-rose-500 to-rose-600",
   },
   {
-    title: "Web3 & Grants",
+    title: "Web3 Grants & Funding",
     description:
-      "Explore blockchain grants, hackathons, and Web3 opportunities. Stay ahead with curated funding and fellowship programs.",
+      "Browse 50+ blockchain grants, hackathon prizes, and fellowship programs. Filter by ecosystem, category, and funding amount.",
     icon: Globe,
     href: "/grants",
     span: "lg:col-span-2",
@@ -112,13 +102,13 @@ export function FeaturesSection() {
             Platform Features
           </div>
           <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
-            Everything you need,
+            One platform,
             <br />
-            <span className="text-gradient-accent">nothing you don't</span>
+            <span className="text-gradient-accent">zero guesswork</span>
           </h2>
           <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-            Tools built for students and recruiters to simplify every step of
-            the career journey.
+            Every tool a student or recruiter needs to go from searching to
+            hired — built into a single, fast platform.
           </p>
         </motion.div>
 
@@ -139,7 +129,7 @@ export function FeaturesSection() {
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div
-                      className={`w-11 h-11 rounded-xl bg-gradient-to-br ${feature.gradient} flex items-center justify-center shadow-sm`}
+                      className={`w-11 h-11 rounded-xl bg-linear-to-br ${feature.gradient} flex items-center justify-center shadow-sm`}
                     >
                       <feature.icon className="w-5 h-5 text-white" />
                     </div>

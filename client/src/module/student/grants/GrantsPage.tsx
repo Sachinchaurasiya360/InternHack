@@ -21,6 +21,7 @@ import {
 import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./grantsData";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
+import { useLocation } from "react-router";
 
 const STATUS_CONFIG = {
   Active: { icon: CheckCircle2, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-900/30" },
@@ -31,6 +32,7 @@ const STATUS_CONFIG = {
 const ECOSYSTEMS = Array.from(new Set(grants.map((g) => g.ecosystem))).sort();
 
 export default function GrantsPage() {
+  const isInsideLayout = useLocation().pathname.startsWith("/student/");
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState<GrantCategory | "ALL">("ALL");
   const [selectedEcosystem, setSelectedEcosystem] = useState<string>("ALL");
@@ -75,7 +77,7 @@ export default function GrantsPage() {
         description="Explore 50+ active Web3, blockchain, and crypto grants. Find funding for your DeFi, infrastructure, gaming, or education project from top foundations and DAOs."
         keywords="web3 grants, blockchain grants, crypto funding, DeFi grants, Ethereum grants, Solana grants, developer grants, DAO funding"
       />
-      <Navbar />
+      {!isInsideLayout && <Navbar />}
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-[#fafafa] dark:bg-gray-950 pt-28 pb-16 px-6">
@@ -319,9 +321,12 @@ function GrantCard({ grant, index, onClick }: { grant: Grant; index: number; onC
                   alt={grant.organization}
                   className="w-6 h-6 object-contain"
                   onError={(e) => {
-                    (e.target as HTMLImageElement).style.display = "none";
-                    (e.target as HTMLImageElement).parentElement!.innerHTML =
-                      `<span class="text-sm font-bold text-gray-400">${grant.organization.charAt(0)}</span>`;
+                    const img = e.target as HTMLImageElement;
+                    img.style.display = 'none';
+                    const span = document.createElement('span');
+                    span.className = 'text-sm font-bold text-gray-400';
+                    span.textContent = grant.organization.charAt(0);
+                    img.parentElement?.appendChild(span);
                   }}
                 />
               </div>
@@ -399,9 +404,12 @@ function GrantDetailModal({ grant, onClose }: { grant: Grant; onClose: () => voi
                 alt={grant.organization}
                 className="w-6 h-6 object-contain"
                 onError={(e) => {
-                  (e.target as HTMLImageElement).style.display = "none";
-                  (e.target as HTMLImageElement).parentElement!.innerHTML =
-                    `<span class="text-sm font-bold text-gray-400">${grant.organization.charAt(0)}</span>`;
+                  const img = e.target as HTMLImageElement;
+                  img.style.display = 'none';
+                  const span = document.createElement('span');
+                  span.className = 'text-sm font-bold text-gray-400';
+                  span.textContent = grant.organization.charAt(0);
+                  img.parentElement?.appendChild(span);
                 }}
               />
             </div>

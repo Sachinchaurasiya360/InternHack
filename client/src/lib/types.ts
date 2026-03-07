@@ -23,6 +23,9 @@ export interface User {
   githubUrl?: string;
   portfolioUrl?: string;
   createdAt?: string;
+  subscriptionPlan?: "FREE" | "MONTHLY" | "YEARLY";
+  subscriptionStatus?: "ACTIVE" | "EXPIRED";
+  subscriptionEndDate?: string;
 }
 
 export interface CustomFieldDefinition {
@@ -465,142 +468,16 @@ export interface GSoCStats {
   topics: { name: string; count: number }[];
 }
 
-// College Discovery
-export type CollegeType = "GOVERNMENT" | "PRIVATE" | "DEEMED" | "AUTONOMOUS" | "CENTRAL" | "STATE";
-export type DegreeLevel = "DIPLOMA" | "BACHELOR" | "MASTER" | "DOCTORAL" | "CERTIFICATE";
-export type CourseMode = "FULL_TIME" | "PART_TIME" | "DISTANCE" | "ONLINE";
-export type NaacGrade = "A_PLUS_PLUS" | "A_PLUS" | "A" | "B_PLUS_PLUS" | "B_PLUS" | "B" | "C" | "UNGRADED";
-export type CollegeReviewStatus = "PENDING" | "APPROVED" | "REJECTED";
-
-export interface College {
-  id: number;
-  name: string;
-  slug: string;
-  logo?: string;
-  coverImage?: string;
-  description: string;
-  type: CollegeType;
-  affiliation?: string;
-  naacGrade?: NaacGrade;
-  nirfRanking?: number;
-  nirfYear?: number;
-  website?: string;
-  establishedYear?: number;
-  campusSize?: string;
-  state: string;
-  city: string;
-  address?: string;
-  pincode?: string;
-  totalStudents?: number;
-  totalFaculty?: number;
-  acceptedExams: string[];
-  facilities: string[];
-  streams: string[];
-  socialLinks: Record<string, string>;
-  photos: string[];
-  avgRating: number;
-  reviewCount: number;
-  courses?: CollegeCourse[];
-  placements?: CollegePlacement[];
-  _count?: { reviews: number; courses: number };
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CollegeCourse {
-  id: number;
-  collegeId: number;
-  name: string;
-  degree: string;
-  degreeLevel: DegreeLevel;
-  specialization?: string;
-  stream: string;
-  durationYears: number;
-  mode: CourseMode;
-  totalFees?: number;
-  feesPerYear?: number;
-  eligibility?: string;
-  seats?: number;
-  isPopular: boolean;
-}
-
-export interface CollegePlacement {
-  id: number;
-  collegeId: number;
-  year: number;
-  avgPackageLPA?: number;
-  highestPackageLPA?: number;
-  medianPackageLPA?: number;
-  placementRate?: number;
-  studentsPlaced?: number;
-  totalStudents?: number;
-  topRecruiters: string[];
-  sectorWise?: Record<string, number>;
-}
-
-export interface CollegeCutoff {
-  id: number;
-  collegeId: number;
-  courseId?: number;
-  examId: number;
-  year: number;
-  category: string;
-  gender?: string;
-  openingRank?: number;
-  closingRank?: number;
-  openingScore?: number;
-  closingScore?: number;
-  round?: string;
-  exam?: EntranceExam;
-  course?: CollegeCourse;
-}
-
-export interface EntranceExam {
-  id: number;
-  name: string;
-  slug: string;
-  fullName?: string;
-  type: string;
-  conductingBody?: string;
-  applicableStreams: string[];
-}
-
-export interface CollegeReview {
-  id: number;
-  collegeId: number;
-  userId: number;
-  overallRating: number;
-  placementsRating?: number;
-  infrastructureRating?: number;
-  facultyRating?: number;
-  campusLifeRating?: number;
-  valueForMoneyRating?: number;
-  title: string;
-  content: string;
-  pros?: string;
-  cons?: string;
-  courseStudied?: string;
-  graduationYear?: number;
-  status: CollegeReviewStatus;
-  user?: { id: number; name: string; profilePic?: string };
-  createdAt: string;
-}
-
-export interface CollegeFilterStats {
-  total: number;
-  states: { name: string; count: number }[];
-  streams: { name: string; count: number }[];
-  exams: { name: string; count: number }[];
-  types: { name: string; count: number }[];
-  naacGrades: { name: string; count: number }[];
-}
-
-export interface StateCount {
-  state: string;
-  count: number;
-}
-
 // YC Companies
+export interface YCFounder {
+  name: string;
+  title: string;
+  bio?: string;
+  imageUrl?: string;
+  linkedin?: string;
+  twitter?: string;
+}
+
 export interface YCCompany {
   id: number;
   ycId: number;
@@ -625,6 +502,9 @@ export interface YCCompany {
   topCompany: boolean;
   ycUrl?: string;
   launchedAt?: string;
+  founders?: YCFounder[];
+  socialLinks?: Record<string, string>;
+  scrapedAt?: string;
 }
 
 export interface YCStats {
@@ -659,6 +539,184 @@ export interface OpenSourceRepo {
   lastUpdated: string;
   createdAt: string;
   updatedAt: string;
+}
+
+// DSA Practice
+export interface DsaTopic {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  orderIndex: number;
+  problemCount: number;
+  solvedCount: number;
+}
+
+export interface DsaSubTopic {
+  id: number;
+  name: string;
+  orderIndex: number;
+  problems: DsaProblem[];
+}
+
+export interface DsaProblem {
+  id: number;
+  title: string;
+  difficulty: string;
+  leetcodeUrl?: string;
+  gfgUrl?: string;
+  articleUrl?: string;
+  videoUrl?: string;
+  hackerrankUrl?: string;
+  codechefUrl?: string;
+  tags: string[];
+  companies: string[];
+  hints?: string;
+  sheets: string[];
+  solved: boolean;
+  notes?: string | null;
+  bookmarked?: boolean;
+}
+
+export interface DsaTopicDetail {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  orderIndex: number;
+  totalProblems: number;
+  totalSolved: number;
+  subTopics: DsaSubTopic[];
+}
+
+export interface DsaProgress {
+  totalProblems: number;
+  totalSolved: number;
+  byDifficulty: {
+    easy: { total: number; solved: number };
+    medium: { total: number; solved: number };
+    hard: { total: number; solved: number };
+  };
+}
+
+export interface DsaCompany {
+  name: string;
+  count: number;
+}
+
+export interface DsaPattern {
+  name: string;
+  count: number;
+}
+
+export interface DsaSheetStats {
+  name: string;
+  total: number;
+  solved: number;
+}
+
+export interface DsaBookmarkItem {
+  id: number;
+  problemId: number;
+  title: string;
+  difficulty: string;
+  leetcodeUrl?: string;
+  gfgUrl?: string;
+  tags: string[];
+  companies: string[];
+  sheets: string[];
+  topicName: string;
+  topicSlug: string;
+  solved: boolean;
+  createdAt: string;
+}
+
+export interface DsaCompanyProblem {
+  id: number;
+  title: string;
+  difficulty: string;
+  leetcodeUrl?: string;
+  gfgUrl?: string;
+  tags: string[];
+  companies: string[];
+  hints?: string;
+  sheets: string[];
+  topicName: string;
+  topicSlug: string;
+  solved: boolean;
+  bookmarked: boolean;
+}
+
+// Aptitude Practice
+export interface AptitudeCategory {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  topicCount: number;
+  questionCount: number;
+  answeredCount: number;
+  topics: AptitudeTopic[];
+}
+
+export interface AptitudeTopic {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  questionCount: number;
+  answeredCount: number;
+  correctCount: number;
+}
+
+export interface AptitudeQuestion {
+  id: number;
+  question: string;
+  optionA: string;
+  optionB: string;
+  optionC: string;
+  optionD: string;
+  optionE?: string;
+  correctAnswer?: string;
+  explanation?: string;
+  difficulty: string;
+  companies: string[];
+  answered: boolean;
+  correct: boolean;
+  topicName?: string;
+  topicSlug?: string;
+}
+
+export interface AptitudeTopicDetail {
+  id: number;
+  name: string;
+  slug: string;
+  description?: string;
+  categoryName: string;
+  categorySlug: string;
+  totalQuestions: number;
+  page: number;
+  totalPages: number;
+  questions: AptitudeQuestion[];
+}
+
+export interface AptitudeCompany {
+  name: string;
+  count: number;
+}
+
+export interface AptitudeCompanyQuestions {
+  company: string;
+  total: number;
+  page: number;
+  totalPages: number;
+  questions: AptitudeQuestion[];
+}
+
+export interface AptitudeProgress {
+  totalQuestions: number;
+  totalAnswered: number;
+  totalCorrect: number;
 }
 
 // Blog

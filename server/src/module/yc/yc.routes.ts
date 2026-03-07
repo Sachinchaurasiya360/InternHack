@@ -1,8 +1,157 @@
 import { Router } from "express";
 import { prisma } from "../../database/db.js";
 import type { Request, Response } from "express";
+import * as cheerio from "cheerio";
 
 const router = Router();
+
+// ── Scrape helpers ──────────────────────────────────────────
+
+interface Founder {
+  name: string;
+  title: string;
+  bio?: string | undefined;
+  imageUrl?: string | undefined;
+  linkedin?: string | undefined;
+  twitter?: string | undefined;
+}
+
+const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
+
+async function scrapeYCPage(slug: string) {
+  const url = `https://www.ycombinator.com/companies/${slug}`;
+  const res = await fetch(url, {
+    headers: {
+      "User-Agent":
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+      Accept: "text/html,application/xhtml+xml",
+    },
+    signal: AbortSignal.timeout(10_000),
+  });
+  if (!res.ok) return null;
+
+  const html = await res.text();
+  const $ = cheerio.load(html);
+
+  // ── Extract founders ──────────────────────────────────────
+  const founders: Founder[] = [];
+
+  // Find the "Active Founders" section, then iterate ycdc-card-new cards within it
+  let foundersParent: ReturnType<typeof $> | null = null;
+  $("div").each((_i, el) => {
+    const ownText = $(el).clone().children().remove().end().text().trim();
+    if (ownText === "Active Founders" || ownText === "Founders") {
+      foundersParent = $(el).closest("div").parent();
+      return false; // break
+    }
+  });
+
+  if (foundersParent) {
+    (foundersParent as ReturnType<typeof $>).find(".ycdc-card-new").each((_i, el) => {
+      const card = $(el);
+
+      // Must contain an avatar image (not a company logo)
+      const img = card.find('img[src*="bookface-images"][src*="avatar"]').first();
+      if (!img.length) return;
+
+      // Name is in .font-bold
+      const nameEl = card.find(".font-bold").first();
+      const name = nameEl.clone().children().remove().end().text().trim();
+      if (!name || founders.some((f) => f.name === name)) return;
+
+      // Title: the full card text starts with "Name TitleBio..."
+      // Extract title by removing the name from the beginning
+      const fullText = card.text().trim();
+      const afterName = fullText.slice(name.length).trim();
+      // Title ends where the bio begins (bio usually restarts with the founder's first name)
+      const firstName = name.split(" ")[0]!;
+      const titleEnd = afterName.indexOf(firstName);
+      const title = titleEnd > 0 ? afterName.slice(0, titleEnd).trim() : afterName.slice(0, 40).trim();
+
+      // Bio: the remaining text after title
+      const bio = titleEnd > 0 ? afterName.slice(titleEnd).trim() : undefined;
+
+      const linkedin = card.find('a[href*="linkedin.com/in"]').first().attr("href") || undefined;
+      const twitter =
+        card.find('a[href*="twitter.com"]').first().attr("href") ||
+        card.find('a[href*="x.com"]').first().attr("href") ||
+        undefined;
+
+      founders.push({
+        name,
+        title: title || "Founder",
+        bio: bio && bio.length > 20 ? bio : undefined,
+        imageUrl: img.attr("src") || undefined,
+        linkedin,
+        twitter,
+      });
+    });
+  }
+
+  // Fallback: find ycdc-card-new with avatar images globally
+  if (founders.length === 0) {
+    $(".ycdc-card-new").each((_i, el) => {
+      const card = $(el);
+      const img = card.find('img[src*="bookface-images"][src*="avatar"]').first();
+      if (!img.length) return;
+
+      const nameEl = card.find(".font-bold").first();
+      const name = nameEl.clone().children().remove().end().text().trim();
+      if (!name || founders.some((f) => f.name === name)) return;
+
+      const fullText = card.text().trim();
+      const afterName = fullText.slice(name.length).trim();
+      const firstName = name.split(" ")[0]!;
+      const titleEnd = afterName.indexOf(firstName);
+      const title = titleEnd > 0 ? afterName.slice(0, titleEnd).trim() : afterName.slice(0, 40).trim();
+      const bio = titleEnd > 0 ? afterName.slice(titleEnd).trim() : undefined;
+
+      founders.push({
+        name,
+        title: title || "Founder",
+        bio: bio && bio.length > 20 ? bio : undefined,
+        imageUrl: img.attr("src") || undefined,
+        linkedin: card.find('a[href*="linkedin.com/in"]').first().attr("href") || undefined,
+        twitter:
+          card.find('a[href*="twitter.com"]').first().attr("href") ||
+          card.find('a[href*="x.com"]').first().attr("href") ||
+          undefined,
+      });
+    });
+  }
+
+  // ── Extract company social links ──────────────────────────
+  // Use the company info card (ycdc-card-new with logos/ image, not avatars/)
+  const socialLinks: Record<string, string> = {};
+  const companyCard = $(".ycdc-card-new")
+    .filter((_i, el) => $(el).find('img[src*="bookface-images"][src*="logos/"]').length > 0)
+    .first();
+  const socialScope = companyCard.length ? companyCard : $("body");
+
+  const twitterLink = socialScope.find('a[href*="twitter.com"], a[href*="x.com"]').first().attr("href");
+  if (twitterLink && !twitterLink.includes("/status/")) socialLinks["twitter"] = twitterLink;
+
+  const linkedinLink = socialScope.find('a[href*="linkedin.com/company"]').first().attr("href");
+  if (linkedinLink) socialLinks["linkedin"] = linkedinLink;
+
+  const fbLink = socialScope.find('a[href*="facebook.com"]').first().attr("href");
+  if (fbLink) socialLinks["facebook"] = fbLink;
+
+  const cbLink = socialScope.find('a[href*="crunchbase.com"]').first().attr("href");
+  if (cbLink) socialLinks["crunchbase"] = cbLink;
+
+  const ghLink = socialScope.find('a[href*="github.com"]').first().attr("href");
+  if (ghLink && !ghLink.includes("/issues/")) socialLinks["github"] = ghLink;
+
+  return { founders, socialLinks };
+}
+
+function needsScrape(company: { scrapedAt: Date | null }): boolean {
+  if (!company.scrapedAt) return true;
+  return Date.now() - company.scrapedAt.getTime() > THIRTY_DAYS_MS;
+}
+
+// ── Routes ──────────────────────────────────────────────────
 
 // GET /api/yc/stats — aggregate counts for filter dropdowns
 router.get("/stats", async (_req: Request, res: Response) => {
@@ -99,16 +248,47 @@ router.get("/companies", async (req: Request, res: Response) => {
   }
 });
 
-// GET /api/yc/companies/:slug — single company detail
+// GET /api/yc/companies/:slug — single company detail (with on-demand scraping)
 router.get("/companies/:slug", async (req: Request, res: Response) => {
   try {
-    const company = await prisma.ycCompany.findUnique({
+    const company = await prisma.ycCompany.findFirst({
       where: { slug: req.params["slug"] },
     });
     if (!company) {
       res.status(404).json({ error: "Company not found" });
       return;
     }
+
+    // If not scraped yet or stale, scrape in background and update
+    if (needsScrape(company)) {
+      // Don't block the response — fire and forget, but also try to return fresh data
+      try {
+        const scraped = await scrapeYCPage(company.slug);
+        if (scraped) {
+          const updated = await prisma.ycCompany.update({
+            where: { id: company.id },
+            data: {
+              founders: scraped.founders.length > 0 ? scraped.founders : undefined,
+              socialLinks:
+                Object.keys(scraped.socialLinks).length > 0 ? scraped.socialLinks : undefined,
+              scrapedAt: new Date(),
+            },
+          });
+          res.json(updated);
+          return;
+        }
+      } catch (scrapeErr) {
+        console.error(`Scrape failed for ${company.slug}:`, scrapeErr);
+        // Mark as scraped to avoid retrying immediately
+        await prisma.ycCompany
+          .update({
+            where: { id: company.id },
+            data: { scrapedAt: new Date() },
+          })
+          .catch(() => {});
+      }
+    }
+
     res.json(company);
   } catch (err) {
     console.error("YC company detail error:", err);
