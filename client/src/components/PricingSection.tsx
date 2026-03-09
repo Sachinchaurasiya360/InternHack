@@ -16,13 +16,13 @@ const freePlanFeatures = [
 
 const proPlanFeatures = [
   { text: "Everything in Free plan", included: true },
-  { text: "Unlimited ATS resume scans", included: true },
-  { text: "All career roadmaps with progress tracking", included: true },
-  { text: "Core subject interview preparation", included: true },
-  { text: "Mini projects & practice exercises", included: true },
+  { text: "Unlimited ATS scans & AI tips", included: true },
+  { text: "LaTeX resume editor & cover letters", included: true },
+  { text: "Full DSA, SQL & aptitude practice", included: true },
+  { text: "Proctored skill verification tests", included: true },
+  { text: "Career roadmaps with progress tracking", included: true },
+  { text: "Open source tools & GSoC guides", included: true },
   { text: "Priority job recommendations", included: true },
-  { text: "Ad-free experience", included: true },
-  { text: "Early access to new features", included: true },
 ];
 
 export function PricingSection() {
@@ -50,10 +50,7 @@ export function PricingSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-6">
-            <Sparkles className="w-3.5 h-3.5" />
-            Pricing
-          </div>
+          
           <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
             Invest in your
             <br />

@@ -19,7 +19,7 @@ const features = [
     icon: Briefcase,
     href: "/jobs",
     span: "md:col-span-2",
-    gradient: "from-indigo-500 to-indigo-600",
+    iconColor: "text-indigo-500",
   },
   {
     title: "Career Roadmaps",
@@ -28,7 +28,7 @@ const features = [
     icon: Map,
     href: "/careers",
     span: "",
-    gradient: "from-violet-500 to-violet-600",
+    iconColor: "text-violet-500",
   },
   {
     title: "AI Resume Scorer",
@@ -37,7 +37,7 @@ const features = [
     icon: FileCheck,
     href: "/ats-score",
     span: "",
-    gradient: "from-emerald-500 to-emerald-600",
+    iconColor: "text-emerald-500",
   },
   {
     title: "Open Source & GSoC",
@@ -45,8 +45,8 @@ const features = [
       "Find beginner-friendly repos, explore GSoC organizations, and get guidance to land your first meaningful open-source contribution.",
     icon: GitBranch,
     href: "/opensource",
-    span: "",
-    gradient: "from-teal-500 to-cyan-500",
+    span: "lg:col-span-2",
+    iconColor: "text-teal-500",
   },
   {
     title: "Company Explorer",
@@ -54,8 +54,8 @@ const features = [
       "Research companies before you apply. Browse tech stacks, funding stages, team sizes, and open roles — including 4,000+ Y Combinator startups.",
     icon: Building2,
     href: "/companies",
-    span: "md:col-span-2",
-    gradient: "from-sky-500 to-sky-600",
+    span: "lg:col-span-2",
+    iconColor: "text-sky-500",
   },
   {
     title: "Recruiter Dashboard",
@@ -64,7 +64,7 @@ const features = [
     icon: Users,
     href: "/register?role=RECRUITER",
     span: "lg:col-span-2",
-    gradient: "from-rose-500 to-rose-600",
+    iconColor: "text-rose-500",
   },
   {
     title: "Web3 Grants & Funding",
@@ -73,7 +73,7 @@ const features = [
     icon: Globe,
     href: "/grants",
     span: "lg:col-span-2",
-    gradient: "from-purple-500 to-fuchsia-500",
+    iconColor: "text-purple-500",
   },
 ];
 
@@ -98,9 +98,9 @@ export function FeaturesSection() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-6">
+          <span className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-6 block">
             Platform Features
-          </div>
+          </span>
           <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
             One platform,
             <br />
@@ -128,11 +128,7 @@ export function FeaturesSection() {
                   className="relative bg-white dark:bg-gray-900 rounded-2xl p-6 md:p-8 border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all h-full group overflow-hidden"
                 >
                   <div className="flex items-start justify-between mb-4">
-                    <div
-                      className={`w-11 h-11 rounded-xl bg-linear-to-br ${feature.gradient} flex items-center justify-center shadow-sm`}
-                    >
-                      <feature.icon className="w-5 h-5 text-white" />
-                    </div>
+                    <feature.icon className={`w-6 h-6 ${feature.iconColor}`} />
                     <ArrowUpRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
                   </div>
                   <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-2">

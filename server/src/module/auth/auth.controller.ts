@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { registerSchema, loginSchema } from "./auth.validation.js";
+import { registerSchema, loginSchema, updateProfileSchema } from "./auth.validation.js";
 import { AuthService } from "./auth.service.js";
 
 export class AuthController {
@@ -85,23 +85,40 @@ export class AuthController {
         return res.status(401).json({ message: "Authentication required" });
       }
 
-      const body = req.body as Record<string, string | undefined>;
-
-      if (body.name !== undefined && (!body.name || body.name.trim().length < 2)) {
-        return res.status(400).json({ message: "Name must be at least 2 characters" });
+      const result = updateProfileSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
       }
 
-      const data: Record<string, string> = {};
-      for (const key of ["name", "contactNo", "company", "designation"] as const) {
-        if (body[key] !== undefined) {
-          data[key] = (body[key] as string).trim();
-        }
-      }
-
-      const user = await this.authService.updateProfile(req.user.id, data);
+      const user = await this.authService.updateProfile(req.user.id, result.data);
 
       return res.status(200).json({ message: "Profile updated successfully", user });
     } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async getPublicProfile(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      if (req.user.role !== "RECRUITER" && req.user.role !== "ADMIN") {
+        return res.status(403).json({ message: "Not authorized" });
+      }
+
+      const id = Number(req.params["id"]);
+      if (!id || isNaN(id)) {
+        return res.status(400).json({ message: "Invalid user ID" });
+      }
+
+      const profile = await this.authService.getPublicProfile(id);
+      return res.status(200).json({ profile });
+    } catch (error) {
+      if (error instanceof Error && error.message === "User not found") {
+        return res.status(404).json({ message: error.message });
+      }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
     }

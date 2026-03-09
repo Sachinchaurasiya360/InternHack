@@ -1,4 +1,5 @@
 import { useParams, Link } from "react-router";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
 import {
@@ -8,7 +9,6 @@ import {
   Calendar,
   User,
   Tag,
-  Loader2,
   FileText,
 } from "lucide-react";
 import api from "../../lib/axios";
@@ -154,10 +154,7 @@ export default function BlogPostPage() {
           </motion.div>
 
           {isLoading ? (
-            <div className="flex flex-col items-center justify-center py-32 text-gray-400">
-              <Loader2 className="w-8 h-8 animate-spin mb-4" />
-              <p className="text-sm">Loading article...</p>
-            </div>
+            <LoadingScreen />
           ) : isError || !post ? (
             <div className="text-center py-32">
               <FileText className="w-12 h-12 text-gray-300 dark:text-gray-700 mx-auto mb-4" />

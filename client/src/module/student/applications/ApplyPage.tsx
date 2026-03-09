@@ -7,6 +7,7 @@ import { DynamicFieldRenderer } from "../../../components/DynamicFieldRenderer";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Job, CustomFieldDefinition } from "../../../lib/types";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 
 export default function ApplyPage() {
   const { jobId } = useParams();
@@ -34,7 +35,7 @@ export default function ApplyPage() {
       if (resumeFile) {
         const formData = new FormData();
         formData.append("file", resumeFile);
-        const uploadRes = await api.post("/upload/resume", formData, {
+        const uploadRes = await api.post("/upload/profile-resume", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         resumeUrl = uploadRes.data.file.url;
@@ -55,7 +56,7 @@ export default function ApplyPage() {
     }
   };
 
-  if (loading) return <div className="min-h-screen bg-gray-50 dark:bg-gray-950"><Navbar /><div className="flex items-center justify-center h-64 pt-24 text-gray-500">Loading...</div></div>;
+  if (loading) return <div className="min-h-screen bg-gray-50 dark:bg-gray-950"><Navbar /><LoadingScreen /></div>;
   if (!job) return <div className="min-h-screen bg-gray-50 dark:bg-gray-950"><Navbar /><div className="text-center pt-24 text-gray-500">Job not found</div></div>;
 
   const customFields = (job.customFields || []) as CustomFieldDefinition[];

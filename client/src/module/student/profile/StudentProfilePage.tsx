@@ -4,10 +4,14 @@ import {
   User, Mail, Phone, Building2, Briefcase, FileText, Save, Loader2,
   CheckCircle, Upload, Trash2, Camera, ExternalLink, MapPin, GraduationCap,
   Linkedin, Github, Globe, X, Plus, AlignLeft, Shield, Calendar, Crown,
+  ChevronDown, ShieldCheck, FolderGit2, Trophy, Pencil, Search as SearchIcon,
 } from "lucide-react";
+import { Link } from "react-router";
+import type { VerifiedSkill, ProjectItem, AchievementItem } from "../../../lib/types";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "react-hot-toast";
 
 interface ProfileData {
@@ -18,6 +22,7 @@ interface ProfileData {
   designation: string;
   resumes: string[];
   profilePic: string;
+  coverImage: string;
   bio: string;
   college: string;
   graduationYear: number | null;
@@ -26,7 +31,17 @@ interface ProfileData {
   linkedinUrl: string;
   githubUrl: string;
   portfolioUrl: string;
+  jobStatus: string | null;
+  projects: ProjectItem[];
+  achievements: AchievementItem[];
 }
+
+const JOB_STATUS_OPTIONS = [
+  { value: "", label: "Not specified" },
+  { value: "NO_OFFER", label: "No offer" },
+  { value: "LOOKING", label: "Looking for job" },
+  { value: "OPEN_TO_OFFER", label: "Open to offer" },
+] as const;
 
 interface CollegeSuggestion {
   id: number;
@@ -50,25 +65,43 @@ function getFileNameFromUrl(url: string): string {
 
 const MAX_RESUMES = 2;
 
+const fadeInUp = {
+  hidden: { opacity: 0, y: 30 },
+  visible: (i: number) => ({
+    opacity: 1,
+    y: 0,
+    transition: { delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  }),
+};
+
 export default function StudentProfilePage() {
   const { user, setUser } = useAuthStore();
   const [form, setForm] = useState<ProfileData>({
     name: "", email: "", contactNo: "", company: "", designation: "",
-    resumes: [], profilePic: "", bio: "", college: "",
+    resumes: [], profilePic: "", coverImage: "", bio: "", college: "",
     graduationYear: null, skills: [], location: "",
     linkedinUrl: "", githubUrl: "", portfolioUrl: "",
+    jobStatus: null, projects: [], achievements: [],
   });
   const [memberSince, setMemberSince] = useState<string | null>(null);
   const [skillInput, setSkillInput] = useState("");
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingPic, setUploadingPic] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
   const [uploadingResume, setUploadingResume] = useState(false);
   const [deletingResume, setDeletingResume] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
+  const [openSections, setOpenSections] = useState<Record<string, boolean>>({
+    basic: true, education: true, skills: true, projects: true, achievements: true, links: false, resumes: true,
+  });
   const picInputRef = useRef<HTMLInputElement>(null);
+  const coverInputRef = useRef<HTMLInputElement>(null);
   const resumeInputRef = useRef<HTMLInputElement>(null);
 
-  // College autocomplete state
+  const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
+  const verifiedMap = new Map(verifiedSkills.map((v) => [v.skillName.toLowerCase(), v]));
+
   const [collegeSuggestions, setCollegeSuggestions] = useState<CollegeSuggestion[]>([]);
   const [collegeLoading, setCollegeLoading] = useState(false);
   const [showCollegeSuggestions, setShowCollegeSuggestions] = useState(false);
@@ -84,18 +117,24 @@ export default function StudentProfilePage() {
           name: u.name ?? "", email: u.email ?? "", contactNo: u.contactNo ?? "",
           company: u.company ?? "", designation: u.designation ?? "",
           resumes: u.resumes ?? [], profilePic: u.profilePic ?? "",
-          bio: u.bio ?? "", college: u.college ?? "",
+          coverImage: u.coverImage ?? "", bio: u.bio ?? "", college: u.college ?? "",
           graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
           location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
           githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
+          jobStatus: u.jobStatus ?? null, projects: u.projects ?? [],
+          achievements: u.achievements ?? [],
         });
         setMemberSince(u.createdAt ?? null);
       })
       .catch(() => toast.error("Failed to load profile"))
       .finally(() => setLoading(false));
+
+    // Fetch verified skills
+    api.get("/skill-tests/my-verified")
+      .then((res) => setVerifiedSkills(res.data.verified ?? []))
+      .catch(() => {});
   }, []);
 
-  // Close college suggestions on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (
@@ -126,7 +165,6 @@ export default function StudentProfilePage() {
     }, 300);
   }, []);
 
-  // Cleanup college search debounce timer on unmount
   useEffect(() => {
     return () => {
       if (collegeTimerRef.current) clearTimeout(collegeTimerRef.current);
@@ -135,6 +173,7 @@ export default function StudentProfilePage() {
 
   const handleChange = (field: keyof ProfileData, value: string | number | null) => {
     setForm((prev) => ({ ...prev, [field]: value }));
+    if (fieldErrors[field]) setFieldErrors((prev) => { const next = { ...prev }; delete next[field]; return next; });
   };
 
   const handleCollegeChange = (value: string) => {
@@ -152,11 +191,13 @@ export default function StudentProfilePage() {
     setUser({
       ...user!, name: updated.name, contactNo: updated.contactNo,
       company: updated.company, designation: updated.designation,
-      resumes: updated.resumes, profilePic: updated.profilePic,
+      resumes: updated.resumes, profilePic: updated.profilePic, coverImage: updated.coverImage,
       bio: updated.bio, college: updated.college,
       graduationYear: updated.graduationYear, skills: updated.skills,
       location: updated.location, linkedinUrl: updated.linkedinUrl,
       githubUrl: updated.githubUrl, portfolioUrl: updated.portfolioUrl,
+      jobStatus: updated.jobStatus as "NO_OFFER" | "LOOKING" | "OPEN_TO_OFFER" | null,
+      projects: updated.projects, achievements: updated.achievements,
     });
   };
 
@@ -177,6 +218,7 @@ export default function StudentProfilePage() {
     if (!form.name.trim() || form.name.trim().length < 2) {
       toast.error("Name must be at least 2 characters"); return;
     }
+    setFieldErrors({});
     setSaving(true);
     try {
       const res = await api.put("/auth/me", {
@@ -186,6 +228,8 @@ export default function StudentProfilePage() {
         graduationYear: form.graduationYear || null, skills: form.skills,
         location: form.location.trim(), linkedinUrl: form.linkedinUrl.trim(),
         githubUrl: form.githubUrl.trim(), portfolioUrl: form.portfolioUrl.trim(),
+        jobStatus: form.jobStatus || null, projects: form.projects,
+        achievements: form.achievements,
       });
       const u = res.data.user;
       const updated: ProfileData = {
@@ -195,20 +239,49 @@ export default function StudentProfilePage() {
         graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
         location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
         githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
+        jobStatus: u.jobStatus ?? null, projects: u.projects ?? [],
+        achievements: u.achievements ?? [],
       };
       setForm(updated);
       syncUser(updated);
       toast.success("Profile updated!");
-    } catch {
-      toast.error("Failed to update profile");
+    } catch (err: unknown) {
+      const errData = (err as { response?: { data?: { errors?: { fieldErrors?: Record<string, string[]> } } } })?.response?.data;
+      if (errData?.errors?.fieldErrors) {
+        const fe = errData.errors.fieldErrors;
+        setFieldErrors(fe);
+        // Auto-open sections that have errors
+        const sectionMap: Record<string, string> = {
+          name: "basic", contactNo: "basic", bio: "basic", location: "basic", jobStatus: "basic",
+          college: "education", graduationYear: "education", company: "education", designation: "education",
+          skills: "skills",
+          linkedinUrl: "links", githubUrl: "links", portfolioUrl: "links",
+          projects: "projects", achievements: "achievements",
+        };
+        setOpenSections((prev) => {
+          const next = { ...prev };
+          for (const key of Object.keys(fe)) {
+            const sec = sectionMap[key];
+            if (sec) next[sec] = true;
+          }
+          return next;
+        });
+        const count = Object.values(fe).flat().length;
+        toast.error(`${count} validation error${count > 1 ? "s" : ""} — check highlighted fields`);
+      } else {
+        toast.error("Failed to update profile");
+      }
     } finally {
       setSaving(false);
     }
   };
 
+  const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2 MB
+
   const handleProfilePicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    if (file.size > MAX_IMAGE_SIZE) { toast.error("Image must be under 2 MB"); if (picInputRef.current) picInputRef.current.value = ""; return; }
     setUploadingPic(true);
     try {
       const fd = new FormData();
@@ -226,10 +299,31 @@ export default function StudentProfilePage() {
     }
   };
 
+  const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > MAX_IMAGE_SIZE) { toast.error("Image must be under 2 MB"); if (coverInputRef.current) coverInputRef.current.value = ""; return; }
+    setUploadingCover(true);
+    try {
+      const fd = new FormData();
+      fd.append("file", file);
+      const res = await api.post("/upload/cover-image", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      const u = res.data.user;
+      setForm((prev) => ({ ...prev, coverImage: u.coverImage ?? "" }));
+      syncUser({ ...form, coverImage: u.coverImage ?? "" });
+      toast.success("Cover image updated!");
+    } catch {
+      toast.error("Failed to upload cover image");
+    } finally {
+      setUploadingCover(false);
+      if (coverInputRef.current) coverInputRef.current.value = "";
+    }
+  };
+
   const handleResumeUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    if (form.resumes.length >= MAX_RESUMES) { toast.error(`Maximum ${MAX_RESUMES} resumes allowed`); return; }
+    // Server auto-replaces oldest resume if at max
     setUploadingResume(true);
     try {
       const fd = new FormData();
@@ -263,327 +357,777 @@ export default function StudentProfilePage() {
     }
   };
 
+  const toggleSection = (key: string) => {
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
   const inputClass = "w-full px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-400 transition-all dark:bg-gray-800 dark:text-white bg-gray-50/50 dark:bg-gray-800/50";
+  const inputErrorClass = "w-full px-4 py-2.5 border border-red-300 dark:border-red-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-red-500/20 focus:border-red-400 transition-all dark:bg-gray-800 dark:text-white bg-red-50/30 dark:bg-red-900/10";
   const labelClass = "flex items-center gap-2 text-sm font-medium text-gray-700 dark:text-gray-300 mb-1.5";
-  const sectionClass = "bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden";
+  const FieldError = ({ field }: { field: string }) => {
+    const errs = fieldErrors[field];
+    if (!errs?.length) return null;
+    return <p className="text-xs text-red-500 dark:text-red-400 mt-1">{errs[0]}</p>;
+  };
 
   const displayDate = memberSince || user?.createdAt;
 
-  if (loading) {
-    return (
-      <div className="max-w-3xl mx-auto">
-        <div className="animate-pulse space-y-4">
-          <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded w-1/3" />
-          <div className="h-64 bg-gray-200 dark:bg-gray-700 rounded-2xl" />
-        </div>
-      </div>
-    );
-  }
+  const profileCompletion = (() => {
+    const fields = [form.name, form.bio, form.contactNo, form.location, form.college, form.company, form.linkedinUrl, form.githubUrl];
+    const filled = fields.filter(Boolean).length;
+    const hasSkills = form.skills.length > 0 ? 1 : 0;
+    const hasResume = form.resumes.length > 0 ? 1 : 0;
+    return Math.round(((filled + hasSkills + hasResume) / (fields.length + 2)) * 100);
+  })();
+
+  if (loading) return <LoadingScreen />;
 
   return (
-    <div className="max-w-3xl mx-auto pb-12">
+    <div className="relative pb-12">
       <SEO title="My Profile" description="Update your InternHack student profile details." noIndex />
 
-      <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}>
-        {/* Profile Header Card */}
-        <div className={`${sectionClass} mb-6`}>
-          {/* Gradient banner */}
-          <div className="h-24 bg-gradient-to-r from-indigo-500 via-violet-500 to-purple-500 relative">
-            <div className="absolute inset-0 opacity-20"
-              style={{
-                backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
-                backgroundSize: "32px 32px",
-              }}
-            />
-          </div>
+      {/* Atmospheric background */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40" />
+        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/20 dark:to-blue-900/20 rounded-full blur-3xl opacity-40" />
+        <div
+          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
+          style={{
+            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+      </div>
 
-          <div className="px-6 pb-6 -mt-10 relative">
-            <div className="flex items-end gap-4">
+      {/* Page Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="mb-8"
+      >
+        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white">
+          My Profile
+        </h1>
+        <p className="mt-2 text-gray-500 dark:text-gray-500">
+          A complete profile helps recruiters find you faster
+        </p>
+      </motion.div>
+
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* ───── Left Column: Profile Overview ───── */}
+        <div className="lg:col-span-1 space-y-6">
+          {/* Profile Card */}
+          <motion.div
+            custom={0}
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300"
+          >
+            {/* Banner */}
+            <div className="h-28 bg-gray-950 dark:bg-gray-800 relative group/banner overflow-hidden">
+              {form.coverImage ? (
+                <img src={form.coverImage} alt="Cover" className="w-full h-full object-cover" />
+              ) : (
+                <div
+                  className="absolute inset-0 opacity-20"
+                  style={{
+                    backgroundImage: "linear-gradient(#fff 1px, transparent 1px), linear-gradient(90deg, #fff 1px, transparent 1px)",
+                    backgroundSize: "24px 24px",
+                  }}
+                />
+              )}
+              <button type="button" onClick={() => coverInputRef.current?.click()} disabled={uploadingCover}
+                className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/banner:opacity-100 transition-opacity cursor-pointer">
+                {uploadingCover ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Camera className="w-5 h-5 text-white" />}
+              </button>
+              <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverImageUpload} className="hidden" />
+            </div>
+
+            <div className="px-5 pb-5 -mt-12 relative">
               {/* Avatar */}
-              <div className="relative group">
-                <div className="w-20 h-20 rounded-2xl bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-900 shadow-lg text-gray-900 dark:text-white flex items-center justify-center text-2xl font-bold shrink-0 overflow-hidden">
+              <div className="relative group mb-3">
+                <div className="w-24 h-24 rounded-2xl bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-900 shadow-lg text-gray-900 dark:text-white flex items-center justify-center text-3xl font-bold overflow-hidden">
                   {form.profilePic ? (
-                    <img src={form.profilePic} alt={form.name} className="w-20 h-20 rounded-2xl object-cover" />
+                    <img src={form.profilePic} alt={form.name} className="w-24 h-24 rounded-2xl object-cover" />
                   ) : (form.name.charAt(0).toUpperCase())}
                 </div>
                 <button type="button" onClick={() => picInputRef.current?.click()} disabled={uploadingPic}
-                  className="absolute inset-0 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
+                  className="absolute inset-0 w-24 h-24 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                   {uploadingPic ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Camera className="w-5 h-5 text-white" />}
                 </button>
                 <input ref={picInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleProfilePicUpload} className="hidden" />
               </div>
 
-              <div className="flex-1 min-w-0 pb-1">
-                <h1 className="text-xl font-bold text-gray-900 dark:text-white truncate">{form.name || "Your Name"}</h1>
-                <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{form.email}</p>
+              <h2 className="text-lg font-bold text-gray-950 dark:text-white truncate">{form.name || "Your Name"}</h2>
+              <p className="text-sm text-gray-500 dark:text-gray-400 truncate">{form.email}</p>
+
+              {(form.designation || form.company) && (
+                <p className="text-sm text-gray-600 dark:text-gray-400 mt-1 truncate">
+                  {form.designation}{form.designation && form.company ? " at " : ""}{form.company}
+                </p>
+              )}
+
+              {/* Tags */}
+              <div className="flex flex-wrap gap-1.5 mt-3">
+                {form.college && (
+                  <span className="inline-flex items-center gap-1 text-xs bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 px-2.5 py-1 rounded-lg font-medium">
+                    <GraduationCap className="w-3 h-3" /> {form.college.length > 25 ? form.college.slice(0, 25) + "..." : form.college}
+                  </span>
+                )}
+                {form.location && (
+                  <span className="inline-flex items-center gap-1 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-2.5 py-1 rounded-lg">
+                    <MapPin className="w-3 h-3" /> {form.location}
+                  </span>
+                )}
               </div>
 
-              <button type="button" onClick={() => picInputRef.current?.click()} disabled={uploadingPic}
-                className="text-xs text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 font-medium shrink-0">
-                {uploadingPic ? "Uploading..." : "Change photo"}
-              </button>
-            </div>
-
-            {/* Quick stats */}
-            <div className="flex flex-wrap gap-3 mt-4">
-              {form.college && (
-                <span className="inline-flex items-center gap-1.5 text-xs bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 px-3 py-1.5 rounded-lg font-medium">
-                  <GraduationCap className="w-3.5 h-3.5" /> {form.college}
-                </span>
-              )}
-              {form.location && (
-                <span className="inline-flex items-center gap-1.5 text-xs bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 px-3 py-1.5 rounded-lg">
-                  <MapPin className="w-3.5 h-3.5" /> {form.location}
-                </span>
-              )}
-              {form.skills.length > 0 && (
-                <span className="inline-flex items-center gap-1.5 text-xs bg-violet-50 dark:bg-violet-900/20 text-violet-600 dark:text-violet-400 px-3 py-1.5 rounded-lg">
-                  {form.skills.length} skill{form.skills.length !== 1 ? "s" : ""}
-                </span>
-              )}
-            </div>
-          </div>
-        </div>
-
-        <p className="text-sm text-gray-500 dark:text-gray-500 mb-6">Update your personal information — a complete profile helps recruiters find you</p>
-
-        {/* Basic Info */}
-        <div className={`${sectionClass} p-6 space-y-5`}>
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
-            Basic Information
-          </h3>
-
-          <div>
-            <label className={labelClass}><User className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Full Name</label>
-            <input type="text" value={form.name} onChange={(e) => handleChange("name", e.target.value)} className={inputClass} placeholder="Your full name" />
-          </div>
-
-          <div>
-            <label className={labelClass}><Mail className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Email</label>
-            <input type="email" value={form.email} disabled className={`${inputClass} !bg-gray-100 dark:!bg-gray-900 text-gray-500 dark:text-gray-500 cursor-not-allowed`} />
-          </div>
-
-          <div>
-            <label className={labelClass}><AlignLeft className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Bio</label>
-            <textarea value={form.bio} onChange={(e) => handleChange("bio", e.target.value)} rows={3} maxLength={500}
-              className={`${inputClass} resize-none`} placeholder="A brief introduction about yourself..." />
-            <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 text-right">{form.bio.length}/500</p>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={labelClass}><Phone className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Phone</label>
-              <input type="tel" value={form.contactNo} onChange={(e) => handleChange("contactNo", e.target.value)} className={inputClass} placeholder="+91 98765 43210" />
-            </div>
-            <div>
-              <label className={labelClass}><MapPin className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Location</label>
-              <input type="text" value={form.location} onChange={(e) => handleChange("location", e.target.value)} className={inputClass} placeholder="e.g. Mumbai, India" />
-            </div>
-          </div>
-        </div>
-
-        {/* Education & Work */}
-        <div className={`${sectionClass} p-6 space-y-5 mt-4`}>
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
-            Education & Work
-          </h3>
-
-          <div className="grid grid-cols-2 gap-4">
-            {/* College with autocomplete */}
-            <div className="relative">
-              <label className={labelClass}><GraduationCap className="w-4 h-4 text-gray-400 dark:text-gray-500" /> College</label>
-              <input
-                ref={collegeInputRef}
-                type="text"
-                value={form.college}
-                onChange={(e) => handleCollegeChange(e.target.value)}
-                onFocus={() => { if (collegeSuggestions.length > 0) setShowCollegeSuggestions(true); }}
-                className={inputClass}
-                placeholder="Start typing college name..."
-                autoComplete="off"
-              />
-              {collegeLoading && (
-                <Loader2 className="absolute right-3 top-9 w-4 h-4 text-gray-400 animate-spin" />
-              )}
-
-              {/* Suggestions dropdown */}
-              {showCollegeSuggestions && collegeSuggestions.length > 0 && (
-                <div
-                  ref={collegeDropdownRef}
-                  className="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl max-h-56 overflow-y-auto"
-                >
-                  {collegeSuggestions.map((c) => (
-                    <button
-                      key={c.id}
-                      type="button"
-                      onClick={() => selectCollege(c.name)}
-                      className="w-full text-left px-4 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors first:rounded-t-xl last:rounded-b-xl"
-                    >
-                      <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{c.name}</p>
-                      <p className="text-xs text-gray-500 dark:text-gray-400">{c.city}, {c.state} · {c.type}</p>
-                    </button>
-                  ))}
+              {/* Social links */}
+              {(form.linkedinUrl || form.githubUrl || form.portfolioUrl) && (
+                <div className="flex gap-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                  {form.linkedinUrl && (
+                    <a href={form.linkedinUrl} target="_blank" rel="noopener noreferrer"
+                      className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 dark:hover:text-indigo-400 transition-colors">
+                      <Linkedin className="w-4 h-4" />
+                    </a>
+                  )}
+                  {form.githubUrl && (
+                    <a href={form.githubUrl} target="_blank" rel="noopener noreferrer"
+                      className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-gray-900 hover:bg-gray-200 dark:hover:bg-gray-700 dark:hover:text-white transition-colors">
+                      <Github className="w-4 h-4" />
+                    </a>
+                  )}
+                  {form.portfolioUrl && (
+                    <a href={form.portfolioUrl} target="_blank" rel="noopener noreferrer"
+                      className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-gray-500 hover:text-violet-600 hover:bg-violet-50 dark:hover:bg-violet-900/20 dark:hover:text-violet-400 transition-colors">
+                      <Globe className="w-4 h-4" />
+                    </a>
+                  )}
                 </div>
               )}
             </div>
+          </motion.div>
 
-            <div>
-              <label className={labelClass}><GraduationCap className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Graduation Year</label>
-              <input type="number" value={form.graduationYear ?? ""} onChange={(e) => handleChange("graduationYear", e.target.value ? Number(e.target.value) : null)}
-                className={inputClass} placeholder="e.g. 2026" min={1990} max={2040} />
+          {/* Profile Completion */}
+          <motion.div
+            custom={1}
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300"
+          >
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-semibold text-gray-950 dark:text-white">Profile Strength</span>
+              <span className={`text-sm font-bold ${profileCompletion >= 80 ? "text-emerald-600" : profileCompletion >= 50 ? "text-amber-600" : "text-red-500"}`}>
+                {profileCompletion}%
+              </span>
             </div>
-          </div>
-
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label className={labelClass}><Building2 className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Company</label>
-              <input type="text" value={form.company} onChange={(e) => handleChange("company", e.target.value)} className={inputClass} placeholder="e.g. Google" />
+            <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+              <motion.div
+                initial={{ width: 0 }}
+                animate={{ width: `${profileCompletion}%` }}
+                transition={{ duration: 1, delay: 0.3, ease: "easeOut" }}
+                className={`h-full rounded-full ${profileCompletion >= 80 ? "bg-linear-to-r from-emerald-500 to-teal-500" : profileCompletion >= 50 ? "bg-linear-to-r from-amber-500 to-orange-500" : "bg-linear-to-r from-red-500 to-rose-500"}`}
+              />
             </div>
-            <div>
-              <label className={labelClass}><Briefcase className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Role</label>
-              <input type="text" value={form.designation} onChange={(e) => handleChange("designation", e.target.value)} className={inputClass} placeholder="e.g. CS Student" />
-            </div>
-          </div>
-        </div>
+            <p className="text-xs text-gray-400 dark:text-gray-500 mt-2">
+              {profileCompletion >= 80 ? "Looking great! Your profile is well filled." : profileCompletion >= 50 ? "Good start. Add more details to stand out." : "Fill in your profile to attract recruiters."}
+            </p>
+          </motion.div>
 
-        {/* Skills */}
-        <div className={`${sectionClass} p-6 space-y-3 mt-4`}>
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
-            Skills <span className="text-xs font-normal text-gray-400 dark:text-gray-500 ml-1">{form.skills.length}/20</span>
-          </h3>
-
-          {form.skills.length > 0 && (
-            <div className="flex flex-wrap gap-2">
-              {form.skills.map((skill, i) => (
-                <span key={i} className="inline-flex items-center gap-1 px-3 py-1 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400 text-sm rounded-lg font-medium">
-                  {skill}
-                  <button type="button" onClick={() => handleRemoveSkill(i)} className="text-indigo-400 dark:text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300"><X className="w-3 h-3" /></button>
+          {/* Account Info */}
+          <motion.div
+            custom={2}
+            variants={fadeInUp}
+            initial="hidden"
+            animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300"
+          >
+            <h3 className="text-sm font-semibold text-gray-950 dark:text-white mb-4 flex items-center gap-2">
+              <Shield className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Account
+            </h3>
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-500">
+                  <CheckCircle className="w-3.5 h-3.5 text-emerald-500" /> Role
                 </span>
-              ))}
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{user?.role}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-500">
+                  <Calendar className="w-3.5 h-3.5 text-gray-400" /> Member since
+                </span>
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                  {displayDate
+                    ? new Date(displayDate).toLocaleDateString("en-IN", { month: "short", year: "numeric" })
+                    : "---"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-500">
+                  <FileText className="w-3.5 h-3.5 text-gray-400" /> Resumes
+                </span>
+                <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">{form.resumes.length}/{MAX_RESUMES}</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-1.5 text-xs text-gray-500 dark:text-gray-500">
+                  <Crown className={`w-3.5 h-3.5 ${user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE" ? "text-amber-500" : "text-gray-400"}`} /> Plan
+                </span>
+                {user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE" ? (
+                  <span className="text-sm font-semibold text-amber-700 dark:text-amber-400 flex items-center gap-1">
+                    Pro <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase bg-amber-500 text-white rounded-full">Premium</span>
+                  </span>
+                ) : (
+                  <span className="text-sm font-semibold text-gray-700 dark:text-gray-300">Free</span>
+                )}
+              </div>
             </div>
-          )}
+          </motion.div>
+        </div>
 
-          <div className="flex gap-2">
-            <input type="text" value={skillInput} onChange={(e) => setSkillInput(e.target.value)}
-              onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddSkill(); } }}
-              className={`${inputClass} flex-1`} placeholder="Type a skill and press Enter" />
-            <button type="button" onClick={handleAddSkill}
-              className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors flex items-center gap-1">
-              <Plus className="w-4 h-4" /> Add
+        {/* ───── Right Column: Editable Sections ───── */}
+        <div className="lg:col-span-2 space-y-4">
+          {/* Basic Info */}
+          <motion.div custom={0} variants={fadeInUp} initial="hidden" animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
+            <button type="button" onClick={() => toggleSection("basic")}
+              className="w-full flex items-center justify-between px-6 py-4 text-left">
+              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </div>
+                Basic Information
+              </h3>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.basic ? "rotate-180" : ""}`} />
             </button>
-          </div>
-        </div>
-
-        {/* Social Links */}
-        <div className={`${sectionClass} p-6 space-y-5 mt-4`}>
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white flex items-center gap-2">
-            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
-            Social Links
-          </h3>
-
-          <div>
-            <label className={labelClass}><Linkedin className="w-4 h-4 text-gray-400 dark:text-gray-500" /> LinkedIn</label>
-            <input type="url" value={form.linkedinUrl} onChange={(e) => handleChange("linkedinUrl", e.target.value)} className={inputClass} placeholder="https://linkedin.com/in/yourname" />
-          </div>
-          <div>
-            <label className={labelClass}><Github className="w-4 h-4 text-gray-400 dark:text-gray-500" /> GitHub</label>
-            <input type="url" value={form.githubUrl} onChange={(e) => handleChange("githubUrl", e.target.value)} className={inputClass} placeholder="https://github.com/yourname" />
-          </div>
-          <div>
-            <label className={labelClass}><Globe className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Portfolio</label>
-            <input type="url" value={form.portfolioUrl} onChange={(e) => handleChange("portfolioUrl", e.target.value)} className={inputClass} placeholder="https://yourportfolio.com" />
-          </div>
-        </div>
-
-        {/* Resumes */}
-        <div className={`${sectionClass} p-6 space-y-3 mt-4`}>
-          <label className="flex items-center gap-2 text-sm font-semibold text-gray-900 dark:text-white">
-            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
-            <FileText className="w-4 h-4 text-gray-400 dark:text-gray-500" /> Resumes
-            <span className="ml-auto text-xs font-normal text-gray-400 dark:text-gray-500">{form.resumes.length}/{MAX_RESUMES}</span>
-          </label>
-
-          {form.resumes.length > 0 && (
-            <div className="space-y-2">
-              {form.resumes.map((url) => (
-                <div key={url} className="flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
-                  <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center shrink-0">
-                    <FileText className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+            {openSections.basic && (
+              <div className="px-6 pb-6 space-y-4 border-t border-gray-50 dark:border-gray-800 pt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}><User className="w-4 h-4 text-gray-400" /> Full Name</label>
+                    <input type="text" value={form.name} onChange={(e) => handleChange("name", e.target.value)} className={fieldErrors.name ? inputErrorClass : inputClass} placeholder="Your full name" />
+                    <FieldError field="name" />
                   </div>
-                  <span className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1">{getFileNameFromUrl(url)}</span>
-                  <a href={url} target="_blank" rel="noopener noreferrer" className="text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shrink-0"><ExternalLink className="w-3.5 h-3.5" /></a>
-                  <button type="button" onClick={() => handleResumeDelete(url)} disabled={deletingResume === url}
-                    className="text-gray-400 dark:text-gray-500 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0 disabled:opacity-50">
-                    {deletingResume === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                  <div>
+                    <label className={labelClass}><Mail className="w-4 h-4 text-gray-400" /> Email</label>
+                    <input type="email" value={form.email} disabled className={`${inputClass} bg-gray-100! dark:bg-gray-900! text-gray-500 cursor-not-allowed`} />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelClass}><AlignLeft className="w-4 h-4 text-gray-400" /> Bio</label>
+                  <textarea value={form.bio} onChange={(e) => handleChange("bio", e.target.value)} rows={3} maxLength={500}
+                    className={`${fieldErrors.bio ? inputErrorClass : inputClass} resize-none`} placeholder="A brief introduction about yourself..." />
+                  <div className="flex justify-between mt-1">
+                    <FieldError field="bio" />
+                    <p className="text-xs text-gray-400 text-right">{form.bio.length}/500</p>
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}><Phone className="w-4 h-4 text-gray-400" /> Phone</label>
+                    <input type="tel" value={form.contactNo} onChange={(e) => handleChange("contactNo", e.target.value)} className={inputClass} placeholder="+91 98765 43210" />
+                  </div>
+                  <div>
+                    <label className={labelClass}><MapPin className="w-4 h-4 text-gray-400" /> Location</label>
+                    <input type="text" value={form.location} onChange={(e) => handleChange("location", e.target.value)} className={inputClass} placeholder="e.g. Mumbai, India" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}><SearchIcon className="w-4 h-4 text-gray-400" /> Job Status</label>
+                    <select
+                      value={form.jobStatus ?? ""}
+                      onChange={(e) => handleChange("jobStatus", e.target.value || null)}
+                      className={inputClass}
+                    >
+                      {JOB_STATUS_OPTIONS.map((opt) => (
+                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Education & Work */}
+          <motion.div custom={1} variants={fadeInUp} initial="hidden" animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
+            <button type="button" onClick={() => toggleSection("education")}
+              className="w-full flex items-center justify-between px-6 py-4 text-left">
+              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <GraduationCap className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </div>
+                Education & Work
+              </h3>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.education ? "rotate-180" : ""}`} />
+            </button>
+            {openSections.education && (
+              <div className="px-6 pb-6 space-y-4 border-t border-gray-50 dark:border-gray-800 pt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="relative">
+                    <label className={labelClass}><GraduationCap className="w-4 h-4 text-gray-400" /> College</label>
+                    <input
+                      ref={collegeInputRef} type="text" value={form.college}
+                      onChange={(e) => handleCollegeChange(e.target.value)}
+                      onFocus={() => { if (collegeSuggestions.length > 0) setShowCollegeSuggestions(true); }}
+                      className={inputClass} placeholder="Start typing college name..." autoComplete="off"
+                    />
+                    {collegeLoading && <Loader2 className="absolute right-3 top-9 w-4 h-4 text-gray-400 animate-spin" />}
+                    {showCollegeSuggestions && collegeSuggestions.length > 0 && (
+                      <div ref={collegeDropdownRef}
+                        className="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl max-h-56 overflow-y-auto">
+                        {collegeSuggestions.map((c) => (
+                          <button key={c.id} type="button" onClick={() => selectCollege(c.name)}
+                            className="w-full text-left px-4 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors first:rounded-t-xl last:rounded-b-xl">
+                            <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{c.name}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{c.city}, {c.state} · {c.type}</p>
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                  <div>
+                    <label className={labelClass}><Calendar className="w-4 h-4 text-gray-400" /> Graduation Year</label>
+                    <input type="number" value={form.graduationYear ?? ""} onChange={(e) => handleChange("graduationYear", e.target.value ? Number(e.target.value) : null)}
+                      className={fieldErrors.graduationYear ? inputErrorClass : inputClass} placeholder="e.g. 2026" min={1990} max={2040} />
+                    <FieldError field="graduationYear" />
+                  </div>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}><Building2 className="w-4 h-4 text-gray-400" /> Company</label>
+                    <input type="text" value={form.company} onChange={(e) => handleChange("company", e.target.value)} className={inputClass} placeholder="e.g. Google" />
+                  </div>
+                  <div>
+                    <label className={labelClass}><Briefcase className="w-4 h-4 text-gray-400" /> Role</label>
+                    <input type="text" value={form.designation} onChange={(e) => handleChange("designation", e.target.value)} className={inputClass} placeholder="e.g. CS Student" />
+                  </div>
+                </div>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Skills */}
+          <motion.div custom={2} variants={fadeInUp} initial="hidden" animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
+            <button type="button" onClick={() => toggleSection("skills")}
+              className="w-full flex items-center justify-between px-6 py-4 text-left">
+              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </div>
+                Skills
+                <span className="text-xs font-normal text-gray-400 ml-1">{form.skills.length}/20</span>
+              </h3>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.skills ? "rotate-180" : ""}`} />
+            </button>
+            {openSections.skills && (
+              <div className="px-6 pb-6 space-y-3 border-t border-gray-50 dark:border-gray-800 pt-4">
+                {form.skills.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {form.skills.map((skill, i) => {
+                      const v = verifiedMap.get(skill.toLowerCase());
+                      return (
+                        <span key={i} className={`inline-flex items-center gap-1 px-3 py-1.5 text-sm rounded-lg font-medium ${v ? "bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400" : "bg-indigo-50 dark:bg-indigo-900/20 text-indigo-700 dark:text-indigo-400"}`}>
+                          {v && <ShieldCheck className="w-3.5 h-3.5" />}
+                          {skill}
+                          {v && <span className="text-[10px] opacity-70">{v.score}%</span>}
+                          <button type="button" onClick={() => handleRemoveSkill(i)} className={`${v ? "text-green-400 dark:text-green-500 hover:text-green-600 dark:hover:text-green-300" : "text-indigo-400 dark:text-indigo-500 hover:text-indigo-600 dark:hover:text-indigo-300"} ml-0.5`}><X className="w-3 h-3" /></button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <input type="text" value={skillInput} onChange={(e) => setSkillInput(e.target.value)}
+                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddSkill(); } }}
+                    className={`${inputClass} flex-1`} placeholder="Type a skill and press Enter" />
+                  <button type="button" onClick={handleAddSkill}
+                    className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors flex items-center gap-1 shrink-0">
+                    <Plus className="w-4 h-4" /> Add
                   </button>
                 </div>
-              ))}
-            </div>
-          )}
+                {form.skills.length > 0 && (
+                  <Link to="/student/skill-verification" className="inline-flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium no-underline transition-colors">
+                    <ShieldCheck className="w-3.5 h-3.5" /> Verify your skills with proctored tests
+                  </Link>
+                )}
+              </div>
+            )}
+          </motion.div>
 
-          {form.resumes.length < MAX_RESUMES && (
-            <button type="button" onClick={() => resumeInputRef.current?.click()} disabled={uploadingResume}
-              className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 dark:text-gray-500 hover:border-indigo-300 dark:hover:border-indigo-600 hover:text-indigo-600 dark:hover:text-indigo-400 hover:bg-indigo-50/30 dark:hover:bg-indigo-900/10 transition-all disabled:opacity-50">
-              {uploadingResume ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Resume (PDF)</>}
+          {/* Projects */}
+          <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
+            <button type="button" onClick={() => toggleSection("projects")}
+              className="w-full flex items-center justify-between px-6 py-4 text-left">
+              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <FolderGit2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </div>
+                Projects
+                <span className="text-xs font-normal text-gray-400 ml-1">{form.projects.length}/10</span>
+              </h3>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.projects ? "rotate-180" : ""}`} />
             </button>
-          )}
-          <input ref={resumeInputRef} type="file" accept=".pdf" onChange={handleResumeUpload} className="hidden" />
-          <p className="text-xs text-gray-400 dark:text-gray-500 mt-1.5">Upload up to {MAX_RESUMES} resumes. PDF only, max 10 MB each.</p>
+            {openSections.projects && (
+              <ProjectsSection projects={form.projects} onChange={(projects) => { setForm((prev) => ({ ...prev, projects })); if (fieldErrors.projects) setFieldErrors((prev) => { const next = { ...prev }; delete next.projects; return next; }); }} inputClass={inputClass} labelClass={labelClass} errors={fieldErrors.projects} />
+            )}
+          </motion.div>
+
+          {/* Achievements */}
+          <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
+            <button type="button" onClick={() => toggleSection("achievements")}
+              className="w-full flex items-center justify-between px-6 py-4 text-left">
+              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <Trophy className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </div>
+                Achievements & Leadership
+                <span className="text-xs font-normal text-gray-400 ml-1">{form.achievements.length}/10</span>
+              </h3>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.achievements ? "rotate-180" : ""}`} />
+            </button>
+            {openSections.achievements && (
+              <AchievementsSection achievements={form.achievements} onChange={(achievements) => { setForm((prev) => ({ ...prev, achievements })); if (fieldErrors.achievements) setFieldErrors((prev) => { const next = { ...prev }; delete next.achievements; return next; }); }} inputClass={inputClass} labelClass={labelClass} errors={fieldErrors.achievements} />
+            )}
+          </motion.div>
+
+          {/* Social Links */}
+          <motion.div custom={5} variants={fadeInUp} initial="hidden" animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
+            <button type="button" onClick={() => toggleSection("links")}
+              className="w-full flex items-center justify-between px-6 py-4 text-left">
+              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <Globe className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </div>
+                Social Links
+                {(form.linkedinUrl || form.githubUrl || form.portfolioUrl) && (
+                  <span className="text-xs font-normal text-gray-400 ml-1">
+                    {[form.linkedinUrl, form.githubUrl, form.portfolioUrl].filter(Boolean).length} added
+                  </span>
+                )}
+              </h3>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.links ? "rotate-180" : ""}`} />
+            </button>
+            {openSections.links && (
+              <div className="px-6 pb-6 space-y-4 border-t border-gray-50 dark:border-gray-800 pt-4">
+                <div>
+                  <label className={labelClass}><Linkedin className="w-4 h-4 text-gray-400" /> LinkedIn</label>
+                  <input type="url" value={form.linkedinUrl} onChange={(e) => handleChange("linkedinUrl", e.target.value)} className={fieldErrors.linkedinUrl ? inputErrorClass : inputClass} placeholder="https://linkedin.com/in/yourname" />
+                  <FieldError field="linkedinUrl" />
+                </div>
+                <div>
+                  <label className={labelClass}><Github className="w-4 h-4 text-gray-400" /> GitHub</label>
+                  <input type="url" value={form.githubUrl} onChange={(e) => handleChange("githubUrl", e.target.value)} className={fieldErrors.githubUrl ? inputErrorClass : inputClass} placeholder="https://github.com/yourname" />
+                  <FieldError field="githubUrl" />
+                </div>
+                <div>
+                  <label className={labelClass}><Globe className="w-4 h-4 text-gray-400" /> Portfolio</label>
+                  <input type="url" value={form.portfolioUrl} onChange={(e) => handleChange("portfolioUrl", e.target.value)} className={fieldErrors.portfolioUrl ? inputErrorClass : inputClass} placeholder="https://yourportfolio.com" />
+                  <FieldError field="portfolioUrl" />
+                </div>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Resumes */}
+          <motion.div custom={6} variants={fadeInUp} initial="hidden" animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
+            <button type="button" onClick={() => toggleSection("resumes")}
+              className="w-full flex items-center justify-between px-6 py-4 text-left">
+              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                </div>
+                Resumes
+                <span className="text-xs font-normal text-gray-400 ml-1">{form.resumes.length}/{MAX_RESUMES}</span>
+              </h3>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.resumes ? "rotate-180" : ""}`} />
+            </button>
+            {openSections.resumes && (
+              <div className="px-6 pb-6 space-y-3 border-t border-gray-50 dark:border-gray-800 pt-4">
+                {form.resumes.length > 0 && (
+                  <div className="space-y-2">
+                    {form.resumes.map((url) => (
+                      <div key={url} className="flex items-center gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                        <div className="w-8 h-8 rounded-lg bg-indigo-50 dark:bg-indigo-900/20 flex items-center justify-center shrink-0">
+                          <FileText className="w-4 h-4 text-indigo-500 dark:text-indigo-400" />
+                        </div>
+                        <span className="text-sm text-gray-700 dark:text-gray-300 truncate flex-1">{getFileNameFromUrl(url)}</span>
+                        <a href={url} target="_blank" rel="noopener noreferrer" className="text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors shrink-0"><ExternalLink className="w-3.5 h-3.5" /></a>
+                        <button type="button" onClick={() => handleResumeDelete(url)} disabled={deletingResume === url}
+                          className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors shrink-0 disabled:opacity-50">
+                          {deletingResume === url ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Trash2 className="w-3.5 h-3.5" />}
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+
+                <button type="button" onClick={() => resumeInputRef.current?.click()} disabled={uploadingResume}
+                  className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 hover:border-gray-400 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800/80 transition-all disabled:opacity-50">
+                  {uploadingResume ? <><Loader2 className="w-4 h-4 animate-spin" /> Uploading...</> : <><Upload className="w-4 h-4" /> Upload Resume (PDF)</>}
+                </button>
+                <input ref={resumeInputRef} type="file" accept=".pdf" onChange={handleResumeUpload} className="hidden" />
+                <p className="text-xs text-gray-400 mt-1">PDF only, max 10 MB each.</p>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Save Button */}
+          <motion.div custom={7} variants={fadeInUp} initial="hidden" animate="visible">
+            <button onClick={handleSave} disabled={saving}
+              className="w-full py-4 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-base font-semibold rounded-2xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-black/10 cursor-pointer">
+              {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : <><Save className="w-4 h-4" /> Save Changes</>}
+            </button>
+          </motion.div>
         </div>
+      </div>
+    </div>
+  );
+}
 
-        {/* Save Button */}
-        <button onClick={handleSave} disabled={saving}
-          className="w-full mt-6 py-3.5 bg-gradient-to-r from-indigo-500 to-violet-500 text-white font-semibold rounded-xl hover:from-indigo-600 hover:to-violet-600 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-indigo-500/20">
-          {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : <><Save className="w-4 h-4" /> Save Changes</>}
-        </button>
+/* ─── Projects Sub-Component ──────────────────────────── */
+function ProjectsSection({ projects, onChange, inputClass, labelClass, errors }: {
+  projects: ProjectItem[];
+  onChange: (p: ProjectItem[]) => void;
+  inputClass: string;
+  labelClass: string;
+  errors?: string[];
+}) {
+  const [editing, setEditing] = useState<string | null>(null);
+  const [draft, setDraft] = useState<ProjectItem>({ id: "", title: "", description: "", techStack: [], liveUrl: "", repoUrl: "" });
+  const [techInput, setTechInput] = useState("");
 
-        {/* Account Info */}
-        <div className={`${sectionClass} p-6 mt-6 mb-8`}>
-          <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-            <div className="w-1.5 h-5 bg-gradient-to-b from-indigo-500 to-violet-500 rounded-full" />
-            <Shield className="w-4 h-4 text-indigo-500" /> Account Information
-          </h3>
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 mb-1">
-                <CheckCircle className="w-3.5 h-3.5 text-green-500" /> Role
-              </span>
-              <p className="font-semibold text-gray-700 dark:text-gray-300 text-sm">{user?.role}</p>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 mb-1">
-                <Calendar className="w-3.5 h-3.5 text-indigo-400" /> Member since
-              </span>
-              <p className="font-semibold text-gray-700 dark:text-gray-300 text-sm">
-                {displayDate
-                  ? new Date(displayDate).toLocaleDateString("en-IN", { month: "long", year: "numeric" })
-                  : "---"}
-              </p>
-            </div>
-            <div className="bg-gray-50 dark:bg-gray-800 rounded-xl p-4">
-              <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 mb-1">
-                <FileText className="w-3.5 h-3.5 text-violet-400" /> Resumes
-              </span>
-              <p className="font-semibold text-gray-700 dark:text-gray-300 text-sm">{form.resumes.length} / {MAX_RESUMES}</p>
-            </div>
-            <div className={`rounded-xl p-4 ${user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE" ? "bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800" : "bg-gray-50 dark:bg-gray-800"}`}>
-              <span className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 mb-1">
-                <Crown className={`w-3.5 h-3.5 ${user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE" ? "text-amber-500" : "text-gray-400"}`} /> Plan
-              </span>
-              {user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE" ? (
-                <p className="font-semibold text-amber-700 dark:text-amber-400 text-sm flex items-center gap-1.5">
-                  Pro <span className="px-1.5 py-0.5 text-[10px] font-bold uppercase bg-amber-500 text-white rounded-full">Premium</span>
-                </p>
-              ) : (
-                <p className="font-semibold text-gray-700 dark:text-gray-300 text-sm">Free</p>
-              )}
-            </div>
+  const startAdd = () => {
+    if (projects.length >= 10) return;
+    const id = crypto.randomUUID();
+    setDraft({ id, title: "", description: "", techStack: [], liveUrl: "", repoUrl: "" });
+    setEditing(id);
+  };
+
+  const startEdit = (p: ProjectItem) => {
+    setDraft({ ...p });
+    setEditing(p.id);
+    setTechInput("");
+  };
+
+  const save = () => {
+    if (!draft.title.trim()) return;
+    const exists = projects.find((p) => p.id === draft.id);
+    if (exists) {
+      onChange(projects.map((p) => (p.id === draft.id ? draft : p)));
+    } else {
+      onChange([...projects, draft]);
+    }
+    setEditing(null);
+  };
+
+  const remove = (id: string) => {
+    onChange(projects.filter((p) => p.id !== id));
+    if (editing === id) setEditing(null);
+  };
+
+  const addTech = () => {
+    const t = techInput.trim();
+    if (!t || draft.techStack.length >= 10) return;
+    if (!draft.techStack.includes(t)) setDraft((d) => ({ ...d, techStack: [...d.techStack, t] }));
+    setTechInput("");
+  };
+
+  return (
+    <div className="px-6 pb-6 space-y-3 border-t border-gray-50 dark:border-gray-800 pt-4">
+      {errors && errors.length > 0 && (
+        <p className="text-xs text-red-500 dark:text-red-400 px-1">Project URLs must be valid (e.g. https://...)</p>
+      )}
+      {projects.filter((p) => p.id !== editing).map((p) => (
+        <div key={p.id} className="flex items-start gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+          <div className="flex-1 min-w-0">
+            <h4 className="text-sm font-semibold text-gray-950 dark:text-white truncate">{p.title}</h4>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{p.description}</p>
+            {p.techStack.length > 0 && (
+              <div className="flex flex-wrap gap-1 mt-2">
+                {p.techStack.map((t, i) => (
+                  <span key={i} className="px-2 py-0.5 text-[10px] font-medium bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-md">{t}</span>
+                ))}
+              </div>
+            )}
+            {(p.liveUrl || p.repoUrl) && (
+              <div className="flex gap-3 mt-2">
+                {p.liveUrl && <a href={p.liveUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"><ExternalLink className="w-3 h-3" /> Live</a>}
+                {p.repoUrl && <a href={p.repoUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-600 dark:text-gray-400 hover:underline flex items-center gap-1"><Github className="w-3 h-3" /> Code</a>}
+              </div>
+            )}
+          </div>
+          <div className="flex gap-1 shrink-0">
+            <button type="button" onClick={() => startEdit(p)} className="text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+            <button type="button" onClick={() => remove(p.id)} className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
           </div>
         </div>
-      </motion.div>
+      ))}
+
+      {editing && (
+        <div className="px-4 py-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-indigo-200 dark:border-indigo-800 space-y-3">
+          <div>
+            <label className={labelClass}>Title</label>
+            <input type="text" value={draft.title} onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))} className={inputClass} placeholder="Project title" maxLength={100} />
+          </div>
+          <div>
+            <label className={labelClass}>Description</label>
+            <textarea value={draft.description} onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))} className={`${inputClass} resize-none`} rows={2} placeholder="Brief description..." maxLength={500} />
+          </div>
+          <div>
+            <label className={labelClass}>Tech Stack</label>
+            <div className="flex flex-wrap gap-1.5 mb-2">
+              {draft.techStack.map((t, i) => (
+                <span key={i} className="inline-flex items-center gap-1 px-2 py-1 text-xs bg-amber-50 dark:bg-amber-900/20 text-amber-700 dark:text-amber-400 rounded-lg font-medium">
+                  {t} <button type="button" onClick={() => setDraft((d) => ({ ...d, techStack: d.techStack.filter((_, j) => j !== i) }))} className="text-amber-400 hover:text-amber-600"><X className="w-3 h-3" /></button>
+                </span>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <input type="text" value={techInput} onChange={(e) => setTechInput(e.target.value)}
+                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addTech(); } }}
+                className={`${inputClass} flex-1`} placeholder="Add technology" />
+              <button type="button" onClick={addTech}
+                className="px-3 py-2 bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 rounded-xl text-xs font-medium hover:bg-amber-100 dark:hover:bg-amber-900/40 transition-colors shrink-0">
+                <Plus className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label className={labelClass}><ExternalLink className="w-3.5 h-3.5 text-gray-400" /> Live URL</label>
+              <input type="url" value={draft.liveUrl ?? ""} onChange={(e) => setDraft((d) => ({ ...d, liveUrl: e.target.value }))} className={inputClass} placeholder="https://..." />
+            </div>
+            <div>
+              <label className={labelClass}><Github className="w-3.5 h-3.5 text-gray-400" /> Repo URL</label>
+              <input type="url" value={draft.repoUrl ?? ""} onChange={(e) => setDraft((d) => ({ ...d, repoUrl: e.target.value }))} className={inputClass} placeholder="https://github.com/..." />
+            </div>
+          </div>
+          <div className="flex gap-2 pt-1">
+            <button type="button" onClick={save} disabled={!draft.title.trim()}
+              className="px-4 py-2 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50">
+              Save
+            </button>
+            <button type="button" onClick={() => setEditing(null)}
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {projects.length < 10 && !editing && (
+        <button type="button" onClick={startAdd}
+          className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 hover:border-amber-300 dark:hover:border-amber-600 hover:text-amber-600 dark:hover:text-amber-400 hover:bg-amber-50/30 dark:hover:bg-amber-900/10 transition-all">
+          <Plus className="w-4 h-4" /> Add Project
+        </button>
+      )}
+    </div>
+  );
+}
+
+/* ─── Achievements Sub-Component ──────────────────────── */
+function AchievementsSection({ achievements, onChange, inputClass, labelClass, errors }: {
+  achievements: AchievementItem[];
+  onChange: (a: AchievementItem[]) => void;
+  inputClass: string;
+  labelClass: string;
+  errors?: string[];
+}) {
+  const [editing, setEditing] = useState<string | null>(null);
+  const [draft, setDraft] = useState<AchievementItem>({ id: "", title: "", description: "", date: "" });
+
+  const startAdd = () => {
+    if (achievements.length >= 10) return;
+    const id = crypto.randomUUID();
+    setDraft({ id, title: "", description: "", date: "" });
+    setEditing(id);
+  };
+
+  const startEdit = (a: AchievementItem) => {
+    setDraft({ ...a });
+    setEditing(a.id);
+  };
+
+  const save = () => {
+    if (!draft.title.trim()) return;
+    const exists = achievements.find((a) => a.id === draft.id);
+    if (exists) {
+      onChange(achievements.map((a) => (a.id === draft.id ? draft : a)));
+    } else {
+      onChange([...achievements, draft]);
+    }
+    setEditing(null);
+  };
+
+  const remove = (id: string) => {
+    onChange(achievements.filter((a) => a.id !== id));
+    if (editing === id) setEditing(null);
+  };
+
+  return (
+    <div className="px-6 pb-6 space-y-3 border-t border-gray-50 dark:border-gray-800 pt-4">
+      {errors && errors.length > 0 && (
+        <p className="text-xs text-red-500 dark:text-red-400 px-1">{errors[0]}</p>
+      )}
+      {achievements.filter((a) => a.id !== editing).map((a) => (
+        <div key={a.id} className="flex items-start gap-3 px-4 py-3 bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+          <div className="w-8 h-8 rounded-lg bg-rose-50 dark:bg-rose-900/20 flex items-center justify-center shrink-0">
+            <Trophy className="w-4 h-4 text-rose-500 dark:text-rose-400" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h4 className="text-sm font-semibold text-gray-950 dark:text-white truncate">{a.title}</h4>
+            <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 line-clamp-2">{a.description}</p>
+            {a.date && <p className="text-[10px] text-gray-400 dark:text-gray-500 mt-1">{a.date}</p>}
+          </div>
+          <div className="flex gap-1 shrink-0">
+            <button type="button" onClick={() => startEdit(a)} className="text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors"><Pencil className="w-3.5 h-3.5" /></button>
+            <button type="button" onClick={() => remove(a.id)} className="text-gray-400 hover:text-red-500 dark:hover:text-red-400 transition-colors"><Trash2 className="w-3.5 h-3.5" /></button>
+          </div>
+        </div>
+      ))}
+
+      {editing && (
+        <div className="px-4 py-4 bg-gray-50 dark:bg-gray-800 rounded-xl border border-rose-200 dark:border-rose-800 space-y-3">
+          <div>
+            <label className={labelClass}>Title</label>
+            <input type="text" value={draft.title} onChange={(e) => setDraft((d) => ({ ...d, title: e.target.value }))} className={inputClass} placeholder="e.g. Dean's List, Hackathon Winner" maxLength={100} />
+          </div>
+          <div>
+            <label className={labelClass}>Description</label>
+            <textarea value={draft.description} onChange={(e) => setDraft((d) => ({ ...d, description: e.target.value }))} className={`${inputClass} resize-none`} rows={2} placeholder="Brief description..." maxLength={300} />
+          </div>
+          <div>
+            <label className={labelClass}><Calendar className="w-3.5 h-3.5 text-gray-400" /> Date</label>
+            <input type="text" value={draft.date ?? ""} onChange={(e) => setDraft((d) => ({ ...d, date: e.target.value }))} className={inputClass} placeholder="e.g. June 2025 or 2024-2025" maxLength={20} />
+          </div>
+          <div className="flex gap-2 pt-1">
+            <button type="button" onClick={save} disabled={!draft.title.trim()}
+              className="px-4 py-2 bg-indigo-600 text-white text-xs font-medium rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-50">
+              Save
+            </button>
+            <button type="button" onClick={() => setEditing(null)}
+              className="px-4 py-2 bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 text-xs font-medium rounded-lg hover:bg-gray-300 dark:hover:bg-gray-600 transition-colors">
+              Cancel
+            </button>
+          </div>
+        </div>
+      )}
+
+      {achievements.length < 10 && !editing && (
+        <button type="button" onClick={startAdd}
+          className="w-full flex items-center justify-center gap-2 py-3 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 hover:border-rose-300 dark:hover:border-rose-600 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50/30 dark:hover:bg-rose-900/10 transition-all">
+          <Plus className="w-4 h-4" /> Add Achievement
+        </button>
+      )}
     </div>
   );
 }

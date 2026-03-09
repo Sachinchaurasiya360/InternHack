@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router";
-import { ArrowLeft, Download, CheckCircle, XCircle, Clock, FileText } from "lucide-react";
+import { ArrowLeft, Download, CheckCircle, XCircle, Clock, FileText, ShieldCheck } from "lucide-react";
 import { motion } from "framer-motion";
 import api, { SERVER_URL } from "../../../lib/axios";
 import { EvaluationForm } from "./EvaluationForm";
-import type { Application } from "../../../lib/types";
+import type { Application, VerifiedSkill } from "../../../lib/types";
 
 export default function ApplicationDetail() {
   const { applicationId } = useParams();
@@ -12,6 +12,7 @@ export default function ApplicationDetail() {
   const [application, setApplication] = useState<Application | null>(null);
   const [loading, setLoading] = useState(true);
   const [evaluatingRoundId, setEvaluatingRoundId] = useState<number | null>(null);
+  const [verifiedSkills, setVerifiedSkills] = useState<VerifiedSkill[]>([]);
 
   const fetchDetail = () => {
     api.get(`/recruiter/applications/${applicationId}`).then((res) => {
@@ -21,6 +22,14 @@ export default function ApplicationDetail() {
   };
 
   useEffect(() => { fetchDetail(); }, [applicationId]);
+
+  useEffect(() => {
+    if (application?.student?.id) {
+      api.get(`/skill-tests/verified/${application.student.id}`)
+        .then((res) => setVerifiedSkills(res.data.verifiedSkills || []))
+        .catch(() => {});
+    }
+  }, [application?.student?.id]);
 
   const handleAdvance = async () => {
     try {
@@ -88,6 +97,36 @@ export default function ApplicationDetail() {
           )}
         </div>
       </div>
+
+      {/* Verified Skills */}
+      {verifiedSkills.length > 0 && (
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold dark:text-white flex items-center gap-2">
+              <ShieldCheck className="w-5 h-5 text-green-500" /> Verified Skills
+            </h2>
+            {application.job?.tags && application.job.tags.length > 0 && (() => {
+              const verifiedNames = new Set(verifiedSkills.map((v) => v.skillName.toLowerCase()));
+              const matched = application.job!.tags.filter((t) => verifiedNames.has(t.toLowerCase())).length;
+              const pct = Math.round((matched / application.job!.tags.length) * 100);
+              return (
+                <span className={`text-sm font-semibold px-3 py-1 rounded-full ${pct >= 70 ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : pct >= 40 ? "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400" : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"}`}>
+                  {pct}% skill match
+                </span>
+              );
+            })()}
+          </div>
+          <div className="flex flex-wrap gap-2">
+            {verifiedSkills.map((vs) => (
+              <span key={vs.skillName} className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-400 rounded-full text-sm font-medium">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                {vs.skillName}
+                <span className="text-green-500 dark:text-green-500 text-xs">({vs.score}%)</span>
+              </span>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Custom Field Answers */}
       {application.customFieldAnswers && Object.keys(application.customFieldAnswers).length > 0 && (

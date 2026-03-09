@@ -3,6 +3,7 @@ import { BrowserRouter, Navigate, Route, Routes } from "react-router";
 import { Toaster } from "react-hot-toast";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
+import { LoadingScreen } from "./components/LoadingScreen";
 
 // Public pages
 const LandingPage = lazy(() => import("./module/LandingPage/landingPage"));
@@ -21,6 +22,7 @@ const GrantsPage = lazy(() => import("./module/student/grants/GrantsPage"));
 const PublicOpenSourcePage = lazy(() => import("./module/student/opensource/PublicOpenSourcePage"));
 const BlogListPage = lazy(() => import("./module/blog/BlogListPage"));
 const BlogPostPage = lazy(() => import("./module/blog/BlogPostPage"));
+const RecruiterLandingPage = lazy(() => import("./module/recruiter/RecruiterLandingPage"));
 const AptitudeCategoriesPage = lazy(() => import("./module/student/aptitude/AptitudeCategoriesPage"));
 const AptitudeTopicPage = lazy(() => import("./module/student/aptitude/AptitudeTopicPage"));
 const AptitudeCompaniesPage = lazy(() => import("./module/student/aptitude/AptitudeCompaniesPage"));
@@ -47,15 +49,19 @@ const MyCareerPathsPage = lazy(() => import("./module/career/MyCareerPathsPage")
 const CareerProgressPage = lazy(() => import("./module/career/CareerProgressPage"));
 const AddCompanyPage = lazy(() => import("./module/student/companies/AddCompanyPage"));
 const StudentProfilePage = lazy(() => import("./module/student/profile/StudentProfilePage"));
+const PublicProfilePage = lazy(() => import("./module/student/profile/PublicProfilePage"));
 const RepoDiscoveryPage = lazy(() => import("./module/student/opensource/RepoDiscoveryPage"));
 const OpenSourceGuidancePage = lazy(() => import("./module/student/opensource/OpenSourceGuidancePage"));
 const GSoCReposPage = lazy(() => import("./module/student/opensource/GSoCReposPage"));
 const ProgramTrackerPage = lazy(() => import("./module/student/opensource/ProgramTrackerPage"));
 const FirstPRRoadmapPage = lazy(() => import("./module/student/opensource/FirstPRRoadmapPage"));
 const GSoCProposalPage = lazy(() => import("./module/student/opensource/GSoCProposalPage"));
+const OpenSourceAnalyticsPage = lazy(() => import("./module/student/opensource/OpenSourceAnalyticsPage"));
 const CheckoutPage = lazy(() => import("./module/student/checkout/CheckoutPage"));
 const SkillQuizPage = lazy(() => import("./module/career/quiz/SkillQuizPage"));
 const SqlPracticePage = lazy(() => import("./module/student/sql/SqlPracticePage"));
+const SkillVerificationPage = lazy(() => import("./module/student/skill-verification/SkillVerificationPage"));
+const SkillTestPage = lazy(() => import("./module/student/skill-verification/SkillTestPage"));
 const SqlExercisePage = lazy(() => import("./module/student/sql/SqlExercisePage"));
 const SqlPlaygroundPage = lazy(() => import("./module/student/sql/SqlPlaygroundPage"));
 
@@ -85,13 +91,16 @@ const AdminSubscribersPage = lazy(() => import("./module/admin/AdminSubscribersP
 const AdminCareersPage = lazy(() => import("./module/admin/careers/AdminCareersPage"));
 const AdminBlogPage = lazy(() => import("./module/admin/blog/AdminBlogPage"));
 const AdminBlogEditor = lazy(() => import("./module/admin/blog/AdminBlogEditor"));
+const AdminDsaPage = lazy(() => import("./module/admin/dsa/AdminDsaPage"));
+const AdminAptitudePage = lazy(() => import("./module/admin/aptitude/AdminAptitudePage"));
+const AdminSkillTestsPage = lazy(() => import("./module/admin/skill-tests/AdminSkillTestsPage"));
 
 function App() {
   return (
     <BrowserRouter>
       <Toaster position="top-right" />
       <ErrorBoundary>
-      <Suspense fallback={<div className="flex items-center justify-center min-h-screen"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600" /></div>}>
+      <Suspense fallback={<LoadingScreen />}>
         <Routes>
           {/* Public routes */}
           <Route path="/" element={<LandingPage />} />
@@ -108,6 +117,7 @@ function App() {
           <Route path="/yc/:slug" element={<YCCompanyDetailPage />} />
           <Route path="/ats-score" element={<PublicAtsPage />} />
           <Route path="/grants" element={<GrantsPage />} />
+          <Route path="/for-recruiters" element={<RecruiterLandingPage />} />
           <Route path="/opensource" element={<PublicOpenSourcePage />} />
           <Route path="/blog" element={<BlogListPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
@@ -154,6 +164,8 @@ function App() {
             <Route path="aptitude" element={<AptitudeCategoriesPage />} />
             <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
             <Route path="aptitude/:slug" element={<AptitudeTopicPage />} />
+            <Route path="skill-verification" element={<SkillVerificationPage />} />
+            <Route path="skill-verification/:testId" element={<SkillTestPage />} />
             <Route path="companies/add" element={<AddCompanyPage />} />
             <Route path="grants" element={<GrantsPage />} />
             <Route path="opensource" element={<RepoDiscoveryPage />} />
@@ -162,6 +174,7 @@ function App() {
             <Route path="opensource/programs" element={<ProgramTrackerPage />} />
             <Route path="opensource/first-pr" element={<FirstPRRoadmapPage />} />
             <Route path="opensource/gsoc-proposal" element={<GSoCProposalPage />} />
+            <Route path="opensource/analytics" element={<OpenSourceAnalyticsPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="profile" element={<StudentProfilePage />} />
           </Route>
@@ -176,7 +189,11 @@ function App() {
             <Route path="jobs/:id/analytics" element={<JobAnalyticsPage />} />
             <Route path="applications/:applicationId" element={<ApplicationDetail />} />
             <Route path="talent-search" element={<TalentSearchPage />} />
+            <Route path="profile/:id" element={<PublicProfilePage />} />
           </Route>
+
+          {/* Profile view (recruiter/admin — backend enforces role) */}
+          <Route path="/profile/:id" element={<ProtectedRoute><PublicProfilePage /></ProtectedRoute>} />
 
           {/* Admin login (public) */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -193,9 +210,13 @@ function App() {
             <Route path="contributions" element={<AdminContributionsPage />} />
             <Route path="subscribers" element={<AdminSubscribersPage />} />
             <Route path="careers" element={<AdminCareersPage />} />
+            <Route path="dsa" element={<AdminDsaPage />} />
+            <Route path="aptitude" element={<AdminAptitudePage />} />
+            <Route path="skill-tests" element={<AdminSkillTestsPage />} />
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="blog/editor" element={<AdminBlogEditor />} />
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />
+            <Route path="profile/:id" element={<PublicProfilePage />} />
           </Route>
         </Routes>
       </Suspense>

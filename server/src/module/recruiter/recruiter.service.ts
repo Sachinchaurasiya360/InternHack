@@ -5,12 +5,14 @@ interface TalentSearchFilter {
   page: number;
   limit: number;
   skills?: string;
+  verifiedSkills?: string;
   college?: string;
   graduationYearMin?: number;
   graduationYearMax?: number;
   minAtsScore?: number;
   location?: string;
   search?: string;
+  jobStatus?: string;
 }
 
 interface CreateRoundData {
@@ -201,7 +203,7 @@ export class RecruiterService {
     const application = await prisma.application.findUnique({
       where: { id: applicationId },
       include: {
-        job: { select: { id: true, title: true, recruiterId: true, customFields: true } },
+        job: { select: { id: true, title: true, recruiterId: true, customFields: true, tags: true } },
         student: { select: { id: true, name: true, email: true, contactNo: true, profilePic: true, resumes: true } },
         roundSubmissions: {
           include: { round: true },
@@ -359,6 +361,17 @@ export class RecruiterService {
       statusCounts[s.status] = s._count.id;
     }
 
+    // Top verified skills among applicants
+    const topVerifiedSkills = await prisma.verifiedSkill.groupBy({
+      by: ["skillName"],
+      where: {
+        student: { applications: { some: { job: { recruiterId } } } },
+      },
+      _count: { id: true },
+      orderBy: { _count: { id: "desc" } },
+      take: 5,
+    });
+
     return {
       totalJobs,
       activeJobs,
@@ -366,6 +379,10 @@ export class RecruiterService {
       hiredCount: statusCounts["HIRED"] || 0,
       statusBreakdown: statusCounts,
       recentApplications,
+      topVerifiedSkills: topVerifiedSkills.map((s) => ({
+        skillName: s.skillName,
+        count: s._count.id,
+      })),
     };
   }
 
@@ -454,8 +471,17 @@ export class RecruiterService {
         where.skills = { hasSome: skillList };
       }
     }
+    if (filter.verifiedSkills) {
+      const vsList = filter.verifiedSkills.split(",").map((s) => s.trim().toLowerCase()).filter(Boolean);
+      if (vsList.length > 0) {
+        where.verifiedSkills = { some: { skillName: { in: vsList } } };
+      }
+    }
     if (filter.minAtsScore) {
       where.atsScores = { some: { overallScore: { gte: filter.minAtsScore } } };
+    }
+    if (filter.jobStatus) {
+      where.jobStatus = filter.jobStatus;
     }
 
     const skip = (filter.page - 1) * filter.limit;
@@ -480,6 +506,7 @@ export class RecruiterService {
           githubUrl: true,
           portfolioUrl: true,
           resumes: true,
+          jobStatus: true,
           atsScores: {
             select: { overallScore: true },
             orderBy: { overallScore: "desc" },
@@ -488,6 +515,10 @@ export class RecruiterService {
           skillProgress: {
             where: { verifiedAt: { not: null } },
             select: { skill: { select: { name: true } } },
+          },
+          verifiedSkills: {
+            select: { skillName: true, score: true, verifiedAt: true },
+            orderBy: { verifiedAt: "desc" as const },
           },
         },
       }),
@@ -508,9 +539,14 @@ export class RecruiterService {
       githubUrl: s.githubUrl,
       portfolioUrl: s.portfolioUrl,
       resumes: s.resumes,
+      jobStatus: s.jobStatus,
       bestAtsScore: s.atsScores[0]?.overallScore ?? null,
-      verifiedSkillCount: s.skillProgress.length,
-      verifiedSkills: s.skillProgress.map((sp) => sp.skill.name),
+      verifiedSkillCount: s.skillProgress.length + s.verifiedSkills.length,
+      verifiedSkills: [
+        ...s.skillProgress.map((sp) => sp.skill.name),
+        ...s.verifiedSkills.map((vs) => vs.skillName),
+      ],
+      standaloneVerifiedSkills: s.verifiedSkills,
     }));
 
     return {

@@ -15,5 +15,6 @@ uploadRouter.post("/attachment", uploadSingle, (req, res) => uploadController.up
 
 // Profile-specific uploads
 uploadRouter.post("/profile-pic", uploadImage, (req, res) => uploadController.uploadProfilePic(req, res));
+uploadRouter.post("/cover-image", uploadImage, (req, res) => uploadController.uploadCoverImage(req, res));
 uploadRouter.post("/profile-resume", uploadResume, (req, res) => uploadController.uploadProfileResume(req, res));
 uploadRouter.delete("/profile-resume", (req, res) => uploadController.deleteProfileResume(req, res));

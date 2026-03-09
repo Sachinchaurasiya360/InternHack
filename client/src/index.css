@@ -80,3 +80,9 @@ body {
   -webkit-text-fill-color: transparent;
   background-clip: text;
 }
+
+/* Proctored test — disable text selection */
+.proctored-test {
+  user-select: none;
+  -webkit-user-select: none;
+}

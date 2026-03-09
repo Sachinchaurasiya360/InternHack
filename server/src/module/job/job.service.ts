@@ -71,6 +71,10 @@ export class JobService {
       where.company = { contains: query.company, mode: "insensitive" };
     }
 
+    if (query.tags) {
+      where.tags = { hasSome: query.tags.split(",").map((t) => t.trim()) };
+    }
+
     const skip = (query.page - 1) * query.limit;
 
     const [jobs, total] = await Promise.all([

@@ -26,6 +26,7 @@ import {
   Award,
   Loader2,
   AlertCircle,
+  BarChart3,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -55,19 +56,11 @@ function difficultyBadge(d: OpenSourceRepo["difficulty"]) {
 // ─── Guidance Cards Data ─────────────────────────────────────────
 const GUIDANCE_CARDS = [
   {
-    to: "/student/opensource/guidance",
-    icon: <BookOpen className="w-5 h-5" />,
-    title: "Contribution Guide",
-    desc: "Fork, clone, branch, commit, PR — step by step",
-    gradient: "from-purple-500 to-violet-600",
-    hoverBorder: "hover:border-purple-300 dark:hover:border-purple-600",
-  },
-  {
     to: "/student/opensource/first-pr",
     icon: <GitPullRequest className="w-5 h-5" />,
     title: "First PR Roadmap",
     desc: "Guided checklist to land your first pull request",
-    gradient: "from-pink-500 to-rose-600",
+    iconColor: "text-pink-500 dark:text-pink-400",
     hoverBorder: "hover:border-pink-300 dark:hover:border-pink-600",
   },
   {
@@ -75,7 +68,7 @@ const GUIDANCE_CARDS = [
     icon: <Trophy className="w-5 h-5" />,
     title: "GSoC Repos",
     desc: "Organizations accepted into Google Summer of Code",
-    gradient: "from-amber-500 to-orange-500",
+    iconColor: "text-amber-500 dark:text-amber-400",
     hoverBorder: "hover:border-amber-300 dark:hover:border-amber-600",
   },
   {
@@ -83,7 +76,7 @@ const GUIDANCE_CARDS = [
     icon: <Award className="w-5 h-5" />,
     title: "GSoC Proposal Guide",
     desc: "Write a winning proposal in 8 steps",
-    gradient: "from-red-500 to-orange-600",
+    iconColor: "text-red-500 dark:text-red-400",
     hoverBorder: "hover:border-red-300 dark:hover:border-red-600",
   },
   {
@@ -91,16 +84,26 @@ const GUIDANCE_CARDS = [
     icon: <GraduationCap className="w-5 h-5" />,
     title: "Program Tracker",
     desc: "Deadlines for GSoC, LFX, MLH, Outreachy & more",
-    gradient: "from-emerald-500 to-teal-600",
+    iconColor: "text-emerald-500 dark:text-emerald-400",
     hoverBorder: "hover:border-emerald-300 dark:hover:border-emerald-600",
   },
   {
-    to: "/student/opensource/guidance#community",
+    to: "https://github.com/firstcontributions/first-contributions",
     icon: <MessagesSquare className="w-5 h-5" />,
-    title: "Community",
-    desc: "Connect with maintainers and fellow contributors",
-    gradient: "from-indigo-500 to-blue-600",
+    title: "First Contributions",
+    desc: "Practice making your first PR on a real GitHub repo",
+    iconColor: "text-indigo-500 dark:text-indigo-400",
     hoverBorder: "hover:border-indigo-300 dark:hover:border-indigo-600",
+    external: true,
+  },
+  {
+    to: "https://goodfirstissue.dev",
+    icon: <Code2 className="w-5 h-5" />,
+    title: "Good First Issues",
+    desc: "Find beginner-friendly issues across popular projects",
+    iconColor: "text-cyan-500 dark:text-cyan-400",
+    hoverBorder: "hover:border-cyan-300 dark:hover:border-cyan-600",
+    external: true,
   },
 ];
 
@@ -110,11 +113,9 @@ function OpenSourceGuidanceSection() {
     <section className="mb-8">
       <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden">
         {/* Header strip */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 bg-gradient-to-r from-purple-50/80 to-indigo-50/80 dark:from-purple-950/30 dark:to-indigo-950/30">
+        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/50">
           <div className="flex items-center gap-2.5">
-            <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-purple-500 to-indigo-600 flex items-center justify-center">
-              <Sparkles className="w-3.5 h-3.5 text-white" />
-            </div>
+            <Sparkles className="w-4.5 h-4.5 text-purple-500 dark:text-purple-400" />
             <h2 className="text-sm font-bold text-gray-900 dark:text-white">Open Source Guidance</h2>
           </div>
           <Link
@@ -128,26 +129,44 @@ function OpenSourceGuidanceSection() {
 
         {/* Cards grid */}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-gray-100 dark:bg-gray-800">
-          {GUIDANCE_CARDS.map((card) => (
-            <Link
-              key={card.to}
-              to={card.to}
-              className={`flex items-start gap-3 p-4 bg-white dark:bg-gray-900 transition-all no-underline group ${card.hoverBorder} hover:bg-gray-50/50 dark:hover:bg-gray-800/50`}
-            >
-              <div className={`w-9 h-9 rounded-xl bg-gradient-to-br ${card.gradient} flex items-center justify-center shrink-0 shadow-sm group-hover:scale-105 transition-transform`}>
-                <span className="text-white">{card.icon}</span>
-              </div>
-              <div className="min-w-0 flex-1">
-                <p className="text-xs font-semibold text-gray-900 dark:text-white mb-0.5 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors">
-                  {card.title}
-                </p>
-                <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-snug line-clamp-2">
-                  {card.desc}
-                </p>
-              </div>
-              <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 mt-1 shrink-0 group-hover:text-purple-500 transition-colors" />
-            </Link>
-          ))}
+          {GUIDANCE_CARDS.map((card) => {
+            const cardContent = (
+              <>
+                <span className={`${card.iconColor} shrink-0 group-hover:scale-110 transition-transform`}>{card.icon}</span>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs font-semibold text-gray-900 dark:text-white mb-0.5 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors">
+                    {card.title}
+                  </p>
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-snug line-clamp-2">
+                    {card.desc}
+                  </p>
+                </div>
+                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 mt-1 shrink-0 group-hover:text-purple-500 transition-colors" />
+              </>
+            );
+
+            const className = `flex items-start gap-3 p-4 bg-white dark:bg-gray-900 transition-all no-underline group ${card.hoverBorder} hover:bg-gray-50/50 dark:hover:bg-gray-800/50`;
+
+            return card.external ? (
+              <a
+                key={card.to}
+                href={card.to}
+                target="_blank"
+                rel="noopener noreferrer"
+                className={className}
+              >
+                {cardContent}
+              </a>
+            ) : (
+              <Link
+                key={card.to}
+                to={card.to}
+                className={className}
+              >
+                {cardContent}
+              </Link>
+            );
+          })}
         </div>
       </div>
     </section>
@@ -239,8 +258,8 @@ export default function RepoDiscoveryPage() {
       {/* ── Hero ────────────────────────────────────────────── */}
       <section className="relative overflow-hidden rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm mb-8">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-[400px] h-[400px] rounded-full bg-gradient-to-br from-purple-50 to-indigo-50 opacity-60 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-[350px] h-[350px] rounded-full bg-gradient-to-tr from-cyan-50 to-emerald-50 opacity-60 blur-3xl" />
+          <div className="absolute -top-40 -right-40 w-100 h-100 rounded-full bg-purple-50 dark:bg-purple-900/20 opacity-60 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-88 h-88 rounded-full bg-cyan-50 dark:bg-cyan-900/20 opacity-60 blur-3xl" />
         </div>
 
         <div
@@ -258,10 +277,6 @@ export default function RepoDiscoveryPage() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
           >
-            <div className="mb-4 inline-flex items-center gap-2 rounded-full border border-purple-200 dark:border-purple-700 bg-purple-50 dark:bg-purple-900/30 px-4 py-1.5 text-sm text-purple-700 dark:text-purple-400">
-              <Sparkles className="w-4 h-4 text-purple-500" />
-              Open Source Discovery
-            </div>
             <h1 className="mb-3 font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight text-gray-950 dark:text-white">
               Discover &amp; Contribute
             </h1>
@@ -292,6 +307,21 @@ export default function RepoDiscoveryPage() {
                 ))}
               </motion.div>
             )}
+
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 }}
+              className="mt-4"
+            >
+              <Link
+                to="/student/opensource/analytics"
+                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 transition-colors no-underline"
+              >
+                <BarChart3 className="w-4 h-4" />
+                View Analytics
+              </Link>
+            </motion.div>
           </motion.div>
         </div>
       </section>
@@ -466,14 +496,14 @@ export default function RepoDiscoveryPage() {
                 className="group relative cursor-pointer rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm transition-all hover:shadow-md hover:border-purple-200 dark:hover:border-purple-700"
               >
                 {repo.trending && (
-                  <div className="absolute -top-2.5 right-4 flex items-center gap-1 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
+                  <div className="absolute -top-2.5 right-4 flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
                     <Flame size={10} />
                     Trending
                   </div>
                 )}
 
                 <div className="mb-3 flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-purple-50 to-indigo-50 text-lg font-bold text-purple-600 border border-purple-100">
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-lg font-bold text-gray-600 dark:text-gray-300">
                     {repo.owner[0].toUpperCase()}
                   </div>
                   <div className="min-w-0 flex-1">
@@ -605,7 +635,7 @@ export default function RepoDiscoveryPage() {
               </button>
 
               <div className="mb-6 flex items-start gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-purple-50 to-indigo-50 text-2xl font-bold text-purple-600 border border-purple-100">
+                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 text-2xl font-bold text-gray-600 dark:text-gray-300">
                   {selectedRepo.owner[0].toUpperCase()}
                 </div>
                 <div>
@@ -622,7 +652,7 @@ export default function RepoDiscoveryPage() {
                       {difficultyBadge(selectedRepo.difficulty).label}
                     </span>
                     {selectedRepo.trending && (
-                      <span className="flex items-center gap-1 rounded-full bg-gradient-to-r from-orange-500 to-rose-500 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
+                      <span className="flex items-center gap-1 rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
                         <Flame size={10} /> Trending
                       </span>
                     )}

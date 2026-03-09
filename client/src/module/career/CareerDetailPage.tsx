@@ -1,12 +1,13 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, TrendingUp, DollarSign, Layers, Clock, Users, Zap, Sparkles } from "lucide-react";
+import { ArrowLeft, TrendingUp, DollarSign, Layers, Clock, Users, Zap } from "lucide-react";
 import api from "../../lib/axios";
 import type { Career } from "../../lib/types";
 import { useAuthStore } from "../../lib/auth.store";
 import RoadmapTimeline from "./components/RoadmapTimeline";
 import { Navbar } from "../../components/Navbar";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { SEO } from "../../components/SEO";
 import toast from "react-hot-toast";
 
@@ -73,13 +74,7 @@ export default function CareerDetailPage() {
     return (
       <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
         <Navbar />
-        <div className="pt-28 max-w-4xl mx-auto px-6">
-          <div className="animate-pulse space-y-4">
-            <div className="h-48 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800" />
-            <div className="h-8 bg-gray-100 dark:bg-gray-800 rounded w-1/2" />
-            <div className="h-4 bg-gray-100 dark:bg-gray-800 rounded w-3/4" />
-          </div>
-        </div>
+        <LoadingScreen />
       </div>
     );
   }
@@ -133,16 +128,6 @@ export default function CareerDetailPage() {
             >
               <ArrowLeft className="w-4 h-4" /> Back to Careers
             </Link>
-          </motion.div>
-
-          <motion.div custom={1} initial="hidden" animate="visible" variants={fadeInUp} className="flex flex-wrap gap-2 mb-5">
-            <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ${catCfg.pill}`}>
-              <Sparkles className="w-3 h-3" />
-              {career.category}
-            </span>
-            <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${diffCfg.bg} ${diffCfg.text}`}>
-              {diffCfg.label}
-            </span>
           </motion.div>
 
           <motion.h1

@@ -17,21 +17,25 @@ import TalentCard, { type TalentResult } from "./TalentCard";
 interface TalentFilters {
   search: string;
   skills: string;
+  verifiedSkills: string;
   college: string;
   graduationYearMin: string;
   graduationYearMax: string;
   minAtsScore: number;
   location: string;
+  jobStatus: string;
 }
 
 const defaultFilters: TalentFilters = {
   search: "",
   skills: "",
+  verifiedSkills: "",
   college: "",
   graduationYearMin: "",
   graduationYearMax: "",
   minAtsScore: 0,
   location: "",
+  jobStatus: "",
 };
 
 interface TalentSearchResponse {
@@ -52,6 +56,7 @@ export default function TalentSearchPage() {
 
       if (appliedFilters.search) params.set("search", appliedFilters.search);
       if (appliedFilters.skills) params.set("skills", appliedFilters.skills);
+      if (appliedFilters.verifiedSkills) params.set("verifiedSkills", appliedFilters.verifiedSkills);
       if (appliedFilters.college) params.set("college", appliedFilters.college);
       if (appliedFilters.graduationYearMin)
         params.set("graduationYearMin", appliedFilters.graduationYearMin);
@@ -60,6 +65,7 @@ export default function TalentSearchPage() {
       if (appliedFilters.minAtsScore > 0)
         params.set("minAtsScore", String(appliedFilters.minAtsScore));
       if (appliedFilters.location) params.set("location", appliedFilters.location);
+      if (appliedFilters.jobStatus) params.set("jobStatus", appliedFilters.jobStatus);
 
       const res = await api.get(`/recruiter/talent-search?${params}`);
       return res.data as TalentSearchResponse;
@@ -263,6 +269,19 @@ function FilterPanel({ filters, updateFilter, onApply, onClear }: FilterPanelPro
         <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Comma-separated</p>
       </div>
 
+      {/* Verified Skills */}
+      <div>
+        <label className={labelClass}>Verified Skills</label>
+        <input
+          type="text"
+          value={filters.verifiedSkills}
+          onChange={(e) => updateFilter("verifiedSkills", e.target.value)}
+          className={inputClass}
+          placeholder="javascript, react..."
+        />
+        <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">Filter by test-verified skills</p>
+      </div>
+
       {/* College */}
       <div>
         <label className={labelClass}>College</label>
@@ -334,6 +353,21 @@ function FilterPanel({ filters, updateFilter, onApply, onClear }: FilterPanelPro
           className={inputClass}
           placeholder="e.g. Bangalore"
         />
+      </div>
+
+      {/* Job Status */}
+      <div>
+        <label className={labelClass}>Job Status</label>
+        <select
+          value={filters.jobStatus}
+          onChange={(e) => updateFilter("jobStatus", e.target.value)}
+          className={inputClass}
+        >
+          <option value="">Any</option>
+          <option value="LOOKING">Looking for job</option>
+          <option value="OPEN_TO_OFFER">Open to offer</option>
+          <option value="NO_OFFER">No offer</option>
+        </select>
       </div>
 
       {/* Actions */}

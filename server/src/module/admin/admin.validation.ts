@@ -188,3 +188,138 @@ export const repoQuerySchema = z.object({
   sortBy: z.enum(["createdAt", "stars", "forks", "lastUpdated", "name"]).default("createdAt"),
   sortOrder: z.enum(["asc", "desc"]).default("desc"),
 });
+
+// ==================== DSA MANAGEMENT ====================
+
+export const dsaTopicQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(50),
+  search: z.string().optional(),
+});
+
+const dsaProblemInputSchema = z.object({
+  title: z.string().min(1).max(300),
+  difficulty: z.string().default("Easy"),
+  leetcodeUrl: z.string().optional().or(z.literal("")),
+  gfgUrl: z.string().optional().or(z.literal("")),
+  articleUrl: z.string().optional().or(z.literal("")),
+  videoUrl: z.string().optional().or(z.literal("")),
+  hackerrankUrl: z.string().optional().or(z.literal("")),
+  codechefUrl: z.string().optional().or(z.literal("")),
+  tags: z.array(z.string()).default([]),
+  companies: z.array(z.string()).default([]),
+  hints: z.string().optional(),
+  sheets: z.array(z.string()).default([]),
+  orderIndex: z.number().int().min(0),
+});
+
+const dsaSubTopicInputSchema = z.object({
+  name: z.string().min(1).max(200),
+  orderIndex: z.number().int().min(0),
+  problems: z.array(dsaProblemInputSchema).default([]),
+});
+
+export const createDsaTopicSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000).optional(),
+  orderIndex: z.number().int().min(0),
+  subTopics: z.array(dsaSubTopicInputSchema).default([]),
+});
+
+export const updateDsaTopicSchema = createDsaTopicSchema.partial();
+
+export const createDsaProblemSchema = dsaProblemInputSchema.extend({
+  subTopicId: z.number().int().positive(),
+});
+
+export const updateDsaProblemSchema = createDsaProblemSchema.partial();
+
+export const createDsaSubTopicSchema = z.object({
+  name: z.string().min(1).max(200),
+  orderIndex: z.number().int().min(0),
+  topicId: z.number().int().positive(),
+});
+
+export const updateDsaSubTopicSchema = createDsaSubTopicSchema.partial();
+
+// ==================== APTITUDE MANAGEMENT ====================
+
+export const aptitudeCategoryQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(50),
+  search: z.string().optional(),
+});
+
+export const createAptitudeCategorySchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000).optional(),
+  orderIndex: z.number().int().min(0).default(0),
+});
+
+export const updateAptitudeCategorySchema = createAptitudeCategorySchema.partial();
+
+export const createAptitudeTopicSchema = z.object({
+  name: z.string().min(1).max(200),
+  description: z.string().max(2000).optional(),
+  orderIndex: z.number().int().min(0).default(0),
+  sourceUrl: z.string().optional().or(z.literal("")),
+  categoryId: z.number().int().positive(),
+});
+
+export const updateAptitudeTopicSchema = createAptitudeTopicSchema.partial();
+
+export const aptitudeQuestionQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  topicId: z.coerce.number().int().optional(),
+  difficulty: z.enum(["EASY", "MEDIUM", "HARD"]).optional(),
+  search: z.string().optional(),
+});
+
+export const createAptitudeQuestionSchema = z.object({
+  question: z.string().min(1),
+  optionA: z.string().min(1),
+  optionB: z.string().min(1),
+  optionC: z.string().min(1),
+  optionD: z.string().min(1),
+  optionE: z.string().optional(),
+  correctAnswer: z.string().min(1),
+  explanation: z.string().optional(),
+  difficulty: z.string().default("MEDIUM"),
+  companies: z.array(z.string()).default([]),
+  sourceUrl: z.string().optional().or(z.literal("")),
+  topicId: z.number().int().positive(),
+});
+
+export const updateAptitudeQuestionSchema = createAptitudeQuestionSchema.partial();
+
+// ==================== SKILL TEST MANAGEMENT ====================
+
+export const adminSkillTestQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  search: z.string().optional(),
+  difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).optional(),
+  isActive: z.enum(["true", "false"]).optional(),
+});
+
+const skillTestQuestionInputSchema = z.object({
+  question: z.string().min(1),
+  options: z.array(z.string().min(1)).length(4),
+  correctIndex: z.number().int().min(0).max(3),
+  explanation: z.string().optional(),
+  orderIndex: z.number().int().min(0),
+});
+
+export const createSkillTestAdminSchema = z.object({
+  skillName: z.string().min(1).max(200),
+  title: z.string().min(1).max(300),
+  description: z.string().max(2000).optional(),
+  difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).default("INTERMEDIATE"),
+  timeLimitSecs: z.number().int().positive().default(1800),
+  passThreshold: z.number().int().min(1).max(100).default(70),
+  isActive: z.boolean().default(true),
+  questions: z.array(skillTestQuestionInputSchema).default([]),
+});
+
+export const updateSkillTestAdminSchema = createSkillTestAdminSchema.partial();

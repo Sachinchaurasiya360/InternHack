@@ -44,7 +44,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               <NavItem href="/careers">Careers</NavItem>
               <NavItem href="/companies">Companies</NavItem>
               <NavItem href="/blog">Blog</NavItem>
-              {!isAuthenticated && <NavItem href="/recruiters">For Recruiters</NavItem>}
+              {!isAuthenticated && <NavItem href="/for-recruiters">For Recruiters</NavItem>}
             </div>
 
             {/* Desktop Actions */}

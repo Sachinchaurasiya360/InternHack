@@ -1,3 +1,4 @@
+import "dotenv/config";
 import { prisma } from "../database/db.js";
 
 const repos = [

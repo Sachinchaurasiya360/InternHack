@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import { Link } from "react-router";
 import {
   MapPin,
   GraduationCap,
@@ -8,6 +9,7 @@ import {
   FileText,
   CheckCircle,
   Mail,
+  Eye,
 } from "lucide-react";
 
 export interface TalentResult {
@@ -24,6 +26,7 @@ export interface TalentResult {
   githubUrl: string | null;
   portfolioUrl: string | null;
   resumes: string[];
+  jobStatus?: string | null;
   bestAtsScore: number | null;
   verifiedSkillCount: number;
   verifiedSkills: string[];
@@ -43,6 +46,18 @@ function getAtsScoreColor(score: number): string {
   if (score >= 80) return "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400";
   if (score >= 60) return "bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400";
   return "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400";
+}
+
+function getJobStatusBadge(status: string | null | undefined) {
+  if (!status) return null;
+  const map: Record<string, { label: string; cls: string }> = {
+    LOOKING: { label: "Looking for job", cls: "bg-emerald-50 text-emerald-700 dark:bg-emerald-900/20 dark:text-emerald-400" },
+    OPEN_TO_OFFER: { label: "Open to offer", cls: "bg-blue-50 text-blue-700 dark:bg-blue-900/20 dark:text-blue-400" },
+    NO_OFFER: { label: "No offer", cls: "bg-gray-100 text-gray-500 dark:bg-gray-800 dark:text-gray-400" },
+  };
+  const info = map[status];
+  if (!info) return null;
+  return <span className={`text-[10px] font-medium px-2 py-0.5 rounded-full ${info.cls}`}>{info.label}</span>;
 }
 
 interface TalentCardProps {
@@ -78,11 +93,14 @@ export default function TalentCard({ student, index = 0 }: TalentCardProps) {
         )}
 
         <div className="min-w-0 flex-1">
-          <a href={`mailto:${student.email}`} className="no-underline group/name">
-            <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover/name:text-blue-600 dark:group-hover/name:text-blue-400 transition-colors cursor-pointer">
-              {student.name}
-            </h3>
-          </a>
+          <div className="flex items-center gap-2">
+            <Link to={`/profile/${student.id}`} className="no-underline group/name">
+              <h3 className="font-semibold text-gray-900 dark:text-white truncate group-hover/name:text-blue-600 dark:group-hover/name:text-blue-400 transition-colors cursor-pointer">
+                {student.name}
+              </h3>
+            </Link>
+            {getJobStatusBadge(student.jobStatus)}
+          </div>
           {student.college && (
             <p className="text-sm text-gray-500 dark:text-gray-400 flex items-center gap-1 truncate">
               <GraduationCap className="w-3.5 h-3.5 flex-shrink-0" />
@@ -194,20 +212,29 @@ export default function TalentCard({ student, index = 0 }: TalentCardProps) {
           )}
         </div>
 
-        <a
-          href={hasResume ? student.resumes[0] : undefined}
-          target="_blank"
-          rel="noopener noreferrer"
-          className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors ${
-            hasResume
-              ? "bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 cursor-pointer"
-              : "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600 cursor-not-allowed pointer-events-none"
-          }`}
-          aria-disabled={!hasResume}
-        >
-          <FileText className="w-3.5 h-3.5" />
-          View Resume
-        </a>
+        <div className="flex items-center gap-2">
+          <Link
+            to={`/profile/${student.id}`}
+            className="inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg bg-indigo-50 text-indigo-700 hover:bg-indigo-100 dark:bg-indigo-900/20 dark:text-indigo-400 dark:hover:bg-indigo-900/40 transition-colors no-underline"
+          >
+            <Eye className="w-3.5 h-3.5" />
+            Profile
+          </Link>
+          <a
+            href={hasResume ? student.resumes[0] : undefined}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={`inline-flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-lg transition-colors ${
+              hasResume
+                ? "bg-black text-white hover:bg-gray-800 dark:bg-white dark:text-black dark:hover:bg-gray-200 cursor-pointer"
+                : "bg-gray-100 text-gray-400 dark:bg-gray-800 dark:text-gray-600 cursor-not-allowed pointer-events-none"
+            }`}
+            aria-disabled={!hasResume}
+          >
+            <FileText className="w-3.5 h-3.5" />
+            Resume
+          </a>
+        </div>
       </div>
     </motion.div>
   );

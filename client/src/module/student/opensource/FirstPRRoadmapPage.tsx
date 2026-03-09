@@ -1,10 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CheckCircle2, Circle, ArrowLeft, GitPullRequest, ChevronDown, ChevronUp,
+  CheckCircle2, Circle, ArrowLeft, GitPullRequest, ChevronDown,
   Copy, Check, ExternalLink, BookOpen, Terminal, Lightbulb, Link2, Trophy,
 } from "lucide-react";
 import { Link } from "react-router";
+import { SEO } from "../../../components/SEO";
 
 // ─── Types ─────────────────────────────────────────────────────
 interface Resource {
@@ -179,7 +180,7 @@ const STEPS: Step[] = [
     ],
     tips: [
       "Prioritize issues that are less than 30 days old — they're more likely to still be relevant.",
-      "Read 2–3 merged PRs that fixed similar issues to understand the expected solution pattern.",
+      "Read 2-3 merged PRs that fixed similar issues to understand the expected solution pattern.",
     ],
   },
   {
@@ -191,7 +192,7 @@ const STEPS: Step[] = [
       "A simple 'I'd like to work on this issue. Could I get assigned?' is enough.",
       "If the issue is ambiguous, ask clarifying questions in your comment.",
       "Wait for maintainer confirmation before starting — some projects have strict assignment policies.",
-      "If no response in 48–72 hours, it's usually fine to proceed (note this in your PR).",
+      "If no response in 48-72 hours, it's usually fine to proceed (note this in your PR).",
       "Don't submit a PR without first being assigned on active projects — it wastes your time.",
     ],
     commands: [
@@ -264,7 +265,7 @@ const STEPS: Step[] = [
     title: "Make Your Changes",
     description: "Write focused, minimal code that solves only the reported issue. Read the codebase before writing — understand patterns and conventions in use.",
     details: [
-      "Read at least 5–10 related files before writing any code — context is everything.",
+      "Read at least 5-10 related files before writing any code — context is everything.",
       "Match the existing code style, indentation, and naming conventions exactly.",
       "Minimize the diff — change only what's necessary. Unrelated cleanups belong in a separate PR.",
       "Add or update tests if the project requires them (most do).",
@@ -376,8 +377,6 @@ const STEPS: Step[] = [
 const RESOURCE_LIBRARY = [
   {
     category: "Interactive Learning",
-    color: "bg-blue-50 border-blue-100",
-    headerColor: "text-blue-800",
     items: [
       { title: "Learn Git Branching", url: "https://learngitbranching.js.org", desc: "Visual, interactive Git exercises in your browser" },
       { title: "Oh My Git!", url: "https://ohmygit.org", desc: "A game that teaches Git concepts visually" },
@@ -386,8 +385,6 @@ const RESOURCE_LIBRARY = [
   },
   {
     category: "Finding Projects",
-    color: "bg-emerald-50 border-emerald-100",
-    headerColor: "text-emerald-800",
     items: [
       { title: "Good First Issue", url: "https://goodfirstissue.dev", desc: "Curated easy issues from popular repos" },
       { title: "Up For Grabs", url: "https://up-for-grabs.net", desc: "Issues specifically for new contributors" },
@@ -397,8 +394,6 @@ const RESOURCE_LIBRARY = [
   },
   {
     category: "Reference & Docs",
-    color: "bg-purple-50 border-purple-100",
-    headerColor: "text-purple-800",
     items: [
       { title: "Pro Git Book (free)", url: "https://git-scm.com/book/en/v2", desc: "Comprehensive free book on Git" },
       { title: "Conventional Commits", url: "https://www.conventionalcommits.org", desc: "Commit message specification" },
@@ -408,8 +403,6 @@ const RESOURCE_LIBRARY = [
   },
   {
     category: "Community",
-    color: "bg-orange-50 border-orange-100",
-    headerColor: "text-orange-800",
     items: [
       { title: "Dev.to #opensource", url: "https://dev.to/t/opensource", desc: "Articles and first-PR stories" },
       { title: "Reddit r/opensource", url: "https://reddit.com/r/opensource", desc: "Q&A and open source discussions" },
@@ -417,10 +410,6 @@ const RESOURCE_LIBRARY = [
     ],
   },
 ];
-
-const TYPE_ICONS: Record<Resource["type"], string> = {
-  article: "📄", tool: "🔧", video: "🎬", docs: "📚", interactive: "🎮",
-};
 
 const STORAGE_KEY = "first-pr-roadmap-completed";
 
@@ -433,7 +422,7 @@ function CodeBlock({ code }: { code: string }) {
     setTimeout(() => setCopied(false), 1800);
   };
   return (
-    <div className="relative group bg-gray-950 rounded-lg overflow-hidden">
+    <div className="relative group bg-gray-950 dark:bg-gray-950 rounded-xl overflow-hidden">
       <pre className="text-xs text-gray-200 p-3 pr-10 overflow-x-auto leading-relaxed font-mono">{code}</pre>
       <button
         onClick={copy}
@@ -447,87 +436,101 @@ function CodeBlock({ code }: { code: string }) {
 
 // ─── Step Card ───────────────────────────────────────────────────
 function StepCard({
-  step, completed, onToggle,
-}: { step: Step; completed: boolean; onToggle: () => void }) {
+  step, completed, onToggle, index,
+}: { step: Step; completed: boolean; onToggle: () => void; index: number }) {
   const [expanded, setExpanded] = useState(false);
   const [activeTab, setActiveTab] = useState<"details" | "commands" | "resources" | "tips">("details");
 
   return (
-    <div
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.2 + index * 0.03 }}
       id={`step-${step.id}`}
-      className={`rounded-2xl border transition-all ${completed ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-200 dark:border-emerald-700" : "bg-white dark:bg-gray-900 border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-sm"}`}
+      className={`bg-white dark:bg-gray-900 border rounded-2xl overflow-hidden transition-all duration-300 ${
+        completed
+          ? "border-green-200 dark:border-green-800 hover:shadow-xl hover:shadow-green-100/50 dark:hover:shadow-green-900/20"
+          : "border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50"
+      }`}
     >
       {/* Header */}
-      <div className="flex items-start gap-4 p-5">
-        {/* Check button */}
+      <div
+        className="flex items-center gap-4 px-5 py-4 cursor-pointer"
+        onClick={() => setExpanded(!expanded)}
+      >
         <button
-          onClick={onToggle}
-          className={`shrink-0 mt-0.5 transition-all ${completed ? "text-emerald-500 scale-110" : "text-gray-300 hover:text-emerald-400"}`}
+          onClick={(e) => { e.stopPropagation(); onToggle(); }}
+          className="shrink-0"
         >
-          {completed ? <CheckCircle2 className="w-6 h-6" /> : <Circle className="w-6 h-6" />}
+          {completed ? (
+            <CheckCircle2 className="w-5 h-5 text-green-500" />
+          ) : (
+            <Circle className="w-5 h-5 text-gray-300 dark:text-gray-600 hover:text-gray-400 dark:hover:text-gray-500 transition-colors" />
+          )}
         </button>
 
         <div className="flex-1 min-w-0">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2 mb-0.5">
-                <span className={`text-xs font-bold ${completed ? "text-emerald-600" : "text-gray-400"}`}>
-                  Step {step.number}
-                </span>
-              </div>
-              <h3 className={`text-base font-bold leading-tight ${completed ? "text-emerald-800 dark:text-emerald-400 line-through decoration-emerald-400" : "text-gray-900 dark:text-white"}`}>
-                {step.title}
-              </h3>
-            </div>
-            <button
-              onClick={() => setExpanded(!expanded)}
-              className="shrink-0 p-1.5 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
-            >
-              {expanded ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            </button>
-          </div>
-          <p className={`text-sm mt-1.5 leading-relaxed ${completed ? "text-emerald-700 dark:text-emerald-400" : "text-gray-500"}`}>
+          <span className={`text-sm font-medium ${
+            completed
+              ? "text-gray-400 dark:text-gray-500 line-through"
+              : "text-gray-950 dark:text-white"
+          }`}>
+            {step.title}
+          </span>
+          <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5 line-clamp-1">
             {step.description}
           </p>
         </div>
+
+        <span className={`text-xs font-bold shrink-0 ${
+          completed ? "text-green-500" : "text-gray-400 dark:text-gray-500"
+        }`}>
+          {step.number}/12
+        </span>
+
+        <ChevronDown className={`w-4 h-4 text-gray-400 dark:text-gray-500 shrink-0 transition-transform duration-200 ${expanded ? "rotate-180" : ""}`} />
       </div>
 
-      {/* Expandable content */}
+      {/* Expanded content */}
       <AnimatePresence>
         {expanded && (
           <motion.div
             initial={{ height: 0, opacity: 0 }}
             animate={{ height: "auto", opacity: 1 }}
             exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.22 }}
+            transition={{ duration: 0.2 }}
             className="overflow-hidden"
           >
-            <div className="border-t border-gray-100 dark:border-gray-800 mx-5" />
-            {/* Tabs */}
-            <div className="flex gap-1 p-4 pb-0">
-              {(["details", "commands", "resources", "tips"] as const).filter((tab) => {
-                if (tab === "commands") return step.commands.length > 0;
-                if (tab === "resources") return step.resources.length > 0;
-                if (tab === "tips") return step.tips.length > 0;
-                return true;
-              }).map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-                    activeTab === tab ? "bg-gray-900 dark:bg-white text-white dark:text-gray-950" : "text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`}
-                >
-                  {tab === "details" && <BookOpen className="w-3 h-3" />}
-                  {tab === "commands" && <Terminal className="w-3 h-3" />}
-                  {tab === "resources" && <Link2 className="w-3 h-3" />}
-                  {tab === "tips" && <Lightbulb className="w-3 h-3" />}
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
-            </div>
+            <div className="px-5 pb-5 space-y-4">
+              <div className="border-t border-gray-100 dark:border-gray-800 pt-4" />
 
-            <div className="p-5 pt-4">
+              {/* Tabs */}
+              <div className="flex items-center gap-2 bg-gray-50 dark:bg-gray-800/50 rounded-xl p-1">
+                {(["details", "commands", "resources", "tips"] as const).filter((tab) => {
+                  if (tab === "commands") return step.commands.length > 0;
+                  if (tab === "resources") return step.resources.length > 0;
+                  if (tab === "tips") return step.tips.length > 0;
+                  return true;
+                }).map((tab) => (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-all ${
+                      activeTab === tab
+                        ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm"
+                        : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+                    }`}
+                  >
+                    {tab === "details" && <BookOpen className="w-3 h-3" />}
+                    {tab === "commands" && <Terminal className="w-3 h-3" />}
+                    {tab === "resources" && <Link2 className="w-3 h-3" />}
+                    {tab === "tips" && <Lightbulb className="w-3 h-3" />}
+                    {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                  </button>
+                ))}
+              </div>
+
+              {/* Tab content */}
               {activeTab === "details" && (
                 <ul className="space-y-2">
                   {step.details.map((d, i) => (
@@ -558,25 +561,24 @@ function StepCard({
                       href={r.url}
                       target="_blank"
                       rel="noopener noreferrer"
-                      className="flex items-center gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 hover:border-gray-200 dark:hover:border-gray-600 hover:bg-white dark:hover:bg-gray-700 no-underline group transition-all"
+                      className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline group transition-all"
                     >
-                      <span className="text-lg">{TYPE_ICONS[r.type]}</span>
                       <div className="flex-1 min-w-0">
-                        <p className="text-sm font-semibold text-gray-900 dark:text-white group-hover:text-blue-700 dark:group-hover:text-blue-400 transition-colors">{r.title}</p>
-                        <p className="text-xs text-gray-400 capitalize">{r.type}</p>
+                        <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{r.title}</p>
+                        <p className="text-xs text-gray-400 dark:text-gray-500 capitalize">{r.type}</p>
                       </div>
-                      <ExternalLink className="w-3.5 h-3.5 text-gray-300 group-hover:text-blue-500 shrink-0" />
+                      <ExternalLink className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-indigo-500 shrink-0" />
                     </a>
                   ))}
                 </div>
               )}
 
               {activeTab === "tips" && (
-                <div className="space-y-3">
+                <div className="space-y-2">
                   {step.tips.map((tip, i) => (
-                    <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-amber-50 dark:bg-amber-900/30 border border-amber-100 dark:border-amber-800">
+                    <div key={i} className="flex items-start gap-3 p-3 rounded-xl bg-gray-50 dark:bg-gray-800">
                       <Lightbulb className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
-                      <p className="text-sm text-amber-900 dark:text-amber-300 leading-relaxed">{tip}</p>
+                      <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{tip}</p>
                     </div>
                   ))}
                 </div>
@@ -585,7 +587,7 @@ function StepCard({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
 
@@ -611,61 +613,103 @@ export default function FirstPRRoadmapPage() {
     saveCompleted(next);
   };
 
-  const resetAll = () => {
-    saveCompleted(new Set());
-  };
+  const resetAll = () => saveCompleted(new Set());
 
   const pct = Math.round((completed.size / STEPS.length) * 100);
   const allDone = completed.size === STEPS.length;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
-      {/* Breadcrumb */}
-      <Link to="/student/opensource" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white mb-6 no-underline transition-colors">
-        <ArrowLeft className="w-4 h-4" />
-        Open Source
-      </Link>
+    <div className="relative pb-12">
+      <SEO title="First PR Roadmap — Open Source" noIndex />
 
-      {/* Hero */}
-      <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-pink-50 via-rose-50 to-fuchsia-50 border border-pink-100 mb-8 p-8">
-        <div className="absolute top-0 right-0 w-56 h-56 bg-gradient-to-bl from-rose-200/30 to-transparent rounded-bl-full pointer-events-none" />
-        <div className="relative">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-500 flex items-center justify-center shadow-lg">
-              <GitPullRequest className="w-5 h-5 text-white" />
-            </div>
-            <div>
-              <h1 className="text-2xl font-bold text-gray-900 dark:text-white">First PR Roadmap</h1>
-              <p className="text-sm text-rose-600">12 steps from zero to your first merged pull request</p>
-            </div>
-          </div>
-          <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mb-5 leading-relaxed">
-            Follow this step-by-step guide with real Git commands and curated resources. Check off each step as you go — your progress is saved in your browser.
-          </p>
+      {/* Atmospheric background */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute -top-32 -right-32 w-150 h-150 bg-indigo-100 dark:bg-indigo-900/20 rounded-full blur-3xl opacity-40" />
+        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-slate-100 dark:bg-slate-900/20 rounded-full blur-3xl opacity-40" />
+        <div
+          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
+          style={{
+            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+      </div>
 
-          {/* Progress */}
-          <div className="flex items-center gap-4">
-            <div className="flex-1 max-w-md">
-              <div className="flex items-center justify-between mb-1.5">
-                <span className="text-xs font-medium text-gray-600">{completed.size} of {STEPS.length} steps completed</span>
-                <span className="text-sm font-bold text-rose-600">{pct}%</span>
-              </div>
-              <div className="h-2 bg-white/60 rounded-full overflow-hidden">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-rose-400 to-pink-500 rounded-full"
-                  animate={{ width: `${pct}%` }}
-                  transition={{ duration: 0.5 }}
-                />
-              </div>
-            </div>
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="text-center mb-10 mt-6"
+      >
+        <Link to="/student/opensource" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4 no-underline">
+          <ArrowLeft className="w-4 h-4" />
+          Open Source
+        </Link>
+
+        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
+          First PR <span className="text-gradient-accent">Roadmap</span>
+        </h1>
+        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-lg mx-auto">
+          12 steps from zero to your first merged pull request
+        </p>
+      </motion.div>
+
+      {/* Stats */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="grid grid-cols-3 gap-4 mb-8"
+      >
+        {[
+          { icon: GitPullRequest, value: STEPS.length, label: "Steps", iconColor: "text-indigo-500" },
+          { icon: CheckCircle2, value: completed.size, label: "Completed", iconColor: "text-green-500" },
+          { icon: Trophy, value: `${pct}%`, label: "Progress", iconColor: "text-amber-500" },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 text-center"
+          >
+            <stat.icon className={`w-6 h-6 ${stat.iconColor} mx-auto mb-3`} />
+            <p className="font-display text-2xl font-bold text-gray-950 dark:text-white">{stat.value}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-0.5">{stat.label}</p>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Progress bar */}
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.15 }}
+        className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 mb-8"
+      >
+        <div className="flex items-center justify-between mb-3">
+          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Overall Progress</span>
+          <div className="flex items-center gap-3">
             {completed.size > 0 && (
-              <button onClick={resetAll} className="text-xs text-gray-400 hover:text-gray-700 transition-colors">
+              <button onClick={resetAll} className="text-xs text-gray-400 hover:text-gray-600 dark:hover:text-gray-300 transition-colors">
                 Reset
               </button>
             )}
+            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+              {completed.size} / {STEPS.length} ({pct}%)
+            </span>
           </div>
         </div>
-      </section>
+        <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+          <motion.div
+            initial={{ width: 0 }}
+            animate={{ width: `${pct}%` }}
+            transition={{ duration: 0.6 }}
+            className={`h-full rounded-full ${pct === 100 ? "bg-green-500" : "bg-indigo-500"}`}
+          />
+        </div>
+      </motion.div>
 
       {/* Completion banner */}
       <AnimatePresence>
@@ -674,39 +718,44 @@ export default function FirstPRRoadmapPage() {
             initial={{ opacity: 0, y: -8 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
-            className="mb-6 p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-200 dark:border-emerald-700 flex items-center gap-4"
+            className="mb-8 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-2xl p-5 flex items-center gap-4"
           >
-            <Trophy className="w-8 h-8 text-emerald-500 shrink-0" />
+            <Trophy className="w-8 h-8 text-green-500 shrink-0" />
             <div>
-              <p className="text-base font-bold text-emerald-900 dark:text-emerald-300">Congratulations — you're an open source contributor!</p>
-              <p className="text-sm text-emerald-700 dark:text-emerald-400 mt-0.5">You've completed all 12 steps. Share your first PR on LinkedIn and add it to your resume. Now pick a harder issue and repeat!</p>
+              <p className="text-base font-bold text-green-900 dark:text-green-300">You're an open source contributor!</p>
+              <p className="text-sm text-green-700 dark:text-green-400 mt-0.5">You've completed all 12 steps. Share your first PR on LinkedIn and add it to your resume!</p>
             </div>
           </motion.div>
         )}
       </AnimatePresence>
 
       {/* Steps */}
-      <div className="space-y-3 mb-12">
-        {STEPS.map((step) => (
+      <div className="space-y-2 mb-12">
+        {STEPS.map((step, i) => (
           <StepCard
             key={step.id}
             step={step}
             completed={completed.has(step.id)}
             onToggle={() => toggle(step.id)}
+            index={i}
           />
         ))}
       </div>
 
       {/* Resource Library */}
-      <section>
-        <div className="flex items-center gap-2 mb-5">
-          <BookOpen className="w-5 h-5 text-gray-600" />
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Resource Library</h2>
-        </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.3 }}
+        className="mb-8"
+      >
+        <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-4">
+          Resource Library
+        </h2>
         <div className="grid md:grid-cols-2 gap-4">
           {RESOURCE_LIBRARY.map((cat) => (
-            <div key={cat.category} className={`rounded-2xl border p-5 ${cat.color}`}>
-              <h3 className={`text-sm font-bold mb-4 ${cat.headerColor}`}>{cat.category}</h3>
+            <div key={cat.category} className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-4">{cat.category}</h3>
               <div className="space-y-2.5">
                 {cat.items.map((item) => (
                   <a
@@ -714,12 +763,12 @@ export default function FirstPRRoadmapPage() {
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-start gap-2.5 group no-underline"
+                    className="flex items-start gap-3 group no-underline"
                   >
-                    <ExternalLink className="w-3.5 h-3.5 text-gray-400 group-hover:text-gray-700 shrink-0 mt-0.5" />
+                    <ExternalLink className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-indigo-500 shrink-0 mt-0.5" />
                     <div>
-                      <p className="text-sm font-semibold text-gray-900 dark:text-white group-hover:underline leading-tight">{item.title}</p>
-                      <p className="text-[11px] text-gray-500 mt-0.5">{item.desc}</p>
+                      <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors leading-tight">{item.title}</p>
+                      <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">{item.desc}</p>
                     </div>
                   </a>
                 ))}
@@ -727,16 +776,19 @@ export default function FirstPRRoadmapPage() {
             </div>
           ))}
         </div>
-      </section>
+      </motion.div>
 
-      {/* Quick reference card */}
-      <section className="mt-8">
-        <div className="flex items-center gap-2 mb-4">
-          <Terminal className="w-5 h-5 text-gray-600" />
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">Quick Command Reference</h2>
-        </div>
-        <div className="bg-gray-950 rounded-2xl p-6">
-          <p className="text-xs text-gray-400 mb-4 font-mono">// Complete workflow: fork → fix → PR</p>
+      {/* Quick Command Reference */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.35 }}
+      >
+        <h2 className="text-sm font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-4">
+          Quick Command Reference
+        </h2>
+        <div className="bg-gray-950 rounded-2xl p-6 overflow-x-auto">
+          <p className="text-xs text-gray-500 mb-4 font-mono">// Complete workflow: fork &rarr; fix &rarr; PR</p>
           <div className="space-y-1">
             {[
               "git clone git@github.com:YOU/repo.git && cd repo",
@@ -758,7 +810,7 @@ export default function FirstPRRoadmapPage() {
             ))}
           </div>
         </div>
-      </section>
+      </motion.div>
     </div>
   );
 }

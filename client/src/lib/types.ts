@@ -3,6 +3,23 @@ export type JobStatus = "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
 export type ApplicationStatus = "APPLIED" | "IN_PROGRESS" | "SHORTLISTED" | "REJECTED" | "HIRED" | "WITHDRAWN";
 export type RoundStatus = "PENDING" | "IN_PROGRESS" | "COMPLETED" | "SKIPPED";
 export type FieldType = "TEXT" | "TEXTAREA" | "DROPDOWN" | "MULTI_SELECT" | "FILE_UPLOAD" | "BOOLEAN" | "NUMERIC" | "DATE" | "EMAIL" | "URL";
+export type StudentJobStatus = "NO_OFFER" | "LOOKING" | "OPEN_TO_OFFER";
+
+export interface ProjectItem {
+  id: string;
+  title: string;
+  description: string;
+  techStack: string[];
+  liveUrl?: string;
+  repoUrl?: string;
+}
+
+export interface AchievementItem {
+  id: string;
+  title: string;
+  description: string;
+  date?: string;
+}
 
 export interface User {
   id: number;
@@ -11,6 +28,7 @@ export interface User {
   role: UserRole;
   contactNo?: string;
   profilePic?: string;
+  coverImage?: string;
   resumes?: string[];
   company?: string;
   designation?: string;
@@ -22,6 +40,9 @@ export interface User {
   linkedinUrl?: string;
   githubUrl?: string;
   portfolioUrl?: string;
+  jobStatus?: StudentJobStatus | null;
+  projects?: ProjectItem[];
+  achievements?: AchievementItem[];
   createdAt?: string;
   subscriptionPlan?: "FREE" | "MONTHLY" | "YEARLY";
   subscriptionStatus?: "ACTIVE" | "EXPIRED";
@@ -398,6 +419,7 @@ export interface TalentSearchResult {
   githubUrl?: string;
   portfolioUrl?: string;
   resumes: string[];
+  jobStatus?: string | null;
   bestAtsScore: number | null;
   verifiedSkillCount: number;
   verifiedSkills: string[];
@@ -426,6 +448,88 @@ export interface QuizAttempt {
   passed: boolean;
   createdAt: string;
   quiz: { title: string; skill: { name: string } };
+}
+
+// Skill Verification
+export type TestDifficulty = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
+
+export interface SkillTest {
+  id: number;
+  skillName: string;
+  title: string;
+  description?: string;
+  difficulty: TestDifficulty;
+  timeLimitSecs: number;
+  passThreshold: number;
+  isActive: boolean;
+  _count?: { questions: number; attempts: number };
+  createdAt: string;
+}
+
+export interface SkillTestQuestion {
+  id: number;
+  question: string;
+  options: string[];
+  correctIndex?: number;
+  explanation?: string;
+  orderIndex: number;
+}
+
+export interface SkillTestWithQuestions extends SkillTest {
+  questions: SkillTestQuestion[];
+  existingVerification?: VerifiedSkill | null;
+  bestAttempt?: { id: number; score: number; passed: boolean } | null;
+}
+
+export interface SkillTestAttempt {
+  id: number;
+  testId: number;
+  score: number;
+  passed: boolean;
+  proctorLog?: ProctorLog;
+  proctoringScore?: number;
+  autoTerminated?: boolean;
+  startedAt: string;
+  completedAt?: string;
+  test: { title: string; skillName: string };
+}
+
+export interface ProctorLog {
+  tabSwitches: number;
+  focusLosses: number;
+  fullscreenExits: number;
+  devtoolsAttempts: number;
+  copyPasteAttempts: number;
+  rightClickAttempts: number;
+  faceViolations: { type: "NO_FACE" | "MULTIPLE_FACES"; timestamp: string; duration?: number }[];
+  warnings: { type: string; message: string; timestamp: string }[];
+  terminated: boolean;
+  terminationReason: string | null;
+  cameraEnabled: boolean;
+  snapshotCount: number;
+}
+
+export interface VerifiedSkill {
+  id: number;
+  skillName: string;
+  score: number;
+  verifiedAt: string;
+}
+
+export interface GradedAnswer {
+  questionId: number;
+  selectedIndex: number;
+  correct: boolean;
+  explanation?: string | null;
+}
+
+export interface SkillTestSubmitResult {
+  attempt: { id: number; score: number; passed: boolean };
+  score: number;
+  passed: boolean;
+  correctCount: number;
+  totalQuestions: number;
+  gradedAnswers: GradedAnswer[];
 }
 
 // GSoC Organizations

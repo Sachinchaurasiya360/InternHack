@@ -71,10 +71,12 @@ export const talentSearchSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(50).default(12),
   skills: z.string().optional(),
+  verifiedSkills: z.string().optional(),
   college: z.string().optional(),
   graduationYearMin: z.coerce.number().int().optional(),
   graduationYearMax: z.coerce.number().int().optional(),
   minAtsScore: z.coerce.number().int().min(0).max(100).optional(),
   location: z.string().optional(),
   search: z.string().optional(),
+  jobStatus: z.string().optional(),
 });

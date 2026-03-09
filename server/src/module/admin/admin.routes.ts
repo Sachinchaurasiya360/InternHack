@@ -80,3 +80,35 @@ adminRouter.delete("/colleges/:id", (req, res, next) => adminController.deleteCo
 // College Reviews
 adminRouter.get("/college-reviews", (req, res, next) => adminController.listCollegeReviews(req, res, next));
 adminRouter.put("/college-reviews/:id/status", (req, res, next) => adminController.updateCollegeReviewStatus(req, res, next));
+
+// DSA Management
+adminRouter.get("/dsa/topics", (req, res, next) => adminController.listDsaTopics(req, res, next));
+adminRouter.get("/dsa/topics/:id", (req, res, next) => adminController.getDsaTopic(req, res, next));
+adminRouter.post("/dsa/topics", (req, res, next) => adminController.createDsaTopic(req, res, next));
+adminRouter.put("/dsa/topics/:id", (req, res, next) => adminController.updateDsaTopic(req, res, next));
+adminRouter.delete("/dsa/topics/:id", (req, res, next) => adminController.deleteDsaTopic(req, res, next));
+adminRouter.post("/dsa/problems", (req, res, next) => adminController.createDsaProblem(req, res, next));
+adminRouter.put("/dsa/problems/:id", (req, res, next) => adminController.updateDsaProblem(req, res, next));
+adminRouter.delete("/dsa/problems/:id", (req, res, next) => adminController.deleteDsaProblem(req, res, next));
+
+// Aptitude Management
+adminRouter.get("/aptitude/categories", (req, res, next) => adminController.listAptitudeCategories(req, res, next));
+adminRouter.get("/aptitude/categories/:id", (req, res, next) => adminController.getAptitudeCategory(req, res, next));
+adminRouter.post("/aptitude/categories", (req, res, next) => adminController.createAptitudeCategory(req, res, next));
+adminRouter.put("/aptitude/categories/:id", (req, res, next) => adminController.updateAptitudeCategory(req, res, next));
+adminRouter.delete("/aptitude/categories/:id", (req, res, next) => adminController.deleteAptitudeCategory(req, res, next));
+adminRouter.post("/aptitude/topics", (req, res, next) => adminController.createAptitudeTopic(req, res, next));
+adminRouter.put("/aptitude/topics/:id", (req, res, next) => adminController.updateAptitudeTopic(req, res, next));
+adminRouter.delete("/aptitude/topics/:id", (req, res, next) => adminController.deleteAptitudeTopic(req, res, next));
+adminRouter.get("/aptitude/questions", (req, res, next) => adminController.listAptitudeQuestions(req, res, next));
+adminRouter.post("/aptitude/questions", (req, res, next) => adminController.createAptitudeQuestion(req, res, next));
+adminRouter.put("/aptitude/questions/:id", (req, res, next) => adminController.updateAptitudeQuestion(req, res, next));
+adminRouter.delete("/aptitude/questions/:id", (req, res, next) => adminController.deleteAptitudeQuestion(req, res, next));
+
+// Skill Test Management
+adminRouter.get("/skill-tests", (req, res, next) => adminController.listAdminSkillTests(req, res, next));
+adminRouter.get("/skill-tests/:id", (req, res, next) => adminController.getAdminSkillTest(req, res, next));
+adminRouter.post("/skill-tests", (req, res, next) => adminController.createAdminSkillTest(req, res, next));
+adminRouter.put("/skill-tests/:id", (req, res, next) => adminController.updateAdminSkillTest(req, res, next));
+adminRouter.delete("/skill-tests/:id", (req, res, next) => adminController.deleteAdminSkillTest(req, res, next));
+adminRouter.patch("/skill-tests/:id/toggle", (req, res, next) => adminController.toggleSkillTestActive(req, res, next));

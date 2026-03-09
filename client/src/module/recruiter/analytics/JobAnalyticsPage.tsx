@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import { useParams, Link } from "react-router";
 import { ArrowLeft, TrendingDown } from "lucide-react";
 import { motion } from "framer-motion";
@@ -32,7 +33,7 @@ export default function JobAnalyticsPage() {
     }).catch(() => setLoading(false));
   }, [jobId]);
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-500">Loading analytics...</div>;
+  if (loading) return <LoadingScreen />;
   if (!data) return <div className="text-center text-gray-500 dark:text-gray-500">Failed to load analytics</div>;
 
   const maxSubmissions = Math.max(...data.roundAnalytics.map((r) => r.totalSubmissions), 1);

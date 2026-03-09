@@ -1,6 +1,5 @@
-import { useRef } from "react";
 import { Link, useNavigate } from "react-router";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { motion } from "framer-motion";
 import { useAuthStore } from "../../../lib/auth.store";
 import {
   Sparkles,
@@ -19,13 +18,16 @@ import {
   Zap,
   Layout,
   PenLine,
+  AlignLeft,
+  Award,
+  Code2,
 } from "lucide-react";
 
 const features = [
   {
     icon: <Target className="w-5 h-5" />,
     title: "ATS Compatibility Score",
-    description: "Get a comprehensive 0–100 score reflecting how well your resume performs with Applicant Tracking Systems.",
+    description: "Get a comprehensive 0-100 score reflecting how well your resume performs with Applicant Tracking Systems.",
     gradient: "from-violet-500 to-violet-600",
   },
   {
@@ -67,68 +69,142 @@ const steps = [
 ];
 
 const categories = [
-  { category: "Formatting", color: "text-violet-600 bg-violet-50 dark:bg-violet-900/30 dark:text-violet-400", items: ["Clean section structure", "Consistent spacing", "Scannable layout", "ATS-safe file format"] },
-  { category: "Keywords", color: "text-blue-600 bg-blue-50 dark:bg-blue-900/30 dark:text-blue-400", items: ["Industry terminology", "Technical skill terms", "Action verbs", "Role-specific phrases"] },
-  { category: "Experience", color: "text-emerald-600 bg-emerald-50 dark:bg-emerald-900/30 dark:text-emerald-400", items: ["Work history clarity", "Achievement metrics", "Job relevance", "Career progression"] },
-  { category: "Skills", color: "text-amber-600 bg-amber-50 dark:bg-amber-900/30 dark:text-amber-400", items: ["Hard skills match", "Soft skills presence", "Skill categorization", "Proficiency clarity"] },
-  { category: "Education", color: "text-pink-600 bg-pink-50 dark:bg-pink-900/30 dark:text-pink-400", items: ["Degree relevance", "Institution clarity", "GPA mention", "Certifications"] },
-  { category: "Impact", color: "text-indigo-600 bg-indigo-50 dark:bg-indigo-900/30 dark:text-indigo-400", items: ["Quantified results", "Achievement focus", "Action-oriented language", "Measurable outcomes"] },
+  { category: "Formatting", icon: AlignLeft, color: "text-violet-600 dark:text-violet-400", bg: "bg-violet-50 dark:bg-violet-900/30", items: ["Clean section structure", "Consistent spacing", "Scannable layout", "ATS-safe format"] },
+  { category: "Keywords", icon: Search, color: "text-blue-600 dark:text-blue-400", bg: "bg-blue-50 dark:bg-blue-900/30", items: ["Industry terminology", "Technical skill terms", "Action verbs", "Role-specific phrases"] },
+  { category: "Experience", icon: Briefcase, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-900/30", items: ["Work history clarity", "Achievement metrics", "Job relevance", "Career progression"] },
+  { category: "Skills", icon: Code2, color: "text-amber-600 dark:text-amber-400", bg: "bg-amber-50 dark:bg-amber-900/30", items: ["Hard skills match", "Soft skills presence", "Skill categorization", "Proficiency clarity"] },
+  { category: "Education", icon: Award, color: "text-pink-600 dark:text-pink-400", bg: "bg-pink-50 dark:bg-pink-900/30", items: ["Degree relevance", "Institution clarity", "GPA mention", "Certifications"] },
+  { category: "Impact", icon: TrendingUp, color: "text-indigo-600 dark:text-indigo-400", bg: "bg-indigo-50 dark:bg-indigo-900/30", items: ["Quantified results", "Achievement focus", "Action-oriented language", "Measurable outcomes"] },
 ];
 
-
-// ── Sticky Horizontal Scroll Section ──────────────────────────────────────
-function StickyAnalyzeSection() {
-  const containerRef = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: containerRef,
-    offset: ["start start", "end end"],
-  });
-  const x = useTransform(scrollYProgress, [0, 1], ["15%", "-65%"]);
-
-  return (
-    <section className="relative bg-white dark:bg-gray-900">
-      <div ref={containerRef} className="relative h-[200vh]">
-        <div className="sticky top-0 h-screen flex flex-col justify-center overflow-hidden">
-          <div className="max-w-6xl mx-auto w-full px-6 mb-8">
-            <div className="text-center">
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-6">
-                <Zap className="w-3 h-3" />
-                Deep Analysis
-              </div>
-              <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-3">
-                What we <span className="text-gradient-accent">analyze</span>
-              </h2>
-              <p className="text-lg text-gray-500 dark:text-gray-500">20+ criteria across 6 key categories</p>
-            </div>
-          </div>
-
-          <motion.div style={{ x }} className="flex gap-5 pl-[10%]">
-            {categories.map((cat) => (
-              <motion.div
-                key={cat.category}
-                whileHover={{ y: -4 }}
-                className="min-w-75 max-w-75 p-6 md:p-7 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm shrink-0 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all"
-              >
-                <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold mb-5 ${cat.color}`}>
-                  <FileText className="w-3 h-3" />
-                  {cat.category}
-                </div>
-                <ul className="space-y-3">
-                  {cat.items.map((item) => (
-                    <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-400">
-                      <CheckCircle className="w-4 h-4 text-green-500 shrink-0" />
-                      {item}
-                    </li>
-                  ))}
-                </ul>
-              </motion.div>
-            ))}
-          </motion.div>
+// Mini resume template thumbnails for the Resume Builder section
+const templatePreviews = [
+  {
+    name: "Classic",
+    accent: "border-t-gray-800 dark:border-t-gray-200",
+    layout: (
+      <div className="space-y-1.5 px-2 py-2">
+        <div className="h-2 w-12 bg-gray-700 rounded-full mx-auto" />
+        <div className="h-0.5 bg-gray-300 dark:bg-gray-600 w-full" />
+        <div className="space-y-1">
+          <div className="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 w-10/12 bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 w-8/12 bg-gray-200 dark:bg-gray-600 rounded-full" />
+        </div>
+        <div className="h-0.5 bg-gray-300 dark:bg-gray-600 w-full" />
+        <div className="space-y-1">
+          <div className="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 w-11/12 bg-gray-200 dark:bg-gray-600 rounded-full" />
         </div>
       </div>
-    </section>
-  );
-}
+    ),
+  },
+  {
+    name: "Modern",
+    accent: "border-t-indigo-500",
+    layout: (
+      <div className="flex h-full">
+        <div className="w-1/3 bg-indigo-50 dark:bg-indigo-900/30 p-1.5 space-y-1.5">
+          <div className="w-5 h-5 rounded-full bg-indigo-200 dark:bg-indigo-700 mx-auto" />
+          <div className="h-1 w-full bg-indigo-200 dark:bg-indigo-700 rounded-full" />
+          <div className="h-1 w-8/12 bg-indigo-100 dark:bg-indigo-800 rounded-full" />
+          <div className="h-1 w-10/12 bg-indigo-100 dark:bg-indigo-800 rounded-full" />
+        </div>
+        <div className="flex-1 p-1.5 space-y-1">
+          <div className="h-1.5 w-12 bg-gray-700 rounded-full" />
+          <div className="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 w-10/12 bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 w-8/12 bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full" />
+        </div>
+      </div>
+    ),
+  },
+  {
+    name: "Minimal",
+    accent: "border-t-gray-400",
+    layout: (
+      <div className="space-y-1.5 px-2 py-2">
+        <div className="h-2.5 w-14 bg-gray-600 rounded-sm" />
+        <div className="h-0.5 w-6 bg-gray-400 dark:bg-gray-500 rounded-full" />
+        <div className="space-y-1 mt-1">
+          <div className="h-1 w-full bg-gray-100 dark:bg-gray-700 rounded-full" />
+          <div className="h-1 w-11/12 bg-gray-100 dark:bg-gray-700 rounded-full" />
+          <div className="h-1 w-9/12 bg-gray-100 dark:bg-gray-700 rounded-full" />
+        </div>
+        <div className="space-y-1 mt-1">
+          <div className="h-1 w-full bg-gray-100 dark:bg-gray-700 rounded-full" />
+          <div className="h-1 w-10/12 bg-gray-100 dark:bg-gray-700 rounded-full" />
+        </div>
+      </div>
+    ),
+  },
+  {
+    name: "Creative",
+    accent: "border-t-violet-500",
+    layout: (
+      <div className="flex h-full">
+        <div className="w-1 bg-violet-400 dark:bg-violet-600" />
+        <div className="flex-1 p-1.5 space-y-1">
+          <div className="h-2 w-14 bg-violet-600 dark:bg-violet-400 rounded-sm" />
+          <div className="flex gap-1 mt-1">
+            <div className="w-1 h-1 rounded-full bg-violet-400 dark:bg-violet-600 mt-0.5 shrink-0" />
+            <div className="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full" />
+          </div>
+          <div className="flex gap-1">
+            <div className="w-1 h-1 rounded-full bg-violet-400 dark:bg-violet-600 mt-0.5 shrink-0" />
+            <div className="h-1 w-10/12 bg-gray-200 dark:bg-gray-600 rounded-full" />
+          </div>
+          <div className="flex gap-1">
+            <div className="w-1 h-1 rounded-full bg-violet-400 dark:bg-violet-600 mt-0.5 shrink-0" />
+            <div className="h-1 w-9/12 bg-gray-200 dark:bg-gray-600 rounded-full" />
+          </div>
+        </div>
+      </div>
+    ),
+  },
+  {
+    name: "Professional",
+    accent: "border-t-gray-900 dark:border-t-white",
+    layout: (
+      <div className="space-y-1.5">
+        <div className="bg-gray-900 dark:bg-gray-100 px-2 py-1.5">
+          <div className="h-1.5 w-12 bg-white dark:bg-gray-800 rounded-full" />
+          <div className="h-0.5 w-16 bg-gray-500 dark:bg-gray-500 rounded-full mt-0.5" />
+        </div>
+        <div className="px-2 space-y-1">
+          <div className="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 w-10/12 bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 w-8/12 bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full" />
+        </div>
+      </div>
+    ),
+  },
+  {
+    name: "Compact",
+    accent: "border-t-emerald-500",
+    layout: (
+      <div className="px-1.5 py-1.5 space-y-1">
+        <div className="flex items-center gap-1">
+          <div className="h-1.5 w-10 bg-emerald-600 dark:bg-emerald-400 rounded-sm" />
+          <div className="h-0.5 flex-1 bg-gray-200 dark:bg-gray-600 rounded-full" />
+        </div>
+        <div className="grid grid-cols-2 gap-x-1 gap-y-0.5">
+          <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 bg-gray-200 dark:bg-gray-600 rounded-full" />
+        </div>
+        <div className="h-0.5 bg-emerald-200 dark:bg-emerald-800 w-full" />
+        <div className="space-y-0.5">
+          <div className="h-1 w-full bg-gray-200 dark:bg-gray-600 rounded-full" />
+          <div className="h-1 w-10/12 bg-gray-200 dark:bg-gray-600 rounded-full" />
+        </div>
+      </div>
+    ),
+  },
+];
 
 // ── Main Landing Page ──────────────────────────────────────────────────────
 export default function AtsLandingPage() {
@@ -162,16 +238,6 @@ export default function AtsLandingPage() {
         />
 
         <div className="relative z-10 max-w-5xl mx-auto px-6 pt-28 pb-16 w-full">
-          {/* Badge */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 border border-black/10 dark:border-gray-700 shadow-sm rounded-full text-xs font-medium mb-8"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-500" />
-            <span className="text-gray-600 dark:text-gray-400">AI-Powered Resume Intelligence</span>
-          </motion.div>
 
           <motion.h1
             initial={{ opacity: 0, y: 24 }}
@@ -282,7 +348,7 @@ export default function AtsLandingPage() {
               >
                 <motion.div
                   whileHover={{ y: -4 }}
-                  className={`relative bg-white dark:bg-gray-900 rounded-2xl p-6 md:p-8 border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all h-full group overflow-hidden`}
+                  className="relative bg-white dark:bg-gray-900 rounded-2xl p-6 md:p-8 border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all h-full group overflow-hidden"
                 >
                   <div className={`w-11 h-11 rounded-xl bg-linear-to-br ${feature.gradient} flex items-center justify-center shadow-sm mb-5`}>
                     <span className="text-white">{feature.icon}</span>
@@ -339,20 +405,28 @@ export default function AtsLandingPage() {
                     </div>
                     <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-2">Resume Builder</h3>
                     <p className="text-sm text-gray-500 dark:text-gray-500 leading-relaxed mb-5">
-                      Build your resume with ATS-optimized templates. Fill in your details, pick a design, and download as PDF.
+                      Build your resume with ATS-optimized templates. Pick a design and download as PDF.
                     </p>
-                    <ul className="space-y-2.5 mb-5">
-                      {["6 professional templates", "Live preview as you type", "PDF download", "Data saved locally"].map((item) => (
-                        <li key={item} className="flex items-center gap-2.5 text-sm text-gray-600 dark:text-gray-400">
-                          <CheckCircle className="w-4 h-4 text-sky-500 shrink-0" />
-                          {item}
-                        </li>
+
+                    {/* Template Previews Grid */}
+                    <div className="grid grid-cols-3 gap-2 mb-5">
+                      {templatePreviews.slice(0, 6).map((tpl) => (
+                        <div
+                          key={tpl.name}
+                          className={`rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 overflow-hidden h-16 border-t-2 ${tpl.accent}`}
+                        >
+                          {tpl.layout}
+                        </div>
                       ))}
-                    </ul>
-                    <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-sky-600 dark:text-sky-400 group-hover:gap-2.5 transition-all">
-                      Build Your Resume
-                      <ArrowRight className="w-4 h-4" />
-                    </span>
+                    </div>
+
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-gray-400 dark:text-gray-500 font-medium">6 professional templates</span>
+                      <span className="inline-flex items-center gap-1.5 text-sm font-semibold text-sky-600 dark:text-sky-400 group-hover:gap-2.5 transition-all">
+                        Build Resume
+                        <ArrowRight className="w-4 h-4" />
+                      </span>
+                    </div>
                   </div>
                 </motion.div>
               </Link>
@@ -456,8 +530,57 @@ export default function AtsLandingPage() {
         </div>
       </section>
 
-      {/* ── Sticky Scroll: What We Analyze ── */}
-      <StickyAnalyzeSection />
+      {/* ── What We Analyze — Compact Grid ── */}
+      <section className="relative py-24 md:py-32 bg-white dark:bg-gray-900 overflow-hidden">
+        <div className="max-w-6xl mx-auto px-6">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-center mb-14"
+          >
+            <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-6">
+              <Zap className="w-3 h-3" />
+              Deep Analysis
+            </div>
+            <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-3">
+              What we <span className="text-gradient-accent">analyze</span>
+            </h2>
+            <p className="text-lg text-gray-500 dark:text-gray-500">20+ criteria across 6 key categories</p>
+          </motion.div>
+
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+            {categories.map((cat, i) => {
+              const Icon = cat.icon;
+              return (
+                <motion.div
+                  key={cat.category}
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: i * 0.07, duration: 0.45 }}
+                  whileHover={{ y: -4 }}
+                  className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all"
+                >
+                  <div className={`inline-flex items-center justify-center w-9 h-9 rounded-xl ${cat.bg} mb-3`}>
+                    <Icon className={`w-4.5 h-4.5 ${cat.color}`} />
+                  </div>
+                  <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-3">{cat.category}</h3>
+                  <ul className="space-y-2">
+                    {cat.items.map((item) => (
+                      <li key={item} className="flex items-center gap-2 text-xs text-gray-500 dark:text-gray-400">
+                        <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0" />
+                        {item}
+                      </li>
+                    ))}
+                  </ul>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
 
       {/* ── CTA ── */}
       <section className="relative py-24 md:py-32 bg-[#fafafa] dark:bg-gray-950 overflow-hidden">

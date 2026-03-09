@@ -7,6 +7,7 @@ import { DynamicFieldRenderer } from "../../../components/DynamicFieldRenderer";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Application, CustomFieldDefinition } from "../../../lib/types";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 
 export default function ApplicationProgressPage() {
   const { applicationId } = useParams();
@@ -39,7 +40,7 @@ export default function ApplicationProgressPage() {
     }
   };
 
-  if (loading) return <div className="flex items-center justify-center h-64 text-gray-500">Loading...</div>;
+  if (loading) return <LoadingScreen />;
   if (!application) return <div className="text-center text-gray-500">Application not found</div>;
 
   const rounds = application.job?.rounds || [];

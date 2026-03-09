@@ -8,7 +8,7 @@ const PRICE_TABLE = {
     pro: 333_00, // ₹333
   },
   YEARLY: {
-    pro: 2677_00, // ₹2,677
+    pro: 2999_00, // ₹2,999
   },
 } as const;
 

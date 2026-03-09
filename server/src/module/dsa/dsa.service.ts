@@ -1,14 +1,20 @@
 import { prisma } from "../../database/db.js";
 
 export class DsaService {
-  async listTopics(studentId?: number, sheet?: string) {
+  async listTopics(studentId?: number, sheet?: string, difficulty?: string[]) {
+    const problemWhere: Record<string, unknown> = {};
+    if (sheet) problemWhere.sheets = { has: sheet };
+    if (difficulty?.length) problemWhere.difficulty = { in: difficulty };
+
+    const hasProblemFilter = Object.keys(problemWhere).length > 0;
+
     const topics = await prisma.dsaTopic.findMany({
       orderBy: { orderIndex: "asc" },
       include: {
         subTopics: {
           include: {
-            problems: sheet
-              ? { where: { sheets: { has: sheet } }, select: { id: true } }
+            problems: hasProblemFilter
+              ? { where: problemWhere, select: { id: true } }
               : { select: { id: true } },
           },
         },

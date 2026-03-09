@@ -1,6 +1,8 @@
 import { useState, useEffect, useCallback } from "react";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import { Link, useSearchParams, useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
+import { motion } from "framer-motion";
 import {
   Search,
   MapPin,
@@ -48,7 +50,7 @@ function CompanyCard({ company }: { company: Company }) {
   return (
     <Link
       to={`/companies/${company.slug}`}
-      className="block bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-shadow p-5 no-underline"
+      className="block bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 p-5 no-underline"
     >
       <div className="flex items-start gap-4">
         {company.logo ? (
@@ -127,7 +129,7 @@ function CompanyCard({ company }: { company: Company }) {
 
 function YCCard({ company }: { company: YCCompany }) {
   return (
-    <Link to={`/yc/${company.slug}`} className="block bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-md transition-all p-5 group no-underline">
+    <Link to={`/yc/${company.slug}`} className="block bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-orange-200 dark:hover:border-orange-800 transition-all duration-300 p-5 group no-underline">
       <div className="flex items-start justify-between gap-3 mb-3">
         <div className="flex items-center gap-3 min-w-0">
           {company.smallLogoUrl ? (
@@ -180,7 +182,7 @@ function YCCard({ company }: { company: YCCompany }) {
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
           {company.allLocations && (
-            <span className="flex items-center gap-1 truncate max-w-[160px]">
+            <span className="flex items-center gap-1 truncate max-w-40">
               <MapPin className="w-3 h-3 shrink-0" />
               {company.allLocations}
             </span>
@@ -337,28 +339,51 @@ export default function CompanyListPage() {
   const ycPagination = ycData?.pagination ?? null;
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+    <div className="relative min-h-screen bg-white/50 dark:bg-gray-950">
+      {/* Atmospheric background */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute -top-32 -right-32 w-150 h-150 bg-indigo-100 dark:bg-indigo-900/20 rounded-full blur-3xl opacity-40" />
+        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-slate-100 dark:bg-slate-900/20 rounded-full blur-3xl opacity-40" />
+        <div
+          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
+          style={{
+            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+      </div>
+
       {!isInsideLayout && <Navbar />}
-      <div className="max-w-7xl mx-auto px-4 py-8 pt-24">
+      <div className="relative max-w-7xl mx-auto px-4 py-8 pt-24 pb-12">
         <SEO
           title="Explore Companies"
           description="Discover companies hiring on InternHack. Browse by industry, size, and location. Read reviews, see tech stacks, and find your ideal workplace."
           keywords="company explorer, companies hiring, company reviews, tech companies, startup jobs, company directory, workplace reviews"
         />
-        {/* Header */}
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center gap-3">
-            <Building2 className="w-8 h-8" />
-            Explore Companies
+
+        {/* Hero Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-8"
+        >
+          <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
+            Explore <span className="text-gradient-accent">Companies</span>
           </h1>
-          <p className="text-gray-500 dark:text-gray-500 mt-2">
-            Discover companies across cities, read reviews, and connect with key
-            people
+          <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
+            Discover companies across cities, read reviews, and find your ideal workplace
           </p>
-        </div>
+        </motion.div>
 
         {/* ── Tabs ─────────────────────────────────────── */}
-        <div className="mb-6 flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-xl p-1 w-fit">
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="mb-6 flex items-center justify-center"
+        >
+        <div className="flex items-center gap-1 bg-white dark:bg-gray-900 rounded-xl p-1 border border-gray-100 dark:border-gray-800 shadow-sm">
           <button
             onClick={() => setActiveTab("all")}
             className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all ${
@@ -385,6 +410,7 @@ export default function CompanyListPage() {
             </span>
           </button>
         </div>
+        </motion.div>
 
         {/* ── TAB: All Companies ─────────────────────── */}
         {activeTab === "all" && (
@@ -421,7 +447,12 @@ export default function CompanyListPage() {
             )}
 
             {/* Search + Filter Bar */}
-            <div className="flex items-center gap-3 mb-6">
+            <motion.div
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, delay: 0.15 }}
+              className="flex items-center gap-3 mb-6"
+            >
               <div className="flex-1 relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
                 <input
@@ -451,11 +482,11 @@ export default function CompanyListPage() {
                   <X className="w-4 h-4" /> Clear
                 </button>
               )}
-            </div>
+            </motion.div>
 
             {/* Filter Panel */}
             {showFilters && (
-              <div className="bg-white dark:bg-gray-900 p-4 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6 grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="bg-white dark:bg-gray-900 p-5 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6 grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div>
                   <label className="block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1">
                     Industry
@@ -518,24 +549,34 @@ export default function CompanyListPage() {
 
             {/* Results */}
             {loading ? (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500" />
+              <div className="flex flex-col items-center justify-center py-20">
+                <Loader2 className="w-8 h-8 text-indigo-500 animate-spin mb-4" />
+                <p className="text-sm text-gray-400 dark:text-gray-500">Loading companies...</p>
               </div>
             ) : companies.length === 0 ? (
-              <div className="text-center py-20">
-                <Users className="w-12 h-12 text-gray-300 dark:text-gray-600 mx-auto mb-4" />
-                <h3 className="text-lg font-medium text-gray-600 dark:text-gray-400">
+              <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">
+                  <Users className="w-9 h-9 text-gray-400" />
+                </div>
+                <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">
                   No companies found
                 </h3>
-                <p className="text-sm text-gray-400 dark:text-gray-500 mt-1">
-                  Try adjusting your search or filters
+                <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
+                  Try adjusting your search or filters to discover more companies
                 </p>
               </div>
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {companies.map((company) => (
-                    <CompanyCard key={company.id} company={company} />
+                  {companies.map((company, i) => (
+                    <motion.div
+                      key={company.id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04, duration: 0.35 }}
+                    >
+                      <CompanyCard company={company} />
+                    </motion.div>
                   ))}
                 </div>
 
@@ -623,7 +664,7 @@ export default function CompanyListPage() {
                 <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
                   <Filter className="w-4 h-4" />
                   Industry:{" "}
-                  <span className="font-medium text-gray-900 dark:text-white truncate max-w-[100px]">
+                  <span className="font-medium text-gray-900 dark:text-white truncate max-w-25">
                     {ycIndustry || "All"}
                   </span>
                   <ChevronDown className="w-3.5 h-3.5" />
@@ -668,21 +709,34 @@ export default function CompanyListPage() {
 
             {/* YC Results */}
             {ycLoading ? (
-              <div className="flex items-center justify-center py-20">
-                <Loader2 className="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500" />
+              <div className="flex flex-col items-center justify-center py-20">
+                <Loader2 className="w-8 h-8 text-orange-500 animate-spin mb-4" />
+                <p className="text-sm text-gray-400 dark:text-gray-500">Loading YC companies...</p>
               </div>
             ) : ycCompanies.length === 0 ? (
-              <div className="text-center py-16 bg-gray-50 dark:bg-gray-950 rounded-xl">
-                <Building2 className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
-                <p className="text-sm text-gray-500 dark:text-gray-500">
-                  No YC companies match your search
+              <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">
+                  <Rocket className="w-9 h-9 text-orange-400" />
+                </div>
+                <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">
+                  No YC companies found
+                </h3>
+                <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
+                  Try adjusting your search or filters
                 </p>
               </div>
             ) : (
               <>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {ycCompanies.map((company) => (
-                    <YCCard key={company.id} company={company} />
+                  {ycCompanies.map((company, i) => (
+                    <motion.div
+                      key={company.id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04, duration: 0.35 }}
+                    >
+                      <YCCard company={company} />
+                    </motion.div>
                   ))}
                 </div>
 

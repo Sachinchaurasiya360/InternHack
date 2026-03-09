@@ -26,6 +26,7 @@ import { ycRouter } from "./module/yc/yc.routes.js";
 import { dsaRouter } from "./module/dsa/dsa.routes.js";
 import { aptitudeRouter } from "./module/aptitude/aptitude.routes.js";
 import { latexRouter } from "./module/latex/latex.routes.js";
+import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 
@@ -108,6 +109,7 @@ app.use("/api/yc", ycRouter);
 app.use("/api/dsa", dsaRouter);
 app.use("/api/aptitude", aptitudeRouter);
 app.use("/api/latex", latexRouter);
+app.use("/api/skill-tests", skillTestRouter);
 
 // ── Public platform stats with in-memory cache (30 min TTL) ──
 let statsCache: { data: unknown; expiresAt: number } | null = null;

@@ -110,6 +110,7 @@ model user {
   isActive    Boolean  @default(true)
   contactNo   String?
   profilePic  String?
+  coverImage  String?
   resumes     String[] @default([])
   company     String?
   designation String?
@@ -131,6 +132,9 @@ model user {
   githubUrl      String?
   portfolioUrl   String?
   location       String?
+  jobStatus      String?
+  projects       Json     @default("[]")
+  achievements   Json     @default("[]")
 
   postedJobs        job[]                  @relation("RecruiterJobs")
   applications      application[]          @relation("StudentApplications")
@@ -155,6 +159,11 @@ model user {
   dsaProgress       studentDsaProgress[] @relation("StudentDsaProgress")
   dsaBookmarks      dsaBookmark[]        @relation("StudentDsaBookmarks")
   aptitudeProgress  studentAptitudeProgress[] @relation("StudentAptitudeProgress")
+
+  // ── Skill verification relations ──
+  skillTestAttempts skillTestAttempt[] @relation("StudentSkillTestAttempts")
+  verifiedSkills    verifiedSkill[]    @relation("StudentVerifiedSkills")
+  createdSkillTests skillTest[]        @relation("SkillTestCreator")
 
   @@index([role])
   @@index([role, isActive])
@@ -1014,4 +1023,83 @@ model studentAptitudeProgress {
 
   @@unique([studentId, questionId])
   @@index([studentId])
+}
+
+// ============================================================
+// SKILL VERIFICATION MODELS
+// ============================================================
+
+enum TestDifficulty {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+}
+
+model skillTest {
+  id            Int                 @id @default(autoincrement())
+  skillName     String
+  title         String
+  description   String?
+  difficulty    TestDifficulty      @default(INTERMEDIATE)
+  timeLimitSecs Int                 @default(1800)
+  passThreshold Int                 @default(70)
+  isActive      Boolean             @default(true)
+  createdById   Int?
+  createdBy     user?               @relation("SkillTestCreator", fields: [createdById], references: [id], onDelete: SetNull)
+  questions     skillTestQuestion[]
+  attempts      skillTestAttempt[]
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  @@unique([skillName, difficulty])
+  @@index([skillName])
+  @@index([isActive])
+}
+
+model skillTestQuestion {
+  id           Int       @id @default(autoincrement())
+  testId       Int
+  test         skillTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+  question     String
+  options      Json
+  correctIndex Int
+  explanation  String?
+  orderIndex   Int       @default(0)
+  createdAt    DateTime  @default(now())
+
+  @@index([testId])
+}
+
+model skillTestAttempt {
+  id          Int       @id @default(autoincrement())
+  testId      Int
+  test        skillTest @relation(fields: [testId], references: [id], onDelete: Cascade)
+  studentId   Int
+  student     user      @relation("StudentSkillTestAttempts", fields: [studentId], references: [id], onDelete: Cascade)
+  score           Int
+  passed          Boolean
+  answers         Json
+  proctorLog      Json?
+  proctoringScore Int?
+  autoTerminated  Boolean   @default(false)
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+  createdAt       DateTime  @default(now())
+
+  @@index([studentId])
+  @@index([testId])
+}
+
+model verifiedSkill {
+  id         Int      @id @default(autoincrement())
+  studentId  Int
+  student    user     @relation("StudentVerifiedSkills", fields: [studentId], references: [id], onDelete: Cascade)
+  skillName  String
+  score      Int
+  attemptId  Int?
+  verifiedAt DateTime @default(now())
+
+  @@unique([studentId, skillName])
+  @@index([studentId])
+  @@index([skillName])
 }

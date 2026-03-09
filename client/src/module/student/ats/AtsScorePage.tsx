@@ -7,7 +7,6 @@ import {
   CheckCircle,
   AlertCircle,
   History,
-  Sparkles,
   Target,
   X,
   BarChart2,
@@ -23,7 +22,6 @@ import {
   Code2,
   Mail,
   ArrowRight,
-  Shield,
   Award,
   ChevronRight,
 } from "lucide-react";
@@ -49,49 +47,7 @@ const CATEGORY_ICONS: Record<string, typeof BarChart2> = {
   impact: TrendingUp,
 };
 
-const CATEGORY_COLORS: Record<
-  string,
-  { pill: string; bar: string; bg: string; ring: string }
-> = {
-  formatting: {
-    pill: "bg-violet-100 text-violet-700 dark:bg-violet-900/30 dark:text-violet-400",
-    bar: "bg-violet-500",
-    bg: "bg-violet-50 dark:bg-violet-900/20",
-    ring: "ring-violet-500/20",
-  },
-  keywords: {
-    pill: "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400",
-    bar: "bg-blue-500",
-    bg: "bg-blue-50 dark:bg-blue-900/20",
-    ring: "ring-blue-500/20",
-  },
-  experience: {
-    pill: "bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400",
-    bar: "bg-emerald-500",
-    bg: "bg-emerald-50 dark:bg-emerald-900/20",
-    ring: "ring-emerald-500/20",
-  },
-  skills: {
-    pill: "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400",
-    bar: "bg-amber-500",
-    bg: "bg-amber-50 dark:bg-amber-900/20",
-    ring: "ring-amber-500/20",
-  },
-  education: {
-    pill: "bg-pink-100 text-pink-700 dark:bg-pink-900/30 dark:text-pink-400",
-    bar: "bg-pink-500",
-    bg: "bg-pink-50 dark:bg-pink-900/20",
-    ring: "ring-pink-500/20",
-  },
-  impact: {
-    pill: "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400",
-    bar: "bg-indigo-500",
-    bg: "bg-indigo-50 dark:bg-indigo-900/20",
-    ring: "ring-indigo-500/20",
-  },
-};
-
-type ResultTab = "breakdown" | "keywords" | "suggestions";
+type ResultTab = "suggestions" | "breakdown" | "keywords";
 
 const ANALYSIS_STEPS = [
   { icon: Upload, label: "Uploading resume" },
@@ -99,7 +55,7 @@ const ANALYSIS_STEPS = [
   { icon: Search, label: "Scanning keywords" },
   { icon: AlignLeft, label: "Checking formatting" },
   { icon: ScanSearch, label: "Analyzing impact statements" },
-  { icon: Sparkles, label: "Generating ATS score" },
+  { icon: BarChart2, label: "Generating ATS score" },
 ];
 
 // ── Score Circle ───────────────────────────────────────────────────────────
@@ -205,11 +161,11 @@ export default function AtsScorePage() {
   const [jobTitle, setJobTitle] = useState("");
   const [jobDescription, setJobDescription] = useState("");
   const [loading, setLoading] = useState(false);
-  const [uploading, setUploading] = useState(false);
+  const [, setUploading] = useState(false);
   const [result, setResult] = useState<AtsScore | null>(null);
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
-  const [activeTab, setActiveTab] = useState<ResultTab>("breakdown");
+  const [activeTab, setActiveTab] = useState<ResultTab>("suggestions");
 
   const [currentStep, setCurrentStep] = useState(-1);
   const [analysisComplete, setAnalysisComplete] = useState(false);
@@ -267,7 +223,7 @@ export default function AtsScorePage() {
     setError("");
     setResult(null);
     setLoading(true);
-    setActiveTab("breakdown");
+    setActiveTab("suggestions");
     setAnalysisComplete(false);
     setCurrentStep(0);
     if (file) {
@@ -280,7 +236,7 @@ export default function AtsScorePage() {
         setUploading(true);
         const formData = new FormData();
         formData.append("file", file);
-        const uploadRes = await api.post("/upload/resume", formData, {
+        const uploadRes = await api.post("/upload/profile-resume", formData, {
           headers: { "Content-Type": "multipart/form-data" },
         });
         url = uploadRes.data.file.url;
@@ -321,6 +277,11 @@ export default function AtsScorePage() {
 
   const TABS: { id: ResultTab; label: string; icon: React.ReactNode }[] = [
     {
+      id: "suggestions",
+      label: "Suggestions",
+      icon: <Lightbulb className="w-3.5 h-3.5" />,
+    },
+    {
       id: "breakdown",
       label: "Breakdown",
       icon: <BarChart2 className="w-3.5 h-3.5" />,
@@ -330,123 +291,95 @@ export default function AtsScorePage() {
       label: "Keywords",
       icon: <Search className="w-3.5 h-3.5" />,
     },
-    {
-      id: "suggestions",
-      label: "Suggestions",
-      icon: <Lightbulb className="w-3.5 h-3.5" />,
-    },
   ];
 
   const showUploadForm = !result;
 
   const TOOLS = [
-    {
-      icon: PenTool,
-      title: "Resume Builder",
-      desc: "Build with templates",
-      to: "/student/ats/templates",
-      gradient: "from-blue-500 to-blue-600",
-      soft: "bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400",
-    },
-    {
-      icon: Code2,
-      title: "LaTeX Editor",
-      desc: "Write in LaTeX",
-      to: "/student/ats/latex-editor",
-      gradient: "from-emerald-500 to-emerald-600",
-      soft: "bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400",
-    },
-    {
-      icon: Mail,
-      title: "Cover Letter",
-      desc: "AI-generated letters",
-      to: "/student/ats/cover-letter",
-      gradient: "from-pink-500 to-rose-600",
-      soft: "bg-pink-50 dark:bg-pink-900/20 text-pink-600 dark:text-pink-400",
-    },
-    {
-      icon: History,
-      title: "Score History",
-      desc: "Past analyses",
-      to: "/student/ats/history",
-      gradient: "from-amber-500 to-orange-600",
-      soft: "bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400",
-    },
+    { icon: PenTool, title: "Resume Builder", desc: "Build with templates", to: "/student/ats/templates" },
+    { icon: Code2, title: "LaTeX Editor", desc: "Write in LaTeX", to: "/student/ats/latex-editor" },
+    { icon: Mail, title: "Cover Letter", desc: "AI-generated letters", to: "/student/ats/cover-letter" },
+    { icon: History, title: "Score History", desc: "Past analyses", to: "/student/ats/history" },
   ];
 
   return (
-    <div className="max-w-6xl mx-auto">
+    <div className="relative max-w-6xl mx-auto pb-12">
       <SEO
         title="Resume"
         description="Your resume toolkit — ATS scoring, resume builder, LaTeX editor, and cover letter generator."
         noIndex
       />
 
-      {/* ── Hero Header ── */}
-      <div className="relative overflow-hidden rounded-2xl bg-linear-to-br from-gray-900 via-gray-900 to-violet-950 dark:from-gray-950 dark:via-gray-950 dark:to-violet-950 p-8 mb-8">
-        <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-violet-500/10 rounded-full blur-3xl" />
-          <div className="absolute -bottom-16 -left-16 w-48 h-48 bg-indigo-500/10 rounded-full blur-3xl" />
-        </div>
-        <div className="relative z-10">
-          <div className="flex items-center gap-2 mb-3">
-            <div className="w-8 h-8 rounded-lg bg-violet-500/20 flex items-center justify-center">
-              <ScanSearch className="w-4 h-4 text-violet-400" />
-            </div>
-            <span className="text-xs font-semibold text-violet-400 tracking-wider uppercase">
-              Resume Toolkit
-            </span>
-          </div>
-          <h1 className="text-3xl font-bold text-white mb-2">
-            Resume & ATS Score
-          </h1>
-          <p className="text-sm text-gray-400 max-w-lg">
-            Score, build, and optimize your resume for ATS systems. Get
-            AI-powered insights to land more interviews.
-          </p>
-        </div>
+      {/* Atmospheric background */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-indigo-100 to-violet-100 dark:from-indigo-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40" />
+        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/20 dark:to-blue-900/20 rounded-full blur-3xl opacity-40" />
+        <div
+          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
+          style={{
+            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
+      </div>
 
-        {/* Tool Cards — inline in hero */}
-        <div className="relative z-10 grid grid-cols-2 lg:grid-cols-4 gap-3 mt-6">
-          {TOOLS.map((tool) => (
+      {/* Page Header — landing page style */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="text-center mb-10 mt-6"
+      >
+        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
+          Resume & <span className="text-gradient-accent">ATS Score</span>
+        </h1>
+        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
+          Score, build, and optimize your resume for ATS systems
+        </p>
+      </motion.div>
+
+      {/* Tool Cards Row */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-10"
+      >
+        {TOOLS.map((tool, i) => (
+          <motion.div
+            key={tool.to}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 + i * 0.06, duration: 0.4 }}
+          >
             <Link
-              key={tool.to}
               to={tool.to}
-              className="group flex items-center gap-3 p-3.5 bg-white/5 hover:bg-white/10 backdrop-blur-sm rounded-xl border border-white/10 hover:border-white/20 transition-all no-underline"
+              className="group flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
             >
-              <div
-                className={`w-9 h-9 rounded-lg bg-linear-to-br ${tool.gradient} flex items-center justify-center shrink-0 shadow-lg`}
-              >
-                <tool.icon className="w-4 h-4 text-white" />
+              <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0">
+                <tool.icon className="w-4.5 h-4.5 text-white dark:text-gray-950" />
               </div>
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-white truncate">
+                <p className="text-sm font-semibold text-gray-950 dark:text-white truncate">
                   {tool.title}
                 </p>
-                <p className="text-[11px] text-gray-400 truncate">
+                <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">
                   {tool.desc}
                 </p>
               </div>
-              <ChevronRight className="w-4 h-4 text-gray-600 group-hover:text-gray-400 transition-colors shrink-0" />
+              <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors shrink-0" />
             </Link>
-          ))}
-        </div>
-      </div>
+          </motion.div>
+        ))}
+      </motion.div>
 
       {/* ── ATS Analyzer Section ── */}
-      <div className="mb-6">
-        <div className="flex items-center gap-2 mb-5">
-          <div className="w-7 h-7 rounded-lg bg-violet-100 dark:bg-violet-900/30 flex items-center justify-center">
-            <Sparkles className="w-3.5 h-3.5 text-violet-600 dark:text-violet-400" />
-          </div>
-          <h2 className="text-lg font-bold text-gray-900 dark:text-white">
-            ATS Score Analyzer
-          </h2>
-          <div className="flex-1" />
-          <span className="flex items-center gap-1.5 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
-            <Shield className="w-3 h-3" /> AI-powered analysis
-          </span>
-        </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="mb-6"
+      >
 
         <div className="grid grid-cols-1 lg:grid-cols-5 gap-6 items-start">
           {/* ── Left Column ── */}
@@ -464,7 +397,7 @@ export default function AtsScorePage() {
                   {/* Upload Card */}
                   <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm p-5">
                     <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
-                      <Upload className="w-4 h-4 text-violet-500" />
+                      <Upload className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                       Upload Resume
                     </h2>
                     <label
@@ -476,10 +409,10 @@ export default function AtsScorePage() {
                       onDrop={handleDrop}
                       className={`relative flex flex-col items-center justify-center gap-3 py-10 px-4 border-2 border-dashed rounded-2xl cursor-pointer transition-all ${
                         isDragging
-                          ? "border-violet-400 bg-violet-50 dark:bg-violet-900/20 scale-[1.01]"
+                          ? "border-gray-400 bg-gray-50 dark:bg-gray-800 scale-[1.01]"
                           : file
                             ? "border-green-300 bg-green-50/50 dark:border-green-700 dark:bg-green-900/20"
-                            : "border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 hover:border-violet-300 dark:hover:border-violet-700 hover:bg-violet-50/30 dark:hover:bg-violet-900/10"
+                            : "border-gray-200 dark:border-gray-700 bg-gray-50/50 dark:bg-gray-800/50 hover:border-gray-400 dark:hover:border-gray-600 hover:bg-gray-100/50 dark:hover:bg-gray-800/80"
                       }`}
                     >
                       <div
@@ -487,7 +420,7 @@ export default function AtsScorePage() {
                           file
                             ? "bg-green-100 dark:bg-green-900/40"
                             : isDragging
-                              ? "bg-violet-100 dark:bg-violet-900/40"
+                              ? "bg-gray-200 dark:bg-gray-700"
                               : "bg-white dark:bg-gray-700 border border-gray-200 dark:border-gray-600 shadow-sm"
                         }`}
                       >
@@ -495,7 +428,7 @@ export default function AtsScorePage() {
                           <FileText className="w-7 h-7 text-green-600 dark:text-green-400" />
                         ) : (
                           <Upload
-                            className={`w-7 h-7 ${isDragging ? "text-violet-500" : "text-gray-400 dark:text-gray-500"}`}
+                            className={`w-7 h-7 ${isDragging ? "text-gray-600 dark:text-gray-300" : "text-gray-400 dark:text-gray-500"}`}
                           />
                         )}
                       </div>
@@ -538,7 +471,7 @@ export default function AtsScorePage() {
                   {/* Job Context */}
                   <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm p-5">
                     <h2 className="text-sm font-semibold text-gray-900 dark:text-white mb-1 flex items-center gap-2">
-                      <Target className="w-4 h-4 text-violet-500" />
+                      <Target className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                       Target Job
                       <span className="ml-auto text-[10px] font-medium text-gray-400 dark:text-gray-500 bg-gray-100 dark:bg-gray-800 px-2 py-0.5 rounded-full uppercase tracking-wider">
                         optional
@@ -553,14 +486,14 @@ export default function AtsScorePage() {
                         value={jobTitle}
                         onChange={(e) => setJobTitle(e.target.value)}
                         placeholder="e.g. Frontend Developer"
-                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white"
+                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-950/10 focus:border-gray-400 dark:focus:ring-white/10 dark:focus:border-gray-500 transition-all placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white"
                       />
                       <textarea
                         value={jobDescription}
                         onChange={(e) => setJobDescription(e.target.value)}
                         placeholder="Paste the job description for tailored keyword analysis..."
                         rows={5}
-                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all resize-none placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white"
+                        className="w-full px-3.5 py-2.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-gray-950/10 focus:border-gray-400 dark:focus:ring-white/10 dark:focus:border-gray-500 transition-all resize-none placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white"
                       />
                     </div>
                   </div>
@@ -575,7 +508,7 @@ export default function AtsScorePage() {
                   <button
                     onClick={handleAnalyze}
                     disabled={loading || (!file && !resumeUrl)}
-                    className="w-full py-3.5 bg-linear-to-r from-violet-600 to-indigo-600 text-white font-semibold rounded-xl hover:from-violet-700 hover:to-indigo-700 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 shadow-lg shadow-violet-500/20 active:scale-[0.99]"
+                    className="w-full py-3.5 bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.99]"
                   >
                     {loading ? (
                       <>
@@ -583,7 +516,7 @@ export default function AtsScorePage() {
                       </>
                     ) : (
                       <>
-                        <Sparkles className="w-4 h-4" /> Analyze Resume
+                        <ScanSearch className="w-4 h-4" /> Analyze Resume
                       </>
                     )}
                   </button>
@@ -647,7 +580,7 @@ export default function AtsScorePage() {
                       <button
                         onClick={handleAnalyze}
                         disabled={loading}
-                        className="flex-1 py-2.5 text-sm font-medium text-white bg-violet-600 rounded-xl hover:bg-violet-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
+                        className="flex-1 py-2.5 text-sm font-medium text-white dark:text-gray-950 bg-gray-950 dark:bg-white rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 flex items-center justify-center gap-1.5"
                       >
                         <RefreshCw
                           className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`}
@@ -661,7 +594,7 @@ export default function AtsScorePage() {
                   {result && (
                     <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm p-5">
                       <div className="flex items-center gap-2 mb-3">
-                        <TrendingUp className="w-4 h-4 text-violet-500" />
+                        <TrendingUp className="w-4 h-4 text-gray-500 dark:text-gray-400" />
                         <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                           Category Scores
                         </h3>
@@ -670,10 +603,6 @@ export default function AtsScorePage() {
                         {Object.entries(result.categoryScores)
                           .slice(0, 6)
                           .map(([key, score]) => {
-                            const col = CATEGORY_COLORS[key] ?? {
-                              pill: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
-                              bg: "bg-gray-50 dark:bg-gray-800",
-                            };
                             const scoreColor =
                               score >= 70
                                 ? "text-green-600 dark:text-green-400"
@@ -683,7 +612,7 @@ export default function AtsScorePage() {
                             return (
                               <div
                                 key={key}
-                                className={`text-center p-2.5 rounded-xl ${col.bg} border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-colors`}
+                                className="text-center p-2.5 rounded-xl bg-gray-50 dark:bg-gray-800/60 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-colors"
                               >
                                 <p className={`text-lg font-bold ${scoreColor}`}>
                                   {score}
@@ -712,28 +641,18 @@ export default function AtsScorePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="min-h-105 flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm relative overflow-hidden"
+                  className="min-h-105 flex flex-col items-center justify-center text-center p-10 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm"
                 >
-                  <div className="absolute inset-0 bg-linear-to-br from-violet-50/40 via-transparent to-indigo-50/30 dark:from-violet-900/10 dark:to-indigo-900/10 pointer-events-none" />
-                  {/* Grid pattern */}
-                  <div
-                    className="absolute inset-0 opacity-[0.03] dark:opacity-[0.05] pointer-events-none"
-                    style={{
-                      backgroundImage:
-                        "radial-gradient(circle, currentColor 1px, transparent 1px)",
-                      backgroundSize: "24px 24px",
-                    }}
-                  />
-                  <div className="relative z-10">
-                    <div className="w-20 h-20 bg-linear-to-br from-violet-100 to-indigo-100 dark:from-violet-900/40 dark:to-indigo-900/40 rounded-2xl flex items-center justify-center mb-5 mx-auto">
-                      <BarChart2 className="w-9 h-9 text-violet-400" />
+                  <div>
+                    <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5 mx-auto">
+                      <BarChart2 className="w-9 h-9 text-gray-400 dark:text-gray-500" />
                     </div>
                     <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">
                       Your Results Await
                     </h3>
                     <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
                       Upload your resume and click{" "}
-                      <span className="font-semibold text-violet-600 dark:text-violet-400">
+                      <span className="font-semibold text-gray-900 dark:text-white">
                         Analyze Resume
                       </span>{" "}
                       to get your ATS score, keyword analysis, and improvement
@@ -747,7 +666,7 @@ export default function AtsScorePage() {
                         },
                         {
                           label: "AI Powered",
-                          icon: <Sparkles className="w-3.5 h-3.5" />,
+                          icon: <ScanSearch className="w-3.5 h-3.5" />,
                         },
                         {
                           label: "Instant",
@@ -773,15 +692,14 @@ export default function AtsScorePage() {
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
-                  className="min-h-105 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm p-6 relative overflow-hidden"
+                  className="min-h-105 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm p-6"
                 >
-                  <div className="absolute inset-0 bg-linear-to-br from-violet-50/30 via-transparent to-transparent dark:from-violet-900/10 pointer-events-none" />
-                  <div className="relative z-10">
+                  <div>
                     <div className="flex items-center gap-3 mb-6">
                       <div className="relative w-10 h-10">
-                        <div className="absolute inset-0 rounded-full border-3 border-violet-100 dark:border-violet-900/50" />
+                        <div className="absolute inset-0 rounded-full border-3 border-gray-200 dark:border-gray-700" />
                         <motion.div
-                          className="absolute inset-0 rounded-full border-3 border-violet-500 border-t-transparent"
+                          className="absolute inset-0 rounded-full border-3 border-gray-950 dark:border-white border-t-transparent"
                           animate={{ rotate: 360 }}
                           transition={{
                             duration: 1,
@@ -790,7 +708,7 @@ export default function AtsScorePage() {
                           }}
                         />
                         <div className="absolute inset-0 flex items-center justify-center">
-                          <Sparkles className="w-4 h-4 text-violet-500" />
+                          <ScanSearch className="w-4 h-4 text-gray-950 dark:text-white" />
                         </div>
                       </div>
                       <div>
@@ -805,7 +723,7 @@ export default function AtsScorePage() {
 
                     <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden mb-6">
                       <motion.div
-                        className="h-full bg-linear-to-r from-violet-500 to-indigo-500 rounded-full"
+                        className="h-full bg-gray-950 dark:bg-white rounded-full"
                         initial={{ width: "0%" }}
                         animate={{
                           width: `${Math.min(((currentStep + 1) / ANALYSIS_STEPS.length) * 100, 100)}%`,
@@ -831,14 +749,14 @@ export default function AtsScorePage() {
                             transition={{ delay: i * 0.08 }}
                             className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                               isCurrent
-                                ? "bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800"
+                                ? "bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700"
                                 : isDone
                                   ? "bg-green-50/50 dark:bg-green-900/10"
                                   : "opacity-50"
                             }`}
                           >
                             <div
-                              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isDone ? "bg-green-100 dark:bg-green-900/40" : isCurrent ? "bg-violet-100 dark:bg-violet-900/40" : "bg-gray-100 dark:bg-gray-800"}`}
+                              className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isDone ? "bg-green-100 dark:bg-green-900/40" : isCurrent ? "bg-gray-200 dark:bg-gray-700" : "bg-gray-100 dark:bg-gray-800"}`}
                             >
                               {isDone ? (
                                 <CheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
@@ -851,14 +769,14 @@ export default function AtsScorePage() {
                                     ease: "linear",
                                   }}
                                 >
-                                  <Icon className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                                  <Icon className="w-4 h-4 text-gray-950 dark:text-white" />
                                 </motion.div>
                               ) : (
                                 <Icon className="w-4 h-4 text-gray-400 dark:text-gray-500" />
                               )}
                             </div>
                             <span
-                              className={`text-sm font-medium flex-1 ${isDone ? "text-green-700 dark:text-green-400" : isCurrent ? "text-violet-700 dark:text-violet-400" : "text-gray-400 dark:text-gray-500"}`}
+                              className={`text-sm font-medium flex-1 ${isDone ? "text-green-700 dark:text-green-400" : isCurrent ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500"}`}
                             >
                               {step.label}
                             </span>
@@ -876,7 +794,7 @@ export default function AtsScorePage() {
                                 {[0, 0.15, 0.3].map((delay) => (
                                   <motion.div
                                     key={delay}
-                                    className="w-1.5 h-1.5 rounded-full bg-violet-400"
+                                    className="w-1.5 h-1.5 rounded-full bg-gray-950 dark:bg-white"
                                     animate={{
                                       scale: [1, 1.4, 1],
                                       opacity: [0.5, 1, 0.5],
@@ -913,9 +831,8 @@ export default function AtsScorePage() {
                   className="space-y-4"
                 >
                   {/* Score Header Card */}
-                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm relative overflow-hidden">
-                    <div className="absolute inset-0 bg-linear-to-br from-violet-50/40 via-transparent to-indigo-50/20 dark:from-violet-900/10 dark:to-indigo-900/10 pointer-events-none" />
-                    <div className="relative z-10 p-6 flex items-center gap-6">
+                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
+                    <div className="p-6 flex items-center gap-6">
                       <ScoreCircle score={result.overallScore} />
                       <div className="flex-1 min-w-0">
                         <h2 className="text-xs font-bold text-gray-400 dark:text-gray-500 uppercase tracking-wider mb-1">
@@ -932,19 +849,14 @@ export default function AtsScorePage() {
                           {Object.entries(result.categoryScores)
                             .sort(([, a], [, b]) => b - a)
                             .slice(0, 3)
-                            .map(([key, score]) => {
-                              const col = CATEGORY_COLORS[key] ?? {
-                                pill: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
-                              };
-                              return (
-                                <span
-                                  key={key}
-                                  className={`px-2.5 py-0.5 rounded-full text-xs font-semibold ${col.pill}`}
-                                >
-                                  {CATEGORY_LABELS[key]}: {score}
-                                </span>
-                              );
-                            })}
+                            .map(([key, score]) => (
+                              <span
+                                key={key}
+                                className="px-2.5 py-0.5 rounded-lg text-xs font-semibold bg-gray-100 text-gray-700 dark:bg-gray-800 dark:text-gray-300"
+                              >
+                                {CATEGORY_LABELS[key]}: {score}
+                              </span>
+                            ))}
                         </div>
                       </div>
                     </div>
@@ -960,7 +872,7 @@ export default function AtsScorePage() {
                           onClick={() => setActiveTab(tab.id)}
                           className={`flex-1 flex items-center justify-center gap-1.5 px-3 py-2 text-sm font-medium rounded-lg transition-all ${
                             activeTab === tab.id
-                              ? "bg-white dark:bg-gray-900 text-violet-700 dark:text-violet-400 shadow-sm"
+                              ? "bg-white dark:bg-gray-900 text-gray-950 dark:text-white shadow-sm"
                               : "text-gray-500 dark:text-gray-500 hover:text-gray-800 dark:hover:text-gray-300"
                           }`}
                         >
@@ -982,11 +894,6 @@ export default function AtsScorePage() {
                           >
                             {Object.entries(result.categoryScores).map(
                               ([key, score]) => {
-                                const col = CATEGORY_COLORS[key] ?? {
-                                  pill: "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400",
-                                  bar: "bg-gray-400",
-                                  bg: "bg-gray-50 dark:bg-gray-800",
-                                };
                                 const Icon = CATEGORY_ICONS[key] ?? BarChart2;
                                 const barColor =
                                   score >= 70
@@ -1005,10 +912,8 @@ export default function AtsScorePage() {
                                     key={key}
                                     className="flex items-center gap-3 p-3.5 bg-gray-50/80 dark:bg-gray-800/60 rounded-xl hover:bg-gray-100/80 dark:hover:bg-gray-700/60 transition-colors"
                                   >
-                                    <div
-                                      className={`w-9 h-9 rounded-lg flex items-center justify-center shrink-0 ${col.pill}`}
-                                    >
-                                      <Icon className="w-4 h-4" />
+                                    <div className="w-9 h-9 rounded-lg flex items-center justify-center shrink-0 bg-gray-100 dark:bg-gray-800">
+                                      <Icon className="w-4 h-4 text-gray-600 dark:text-gray-400" />
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <div className="flex justify-between items-center mb-1.5">
@@ -1115,35 +1020,37 @@ export default function AtsScorePage() {
                             animate={{ opacity: 1, x: 0 }}
                             exit={{ opacity: 0, x: 8 }}
                             transition={{ duration: 0.18 }}
-                            className="space-y-2.5"
                           >
                             {result.suggestions.length > 0 ? (
-                              result.suggestions.map((s, i) => (
-                                <motion.div
-                                  key={i}
-                                  initial={{ opacity: 0, x: -10 }}
-                                  animate={{ opacity: 1, x: 0 }}
-                                  transition={{ delay: i * 0.06 }}
-                                  className="flex items-start gap-3 p-4 bg-amber-50/70 dark:bg-amber-900/10 rounded-xl border border-amber-100 dark:border-amber-900/40"
-                                >
-                                  <span className="w-6 h-6 bg-amber-200 dark:bg-amber-800 text-amber-800 dark:text-amber-200 rounded-lg text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
-                                    {i + 1}
-                                  </span>
-                                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
-                                    {s}
-                                  </p>
-                                </motion.div>
-                              ))
+                              <div className="space-y-px rounded-xl overflow-hidden border border-gray-100 dark:border-gray-800">
+                                {result.suggestions.map((s, i) => (
+                                  <motion.div
+                                    key={i}
+                                    initial={{ opacity: 0, y: 6 }}
+                                    animate={{ opacity: 1, y: 0 }}
+                                    transition={{ delay: i * 0.05 }}
+                                    className="flex items-start gap-4 px-5 py-4 bg-gray-50/60 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800 transition-colors"
+                                  >
+                                    <div className="w-7 h-7 rounded-lg bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 mt-0.5">
+                                      <span className="text-[11px] font-bold text-white dark:text-gray-950">{i + 1}</span>
+                                    </div>
+                                    <div className="flex-1 min-w-0">
+                                      <p className="text-sm text-gray-800 dark:text-gray-200 leading-relaxed">{s}</p>
+                                    </div>
+                                    <ArrowRight className="w-4 h-4 text-gray-300 dark:text-gray-600 shrink-0 mt-1" />
+                                  </motion.div>
+                                ))}
+                              </div>
                             ) : (
-                              <div className="flex flex-col items-center py-8 text-center">
-                                <div className="w-12 h-12 rounded-xl bg-green-100 dark:bg-green-900/30 flex items-center justify-center mb-3">
-                                  <CheckCircle className="w-6 h-6 text-green-500" />
+                              <div className="flex flex-col items-center py-10 text-center">
+                                <div className="w-14 h-14 rounded-2xl bg-green-50 dark:bg-green-900/20 flex items-center justify-center mb-4">
+                                  <CheckCircle className="w-7 h-7 text-green-500" />
                                 </div>
-                                <p className="text-sm text-gray-500 dark:text-gray-400 font-medium">
-                                  No major improvements needed
+                                <p className="text-sm font-semibold text-gray-900 dark:text-white">
+                                  No improvements needed
                                 </p>
                                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-1">
-                                  Your resume looks great!
+                                  Your resume is well-optimized for ATS systems
                                 </p>
                               </div>
                             )}
@@ -1157,7 +1064,7 @@ export default function AtsScorePage() {
             </AnimatePresence>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

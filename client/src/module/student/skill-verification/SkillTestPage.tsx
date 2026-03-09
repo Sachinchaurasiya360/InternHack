@@ -1,0 +1,629 @@
+import { useEffect, useState, useCallback, useRef } from "react";
+import { useParams, useNavigate, Link } from "react-router";
+import { motion } from "framer-motion";
+import {
+  ArrowLeft,
+  Clock,
+  HelpCircle,
+  Loader2,
+  AlertTriangle,
+  ShieldCheck,
+  Eye,
+  EyeOff,
+  Maximize,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle2,
+  Camera,
+  Ban,
+  Shield,
+} from "lucide-react";
+import api from "../../../lib/axios";
+import toast from "react-hot-toast";
+import type { SkillTestWithQuestions, SkillTestSubmitResult } from "../../../lib/types";
+import { useProctoring } from "../../../hooks/useProctoring";
+import { useLayoutStore } from "../../../lib/layout.store";
+import ProctoringCamera from "../../../components/ProctoringCamera";
+import ProctorWarningOverlay from "./ProctorWarningOverlay";
+
+const OPTION_LABELS = ["A", "B", "C", "D"] as const;
+
+/* ------------------------------------------------------------------ */
+/*  Timer hook                                                         */
+/* ------------------------------------------------------------------ */
+function useCountdown(totalSeconds: number | null, onExpire: () => void) {
+  const [remaining, setRemaining] = useState(totalSeconds ?? 0);
+  const onExpireRef = useRef(onExpire);
+  onExpireRef.current = onExpire;
+
+  useEffect(() => {
+    if (!totalSeconds || totalSeconds <= 0) return;
+    setRemaining(totalSeconds);
+
+    const interval = setInterval(() => {
+      setRemaining((prev) => {
+        if (prev <= 1) {
+          clearInterval(interval);
+          onExpireRef.current();
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [totalSeconds]);
+
+  const mins = Math.floor(remaining / 60);
+  const secs = remaining % 60;
+  const formatted = `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+  const isUrgent = totalSeconds !== null && remaining <= 60;
+
+  return { remaining, formatted, isUrgent };
+}
+
+/* ------------------------------------------------------------------ */
+/*  Component                                                          */
+/* ------------------------------------------------------------------ */
+export default function SkillTestPage() {
+  const { testId } = useParams();
+  const navigate = useNavigate();
+  const setImmersive = useLayoutStore((s) => s.setImmersive);
+
+  const [test, setTest] = useState<SkillTestWithQuestions | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const [currentQ, setCurrentQ] = useState(0);
+  const [submitting, setSubmitting] = useState(false);
+  const [result, setResult] = useState<SkillTestSubmitResult | null>(null);
+  const [started, setStarted] = useState(false);
+  const submittingRef = useRef(false);
+
+  /* ---- Immersive mode management --------------------------------- */
+  useEffect(() => {
+    return () => setImmersive(false);
+  }, [setImmersive]);
+
+  useEffect(() => {
+    setImmersive(started && !result);
+  }, [started, result, setImmersive]);
+
+  /* ---- Proctoring hook ------------------------------------------- */
+  const handleTerminate = useCallback(() => {
+    terminateRef.current?.();
+  }, []);
+
+  const proctor = useProctoring({
+    enabled: started && !result,
+    onTerminate: handleTerminate,
+  });
+
+  /* Fetch test detail ----------------------------------------------- */
+  useEffect(() => {
+    if (!testId) return;
+    setLoading(true);
+    api
+      .get(`/skill-tests/${testId}`)
+      .then((res) => setTest(res.data))
+      .catch((err) => {
+        setError(err?.response?.data?.error ?? "Test not found.");
+      })
+      .finally(() => setLoading(false));
+  }, [testId]);
+
+  /* Start test ------------------------------------------------------ */
+  const handleStart = useCallback(async () => {
+    if (!testId) return;
+    try {
+      const res = await api.post(`/skill-tests/${testId}/start`);
+      setTest((prev) =>
+        prev ? { ...prev, questions: res.data.questions } : prev
+      );
+      setStarted(true);
+      await proctor.requestFullscreen();
+    } catch (err: any) {
+      toast.error(err?.response?.data?.error ?? "Failed to start test");
+    }
+  }, [testId, proctor]);
+
+  /* Submit ---------------------------------------------------------- */
+  const handleSubmit = useCallback(
+    async (auto = false) => {
+      if (!test || submittingRef.current) return;
+      submittingRef.current = true;
+      setSubmitting(true);
+
+      try {
+        const answersPayload = Object.entries(answers).map(([qId, idx]) => ({
+          questionId: Number(qId),
+          selectedIndex: idx,
+        }));
+
+        const res = await api.post(`/skill-tests/${test.id}/submit`, {
+          answers: answersPayload,
+          proctorLog: proctor.getProctorLog(),
+        });
+        setResult(res.data);
+
+        if (res.data.passed) {
+          toast.success("Congratulations! You passed and your skill is now verified!");
+        } else {
+          toast.error(`Score: ${res.data.score}% — you need ${test.passThreshold}% to pass.`);
+        }
+
+        if (document.fullscreenElement) {
+          document.exitFullscreen().catch(() => {});
+        }
+      } catch (err: any) {
+        toast.error(err?.response?.data?.error ?? "Failed to submit test");
+      } finally {
+        submittingRef.current = false;
+        setSubmitting(false);
+      }
+    },
+    [test, answers, proctor]
+  );
+
+  // Wire terminate callback
+  const terminateRef = useRef<() => void>();
+  terminateRef.current = () => handleSubmit(true);
+
+  /* Timer ----------------------------------------------------------- */
+  const { formatted: timerDisplay, isUrgent } = useCountdown(
+    started && !result ? (test?.timeLimitSecs ?? null) : null,
+    () => handleSubmit(true)
+  );
+
+  /* Helpers --------------------------------------------------------- */
+  const questions = test?.questions ?? [];
+  const totalQuestions = questions.length;
+  const answeredCount = Object.keys(answers).length;
+  const allAnswered = answeredCount === totalQuestions && totalQuestions > 0;
+  const currentQuestion = questions[currentQ];
+
+  const selectAnswer = (questionId: number, optIdx: number) => {
+    if (result) return;
+    setAnswers((prev) => ({ ...prev, [questionId]: optIdx }));
+  };
+
+  /* Loading --------------------------------------------------------- */
+  if (loading) {
+    return (
+      <div className="max-w-4xl mx-auto animate-pulse space-y-4">
+        <div className="h-8 bg-gray-100 dark:bg-gray-800 rounded-xl w-1/3" />
+        <div className="h-48 bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+      </div>
+    );
+  }
+
+  if (error || !test) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <Link
+          to="/student/skill-verification"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white mb-5 no-underline transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Skill Tests
+        </Link>
+        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-10 text-center space-y-3">
+          <AlertTriangle className="w-10 h-10 text-amber-400 mx-auto" />
+          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Test Not Available</h2>
+          <p className="text-sm text-gray-500 dark:text-gray-400">{error}</p>
+        </div>
+      </div>
+    );
+  }
+
+  /* Pre-start screen ------------------------------------------------ */
+  if (!started) {
+    return (
+      <div className="max-w-3xl mx-auto">
+        <Link
+          to="/student/skill-verification"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white mb-5 no-underline transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Skill Tests
+        </Link>
+
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-8 space-y-6"
+        >
+          <div className="text-center space-y-2">
+            <div className="w-14 h-14 bg-violet-100 dark:bg-violet-900/30 rounded-2xl flex items-center justify-center mx-auto">
+              <ShieldCheck className="w-7 h-7 text-violet-600 dark:text-violet-400" />
+            </div>
+            <h1 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+              {test.title}
+            </h1>
+            <p className="text-sm text-gray-500 dark:text-gray-400 capitalize">
+              {test.skillName.replace("-", " ")}
+            </p>
+          </div>
+
+          {test.description && (
+            <p className="text-sm text-gray-600 dark:text-gray-400 text-center">
+              {test.description}
+            </p>
+          )}
+
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {[
+              { label: "Questions", value: `${totalQuestions}`, icon: HelpCircle },
+              { label: "Time Limit", value: `${Math.ceil(test.timeLimitSecs / 60)} min`, icon: Clock },
+              { label: "Pass Score", value: `${test.passThreshold}%`, icon: CheckCircle2 },
+              { label: "Proctored", value: "Yes", icon: Eye },
+            ].map((item) => (
+              <div
+                key={item.label}
+                className="bg-gray-50 dark:bg-gray-800 rounded-xl p-3 text-center"
+              >
+                <item.icon className="w-4 h-4 text-gray-400 mx-auto mb-1" />
+                <p className="text-sm font-bold text-gray-900 dark:text-gray-100">{item.value}</p>
+                <p className="text-[11px] text-gray-500 dark:text-gray-400">{item.label}</p>
+              </div>
+            ))}
+          </div>
+
+          {test.existingVerification && (
+            <div className="bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-xl p-3 text-center">
+              <p className="text-sm text-green-700 dark:text-green-400 font-medium">
+                Already verified with {test.existingVerification.score}% score. You can retake to improve.
+              </p>
+            </div>
+          )}
+
+          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 space-y-2">
+            <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
+              <Shield className="w-4 h-4" /> Proctored Test Rules
+            </h3>
+            <ul className="text-xs text-amber-700 dark:text-amber-400 space-y-1.5 list-disc list-inside">
+              <li>The test will enter fullscreen mode</li>
+              <li>Your camera will be active for face detection</li>
+              <li>DevTools, right-click, and copy/paste are disabled</li>
+              <li>3 tab switches will auto-submit your test</li>
+              <li>Leaving fullscreen for 10+ seconds will auto-submit</li>
+              <li>Your proctor log and integrity score are visible to recruiters</li>
+            </ul>
+          </div>
+
+          <button
+            onClick={handleStart}
+            className="w-full py-3.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+          >
+            <Maximize className="w-4 h-4" />
+            Start Proctored Test
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
+  /* Result screen --------------------------------------------------- */
+  if (result) {
+    const log = proctor.getProctorLog();
+    return (
+      <div className="max-w-3xl mx-auto space-y-5">
+        <Link
+          to="/student/skill-verification"
+          className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white no-underline transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" /> Back to Skill Tests
+        </Link>
+
+        {/* Score card */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.95 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className={`rounded-2xl p-8 text-center border ${
+            result.passed
+              ? "bg-green-50 dark:bg-green-900/20 border-green-200 dark:border-green-800"
+              : "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+          }`}
+        >
+          <div
+            className={`w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl font-bold ${
+              result.passed
+                ? "bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-400"
+                : "bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-400"
+            }`}
+          >
+            {result.score}%
+          </div>
+          <h2 className={`text-lg font-bold ${result.passed ? "text-green-800 dark:text-green-300" : "text-red-800 dark:text-red-300"}`}>
+            {result.passed ? "Skill Verified!" : "Not Passed"}
+          </h2>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
+            {result.correctCount}/{result.totalQuestions} correct
+            {!result.passed && ` — Need ${test.passThreshold}% to pass`}
+          </p>
+
+          {/* Proctor summary */}
+          <div className="flex flex-wrap justify-center gap-3 mt-4 text-xs text-gray-500 dark:text-gray-400">
+            <span className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-md">
+              <EyeOff className="w-3 h-3" /> Tab: {log.tabSwitches}
+            </span>
+            <span className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-md">
+              <Eye className="w-3 h-3" /> Focus: {log.focusLosses}
+            </span>
+            {log.devtoolsAttempts > 0 && (
+              <span className="flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-md">
+                <Ban className="w-3 h-3" /> DevTools: {log.devtoolsAttempts}
+              </span>
+            )}
+            {log.faceViolations.length > 0 && (
+              <span className="flex items-center gap-1 px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-md">
+                <Camera className="w-3 h-3" /> Face: {log.faceViolations.length}
+              </span>
+            )}
+            <span className="flex items-center gap-1 px-2 py-1 bg-gray-100 dark:bg-gray-800 rounded-md">
+              <Camera className="w-3 h-3" /> Cam: {log.cameraEnabled ? "On" : "Off"}
+            </span>
+            {log.terminated && (
+              <span className="px-2 py-1 bg-red-100 dark:bg-red-900/30 text-red-600 dark:text-red-400 rounded-md font-semibold">
+                Auto-terminated
+              </span>
+            )}
+          </div>
+        </motion.div>
+
+        {/* Question review */}
+        <div className="space-y-3">
+          <h3 className="text-sm font-bold text-gray-900 dark:text-gray-100">
+            Question Review
+          </h3>
+          {questions.map((q, qIdx) => {
+            const graded = result.gradedAnswers.find(
+              (g) => g.questionId === q.id
+            );
+            return (
+              <div
+                key={q.id}
+                className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl p-4 space-y-2"
+              >
+                <p className="text-sm text-gray-900 dark:text-gray-100">
+                  <span className="text-gray-400 mr-1">{qIdx + 1}.</span>
+                  {q.question}
+                </p>
+                <div className="space-y-1.5">
+                  {q.options.map((opt, optIdx) => {
+                    const isSelected = graded?.selectedIndex === optIdx;
+                    const isCorrect = graded?.correct && isSelected;
+                    const isWrong = !graded?.correct && isSelected;
+                    return (
+                      <div
+                        key={optIdx}
+                        className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs border ${
+                          isCorrect
+                            ? "border-green-300 dark:border-green-700 bg-green-50 dark:bg-green-900/20 text-green-800 dark:text-green-300"
+                            : isWrong
+                            ? "border-red-300 dark:border-red-700 bg-red-50 dark:bg-red-900/20 text-red-800 dark:text-red-300"
+                            : "border-gray-100 dark:border-gray-700 text-gray-600 dark:text-gray-400"
+                        }`}
+                      >
+                        <span className="font-bold w-5">{OPTION_LABELS[optIdx]}</span>
+                        <span>{opt}</span>
+                      </div>
+                    );
+                  })}
+                </div>
+                {graded?.explanation && (
+                  <p className="text-xs text-gray-500 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 rounded-lg p-2 mt-1">
+                    {graded.explanation}
+                  </p>
+                )}
+              </div>
+            );
+          })}
+        </div>
+
+        {/* Actions */}
+        <div className="flex gap-3 pt-2 pb-8">
+          <Link
+            to="/student/skill-verification"
+            className="flex-1 py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors no-underline"
+          >
+            Back to Tests
+          </Link>
+          {!result.passed && (
+            <button
+              onClick={() => {
+                setResult(null);
+                setAnswers({});
+                setCurrentQ(0);
+                setStarted(false);
+              }}
+              className="flex-1 py-3 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-colors"
+            >
+              Try Again
+            </button>
+          )}
+        </div>
+      </div>
+    );
+  }
+
+  /* Test in progress ------------------------------------------------ */
+  return (
+    <div className="max-w-4xl mx-auto">
+      {/* Fullscreen warning overlay */}
+      {proctor.state.showFullscreenWarning && (
+        <ProctorWarningOverlay
+          secondsLeft={proctor.state.fullscreenGraceRemaining}
+          onReturnFullscreen={proctor.requestFullscreen}
+        />
+      )}
+
+      {/* Camera PiP */}
+      <ProctoringCamera
+        onViolation={proctor.registerFaceViolation}
+        onSnapshot={proctor.addSnapshot}
+        onError={(err) => {
+          toast.error(`Camera: ${err}`);
+          proctor.setCameraEnabled(false);
+        }}
+        onReady={() => proctor.setCameraEnabled(true)}
+      />
+
+      {/* Sticky header */}
+      <div className="sticky top-0 z-10 bg-white/80 dark:bg-gray-950/80 backdrop-blur-md border-b border-gray-100 dark:border-gray-800 -mx-4 px-4 py-3 mb-5">
+        <div className="flex items-center justify-between gap-4 max-w-4xl mx-auto">
+          <div className="flex items-center gap-3 min-w-0">
+            <ShieldCheck className="w-5 h-5 text-violet-500 shrink-0" />
+            <h1 className="text-sm font-bold text-gray-900 dark:text-gray-100 truncate">
+              {test.title}
+            </h1>
+          </div>
+
+          <div className="flex items-center gap-2">
+            {/* Tab switch indicator */}
+            {proctor.state.tabSwitches > 0 && (
+              <span className="px-2 py-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] font-semibold rounded-md flex items-center gap-1">
+                <EyeOff className="w-3 h-3" /> {proctor.state.tabSwitches}/3
+              </span>
+            )}
+
+            {/* DevTools indicator */}
+            {proctor.state.devtoolsAttempts > 0 && (
+              <span className="px-2 py-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] font-semibold rounded-md flex items-center gap-1">
+                <Ban className="w-3 h-3" /> {proctor.state.devtoolsAttempts}
+              </span>
+            )}
+
+            {/* Face violation indicator */}
+            {proctor.state.faceViolations.length > 0 && (
+              <span className="px-2 py-1 bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] font-semibold rounded-md flex items-center gap-1 animate-pulse">
+                <Camera className="w-3 h-3" /> {proctor.state.faceViolations.length}
+              </span>
+            )}
+
+            {/* Progress */}
+            <span className="px-2 py-1 bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-[10px] font-semibold rounded-md tabular-nums">
+              {answeredCount}/{totalQuestions}
+            </span>
+
+            {/* Timer */}
+            <div
+              className={`px-3 py-1.5 rounded-lg text-sm font-mono font-bold tabular-nums ${
+                isUrgent
+                  ? "bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 animate-pulse"
+                  : "bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300"
+              }`}
+            >
+              {timerDisplay}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Horizontal question navigator — at top */}
+      <div className="flex flex-wrap gap-1.5 mb-5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-3">
+        {questions.map((q, i) => (
+          <button
+            key={q.id}
+            onClick={() => setCurrentQ(i)}
+            className={`w-9 h-9 rounded-lg text-xs font-bold transition-all ${
+              i === currentQ
+                ? "bg-violet-600 text-white shadow-sm"
+                : answers[q.id] !== undefined
+                ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400"
+                : "bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+            }`}
+          >
+            {i + 1}
+          </button>
+        ))}
+      </div>
+
+      {/* Current question */}
+      <div>
+        {currentQuestion && (
+          <motion.div
+            key={currentQuestion.id}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.2 }}
+            className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-6"
+          >
+            <p className="text-sm font-bold text-gray-900 dark:text-gray-100 mb-4">
+              <span className="text-gray-400 dark:text-gray-500 mr-1.5">
+                {currentQ + 1}.
+              </span>
+              {currentQuestion.question}
+            </p>
+
+            <div className="space-y-2.5">
+              {currentQuestion.options.map((opt, optIdx) => {
+                const isSelected = answers[currentQuestion.id] === optIdx;
+                return (
+                  <button
+                    key={optIdx}
+                    onClick={() => selectAnswer(currentQuestion.id, optIdx)}
+                    className={`w-full flex items-center gap-3 px-4 py-3.5 rounded-xl text-left text-sm transition-all border ${
+                      isSelected
+                        ? "border-violet-400 dark:border-violet-500 bg-violet-50 dark:bg-violet-900/20 text-violet-900 dark:text-violet-200 ring-1 ring-violet-200 dark:ring-violet-700"
+                        : "border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800/50 text-gray-700 dark:text-gray-300 hover:border-gray-200 dark:hover:border-gray-600 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    <span
+                      className={`w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold shrink-0 border ${
+                        isSelected
+                          ? "border-violet-400 dark:border-violet-500 bg-violet-500 text-white"
+                          : "border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400"
+                      }`}
+                    >
+                      {OPTION_LABELS[optIdx]}
+                    </span>
+                    <span className="flex-1">{opt}</span>
+                  </button>
+                );
+              })}
+            </div>
+          </motion.div>
+        )}
+
+        {/* Navigation */}
+        <div className="flex items-center justify-between mt-5 pb-8">
+          <button
+            onClick={() => setCurrentQ((p) => Math.max(0, p - 1))}
+            disabled={currentQ === 0}
+            className="flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+          >
+            <ChevronLeft className="w-4 h-4" /> Previous
+          </button>
+
+          {currentQ === totalQuestions - 1 ? (
+            <button
+              onClick={() => handleSubmit(false)}
+              disabled={!allAnswered || submitting}
+              className="flex items-center gap-2 px-6 py-2.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-xl transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+            >
+              {submitting ? (
+                <>
+                  <Loader2 className="w-4 h-4 animate-spin" /> Submitting...
+                </>
+              ) : (
+                <>
+                  Submit Test
+                  {!allAnswered &&
+                    ` (${totalQuestions - answeredCount} unanswered)`}
+                </>
+              )}
+            </button>
+          ) : (
+            <button
+              onClick={() =>
+                setCurrentQ((p) => Math.min(totalQuestions - 1, p + 1))
+              }
+              className="flex items-center gap-1 px-4 py-2.5 text-sm font-medium text-white bg-violet-600 hover:bg-violet-700 rounded-xl transition-colors"
+            >
+              Next <ChevronRight className="w-4 h-4" />
+            </button>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}

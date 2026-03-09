@@ -17,6 +17,8 @@ import {
   Users,
   ArrowRight,
   Info,
+  Bookmark,
+  BookmarkCheck,
 } from "lucide-react";
 import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./grantsData";
 import { Navbar } from "../../../components/Navbar";
@@ -39,9 +41,26 @@ export default function GrantsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
   const [showFilters, setShowFilters] = useState(false);
+  const [savedGrants, setSavedGrants] = useState<Set<string>>(() => {
+    try {
+      const stored = localStorage.getItem("savedGrants");
+      return stored ? new Set(JSON.parse(stored)) : new Set();
+    } catch { return new Set(); }
+  });
+  const [showSavedOnly, setShowSavedOnly] = useState(false);
+
+  const toggleSave = (grantId: string) => {
+    setSavedGrants((prev) => {
+      const next = new Set(prev);
+      if (next.has(grantId)) next.delete(grantId);
+      else next.add(grantId);
+      localStorage.setItem("savedGrants", JSON.stringify([...next]));
+      return next;
+    });
+  };
 
   const filtered = useMemo(() => {
-    return grants.filter((g) => {
+    let result = grants.filter((g) => {
       if (selectedCategory !== "ALL" && g.category !== selectedCategory) return false;
       if (selectedEcosystem !== "ALL" && g.ecosystem !== selectedEcosystem) return false;
       if (selectedStatus !== "ALL" && g.status !== selectedStatus) return false;
@@ -56,7 +75,11 @@ export default function GrantsPage() {
       }
       return true;
     });
-  }, [search, selectedCategory, selectedEcosystem, selectedStatus]);
+    if (showSavedOnly) {
+      result = result.filter((g) => savedGrants.has(g.id));
+    }
+    return result;
+  }, [search, selectedCategory, selectedEcosystem, selectedStatus, showSavedOnly, savedGrants]);
 
   const activeFilters =
     (selectedCategory !== "ALL" ? 1 : 0) +
@@ -203,6 +226,19 @@ export default function GrantsPage() {
             )}
             <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showFilters ? "rotate-180" : ""}`} />
           </button>
+
+          {/* Saved filter toggle */}
+          <button
+            onClick={() => setShowSavedOnly(!showSavedOnly)}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium transition-colors ${
+              showSavedOnly
+                ? "bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400"
+                : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+            }`}
+          >
+            <Bookmark className="w-4 h-4" />
+            Saved ({savedGrants.size})
+          </button>
         </div>
 
         {/* Expanded filters */}
@@ -279,7 +315,7 @@ export default function GrantsPage() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
             {filtered.map((grant, i) => (
-              <GrantCard key={grant.id} grant={grant} index={i} onClick={() => setSelectedGrant(grant)} />
+              <GrantCard key={grant.id} grant={grant} index={i} onClick={() => setSelectedGrant(grant)} saved={savedGrants.has(grant.id)} onToggleSave={() => toggleSave(grant.id)} />
             ))}
           </div>
         )}
@@ -295,7 +331,7 @@ export default function GrantsPage() {
   );
 }
 
-function GrantCard({ grant, index, onClick }: { grant: Grant; index: number; onClick: () => void }) {
+function GrantCard({ grant, index, onClick, saved, onToggleSave }: { grant: Grant; index: number; onClick: () => void; saved: boolean; onToggleSave: () => void }) {
   const statusCfg = STATUS_CONFIG[grant.status];
   const StatusIcon = statusCfg.icon;
 
@@ -311,6 +347,19 @@ function GrantCard({ grant, index, onClick }: { grant: Grant; index: number; onC
         onClick={onClick}
         className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:shadow-gray-100 dark:hover:shadow-gray-900 transition-all duration-300 cursor-pointer"
       >
+        {/* Bookmark button */}
+        <span
+          role="button"
+          onClick={(e) => { e.stopPropagation(); onToggleSave(); }}
+          className="absolute top-3 right-3 z-10 p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        >
+          {saved ? (
+            <BookmarkCheck className="w-4 h-4 text-amber-500" />
+          ) : (
+            <Bookmark className="w-4 h-4 text-gray-400 hover:text-amber-500" />
+          )}
+        </span>
+
         <div className="flex flex-col flex-1 p-6">
           {/* Header: logo + org + status */}
           <div className="flex items-center justify-between mb-4">

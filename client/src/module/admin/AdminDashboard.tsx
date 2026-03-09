@@ -1,4 +1,5 @@
 import { Link } from "react-router";
+import { LoadingScreen } from "../../components/LoadingScreen";
 import { motion } from "framer-motion";
 import { Users, Building2, Briefcase, TrendingUp, FileText, Award } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
@@ -12,9 +13,7 @@ export default function AdminDashboard() {
     queryFn: () => api.get("/admin/platform-dashboard").then((res) => res.data as AdminDashboardData),
   });
 
-  if (loading) {
-    return <div className="flex items-center justify-center h-64 text-gray-400">Loading dashboard...</div>;
-  }
+  if (loading) return <LoadingScreen />;
 
   if (!data) {
     return <div className="text-center text-gray-400">Failed to load dashboard</div>;

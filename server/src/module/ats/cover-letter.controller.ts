@@ -1,6 +1,8 @@
 import type { Request, Response, NextFunction } from "express";
 import type { CoverLetterService } from "./cover-letter.service.js";
 import { generateCoverLetterSchema } from "./cover-letter.validation.js";
+import type { UserProfile } from "./cover-letter.validation.js";
+import { prisma } from "../../database/db.js";
 
 export class CoverLetterController {
   constructor(private readonly coverLetterService: CoverLetterService) {}
@@ -18,7 +20,42 @@ export class CoverLetterController {
         return;
       }
 
-      const coverLetter = await this.coverLetterService.generate(result.data);
+      let profile: UserProfile | undefined;
+
+      if (result.data.useProfile) {
+        const user = await prisma.user.findUnique({
+          where: { id: req.user.id },
+          select: {
+            name: true,
+            bio: true,
+            college: true,
+            graduationYear: true,
+            skills: true,
+            location: true,
+            company: true,
+            designation: true,
+            projects: true,
+            achievements: true,
+          },
+        });
+
+        if (user) {
+          profile = {
+            name: user.name,
+            bio: user.bio,
+            college: user.college,
+            graduationYear: user.graduationYear,
+            skills: user.skills,
+            location: user.location,
+            company: user.company,
+            designation: user.designation,
+            projects: (user.projects as UserProfile["projects"]) ?? [],
+            achievements: (user.achievements as UserProfile["achievements"]) ?? [],
+          };
+        }
+      }
+
+      const coverLetter = await this.coverLetterService.generate(result.data, profile);
       res.json({ message: "Cover letter generated successfully", coverLetter });
     } catch (err) {
       next(err);

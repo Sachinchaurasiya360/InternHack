@@ -8,7 +8,8 @@ export class DsaController {
     try {
       const studentId = req.user?.id;
       const sheet = req.query.sheet as string | undefined;
-      const topics = await this.dsaService.listTopics(studentId, sheet);
+      const difficulty = req.query.difficulty ? (req.query.difficulty as string).split(",") : undefined;
+      const topics = await this.dsaService.listTopics(studentId, sheet, difficulty);
       res.json(topics);
     } catch (err) {
       next(err);

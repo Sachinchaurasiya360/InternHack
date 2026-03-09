@@ -32,15 +32,20 @@ export class LatexController {
     } catch (err) {
       if (err instanceof Error) {
         if (err.message.includes("pdflatex not found")) {
-          res.status(503).json({ message: err.message });
+          res.status(503).json({ message: "LaTeX compiler is temporarily unavailable. Please try again later." });
           return;
         }
         if (err.message.includes("timed out")) {
-          res.status(408).json({ message: err.message });
+          res.status(408).json({ message: "Compilation timed out. Try simplifying your document or reducing its length." });
           return;
         }
         if (err.message.includes("compilation failed")) {
-          res.status(422).json({ message: err.message });
+          // Extract just the error details after "LaTeX compilation failed:\n"
+          const details = err.message.replace(/^LaTeX compilation failed:\n?/, "").trim();
+          res.status(422).json({
+            message: "Your LaTeX document has errors. Please fix them and try again.",
+            details: details || undefined,
+          });
           return;
         }
       }

@@ -28,6 +28,9 @@ interface UpdateProfileInput {
   linkedinUrl?: string;
   githubUrl?: string;
   portfolioUrl?: string;
+  jobStatus?: string | null;
+  projects?: { id: string; title: string; description: string; techStack: string[]; liveUrl?: string; repoUrl?: string }[];
+  achievements?: { id: string; title: string; description: string; date?: string }[];
 }
 
 interface LoginInput {
@@ -73,6 +76,9 @@ export class AuthService {
         company: true,
         designation: true,
         createdAt: true,
+        subscriptionPlan: true,
+        subscriptionStatus: true,
+        subscriptionEndDate: true,
       },
     });
 
@@ -138,6 +144,9 @@ export class AuthService {
         designation: user.designation,
         profilePic: user.profilePic,
         createdAt: user.createdAt,
+        subscriptionPlan: user.subscriptionPlan,
+        subscriptionStatus: user.subscriptionStatus,
+        subscriptionEndDate: user.subscriptionEndDate,
       },
       token,
       isNewUser: !user.createdAt || (Date.now() - user.createdAt.getTime()) < 5000,
@@ -170,6 +179,9 @@ export class AuthService {
         company: user.company,
         designation: user.designation,
         createdAt: user.createdAt,
+        subscriptionPlan: user.subscriptionPlan,
+        subscriptionStatus: user.subscriptionStatus,
+        subscriptionEndDate: user.subscriptionEndDate,
       },
       token,
     };
@@ -182,6 +194,7 @@ export class AuthService {
     role: true,
     contactNo: true,
     profilePic: true,
+    coverImage: true,
     resumes: true,
     company: true,
     designation: true,
@@ -193,6 +206,9 @@ export class AuthService {
     linkedinUrl: true,
     githubUrl: true,
     portfolioUrl: true,
+    jobStatus: true,
+    projects: true,
+    achievements: true,
     createdAt: true,
     subscriptionPlan: true,
     subscriptionStatus: true,
@@ -225,6 +241,15 @@ export class AuthService {
     if ("skills" in data) {
       updateData.skills = Array.isArray(data.skills) ? data.skills : [];
     }
+    if ("jobStatus" in data) {
+      updateData.jobStatus = data.jobStatus || null;
+    }
+    if ("projects" in data) {
+      updateData.projects = Array.isArray(data.projects) ? data.projects : [];
+    }
+    if ("achievements" in data) {
+      updateData.achievements = Array.isArray(data.achievements) ? data.achievements : [];
+    }
 
     const user = await prisma.user.update({
       where: { id: userId },
@@ -233,5 +258,32 @@ export class AuthService {
     });
 
     return user;
+  }
+
+  async getPublicProfile(userId: number) {
+    const user = await prisma.user.findUnique({
+      where: { id: userId, role: "STUDENT" },
+      select: {
+        ...this.profileSelect,
+        verifiedSkills: {
+          select: { skillName: true, score: true, verifiedAt: true },
+        },
+        atsScores: {
+          select: { overallScore: true },
+          orderBy: { overallScore: "desc" },
+          take: 1,
+        },
+      },
+    });
+
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    const { atsScores, ...rest } = user;
+    return {
+      ...rest,
+      bestAtsScore: atsScores[0]?.overallScore ?? null,
+    };
   }
 }

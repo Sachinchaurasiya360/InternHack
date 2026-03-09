@@ -1,8 +1,9 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Briefcase, Users, TrendingUp, Award } from "lucide-react";
+import { Briefcase, Users, TrendingUp, Award, ShieldCheck } from "lucide-react";
 import api from "../../lib/axios";
+import { LoadingScreen } from "../../components/LoadingScreen";
 
 interface DashboardData {
   totalJobs: number;
@@ -10,6 +11,7 @@ interface DashboardData {
   totalApplications: number;
   hiredCount: number;
   statusBreakdown: Record<string, number>;
+  topVerifiedSkills: { skillName: string; count: number }[];
   recentApplications: {
     id: number;
     status: string;
@@ -30,9 +32,7 @@ export default function RecruiterDashboard() {
     }).catch(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return <div className="flex items-center justify-center h-64 text-gray-500 dark:text-gray-500">Loading dashboard...</div>;
-  }
+  if (loading) return <LoadingScreen />;
 
   if (!data) {
     return <div className="text-center text-gray-500 dark:text-gray-500">Failed to load dashboard</div>;
@@ -79,6 +79,34 @@ export default function RecruiterDashboard() {
               <div key={status} className="px-4 py-2 bg-gray-50 dark:bg-gray-950 rounded-lg">
                 <span className="text-xs text-gray-500 dark:text-gray-500 uppercase">{status}</span>
                 <p className="text-lg font-bold text-gray-900 dark:text-white">{count}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+
+      {/* Top Verified Skills */}
+      {data.topVerifiedSkills && data.topVerifiedSkills.length > 0 && (
+        <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-8">
+          <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-4 flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-green-500" /> Top Verified Skills Among Applicants
+          </h2>
+          <div className="space-y-3">
+            {data.topVerifiedSkills.map((skill, i) => (
+              <div key={skill.skillName} className="flex items-center gap-3">
+                <span className="text-sm font-bold text-gray-400 dark:text-gray-600 w-6">#{i + 1}</span>
+                <div className="flex-1">
+                  <div className="flex items-center justify-between mb-1">
+                    <span className="text-sm font-medium text-gray-900 dark:text-white">{skill.skillName}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-500">{skill.count} verified</span>
+                  </div>
+                  <div className="w-full bg-gray-100 dark:bg-gray-800 rounded-full h-1.5">
+                    <div
+                      className="bg-green-500 rounded-full h-1.5"
+                      style={{ width: `${Math.min(100, (skill.count / (data.topVerifiedSkills[0]?.count || 1)) * 100)}%` }}
+                    />
+                  </div>
+                </div>
               </div>
             ))}
           </div>

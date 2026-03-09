@@ -1,38 +1,69 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
-import { Code2, CheckCircle2, ChevronRight, Building2, Puzzle, Bookmark, BookOpen } from "lucide-react";
+import { motion } from "framer-motion";
+import { Code2, CheckCircle2, Building2, Puzzle, Bookmark, BookOpen, TrendingUp, ArrowRight } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { DsaTopic, DsaProgress, DsaSheetStats } from "../../../lib/types";
+import type { DsaTopic, DsaProgress } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 
-const DIFFICULTY_COLORS: Record<string, string> = {
-  easy: "text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-900/30",
-  medium: "text-yellow-600 dark:text-yellow-400 bg-yellow-50 dark:bg-yellow-900/30",
-  hard: "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/30",
+const DIFFICULTY_COLORS: Record<string, { ring: string; text: string }> = {
+  easy:   { ring: "stroke-green-500", text: "text-green-600 dark:text-green-400" },
+  medium: { ring: "stroke-yellow-500", text: "text-yellow-600 dark:text-yellow-400" },
+  hard:   { ring: "stroke-red-500", text: "text-red-600 dark:text-red-400" },
 };
 
-type SheetTab = "all" | "a2z" | "blind75" | "neetcode150";
+type DifficultyTab = "all" | "easy" | "medium-hard";
 
-const SHEET_TABS: { key: SheetTab; label: string }[] = [
-  { key: "all", label: "All" },
-  { key: "a2z", label: "A2Z Sheet" },
-  { key: "blind75", label: "Blind 75" },
-  { key: "neetcode150", label: "NeetCode 150" },
+const DIFFICULTY_TABS: { key: DifficultyTab; label: string; desc: string }[] = [
+  { key: "all", label: "0 – 100", desc: "All Questions" },
+  { key: "easy", label: "0 – 1", desc: "Basic & Important" },
+  { key: "medium-hard", label: "1 – 100", desc: "Medium & Tough" },
 ];
+
+function CircularProgress({ progress }: { progress: number }) {
+  const r = 28;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (progress / 100) * circ;
+
+  return (
+    <div className="relative w-16 h-16 shrink-0">
+      <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r={r} fill="none" stroke="#f3f4f6" className="dark:stroke-gray-700" strokeWidth="5" />
+        <circle
+          cx="32" cy="32" r={r}
+          fill="none"
+          className="stroke-indigo-500"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeDasharray={`${circ}`}
+          strokeDashoffset={offset}
+          style={{ transition: "stroke-dashoffset 0.6s ease" }}
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-800 dark:text-gray-200">
+        {progress}%
+      </span>
+    </div>
+  );
+}
 
 export default function DsaTopicsPage() {
   const { user } = useAuthStore();
-  const [activeSheet, setActiveSheet] = useState<SheetTab>("all");
+  const [activeTab, setActiveTab] = useState<DifficultyTab>("all");
 
-  const sheetParam = activeSheet === "all" ? undefined : activeSheet;
+  const difficultyParam =
+    activeTab === "easy" ? "Easy" :
+    activeTab === "medium-hard" ? "Medium,Hard" :
+    undefined;
 
   const { data: topics, isLoading } = useQuery({
-    queryKey: queryKeys.dsa.topics(sheetParam),
+    queryKey: queryKeys.dsa.topics(difficultyParam),
     queryFn: () => {
-      const params = sheetParam ? `?sheet=${sheetParam}` : "";
+      const params = difficultyParam ? `?difficulty=${difficultyParam}` : "";
       return api.get<DsaTopic[]>(`/dsa/topics${params}`).then((r) => r.data);
     },
   });
@@ -43,179 +74,242 @@ export default function DsaTopicsPage() {
     enabled: !!user,
   });
 
-  const { data: sheetStats } = useQuery({
-    queryKey: queryKeys.dsa.sheets(),
-    queryFn: () => api.get<DsaSheetStats[]>("/dsa/sheets").then((r) => r.data),
-    enabled: !!user,
-  });
-
   const totalProblems = topics?.reduce((s, t) => s + t.problemCount, 0) ?? 0;
   const totalSolved = topics?.reduce((s, t) => s + t.solvedCount, 0) ?? 0;
   const overallPct = totalProblems > 0 ? Math.round((totalSolved / totalProblems) * 100) : 0;
 
-  const activeSheetStats = sheetStats?.find((s) => s.name === sheetParam);
+  const tabProgress = activeTab !== "all" && progress ? (() => {
+    const d = progress.byDifficulty;
+    if (activeTab === "easy") return { total: d.easy.total, solved: d.easy.solved };
+    return { total: d.medium.total + d.hard.total, solved: d.medium.solved + d.hard.solved };
+  })() : null;
+
+  if (isLoading) return <LoadingScreen />;
 
   return (
-    <div className="max-w-5xl mx-auto">
+    <div className="relative pb-12">
       <SEO title="DSA Practice" noIndex />
 
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-2">
-          <div className="w-10 h-10 rounded-xl bg-indigo-100 dark:bg-indigo-900/40 flex items-center justify-center">
-            <Code2 className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">DSA Practice</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">Master Data Structures & Algorithms</p>
-          </div>
-        </div>
-
-        {/* Quick Access Cards */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-4">
-          <Link
-            to="/student/dsa/companies"
-            className="flex items-center gap-2.5 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm transition-all"
-          >
-            <div className="w-8 h-8 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center">
-              <Building2 className="w-4 h-4 text-blue-600 dark:text-blue-400" />
-            </div>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Companies</span>
-          </Link>
-          <Link
-            to="/student/dsa/patterns"
-            className="flex items-center gap-2.5 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl hover:border-purple-300 dark:hover:border-purple-700 hover:shadow-sm transition-all"
-          >
-            <div className="w-8 h-8 rounded-lg bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center">
-              <Puzzle className="w-4 h-4 text-purple-600 dark:text-purple-400" />
-            </div>
-            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Patterns</span>
-          </Link>
-          {user && (
-            <Link
-              to="/student/dsa/bookmarks"
-              className="flex items-center gap-2.5 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl hover:border-amber-300 dark:hover:border-amber-700 hover:shadow-sm transition-all"
-            >
-              <div className="w-8 h-8 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center">
-                <Bookmark className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-              </div>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Bookmarks</span>
-            </Link>
-          )}
-          <div className="flex items-center gap-2.5 p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl">
-            <div className="w-8 h-8 rounded-lg bg-green-50 dark:bg-green-900/30 flex items-center justify-center">
-              <BookOpen className="w-4 h-4 text-green-600 dark:text-green-400" />
-            </div>
-            <div>
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{totalProblems}</span>
-              <span className="text-xs text-gray-400 dark:text-gray-500 ml-1">problems</span>
-            </div>
-          </div>
-        </div>
-
-        {/* Overall Progress Bar */}
-        {user && (
-          <div className="mt-4 p-4 bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-800">
-            <div className="flex items-center justify-between mb-2">
-              <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
-                {activeSheetStats ? `${SHEET_TABS.find((t) => t.key === activeSheet)?.label} Progress` : "Overall Progress"}
-              </span>
-              <span className="text-sm font-semibold text-gray-900 dark:text-white">
-                {activeSheetStats
-                  ? `${activeSheetStats.solved} / ${activeSheetStats.total} solved (${activeSheetStats.total > 0 ? Math.round((activeSheetStats.solved / activeSheetStats.total) * 100) : 0}%)`
-                  : `${totalSolved} / ${totalProblems} solved (${overallPct}%)`}
-              </span>
-            </div>
-            <div className="w-full h-2.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-              <div
-                className="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full transition-all duration-500"
-                style={{
-                  width: `${
-                    activeSheetStats
-                      ? activeSheetStats.total > 0
-                        ? Math.round((activeSheetStats.solved / activeSheetStats.total) * 100)
-                        : 0
-                      : overallPct
-                  }%`,
-                }}
-              />
-            </div>
-
-            {/* Difficulty breakdown */}
-            {progress && !activeSheetStats && (
-              <div className="grid grid-cols-3 gap-3 mt-4">
-                {(["easy", "medium", "hard"] as const).map((d) => (
-                  <div key={d} className={`rounded-lg px-3 py-2 ${DIFFICULTY_COLORS[d]}`}>
-                    <div className="text-xs font-medium capitalize">{d}</div>
-                    <div className="text-lg font-bold">
-                      {progress.byDifficulty[d].solved}/{progress.byDifficulty[d].total}
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
+      {/* Atmospheric background */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-indigo-100 to-cyan-100 dark:from-indigo-900/20 dark:to-cyan-900/20 rounded-full blur-3xl opacity-40" />
+        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-violet-100 dark:from-slate-900/20 dark:to-violet-900/20 rounded-full blur-3xl opacity-40" />
+        <div
+          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
+          style={{
+            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
       </div>
 
-      {/* Sheet Tabs */}
-      <div className="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5 mb-6 overflow-x-auto">
-        {SHEET_TABS.map((tab) => (
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="text-center mb-10 mt-6"
+      >
+        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
+          DSA <span className="text-gradient-accent">Practice</span>
+        </h1>
+        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-md mx-auto">
+          Master Data Structures & Algorithms
+        </p>
+      </motion.div>
+
+      {/* Stats */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="grid grid-cols-3 gap-4 mb-8"
+      >
+        {[
+          { icon: BookOpen, value: totalProblems, label: "Problems", iconColor: "text-indigo-500" },
+          { icon: TrendingUp, value: totalSolved, label: "Solved", iconColor: "text-violet-500" },
+          { icon: CheckCircle2, value: `${overallPct}%`, label: "Complete", iconColor: "text-emerald-500" },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 text-center"
+          >
+            <stat.icon className={`w-6 h-6 ${stat.iconColor} mx-auto mb-3`} />
+            <p className="font-display text-2xl font-bold text-gray-950 dark:text-white">{stat.value}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-0.5">{stat.label}</p>
+          </motion.div>
+        ))}
+      </motion.div>
+
+      {/* Quick Access */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+        className="flex items-center gap-3 mb-6 flex-wrap"
+      >
+        {[
+          { to: "/student/dsa/companies", icon: Building2, label: "Companies", iconColor: "text-blue-500" },
+          { to: "/student/dsa/patterns", icon: Puzzle, label: "Patterns", iconColor: "text-purple-500" },
+          ...(user ? [{ to: "/student/dsa/bookmarks", icon: Bookmark, label: "Bookmarks", iconColor: "text-amber-500" }] : []),
+        ].map((link) => (
+          <Link
+            key={link.to}
+            to={link.to}
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
+          >
+            <link.icon className={`w-4 h-4 ${link.iconColor}`} />
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">{link.label}</span>
+          </Link>
+        ))}
+      </motion.div>
+
+      {/* Difficulty Breakdown */}
+      {user && progress && activeTab === "all" && (
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          className="grid grid-cols-3 gap-4 mb-8"
+        >
+          {(["easy", "medium", "hard"] as const).map((d, i) => {
+            const colors = DIFFICULTY_COLORS[d];
+            return (
+              <motion.div
+                key={d}
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.2 + i * 0.08, duration: 0.4 }}
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 text-center"
+              >
+                <p className={`text-xs font-semibold uppercase tracking-wider ${colors.text} mb-2`}>{d}</p>
+                <p className={`font-display text-2xl font-bold ${colors.text}`}>
+                  {progress.byDifficulty[d].solved}/{progress.byDifficulty[d].total}
+                </p>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+      )}
+
+      {/* Tab Progress (when a difficulty filter is active) */}
+      {user && tabProgress && (
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 mb-8"
+        >
+          <div className="flex items-center justify-between mb-3">
+            <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+              {DIFFICULTY_TABS.find((t) => t.key === activeTab)?.desc} Progress
+            </span>
+            <span className="text-sm font-semibold text-gray-900 dark:text-white">
+              {tabProgress.solved} / {tabProgress.total} solved ({tabProgress.total > 0 ? Math.round((tabProgress.solved / tabProgress.total) * 100) : 0}%)
+            </span>
+          </div>
+          <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${tabProgress.total > 0 ? Math.round((tabProgress.solved / tabProgress.total) * 100) : 0}%` }}
+              transition={{ duration: 0.6 }}
+              className="h-full bg-indigo-500 rounded-full"
+            />
+          </div>
+        </motion.div>
+      )}
+
+      {/* Difficulty Tabs */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.2 }}
+        className="flex items-center gap-2 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-1.5 mb-8 overflow-x-auto"
+      >
+        {DIFFICULTY_TABS.map((tab) => (
           <button
             key={tab.key}
-            onClick={() => setActiveSheet(tab.key)}
-            className={`px-4 py-2 text-sm font-medium rounded-md transition-colors whitespace-nowrap ${
-              activeSheet === tab.key
-                ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm"
-                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
+            onClick={() => setActiveTab(tab.key)}
+            className={`flex-1 px-5 py-2.5 rounded-xl transition-all duration-200 whitespace-nowrap text-center ${
+              activeTab === tab.key
+                ? "bg-gray-950 text-white dark:bg-white dark:text-gray-950 shadow-sm"
+                : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
             }`}
           >
-            {tab.label}
-            {user && sheetStats && tab.key !== "all" && (
-              <span className="ml-1.5 text-xs opacity-60">
-                ({sheetStats.find((s) => s.name === tab.key)?.total ?? 0})
-              </span>
-            )}
+            <span className="text-sm font-semibold">{tab.label}</span>
+            <span className={`block text-[10px] mt-0.5 ${activeTab === tab.key ? "opacity-70" : "opacity-50"}`}>{tab.desc}</span>
           </button>
         ))}
-      </div>
+      </motion.div>
 
       {/* Topic List */}
-      {isLoading ? (
-        <div className="space-y-3">
-          {Array.from({ length: 8 }).map((_, i) => (
-            <div key={i} className="h-20 bg-gray-100 dark:bg-gray-800 rounded-xl animate-pulse" />
-          ))}
-        </div>
-      ) : (
-        <div className="space-y-2">
-          {topics?.map((topic, idx) => {
-            const pct = topic.problemCount > 0
-              ? Math.round((topic.solvedCount / topic.problemCount) * 100)
-              : 0;
+      <div className="space-y-3">
+        {topics?.map((topic, idx) => {
+          const pct = topic.problemCount > 0
+            ? Math.round((topic.solvedCount / topic.problemCount) * 100)
+            : 0;
+          const isComplete = pct === 100;
 
-            return (
+          return (
+            <motion.div
+              key={topic.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.25 + idx * 0.04 }}
+            >
               <Link
-                key={topic.id}
                 to={`/student/dsa/${topic.slug}`}
-                className="flex items-center gap-4 p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-sm transition-all group"
+                className="group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
               >
-                {/* Step number */}
-                <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center text-sm font-bold text-gray-600 dark:text-gray-400 shrink-0">
-                  {idx + 1}
-                </div>
+                {/* Circular progress or step number */}
+                {user ? (
+                  <CircularProgress progress={pct} />
+                ) : (
+                  <div className="w-16 h-16 shrink-0 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                    <span className="font-display text-lg font-bold text-gray-500 dark:text-gray-400">{idx + 1}</span>
+                  </div>
+                )}
 
-                {/* Title & progress */}
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors truncate">
-                    {topic.name}
-                  </h3>
-                  <div className="flex items-center gap-3 mt-1">
-                    <span className="text-xs text-gray-500 dark:text-gray-400">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h3 className="text-base font-semibold text-gray-950 dark:text-white truncate">
+                      {topic.name}
+                    </h3>
+                    {isComplete && user && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 shrink-0">
+                        Complete
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mb-2.5">
+                    {topic.problemCount} problems
+                    {user && topic.solvedCount > 0 && ` \u00B7 ${topic.solvedCount} solved`}
+                  </p>
+
+                  {/* Progress bar */}
+                  {user && (
+                    <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        transition={{ duration: 0.6, delay: 0.25 + idx * 0.04 }}
+                        className={`h-full rounded-full ${
+                          isComplete ? "bg-green-500" : pct > 0 ? "bg-gray-950 dark:bg-white" : "bg-gray-200 dark:bg-gray-700"
+                        }`}
+                      />
+                    </div>
+                  )}
+
+                  <div className="flex items-center gap-3 mt-2.5 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
+                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">
                       {topic.problemCount} problems
                     </span>
                     {user && topic.solvedCount > 0 && (
-                      <span className="text-xs text-green-600 dark:text-green-400 flex items-center gap-1">
+                      <span className="flex items-center gap-1 text-emerald-500">
                         <CheckCircle2 className="w-3 h-3" />
                         {topic.solvedCount} solved
                       </span>
@@ -223,35 +317,27 @@ export default function DsaTopicsPage() {
                   </div>
                 </div>
 
-                {/* Progress bar */}
-                {user && (
-                  <div className="flex items-center gap-3 shrink-0">
-                    <div className="w-24 hidden sm:block">
-                      <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                        <div
-                          className="h-full bg-indigo-600 dark:bg-indigo-500 rounded-full transition-all"
-                          style={{ width: `${pct}%` }}
-                        />
-                      </div>
-                    </div>
-                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 w-8 text-right">
-                      {pct}%
-                    </span>
-                  </div>
-                )}
-
-                <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-600 shrink-0" />
+                <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
               </Link>
-            );
-          })}
+            </motion.div>
+          );
+        })}
 
-          {topics?.length === 0 && (
-            <div className="text-center py-12 text-gray-400 dark:text-gray-500">
-              No topics found for this sheet
-            </div>
-          )}
-        </div>
-      )}
+        {topics?.length === 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+            className="text-center py-20 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800"
+          >
+            <Code2 className="w-10 h-10 text-indigo-500 mx-auto mb-4" />
+            <h3 className="font-display text-lg font-bold text-gray-950 dark:text-white mb-2">No topics found</h3>
+            <p className="text-sm text-gray-500 dark:text-gray-500 max-w-sm mx-auto">
+              No topics available for this difficulty level.
+            </p>
+          </motion.div>
+        )}
+      </div>
     </div>
   );
 }

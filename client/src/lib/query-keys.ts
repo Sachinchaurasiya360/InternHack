@@ -115,9 +115,20 @@ export const queryKeys = {
     progress: () => ["aptitude", "progress"] as const,
   },
 
+  // Skill Tests
+  skillTests: {
+    list: (params?: Record<string, string | number>) =>
+      ["skill-tests", "list", params] as const,
+    detail: (id: number) => ["skill-tests", "detail", id] as const,
+    myAttempts: () => ["skill-tests", "my-attempts"] as const,
+    myVerified: () => ["skill-tests", "my-verified"] as const,
+    studentVerified: (studentId: number) =>
+      ["skill-tests", "student-verified", studentId] as const,
+  },
+
   // DSA Practice
   dsa: {
-    topics: (sheet?: string) => ["dsa", "topics", sheet] as const,
+    topics: (filter?: string) => ["dsa", "topics", filter] as const,
     topic: (slug: string) => ["dsa", "topic", slug] as const,
     progress: () => ["dsa", "progress"] as const,
     bookmarks: () => ["dsa", "bookmarks"] as const,

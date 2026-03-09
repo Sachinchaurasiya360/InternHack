@@ -43,11 +43,28 @@ function readAndCleanup(filePath: string): Buffer {
 
 /** Try S3 first, fall back to local storage */
 async function uploadWithFallback(buffer: Buffer, folder: string, userId: number, originalName: string, mimeType: string): Promise<string> {
+  const key = buildS3Key(folder, userId, originalName);
+  console.log("[S3] Attempting upload:", {
+    bucket: process.env["AWS_S3_BUCKET"] || "(empty)",
+    region: process.env["AWS_REGION"] || "(empty)",
+    key,
+    contentType: mimeType,
+    sizeBytes: buffer.length,
+    hasAccessKey: !!process.env["AWS_ACCESS_KEY_ID"],
+    hasSecretKey: !!process.env["AWS_SECRET_ACCESS_KEY"],
+  });
   try {
-    const key = buildS3Key(folder, userId, originalName);
-    return await uploadToS3(buffer, key, mimeType);
-  } catch (err) {
-    console.warn("S3 upload failed, falling back to local storage:", (err as Error).message);
+    const url = await uploadToS3(buffer, key, mimeType);
+    console.log("[S3] Upload succeeded:", url);
+    return url;
+  } catch (err: unknown) {
+    const error = err as Error & { $metadata?: unknown; Code?: string; name?: string };
+    console.error("[S3] Upload FAILED:", {
+      name: error.name,
+      message: error.message,
+      code: error.Code,
+      metadata: error.$metadata,
+    });
     return saveLocally(buffer, folder, userId, originalName);
   }
 }
@@ -108,7 +125,7 @@ export class UploadController {
       const user = await prisma.user.update({
         where: { id: userId },
         data: { profilePic: url },
-        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
+        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true },
       });
 
       if (current?.profilePic) {
@@ -116,6 +133,35 @@ export class UploadController {
       }
 
       return res.status(200).json({ message: "Profile picture updated", user });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  /** Upload cover/banner image — S3 with local fallback */
+  async uploadCoverImage(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+      if (!req.file) return res.status(400).json({ message: "No image uploaded" });
+
+      const userId = req.user.id;
+      const current = await prisma.user.findUnique({ where: { id: userId }, select: { coverImage: true } });
+
+      const buffer = readAndCleanup(req.file.path);
+      const url = await uploadWithFallback(buffer, "cover-images", userId, req.file.originalname, req.file.mimetype);
+
+      const user = await prisma.user.update({
+        where: { id: userId },
+        data: { coverImage: url },
+        select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, coverImage: true, resumes: true, company: true, designation: true, createdAt: true },
+      });
+
+      if (current?.coverImage) {
+        deleteFile(current.coverImage);
+      }
+
+      return res.status(200).json({ message: "Cover image updated", user });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -130,21 +176,31 @@ export class UploadController {
 
       const userId = req.user.id;
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { resumes: true } });
-      if (current && current.resumes.length >= MAX_RESUMES) {
-        if (req.file.path) fs.unlink(req.file.path, () => {});
-        return res.status(400).json({ message: `Maximum ${MAX_RESUMES} resumes allowed. Delete one before uploading a new one.` });
-      }
 
       const buffer = readAndCleanup(req.file.path);
       const url = await uploadWithFallback(buffer, "resumes", userId, req.file.originalname, req.file.mimetype);
 
+      // If at max, delete the oldest resume to make room
+      let updatedResumes = current?.resumes ?? [];
+      if (updatedResumes.length >= MAX_RESUMES) {
+        const oldest = updatedResumes[0];
+        deleteFile(oldest);
+        updatedResumes = [...updatedResumes.slice(1), url];
+      } else {
+        updatedResumes = [...updatedResumes, url];
+      }
+
       const user = await prisma.user.update({
         where: { id: userId },
-        data: { resumes: { push: url } },
+        data: { resumes: updatedResumes },
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
       });
 
-      return res.status(200).json({ message: "Resume uploaded", user });
+      return res.status(200).json({
+        message: "Resume uploaded",
+        user,
+        file: { url, originalName: req.file.originalname, size: req.file.size, mimeType: req.file.mimetype },
+      });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });

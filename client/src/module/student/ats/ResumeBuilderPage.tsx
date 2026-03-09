@@ -17,6 +17,12 @@ import {
   ChevronUp,
   Eye,
   PenLine,
+  Palette,
+  ScanSearch,
+  CheckCircle,
+  History,
+  Mail,
+  ChevronRight,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import type {
@@ -53,18 +59,25 @@ function FormSection({
   open,
   onToggle,
   children,
+  delay = 0,
 }: {
   title: string;
   icon: React.ReactNode;
   open: boolean;
   onToggle: () => void;
   children: React.ReactNode;
+  delay?: number;
 }) {
   return (
-    <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 overflow-hidden">
+    <motion.div
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.35, delay, ease: [0.22, 1, 0.36, 1] }}
+      className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden"
+    >
       <button
         onClick={onToggle}
-        className="w-full flex items-center justify-between px-5 py-3.5 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+        className="w-full flex items-center justify-between px-5 py-4 hover:bg-gray-50 dark:hover:bg-gray-800/60 transition-colors"
       >
         <span className="flex items-center gap-2.5 text-sm font-semibold text-gray-800 dark:text-gray-200">
           {icon}
@@ -89,13 +102,13 @@ function FormSection({
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+    </motion.div>
   );
 }
 
 // ── Small helpers ──────────────────────────────────────────────────
 const inputCls =
-  "w-full px-3 py-2 text-sm border border-gray-200 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 transition-colors bg-white dark:bg-gray-800 dark:text-white";
+  "w-full px-3.5 py-2.5 text-sm border border-gray-200 dark:border-gray-700 rounded-xl focus:outline-none focus:ring-2 focus:ring-violet-500/20 focus:border-violet-400 transition-all placeholder-gray-400 dark:placeholder-gray-500 bg-gray-50/50 dark:bg-gray-800/50 dark:text-white";
 const labelCls = "block text-xs font-medium text-gray-500 dark:text-gray-500 mb-1";
 const btnAddCls =
   "flex items-center gap-1.5 text-xs font-medium text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 mt-2";
@@ -105,6 +118,22 @@ const btnRemoveCls =
 function uid() {
   return crypto.randomUUID();
 }
+
+const TEMPLATE_COLORS: Record<string, { dot: string; bg: string; border: string }> = {
+  classic: { dot: "bg-gray-800 dark:bg-gray-200", bg: "bg-gray-50 dark:bg-gray-800/80", border: "border-gray-800 dark:border-gray-200" },
+  modern: { dot: "bg-indigo-500", bg: "bg-indigo-50 dark:bg-indigo-900/20", border: "border-indigo-500" },
+  minimal: { dot: "bg-gray-400", bg: "bg-gray-50 dark:bg-gray-800/60", border: "border-gray-400" },
+  professional: { dot: "bg-gray-900 dark:bg-white", bg: "bg-gray-50 dark:bg-gray-800/80", border: "border-gray-900 dark:border-white" },
+  creative: { dot: "bg-violet-500", bg: "bg-violet-50 dark:bg-violet-900/20", border: "border-violet-500" },
+  compact: { dot: "bg-emerald-500", bg: "bg-emerald-50 dark:bg-emerald-900/20", border: "border-emerald-500" },
+};
+
+const TOOLS = [
+  { icon: ScanSearch, title: "ATS Score", desc: "Analyze your resume", to: "/student/ats/score" },
+  { icon: Code2, title: "LaTeX Editor", desc: "Write in LaTeX", to: "/student/ats/latex-editor" },
+  { icon: Mail, title: "Cover Letter", desc: "AI-generated letters", to: "/student/ats/cover-letter" },
+  { icon: History, title: "Score History", desc: "Past analyses", to: "/student/ats/history" },
+];
 
 // ── Main Page ──────────────────────────────────────────────────────
 export default function ResumeBuilderPage() {
@@ -245,25 +274,89 @@ export default function ResumeBuilderPage() {
     <>
       <SEO title="Resume Builder — InternHack" description="Build your ATS-optimized resume with professional templates" />
 
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-        {/* Header */}
-        <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 sticky top-0 z-30">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Link to="/student/ats" className="p-1.5 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors text-gray-500 dark:text-gray-400">
-                <ArrowLeft className="w-4 h-4" />
+      <div className="relative max-w-[1440px] mx-auto pb-12">
+        {/* Atmospheric background */}
+        <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+          <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-violet-100 to-indigo-100 dark:from-violet-900/20 dark:to-indigo-900/20 rounded-full blur-3xl opacity-40" />
+          <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-blue-100 dark:from-slate-900/20 dark:to-blue-900/20 rounded-full blur-3xl opacity-40" />
+          <div
+            className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
+            style={{
+              backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+              backgroundSize: "48px 48px",
+            }}
+          />
+        </div>
+
+        {/* Page Header — landing page style */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+          className="text-center mb-8 px-4"
+        >
+         
+          <h1 className=" mt-4 font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
+            Build Your <span className="text-gradient-accent">Perfect Resume</span>
+          </h1>
+          <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
+            Fill in your details, pick a template, and download a polished PDF
+          </p>
+        </motion.div>
+
+        {/* Tool Cards Row */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.1 }}
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8 px-4 sm:px-6"
+        >
+          {TOOLS.map((tool, i) => (
+            <motion.div
+              key={tool.to}
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ delay: 0.1 + i * 0.06, duration: 0.4 }}
+            >
+              <Link
+                to={tool.to}
+                className="group flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
+              >
+                <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0">
+                  <tool.icon className="w-4.5 h-4.5 text-white dark:text-gray-950" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-950 dark:text-white truncate">
+                    {tool.title}
+                  </p>
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">
+                    {tool.desc}
+                  </p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors shrink-0" />
               </Link>
-              <div>
-                <h1 className="text-sm font-bold text-gray-900 dark:text-white">Resume Builder</h1>
-                <p className="text-[11px] text-gray-400 dark:text-gray-500">Fill in your details, pick a template, download PDF</p>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
+            </motion.div>
+          ))}
+        </motion.div>
+
+        {/* Template Selector */}
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.15 }}
+          className="px-4 sm:px-6 mb-6"
+        >
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
+            <div className="flex items-center gap-3 mb-3">
+              <Palette className="w-4 h-4 text-violet-500" />
+              <h2 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Choose Template
+              </h2>
               {/* Mobile toggle */}
-              <div className="flex md:hidden bg-gray-100 dark:bg-gray-800 rounded-lg p-0.5">
+              <div className="flex md:hidden ml-auto bg-gray-100 dark:bg-gray-800 rounded-xl p-0.5">
                 <button
                   onClick={() => setMobileView("form")}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                     mobileView === "form" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
@@ -272,7 +365,7 @@ export default function ResumeBuilderPage() {
                 </button>
                 <button
                   onClick={() => setMobileView("preview")}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-md transition-colors ${
+                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
                     mobileView === "preview" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 dark:text-gray-400"
                   }`}
                 >
@@ -280,41 +373,35 @@ export default function ResumeBuilderPage() {
                   Preview
                 </button>
               </div>
-              <button
-                onClick={handleDownload}
-                className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-950 text-white text-xs font-semibold rounded-xl hover:bg-gray-800 transition-colors dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
-              >
-                <Download className="w-3.5 h-3.5" />
-                Download PDF
-              </button>
+            </div>
+            <div className="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+              {TEMPLATES.map((tpl) => {
+                const isActive = selectedTemplate === tpl.id;
+                const colors = TEMPLATE_COLORS[tpl.id] ?? TEMPLATE_COLORS.classic;
+                return (
+                  <button
+                    key={tpl.id}
+                    onClick={() => setSelectedTemplate(tpl.id)}
+                    className={`shrink-0 flex items-center gap-2.5 px-4 py-2.5 rounded-xl text-xs font-medium transition-all border-2 ${
+                      isActive
+                        ? `${colors.border} ${colors.bg} text-gray-900 dark:text-white shadow-sm`
+                        : "border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300"
+                    }`}
+                  >
+                    <span className={`w-2.5 h-2.5 rounded-full shrink-0 ${isActive ? colors.dot : "bg-gray-300 dark:bg-gray-600"}`} />
+                    <span>{tpl.name}</span>
+                    {isActive && (
+                      <CheckCircle className="w-3.5 h-3.5 text-green-500 shrink-0" />
+                    )}
+                  </button>
+                );
+              })}
             </div>
           </div>
-        </div>
-
-        {/* Template Selector */}
-        <div className="bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800">
-          <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-3">
-            <div className="flex items-center gap-3 overflow-x-auto pb-1 scrollbar-none">
-              <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium shrink-0">Template:</span>
-              {TEMPLATES.map((tpl) => (
-                <button
-                  key={tpl.id}
-                  onClick={() => setSelectedTemplate(tpl.id)}
-                  className={`shrink-0 px-3.5 py-1.5 rounded-lg text-xs font-medium transition-all border-2 ${
-                    selectedTemplate === tpl.id
-                      ? `${tpl.accent} bg-gray-50 dark:bg-gray-800 text-gray-900 dark:text-white`
-                      : "border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300"
-                  }`}
-                >
-                  {tpl.name}
-                </button>
-              ))}
-            </div>
-          </div>
-        </div>
+        </motion.div>
 
         {/* Main Content */}
-        <div className="max-w-[1400px] mx-auto px-4 sm:px-6 py-6">
+        <div className="px-4 sm:px-6">
           <div className="flex gap-6">
             {/* Left - Form */}
             <div
@@ -328,6 +415,7 @@ export default function ResumeBuilderPage() {
                 icon={<User className="w-4 h-4 text-violet-500" />}
                 open={openSections.personal!}
                 onToggle={() => toggle("personal")}
+                delay={0.2}
               >
                 <div className="grid grid-cols-2 gap-3">
                   <div className="col-span-2">
@@ -363,6 +451,7 @@ export default function ResumeBuilderPage() {
                 icon={<FileText className="w-4 h-4 text-blue-500" />}
                 open={openSections.summary!}
                 onToggle={() => toggle("summary")}
+                delay={0.24}
               >
                 <textarea
                   className={`${inputCls} min-h-[80px] resize-y`}
@@ -378,6 +467,7 @@ export default function ResumeBuilderPage() {
                 icon={<Briefcase className="w-4 h-4 text-emerald-500" />}
                 open={openSections.experience!}
                 onToggle={() => toggle("experience")}
+                delay={0.28}
               >
                 <AnimatePresence>
                   {data.experience.map((exp) => (
@@ -386,7 +476,7 @@ export default function ResumeBuilderPage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="border border-gray-100 dark:border-gray-800 rounded-lg p-3 space-y-2 relative"
+                      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
                     >
                       <button onClick={() => removeExperience(exp.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
                         <Trash2 className="w-3.5 h-3.5" />
@@ -447,6 +537,7 @@ export default function ResumeBuilderPage() {
                 icon={<GraduationCap className="w-4 h-4 text-amber-500" />}
                 open={openSections.education!}
                 onToggle={() => toggle("education")}
+                delay={0.32}
               >
                 <AnimatePresence>
                   {data.education.map((edu) => (
@@ -455,7 +546,7 @@ export default function ResumeBuilderPage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="border border-gray-100 dark:border-gray-800 rounded-lg p-3 space-y-2 relative"
+                      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
                     >
                       <button onClick={() => removeEducation(edu.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
                         <Trash2 className="w-3.5 h-3.5" />
@@ -500,6 +591,7 @@ export default function ResumeBuilderPage() {
                 icon={<Code2 className="w-4 h-4 text-pink-500" />}
                 open={openSections.skills!}
                 onToggle={() => toggle("skills")}
+                delay={0.36}
               >
                 <div className="flex gap-2">
                   <input
@@ -516,7 +608,7 @@ export default function ResumeBuilderPage() {
                   />
                   <button
                     onClick={addSkill}
-                    className="px-3 py-2 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-lg text-xs font-medium hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors shrink-0"
+                    className="px-3.5 py-2.5 bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 rounded-xl text-xs font-medium hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors shrink-0"
                   >
                     Add
                   </button>
@@ -526,7 +618,7 @@ export default function ResumeBuilderPage() {
                     {data.skills.map((skill) => (
                       <span
                         key={skill}
-                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-md text-xs"
+                        className="inline-flex items-center gap-1 px-2.5 py-1 bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg text-xs"
                       >
                         {skill}
                         <button onClick={() => removeSkill(skill)} className="text-gray-400 dark:text-gray-500 hover:text-red-500">
@@ -544,6 +636,7 @@ export default function ResumeBuilderPage() {
                 icon={<FolderOpen className="w-4 h-4 text-indigo-500" />}
                 open={openSections.projects!}
                 onToggle={() => toggle("projects")}
+                delay={0.4}
               >
                 <AnimatePresence>
                   {data.projects.map((proj) => (
@@ -552,7 +645,7 @@ export default function ResumeBuilderPage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="border border-gray-100 dark:border-gray-800 rounded-lg p-3 space-y-2 relative"
+                      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
                     >
                       <button onClick={() => removeProject(proj.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
                         <Trash2 className="w-3.5 h-3.5" />
@@ -594,6 +687,7 @@ export default function ResumeBuilderPage() {
                 icon={<Award className="w-4 h-4 text-teal-500" />}
                 open={openSections.certifications!}
                 onToggle={() => toggle("certifications")}
+                delay={0.44}
               >
                 <AnimatePresence>
                   {data.certifications.map((cert) => (
@@ -602,7 +696,7 @@ export default function ResumeBuilderPage() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: "auto" }}
                       exit={{ opacity: 0, height: 0 }}
-                      className="border border-gray-100 dark:border-gray-800 rounded-lg p-3 space-y-2 relative"
+                      className="border border-gray-100 dark:border-gray-800 rounded-xl p-3 space-y-2 relative"
                     >
                       <button onClick={() => removeCertification(cert.id)} className={`absolute top-2 right-2 ${btnRemoveCls}`}>
                         <Trash2 className="w-3.5 h-3.5" />
@@ -630,22 +724,53 @@ export default function ResumeBuilderPage() {
               </FormSection>
             </div>
 
-            {/* Right - Preview (stays light for print fidelity) */}
+            {/* Right - Preview */}
             <div
               className={`flex-1 ${
                 mobileView === "form" ? "hidden md:block" : ""
               }`}
             >
-              <div className="sticky top-[105px]">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: 0.25 }}
+                className="sticky top-4"
+              >
+                {/* Preview header */}
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Eye className="w-4 h-4 text-violet-500" />
+                    <h3 className="text-xs font-bold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                      Live Preview
+                    </h3>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Link
+                      to="/student/ats/score"
+                      className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-400 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors no-underline"
+                    >
+                      <ScanSearch className="w-3.5 h-3.5" />
+                      Score It
+                    </Link>
+                    <button
+                      onClick={handleDownload}
+                      className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-xs font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors"
+                    >
+                      <Download className="w-3.5 h-3.5" />
+                      Download PDF
+                    </button>
+                  </div>
+                </div>
+
                 <div
-                  className="bg-white rounded-xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden"
-                  style={{ maxHeight: "calc(100vh - 130px)", overflowY: "auto" }}
+                  className="bg-white rounded-2xl border border-gray-200 dark:border-gray-700 shadow-sm overflow-hidden"
+                  style={{ maxHeight: "calc(100vh - 100px)", overflowY: "auto" }}
                 >
                   <div ref={printRef}>
                     <TemplateComponent data={data} />
                   </div>
                 </div>
-              </div>
+              </motion.div>
             </div>
           </div>
         </div>

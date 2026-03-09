@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router";
-import { Database, CheckCircle2, ChevronRight, ArrowLeft, Terminal } from "lucide-react";
+import { motion } from "framer-motion";
+import { CheckCircle2, ArrowRight, Terminal, BookOpen, TrendingUp } from "lucide-react";
 import { sections, exercises } from "./data/exercises";
 import { SEO } from "../../../components/SEO";
 
@@ -18,15 +19,36 @@ const DIFFICULTY_COLOR: Record<string, string> = {
   Hard: "text-red-600 dark:text-red-400",
 };
 
-const SECTION_ICONS: Record<number, string> = {
-  0: "S", 1: "N", 2: "W", 3: "P", 4: "SS", 5: "AG",
-  6: "J", 7: "J+", 8: "0", 9: "W", 10: "SJ", 11: "D", 12: "M",
-};
+function CircularProgress({ progress }: { progress: number }) {
+  const r = 28;
+  const circ = 2 * Math.PI * r;
+  const offset = circ - (progress / 100) * circ;
+
+  return (
+    <div className="relative w-16 h-16 shrink-0">
+      <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
+        <circle cx="32" cy="32" r={r} fill="none" stroke="#f3f4f6" className="dark:stroke-gray-700" strokeWidth="5" />
+        <circle
+          cx="32" cy="32" r={r}
+          fill="none"
+          className="stroke-blue-500"
+          strokeWidth="5"
+          strokeLinecap="round"
+          strokeDasharray={`${circ}`}
+          strokeDashoffset={offset}
+          style={{ transition: "stroke-dashoffset 0.6s ease" }}
+        />
+      </svg>
+      <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-800 dark:text-gray-200">
+        {progress}%
+      </span>
+    </div>
+  );
+}
 
 export default function SqlPracticePage() {
   const location = useLocation();
   const isStudentRoute = location.pathname.startsWith("/student");
-  const backLink = isStudentRoute ? "/student/dsa" : "/dsa";
 
   const progress = useMemo(() => getProgress(), []);
 
@@ -42,121 +64,160 @@ export default function SqlPracticePage() {
 
   const totalSolved = Object.values(progress).filter((p) => p.solved).length;
   const totalExercises = exercises.length;
+  const overallPct = totalExercises > 0 ? Math.round((totalSolved / totalExercises) * 100) : 0;
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="relative pb-12">
       <SEO title="SQL Practice" noIndex />
 
-      <div className="mb-6">
-        <Link to={backLink} className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-3">
-          <ArrowLeft className="w-4 h-4" />
-          Back
-        </Link>
-
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/40 flex items-center justify-center">
-            <Database className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-gray-900 dark:text-white">SQL Practice</h1>
-            <p className="text-sm text-gray-500 dark:text-gray-400">
-              Interactive SQL exercises — runs entirely in your browser
-            </p>
-          </div>
-        </div>
+      {/* Atmospheric background */}
+      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
+        <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-blue-100 to-cyan-100 dark:from-blue-900/20 dark:to-cyan-900/20 rounded-full blur-3xl opacity-40" />
+        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-linear-to-tr from-slate-100 to-indigo-100 dark:from-slate-900/20 dark:to-indigo-900/20 rounded-full blur-3xl opacity-40" />
+        <div
+          className="absolute inset-0 opacity-[0.02] dark:opacity-[0.03]"
+          style={{
+            backgroundImage: "linear-gradient(currentColor 1px, transparent 1px), linear-gradient(90deg, currentColor 1px, transparent 1px)",
+            backgroundSize: "48px 48px",
+          }}
+        />
       </div>
+
+      {/* Header */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="text-center mb-10 mt-6"
+      >
+        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
+          SQL <span className="text-gradient-accent">Practice</span>
+        </h1>
+        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-md mx-auto">
+          Interactive exercises — runs entirely in your browser
+        </p>
+      </motion.div>
+
+      {/* Stats */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="grid grid-cols-3 gap-4 mb-8"
+      >
+        {[
+          { icon: BookOpen, value: totalExercises, label: "Exercises", iconColor: "text-blue-500" },
+          { icon: TrendingUp, value: totalSolved, label: "Solved", iconColor: "text-violet-500" },
+          { icon: CheckCircle2, value: `${overallPct}%`, label: "Complete", iconColor: "text-emerald-500" },
+        ].map((stat, i) => (
+          <motion.div
+            key={stat.label}
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ delay: 0.1 + i * 0.08, duration: 0.4 }}
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-5 text-center"
+          >
+            <stat.icon className={`w-6 h-6 ${stat.iconColor} mx-auto mb-3`} />
+            <p className="font-display text-2xl font-bold text-gray-950 dark:text-white">{stat.value}</p>
+            <p className="text-xs text-gray-400 dark:text-gray-500 font-medium mt-0.5">{stat.label}</p>
+          </motion.div>
+        ))}
+      </motion.div>
 
       {/* Playground card */}
-      <Link
-        to={`${isStudentRoute ? "/student/sql" : "/sql"}/playground`}
-        className="flex items-center gap-4 p-4 mb-4 bg-linear-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200 dark:border-emerald-800 rounded-xl hover:shadow-md transition-all group"
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.15 }}
+        className="mb-8"
       >
-        <div className="w-10 h-10 rounded-lg bg-emerald-100 dark:bg-emerald-900/40 flex items-center justify-center shrink-0">
-          <Terminal className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-        </div>
-        <div className="flex-1">
-          <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
-            SQL Playground
-          </h3>
-          <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">
-            Open editor with pre-loaded tables — write any query and see results instantly
-          </p>
-        </div>
-        <ChevronRight className="w-4 h-4 text-gray-400 shrink-0" />
-      </Link>
-
-      {/* Overall progress */}
-      <div className="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl p-4 mb-6">
-        <div className="flex items-center justify-between mb-2">
-          <span className="text-sm font-medium text-gray-700 dark:text-gray-300">Overall Progress</span>
-          <span className="text-sm text-gray-500 dark:text-gray-400">
-            {totalSolved}/{totalExercises} exercises
-          </span>
-        </div>
-        <div className="w-full h-2 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-          <div
-            className="h-full bg-blue-500 rounded-full transition-all duration-500"
-            style={{ width: `${totalExercises > 0 ? (totalSolved / totalExercises) * 100 : 0}%` }}
-          />
-        </div>
-      </div>
+        <Link
+          to={`${isStudentRoute ? "/student/sql" : "/sql"}/playground`}
+          className="group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-emerald-200 dark:hover:border-emerald-800 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
+        >
+          <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
+            <Terminal className="w-6 h-6 text-emerald-500" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="text-base font-semibold text-gray-950 dark:text-white mb-0.5">
+              SQL Playground
+            </h3>
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              Open editor with pre-loaded tables — write any query and see results instantly
+            </p>
+          </div>
+          <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+        </Link>
+      </motion.div>
 
       {/* Section list */}
       <div className="space-y-3">
         {sectionStats.map((section, idx) => {
-          const pct = section.total > 0 ? (section.solved / section.total) * 100 : 0;
+          const pct = section.total > 0 ? Math.round((section.solved / section.total) * 100) : 0;
           const basePath = isStudentRoute ? "/student/sql" : "/sql";
+          const isComplete = pct === 100 && section.total > 0;
 
           return (
-            <Link
+            <motion.div
               key={section.id}
-              to={`${basePath}/${section.id}`}
-              className="flex items-center gap-4 p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl hover:border-blue-300 dark:hover:border-blue-700 hover:shadow-sm transition-all group"
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.2 + idx * 0.04 }}
             >
-              <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400 font-bold text-sm shrink-0">
-                {SECTION_ICONS[idx] ?? idx}
-              </div>
+              <Link
+                to={`${basePath}/${section.id}`}
+                className="group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
+              >
+                <CircularProgress progress={pct} />
 
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-2">
-                  <h3 className="font-semibold text-gray-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors truncate">
-                    {section.title}
-                  </h3>
-                  {pct === 100 && section.total > 0 && (
-                    <CheckCircle2 className="w-4 h-4 text-green-500 shrink-0" />
-                  )}
-                </div>
-                <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5 truncate">
-                  {section.description}
-                </p>
-                <div className="flex items-center gap-3 mt-1.5">
-                  <div className="flex-1 max-w-48 h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-blue-500 rounded-full transition-all"
-                      style={{ width: `${pct}%` }}
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2 flex-wrap mb-1">
+                    <h3 className="text-base font-semibold text-gray-950 dark:text-white truncate">
+                      {section.title}
+                    </h3>
+                    {isComplete && (
+                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 shrink-0">
+                        Complete
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-xs text-gray-500 dark:text-gray-500 mb-2.5 truncate">
+                    {section.description}
+                  </p>
+
+                  {/* Progress bar */}
+                  <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                    <motion.div
+                      initial={{ width: 0 }}
+                      animate={{ width: `${pct}%` }}
+                      transition={{ duration: 0.6, delay: 0.2 + idx * 0.04 }}
+                      className={`h-full rounded-full ${
+                        isComplete ? "bg-green-500" : pct > 0 ? "bg-gray-950 dark:bg-white" : "bg-gray-200 dark:bg-gray-700"
+                      }`}
                     />
                   </div>
-                  <span className="text-[11px] text-gray-400 dark:text-gray-500">
-                    {section.solved}/{section.total}
-                  </span>
-                  {section.difficulties.map((d) => (
-                    <span key={d} className={`text-[10px] font-medium ${DIFFICULTY_COLOR[d]}`}>{d}</span>
-                  ))}
-                </div>
-              </div>
 
-              <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-600 shrink-0" />
-            </Link>
+                  <div className="flex items-center gap-3 mt-2.5 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
+                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">
+                      {section.solved}/{section.total} exercises
+                    </span>
+                    {section.difficulties.map((d) => (
+                      <span key={d} className={`px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded ${DIFFICULTY_COLOR[d]}`}>
+                        {d}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+              </Link>
+            </motion.div>
           );
         })}
       </div>
 
-      {/* Info */}
-      <div className="mt-6 p-3 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg">
-        <p className="text-xs text-blue-700 dark:text-blue-300">
-          Powered by SQLite (WebAssembly). All queries run locally in your browser — no data leaves your machine. Progress is saved automatically.
-        </p>
-      </div>
+     
     </div>
   );
 }

@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { ArrowRight, Sparkles } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { Link } from "react-router";
 import { useAuthStore } from "../lib/auth.store";
 
@@ -44,19 +44,8 @@ export function HeroSection() {
       />
 
       <div className="relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-20 text-center">
-        <motion.div
-          custom={0}
-          initial="hidden"
-          animate="visible"
-          variants={fadeInUp}
-          className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-900 border border-black/10 dark:border-gray-700 shadow-sm text-sm text-gray-600 dark:text-gray-400 mb-8"
-        >
-          <Sparkles className="w-4 h-4 text-indigo-500" />
-          <span>AI-Powered Career Platform</span>
-        </motion.div>
-
         <motion.h1
-          custom={1}
+          custom={0}
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
@@ -68,18 +57,18 @@ export function HeroSection() {
         </motion.h1>
 
         <motion.p
-          custom={2}
+          custom={1}
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
           className="text-lg sm:text-xl text-gray-500 dark:text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed"
         >
           Browse curated jobs, follow guided career roadmaps, score your resume
-          with AI, and connect directly with recruiters — all in one platform.
+          with AI, and connect directly with recruiters all in one platform.
         </motion.p>
 
         <motion.div
-          custom={3}
+          custom={2}
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
@@ -107,22 +96,6 @@ export function HeroSection() {
         </motion.div>
 
       </div>
-
-      {/* Scroll indicator */}
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 2 }}
-        className="absolute bottom-8 left-1/2 -translate-x-1/2"
-      >
-        <motion.div
-          animate={{ y: [0, 8, 0] }}
-          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-          className="w-5 h-8 border-2 border-gray-300 dark:border-gray-600 rounded-full flex items-start justify-center p-1.5"
-        >
-          <motion.div className="w-1 h-1.5 bg-gray-400 dark:bg-gray-500 rounded-full" />
-        </motion.div>
-      </motion.div>
     </section>
   );
 }

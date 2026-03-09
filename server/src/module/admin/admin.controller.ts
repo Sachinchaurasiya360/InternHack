@@ -22,6 +22,22 @@ import {
   adminCollegeQuerySchema,
   adminCollegeReviewQuerySchema,
   updateCollegeReviewStatusSchema,
+  dsaTopicQuerySchema,
+  createDsaTopicSchema,
+  updateDsaTopicSchema,
+  createDsaProblemSchema,
+  updateDsaProblemSchema,
+  aptitudeCategoryQuerySchema,
+  createAptitudeCategorySchema,
+  updateAptitudeCategorySchema,
+  createAptitudeTopicSchema,
+  updateAptitudeTopicSchema,
+  aptitudeQuestionQuerySchema,
+  createAptitudeQuestionSchema,
+  updateAptitudeQuestionSchema,
+  adminSkillTestQuerySchema,
+  createSkillTestAdminSchema,
+  updateSkillTestAdminSchema,
 } from "./admin.validation.js";
 
 export class AdminController {
@@ -651,6 +667,305 @@ export class AdminController {
       if (err instanceof Error && err.message === "College review not found") {
         res.status(404).json({ message: err.message }); return;
       }
+      next(err);
+    }
+  }
+
+  // ==================== DSA MANAGEMENT ====================
+
+  async listDsaTopics(req: Request, res: Response, next: NextFunction) {
+    try {
+      const query = dsaTopicQuerySchema.parse(req.query);
+      const data = await this.adminService.listDsaTopics(query);
+      res.json(data);
+    } catch (err) { next(err); }
+  }
+
+  async getDsaTopic(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid topic ID" }); return; }
+      const topic = await this.adminService.getDsaTopic(id);
+      res.json({ topic });
+    } catch (err) {
+      if (err instanceof Error && err.message === "DSA topic not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async createDsaTopic(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = createDsaTopicSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const topic = await this.adminService.createDsaTopic(result.data);
+      res.status(201).json({ message: "DSA topic created", topic });
+    } catch (err) { next(err); }
+  }
+
+  async updateDsaTopic(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid topic ID" }); return; }
+      const result = updateDsaTopicSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const topic = await this.adminService.updateDsaTopic(id, result.data as Parameters<typeof this.adminService.updateDsaTopic>[1]);
+      res.json({ message: "DSA topic updated", topic });
+    } catch (err) {
+      if (err instanceof Error && err.message === "DSA topic not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async deleteDsaTopic(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid topic ID" }); return; }
+      await this.adminService.deleteDsaTopic(id);
+      res.json({ message: "DSA topic deleted" });
+    } catch (err) {
+      if (err instanceof Error && err.message === "DSA topic not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async createDsaProblem(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = createDsaProblemSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const problem = await this.adminService.createDsaProblem(result.data);
+      res.status(201).json({ message: "DSA problem created", problem });
+    } catch (err) { next(err); }
+  }
+
+  async updateDsaProblem(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
+      const result = updateDsaProblemSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const problem = await this.adminService.updateDsaProblem(id, result.data);
+      res.json({ message: "DSA problem updated", problem });
+    } catch (err) {
+      if (err instanceof Error && err.message === "DSA problem not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async deleteDsaProblem(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid problem ID" }); return; }
+      await this.adminService.deleteDsaProblem(id);
+      res.json({ message: "DSA problem deleted" });
+    } catch (err) {
+      if (err instanceof Error && err.message === "DSA problem not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  // ==================== APTITUDE MANAGEMENT ====================
+
+  async listAptitudeCategories(req: Request, res: Response, next: NextFunction) {
+    try {
+      const query = aptitudeCategoryQuerySchema.parse(req.query);
+      const data = await this.adminService.listAptitudeCategories(query);
+      res.json(data);
+    } catch (err) { next(err); }
+  }
+
+  async getAptitudeCategory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid category ID" }); return; }
+      const category = await this.adminService.getAptitudeCategory(id);
+      res.json({ category });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Aptitude category not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async createAptitudeCategory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = createAptitudeCategorySchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const category = await this.adminService.createAptitudeCategory(result.data);
+      res.status(201).json({ message: "Category created", category });
+    } catch (err) { next(err); }
+  }
+
+  async updateAptitudeCategory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid category ID" }); return; }
+      const result = updateAptitudeCategorySchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const category = await this.adminService.updateAptitudeCategory(id, result.data);
+      res.json({ message: "Category updated", category });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Aptitude category not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async deleteAptitudeCategory(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid category ID" }); return; }
+      await this.adminService.deleteAptitudeCategory(id);
+      res.json({ message: "Category deleted" });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Aptitude category not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async createAptitudeTopic(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = createAptitudeTopicSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const topic = await this.adminService.createAptitudeTopic(result.data);
+      res.status(201).json({ message: "Topic created", topic });
+    } catch (err) { next(err); }
+  }
+
+  async updateAptitudeTopic(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid topic ID" }); return; }
+      const result = updateAptitudeTopicSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const topic = await this.adminService.updateAptitudeTopic(id, result.data);
+      res.json({ message: "Topic updated", topic });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Aptitude topic not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async deleteAptitudeTopic(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid topic ID" }); return; }
+      await this.adminService.deleteAptitudeTopic(id);
+      res.json({ message: "Topic deleted" });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Aptitude topic not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async listAptitudeQuestions(req: Request, res: Response, next: NextFunction) {
+    try {
+      const query = aptitudeQuestionQuerySchema.parse(req.query);
+      const data = await this.adminService.listAptitudeQuestions(query);
+      res.json(data);
+    } catch (err) { next(err); }
+  }
+
+  async createAptitudeQuestion(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = createAptitudeQuestionSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const question = await this.adminService.createAptitudeQuestion(result.data);
+      res.status(201).json({ message: "Question created", question });
+    } catch (err) { next(err); }
+  }
+
+  async updateAptitudeQuestion(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid question ID" }); return; }
+      const result = updateAptitudeQuestionSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const question = await this.adminService.updateAptitudeQuestion(id, result.data);
+      res.json({ message: "Question updated", question });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Aptitude question not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async deleteAptitudeQuestion(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid question ID" }); return; }
+      await this.adminService.deleteAptitudeQuestion(id);
+      res.json({ message: "Question deleted" });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Aptitude question not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  // ==================== SKILL TEST MANAGEMENT ====================
+
+  async listAdminSkillTests(req: Request, res: Response, next: NextFunction) {
+    try {
+      const query = adminSkillTestQuerySchema.parse(req.query);
+      const data = await this.adminService.listAdminSkillTests(query);
+      res.json(data);
+    } catch (err) { next(err); }
+  }
+
+  async getAdminSkillTest(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid test ID" }); return; }
+      const test = await this.adminService.getAdminSkillTest(id);
+      res.json({ test });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Skill test not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async createAdminSkillTest(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) { res.status(401).json({ message: "Authentication required" }); return; }
+      const result = createSkillTestAdminSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const test = await this.adminService.createAdminSkillTest(result.data, req.user.id);
+      res.status(201).json({ message: "Skill test created", test });
+    } catch (err) { next(err); }
+  }
+
+  async updateAdminSkillTest(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid test ID" }); return; }
+      const result = updateSkillTestAdminSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const test = await this.adminService.updateAdminSkillTest(id, result.data as Parameters<typeof this.adminService.updateAdminSkillTest>[1]);
+      res.json({ message: "Skill test updated", test });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Skill test not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async deleteAdminSkillTest(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid test ID" }); return; }
+      await this.adminService.deleteAdminSkillTest(id);
+      res.json({ message: "Skill test deleted" });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Skill test not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async toggleSkillTestActive(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid test ID" }); return; }
+      const { isActive } = req.body;
+      if (typeof isActive !== "boolean") { res.status(400).json({ message: "isActive is required" }); return; }
+      const test = await this.adminService.toggleSkillTestActive(id, isActive);
+      res.json({ message: `Skill test ${isActive ? "activated" : "deactivated"}`, test });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Skill test not found") { res.status(404).json({ message: err.message }); return; }
       next(err);
     }
   }
