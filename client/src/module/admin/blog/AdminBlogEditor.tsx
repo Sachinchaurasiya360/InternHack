@@ -14,7 +14,6 @@ import toast from "react-hot-toast";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import type { BlogPost, BlogCategory } from "../../blog/components/BlogCard";
-import { CATEGORY_LABELS } from "../../blog/components/BlogCard";
 
 const CATEGORY_OPTIONS: { value: BlogCategory; label: string }[] = [
   { value: "CAREER_ADVICE", label: "Career Advice" },
@@ -139,7 +138,7 @@ export default function AdminBlogEditor() {
     queryKey: ["admin", "blog", "edit", id],
     queryFn: async () => {
       // Use admin endpoint - the public slug endpoint won't have all fields for DRAFT posts
-      const res = await api.get("/blog/admin/posts", { params: { page: 1, limit: 1, search: "" } });
+      await api.get("/blog/admin/posts", { params: { page: 1, limit: 1, search: "" } });
       // Fallback: fetch all and find by id. In a real app the admin detail endpoint would be used.
       // Since the spec only gives us list + slug endpoints, fetch via slug or search the list.
       const allRes = await api.get("/blog/admin/posts", { params: { page: 1, limit: 100 } });

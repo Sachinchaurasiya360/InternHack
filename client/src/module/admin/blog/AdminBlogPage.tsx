@@ -21,7 +21,7 @@ import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Pagination } from "../../../lib/types";
-import type { BlogPost, BlogCategory } from "../../blog/components/BlogCard";
+import type { BlogPost } from "../../blog/components/BlogCard";
 import { CATEGORY_LABELS } from "../../blog/components/BlogCard";
 
 type StatusFilter = "ALL" | "DRAFT" | "PUBLISHED";

@@ -22,7 +22,7 @@ export default function JobBrowsePage() {
   const [debouncedLocation, setDebouncedLocation] = useState("");
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [page, setPage] = useState(1);
-  const timerRef = useRef<ReturnType<typeof setTimeout>>();
+  const timerRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   // Debounce search & location inputs
   useEffect(() => {

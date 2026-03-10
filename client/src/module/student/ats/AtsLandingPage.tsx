@@ -14,7 +14,6 @@ import {
   Upload,
   Brain,
   TrendingUp,
-  FileText,
   Zap,
   Layout,
   PenLine,

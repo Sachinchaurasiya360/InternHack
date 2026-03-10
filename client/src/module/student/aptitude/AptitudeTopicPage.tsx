@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { useParams, Link } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, CheckCircle2, XCircle, ChevronLeft, ChevronRight, Building2, Clock, Brain } from "lucide-react";
+import { ArrowLeft, CheckCircle2, XCircle, ChevronLeft, ChevronRight, Building2, Clock } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeTopicDetail } from "../../../lib/types";

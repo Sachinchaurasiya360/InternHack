@@ -16,17 +16,6 @@ interface PathDetail extends Career {
   totalSkills: number;
 }
 
-const CATEGORY_ACCENT: Record<string, string> = {
-  ENGINEERING: "from-blue-500 to-blue-600",
-  DATA:        "from-purple-500 to-purple-600",
-  DESIGN:      "from-pink-500 to-rose-600",
-  PRODUCT:     "from-orange-400 to-amber-500",
-  MARKETING:   "from-green-500 to-emerald-600",
-  DEVOPS:      "from-cyan-500 to-teal-600",
-  SECURITY:    "from-red-500 to-red-600",
-  OTHER:       "from-gray-500 to-gray-600",
-};
-
 export default function CareerProgressPage() {
   const { slug } = useParams();
   const navigate = useNavigate();
@@ -116,7 +105,6 @@ export default function CareerProgressPage() {
   }
 
   const totalWeeks = detail.phases?.reduce((s, p) => s + (p.durationWeeks ?? 0), 0) ?? 0;
-  const gradient = CATEGORY_ACCENT[detail.category] ?? CATEGORY_ACCENT["OTHER"];
   const overallTotal = detail.totalSkills + topicStats.total;
   const overallCompleted = detail.completedSkills + topicStats.completed;
   const overallPct = overallTotal > 0 ? Math.round((overallCompleted / overallTotal) * 100) : 0;

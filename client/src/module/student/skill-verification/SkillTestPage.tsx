@@ -136,7 +136,7 @@ export default function SkillTestPage() {
 
   /* Submit ---------------------------------------------------------- */
   const handleSubmit = useCallback(
-    async (auto = false) => {
+    async (_auto = false) => {
       if (!test || submittingRef.current) return;
       submittingRef.current = true;
       setSubmitting(true);
@@ -173,7 +173,7 @@ export default function SkillTestPage() {
   );
 
   // Wire terminate callback
-  const terminateRef = useRef<() => void>();
+  const terminateRef = useRef<() => void>(undefined);
   terminateRef.current = () => handleSubmit(true);
 
   /* Timer ----------------------------------------------------------- */

@@ -1,12 +1,9 @@
 import { Link } from "react-router";
 import { motion } from "framer-motion";
 import {
-  FileText,
   Clock,
-  History,
   ScanSearch,
   PenTool,
-  Code2,
   Mail,
   ChevronRight,
   BarChart2,

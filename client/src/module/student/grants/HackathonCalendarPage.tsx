@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useEffect, useMemo, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Search,
@@ -17,16 +17,34 @@ import {
   Tag,
   ArrowLeft,
   Trophy,
+  Loader2,
 } from "lucide-react";
-import {
-  hackathons,
-  HACKATHON_ECOSYSTEMS,
-  type Hackathon,
-  type HackathonStatus,
-  type LocationType,
-} from "./hackathonsData";
+import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import { Link } from "react-router";
+
+type HackathonStatus = "upcoming" | "ongoing" | "past";
+type LocationType = "virtual" | "in-person" | "hybrid";
+
+interface Hackathon {
+  id: number;
+  name: string;
+  organizer: string;
+  logo: string;
+  description: string;
+  prizePool: string;
+  startDate: string;
+  endDate: string;
+  location: string;
+  locationType: LocationType;
+  website: string;
+  tags: string[];
+  tracks: string[];
+  eligibility: string;
+  status: HackathonStatus;
+  ecosystem: string;
+  highlights: string[];
+}
 
 const STATUS_CONFIG = {
   upcoming: {
@@ -71,11 +89,28 @@ function formatDateRange(start: string, end: string): string {
 }
 
 export default function HackathonCalendarPage() {
+  const [hackathons, setHackathons] = useState<Hackathon[]>([]);
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState<HackathonStatus | "ALL">("ALL");
   const [locationFilter, setLocationFilter] = useState<LocationType | "ALL">("ALL");
   const [ecosystemFilter, setEcosystemFilter] = useState<string>("ALL");
   const [selectedHackathon, setSelectedHackathon] = useState<Hackathon | null>(null);
+
+  const fetchHackathons = useCallback(() => {
+    setLoading(true);
+    api.get("/hackathons").then((res) => {
+      setHackathons(res.data.hackathons);
+      setLoading(false);
+    }).catch(() => setLoading(false));
+  }, []);
+
+  useEffect(() => { fetchHackathons(); }, [fetchHackathons]);
+
+  const HACKATHON_ECOSYSTEMS = useMemo(
+    () => Array.from(new Set(hackathons.map((h) => h.ecosystem))).sort(),
+    [hackathons]
+  );
 
   const filtered = useMemo(() => {
     return hackathons.filter((h) => {
@@ -93,7 +128,7 @@ export default function HackathonCalendarPage() {
       }
       return true;
     });
-  }, [search, statusFilter, locationFilter, ecosystemFilter]);
+  }, [hackathons, search, statusFilter, locationFilter, ecosystemFilter]);
 
   const ongoingCount = hackathons.filter((h) => h.status === "ongoing").length;
   const upcomingCount = hackathons.filter((h) => h.status === "upcoming").length;
@@ -276,7 +311,11 @@ export default function HackathonCalendarPage() {
         </div>
 
         {/* Grid */}
-        {filtered.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center py-24">
+            <Loader2 className="w-6 h-6 text-gray-400 dark:text-gray-500 animate-spin" />
+          </div>
+        ) : filtered.length === 0 ? (
           <div className="text-center py-24 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700">
             <Trophy className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
             <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-1">

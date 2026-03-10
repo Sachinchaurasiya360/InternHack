@@ -15,7 +15,6 @@ import {
   FileText,
   ScanSearch,
   Building2,
-  Globe,
   Map,
   Briefcase,
   Loader2,

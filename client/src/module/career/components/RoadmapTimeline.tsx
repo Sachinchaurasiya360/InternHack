@@ -5,7 +5,6 @@ import {
   ChevronRight,
   Check,
   BookOpen,
-  Video,
   FileText,
   Wrench,
   ExternalLink,

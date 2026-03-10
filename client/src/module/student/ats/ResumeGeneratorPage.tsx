@@ -15,7 +15,6 @@ import {
   MessageSquare,
   ScanSearch,
   PenTool,
-  History,
   Mail,
   ChevronRight,
   User,

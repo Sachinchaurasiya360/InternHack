@@ -5,7 +5,6 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Building2,
-  Calendar,
   ExternalLink,
   Globe,
   Linkedin,

@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router";
-import { LayoutDashboard, Users, Briefcase, ScrollText, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, Compass, BookOpen, GraduationCap, Code2, Brain, BadgeCheck } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, ScrollText, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, Compass, BookOpen, GraduationCap, Code2, Brain, BadgeCheck, Trophy } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useNavigate } from "react-router";
 import { SEO } from "../../components/SEO";
@@ -87,6 +87,10 @@ export default function AdminLayout() {
           <NavLink to="/admin/skill-tests" className={linkClass}>
             <BadgeCheck className="w-4 h-4" />
             Skill Tests
+          </NavLink>
+          <NavLink to="/admin/hackathons" className={linkClass}>
+            <Trophy className="w-4 h-4" />
+            Hackathons
           </NavLink>
           <NavLink to="/admin/blog" className={linkClass}>
             <BookOpen className="w-4 h-4" />

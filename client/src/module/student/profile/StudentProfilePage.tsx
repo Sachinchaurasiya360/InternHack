@@ -71,7 +71,7 @@ const fadeInUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] as const },
   }),
 };
 
@@ -196,7 +196,7 @@ export default function StudentProfilePage() {
       company: updated.company, designation: updated.designation,
       resumes: updated.resumes, profilePic: updated.profilePic, coverImage: updated.coverImage,
       bio: updated.bio, college: updated.college,
-      graduationYear: updated.graduationYear, skills: updated.skills,
+      graduationYear: updated.graduationYear ?? undefined, skills: updated.skills,
       location: updated.location, linkedinUrl: updated.linkedinUrl,
       githubUrl: updated.githubUrl, portfolioUrl: updated.portfolioUrl,
       jobStatus: updated.jobStatus as "NO_OFFER" | "LOOKING" | "OPEN_TO_OFFER" | null,

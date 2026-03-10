@@ -14,7 +14,6 @@ import {
   Filter,
   Code2,
   Sparkles,
-  Globe,
   Flame,
   ArrowRight,
   BookOpen,

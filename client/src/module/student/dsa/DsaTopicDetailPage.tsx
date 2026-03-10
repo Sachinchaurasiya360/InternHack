@@ -23,33 +23,6 @@ const DIFF_TEXT: Record<string, string> = {
 
 type DiffFilter = "All" | "Easy" | "Medium" | "Hard";
 
-function CircularProgress({ progress }: { progress: number }) {
-  const r = 28;
-  const circ = 2 * Math.PI * r;
-  const offset = circ - (progress / 100) * circ;
-
-  return (
-    <div className="relative w-16 h-16 shrink-0">
-      <svg className="w-16 h-16 -rotate-90" viewBox="0 0 64 64">
-        <circle cx="32" cy="32" r={r} fill="none" stroke="#f3f4f6" className="dark:stroke-gray-700" strokeWidth="5" />
-        <circle
-          cx="32" cy="32" r={r}
-          fill="none"
-          className="stroke-indigo-500"
-          strokeWidth="5"
-          strokeLinecap="round"
-          strokeDasharray={`${circ}`}
-          strokeDashoffset={offset}
-          style={{ transition: "stroke-dashoffset 0.6s ease" }}
-        />
-      </svg>
-      <span className="absolute inset-0 flex items-center justify-center text-sm font-bold text-gray-800 dark:text-gray-200">
-        {progress}%
-      </span>
-    </div>
-  );
-}
-
 export default function DsaTopicDetailPage() {
   const { slug } = useParams<{ slug: string }>();
   const { user } = useAuthStore();

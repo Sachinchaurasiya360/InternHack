@@ -61,7 +61,6 @@ const Web3RoadmapPage = lazy(() => import("./module/student/grants/Web3RoadmapPa
 const GrantTrackerPage = lazy(() => import("./module/student/grants/GrantTrackerPage"));
 const HackathonCalendarPage = lazy(() => import("./module/student/grants/HackathonCalendarPage"));
 const ProjectIdeasPage = lazy(() => import("./module/student/grants/ProjectIdeasPage"));
-const EcosystemComparePage = lazy(() => import("./module/student/grants/EcosystemComparePage"));
 const CheckoutPage = lazy(() => import("./module/student/checkout/CheckoutPage"));
 const SkillQuizPage = lazy(() => import("./module/career/quiz/SkillQuizPage"));
 const SqlPracticePage = lazy(() => import("./module/student/sql/SqlPracticePage"));
@@ -100,6 +99,7 @@ const AdminBlogEditor = lazy(() => import("./module/admin/blog/AdminBlogEditor")
 const AdminDsaPage = lazy(() => import("./module/admin/dsa/AdminDsaPage"));
 const AdminAptitudePage = lazy(() => import("./module/admin/aptitude/AdminAptitudePage"));
 const AdminSkillTestsPage = lazy(() => import("./module/admin/skill-tests/AdminSkillTestsPage"));
+const AdminHackathonsPage = lazy(() => import("./module/admin/hackathons/AdminHackathonsPage"));
 
 function App() {
   return (
@@ -182,7 +182,6 @@ function App() {
             <Route path="grants/tracker" element={<GrantTrackerPage />} />
             <Route path="grants/hackathons" element={<HackathonCalendarPage />} />
             <Route path="grants/projects" element={<ProjectIdeasPage />} />
-            <Route path="grants/ecosystems" element={<EcosystemComparePage />} />
             <Route path="opensource" element={<RepoDiscoveryPage />} />
             <Route path="opensource/gsoc" element={<GSoCReposPage />} />
             <Route path="opensource/programs" element={<ProgramTrackerPage />} />
@@ -227,6 +226,7 @@ function App() {
             <Route path="dsa" element={<AdminDsaPage />} />
             <Route path="aptitude" element={<AdminAptitudePage />} />
             <Route path="skill-tests" element={<AdminSkillTestsPage />} />
+            <Route path="hackathons" element={<AdminHackathonsPage />} />
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="blog/editor" element={<AdminBlogEditor />} />
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />

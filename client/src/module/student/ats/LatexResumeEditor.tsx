@@ -11,7 +11,6 @@ import {
   Loader2,
   Play,
   ScanSearch,
-  PenTool,
   Mail,
   History,
   ChevronRight,

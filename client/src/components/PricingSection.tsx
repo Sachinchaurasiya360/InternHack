@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Check, Sparkles, Crown, X } from "lucide-react";
+import { Check, Crown, X } from "lucide-react";
 import { useNavigate } from "react-router";
 import { useAuthStore } from "../lib/auth.store";
 

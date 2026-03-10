@@ -11,17 +11,6 @@ import { LoadingScreen } from "../../components/LoadingScreen";
 import { SEO } from "../../components/SEO";
 import toast from "react-hot-toast";
 
-const CATEGORY_CONFIG: Record<string, { pill: string; gradient: string; icon: string }> = {
-  ENGINEERING: { pill: "bg-blue-50 text-blue-700 border-blue-100 dark:bg-blue-900/30 dark:text-blue-400 dark:border-blue-800", gradient: "from-blue-500 to-blue-600", icon: "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400" },
-  DESIGN:      { pill: "bg-pink-50 text-pink-700 border-pink-100 dark:bg-pink-900/30 dark:text-pink-400 dark:border-pink-800", gradient: "from-pink-500 to-rose-600", icon: "bg-pink-50 text-pink-600 dark:bg-pink-900/30 dark:text-pink-400" },
-  DATA:        { pill: "bg-purple-50 text-purple-700 border-purple-100 dark:bg-purple-900/30 dark:text-purple-400 dark:border-purple-800", gradient: "from-purple-500 to-purple-600", icon: "bg-purple-50 text-purple-600 dark:bg-purple-900/30 dark:text-purple-400" },
-  PRODUCT:     { pill: "bg-orange-50 text-orange-700 border-orange-100 dark:bg-orange-900/30 dark:text-orange-400 dark:border-orange-800", gradient: "from-orange-400 to-amber-500", icon: "bg-orange-50 text-orange-600 dark:bg-orange-900/30 dark:text-orange-400" },
-  MARKETING:   { pill: "bg-green-50 text-green-700 border-green-100 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800", gradient: "from-green-500 to-emerald-600", icon: "bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400" },
-  DEVOPS:      { pill: "bg-cyan-50 text-cyan-700 border-cyan-100 dark:bg-cyan-900/30 dark:text-cyan-400 dark:border-cyan-800", gradient: "from-cyan-500 to-teal-600", icon: "bg-cyan-50 text-cyan-600 dark:bg-cyan-900/30 dark:text-cyan-400" },
-  SECURITY:    { pill: "bg-red-50 text-red-700 border-red-100 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800", gradient: "from-red-500 to-red-600", icon: "bg-red-50 text-red-600 dark:bg-red-900/30 dark:text-red-400" },
-  OTHER:       { pill: "bg-gray-50 text-gray-700 border-gray-200 dark:bg-gray-800 dark:text-gray-300 dark:border-gray-700", gradient: "from-gray-500 to-gray-600", icon: "bg-gray-50 text-gray-600 dark:bg-gray-800 dark:text-gray-400" },
-};
-
 const DIFFICULTY_CONFIG: Record<string, { bg: string; text: string; label: string }> = {
   BEGINNER: { bg: "bg-green-50 dark:bg-green-900/30", text: "text-green-700 dark:text-green-400", label: "Beginner Friendly" },
   INTERMEDIATE: { bg: "bg-amber-50 dark:bg-amber-900/30", text: "text-amber-700 dark:text-amber-400", label: "Intermediate" },
@@ -90,7 +79,6 @@ export default function CareerDetailPage() {
 
   const totalWeeks = career.phases?.reduce((sum, p) => sum + (p.durationWeeks ?? 0), 0) ?? 0;
   const totalSkills = career.phases?.reduce((sum, p) => sum + p.skills.length, 0) ?? 0;
-  const catCfg = CATEGORY_CONFIG[career.category] ?? CATEGORY_CONFIG["OTHER"];
   const diffCfg = DIFFICULTY_CONFIG[career.difficulty] ?? { bg: "bg-gray-50 dark:bg-gray-800", text: "text-gray-600 dark:text-gray-400", label: career.difficulty };
 
   return (

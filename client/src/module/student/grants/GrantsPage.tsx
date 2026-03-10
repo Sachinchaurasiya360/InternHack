@@ -23,11 +23,10 @@ import {
   ClipboardList,
   Calendar,
   Lightbulb,
-  Layers,
 } from "lucide-react";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
-  Map: MapIcon, ClipboardList, Calendar, Lightbulb, Layers,
+  Map: MapIcon, ClipboardList, Calendar, Lightbulb,
 };
 import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./grantsData";
 import { Navbar } from "../../../components/Navbar";
@@ -39,7 +38,6 @@ const GUIDANCE_CARDS = [
   { to: "/student/grants/tracker", icon: "ClipboardList", title: "Application Tracker", desc: "Track your grant applications, statuses, and deadlines", iconColor: "text-emerald-500 dark:text-emerald-400", hoverBorder: "hover:border-emerald-300 dark:hover:border-emerald-600" },
   { to: "/student/grants/hackathons", icon: "Calendar", title: "Hackathon Calendar", desc: "Upcoming blockchain hackathons with prizes and details", iconColor: "text-amber-500 dark:text-amber-400", hoverBorder: "hover:border-amber-300 dark:hover:border-amber-600" },
   { to: "/student/grants/projects", icon: "Lightbulb", title: "Project Ideas", desc: "Smart contract projects by difficulty with full specs", iconColor: "text-pink-500 dark:text-pink-400", hoverBorder: "hover:border-pink-300 dark:hover:border-pink-600" },
-  { to: "/student/grants/ecosystems", icon: "Layers", title: "Ecosystem Compare", desc: "Side-by-side comparison of 12 blockchain ecosystems", iconColor: "text-cyan-500 dark:text-cyan-400", hoverBorder: "hover:border-cyan-300 dark:hover:border-cyan-600" },
 ];
 
 const STATUS_CONFIG = {
@@ -58,7 +56,7 @@ export default function GrantsPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>("ALL");
   const [selectedGrant, setSelectedGrant] = useState<Grant | null>(null);
   const [showFilters, setShowFilters] = useState(false);
-  const [savedGrants, setSavedGrants] = useState<Set<string>>(() => {
+  const [savedGrants, setSavedGrants] = useState<Set<number>>(() => {
     try {
       const stored = localStorage.getItem("savedGrants");
       return stored ? new Set(JSON.parse(stored)) : new Set();
@@ -66,7 +64,7 @@ export default function GrantsPage() {
   });
   const [showSavedOnly, setShowSavedOnly] = useState(false);
 
-  const toggleSave = (grantId: string) => {
+  const toggleSave = (grantId: number) => {
     setSavedGrants((prev) => {
       const next = new Set(prev);
       if (next.has(grantId)) next.delete(grantId);

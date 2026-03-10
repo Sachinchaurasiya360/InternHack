@@ -95,11 +95,11 @@ class SqlEngine {
       );
       if (tables.length === 0) return [];
 
-      return tables[0].values.map(([tableName]) => {
+      return tables[0].values.map(([tableName]: unknown[]) => {
         const cols = this.db!.exec(`PRAGMA table_info("${tableName}")`);
         const columns =
           cols.length > 0
-            ? cols[0].values.map((row) => ({
+            ? cols[0].values.map((row: unknown[]) => ({
                 name: String(row[1]),
                 type: String(row[2]),
               }))
