@@ -3,9 +3,10 @@ import { useParams, Link } from "react-router";
 import { motion } from "framer-motion";
 import {
   Building2, MapPin, Globe, Users, Calendar,
-  Mail, Phone, Linkedin, ArrowLeft, ExternalLink, Loader2,
+  Mail, Phone, Linkedin, ArrowLeft, ExternalLink,
   MessageSquarePlus, PenLine, UserPlus, Star, Briefcase,
 } from "lucide-react";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import api, { SERVER_URL } from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { Navbar } from "../../../components/Navbar";
@@ -70,9 +71,7 @@ export default function CompanyDetailPage() {
     return (
       <div className="min-h-screen bg-white dark:bg-gray-950">
         <Navbar />
-        <div className="flex items-center justify-center py-40">
-          <Loader2 className="w-6 h-6 animate-spin text-gray-400 dark:text-gray-500" />
-        </div>
+        <LoadingScreen />
       </div>
     );
   }
@@ -97,7 +96,7 @@ export default function CompanyDetailPage() {
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
       <SEO
         title={company.name}
-        description={`${company.name} — ${company.industry || "Company"} in ${company.city}, ${company.state}. ${company.description?.slice(0, 120) || "Read reviews, see tech stack, and explore career opportunities."}`}
+        description={`${company.name} - ${company.industry || "Company"} in ${company.city}, ${company.state}. ${company.description?.slice(0, 120) || "Read reviews, see tech stack, and explore career opportunities."}`}
         keywords={`${company.name}, ${company.industry}, ${company.city}, company reviews, tech companies, ${company.technologies?.join(", ") || ""}`}
         ogImage={company.logo || undefined}
       />

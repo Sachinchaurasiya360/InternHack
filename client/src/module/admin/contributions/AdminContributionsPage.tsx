@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { GitPullRequest, Check, X, Loader2 } from "lucide-react";
+import { GitPullRequest, Check, X } from "lucide-react";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "react-hot-toast";
 import api from "../../../lib/axios";
 import type { CompanyContribution, Pagination } from "../../../lib/types";
@@ -74,9 +75,7 @@ export default function AdminContributionsPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center h-64 text-gray-400">
-          <Loader2 className="w-6 h-6 animate-spin" />
-        </div>
+        <LoadingScreen compact />
       ) : contributions.length === 0 ? (
         <div className="text-center text-gray-500 py-20">No {statusFilter.toLowerCase()} contributions</div>
       ) : (

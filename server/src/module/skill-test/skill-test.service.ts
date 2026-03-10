@@ -1,5 +1,16 @@
 import { prisma } from "../../database/db.js";
 
+const QUESTIONS_PER_SESSION = 20;
+
+/** Fisher-Yates shuffle (in-place, returns same array) */
+function shuffle<T>(arr: T[]): T[] {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i]!, arr[j]!] = [arr[j]!, arr[i]!];
+  }
+  return arr;
+}
+
 export class SkillTestService {
   async listTests(skill?: string, difficulty?: string) {
     const where: Record<string, unknown> = { isActive: true };
@@ -46,6 +57,8 @@ export class SkillTestService {
     return {
       ...test,
       questions: sanitizedQuestions,
+      totalPool: test.questions.length,
+      questionsPerSession: Math.min(QUESTIONS_PER_SESSION, test.questions.length),
       existingVerification,
       bestAttempt,
     };
@@ -54,14 +67,16 @@ export class SkillTestService {
   async startTest(testId: number) {
     const test = await prisma.skillTest.findUnique({
       where: { id: testId },
-      include: {
-        questions: { orderBy: { orderIndex: "asc" } },
-      },
+      include: { questions: true },
     });
 
     if (!test || !test.isActive) throw new Error("Test not found");
 
-    const sanitizedQuestions = test.questions.map(
+    // Shuffle and pick a random subset
+    const pool = shuffle([...test.questions]);
+    const selected = pool.slice(0, Math.min(QUESTIONS_PER_SESSION, pool.length));
+
+    const sanitizedQuestions = selected.map(
       ({ correctIndex, ...rest }) => rest
     );
 
@@ -71,6 +86,8 @@ export class SkillTestService {
       title: test.title,
       timeLimitSecs: test.timeLimitSecs,
       passThreshold: test.passThreshold,
+      totalPool: test.questions.length,
+      questionsCount: selected.length,
       questions: sanitizedQuestions,
     };
   }
@@ -87,10 +104,10 @@ export class SkillTestService {
     });
     if (!test) throw new Error("Test not found");
 
-    // Grade answers
+    // Grade answers — total is the served subset, not the full pool
     const questionMap = new Map(test.questions.map((q) => [q.id, q]));
     let correctCount = 0;
-    const totalQuestions = test.questions.length;
+    const totalQuestions = Math.min(QUESTIONS_PER_SESSION, test.questions.length);
 
     const gradedAnswers = answers.map((ans) => {
       const question = questionMap.get(ans.questionId);

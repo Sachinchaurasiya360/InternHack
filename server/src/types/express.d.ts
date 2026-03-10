@@ -8,6 +8,12 @@ declare global {
         email: string;
         role: UserRole;
       };
+      usageInfo?: {
+        used: number;
+        limit: number;
+        action: string;
+        tier: string;
+      };
     }
   }
 }

@@ -56,7 +56,7 @@ export default function ModernTemplate({ data }: { data: ResumeData }) {
                 </p>
                 <p className="text-indigo-200 text-[9px]">{edu.institution}</p>
                 <p className="text-indigo-300 text-[9px]">
-                  {edu.startDate} — {edu.endDate}
+                  {edu.startDate} - {edu.endDate}
                   {edu.gpa ? ` | GPA: ${edu.gpa}` : ""}
                 </p>
               </div>
@@ -74,7 +74,7 @@ export default function ModernTemplate({ data }: { data: ResumeData }) {
               <div key={cert.id} className="mb-2">
                 <p className="font-bold text-white text-[10px]">{cert.name}</p>
                 <p className="text-indigo-200 text-[9px]">
-                  {cert.issuer}{cert.date ? ` — ${cert.date}` : ""}
+                  {cert.issuer}{cert.date ? ` - ${cert.date}` : ""}
                 </p>
               </div>
             ))}
@@ -105,7 +105,7 @@ export default function ModernTemplate({ data }: { data: ResumeData }) {
                 <div className="flex justify-between items-baseline">
                   <h3 className="font-bold text-gray-900 text-[11px]">{exp.title}</h3>
                   <span className="text-[9px] text-gray-400 shrink-0 ml-2">
-                    {exp.startDate} — {exp.current ? "Present" : exp.endDate}
+                    {exp.startDate} - {exp.current ? "Present" : exp.endDate}
                   </span>
                 </div>
                 <p className="text-indigo-600 text-[10px] font-medium">{exp.company}</p>

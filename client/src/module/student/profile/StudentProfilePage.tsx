@@ -13,6 +13,7 @@ import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "react-hot-toast";
+import ImageCropModal from "../../../components/ImageCropModal";
 
 interface ProfileData {
   name: string;
@@ -70,7 +71,7 @@ const fadeInUp = {
   visible: (i: number) => ({
     opacity: 1,
     y: 0,
-    transition: { delay: i * 0.1, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+    transition: { delay: i * 0.08, duration: 0.5, ease: [0.22, 1, 0.36, 1] },
   }),
 };
 
@@ -95,6 +96,8 @@ export default function StudentProfilePage() {
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     basic: true, education: true, skills: true, projects: true, achievements: true, links: false, resumes: true,
   });
+  const [cropSrc, setCropSrc] = useState<string | null>(null);
+  const [cropType, setCropType] = useState<"profile" | "cover" | null>(null);
   const picInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const resumeInputRef = useRef<HTMLInputElement>(null);
@@ -267,7 +270,7 @@ export default function StudentProfilePage() {
           return next;
         });
         const count = Object.values(fe).flat().length;
-        toast.error(`${count} validation error${count > 1 ? "s" : ""} — check highlighted fields`);
+        toast.error(`${count} validation error${count > 1 ? "s" : ""} - check highlighted fields`);
       } else {
         toast.error("Failed to update profile");
       }
@@ -278,45 +281,53 @@ export default function StudentProfilePage() {
 
   const MAX_IMAGE_SIZE = 2 * 1024 * 1024; // 2 MB
 
-  const handleProfilePicUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePicSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > MAX_IMAGE_SIZE) { toast.error("Image must be under 2 MB"); if (picInputRef.current) picInputRef.current.value = ""; return; }
-    setUploadingPic(true);
-    try {
-      const fd = new FormData();
-      fd.append("file", file);
-      const res = await api.post("/upload/profile-pic", fd, { headers: { "Content-Type": "multipart/form-data" } });
-      const u = res.data.user;
-      setForm((prev) => ({ ...prev, profilePic: u.profilePic ?? "" }));
-      syncUser({ ...form, profilePic: u.profilePic ?? "" });
-      toast.success("Profile picture updated!");
-    } catch {
-      toast.error("Failed to upload profile picture");
-    } finally {
-      setUploadingPic(false);
-      if (picInputRef.current) picInputRef.current.value = "";
-    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropSrc(reader.result as string);
+      setCropType("profile");
+    };
+    reader.readAsDataURL(file);
+    if (picInputRef.current) picInputRef.current.value = "";
   };
 
-  const handleCoverImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleCoverImageSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
     if (file.size > MAX_IMAGE_SIZE) { toast.error("Image must be under 2 MB"); if (coverInputRef.current) coverInputRef.current.value = ""; return; }
-    setUploadingCover(true);
+    const reader = new FileReader();
+    reader.onload = () => {
+      setCropSrc(reader.result as string);
+      setCropType("cover");
+    };
+    reader.readAsDataURL(file);
+    if (coverInputRef.current) coverInputRef.current.value = "";
+  };
+
+  const handleCropComplete = async (blob: Blob) => {
+    const isProfile = cropType === "profile";
+    const setUploading = isProfile ? setUploadingPic : setUploadingCover;
+    const endpoint = isProfile ? "/upload/profile-pic" : "/upload/cover-image";
+    const field = isProfile ? "profilePic" : "coverImage";
+
+    setCropSrc(null);
+    setCropType(null);
+    setUploading(true);
     try {
       const fd = new FormData();
-      fd.append("file", file);
-      const res = await api.post("/upload/cover-image", fd, { headers: { "Content-Type": "multipart/form-data" } });
+      fd.append("file", blob, "cropped.jpg");
+      const res = await api.post(endpoint, fd, { headers: { "Content-Type": "multipart/form-data" } });
       const u = res.data.user;
-      setForm((prev) => ({ ...prev, coverImage: u.coverImage ?? "" }));
-      syncUser({ ...form, coverImage: u.coverImage ?? "" });
-      toast.success("Cover image updated!");
+      setForm((prev) => ({ ...prev, [field]: u[field] ?? "" }));
+      syncUser({ ...form, [field]: u[field] ?? "" });
+      toast.success(isProfile ? "Profile picture updated!" : "Cover image updated!");
     } catch {
-      toast.error("Failed to upload cover image");
+      toast.error(isProfile ? "Failed to upload profile picture" : "Failed to upload cover image");
     } finally {
-      setUploadingCover(false);
-      if (coverInputRef.current) coverInputRef.current.value = "";
+      setUploading(false);
     }
   };
 
@@ -403,13 +414,13 @@ export default function StudentProfilePage() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-        className="mb-8"
+        transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
+        className="text-center mb-10 mt-6"
       >
-        <h1 className="text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white">
-          My Profile
+        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
+          My <span className="text-gradient-accent">Profile</span>
         </h1>
-        <p className="mt-2 text-gray-500 dark:text-gray-500">
+        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
           A complete profile helps recruiters find you faster
         </p>
       </motion.div>
@@ -442,7 +453,7 @@ export default function StudentProfilePage() {
                 className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover/banner:opacity-100 transition-opacity cursor-pointer">
                 {uploadingCover ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Camera className="w-5 h-5 text-white" />}
               </button>
-              <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverImageUpload} className="hidden" />
+              <input ref={coverInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleCoverImageSelect} className="hidden" />
             </div>
 
             <div className="px-5 pb-5 -mt-12 relative">
@@ -457,7 +468,7 @@ export default function StudentProfilePage() {
                   className="absolute inset-0 w-24 h-24 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
                   {uploadingPic ? <Loader2 className="w-5 h-5 text-white animate-spin" /> : <Camera className="w-5 h-5 text-white" />}
                 </button>
-                <input ref={picInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleProfilePicUpload} className="hidden" />
+                <input ref={picInputRef} type="file" accept="image/jpeg,image/png,image/webp" onChange={handleProfilePicSelect} className="hidden" />
               </div>
 
               <h2 className="text-lg font-bold text-gray-950 dark:text-white truncate">{form.name || "Your Name"}</h2>
@@ -594,8 +605,8 @@ export default function StudentProfilePage() {
             <button type="button" onClick={() => toggleSection("basic")}
               className="w-full flex items-center justify-between px-6 py-4 text-left">
               <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <User className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
+                  <User className="w-4 h-4 text-white dark:text-gray-900" />
                 </div>
                 Basic Information
               </h3>
@@ -657,8 +668,8 @@ export default function StudentProfilePage() {
             <button type="button" onClick={() => toggleSection("education")}
               className="w-full flex items-center justify-between px-6 py-4 text-left">
               <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <GraduationCap className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
+                  <GraduationCap className="w-4 h-4 text-white dark:text-gray-900" />
                 </div>
                 Education & Work
               </h3>
@@ -716,8 +727,8 @@ export default function StudentProfilePage() {
             <button type="button" onClick={() => toggleSection("skills")}
               className="w-full flex items-center justify-between px-6 py-4 text-left">
               <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <CheckCircle className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
+                  <CheckCircle className="w-4 h-4 text-white dark:text-gray-900" />
                 </div>
                 Skills
                 <span className="text-xs font-normal text-gray-400 ml-1">{form.skills.length}/20</span>
@@ -765,8 +776,8 @@ export default function StudentProfilePage() {
             <button type="button" onClick={() => toggleSection("projects")}
               className="w-full flex items-center justify-between px-6 py-4 text-left">
               <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <FolderGit2 className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
+                  <FolderGit2 className="w-4 h-4 text-white dark:text-gray-900" />
                 </div>
                 Projects
                 <span className="text-xs font-normal text-gray-400 ml-1">{form.projects.length}/10</span>
@@ -784,8 +795,8 @@ export default function StudentProfilePage() {
             <button type="button" onClick={() => toggleSection("achievements")}
               className="w-full flex items-center justify-between px-6 py-4 text-left">
               <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <Trophy className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
+                  <Trophy className="w-4 h-4 text-white dark:text-gray-900" />
                 </div>
                 Achievements & Leadership
                 <span className="text-xs font-normal text-gray-400 ml-1">{form.achievements.length}/10</span>
@@ -803,8 +814,8 @@ export default function StudentProfilePage() {
             <button type="button" onClick={() => toggleSection("links")}
               className="w-full flex items-center justify-between px-6 py-4 text-left">
               <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <Globe className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
+                  <Globe className="w-4 h-4 text-white dark:text-gray-900" />
                 </div>
                 Social Links
                 {(form.linkedinUrl || form.githubUrl || form.portfolioUrl) && (
@@ -842,8 +853,8 @@ export default function StudentProfilePage() {
             <button type="button" onClick={() => toggleSection("resumes")}
               className="w-full flex items-center justify-between px-6 py-4 text-left">
               <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                  <FileText className="w-4 h-4 text-gray-600 dark:text-gray-400" />
+                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
+                  <FileText className="w-4 h-4 text-white dark:text-gray-900" />
                 </div>
                 Resumes
                 <span className="text-xs font-normal text-gray-400 ml-1">{form.resumes.length}/{MAX_RESUMES}</span>
@@ -889,6 +900,16 @@ export default function StudentProfilePage() {
           </motion.div>
         </div>
       </div>
+
+      {/* Image Crop Modal */}
+      {cropSrc && cropType && (
+        <ImageCropModal
+          imageSrc={cropSrc}
+          aspect={cropType === "profile" ? 1 : 16 / 5}
+          onCrop={handleCropComplete}
+          onClose={() => { setCropSrc(null); setCropType(null); }}
+        />
+      )}
     </div>
   );
 }

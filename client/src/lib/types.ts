@@ -203,6 +203,18 @@ export interface AtsScore {
   updatedAt: string;
 }
 
+// Usage tracking
+export interface UsageItem {
+  action: "ATS_SCORE" | "COVER_LETTER" | "GENERATE_RESUME";
+  used: number;
+  limit: number;
+}
+
+export interface UsageStats {
+  tier: "FREE" | "PREMIUM";
+  usage: UsageItem[];
+}
+
 // Cover Letter
 export type CoverLetterTone = "professional" | "friendly" | "enthusiastic";
 

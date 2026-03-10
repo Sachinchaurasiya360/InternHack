@@ -130,7 +130,7 @@ export default function YCCompanyDetailPage() {
   return (
     <div className="relative min-h-screen bg-white/50 dark:bg-gray-950">
       <SEO
-        title={`${company.name} — YC ${company.batchShort || ""}`}
+        title={`${company.name} - YC ${company.batchShort || ""}`}
         description={company.oneLiner || company.longDescription?.slice(0, 160) || `${company.name} is a Y Combinator company.`}
         keywords={`${company.name}, Y Combinator, YC, ${company.industry || ""}, ${company.tags?.join(", ") || ""}`}
         ogImage={company.smallLogoUrl || undefined}
@@ -223,10 +223,10 @@ export default function YCCompanyDetailPage() {
           className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8"
         >
           {[
-            { label: "Location", value: company.allLocations || "—", icon: MapPin },
-            { label: "Team Size", value: company.teamSize ? company.teamSize.toLocaleString() : "—", icon: Users },
-            { label: "Industry", value: company.industry || "—", icon: Building2 },
-            { label: "Stage", value: company.stage || company.batch || "—", icon: Rocket },
+            { label: "Location", value: company.allLocations || "-", icon: MapPin },
+            { label: "Team Size", value: company.teamSize ? company.teamSize.toLocaleString() : "-", icon: Users },
+            { label: "Industry", value: company.industry || "-", icon: Building2 },
+            { label: "Stage", value: company.stage || company.batch || "-", icon: Rocket },
           ].map((item) => (
             <div
               key={item.label}

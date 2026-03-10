@@ -1,11 +1,17 @@
 import { useMemo } from "react";
 import { Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
+import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, ArrowRight, Terminal, BookOpen, TrendingUp } from "lucide-react";
 import { sections, exercises } from "./data/exercises";
 import { SEO } from "../../../components/SEO";
+import { useAuthStore } from "../../../lib/auth.store";
+import api from "../../../lib/axios";
+import { queryKeys } from "../../../lib/query-keys";
 
-function getProgress(): Record<string, { solved: boolean }> {
+type SqlProgress = Record<string, { solved: boolean }>;
+
+function getLocalProgress(): SqlProgress {
   try {
     return JSON.parse(localStorage.getItem("sql-progress") || "{}");
   } catch {
@@ -49,8 +55,16 @@ function CircularProgress({ progress }: { progress: number }) {
 export default function SqlPracticePage() {
   const location = useLocation();
   const isStudentRoute = location.pathname.startsWith("/student");
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
 
-  const progress = useMemo(() => getProgress(), []);
+  const { data: serverProgress } = useQuery<SqlProgress>({
+    queryKey: queryKeys.sql.progress(),
+    queryFn: async () => (await api.get("/sql/progress")).data,
+    enabled: isAuthenticated,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const progress: SqlProgress = isAuthenticated ? (serverProgress ?? {}) : getLocalProgress();
 
   const sectionStats = useMemo(() => {
     return sections.map((section) => {
@@ -94,7 +108,7 @@ export default function SqlPracticePage() {
           SQL <span className="text-gradient-accent">Practice</span>
         </h1>
         <p className="text-lg text-gray-500 dark:text-gray-500 max-w-md mx-auto">
-          Interactive exercises — runs entirely in your browser
+          Interactive exercises - runs entirely in your browser
         </p>
       </motion.div>
 
@@ -143,7 +157,7 @@ export default function SqlPracticePage() {
               SQL Playground
             </h3>
             <p className="text-xs text-gray-500 dark:text-gray-500">
-              Open editor with pre-loaded tables — write any query and see results instantly
+              Open editor with pre-loaded tables - write any query and see results instantly
             </p>
           </div>
           <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />

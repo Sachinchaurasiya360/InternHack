@@ -10,17 +10,18 @@ import {
   Mail,
   ChevronRight,
   BarChart2,
-  Loader2,
+  Sparkles,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AtsScore } from "../../../lib/types";
 
 const TOOLS = [
   { icon: ScanSearch, title: "ATS Score", desc: "Analyze your resume", to: "/student/ats/score" },
+  { icon: Sparkles, title: "AI Resume", desc: "Generate with AI", to: "/student/ats/resume-generator" },
   { icon: PenTool, title: "Resume Builder", desc: "Build with templates", to: "/student/ats/templates" },
-  { icon: Code2, title: "LaTeX Editor", desc: "Write in LaTeX", to: "/student/ats/latex-editor" },
   { icon: Mail, title: "Cover Letter", desc: "AI-generated letters", to: "/student/ats/cover-letter" },
 ];
 
@@ -110,10 +111,7 @@ export default function AtsHistoryPage() {
         transition={{ duration: 0.5, delay: 0.2 }}
       >
         {loading ? (
-          <div className="flex flex-col items-center justify-center py-20">
-            <Loader2 className="w-8 h-8 text-indigo-500 animate-spin mb-4" />
-            <p className="text-sm text-gray-400 dark:text-gray-500">Loading your history...</p>
-          </div>
+          <LoadingScreen compact />
         ) : scores.length === 0 ? (
           <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
             <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">

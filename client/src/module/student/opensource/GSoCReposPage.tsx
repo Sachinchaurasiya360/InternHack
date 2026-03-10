@@ -4,11 +4,12 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Search, ExternalLink, Trophy, ChevronDown, X, ArrowLeft,
   Code2, Globe, Calendar, Layers, Tag, ChevronLeft, ChevronRight,
-  Users, Mail, MessageSquare, Lightbulb, BookOpen, Loader2,
+  Users, Mail, MessageSquare, Lightbulb, BookOpen,
 } from "lucide-react";
 import { Link } from "react-router";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import type { GSoCOrganization, GSoCStats } from "../../../lib/types";
 
 // ─── Styles ──────────────────────────────────────────────────────
@@ -366,7 +367,7 @@ export default function GSoCReposPage() {
             </div>
             <div>
               <h1 className="text-2xl font-bold text-gray-900 dark:text-white">GSoC Organizations</h1>
-              <p className="text-sm text-amber-700 dark:text-amber-400">Google Summer of Code — {stats?.total ?? "520"}+ accepted organizations</p>
+              <p className="text-sm text-amber-700 dark:text-amber-400">Google Summer of Code - {stats?.total ?? "520"}+ accepted organizations</p>
             </div>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mb-6 leading-relaxed">
@@ -375,10 +376,10 @@ export default function GSoCReposPage() {
           {/* Stats */}
           <div className="flex flex-wrap gap-3">
             {[
-              { label: "Organizations", value: stats?.total ?? "—" },
-              { label: "Categories", value: stats?.categories.length ?? "—" },
+              { label: "Organizations", value: stats?.total ?? "-" },
+              { label: "Categories", value: stats?.categories.length ?? "-" },
               { label: "Years", value: "2016–2026" },
-              { label: "Technologies", value: stats?.technologies.length ?? "—" },
+              { label: "Technologies", value: stats?.technologies.length ?? "-" },
             ].map((s) => (
               <div key={s.label} className="bg-white/70 dark:bg-gray-900/70 rounded-xl px-4 py-2 border border-amber-100 dark:border-amber-800">
                 <p className="text-lg font-bold text-gray-900 dark:text-white leading-none">{s.value}</p>
@@ -421,14 +422,12 @@ export default function GSoCReposPage() {
       {/* Result count */}
       <p className="text-sm text-gray-400 mb-5">
         Showing <span className="font-semibold text-gray-900 dark:text-white">{organizations.length}</span> of {pagination.total} organizations
-        {pagination.totalPages > 1 && <span> — page {pagination.page} of {pagination.totalPages}</span>}
+        {pagination.totalPages > 1 && <span> - page {pagination.page} of {pagination.totalPages}</span>}
       </p>
 
       {/* Grid */}
       {isLoading ? (
-        <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 text-amber-500 animate-spin" />
-        </div>
+        <LoadingScreen />
       ) : organizations.length === 0 ? (
         <div className="text-center py-16 bg-gray-50 dark:bg-gray-950 rounded-2xl">
           <Trophy className="w-10 h-10 text-gray-200 dark:text-gray-700 mx-auto mb-3" />

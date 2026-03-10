@@ -81,8 +81,26 @@ body {
   background-clip: text;
 }
 
-/* Proctored test — disable text selection */
+/* Proctored test — lock down the page */
 .proctored-test {
-  user-select: none;
-  -webkit-user-select: none;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-touch-callout: none !important;
+  -webkit-user-drag: none !important;
+}
+
+.proctored-test * {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+}
+
+.proctored-test img {
+  pointer-events: none;
+  -webkit-user-drag: none;
+}
+
+@media print {
+  .proctored-test {
+    display: none !important;
+  }
 }

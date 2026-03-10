@@ -19,11 +19,28 @@ import {
   Info,
   Bookmark,
   BookmarkCheck,
+  Map as MapIcon,
+  ClipboardList,
+  Calendar,
+  Lightbulb,
+  Layers,
 } from "lucide-react";
+
+const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
+  Map: MapIcon, ClipboardList, Calendar, Lightbulb, Layers,
+};
 import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./grantsData";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
-import { useLocation } from "react-router";
+import { Link, useLocation } from "react-router";
+
+const GUIDANCE_CARDS = [
+  { to: "/student/grants/roadmap", icon: "Map", title: "Web3 Roadmap", desc: "9-step path from blockchain basics to grant applications", iconColor: "text-indigo-500 dark:text-indigo-400", hoverBorder: "hover:border-indigo-300 dark:hover:border-indigo-600" },
+  { to: "/student/grants/tracker", icon: "ClipboardList", title: "Application Tracker", desc: "Track your grant applications, statuses, and deadlines", iconColor: "text-emerald-500 dark:text-emerald-400", hoverBorder: "hover:border-emerald-300 dark:hover:border-emerald-600" },
+  { to: "/student/grants/hackathons", icon: "Calendar", title: "Hackathon Calendar", desc: "Upcoming blockchain hackathons with prizes and details", iconColor: "text-amber-500 dark:text-amber-400", hoverBorder: "hover:border-amber-300 dark:hover:border-amber-600" },
+  { to: "/student/grants/projects", icon: "Lightbulb", title: "Project Ideas", desc: "Smart contract projects by difficulty with full specs", iconColor: "text-pink-500 dark:text-pink-400", hoverBorder: "hover:border-pink-300 dark:hover:border-pink-600" },
+  { to: "/student/grants/ecosystems", icon: "Layers", title: "Ecosystem Compare", desc: "Side-by-side comparison of 12 blockchain ecosystems", iconColor: "text-cyan-500 dark:text-cyan-400", hoverBorder: "hover:border-cyan-300 dark:hover:border-cyan-600" },
+];
 
 const STATUS_CONFIG = {
   Active: { icon: CheckCircle2, color: "text-emerald-600 dark:text-emerald-400", bg: "bg-emerald-50 dark:bg-emerald-900/30" },
@@ -78,6 +95,11 @@ export default function GrantsPage() {
     if (showSavedOnly) {
       result = result.filter((g) => savedGrants.has(g.id));
     }
+    // Sort by category order so new categories appear interleaved
+    if (selectedCategory === "ALL" && !search) {
+      const catOrder = new Map(GRANT_CATEGORIES.map((c, i) => [c, i]));
+      result = [...result].sort((a, b) => (catOrder.get(a.category) ?? 99) - (catOrder.get(b.category) ?? 99));
+    }
     return result;
   }, [search, selectedCategory, selectedEcosystem, selectedStatus, showSavedOnly, savedGrants]);
 
@@ -96,9 +118,9 @@ export default function GrantsPage() {
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
       <SEO
-        title="Web3 Grants"
-        description="Explore 50+ active Web3, blockchain, and crypto grants. Find funding for your DeFi, infrastructure, gaming, or education project from top foundations and DAOs."
-        keywords="web3 grants, blockchain grants, crypto funding, DeFi grants, Ethereum grants, Solana grants, developer grants, DAO funding"
+        title="Grants & Funding"
+        description="Explore 150+ grants across Web3, government, research, climate, AI, and corporate innovation. Find funding for your next project from top foundations, governments, and companies."
+        keywords="grants, funding, startup grants, research grants, government grants, climate grants, AI grants, Web3 grants, blockchain grants, corporate innovation"
       />
       {!isInsideLayout && <Navbar />}
 
@@ -118,23 +140,14 @@ export default function GrantsPage() {
           }}
         />
 
-        <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-900 border border-black/10 dark:border-gray-700 shadow-sm text-sm text-gray-600 dark:text-gray-400 mb-8"
-          >
-            <Sparkles className="w-4 h-4 text-amber-500" />
-            <span>Web3 & Blockchain Funding</span>
-          </motion.div>
-
+        <div className="relative z-10 max-w-4xl mx-auto text-center mt-6">
           <motion.h1
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
             className="font-display text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight text-gray-950 dark:text-white mb-4"
           >
-            Web3 Grants
+            Grants & Funding
           </motion.h1>
 
           <motion.p
@@ -143,7 +156,7 @@ export default function GrantsPage() {
             transition={{ delay: 0.2 }}
             className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto mb-10 leading-relaxed"
           >
-            Discover 50+ grants from top blockchain foundations and DAOs. Find funding for your next project.
+            Discover 150+ grants across Web3, government, research, climate, AI, and more. Find funding for your next project.
           </motion.p>
 
           {/* Search */}
@@ -156,7 +169,7 @@ export default function GrantsPage() {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
             <input
               type="text"
-              placeholder="Search grants — Ethereum, Solana, DeFi, gaming..."
+              placeholder="Search grants — government, research, climate, AI, Web3..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="w-full pl-11 pr-5 py-3.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-300 transition-all shadow-sm"
@@ -178,14 +191,42 @@ export default function GrantsPage() {
         </div>
       </section>
 
+      {/* Guidance cards (student layout only) */}
+      {isInsideLayout && (
+        <div className="max-w-6xl mx-auto px-6 pt-6 pb-2">
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+            {GUIDANCE_CARDS.map((card, i) => {
+              const Icon = ICON_MAP[card.icon];
+              return (
+                <motion.div
+                  key={card.to}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.3 + i * 0.05 }}
+                >
+                  <Link
+                    to={card.to}
+                    className={`block p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl ${card.hoverBorder} hover:shadow-md transition-all no-underline group`}
+                  >
+                    {Icon && <Icon className={`w-5 h-5 ${card.iconColor} mb-2`} />}
+                    <h3 className="text-sm font-bold text-gray-900 dark:text-white mb-1 group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">{card.title}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 line-clamp-2">{card.desc}</p>
+                  </Link>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <div className="max-w-6xl mx-auto px-6 py-8">
         {/* Filter bar */}
         <div className="flex flex-wrap items-center gap-3 mb-6">
           {/* Category chips */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
             <button
               onClick={() => setSelectedCategory("ALL")}
-              className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all border ${
+              className={`shrink-0 px-3.5 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all border ${
                 selectedCategory === "ALL"
                   ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 border-gray-950 dark:border-white"
                   : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
@@ -197,7 +238,7 @@ export default function GrantsPage() {
               <button
                 key={cat}
                 onClick={() => setSelectedCategory(cat === selectedCategory ? "ALL" : cat)}
-                className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all border ${
+                className={`shrink-0 px-3.5 py-2 rounded-xl text-sm font-medium whitespace-nowrap transition-all border ${
                   selectedCategory === cat
                     ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 border-gray-950 dark:border-white"
                     : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"

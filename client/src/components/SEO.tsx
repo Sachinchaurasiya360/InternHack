@@ -26,7 +26,7 @@ export function SEO({
   ogType = "website",
   noIndex = false,
 }: SEOProps) {
-  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} — AI-Powered Career Platform for Students`;
+  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} - AI-Powered Career Platform for Students`;
 
   return (
     <Helmet>

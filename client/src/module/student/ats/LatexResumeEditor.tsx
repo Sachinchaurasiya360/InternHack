@@ -16,6 +16,7 @@ import {
   History,
   ChevronRight,
   Code2,
+  Sparkles,
 } from "lucide-react";
 import CodeMirror from "@uiw/react-codemirror";
 import { javascript } from "@codemirror/lang-javascript";
@@ -84,7 +85,7 @@ Experienced software engineer with 5+ years building scalable web applications. 
 \\end{document}`;
 const TOOLS = [
   { icon: ScanSearch, title: "ATS Score", desc: "Analyze your resume", to: "/student/ats/score" },
-  { icon: PenTool, title: "Resume Builder", desc: "Build with templates", to: "/student/ats/templates" },
+  { icon: Sparkles, title: "AI Resume", desc: "Generate with AI", to: "/student/ats/resume-generator" },
   { icon: Mail, title: "Cover Letter", desc: "AI-generated letters", to: "/student/ats/cover-letter" },
   { icon: History, title: "Score History", desc: "Past analyses", to: "/student/ats/history" },
 ];
@@ -119,7 +120,7 @@ export default function LatexResumeEditor() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Compile — sends to backend, shows PDF in preview
+  // Compile - sends to backend, shows PDF in preview
   const handleCompile = async () => {
     setCompiling(true);
     setPreviewError(null);
@@ -155,7 +156,7 @@ export default function LatexResumeEditor() {
     }
   };
 
-  // Download — compiles and triggers download
+  // Download - compiles and triggers download
   const handleDownloadPdf = async () => {
     setCompiling(true);
     try {

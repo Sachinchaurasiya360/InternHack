@@ -103,7 +103,7 @@ export default function AptitudeTopicPage() {
 
   return (
     <div className="relative max-w-4xl mx-auto pb-12">
-      <SEO title={`${topic.name} — Aptitude`} noIndex />
+      <SEO title={`${topic.name} - Aptitude`} noIndex />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

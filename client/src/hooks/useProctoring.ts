@@ -221,8 +221,8 @@ export function useProctoring(config: ProctoringConfig) {
         return;
       }
 
-      // Block Ctrl+Shift+I/J/C
-      if (e.ctrlKey && e.shiftKey && ["I", "J", "C"].includes(e.key.toUpperCase())) {
+      // Block Ctrl+Shift+I/J/C/S (devtools & screenshots)
+      if (e.ctrlKey && e.shiftKey && ["I", "J", "C", "S"].includes(e.key.toUpperCase())) {
         e.preventDefault();
         e.stopPropagation();
         devtoolsAttemptsRef.current += 1;
@@ -245,8 +245,50 @@ export function useProctoring(config: ProctoringConfig) {
       }
 
       // Block Ctrl+S (save), Ctrl+A (select all), Ctrl+P (print)
-      if (e.ctrlKey && !e.shiftKey && ["S", "A", "P"].includes(e.key.toUpperCase())) {
+      // Ctrl+H (history), Ctrl+J (downloads), Ctrl+L (address bar),
+      // Ctrl+D (bookmark), Ctrl+G (find next)
+      if (e.ctrlKey && !e.shiftKey && ["S", "A", "P", "H", "J", "L", "D", "G"].includes(e.key.toUpperCase())) {
         e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      // Block PrintScreen
+      if (e.key === "PrintScreen") {
+        e.preventDefault();
+        e.stopPropagation();
+        copyPasteAttemptsRef.current += 1;
+        pushWarning("screenshot", "PrintScreen blocked");
+        toast.error("Screenshots are disabled during the test!", { id: "screenshot", duration: 2000 });
+        syncState();
+        return;
+      }
+
+      // Block Alt+Tab awareness (can't prevent OS-level but log it)
+      if (e.altKey && e.key === "Tab") {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      // Block Escape key (prevent exiting fullscreen via Escape)
+      if (e.key === "Escape") {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      // Block F1-F11 function keys
+      if (/^F([1-9]|1[01])$/.test(e.key)) {
+        e.preventDefault();
+        e.stopPropagation();
+        return;
+      }
+
+      // Block Ctrl+W / Ctrl+N / Ctrl+T (close/new tab/window)
+      if (e.ctrlKey && ["W", "N", "T"].includes(e.key.toUpperCase())) {
+        e.preventDefault();
+        e.stopPropagation();
         return;
       }
     };
@@ -284,6 +326,7 @@ export function useProctoring(config: ProctoringConfig) {
       // Deduplicate: skip if visibility change fired within 500ms
       if (Date.now() - lastVisibilityTs.current < 500) return;
       focusLossesRef.current += 1;
+      pushWarning("focus_loss", "Window focus lost");
       syncState();
     };
 
@@ -299,6 +342,35 @@ export function useProctoring(config: ProctoringConfig) {
       }
     };
 
+    // Block drag events (prevent dragging text/images out)
+    const handleDragStart = (e: Event) => {
+      e.preventDefault();
+    };
+
+    // Block print
+    const handleBeforePrint = () => {
+      if (terminatedRef.current) return;
+      copyPasteAttemptsRef.current += 1;
+      pushWarning("print", "Print attempt blocked");
+      toast.error("Printing is disabled during the test!", { id: "print", duration: 2000 });
+      syncState();
+    };
+
+    // Detect window resize (potential screen-share / split-screen)
+    let lastWidth = window.innerWidth;
+    let lastHeight = window.innerHeight;
+    const handleResize = () => {
+      if (terminatedRef.current) return;
+      const widthDelta = Math.abs(window.innerWidth - lastWidth);
+      const heightDelta = Math.abs(window.innerHeight - lastHeight);
+      // Only flag significant resizes (> 100px), not minor adjustments
+      if (widthDelta > 100 || heightDelta > 100) {
+        pushWarning("window_resize", `Window resized: ${widthDelta}x${heightDelta}`);
+      }
+      lastWidth = window.innerWidth;
+      lastHeight = window.innerHeight;
+    };
+
     // Attach
     document.addEventListener("keydown", handleKeyDown, true);
     document.addEventListener("contextmenu", handleContextMenu, true);
@@ -308,9 +380,19 @@ export function useProctoring(config: ProctoringConfig) {
     document.addEventListener("visibilitychange", handleVisibility);
     window.addEventListener("blur", handleBlur);
     document.addEventListener("fullscreenchange", handleFullscreenChange);
+    document.addEventListener("dragstart", handleDragStart, true);
+    window.addEventListener("beforeprint", handleBeforePrint);
+    window.addEventListener("resize", handleResize);
 
-    // CSS: disable text selection
+    // CSS: disable text selection, pointer events on non-test elements
     document.body.classList.add("proctored-test");
+
+    // Override clipboard API
+    const origWrite = navigator.clipboard?.writeText?.bind(navigator.clipboard);
+    if (navigator.clipboard) {
+      navigator.clipboard.writeText = async () => {};
+      navigator.clipboard.write = async () => {};
+    }
 
     return () => {
       document.removeEventListener("keydown", handleKeyDown, true);
@@ -321,8 +403,15 @@ export function useProctoring(config: ProctoringConfig) {
       document.removeEventListener("visibilitychange", handleVisibility);
       window.removeEventListener("blur", handleBlur);
       document.removeEventListener("fullscreenchange", handleFullscreenChange);
+      document.removeEventListener("dragstart", handleDragStart, true);
+      window.removeEventListener("beforeprint", handleBeforePrint);
+      window.removeEventListener("resize", handleResize);
       document.body.classList.remove("proctored-test");
       if (graceTimerRef.current) clearInterval(graceTimerRef.current);
+      // Restore clipboard API
+      if (navigator.clipboard && origWrite) {
+        navigator.clipboard.writeText = origWrite;
+      }
     };
   }, [enabled, maxTabSwitches, syncState, pushWarning, checkThresholds, startGracePeriod, clearGracePeriod]);
 

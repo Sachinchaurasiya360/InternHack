@@ -24,7 +24,7 @@ const features = [
   {
     title: "Career Roadmaps",
     description:
-      "Step-by-step learning paths across 8+ career tracks — from frontend to data science. Track your progress and never feel lost.",
+      "Step-by-step learning paths across 8+ career tracks - from frontend to data science. Track your progress and never feel lost.",
     icon: Map,
     href: "/careers",
     span: "",
@@ -51,7 +51,7 @@ const features = [
   {
     title: "Company Explorer",
     description:
-      "Research companies before you apply. Browse tech stacks, funding stages, team sizes, and open roles — including 4,000+ Y Combinator startups.",
+      "Research companies before you apply. Browse tech stacks, funding stages, team sizes, and open roles - including 4,000+ Y Combinator startups.",
     icon: Building2,
     href: "/companies",
     span: "lg:col-span-2",
@@ -60,7 +60,7 @@ const features = [
   {
     title: "Recruiter Dashboard",
     description:
-      "Post jobs, design multi-round hiring pipelines, review applications, and shortlist candidates — all from one clean dashboard.",
+      "Post jobs, design multi-round hiring pipelines, review applications, and shortlist candidates - all from one clean dashboard.",
     icon: Users,
     href: "/register?role=RECRUITER",
     span: "lg:col-span-2",
@@ -108,7 +108,7 @@ export function FeaturesSection() {
           </h2>
           <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
             Every tool a student or recruiter needs to go from searching to
-            hired — built into a single, fast platform.
+            hired - built into a single, fast platform.
           </p>
         </motion.div>
 

@@ -45,18 +45,23 @@ const AtsScoreDetailPage = lazy(() => import("./module/student/ats/AtsScoreDetai
 const ResumeBuilderPage = lazy(() => import("./module/student/ats/ResumeBuilderPage"));
 const CoverLetterPage = lazy(() => import("./module/student/ats/CoverLetterPage"));
 const LatexResumeEditor = lazy(() => import("./module/student/ats/LatexResumeEditor"));
+const ResumeGeneratorPage = lazy(() => import("./module/student/ats/ResumeGeneratorPage"));
 const MyCareerPathsPage = lazy(() => import("./module/career/MyCareerPathsPage"));
 const CareerProgressPage = lazy(() => import("./module/career/CareerProgressPage"));
 const AddCompanyPage = lazy(() => import("./module/student/companies/AddCompanyPage"));
 const StudentProfilePage = lazy(() => import("./module/student/profile/StudentProfilePage"));
 const PublicProfilePage = lazy(() => import("./module/student/profile/PublicProfilePage"));
 const RepoDiscoveryPage = lazy(() => import("./module/student/opensource/RepoDiscoveryPage"));
-const OpenSourceGuidancePage = lazy(() => import("./module/student/opensource/OpenSourceGuidancePage"));
 const GSoCReposPage = lazy(() => import("./module/student/opensource/GSoCReposPage"));
 const ProgramTrackerPage = lazy(() => import("./module/student/opensource/ProgramTrackerPage"));
 const FirstPRRoadmapPage = lazy(() => import("./module/student/opensource/FirstPRRoadmapPage"));
 const GSoCProposalPage = lazy(() => import("./module/student/opensource/GSoCProposalPage"));
 const OpenSourceAnalyticsPage = lazy(() => import("./module/student/opensource/OpenSourceAnalyticsPage"));
+const Web3RoadmapPage = lazy(() => import("./module/student/grants/Web3RoadmapPage"));
+const GrantTrackerPage = lazy(() => import("./module/student/grants/GrantTrackerPage"));
+const HackathonCalendarPage = lazy(() => import("./module/student/grants/HackathonCalendarPage"));
+const ProjectIdeasPage = lazy(() => import("./module/student/grants/ProjectIdeasPage"));
+const EcosystemComparePage = lazy(() => import("./module/student/grants/EcosystemComparePage"));
 const CheckoutPage = lazy(() => import("./module/student/checkout/CheckoutPage"));
 const SkillQuizPage = lazy(() => import("./module/career/quiz/SkillQuizPage"));
 const SqlPracticePage = lazy(() => import("./module/student/sql/SqlPracticePage"));
@@ -64,6 +69,7 @@ const SkillVerificationPage = lazy(() => import("./module/student/skill-verifica
 const SkillTestPage = lazy(() => import("./module/student/skill-verification/SkillTestPage"));
 const SqlExercisePage = lazy(() => import("./module/student/sql/SqlExercisePage"));
 const SqlPlaygroundPage = lazy(() => import("./module/student/sql/SqlPlaygroundPage"));
+const MockInterviewPage = lazy(() => import("./module/student/mock-interview/MockInterviewPage"));
 
 // Recruiter pages
 const RecruiterLayout = lazy(() => import("./module/recruiter/RecruiterLayout"));
@@ -131,6 +137,9 @@ function App() {
           <Route path="/aptitude/companies" element={<AptitudeCompaniesPage />} />
           <Route path="/aptitude/:slug" element={<AptitudeTopicPage />} />
 
+          {/* Standalone proctored test - no layout chrome */}
+          <Route path="/test/:testId" element={<ProtectedRoute role="STUDENT"><SkillTestPage /></ProtectedRoute>} />
+
           {/* Student protected routes */}
           <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyPage /></ProtectedRoute>} />
           <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
@@ -146,6 +155,7 @@ function App() {
             <Route path="ats/score" element={<AtsScorePage />} />
             <Route path="ats/history" element={<AtsHistoryPage />} />
             <Route path="ats/history/:scoreId" element={<AtsScoreDetailPage />} />
+            <Route path="ats/resume-generator" element={<ResumeGeneratorPage />} />
             <Route path="ats/templates" element={<ResumeBuilderPage />} />
             <Route path="ats/cover-letter" element={<CoverLetterPage />} />
             <Route path="ats/latex-editor" element={<LatexResumeEditor />} />
@@ -165,11 +175,15 @@ function App() {
             <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
             <Route path="aptitude/:slug" element={<AptitudeTopicPage />} />
             <Route path="skill-verification" element={<SkillVerificationPage />} />
-            <Route path="skill-verification/:testId" element={<SkillTestPage />} />
+            <Route path="mock-interview" element={<MockInterviewPage />} />
             <Route path="companies/add" element={<AddCompanyPage />} />
             <Route path="grants" element={<GrantsPage />} />
+            <Route path="grants/roadmap" element={<Web3RoadmapPage />} />
+            <Route path="grants/tracker" element={<GrantTrackerPage />} />
+            <Route path="grants/hackathons" element={<HackathonCalendarPage />} />
+            <Route path="grants/projects" element={<ProjectIdeasPage />} />
+            <Route path="grants/ecosystems" element={<EcosystemComparePage />} />
             <Route path="opensource" element={<RepoDiscoveryPage />} />
-            <Route path="opensource/guidance" element={<OpenSourceGuidancePage />} />
             <Route path="opensource/gsoc" element={<GSoCReposPage />} />
             <Route path="opensource/programs" element={<ProgramTrackerPage />} />
             <Route path="opensource/first-pr" element={<FirstPRRoadmapPage />} />
@@ -192,7 +206,7 @@ function App() {
             <Route path="profile/:id" element={<PublicProfilePage />} />
           </Route>
 
-          {/* Profile view (recruiter/admin — backend enforces role) */}
+          {/* Profile view (recruiter/admin - backend enforces role) */}
           <Route path="/profile/:id" element={<ProtectedRoute><PublicProfilePage /></ProtectedRoute>} />
 
           {/* Admin login (public) */}

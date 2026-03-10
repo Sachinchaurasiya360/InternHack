@@ -159,11 +159,15 @@ model user {
   dsaProgress       studentDsaProgress[] @relation("StudentDsaProgress")
   dsaBookmarks      dsaBookmark[]        @relation("StudentDsaBookmarks")
   aptitudeProgress  studentAptitudeProgress[] @relation("StudentAptitudeProgress")
+  sqlProgress       studentSqlProgress[]     @relation("StudentSqlProgress")
 
   // ── Skill verification relations ──
   skillTestAttempts skillTestAttempt[] @relation("StudentSkillTestAttempts")
   verifiedSkills    verifiedSkill[]    @relation("StudentVerifiedSkills")
   createdSkillTests skillTest[]        @relation("SkillTestCreator")
+
+  // ── Usage tracking ──
+  usageLogs usageLog[] @relation("UserUsageLogs")
 
   @@index([role])
   @@index([role, isActive])
@@ -966,6 +970,23 @@ model dsaBookmark {
 }
 
 // ============================================================
+// SQL PRACTICE PROGRESS
+// ============================================================
+
+model studentSqlProgress {
+  id         Int      @id @default(autoincrement())
+  studentId  Int
+  exerciseId String
+  solved     Boolean  @default(false)
+  code       String?
+  solvedAt   DateTime @default(now())
+  student    user     @relation("StudentSqlProgress", fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, exerciseId])
+  @@index([studentId])
+}
+
+// ============================================================
 // APTITUDE PRACTICE MODELS
 // ============================================================
 
@@ -1102,4 +1123,26 @@ model verifiedSkill {
   @@unique([studentId, skillName])
   @@index([studentId])
   @@index([skillName])
+}
+
+// ============================================================
+// USAGE TRACKING
+// ============================================================
+
+enum UsageAction {
+  ATS_SCORE
+  COVER_LETTER
+  GENERATE_RESUME
+  JOB_APPLICATION
+  MOCK_INTERVIEW
+}
+
+model usageLog {
+  id        Int         @id @default(autoincrement())
+  userId    Int
+  user      user        @relation("UserUsageLogs", fields: [userId], references: [id], onDelete: Cascade)
+  action    UsageAction
+  createdAt DateTime    @default(now())
+
+  @@index([userId, action, createdAt])
 }

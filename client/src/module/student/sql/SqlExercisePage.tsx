@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
 import { useParams, Link, useLocation, useNavigate } from "react-router";
 import { motion } from "framer-motion";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   ArrowLeft,
   ChevronLeft,
@@ -26,8 +27,13 @@ import SqlResultTable from "./components/SqlResultTable";
 import SqlSchemaPanel from "./components/SqlSchemaPanel";
 import type { TableInfo } from "./lib/sql-engine";
 import { SEO } from "../../../components/SEO";
+import { useAuthStore } from "../../../lib/auth.store";
+import api from "../../../lib/axios";
+import { queryKeys } from "../../../lib/query-keys";
 
-function getProgress(): Record<string, { solved: boolean; code: string }> {
+type SqlProgress = Record<string, { solved: boolean; code: string | null }>;
+
+function getLocalProgress(): SqlProgress {
   try {
     return JSON.parse(localStorage.getItem("sql-progress") || "{}");
   } catch {
@@ -35,10 +41,43 @@ function getProgress(): Record<string, { solved: boolean; code: string }> {
   }
 }
 
-function saveProgress(id: string, solved: boolean, code: string) {
-  const progress = getProgress();
+function saveLocalProgress(id: string, solved: boolean, code: string) {
+  const progress = getLocalProgress();
   progress[id] = { solved, code };
   localStorage.setItem("sql-progress", JSON.stringify(progress));
+}
+
+function useSqlProgress() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const queryClient = useQueryClient();
+
+  const { data: serverProgress } = useQuery<SqlProgress>({
+    queryKey: queryKeys.sql.progress(),
+    queryFn: async () => (await api.get("/sql/progress")).data,
+    enabled: isAuthenticated,
+    staleTime: 5 * 60 * 1000,
+  });
+
+  const mutation = useMutation({
+    mutationFn: (vars: { exerciseId: string; solved: boolean; code: string }) =>
+      api.post("/sql/progress", vars),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: queryKeys.sql.progress() }),
+  });
+
+  const progress: SqlProgress = isAuthenticated ? (serverProgress ?? {}) : getLocalProgress();
+
+  const save = useCallback(
+    (id: string, solved: boolean, code: string) => {
+      if (isAuthenticated) {
+        mutation.mutate({ exerciseId: id, solved, code });
+      } else {
+        saveLocalProgress(id, solved, code);
+      }
+    },
+    [isAuthenticated, mutation]
+  );
+
+  return { progress, save };
 }
 
 const DIFF_BADGE: Record<string, string> = {
@@ -53,6 +92,8 @@ export default function SqlExercisePage() {
   const navigate = useNavigate();
   const isStudentRoute = location.pathname.startsWith("/student");
   const basePath = isStudentRoute ? "/student/sql" : "/sql";
+
+  const { progress, save } = useSqlProgress();
 
   const section = sections.find((s) => s.id === sectionSlug);
   const sectionExercises = useMemo(
@@ -78,7 +119,7 @@ export default function SqlExercisePage() {
   const [result, setResult] = useState<QueryResult | null>(null);
   const [validation, setValidation] = useState<ValidationResult | null>(null);
   const [showExpected, setShowExpected] = useState(false);
-  const [showHints, setShowHints] = useState(0); // how many hints to show
+  const [showHints, setShowHints] = useState(0);
   const [showSchema, setShowSchema] = useState(false);
   const [schema, setSchema] = useState<TableInfo[]>([]);
   const [dbReady, setDbReady] = useState(false);
@@ -104,13 +145,12 @@ export default function SqlExercisePage() {
     setShowExpected(false);
 
     // Restore saved code or use starter
-    const saved = getProgress();
-    const savedEntry = saved[exercise.id];
+    const savedEntry = progress[exercise.id];
     setCode(savedEntry?.code || exercise.starterCode);
     setSolved(!!savedEntry?.solved);
 
     load();
-  }, [exercise?.id, section?.id]);
+  }, [exercise?.id, section?.id, progress]);
 
   const handleRun = useCallback(async () => {
     if (!exercise || !dbReady) return;
@@ -129,9 +169,9 @@ export default function SqlExercisePage() {
 
       if (v.correct) {
         setSolved(true);
-        saveProgress(exercise.id, true, code);
+        save(exercise.id, true, code);
       } else {
-        saveProgress(exercise.id, false, code);
+        save(exercise.id, false, code);
       }
     }
 
@@ -142,7 +182,7 @@ export default function SqlExercisePage() {
         await sqlEngine.resetDataset(exercise.dataset, datasetSql);
       }
     }
-  }, [code, exercise, dbReady]);
+  }, [code, exercise, dbReady, save]);
 
   const handleReset = useCallback(() => {
     if (!exercise) return;
@@ -155,7 +195,6 @@ export default function SqlExercisePage() {
 
   // Section exercise list view
   if (!exerciseId && section) {
-    const progress = getProgress();
     const solvedCount = sectionExercises.filter((e) => progress[e.id]?.solved).length;
     const pct = sectionExercises.length > 0 ? Math.round((solvedCount / sectionExercises.length) * 100) : 0;
 

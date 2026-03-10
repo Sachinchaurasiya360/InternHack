@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Brain, Plus, Pencil, Trash2, ChevronDown, ChevronRight, Save, X, Loader2 } from "lucide-react";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 
 interface AptitudeQuestion {
@@ -254,7 +255,7 @@ export default function AdminAptitudePage() {
         )}
 
         {questionsLoading ? (
-          <div className="flex justify-center py-12"><Loader2 className="w-8 h-8 text-indigo-400 animate-spin" /></div>
+          <LoadingScreen compact />
         ) : (
           <div className="space-y-2">
             {questions.map((q, i) => (
@@ -397,7 +398,7 @@ export default function AdminAptitudePage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center py-20"><Loader2 className="w-8 h-8 text-indigo-400 animate-spin" /></div>
+        <LoadingScreen compact />
       ) : (
         <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
           <table className="w-full">

@@ -1,0 +1,24 @@
+import type { UsageAction } from "@prisma/client";
+
+export type PlanTier = "FREE" | "PREMIUM";
+
+export const DAILY_LIMITS: Record<UsageAction, Record<PlanTier, number>> = {
+  ATS_SCORE:       { FREE: 2,  PREMIUM: 20 },
+  COVER_LETTER:    { FREE: 2,  PREMIUM: 20 },
+  GENERATE_RESUME: { FREE: 1,  PREMIUM: 20 },
+  JOB_APPLICATION: { FREE: 10, PREMIUM: 999999 },
+  MOCK_INTERVIEW:  { FREE: 0,  PREMIUM: 999999 },
+};
+
+export function getPlanTier(
+  subscriptionPlan: string,
+  subscriptionStatus: string,
+): PlanTier {
+  if (
+    (subscriptionPlan === "MONTHLY" || subscriptionPlan === "YEARLY") &&
+    subscriptionStatus === "ACTIVE"
+  ) {
+    return "PREMIUM";
+  }
+  return "FREE";
+}

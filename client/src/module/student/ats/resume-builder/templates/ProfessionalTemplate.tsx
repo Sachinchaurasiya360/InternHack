@@ -43,7 +43,7 @@ export default function ProfessionalTemplate({ data }: { data: ResumeData }) {
                 <div className="flex justify-between items-baseline">
                   <h3 className="font-bold text-gray-900">{exp.title}</h3>
                   <span className="text-[9px] text-gray-400 shrink-0 ml-2 bg-gray-100 px-2 py-0.5 rounded">
-                    {exp.startDate} — {exp.current ? "Present" : exp.endDate}
+                    {exp.startDate} - {exp.current ? "Present" : exp.endDate}
                   </span>
                 </div>
                 <p className="text-gray-500 text-[10px] font-medium">{exp.company}</p>
@@ -90,7 +90,7 @@ export default function ProfessionalTemplate({ data }: { data: ResumeData }) {
                     {edu.degree}{edu.field ? ` in ${edu.field}` : ""}
                   </h3>
                   <span className="text-[9px] text-gray-400 shrink-0 ml-2 bg-gray-100 px-2 py-0.5 rounded">
-                    {edu.startDate} — {edu.endDate}
+                    {edu.startDate} - {edu.endDate}
                   </span>
                 </div>
                 <p className="text-gray-500 text-[10px]">
@@ -140,7 +140,7 @@ export default function ProfessionalTemplate({ data }: { data: ResumeData }) {
               <div key={cert.id} className="flex justify-between items-baseline mb-1 pl-3">
                 <span className="text-gray-700">
                   <span className="font-bold">{cert.name}</span>
-                  {cert.issuer ? ` — ${cert.issuer}` : ""}
+                  {cert.issuer ? ` - ${cert.issuer}` : ""}
                 </span>
                 {cert.date && <span className="text-[10px] text-gray-400">{cert.date}</span>}
               </div>

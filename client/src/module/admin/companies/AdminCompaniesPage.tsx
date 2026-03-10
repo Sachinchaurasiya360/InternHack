@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { Building2, Check, Trash2, Loader2, Eye, EyeOff } from "lucide-react";
+import { Building2, Check, Trash2, Eye, EyeOff } from "lucide-react";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "react-hot-toast";
 import api, { SERVER_URL } from "../../../lib/axios";
 import type { Company, Pagination } from "../../../lib/types";
@@ -54,9 +55,7 @@ export default function AdminCompaniesPage() {
       </h1>
 
       {loading ? (
-        <div className="flex items-center justify-center h-64 text-gray-400">
-          <Loader2 className="w-6 h-6 animate-spin" />
-        </div>
+        <LoadingScreen compact />
       ) : companies.length === 0 ? (
         <div className="text-center text-gray-500 py-20">No companies found</div>
       ) : (

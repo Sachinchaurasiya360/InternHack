@@ -1,5 +1,6 @@
 import { useState, useRef, useMemo } from "react";
 import { Link } from "react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Sparkles,
@@ -27,7 +28,8 @@ import toast from "react-hot-toast";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
 import { useAuthStore } from "../../../lib/auth.store";
-import type { CoverLetterTone } from "../../../lib/types";
+import { queryKeys } from "../../../lib/query-keys";
+import type { CoverLetterTone, UsageStats } from "../../../lib/types";
 
 const TONES: { id: CoverLetterTone; label: string; description: string }[] = [
   { id: "professional", label: "Professional", description: "Formal and confident" },
@@ -48,12 +50,13 @@ const labelCls = "block text-xs font-medium text-gray-500 dark:text-gray-500 mb-
 
 const TOOLS = [
   { icon: ScanSearch, title: "ATS Score", desc: "Analyze your resume", to: "/student/ats/score" },
+  { icon: Sparkles, title: "AI Resume", desc: "Generate with AI", to: "/student/ats/resume-generator" },
   { icon: PenTool, title: "Resume Builder", desc: "Build with templates", to: "/student/ats/templates" },
-  { icon: Code2, title: "LaTeX Editor", desc: "Write in LaTeX", to: "/student/ats/latex-editor" },
   { icon: History, title: "Score History", desc: "Past analyses", to: "/student/ats/history" },
 ];
 
 export default function CoverLetterPage() {
+  const queryClient = useQueryClient();
   const [jobDescription, setJobDescription] = useState("");
   const [jobTitle, setJobTitle] = useState("");
   const [companyName, setCompanyName] = useState("");
@@ -68,12 +71,22 @@ export default function CoverLetterPage() {
 
   const user = useAuthStore((s) => s.user);
 
+  const { data: usageData } = useQuery<UsageStats>({
+    queryKey: queryKeys.ats.usage(),
+    queryFn: () => api.get("/ats/usage").then((r) => r.data),
+    staleTime: 60_000,
+    refetchOnWindowFocus: true,
+  });
+
+  const clUsage = usageData?.usage.find((u) => u.action === "COVER_LETTER");
+  const limitReached = clUsage ? clUsage.used >= clUsage.limit : false;
+
   const profileSummary = useMemo(() => {
     if (!user) return null;
     const parts: string[] = [];
     if (user.skills && user.skills.length > 0) parts.push(user.skills.join(", "));
     if (user.college) parts.push(user.college + (user.graduationYear ? ` (${String(user.graduationYear)})` : ""));
-    if (user.company) parts.push(user.company + (user.designation ? ` — ${user.designation}` : ""));
+    if (user.company) parts.push(user.company + (user.designation ? ` - ${user.designation}` : ""));
     if (user.projects && user.projects.length > 0) parts.push(`${String(user.projects.length)} project${user.projects.length > 1 ? "s" : ""}`);
     if (user.achievements && user.achievements.length > 0) parts.push(`${String(user.achievements.length)} achievement${user.achievements.length > 1 ? "s" : ""}`);
     return parts;
@@ -109,6 +122,7 @@ export default function CoverLetterPage() {
         useProfile,
       });
       setCoverLetter(data.coverLetter);
+      queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
     } catch (err) {
       const msg =
         (err as { response?: { data?: { message?: string } } })?.response?.data
@@ -148,7 +162,7 @@ export default function CoverLetterPage() {
 
   return (
     <div className="relative max-w-6xl mx-auto pb-12">
-      <SEO title="Cover Letter Builder — InternHack" description="Generate AI-powered cover letters tailored to any job" />
+      <SEO title="Cover Letter Builder - InternHack" description="Generate AI-powered cover letters tailored to any job" />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -397,9 +411,20 @@ export default function CoverLetterPage() {
                   </div>
                 </div>
 
+                {clUsage && (
+                  <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                    <span>{clUsage.used}/{clUsage.limit} used today</span>
+                    {limitReached && (
+                      <Link to="/student/pricing" className="text-violet-600 dark:text-violet-400 font-medium no-underline hover:underline">
+                        Upgrade
+                      </Link>
+                    )}
+                  </div>
+                )}
+
                 <button
                   onClick={handleGenerate}
-                  disabled={loading || jobDescription.trim().length < 50}
+                  disabled={loading || jobDescription.trim().length < 50 || limitReached}
                   className="w-full flex items-center justify-center gap-2 py-3.5 bg-gray-950 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-all disabled:opacity-40 disabled:cursor-not-allowed dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200 active:scale-[0.99]"
                 >
                   {loading ? (
@@ -407,6 +432,8 @@ export default function CoverLetterPage() {
                       <RefreshCw className="w-4 h-4 animate-spin" />
                       Generating...
                     </>
+                  ) : limitReached ? (
+                    "Daily limit reached"
                   ) : (
                     <>
                       Generate Cover Letter

@@ -85,7 +85,7 @@ const CORE_SUBJECT_RESOURCES: Record<string, { label: string; url: string }[]> =
     { label: "ByteByteGo", url: "https://bytebytego.com/" },
   ],
   lld: [
-    { label: "Refactoring Guru — Design Patterns", url: "https://refactoring.guru/design-patterns" },
+    { label: "Refactoring Guru - Design Patterns", url: "https://refactoring.guru/design-patterns" },
     { label: "Head First Design Patterns", url: "https://www.oreilly.com/library/view/head-first-design/9781492077992/" },
     { label: "Sudocode LLD (YouTube)", url: "https://www.youtube.com/playlist?list=PLTCrU9sGybupCpY20eked6blbHI4zZ55k" },
   ],
@@ -467,7 +467,7 @@ function CoreSubjectCard({ subject, index }: { subject: typeof CORE_SUBJECTS[num
                 </div>
               )}
 
-              {/* Interview Questions — Flashcard */}
+              {/* Interview Questions - Flashcard */}
               {activeTab === "questions" && currentQ && (
                 <div className="p-5">
                   {/* Header */}

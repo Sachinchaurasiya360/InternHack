@@ -10,13 +10,13 @@ import {
   Filter,
   Star,
   Users,
-  Loader2,
   X,
   Rocket,
   ExternalLink,
   ChevronDown,
   ChevronLeft,
   ChevronRight,
+  Lock,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Navbar } from "../../../components/Navbar";
@@ -150,7 +150,7 @@ function YCCard({ company }: { company: YCCompany }) {
               {company.name}
             </h4>
             <p className="text-xs text-gray-400 dark:text-gray-500">
-              {company.industry || company.subindustry || "—"}
+              {company.industry || company.subindustry || "-"}
             </p>
           </div>
         </div>
@@ -176,7 +176,7 @@ function YCCard({ company }: { company: YCCompany }) {
       </div>
 
       <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-3">
-        {company.oneLiner || "—"}
+        {company.oneLiner || "-"}
       </p>
 
       <div className="flex items-center justify-between">
@@ -235,6 +235,8 @@ export default function CompanyListPage() {
   const [pagination, setPagination] = useState<Pagination | null>(null);
   const [loading, setLoading] = useState(true);
   const [showFilters, setShowFilters] = useState(false);
+  const [cityLimited, setCityLimited] = useState(false);
+  const [totalUnlimited, setTotalUnlimited] = useState(0);
 
   // Active tab
   const [activeTab, setActiveTab] = useState<Tab>("all");
@@ -292,6 +294,8 @@ export default function CompanyListPage() {
       const res = await api.get("/companies", { params });
       setCompanies(res.data.companies);
       setPagination(res.data.pagination);
+      setCityLimited(!!res.data.limited);
+      setTotalUnlimited(res.data.totalUnlimited || 0);
     } catch {
       setCompanies([]);
     } finally {
@@ -549,10 +553,7 @@ export default function CompanyListPage() {
 
             {/* Results */}
             {loading ? (
-              <div className="flex flex-col items-center justify-center py-20">
-                <Loader2 className="w-8 h-8 text-indigo-500 animate-spin mb-4" />
-                <p className="text-sm text-gray-400 dark:text-gray-500">Loading companies...</p>
-              </div>
+              <LoadingScreen compact />
             ) : companies.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
                 <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">
@@ -579,6 +580,27 @@ export default function CompanyListPage() {
                     </motion.div>
                   ))}
                 </div>
+
+                {/* Upgrade banner for city-limited results */}
+                {cityLimited && selectedCity && (
+                  <div className="mt-6 flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+                    <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                        Showing first 20 of {totalUnlimited} companies in {selectedCity}
+                      </p>
+                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                        Upgrade to Premium to see all companies in this city.
+                      </p>
+                    </div>
+                    <Link
+                      to="/pricing"
+                      className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors no-underline"
+                    >
+                      Upgrade
+                    </Link>
+                  </div>
+                )}
 
                 {/* Pagination */}
                 {pagination && pagination.totalPages > 1 && (
@@ -709,10 +731,7 @@ export default function CompanyListPage() {
 
             {/* YC Results */}
             {ycLoading ? (
-              <div className="flex flex-col items-center justify-center py-20">
-                <Loader2 className="w-8 h-8 text-orange-500 animate-spin mb-4" />
-                <p className="text-sm text-gray-400 dark:text-gray-500">Loading YC companies...</p>
-              </div>
+              <LoadingScreen compact />
             ) : ycCompanies.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
                 <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">

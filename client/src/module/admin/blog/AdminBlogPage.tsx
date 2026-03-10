@@ -6,7 +6,6 @@ import {
   FileText,
   Plus,
   Search,
-  Loader2,
   Star,
   StarOff,
   Eye,
@@ -18,6 +17,7 @@ import {
   FilePen,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Pagination } from "../../../lib/types";
@@ -148,9 +148,7 @@ export default function AdminBlogPage() {
 
       {/* Table */}
       {isLoading ? (
-        <div className="flex items-center justify-center h-64 text-gray-400">
-          <Loader2 className="w-6 h-6 animate-spin" />
-        </div>
+        <LoadingScreen compact />
       ) : posts.length === 0 ? (
         <div className="text-center text-gray-500 py-20">
           <FileText className="w-10 h-10 mx-auto mb-3 text-gray-600" />

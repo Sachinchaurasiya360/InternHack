@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import {
   Layers,
   TrendingUp,
-  IndianRupee,
   Users,
   ArrowRight,
   Code,
@@ -161,12 +160,6 @@ export default function CareerCard({ career, index = 0 }: CareerCardProps) {
           {/* Bottom row */}
           <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
             <div className="flex items-center gap-3 text-xs text-gray-400 dark:text-gray-500">
-              {career.avgSalary && (
-                <span className="flex items-center gap-1">
-                  <IndianRupee className="w-3.5 h-3.5" />
-                  {career.avgSalary}
-                </span>
-              )}
               {career._count && career._count.enrollments > 0 && (
                 <span className="flex items-center gap-1">
                   <Users className="w-3.5 h-3.5" />

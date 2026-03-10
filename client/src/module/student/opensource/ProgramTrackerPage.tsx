@@ -153,7 +153,7 @@ const PROGRAMS: Program[] = [
       { phase: "Graduation & Demo Day", dates: "End of batch" },
     ],
     howToApply: [
-      "Apply at fellowship.mlh.io — fill out the application form",
+      "Apply at fellowship.mlh.io - fill out the application form",
       "Submit a personal statement about your coding journey",
       "Complete a short coding challenge",
       "Attend a technical interview with an MLH reviewer",
@@ -166,7 +166,7 @@ const PROGRAMS: Program[] = [
     short: "Outreachy",
     description: "Paid, remote internships in open source and open science for people subject to systemic bias in the tech industry. One of the highest stipends available.",
     fullDescription: "Outreachy provides internships in open source and open science for people who face under-representation, systemic bias, or discrimination in the technology industry. Two cohorts run per year (May–Aug and Dec–Mar). Participants must be in an eligible country and meet demographic requirements.",
-    eligibility: "People subject to discrimination in tech — women, non-binary, LGBTQ+, racial/ethnic minorities, and others in eligible countries",
+    eligibility: "People subject to discrimination in tech - women, non-binary, LGBTQ+, racial/ethnic minorities, and others in eligible countries",
     eligibilityType: "Diversity-focused",
     stipend: "$7,000",
     stipendPaid: true,
@@ -246,7 +246,7 @@ const PROGRAMS: Program[] = [
     short: "GSSoC",
     description: "India's largest open source program, inspired by GSoC. Runs March–May connecting Indian students with mentors from 100+ open source projects.",
     fullDescription: "GirlScript Summer of Code (GSSoC) is a 3-month open source program conducted by the GirlScript Foundation. It is primarily focused on Indian students and aims to help them get started with contributing to open source. Top contributors receive certificates, swag, and job referrals.",
-    eligibility: "Open to all — primarily Indian students but anyone can join",
+    eligibility: "Open to all - primarily Indian students but anyone can join",
     eligibilityType: "Open to All",
     stipend: "Certificates + swag + job referrals for top contributors",
     stipendPaid: false,
@@ -260,7 +260,7 @@ const PROGRAMS: Program[] = [
     bgColor: "bg-pink-50 border-pink-200",
     tags: ["india", "beginner-friendly", "certificates", "gssoc"],
     requirements: [
-      "No strict eligibility — students and beginners welcome",
+      "No strict eligibility - students and beginners welcome",
       "GitHub account required",
       "Commit to contributing throughout March–May",
       "Register on the GSSoC portal before the deadline",
@@ -447,7 +447,7 @@ const PROGRAMS: Program[] = [
     fullDescription: "The Kubernetes Release Team Shadow Program allows contributors to shadow members of the Kubernetes release team. Shadows assist with documentation, communication, CI signal, and release notes across each 3-month Kubernetes release cycle.",
     eligibility: "Kubernetes contributors with some prior contribution history",
     eligibilityType: "Open to All",
-    stipend: "Unpaid — strong resume credential",
+    stipend: "Unpaid - strong resume credential",
     stipendPaid: false,
     stipendRange: "Low/None",
     window: "3 times/year (aligned with K8s releases)",
@@ -690,7 +690,7 @@ export default function ProgramTrackerPage() {
             </div>
           </div>
           <p className="text-sm text-gray-600 dark:text-gray-400 max-w-2xl mb-6 leading-relaxed">
-            All major open source programs in one place — with deadlines, stipends, eligibility, and step-by-step application guides. Set reminders and apply before windows close.
+            All major open source programs in one place - with deadlines, stipends, eligibility, and step-by-step application guides. Set reminders and apply before windows close.
           </p>
           <div className="flex flex-wrap gap-3">
             {[
@@ -778,7 +778,7 @@ export default function ProgramTrackerPage() {
           <div>
             <p className="text-sm font-semibold text-emerald-900 dark:text-emerald-300">Apply to multiple programs simultaneously</p>
             <p className="text-xs text-emerald-700 dark:text-emerald-400 mt-1 leading-relaxed">
-              GSoC and Outreachy application windows often overlap with GSSoC and Hacktoberfest. Diversify your applications — each program has different evaluation criteria and your contributions to one project can strengthen proposals in others.
+              GSoC and Outreachy application windows often overlap with GSSoC and Hacktoberfest. Diversify your applications - each program has different evaluation criteria and your contributions to one project can strengthen proposals in others.
             </p>
           </div>
         </div>

@@ -16,20 +16,19 @@ import {
   Sparkles,
   Globe,
   Flame,
-  ArrowUpRight,
+  ArrowRight,
   BookOpen,
   Trophy,
   GraduationCap,
   GitPullRequest,
-  MessagesSquare,
   ChevronRight,
   Award,
-  Loader2,
   AlertCircle,
   BarChart3,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { SEO } from "../../../components/SEO";
 import type { OpenSourceRepo, Pagination } from "../../../lib/types";
 import {
   REPO_DOMAINS,
@@ -57,126 +56,34 @@ function difficultyBadge(d: OpenSourceRepo["difficulty"]) {
 const GUIDANCE_CARDS = [
   {
     to: "/student/opensource/first-pr",
-    icon: <GitPullRequest className="w-5 h-5" />,
-    title: "First PR Roadmap",
-    desc: "Guided checklist to land your first pull request",
-    iconColor: "text-pink-500 dark:text-pink-400",
-    hoverBorder: "hover:border-pink-300 dark:hover:border-pink-600",
+    icon: GitPullRequest,
+    title: "Your First Contribution",
+    desc: "10-step guide from zero to your first merged pull request",
   },
   {
     to: "/student/opensource/gsoc",
-    icon: <Trophy className="w-5 h-5" />,
+    icon: Trophy,
     title: "GSoC Repos",
     desc: "Organizations accepted into Google Summer of Code",
-    iconColor: "text-amber-500 dark:text-amber-400",
-    hoverBorder: "hover:border-amber-300 dark:hover:border-amber-600",
   },
   {
     to: "/student/opensource/gsoc-proposal",
-    icon: <Award className="w-5 h-5" />,
+    icon: Award,
     title: "GSoC Proposal Guide",
     desc: "Write a winning proposal in 8 steps",
-    iconColor: "text-red-500 dark:text-red-400",
-    hoverBorder: "hover:border-red-300 dark:hover:border-red-600",
   },
   {
     to: "/student/opensource/programs",
-    icon: <GraduationCap className="w-5 h-5" />,
+    icon: GraduationCap,
     title: "Program Tracker",
     desc: "Deadlines for GSoC, LFX, MLH, Outreachy & more",
-    iconColor: "text-emerald-500 dark:text-emerald-400",
-    hoverBorder: "hover:border-emerald-300 dark:hover:border-emerald-600",
-  },
-  {
-    to: "https://github.com/firstcontributions/first-contributions",
-    icon: <MessagesSquare className="w-5 h-5" />,
-    title: "First Contributions",
-    desc: "Practice making your first PR on a real GitHub repo",
-    iconColor: "text-indigo-500 dark:text-indigo-400",
-    hoverBorder: "hover:border-indigo-300 dark:hover:border-indigo-600",
-    external: true,
-  },
-  {
-    to: "https://goodfirstissue.dev",
-    icon: <Code2 className="w-5 h-5" />,
-    title: "Good First Issues",
-    desc: "Find beginner-friendly issues across popular projects",
-    iconColor: "text-cyan-500 dark:text-cyan-400",
-    hoverBorder: "hover:border-cyan-300 dark:hover:border-cyan-600",
-    external: true,
   },
 ];
-
-// ─── Guidance Section ────────────────────────────────────────────
-function OpenSourceGuidanceSection() {
-  return (
-    <section className="mb-8">
-      <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 overflow-hidden">
-        {/* Header strip */}
-        <div className="flex items-center justify-between px-5 py-3.5 border-b border-gray-100 dark:border-gray-800 bg-gray-50/80 dark:bg-gray-800/50">
-          <div className="flex items-center gap-2.5">
-            <Sparkles className="w-4.5 h-4.5 text-purple-500 dark:text-purple-400" />
-            <h2 className="text-sm font-bold text-gray-900 dark:text-white">Open Source Guidance</h2>
-          </div>
-          <Link
-            to="/student/opensource/guidance"
-            className="flex items-center gap-1 text-[11px] font-semibold text-purple-600 dark:text-purple-400 hover:text-purple-800 dark:hover:text-purple-300 transition-colors no-underline"
-          >
-            View all
-            <ChevronRight className="w-3.5 h-3.5" />
-          </Link>
-        </div>
-
-        {/* Cards grid */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-px bg-gray-100 dark:bg-gray-800">
-          {GUIDANCE_CARDS.map((card) => {
-            const cardContent = (
-              <>
-                <span className={`${card.iconColor} shrink-0 group-hover:scale-110 transition-transform`}>{card.icon}</span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-xs font-semibold text-gray-900 dark:text-white mb-0.5 group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors">
-                    {card.title}
-                  </p>
-                  <p className="text-[11px] text-gray-400 dark:text-gray-500 leading-snug line-clamp-2">
-                    {card.desc}
-                  </p>
-                </div>
-                <ChevronRight className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 mt-1 shrink-0 group-hover:text-purple-500 transition-colors" />
-              </>
-            );
-
-            const className = `flex items-start gap-3 p-4 bg-white dark:bg-gray-900 transition-all no-underline group ${card.hoverBorder} hover:bg-gray-50/50 dark:hover:bg-gray-800/50`;
-
-            return card.external ? (
-              <a
-                key={card.to}
-                href={card.to}
-                target="_blank"
-                rel="noopener noreferrer"
-                className={className}
-              >
-                {cardContent}
-              </a>
-            ) : (
-              <Link
-                key={card.to}
-                to={card.to}
-                className={className}
-              >
-                {cardContent}
-              </Link>
-            );
-          })}
-        </div>
-      </div>
-    </section>
-  );
-}
 
 // ─── Skeleton Card ───────────────────────────────────────────────
 function RepoCardSkeleton() {
   return (
-    <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 animate-pulse">
+    <div className="rounded-2xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-5 animate-pulse">
       <div className="flex items-start gap-3 mb-3">
         <div className="h-10 w-10 rounded-xl bg-gray-100 dark:bg-gray-800" />
         <div className="flex-1">
@@ -191,7 +98,7 @@ function RepoCardSkeleton() {
           <div key={i} className="h-5 w-14 rounded-md bg-gray-100 dark:bg-gray-800" />
         ))}
       </div>
-      <div className="flex gap-4 pt-3 border-t border-gray-50 dark:border-gray-800">
+      <div className="flex gap-4 pt-3 border-t border-gray-100 dark:border-gray-800">
         {[1, 2, 3].map((i) => (
           <div key={i} className="h-3 w-12 rounded bg-gray-100 dark:bg-gray-800" />
         ))}
@@ -253,17 +160,23 @@ export default function RepoDiscoveryPage() {
     setPage(1);
   };
 
+  const activeFilters =
+    (selectedDomain !== "ALL" ? 1 : 0) +
+    (selectedDifficulty !== "ALL" ? 1 : 0);
+
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
-      {/* ── Hero ────────────────────────────────────────────── */}
-      <section className="relative overflow-hidden rounded-2xl bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 shadow-sm mb-8">
+    <div className="min-h-screen">
+      <SEO title="Open Source - InternHack" description="Discover beginner-friendly open-source projects and make your first contribution" />
+
+      {/* Hero */}
+      <section className="relative overflow-hidden pt-4 pb-16 px-6">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute -top-40 -right-40 w-100 h-100 rounded-full bg-purple-50 dark:bg-purple-900/20 opacity-60 blur-3xl" />
-          <div className="absolute -bottom-40 -left-40 w-88 h-88 rounded-full bg-cyan-50 dark:bg-cyan-900/20 opacity-60 blur-3xl" />
+          <div className="absolute -top-40 -right-40 w-125 h-125 rounded-full bg-linear-to-br from-purple-50 to-violet-50 dark:from-purple-900/20 dark:to-violet-900/20 opacity-60 blur-3xl" />
+          <div className="absolute -bottom-40 -left-40 w-100 h-100 rounded-full bg-linear-to-tr from-cyan-50 to-teal-50 dark:from-cyan-900/20 dark:to-teal-900/20 opacity-60 blur-3xl" />
         </div>
 
         <div
-          className="absolute inset-0 opacity-[0.02]"
+          className="absolute inset-0 opacity-[0.03] dark:opacity-[0.02]"
           style={{
             backgroundImage:
               "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
@@ -271,97 +184,134 @@ export default function RepoDiscoveryPage() {
           }}
         />
 
-        <div className="relative z-10 py-12 px-6 text-center">
+        <div className="relative z-10 max-w-4xl mx-auto text-center mt-6">
+          <motion.h1
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 }}
+            className="font-display text-4xl sm:text-5xl md:text-6xl font-bold leading-tight tracking-tight text-gray-950 dark:text-white mb-4"
+          >
+            Discover & <span className="text-gradient-accent">Contribute</span>
+          </motion.h1>
+
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto mb-10 leading-relaxed"
+          >
+            Find beginner-friendly open-source projects, explore trending repos, and make your first contribution today.
+          </motion.p>
+
+          {/* Search */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
+            transition={{ delay: 0.3 }}
+            className="relative max-w-lg mx-auto"
           >
-            <h1 className="mb-3 font-display text-3xl sm:text-4xl md:text-5xl font-bold leading-tight tracking-tight text-gray-950 dark:text-white">
-              Discover &amp; Contribute
-            </h1>
-            <p className="mx-auto mb-6 max-w-2xl text-base text-gray-500 leading-relaxed">
-              Find beginner-friendly open-source projects, explore trending repositories, and make your first contribution today.
-            </p>
-
-            {stats && (
-              <motion.div
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.3 }}
-                className="flex flex-wrap items-center justify-center gap-3"
-              >
-                {[
-                  { icon: <Code2 size={14} />, label: `${stats.totalRepos} Repos` },
-                  { icon: <Star size={14} />, label: `${stats.totalStars} Stars` },
-                  { icon: <Flame size={14} />, label: `${stats.trendingCount} Trending` },
-                  { icon: <Globe size={14} />, label: `${stats.languages} Languages` },
-                ].map((s) => (
-                  <span
-                    key={s.label}
-                    className="flex items-center gap-1.5 rounded-full border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3 py-1 text-xs text-gray-600 dark:text-gray-400 shadow-sm"
-                  >
-                    {s.icon}
-                    {s.label}
-                  </span>
-                ))}
-              </motion.div>
-            )}
-
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5 }}
-              className="mt-4"
-            >
-              <Link
-                to="/student/opensource/analytics"
-                className="inline-flex items-center gap-2 rounded-lg bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-500 transition-colors no-underline"
-              >
-                <BarChart3 className="w-4 h-4" />
-                View Analytics
-              </Link>
-            </motion.div>
+            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+            <input
+              type="text"
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+              placeholder="Search repos, languages, tags..."
+              className="w-full pl-11 pr-5 py-3.5 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 text-sm focus:outline-none focus:ring-2 focus:ring-purple-500/20 focus:border-purple-300 transition-all shadow-sm"
+            />
           </motion.div>
+
+          {stats && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+              className="flex items-center justify-center gap-4 mt-6"
+            >
+              <span className="text-gray-400 dark:text-gray-500 text-sm">{stats.totalRepos} repos</span>
+              <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
+              <span className="text-gray-400 dark:text-gray-500 text-sm">{stats.totalStars} stars</span>
+              <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
+              <span className="text-gray-400 dark:text-gray-500 text-sm">{stats.trendingCount} trending</span>
+              <span className="w-1 h-1 rounded-full bg-gray-300 dark:bg-gray-600" />
+              <span className="text-gray-400 dark:text-gray-500 text-sm">{stats.languages} languages</span>
+            </motion.div>
+          )}
         </div>
       </section>
 
-      {/* ── Open Source Guidance ────────────────────────────── */}
-      <OpenSourceGuidanceSection />
-
-      {/* ── Search + Controls ───────────────────────────────── */}
-      <div className="mb-6 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-        <div className="relative flex-1 max-w-xl">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-          <input
-            type="text"
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-            placeholder="Search repos, languages, tags..."
-            className="w-full rounded-xl border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 py-2.5 pl-10 pr-4 text-sm text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500 outline-none transition shadow-sm focus:border-purple-300 focus:ring-2 focus:ring-purple-500/20"
-          />
+      <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Guidance Cards */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
+          {GUIDANCE_CARDS.map((card, i) => (
+            <motion.div
+              key={card.to}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 + i * 0.06, duration: 0.4 }}
+            >
+              <Link
+                to={card.to}
+                className="group flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:shadow-gray-100 dark:hover:shadow-gray-900 transition-all duration-300 no-underline"
+              >
+                <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0">
+                  <card.icon className="w-4.5 h-4.5 text-white dark:text-gray-950" />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-semibold text-gray-950 dark:text-white truncate">{card.title}</p>
+                  <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{card.desc}</p>
+                </div>
+                <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors shrink-0" />
+              </Link>
+            </motion.div>
+          ))}
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Filter bar */}
+        <div className="flex flex-wrap items-center gap-3 mb-6">
+          {/* Domain chips */}
+          <div className="flex flex-wrap gap-2">
+            {REPO_DOMAINS.map((d) => (
+              <button
+                key={d.key}
+                onClick={() => updateFilter(setSelectedDomain, d.key === selectedDomain ? "ALL" : d.key)}
+                className={`px-3.5 py-2 rounded-xl text-sm font-medium transition-all border ${
+                  selectedDomain === d.key
+                    ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 border-gray-950 dark:border-white"
+                    : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
+                }`}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
+
+          {/* More filters toggle */}
           <button
             onClick={() => setShowFilters(!showFilters)}
-            className={`flex items-center gap-2 rounded-xl border px-4 py-2.5 text-sm transition ${
-              showFilters
-                ? "border-purple-300 bg-purple-50 text-purple-700 dark:border-purple-600 dark:bg-purple-900/30 dark:text-purple-400"
-                : "border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 shadow-sm"
+            className={`flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium transition-all border ${
+              activeFilters > 0
+                ? "bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 border-purple-200 dark:border-purple-800"
+                : "bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800"
             }`}
           >
-            <Filter size={16} />
+            <Filter className="w-3.5 h-3.5" />
             Filters
+            {activeFilters > 0 && (
+              <span className="w-5 h-5 rounded-full bg-purple-500 text-white text-xs flex items-center justify-center">
+                {activeFilters}
+              </span>
+            )}
+            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${showFilters ? "rotate-180" : ""}`} />
           </button>
 
+          {/* Sort */}
           <div className="relative group">
-            <button className="flex items-center gap-2 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-4 py-2.5 text-sm text-gray-600 dark:text-gray-300 transition shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700">
-              <TrendingUp size={16} />
+            <button className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 transition-all hover:bg-gray-50 dark:hover:bg-gray-800">
+              <TrendingUp className="w-3.5 h-3.5" />
               {SORT_OPTIONS.find((s) => s.key === sortKey)?.label ?? "Sort"}
-              <ChevronDown size={14} />
+              <ChevronDown className="w-3.5 h-3.5" />
             </button>
-            <div className="absolute right-0 top-full z-20 mt-1 hidden min-w-[180px] rounded-xl border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 p-1 shadow-xl group-hover:block">
+            <div className="absolute right-0 top-full z-20 mt-1 hidden min-w-44 rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-1 shadow-xl group-hover:block">
               {SORT_OPTIONS.map((opt) => (
                 <button
                   key={opt.key}
@@ -369,7 +319,7 @@ export default function RepoDiscoveryPage() {
                   className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
                     sortKey === opt.key
                       ? "bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 font-medium"
-                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700"
+                      : "text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800"
                   }`}
                 >
                   {opt.label}
@@ -377,366 +327,398 @@ export default function RepoDiscoveryPage() {
               ))}
             </div>
           </div>
-        </div>
-      </div>
 
-      {/* ── Filter bar ─────────────────────────────────────── */}
-      <AnimatePresence>
-        {showFilters && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="mb-6 overflow-hidden"
+          {/* Analytics link */}
+          <Link
+            to="/student/opensource/analytics"
+            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all no-underline ml-auto"
           >
-            <div className="rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm">
-              <div className="mb-4">
-                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">Domain</p>
-                <div className="flex flex-wrap gap-2">
-                  {REPO_DOMAINS.map((d) => (
-                    <button
-                      key={d.key}
-                      onClick={() => updateFilter(setSelectedDomain, d.key)}
-                      className={`flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                        selectedDomain === d.key
-                          ? "bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 ring-1 ring-purple-200 dark:ring-purple-700"
-                          : "bg-gray-50 dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300"
-                      }`}
-                    >
-                      <span>{d.icon}</span>
-                      {d.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <p className="mb-2 text-xs font-medium uppercase tracking-wider text-gray-400">Difficulty</p>
-                <div className="flex flex-wrap gap-2">
-                  {DIFFICULTY_OPTIONS.map((d) => (
-                    <button
-                      key={d.key}
-                      onClick={() => updateFilter(setSelectedDifficulty, d.key)}
-                      className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${
-                        selectedDifficulty === d.key
-                          ? "bg-purple-50 dark:bg-purple-900/30 text-purple-700 dark:text-purple-400 ring-1 ring-purple-200 dark:ring-purple-700"
-                          : "bg-gray-50 dark:bg-gray-800 text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300"
-                      }`}
-                    >
-                      {d.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* ── Results count ──────────────────────────────────── */}
-      {pagination && (
-        <p className="mb-6 text-sm text-gray-400">
-          Showing <span className="text-gray-900 dark:text-white font-medium">{repos.length}</span> of {pagination.total} repositories
-        </p>
-      )}
-
-      {/* ── Loading State ──────────────────────────────────── */}
-      {isLoading && (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          {Array.from({ length: 6 }).map((_, i) => (
-            <RepoCardSkeleton key={i} />
-          ))}
+            <BarChart3 className="w-3.5 h-3.5" />
+            Analytics
+          </Link>
         </div>
-      )}
 
-      {/* ── Error State ────────────────────────────────────── */}
-      {isError && (
-        <div className="flex flex-col items-center justify-center py-24 text-center">
-          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-red-50 dark:bg-red-900/20">
-            <AlertCircle size={32} className="text-red-400" />
-          </div>
-          <h3 className="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300">Failed to load repositories</h3>
-          <p className="max-w-md text-sm text-gray-400">
-            There was an error fetching the repositories. Please try again later.
-          </p>
-        </div>
-      )}
+        {/* Expanded filters */}
+        <AnimatePresence>
+          {showFilters && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: "auto", opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+              className="overflow-hidden mb-6"
+            >
+              <div className="flex flex-wrap gap-4 p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700">
+                <div>
+                  <label className="text-xs font-medium text-gray-500 dark:text-gray-500 mb-2 block">Difficulty</label>
+                  <select
+                    value={selectedDifficulty}
+                    onChange={(e) => updateFilter(setSelectedDifficulty, e.target.value)}
+                    className="px-3 py-2 rounded-xl text-sm border border-gray-200 dark:border-gray-600 bg-white dark:bg-gray-800 text-gray-700 dark:text-white focus:outline-none focus:ring-2 focus:ring-purple-500/20"
+                  >
+                    {DIFFICULTY_OPTIONS.map((d) => (
+                      <option key={d.key} value={d.key}>{d.label}</option>
+                    ))}
+                  </select>
+                </div>
 
-      {/* ── Empty State ────────────────────────────────────── */}
-      {!isLoading && !isError && repos.length === 0 && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="flex flex-col items-center justify-center py-24 text-center"
-        >
-          <div className="mb-4 flex h-20 w-20 items-center justify-center rounded-2xl bg-gray-50 dark:bg-gray-800">
-            <Search size={32} className="text-gray-300 dark:text-gray-600" />
-          </div>
-          <h3 className="mb-2 text-lg font-semibold text-gray-700 dark:text-gray-300">No repositories found</h3>
-          <p className="max-w-md text-sm text-gray-400">
-            Try adjusting your search or filters to discover more projects.
-          </p>
-        </motion.div>
-      )}
-
-      {/* ── Cards grid ─────────────────────────────────────── */}
-      {!isLoading && !isError && repos.length > 0 && (
-        <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-          <AnimatePresence mode="popLayout">
-            {repos.map((repo, i) => (
-              <motion.div
-                layout
-                key={repo.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ delay: i * 0.04, duration: 0.35 }}
-                onClick={() => setSelectedRepo(repo)}
-                className="group relative cursor-pointer rounded-2xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-5 shadow-sm transition-all hover:shadow-md hover:border-purple-200 dark:hover:border-purple-700"
-              >
-                {repo.trending && (
-                  <div className="absolute -top-2.5 right-4 flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
-                    <Flame size={10} />
-                    Trending
+                {activeFilters > 0 && (
+                  <div className="flex items-end">
+                    <button
+                      onClick={() => {
+                        setSelectedDomain("ALL");
+                        setSelectedDifficulty("ALL");
+                        setSearch("");
+                        setPage(1);
+                      }}
+                      className="px-3 py-2 text-sm text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 underline underline-offset-2"
+                    >
+                      Clear all
+                    </button>
                   </div>
                 )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
-                <div className="mb-3 flex items-start gap-3">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-gray-100 dark:bg-gray-800 text-lg font-bold text-gray-600 dark:text-gray-300">
-                    {repo.owner[0].toUpperCase()}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <h3 className="truncate text-base font-semibold text-gray-900 dark:text-white group-hover:text-purple-700 dark:group-hover:text-purple-400 transition-colors">
-                      {repo.owner}/<span className="text-purple-600">{repo.name}</span>
-                    </h3>
-                    <div className="flex items-center gap-2 mt-0.5">
-                      <span
-                        className="inline-block h-2.5 w-2.5 rounded-full"
-                        style={{ backgroundColor: LANGUAGE_COLORS[repo.language] ?? "#888" }}
-                      />
-                      <span className="text-xs text-gray-500">{repo.language}</span>
-                      <span className={`ml-auto rounded-full px-2 py-0.5 text-[10px] font-medium ring-1 ${difficultyBadge(repo.difficulty).cls}`}>
-                        {difficultyBadge(repo.difficulty).label}
-                      </span>
-                    </div>
-                  </div>
-                </div>
+        {/* Results count */}
+        <div className="flex items-center justify-between mb-5">
+          <p className="text-sm text-gray-500 dark:text-gray-500">
+            {pagination ? (
+              <>
+                <span className="font-semibold text-gray-900 dark:text-white">{pagination.total}</span> repositor{pagination.total !== 1 ? "ies" : "y"}
+                {selectedDomain !== "ALL" && <> in <span className="font-semibold text-gray-900 dark:text-white">{REPO_DOMAINS.find((d) => d.key === selectedDomain)?.label}</span></>}
+                {search && <> matching "<span className="font-semibold text-gray-900 dark:text-white">{search}</span>"</>}
+              </>
+            ) : (
+              "Loading..."
+            )}
+          </p>
+        </div>
 
-                <p className="mb-4 line-clamp-2 text-sm text-gray-500">
-                  {repo.description}
-                </p>
-
-                <div className="mb-4 flex flex-wrap gap-1.5">
-                  {repo.tags.slice(0, 4).map((tag) => (
-                    <span
-                      key={tag}
-                      className="rounded-md bg-gray-50 dark:bg-gray-800 px-2 py-0.5 text-[10px] text-gray-500"
-                    >
-                      #{tag}
-                    </span>
-                  ))}
-                </div>
-
-                <div className="flex items-center gap-4 border-t border-gray-50 dark:border-gray-800 pt-3 text-xs text-gray-400">
-                  <span className="flex items-center gap-1">
-                    <Star size={13} className="text-amber-500" />
-                    {formatCount(repo.stars)}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <GitFork size={13} className="text-cyan-500" />
-                    {formatCount(repo.forks)}
-                  </span>
-                  <span className="flex items-center gap-1">
-                    <CircleDot size={13} className="text-emerald-500" />
-                    {formatCount(repo.openIssues)} issues
-                  </span>
-                  <ArrowUpRight
-                    size={14}
-                    className="ml-auto text-gray-300 transition group-hover:text-purple-500"
-                  />
-                </div>
-              </motion.div>
+        {/* Loading State */}
+        {isLoading && (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {Array.from({ length: 6 }).map((_, i) => (
+              <RepoCardSkeleton key={i} />
             ))}
-          </AnimatePresence>
-        </div>
-      )}
-
-      {/* ── Pagination ─────────────────────────────────────── */}
-      {pagination && pagination.totalPages > 1 && (
-        <div className="mt-8 flex items-center justify-center gap-2">
-          <button
-            onClick={() => setPage((p) => Math.max(1, p - 1))}
-            disabled={page <= 1}
-            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3.5 py-2 text-sm text-gray-600 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:pointer-events-none"
-          >
-            Previous
-          </button>
-          <div className="flex items-center gap-1">
-            {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
-              let pageNum: number;
-              if (pagination.totalPages <= 5) {
-                pageNum = i + 1;
-              } else if (page <= 3) {
-                pageNum = i + 1;
-              } else if (page >= pagination.totalPages - 2) {
-                pageNum = pagination.totalPages - 4 + i;
-              } else {
-                pageNum = page - 2 + i;
-              }
-              return (
-                <button
-                  key={pageNum}
-                  onClick={() => setPage(pageNum)}
-                  className={`w-9 h-9 rounded-lg text-sm font-medium transition ${
-                    page === pageNum
-                      ? "bg-purple-600 text-white shadow-sm"
-                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
-                  }`}
-                >
-                  {pageNum}
-                </button>
-              );
-            })}
           </div>
-          <button
-            onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
-            disabled={page >= pagination.totalPages}
-            className="rounded-lg border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 px-3.5 py-2 text-sm text-gray-600 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-40 disabled:pointer-events-none"
-          >
-            Next
-          </button>
-        </div>
-      )}
+        )}
 
-      {/* ── Detail Modal ─────────────────────────────────────── */}
+        {/* Error State */}
+        {isError && (
+          <div className="text-center py-24 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700">
+            <AlertCircle className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-1">Failed to load repositories</h3>
+            <p className="text-sm text-gray-400 dark:text-gray-500">There was an error fetching the repositories. Please try again later.</p>
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!isLoading && !isError && repos.length === 0 && (
+          <div className="text-center py-24 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700">
+            <Search className="w-10 h-10 text-gray-300 dark:text-gray-600 mx-auto mb-3" />
+            <h3 className="text-lg font-semibold text-gray-700 dark:text-gray-300 mb-1">No repositories found</h3>
+            <p className="text-sm text-gray-400 dark:text-gray-500">Try adjusting your search or filters to discover more projects.</p>
+          </div>
+        )}
+
+        {/* Cards grid */}
+        {!isLoading && !isError && repos.length > 0 && (
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <AnimatePresence mode="popLayout">
+              {repos.map((repo, i) => (
+                <motion.div
+                  layout
+                  key={repo.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  transition={{ delay: i * 0.04, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+                  whileHover={{ y: -4 }}
+                  className="h-full"
+                >
+                  <button
+                    onClick={() => setSelectedRepo(repo)}
+                    className="group relative flex flex-col h-full w-full text-left bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:shadow-lg hover:shadow-gray-100 dark:hover:shadow-gray-900 transition-all duration-300 cursor-pointer"
+                  >
+                    {repo.trending && (
+                      <div className="absolute -top-2.5 right-4 flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-white shadow-md">
+                        <Flame size={10} />
+                        Trending
+                      </div>
+                    )}
+
+                    <div className="flex flex-col flex-1 p-6">
+                      {/* Header */}
+                      <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center gap-3">
+                          <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center shrink-0 text-sm font-bold text-gray-500 dark:text-gray-400">
+                            {repo.owner[0].toUpperCase()}
+                          </div>
+                          <span className="text-xs font-medium text-gray-500 dark:text-gray-500">{repo.owner}</span>
+                        </div>
+                        <span className={`rounded-full px-2 py-0.5 text-[10px] font-medium ring-1 ${difficultyBadge(repo.difficulty).cls}`}>
+                          {difficultyBadge(repo.difficulty).label}
+                        </span>
+                      </div>
+
+                      {/* Name */}
+                      <h3 className="text-base font-bold text-gray-900 dark:text-white mb-2 leading-snug group-hover:text-gray-700 dark:group-hover:text-gray-300 transition-colors">
+                        {repo.name}
+                      </h3>
+
+                      {/* Description */}
+                      <p className="text-sm text-gray-500 dark:text-gray-500 line-clamp-2 leading-relaxed mb-4 flex-1">
+                        {repo.description}
+                      </p>
+
+                      {/* Tags */}
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        <span className="flex items-center gap-1 px-2 py-0.5 rounded-md bg-gray-50 dark:bg-gray-800 text-xs font-medium text-gray-600 dark:text-gray-400">
+                          <span
+                            className="inline-block h-2 w-2 rounded-full"
+                            style={{ backgroundColor: LANGUAGE_COLORS[repo.language] ?? "#888" }}
+                          />
+                          {repo.language}
+                        </span>
+                        {repo.tags.slice(0, 3).map((tag) => (
+                          <span
+                            key={tag}
+                            className="px-2 py-0.5 rounded-md bg-gray-50 dark:bg-gray-800 text-[10px] text-gray-500 dark:text-gray-400"
+                          >
+                            #{tag}
+                          </span>
+                        ))}
+                      </div>
+
+                      {/* Bottom stats + CTA */}
+                      <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-800">
+                        <div className="flex items-center gap-3 text-xs text-gray-400">
+                          <span className="flex items-center gap-1">
+                            <Star size={13} className="text-amber-500" />
+                            {formatCount(repo.stars)}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <GitFork size={13} className="text-cyan-500" />
+                            {formatCount(repo.forks)}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <CircleDot size={13} className="text-emerald-500" />
+                            {formatCount(repo.openIssues)}
+                          </span>
+                        </div>
+                        <span className="flex items-center gap-1 text-sm font-medium text-gray-400 dark:text-gray-500 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">
+                          Details
+                          <ArrowRight className="w-4 h-4 group-hover:translate-x-0.5 transition-transform" />
+                        </span>
+                      </div>
+                    </div>
+                  </button>
+                </motion.div>
+              ))}
+            </AnimatePresence>
+          </div>
+        )}
+
+        {/* Pagination */}
+        {pagination && pagination.totalPages > 1 && (
+          <div className="mt-8 flex items-center justify-center gap-2">
+            <button
+              onClick={() => setPage((p) => Math.max(1, p - 1))}
+              disabled={page <= 1}
+              className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3.5 py-2 text-sm text-gray-600 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:pointer-events-none"
+            >
+              Previous
+            </button>
+            <div className="flex items-center gap-1">
+              {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                let pageNum: number;
+                if (pagination.totalPages <= 5) {
+                  pageNum = i + 1;
+                } else if (page <= 3) {
+                  pageNum = i + 1;
+                } else if (page >= pagination.totalPages - 2) {
+                  pageNum = pagination.totalPages - 4 + i;
+                } else {
+                  pageNum = page - 2 + i;
+                }
+                return (
+                  <button
+                    key={pageNum}
+                    onClick={() => setPage(pageNum)}
+                    className={`w-9 h-9 rounded-lg text-sm font-medium transition ${
+                      page === pageNum
+                        ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 shadow-sm"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    {pageNum}
+                  </button>
+                );
+              })}
+            </div>
+            <button
+              onClick={() => setPage((p) => Math.min(pagination.totalPages, p + 1))}
+              disabled={page >= pagination.totalPages}
+              className="rounded-xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 px-3.5 py-2 text-sm text-gray-600 dark:text-gray-300 transition hover:bg-gray-50 dark:hover:bg-gray-800 disabled:opacity-40 disabled:pointer-events-none"
+            >
+              Next
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Detail Modal */}
       <AnimatePresence>
         {selectedRepo && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm p-4"
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm"
             onClick={() => setSelectedRepo(null)}
           >
             <motion.div
               initial={{ opacity: 0, scale: 0.95, y: 20 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 20 }}
-              transition={{ duration: 0.25 }}
-              className="relative max-h-[85vh] w-full max-w-2xl overflow-y-auto rounded-3xl border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 p-6 shadow-2xl md:p-8"
+              transition={{ type: "spring", duration: 0.4 }}
+              className="bg-white dark:bg-gray-900 rounded-2xl shadow-2xl w-full max-w-2xl max-h-[85vh] overflow-y-auto"
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                onClick={() => setSelectedRepo(null)}
-                className="absolute right-4 top-4 rounded-full bg-gray-50 dark:bg-gray-800 p-2 text-gray-400 transition hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300"
-              >
-                <X size={18} />
-              </button>
-
-              <div className="mb-6 flex items-start gap-4">
-                <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gray-100 dark:bg-gray-800 text-2xl font-bold text-gray-600 dark:text-gray-300">
-                  {selectedRepo.owner[0].toUpperCase()}
+              {/* Modal header */}
+              <div className="sticky top-0 bg-white dark:bg-gray-900 border-b border-gray-100 dark:border-gray-800 px-6 py-4 rounded-t-2xl flex items-center justify-between z-10">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 rounded-xl bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 flex items-center justify-center text-sm font-bold text-gray-500 dark:text-gray-400">
+                    {selectedRepo.owner[0].toUpperCase()}
+                  </div>
+                  <div>
+                    <h2 className="text-lg font-bold text-gray-900 dark:text-white">
+                      {selectedRepo.owner}/{selectedRepo.name}
+                    </h2>
+                    <div className="flex items-center gap-2 mt-0.5">
+                      <span
+                        className="inline-block h-2.5 w-2.5 rounded-full"
+                        style={{ backgroundColor: LANGUAGE_COLORS[selectedRepo.language] ?? "#888" }}
+                      />
+                      <span className="text-sm text-gray-500 dark:text-gray-500">{selectedRepo.language}</span>
+                    </div>
+                  </div>
                 </div>
+                <button onClick={() => setSelectedRepo(null)} className="w-8 h-8 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-700 flex items-center justify-center transition-colors">
+                  <X className="w-4 h-4 text-gray-500 dark:text-gray-500" />
+                </button>
+              </div>
+
+              <div className="px-6 py-6 space-y-6">
+                {/* Status badges */}
+                <div className="flex flex-wrap gap-3">
+                  <span className={`rounded-full px-2.5 py-1 text-xs font-medium ring-1 ${difficultyBadge(selectedRepo.difficulty).cls}`}>
+                    {difficultyBadge(selectedRepo.difficulty).label}
+                  </span>
+                  {selectedRepo.trending && (
+                    <span className="flex items-center gap-1 rounded-full bg-orange-500 px-2.5 py-1 text-[10px] font-bold uppercase text-white">
+                      <Flame size={10} /> Trending
+                    </span>
+                  )}
+                </div>
+
+                {/* Description */}
                 <div>
-                  <h2 className="text-xl font-bold text-gray-900 dark:text-white">
-                    {selectedRepo.owner}/{selectedRepo.name}
-                  </h2>
-                  <div className="mt-1 flex flex-wrap items-center gap-2">
-                    <span
-                      className="inline-block h-3 w-3 rounded-full"
-                      style={{ backgroundColor: LANGUAGE_COLORS[selectedRepo.language] ?? "#888" }}
-                    />
-                    <span className="text-sm text-gray-500">{selectedRepo.language}</span>
-                    <span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ring-1 ${difficultyBadge(selectedRepo.difficulty).cls}`}>
-                      {difficultyBadge(selectedRepo.difficulty).label}
-                    </span>
-                    {selectedRepo.trending && (
-                      <span className="flex items-center gap-1 rounded-full bg-orange-500 px-2 py-0.5 text-[10px] font-bold uppercase text-white">
-                        <Flame size={10} /> Trending
-                      </span>
-                    )}
-                  </div>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-1.5">
+                    <BookOpen className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                    About
+                  </h3>
+                  <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed">{selectedRepo.description}</p>
                 </div>
-              </div>
 
-              <p className="mb-6 text-sm leading-relaxed text-gray-600">
-                {selectedRepo.description}
-              </p>
-
-              <div className="mb-6 grid grid-cols-3 gap-3">
-                {[
-                  { label: "Stars", value: formatCount(selectedRepo.stars), icon: <Star size={16} className="text-amber-500" /> },
-                  { label: "Forks", value: formatCount(selectedRepo.forks), icon: <GitFork size={16} className="text-cyan-500" /> },
-                  { label: "Open Issues", value: formatCount(selectedRepo.openIssues), icon: <CircleDot size={16} className="text-emerald-500" /> },
-                ].map((s) => (
-                  <div key={s.label} className="rounded-xl border border-gray-100 dark:border-gray-800 bg-gray-50 dark:bg-gray-800 p-3 text-center">
-                    <div className="flex items-center justify-center gap-1.5 mb-1">{s.icon}<span className="text-lg font-bold text-gray-900 dark:text-white">{s.value}</span></div>
-                    <p className="text-[10px] uppercase tracking-wider text-gray-400">{s.label}</p>
-                  </div>
-                ))}
-              </div>
-
-              {selectedRepo.techStack.length > 0 && (
-                <div className="mb-5">
-                  <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Tech Stack</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedRepo.techStack.map((t) => (
-                      <span key={t} className="rounded-lg bg-purple-50 dark:bg-purple-900/30 px-2.5 py-1 text-xs text-purple-700 dark:text-purple-400 ring-1 ring-purple-100 dark:ring-purple-700">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {selectedRepo.issueTypes.length > 0 && (
-                <div className="mb-5">
-                  <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Issue Labels</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {selectedRepo.issueTypes.map((t) => (
-                      <span key={t} className="rounded-lg bg-emerald-50 dark:bg-emerald-900/30 px-2.5 py-1 text-xs text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-100 dark:ring-emerald-700">
-                        {t}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {selectedRepo.highlights.length > 0 && (
-                <div className="mb-6">
-                  <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Why Contribute?</h4>
-                  <ul className="space-y-1.5">
-                    {selectedRepo.highlights.map((h, i) => (
-                      <li key={i} className="flex items-start gap-2 text-sm text-gray-600">
-                        <Sparkles size={14} className="mt-0.5 shrink-0 text-purple-500" />
-                        {h}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              )}
-
-              <div className="mb-6">
-                <h4 className="mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">Tags</h4>
-                <div className="flex flex-wrap gap-2">
-                  {selectedRepo.tags.map((tag) => (
-                    <span key={tag} className="rounded-md bg-gray-50 dark:bg-gray-800 px-2.5 py-1 text-xs text-gray-500">
-                      #{tag}
-                    </span>
+                {/* Stats */}
+                <div className="grid grid-cols-3 gap-3">
+                  {[
+                    { label: "Stars", value: formatCount(selectedRepo.stars), icon: <Star size={16} className="text-amber-500" /> },
+                    { label: "Forks", value: formatCount(selectedRepo.forks), icon: <GitFork size={16} className="text-cyan-500" /> },
+                    { label: "Open Issues", value: formatCount(selectedRepo.openIssues), icon: <CircleDot size={16} className="text-emerald-500" /> },
+                  ].map((s) => (
+                    <div key={s.label} className="rounded-xl bg-gray-50 dark:bg-gray-800 p-3 text-center">
+                      <div className="flex items-center justify-center gap-1.5 mb-1">{s.icon}<span className="text-lg font-bold text-gray-900 dark:text-white">{s.value}</span></div>
+                      <p className="text-[10px] uppercase tracking-wider text-gray-400">{s.label}</p>
+                    </div>
                   ))}
                 </div>
-              </div>
 
-              <a
-                href={selectedRepo.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex w-full items-center justify-center gap-2 rounded-xl bg-gray-950 dark:bg-white py-3 text-sm font-semibold text-white dark:text-gray-950 transition hover:bg-gray-800 dark:hover:bg-gray-200 no-underline"
-              >
-                <ExternalLink size={16} />
-                View on GitHub
-              </a>
+                {/* Tech Stack */}
+                {selectedRepo.techStack.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-1.5">
+                      <Code2 className="w-4 h-4 text-gray-400 dark:text-gray-500" />
+                      Tech Stack
+                    </h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedRepo.techStack.map((t) => (
+                        <span key={t} className="px-2.5 py-1 rounded-lg bg-purple-50 dark:bg-purple-900/30 text-xs text-purple-700 dark:text-purple-400 ring-1 ring-purple-100 dark:ring-purple-700">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Issue Labels */}
+                {selectedRepo.issueTypes.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Issue Labels</h3>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedRepo.issueTypes.map((t) => (
+                        <span key={t} className="px-2.5 py-1 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 text-xs text-emerald-700 dark:text-emerald-400 ring-1 ring-emerald-100 dark:ring-emerald-700">
+                          {t}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Highlights */}
+                {selectedRepo.highlights.length > 0 && (
+                  <div>
+                    <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-1.5">
+                      <Sparkles className="w-4 h-4 text-purple-500" />
+                      Why Contribute?
+                    </h3>
+                    <div className="space-y-2">
+                      {selectedRepo.highlights.map((h, i) => (
+                        <div key={i} className="flex items-start gap-2.5 text-sm text-gray-600 dark:text-gray-400">
+                          <span className="w-1.5 h-1.5 rounded-full bg-purple-400 mt-1.5 shrink-0" />
+                          {h}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Tags */}
+                <div>
+                  <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2">Tags</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedRepo.tags.map((tag) => (
+                      <span key={tag} className="px-2.5 py-1 rounded-lg bg-gray-50 dark:bg-gray-800 border border-gray-100 dark:border-gray-700 text-xs font-medium text-gray-600 dark:text-gray-400">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* View on GitHub */}
+                <a
+                  href={selectedRepo.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center justify-center gap-2 w-full py-3.5 rounded-xl bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline"
+                >
+                  View on GitHub
+                  <ExternalLink className="w-4 h-4" />
+                </a>
+              </div>
             </motion.div>
           </motion.div>
         )}

@@ -112,7 +112,7 @@ export default function TalentSearchPage() {
       </button>
 
       <div className="flex gap-6">
-        {/* Sidebar — Desktop */}
+        {/* Sidebar - Desktop */}
         <div className="hidden lg:block w-72 flex-shrink-0">
           <FilterPanel
             filters={filters}
@@ -122,7 +122,7 @@ export default function TalentSearchPage() {
           />
         </div>
 
-        {/* Sidebar — Mobile overlay */}
+        {/* Sidebar - Mobile overlay */}
         <AnimatePresence>
           {sidebarOpen && (
             <>

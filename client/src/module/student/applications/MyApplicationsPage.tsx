@@ -76,7 +76,7 @@ export default function MyApplicationsPage() {
         />
       </div>
 
-      {/* Page Header — landing page style */}
+      {/* Page Header - landing page style */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -91,7 +91,7 @@ export default function MyApplicationsPage() {
         </p>
       </motion.div>
 
-      {/* Stats Row — landing page style with icon boxes */}
+      {/* Stats Row - landing page style with icon boxes */}
       {applications.length > 0 && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}

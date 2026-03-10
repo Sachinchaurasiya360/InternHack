@@ -43,7 +43,7 @@ export default function CompactTemplate({ data }: { data: ResumeData }) {
                   <span className="text-gray-600">{exp.company}</span>
                 </span>
                 <span className="text-[8px] text-gray-400 shrink-0 ml-2">
-                  {exp.startDate} — {exp.current ? "Present" : exp.endDate}
+                  {exp.startDate} - {exp.current ? "Present" : exp.endDate}
                 </span>
               </div>
               {exp.description && (
@@ -85,7 +85,7 @@ export default function CompactTemplate({ data }: { data: ResumeData }) {
               <div key={cert.id} className="mb-1">
                 <p className="text-gray-700 text-[9px]">
                   <span className="font-bold">{cert.name}</span>
-                  {cert.issuer ? ` — ${cert.issuer}` : ""}
+                  {cert.issuer ? ` - ${cert.issuer}` : ""}
                   {cert.date ? ` (${cert.date})` : ""}
                 </p>
               </div>

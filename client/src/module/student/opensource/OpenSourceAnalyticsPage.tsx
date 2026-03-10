@@ -5,11 +5,11 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft,
   BarChart3,
-  Loader2,
   AlertCircle,
   Filter,
   X,
 } from "lucide-react";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import {
   PieChart,
   Pie,
@@ -254,8 +254,8 @@ export default function OpenSourceAnalyticsPage() {
   // ─── Loading / Error ────────────────────────────────────────
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <Loader2 className="w-8 h-8 text-indigo-500 animate-spin" />
+      <div className="min-h-screen bg-gray-50">
+        <LoadingScreen />
       </div>
     );
   }
@@ -338,7 +338,7 @@ export default function OpenSourceAnalyticsPage() {
       {orgs.length > 0 && (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-2 gap-6">
 
-          {/* 1 — Category Distribution (Pie) */}
+          {/* 1 - Category Distribution (Pie) */}
           <ChartCard title="Category Distribution" subtitle="Organizations grouped by category" index={0}>
             <ResponsiveContainer width="100%" height={300}>
               <PieChart>
@@ -351,7 +351,7 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 2 — Year-wise Participation Trend (Line) */}
+          {/* 2 - Year-wise Participation Trend (Line) */}
           <ChartCard title="Year-wise Participation" subtitle="Number of organizations participating each year" index={1}>
             <ResponsiveContainer width="100%" height={300}>
               <LineChart data={yearTrendData}>
@@ -364,7 +364,7 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 3 — Top Technologies (Horizontal Bar) */}
+          {/* 3 - Top Technologies (Horizontal Bar) */}
           <ChartCard title="Top Technologies" subtitle="Most popular technologies across organizations" index={2}>
             <ResponsiveContainer width="100%" height={340}>
               <BarChart data={techData} layout="vertical" margin={{ left: 20 }}>
@@ -379,7 +379,7 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 4 — Top Topics */}
+          {/* 4 - Top Topics */}
           <ChartCard title="Top Topics" subtitle="Most common topics across organizations" index={3}>
             <ResponsiveContainer width="100%" height={340}>
               <BarChart data={topicData} layout="vertical" margin={{ left: 20 }}>
@@ -394,7 +394,7 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 5 — Top Orgs by Projects */}
+          {/* 5 - Top Orgs by Projects */}
           <ChartCard title="Top Organizations by Projects" subtitle="Organizations with the most GSoC projects" index={4}>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={topProjectsData} margin={{ left: 10 }}>
@@ -409,7 +409,7 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 6 — Years Active Distribution */}
+          {/* 6 - Years Active Distribution */}
           <ChartCard title="Longevity Distribution" subtitle="How many years organizations have been in GSoC" index={5}>
             <ResponsiveContainer width="100%" height={300}>
               <BarChart data={yearCountData}>
@@ -422,7 +422,7 @@ export default function OpenSourceAnalyticsPage() {
             </ResponsiveContainer>
           </ChartCard>
 
-          {/* 7 — Org Comparison Radar */}
+          {/* 7 - Org Comparison Radar */}
           <ChartCard title="Organization Comparison" subtitle="Select 2-4 organizations to compare" index={6} className="lg:col-span-2">
             <div className="flex flex-wrap gap-1.5 mb-4 max-h-24 overflow-y-auto">
               {orgs.slice(0, 60).map((o) => (

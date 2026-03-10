@@ -3,6 +3,7 @@ import type { CoverLetterService } from "./cover-letter.service.js";
 import { generateCoverLetterSchema } from "./cover-letter.validation.js";
 import type { UserProfile } from "./cover-letter.validation.js";
 import { prisma } from "../../database/db.js";
+import type { UsageAction } from "@prisma/client";
 
 export class CoverLetterController {
   constructor(private readonly coverLetterService: CoverLetterService) {}
@@ -56,7 +57,14 @@ export class CoverLetterController {
       }
 
       const coverLetter = await this.coverLetterService.generate(result.data, profile);
-      res.json({ message: "Cover letter generated successfully", coverLetter });
+
+      await prisma.usageLog.create({ data: { userId: req.user.id, action: "COVER_LETTER" as UsageAction } });
+
+      const usage = req.usageInfo
+        ? { used: req.usageInfo.used + 1, limit: req.usageInfo.limit }
+        : undefined;
+
+      res.json({ message: "Cover letter generated successfully", coverLetter, usage });
     } catch (err) {
       next(err);
     }

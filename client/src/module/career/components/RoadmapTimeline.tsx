@@ -16,9 +16,9 @@ import {
   Shuffle,
   Rocket,
   Clock,
-  GraduationCap,
   ShieldCheck,
   ClipboardList,
+  Github,
 } from "lucide-react";
 import { Link } from "react-router";
 import type { CareerPhase, CareerSkill } from "../../../lib/types";
@@ -26,19 +26,9 @@ import { getTopicsForSkill } from "./skillTopics";
 import { getProjectsForSkill } from "./skillProjects";
 import { getQuestionsForSkill, shuffleArray } from "./skillQuestions";
 
-const CORE_SUBJECTS = [
-  { key: "dbms", label: "DBMS", icon: "🗄️" },
-  { key: "computer network", label: "Computer Networks", icon: "🌐" },
-  { key: "computer fundamental", label: "Computer Fundamentals", icon: "💻" },
-  { key: "operating system", label: "Operating Systems", icon: "⚙️" },
-  { key: "hld", label: "High-Level Design (HLD)", icon: "🏗️" },
-  { key: "lld", label: "Low-Level Design (LLD)", icon: "🔧" },
-  { key: "aptitude", label: "Aptitude", icon: "🧮" },
-];
-
 const RESOURCE_ICONS: Record<string, React.ReactNode> = {
   ARTICLE: <FileText className="w-4 h-4" />,
-  VIDEO: <Video className="w-4 h-4" />,
+  VIDEO: <BookOpen className="w-4 h-4" />,
   COURSE: <BookOpen className="w-4 h-4" />,
   BOOK: <BookOpen className="w-4 h-4" />,
   DOCUMENTATION: <FileText className="w-4 h-4" />,
@@ -241,8 +231,6 @@ export default function RoadmapTimeline({ phases, interactive = false, onToggleS
         );
       })}
 
-      {/* ── Core Subject Interview Preparation ─────────────────────────── */}
-      <CoreSubjectSection />
     </div>
   );
 }
@@ -351,7 +339,7 @@ function SkillItem({
           </span>
         )}
 
-        {/* Skill name — click to expand */}
+        {/* Skill name - click to expand */}
         <button
           onClick={() => hasContent && setExpanded((o) => !o)}
           disabled={!hasContent}
@@ -491,7 +479,7 @@ function SkillItem({
                             {topic}
                           </span>
                           <a
-                            href={getResourceUrl(topic.split("—")[0].trim())}
+                            href={getResourceUrl(topic.split("-")[0].trim())}
                             target="_blank"
                             rel="noopener noreferrer"
                             onClick={(e) => e.stopPropagation()}
@@ -542,6 +530,18 @@ function SkillItem({
                         </span>
                       </div>
                       <p className="text-sm text-gray-500 leading-relaxed">{project.description}</p>
+                      {project.githubUrl && (
+                        <a
+                          href={project.githubUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          onClick={(e) => e.stopPropagation()}
+                          className="inline-flex items-center gap-1.5 mt-3 text-xs font-medium text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white no-underline px-3 py-1.5 rounded-lg border border-gray-200 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors"
+                        >
+                          <Github className="w-3.5 h-3.5" />
+                          View on GitHub
+                        </a>
+                      )}
                     </div>
                   ))}
                 </div>
@@ -613,240 +613,3 @@ function SkillItem({
   );
 }
 
-// ── Core Subject Interview Preparation ──────────────────────────────────────
-
-function CoreSubjectSection() {
-  const [expanded, setExpanded] = useState(false);
-  const [activeSubject, setActiveSubject] = useState(CORE_SUBJECTS[0].key);
-
-  return (
-    <div>
-      <button
-        onClick={() => setExpanded((o) => !o)}
-        className="w-full flex items-center justify-between gap-4 px-5 py-4 rounded-2xl bg-linear-to-r from-indigo-50 to-violet-50 dark:from-indigo-900/30 dark:to-violet-900/30 hover:from-indigo-100 hover:to-violet-100 dark:hover:from-indigo-900/50 dark:hover:to-violet-900/50 transition-colors group border border-indigo-100 dark:border-indigo-800"
-      >
-        <div className="flex items-center gap-4 min-w-0">
-          <span className="w-9 h-9 rounded-xl bg-indigo-500 text-white flex items-center justify-center shrink-0">
-            <GraduationCap className="w-5 h-5" />
-          </span>
-          <div className="text-left min-w-0">
-            <h3 className="text-base font-semibold text-gray-900 dark:text-white">Core Subject Interview Preparation</h3>
-            <span className="text-xs text-gray-500 mt-0.5 block">DBMS, Computer Networks, OS, HLD, LLD, Aptitude & more</span>
-          </div>
-        </div>
-        <div className="shrink-0">
-          {expanded
-            ? <ChevronDown className="w-5 h-5 text-indigo-400" />
-            : <ChevronRight className="w-5 h-5 text-indigo-400" />
-          }
-        </div>
-      </button>
-
-      <AnimatePresence>
-        {expanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: "auto", opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden"
-          >
-            <div className="mt-3 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl overflow-hidden shadow-sm">
-              {/* Subject Tabs */}
-              <div className="flex flex-wrap gap-2 px-5 pt-5 pb-3">
-                {CORE_SUBJECTS.map((sub) => (
-                  <button
-                    key={sub.key}
-                    onClick={() => setActiveSubject(sub.key)}
-                    className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium transition-all ${
-                      activeSubject === sub.key
-                        ? "bg-indigo-500 text-white shadow-sm"
-                        : "bg-gray-50 dark:bg-gray-800 text-gray-600 dark:text-gray-400 border border-gray-100 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
-                    }`}
-                  >
-                    <span>{sub.icon}</span>
-                    {sub.label}
-                  </button>
-                ))}
-              </div>
-
-              {/* Active Subject Content */}
-              {CORE_SUBJECTS.map((sub) =>
-                activeSubject === sub.key ? (
-                  <CoreSubjectContent key={sub.key} subjectKey={sub.key} label={sub.label} />
-                ) : null
-              )}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </div>
-  );
-}
-
-function CoreSubjectContent({ subjectKey, label }: { subjectKey: string; label: string }) {
-  const topics = getTopicsForSkill(subjectKey);
-  const projects = getProjectsForSkill(subjectKey);
-  const allQuestions = getQuestionsForSkill(subjectKey);
-  const [activeTab, setActiveTab] = useState<"topics" | "projects" | "interview">("interview");
-  const [questions, setQuestions] = useState(() => shuffleArray(allQuestions).slice(0, 5));
-  const [revealedAnswers, setRevealedAnswers] = useState<Set<number>>(new Set());
-
-  const reshuffleQuestions = () => {
-    setQuestions(shuffleArray(allQuestions).slice(0, 5));
-    setRevealedAnswers(new Set());
-  };
-
-  const toggleAnswer = (idx: number) => {
-    setRevealedAnswers((prev) => {
-      const next = new Set(prev);
-      if (next.has(idx)) next.delete(idx); else next.add(idx);
-      return next;
-    });
-  };
-
-  return (
-    <div className="border-t border-gray-100 dark:border-gray-800">
-      {/* Tabs */}
-      <div className="flex border-b border-gray-100 dark:border-gray-700">
-        {topics.length > 0 && (
-          <button
-            onClick={() => setActiveTab("topics")}
-            className={`flex items-center gap-1.5 px-5 py-3 text-sm font-medium transition-colors ${
-              activeTab === "topics"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-500 bg-white dark:bg-gray-900"
-                : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-            }`}
-          >
-            <BookOpen className="w-3.5 h-3.5" />
-            Topics ({topics.length})
-          </button>
-        )}
-        {projects.length > 0 && (
-          <button
-            onClick={() => setActiveTab("projects")}
-            className={`flex items-center gap-1.5 px-5 py-3 text-sm font-medium transition-colors ${
-              activeTab === "projects"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-500 bg-white dark:bg-gray-900"
-                : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-            }`}
-          >
-            <Rocket className="w-3.5 h-3.5" />
-            Projects ({projects.length})
-          </button>
-        )}
-        {allQuestions.length > 0 && (
-          <button
-            onClick={() => setActiveTab("interview")}
-            className={`flex items-center gap-1.5 px-5 py-3 text-sm font-medium transition-colors ${
-              activeTab === "interview"
-                ? "text-indigo-600 dark:text-indigo-400 border-b-2 border-indigo-500 bg-white dark:bg-gray-900"
-                : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
-            }`}
-          >
-            <HelpCircle className="w-3.5 h-3.5" />
-            Interview Prep ({allQuestions.length})
-          </button>
-        )}
-      </div>
-
-      {/* Topics Tab */}
-      {activeTab === "topics" && topics.length > 0 && (
-        <div className="divide-y divide-gray-100/80 dark:divide-gray-700/80">
-          {topics.map((topic, i) => (
-            <div key={i} className="flex items-center gap-4 px-5 py-3.5">
-              <span className="w-5 h-5 rounded-md border-2 border-gray-300 dark:border-gray-600 flex items-center justify-center shrink-0" />
-              <span className="flex-1 text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{topic}</span>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Projects Tab */}
-      {activeTab === "projects" && projects.length > 0 && (
-        <div className="p-5 space-y-3">
-          <div className="flex items-center gap-2 mb-1">
-            <Lightbulb className="w-4 h-4 text-amber-500" />
-            <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">Practice Projects</span>
-          </div>
-          {projects.map((project, i) => (
-            <div key={i} className="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4">
-              <div className="flex items-start justify-between gap-3 mb-2">
-                <h5 className="text-sm font-semibold text-gray-900 dark:text-white">{project.title}</h5>
-                <span className={`text-xs font-medium px-2.5 py-1 rounded-lg border shrink-0 ${
-                  project.difficulty === "Easy"
-                    ? "bg-green-50 text-green-600 border-green-100 dark:bg-green-900/30 dark:text-green-400 dark:border-green-800"
-                    : project.difficulty === "Medium"
-                    ? "bg-amber-50 text-amber-600 border-amber-100 dark:bg-amber-900/30 dark:text-amber-400 dark:border-amber-800"
-                    : "bg-red-50 text-red-600 border-red-100 dark:bg-red-900/30 dark:text-red-400 dark:border-red-800"
-                }`}>
-                  {project.difficulty}
-                </span>
-              </div>
-              <p className="text-sm text-gray-500 leading-relaxed">{project.description}</p>
-            </div>
-          ))}
-        </div>
-      )}
-
-      {/* Interview Prep Tab */}
-      {activeTab === "interview" && allQuestions.length > 0 && (
-        <div className="p-5 space-y-3">
-          <div className="flex items-center justify-between mb-1">
-            <div className="flex items-center gap-2">
-              <HelpCircle className="w-4 h-4 text-indigo-500" />
-              <span className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{label} Interview Questions</span>
-            </div>
-            <button
-              onClick={reshuffleQuestions}
-              className="flex items-center gap-1.5 text-xs font-medium text-indigo-500 hover:text-indigo-700 dark:hover:text-indigo-400 transition-colors"
-            >
-              <Shuffle className="w-3.5 h-3.5" />
-              Shuffle
-            </button>
-          </div>
-          {questions.map((q, i) => (
-            <div key={`${q.question}-${i}`} className="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 p-4">
-              <div className="flex items-start justify-between gap-3">
-                <p className="text-sm font-medium text-gray-900 dark:text-white leading-relaxed flex-1">
-                  <span className="text-indigo-500 font-semibold mr-1.5">Q{i + 1}.</span>
-                  {q.question}
-                </p>
-                <button
-                  onClick={() => toggleAnswer(i)}
-                  className="shrink-0 flex items-center gap-1 text-xs font-medium text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 transition-colors mt-0.5"
-                >
-                  {revealedAnswers.has(i) ? (
-                    <><EyeOff className="w-3.5 h-3.5" /> Hide</>
-                  ) : (
-                    <><Eye className="w-3.5 h-3.5" /> Show</>
-                  )}
-                </button>
-              </div>
-              <AnimatePresence>
-                {revealedAnswers.has(i) && (
-                  <motion.div
-                    initial={{ height: 0, opacity: 0 }}
-                    animate={{ height: "auto", opacity: 1 }}
-                    exit={{ height: 0, opacity: 0 }}
-                    transition={{ duration: 0.15 }}
-                    className="overflow-hidden"
-                  >
-                    <p className="text-sm text-gray-500 leading-relaxed mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
-                      {q.answer}
-                    </p>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
-          ))}
-          {allQuestions.length > 5 && (
-            <p className="text-xs text-gray-400 dark:text-gray-500 text-center pt-1">
-              Showing 5 of {allQuestions.length} questions. Click shuffle for new ones.
-            </p>
-          )}
-        </div>
-      )}
-    </div>
-  );
-}

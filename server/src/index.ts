@@ -25,6 +25,7 @@ import { gsocRouter } from "./module/gsoc/gsoc.routes.js";
 import { ycRouter } from "./module/yc/yc.routes.js";
 import { dsaRouter } from "./module/dsa/dsa.routes.js";
 import { aptitudeRouter } from "./module/aptitude/aptitude.routes.js";
+import { sqlRouter } from "./module/sql/sql.routes.js";
 import { latexRouter } from "./module/latex/latex.routes.js";
 import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
@@ -74,13 +75,6 @@ const authLimiter = rateLimit({
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
 
-const atsLimiter = rateLimit({
-  windowMs: 60 * 60 * 1000,
-  max: 10,
-  message: { message: "ATS scoring limit reached. Try again later." },
-});
-app.use("/api/ats/score", atsLimiter);
-
 const latexLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   max: 20,
@@ -108,6 +102,7 @@ app.use("/api/gsoc", gsocRouter);
 app.use("/api/yc", ycRouter);
 app.use("/api/dsa", dsaRouter);
 app.use("/api/aptitude", aptitudeRouter);
+app.use("/api/sql", sqlRouter);
 app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
 

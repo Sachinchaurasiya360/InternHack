@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { MessageSquare, Check, X, Loader2, Star } from "lucide-react";
+import { MessageSquare, Check, X, Star } from "lucide-react";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "react-hot-toast";
 import api from "../../../lib/axios";
 import type { CompanyReview, Pagination } from "../../../lib/types";
@@ -59,9 +60,7 @@ export default function AdminReviewsPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center h-64 text-gray-400">
-          <Loader2 className="w-6 h-6 animate-spin" />
-        </div>
+        <LoadingScreen compact />
       ) : reviews.length === 0 ? (
         <div className="text-center text-gray-500 py-20">No {statusFilter.toLowerCase()} reviews</div>
       ) : (

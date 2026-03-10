@@ -8,7 +8,7 @@ export default function PublicAtsPage() {
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <SEO
         title="ATS Resume Score"
-        description="Score your resume with AI-powered ATS analysis. Get detailed feedback on formatting, keywords, experience, skills, education, and impact — completely free."
+        description="Score your resume with AI-powered ATS analysis. Get detailed feedback on formatting, keywords, experience, skills, education, and impact - completely free."
         keywords="ATS score, resume checker, AI resume analysis, ATS resume score, resume optimization, resume keywords, applicant tracking system"
       />
       <Navbar />

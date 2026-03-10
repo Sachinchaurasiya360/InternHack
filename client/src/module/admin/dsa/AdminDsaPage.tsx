@@ -1,5 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
 import { Code2, Plus, Pencil, Trash2, ChevronDown, ChevronRight, Save, X, Loader2 } from "lucide-react";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 
 interface Problem {
@@ -365,9 +366,7 @@ export default function AdminDsaPage() {
       </div>
 
       {loading ? (
-        <div className="flex items-center justify-center py-20">
-          <Loader2 className="w-8 h-8 text-indigo-400 animate-spin" />
-        </div>
+        <LoadingScreen compact />
       ) : (
         <div className="bg-gray-900 rounded-xl border border-gray-800 overflow-hidden">
           <table className="w-full">

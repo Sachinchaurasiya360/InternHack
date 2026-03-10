@@ -44,7 +44,7 @@ const features = [
   {
     title: "Multi-Round Hiring Pipeline",
     description:
-      "Design custom hiring stages — screening, coding tests, interviews, offers. Each round supports custom fields and instructions.",
+      "Design custom hiring stages - screening, coding tests, interviews, offers. Each round supports custom fields and instructions.",
     icon: ClipboardList,
     iconColor: "text-violet-500",
   },
@@ -93,7 +93,7 @@ export default function RecruiterLandingPage() {
     <div className="font-sans bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
       <SEO
         title="For Recruiters"
-        description="Post jobs, design multi-round hiring pipelines, review applications, and hire top student talent — all from one recruiter dashboard on InternHack."
+        description="Post jobs, design multi-round hiring pipelines, review applications, and hire top student talent - all from one recruiter dashboard on InternHack."
         keywords="recruiter dashboard, post jobs, hire students, hiring pipeline, application management, campus recruitment, talent search"
       />
       <Navbar />
@@ -138,7 +138,7 @@ export default function RecruiterLandingPage() {
             className="text-lg sm:text-xl text-gray-500 dark:text-gray-500 max-w-2xl mx-auto mb-10 leading-relaxed"
           >
             Post jobs, design multi-round hiring pipelines, review applications,
-            and connect with top student talent — all from one dashboard.
+            and connect with top student talent - all from one dashboard.
           </motion.p>
 
           <motion.div
@@ -227,7 +227,7 @@ export default function RecruiterLandingPage() {
               <span className="text-gradient-accent">to hire great talent</span>
             </h2>
             <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-              From job posting to offer letter — one platform, zero friction.
+              From job posting to offer letter - one platform, zero friction.
             </p>
           </motion.div>
 

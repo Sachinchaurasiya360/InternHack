@@ -1,5 +1,6 @@
 import { prisma } from "../../database/db.js";
 import type { Prisma } from "@prisma/client";
+import type { PlanTier } from "../../config/usage-limits.js";
 import DOMPurify from "isomorphic-dompurify";
 
 const sanitize = (s: string) => DOMPurify.sanitize(s, { ALLOWED_TAGS: [] });
@@ -51,7 +52,7 @@ interface AddContactInput {
 }
 
 export class CompanyService {
-  async listCompanies(params: ListCompaniesParams) {
+  async listCompanies(params: ListCompaniesParams, tier: PlanTier = "FREE") {
     const page = Math.max(1, parseInt(params.page || "1", 10));
     const limit = Math.min(50, Math.max(1, parseInt(params.limit || "12", 10)));
     const skip = (page - 1) * limit;
@@ -84,12 +85,17 @@ export class CompanyService {
       ];
     }
 
+    // Free/unauthenticated users: cap at 20 when filtering by city
+    const isCityLimited = !!params.city && tier === "FREE";
+    const effectiveLimit = isCityLimited ? Math.min(limit, 20) : limit;
+    const effectiveSkip = isCityLimited ? Math.min(skip, 20) : skip;
+
     const [companies, total] = await Promise.all([
       prisma.company.findMany({
         where,
         orderBy: { avgRating: "desc" },
-        skip,
-        take: limit,
+        skip: isCityLimited && effectiveSkip >= 20 ? 20 : effectiveSkip,
+        take: isCityLimited ? Math.max(0, 20 - effectiveSkip) : effectiveLimit,
         select: {
           id: true,
           name: true,
@@ -113,10 +119,12 @@ export class CompanyService {
       companies,
       pagination: {
         page,
-        limit,
-        total,
-        totalPages: Math.ceil(total / limit),
+        limit: effectiveLimit,
+        total: isCityLimited ? Math.min(total, 20) : total,
+        totalPages: isCityLimited ? Math.ceil(Math.min(total, 20) / effectiveLimit) : Math.ceil(total / limit),
       },
+      limited: isCityLimited && total > 20,
+      totalUnlimited: isCityLimited && total > 20 ? total : undefined,
     };
   }
 

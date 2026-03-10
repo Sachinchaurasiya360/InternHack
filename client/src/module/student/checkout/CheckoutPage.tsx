@@ -144,7 +144,7 @@ const HOW_IT_WORKS = [
   {
     step: "2",
     title: "Pay securely via Razorpay",
-    desc: "UPI, cards, net banking — all options supported.",
+    desc: "UPI, cards, net banking - all options supported.",
   },
   {
     step: "3",
@@ -157,7 +157,7 @@ const HOW_IT_WORKS = [
 export default function CheckoutPage() {
   const { user, setUser } = useAuthStore();
 
-  // Redirect premium users — they already have an active subscription
+  // Redirect premium users - they already have an active subscription
   if (user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE") {
     return <Navigate to="/student/profile" replace />;
   }
@@ -192,7 +192,7 @@ export default function CheckoutPage() {
         amount: data.amount,
         currency: data.currency,
         name: "InternHack",
-        description: `${planKey.charAt(0).toUpperCase() + planKey.slice(1)} Plan — ${billing}`,
+        description: `${planKey.charAt(0).toUpperCase() + planKey.slice(1)} Plan - ${billing}`,
         order_id: data.orderId,
         prefill: {
           name: user?.name || "",

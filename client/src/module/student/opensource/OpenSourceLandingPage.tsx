@@ -27,13 +27,13 @@ const features = [
   {
     icon: <BookOpen className="w-5 h-5" />,
     title: "Open Source Guidance",
-    description: "Step-by-step guides to help you understand open-source contribution workflows — from forking a repo to creating pull requests.",
+    description: "Step-by-step guides to help you understand open-source contribution workflows - from forking a repo to creating pull requests.",
     gradient: "from-purple-500 to-purple-600",
   },
   {
     icon: <Code2 className="w-5 h-5" />,
     title: "Curated Repository Discovery",
-    description: "Explore hand-picked repositories tagged by difficulty, language, and domain — find beginner-friendly projects in seconds.",
+    description: "Explore hand-picked repositories tagged by difficulty, language, and domain - find beginner-friendly projects in seconds.",
     gradient: "from-blue-500 to-blue-600",
   },
   {
@@ -51,7 +51,7 @@ const features = [
   {
     icon: <GitPullRequest className="w-5 h-5" />,
     title: "First PR Roadmap",
-    description: "Follow our guided checklist to land your first pull request — pick an issue, set up locally, submit, and get merged.",
+    description: "Follow our guided checklist to land your first pull request - pick an issue, set up locally, submit, and get merged.",
     gradient: "from-pink-500 to-pink-600",
   },
   {
@@ -126,7 +126,7 @@ const steps = [
     step: "03",
     icon: <GitPullRequest className="w-5 h-5" />,
     title: "Make Your First PR",
-    description: "Fork, clone, branch, commit, and push — follow our step-by-step checklist and submit your first pull request.",
+    description: "Fork, clone, branch, commit, and push - follow our step-by-step checklist and submit your first pull request.",
   },
 ];
 
@@ -264,7 +264,7 @@ export default function OpenSourceLandingPage() {
             transition={{ delay: 0.3 }}
             className="text-gray-500 text-lg md:text-xl max-w-2xl mb-10 leading-relaxed"
           >
-            Your complete guide to open-source — find beginner-friendly repositories, track GSoC orgs, discover programs like LFX and Outreachy, and make your first pull request with confidence.
+            Your complete guide to open-source - find beginner-friendly repositories, track GSoC orgs, discover programs like LFX and Outreachy, and make your first pull request with confidence.
           </motion.p>
 
           <motion.div
@@ -278,7 +278,7 @@ export default function OpenSourceLandingPage() {
               className="inline-flex items-center gap-2 px-8 py-4 bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-semibold rounded-2xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-lg shadow-black/10 text-base"
             >
               <Rocket className="w-5 h-5" />
-              {isAuthenticated ? "Explore Repos" : "Get Started — It's Free"}
+              {isAuthenticated ? "Explore Repos" : "Get Started - It's Free"}
             </button>
             <Link
               to={isAuthenticated ? "/student/opensource" : "/register"}
@@ -339,7 +339,7 @@ export default function OpenSourceLandingPage() {
               <span className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">start contributing</span>
             </h2>
             <p className="text-lg text-gray-500 max-w-xl mx-auto">
-              From zero knowledge to merged pull requests — we've got every step covered.
+              From zero knowledge to merged pull requests - we've got every step covered.
             </p>
           </motion.div>
 
@@ -564,7 +564,7 @@ export default function OpenSourceLandingPage() {
                   whileTap={{ scale: 0.98 }}
                   className="px-8 py-4 bg-white text-gray-950 text-base font-semibold rounded-2xl hover:bg-gray-100 transition-all shadow-lg flex items-center gap-2 justify-center"
                 >
-                  {isAuthenticated ? "Explore Repositories" : "Get Started — It's Free"}
+                  {isAuthenticated ? "Explore Repositories" : "Get Started - It's Free"}
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
                 <Link to={isAuthenticated ? "/student/opensource" : "/register"} className="no-underline">

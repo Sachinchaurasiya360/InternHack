@@ -20,6 +20,7 @@ export const queryKeys = {
     all: ["ats"] as const,
     history: () => ["ats", "history"] as const,
     detail: (id: string | number) => ["ats", "detail", id] as const,
+    usage: () => ["ats", "usage"] as const,
   },
 
   // Companies
@@ -124,6 +125,11 @@ export const queryKeys = {
     myVerified: () => ["skill-tests", "my-verified"] as const,
     studentVerified: (studentId: number) =>
       ["skill-tests", "student-verified", studentId] as const,
+  },
+
+  // SQL Practice
+  sql: {
+    progress: () => ["sql", "progress"] as const,
   },
 
   // DSA Practice

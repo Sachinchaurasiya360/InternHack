@@ -207,7 +207,7 @@ export default function DsaTopicDetailPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={`${topic.name} — DSA Practice`} noIndex />
+      <SEO title={`${topic.name} - DSA Practice`} noIndex />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

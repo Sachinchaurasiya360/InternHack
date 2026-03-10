@@ -45,7 +45,7 @@ export default function ClassicTemplate({ data }: { data: ResumeData }) {
               <div className="flex justify-between items-baseline">
                 <h3 className="font-bold text-gray-900">{exp.title}</h3>
                 <span className="text-[10px] text-gray-500 shrink-0 ml-2">
-                  {exp.startDate} — {exp.current ? "Present" : exp.endDate}
+                  {exp.startDate} - {exp.current ? "Present" : exp.endDate}
                 </span>
               </div>
               <p className="text-gray-600 italic text-[10px]">{exp.company}</p>
@@ -74,11 +74,11 @@ export default function ClassicTemplate({ data }: { data: ResumeData }) {
                   {edu.degree}{edu.field ? ` in ${edu.field}` : ""}
                 </h3>
                 <span className="text-[10px] text-gray-500 shrink-0 ml-2">
-                  {edu.startDate} — {edu.endDate}
+                  {edu.startDate} - {edu.endDate}
                 </span>
               </div>
               <p className="text-gray-600 text-[10px]">
-                {edu.institution}{edu.gpa ? ` — GPA: ${edu.gpa}` : ""}
+                {edu.institution}{edu.gpa ? ` - GPA: ${edu.gpa}` : ""}
               </p>
             </div>
           ))}
@@ -126,7 +126,7 @@ export default function ClassicTemplate({ data }: { data: ResumeData }) {
             <div key={cert.id} className="flex justify-between items-baseline mb-1">
               <span className="text-gray-700">
                 <span className="font-bold">{cert.name}</span>
-                {cert.issuer ? ` — ${cert.issuer}` : ""}
+                {cert.issuer ? ` - ${cert.issuer}` : ""}
               </span>
               {cert.date && <span className="text-[10px] text-gray-500">{cert.date}</span>}
             </div>

@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Upload,
@@ -27,7 +28,8 @@ import {
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
-import type { AtsScore } from "../../../lib/types";
+import { queryKeys } from "../../../lib/query-keys";
+import type { AtsScore, UsageStats } from "../../../lib/types";
 
 const CATEGORY_LABELS: Record<string, string> = {
   formatting: "Formatting",
@@ -156,6 +158,7 @@ function ScoreCircle({
 
 // ── Main Page ──────────────────────────────────────────────────────────────
 export default function AtsScorePage() {
+  const queryClient = useQueryClient();
   const [file, setFile] = useState<File | null>(null);
   const [resumeUrl, setResumeUrl] = useState("");
   const [jobTitle, setJobTitle] = useState("");
@@ -166,6 +169,16 @@ export default function AtsScorePage() {
   const [error, setError] = useState("");
   const [isDragging, setIsDragging] = useState(false);
   const [activeTab, setActiveTab] = useState<ResultTab>("suggestions");
+
+  const { data: usageData } = useQuery<UsageStats>({
+    queryKey: queryKeys.ats.usage(),
+    queryFn: () => api.get("/ats/usage").then((r) => r.data),
+    staleTime: 60_000,
+    refetchOnWindowFocus: true,
+  });
+
+  const atsUsage = usageData?.usage.find((u) => u.action === "ATS_SCORE");
+  const limitReached = atsUsage ? atsUsage.used >= atsUsage.limit : false;
 
   const [currentStep, setCurrentStep] = useState(-1);
   const [analysisComplete, setAnalysisComplete] = useState(false);
@@ -253,6 +266,7 @@ export default function AtsScorePage() {
       if (jobDescription.trim()) body["jobDescription"] = jobDescription.trim();
       const res = await api.post("/ats/score", body);
       setResult(res.data.score);
+      queryClient.invalidateQueries({ queryKey: queryKeys.ats.usage() });
     } catch (err: unknown) {
       const msg =
         (err as { response?: { data?: { message?: string } } })?.response?.data
@@ -306,7 +320,7 @@ export default function AtsScorePage() {
     <div className="relative max-w-6xl mx-auto pb-12">
       <SEO
         title="Resume"
-        description="Your resume toolkit — ATS scoring, resume builder, LaTeX editor, and cover letter generator."
+        description="Your resume toolkit - ATS scoring, resume builder, LaTeX editor, and cover letter generator."
         noIndex
       />
 
@@ -323,7 +337,7 @@ export default function AtsScorePage() {
         />
       </div>
 
-      {/* Page Header — landing page style */}
+      {/* Page Header - landing page style */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -505,15 +519,28 @@ export default function AtsScorePage() {
                     </div>
                   )}
 
+                  {atsUsage && (
+                    <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+                      <span>{atsUsage.used}/{atsUsage.limit} used today</span>
+                      {limitReached && (
+                        <Link to="/student/pricing" className="text-violet-600 dark:text-violet-400 font-medium no-underline hover:underline">
+                          Upgrade
+                        </Link>
+                      )}
+                    </div>
+                  )}
+
                   <button
                     onClick={handleAnalyze}
-                    disabled={loading || (!file && !resumeUrl)}
+                    disabled={loading || (!file && !resumeUrl) || limitReached}
                     className="w-full py-3.5 bg-gray-950 dark:bg-white text-white dark:text-gray-950 font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2 active:scale-[0.99]"
                   >
                     {loading ? (
                       <>
                         <Loader2 className="w-4 h-4 animate-spin" /> Analyzing...
                       </>
+                    ) : limitReached ? (
+                      "Daily limit reached"
                     ) : (
                       <>
                         <ScanSearch className="w-4 h-4" /> Analyze Resume
@@ -842,7 +869,7 @@ export default function AtsScorePage() {
                           {result.overallScore >= 70
                             ? "Great job! Your resume is well-optimized for ATS systems."
                             : result.overallScore >= 40
-                              ? "Decent start — a few tweaks can push your score much higher."
+                              ? "Decent start - a few tweaks can push your score much higher."
                               : "Your resume needs significant improvements for ATS compatibility."}
                         </p>
                         <div className="flex flex-wrap gap-1.5">

@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useRef } from "react";
-import { useParams, useNavigate, Link } from "react-router";
+import { useParams } from "react-router";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -22,7 +22,6 @@ import api from "../../../lib/axios";
 import toast from "react-hot-toast";
 import type { SkillTestWithQuestions, SkillTestSubmitResult } from "../../../lib/types";
 import { useProctoring } from "../../../hooks/useProctoring";
-import { useLayoutStore } from "../../../lib/layout.store";
 import ProctoringCamera from "../../../components/ProctoringCamera";
 import ProctorWarningOverlay from "./ProctorWarningOverlay";
 
@@ -67,8 +66,6 @@ function useCountdown(totalSeconds: number | null, onExpire: () => void) {
 /* ------------------------------------------------------------------ */
 export default function SkillTestPage() {
   const { testId } = useParams();
-  const navigate = useNavigate();
-  const setImmersive = useLayoutStore((s) => s.setImmersive);
 
   const [test, setTest] = useState<SkillTestWithQuestions | null>(null);
   const [loading, setLoading] = useState(true);
@@ -80,14 +77,24 @@ export default function SkillTestPage() {
   const [started, setStarted] = useState(false);
   const submittingRef = useRef(false);
 
-  /* ---- Immersive mode management --------------------------------- */
+  /* ---- Prevent closing tab during active test ---------------------- */
   useEffect(() => {
-    return () => setImmersive(false);
-  }, [setImmersive]);
+    if (!started || result) return;
+    const handleBeforeUnload = (e: BeforeUnloadEvent) => {
+      e.preventDefault();
+    };
+    window.addEventListener("beforeunload", handleBeforeUnload);
+    return () => window.removeEventListener("beforeunload", handleBeforeUnload);
+  }, [started, result]);
 
+  /* ---- Page title during test -------------------------------------- */
   useEffect(() => {
-    setImmersive(started && !result);
-  }, [started, result, setImmersive]);
+    const original = document.title;
+    if (started && !result) {
+      document.title = "Proctored Test In Progress";
+    }
+    return () => { document.title = original; };
+  }, [started, result]);
 
   /* ---- Proctoring hook ------------------------------------------- */
   const handleTerminate = useCallback(() => {
@@ -149,7 +156,7 @@ export default function SkillTestPage() {
         if (res.data.passed) {
           toast.success("Congratulations! You passed and your skill is now verified!");
         } else {
-          toast.error(`Score: ${res.data.score}% — you need ${test.passThreshold}% to pass.`);
+          toast.error(`Score: ${res.data.score}% - you need ${test.passThreshold}% to pass.`);
         }
 
         if (document.fullscreenElement) {
@@ -190,26 +197,32 @@ export default function SkillTestPage() {
   /* Loading --------------------------------------------------------- */
   if (loading) {
     return (
-      <div className="max-w-4xl mx-auto animate-pulse space-y-4">
-        <div className="h-8 bg-gray-100 dark:bg-gray-800 rounded-xl w-1/3" />
-        <div className="h-48 bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center">
+        <div className="max-w-4xl w-full px-6 animate-pulse space-y-4">
+          <div className="h-8 bg-gray-100 dark:bg-gray-800 rounded-xl w-1/3" />
+          <div className="h-48 bg-gray-100 dark:bg-gray-800 rounded-2xl" />
+        </div>
       </div>
     );
   }
 
+  const closeTab = () => window.close();
+
   if (error || !test) {
     return (
-      <div className="max-w-3xl mx-auto">
-        <Link
-          to="/student/skill-verification"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white mb-5 no-underline transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Skill Tests
-        </Link>
-        <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-10 text-center space-y-3">
-          <AlertTriangle className="w-10 h-10 text-amber-400 mx-auto" />
-          <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Test Not Available</h2>
-          <p className="text-sm text-gray-500 dark:text-gray-400">{error}</p>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
+        <div className="max-w-3xl mx-auto">
+          <button
+            onClick={closeTab}
+            className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white mb-5 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" /> Close
+          </button>
+          <div className="bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-10 text-center space-y-3">
+            <AlertTriangle className="w-10 h-10 text-amber-400 mx-auto" />
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Test Not Available</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">{error}</p>
+          </div>
         </div>
       </div>
     );
@@ -218,13 +231,8 @@ export default function SkillTestPage() {
   /* Pre-start screen ------------------------------------------------ */
   if (!started) {
     return (
-      <div className="max-w-3xl mx-auto">
-        <Link
-          to="/student/skill-verification"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white mb-5 no-underline transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Skill Tests
-        </Link>
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-6">
+      <div className="max-w-3xl w-full">
 
         <motion.div
           initial={{ opacity: 0, y: 16 }}
@@ -251,10 +259,10 @@ export default function SkillTestPage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {[
-              { label: "Questions", value: `${totalQuestions}`, icon: HelpCircle },
+              { label: "Questions", value: `${(test as any).questionsPerSession ?? totalQuestions} random`, icon: HelpCircle },
+              { label: "Question Pool", value: `${(test as any).totalPool ?? totalQuestions}`, icon: HelpCircle },
               { label: "Time Limit", value: `${Math.ceil(test.timeLimitSecs / 60)} min`, icon: Clock },
               { label: "Pass Score", value: `${test.passThreshold}%`, icon: CheckCircle2 },
-              { label: "Proctored", value: "Yes", icon: Eye },
             ].map((item) => (
               <div
                 key={item.label}
@@ -275,16 +283,18 @@ export default function SkillTestPage() {
             </div>
           )}
 
-          <div className="bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl p-4 space-y-2">
-            <h3 className="text-sm font-semibold text-amber-800 dark:text-amber-300 flex items-center gap-1.5">
-              <Shield className="w-4 h-4" /> Proctored Test Rules
+          <div className="bg-gray-50 dark:bg-gray-800/60 border border-gray-200 dark:border-gray-700 rounded-xl p-4 space-y-2">
+            <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200 flex items-center gap-1.5">
+              <Shield className="w-4 h-4 text-gray-500 dark:text-gray-400" /> Proctored Test Rules
             </h3>
-            <ul className="text-xs text-amber-700 dark:text-amber-400 space-y-1.5 list-disc list-inside">
+            <ul className="text-xs text-gray-600 dark:text-gray-400 space-y-1.5 list-disc list-inside">
               <li>The test will enter fullscreen mode</li>
               <li>Your camera will be active for face detection</li>
-              <li>DevTools, right-click, and copy/paste are disabled</li>
+              <li>DevTools, right-click, copy/paste, and screenshots are disabled</li>
               <li>3 tab switches will auto-submit your test</li>
               <li>Leaving fullscreen for 10+ seconds will auto-submit</li>
+              <li>Printing and text dragging are blocked</li>
+              <li>Closing the tab during the test is blocked</li>
               <li>Your proctor log and integrity score are visible to recruiters</li>
             </ul>
           </div>
@@ -298,6 +308,7 @@ export default function SkillTestPage() {
           </button>
         </motion.div>
       </div>
+      </div>
     );
   }
 
@@ -305,13 +316,8 @@ export default function SkillTestPage() {
   if (result) {
     const log = proctor.getProctorLog();
     return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-6">
       <div className="max-w-3xl mx-auto space-y-5">
-        <Link
-          to="/student/skill-verification"
-          className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white no-underline transition-colors"
-        >
-          <ArrowLeft className="w-4 h-4" /> Back to Skill Tests
-        </Link>
 
         {/* Score card */}
         <motion.div
@@ -337,7 +343,7 @@ export default function SkillTestPage() {
           </h2>
           <p className="text-sm text-gray-600 dark:text-gray-400 mt-1">
             {result.correctCount}/{result.totalQuestions} correct
-            {!result.passed && ` — Need ${test.passThreshold}% to pass`}
+            {!result.passed && ` - Need ${test.passThreshold}% to pass`}
           </p>
 
           {/* Proctor summary */}
@@ -421,12 +427,12 @@ export default function SkillTestPage() {
 
         {/* Actions */}
         <div className="flex gap-3 pt-2 pb-8">
-          <Link
-            to="/student/skill-verification"
-            className="flex-1 py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors no-underline"
+          <button
+            onClick={closeTab}
+            className="flex-1 py-3 text-center bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 text-sm font-semibold rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
           >
-            Back to Tests
-          </Link>
+            Close Tab
+          </button>
           {!result.passed && (
             <button
               onClick={() => {
@@ -442,11 +448,13 @@ export default function SkillTestPage() {
           )}
         </div>
       </div>
+      </div>
     );
   }
 
   /* Test in progress ------------------------------------------------ */
   return (
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4">
     <div className="max-w-4xl mx-auto">
       {/* Fullscreen warning overlay */}
       {proctor.state.showFullscreenWarning && (
@@ -518,7 +526,7 @@ export default function SkillTestPage() {
         </div>
       </div>
 
-      {/* Horizontal question navigator — at top */}
+      {/* Horizontal question navigator - at top */}
       <div className="flex flex-wrap gap-1.5 mb-5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl p-3">
         {questions.map((q, i) => (
           <button
@@ -624,6 +632,7 @@ export default function SkillTestPage() {
           )}
         </div>
       </div>
+    </div>
     </div>
   );
 }

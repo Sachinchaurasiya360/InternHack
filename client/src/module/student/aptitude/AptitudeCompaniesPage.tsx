@@ -140,7 +140,7 @@ export default function AptitudeCompaniesPage() {
 
     return (
       <div className="relative max-w-4xl mx-auto pb-12">
-        <SEO title={`${selectedCompany} — Aptitude`} noIndex />
+        <SEO title={`${selectedCompany} - Aptitude`} noIndex />
 
         {/* Atmospheric background */}
         <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -482,7 +482,7 @@ export default function AptitudeCompaniesPage() {
         </div>
       </motion.div>
 
-      {/* Companies list — full-width cards like categories page */}
+      {/* Companies list - full-width cards like categories page */}
       <div className="space-y-3">
         {filtered?.map((company, idx) => (
           <motion.div

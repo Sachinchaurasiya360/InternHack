@@ -7,6 +7,8 @@ import {
   suggestEditSchema,
   addContactSchema,
 } from "./company.validation.js";
+import { getPlanTier, type PlanTier } from "../../config/usage-limits.js";
+import { prisma } from "../../database/db.js";
 
 export class CompanyController {
   constructor(private readonly companyService: CompanyService) {}
@@ -19,7 +21,19 @@ export class CompanyController {
         return;
       }
 
-      const data = await this.companyService.listCompanies(result.data as Parameters<CompanyService["listCompanies"]>[0]);
+      let tier: PlanTier = "FREE";
+      if (req.user) {
+        const user = await prisma.user.findUnique({
+          where: { id: req.user.id },
+          select: { subscriptionPlan: true, subscriptionStatus: true },
+        });
+        if (user) tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus);
+      }
+
+      const data = await this.companyService.listCompanies(
+        result.data as Parameters<CompanyService["listCompanies"]>[0],
+        tier,
+      );
       res.json(data);
     } catch (err) {
       next(err);

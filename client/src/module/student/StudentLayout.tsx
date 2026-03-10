@@ -1,6 +1,6 @@
 import { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, ScanSearch, Map, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, Code2, Database, Brain, ShieldCheck } from "lucide-react";
+import { NavLink, Link, Outlet, useNavigate } from "react-router";
+import { Briefcase, FileText, LogOut, ScanSearch, Map, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, Code2, Database, Brain, ShieldCheck, Video } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useLayoutStore } from "../../lib/layout.store";
 import { Navbar } from "../../components/Navbar";
@@ -15,8 +15,9 @@ const NAV_ITEMS = [
   { to: "/student/sql", icon: Database, label: "SQL Practice" },
   { to: "/student/aptitude", icon: Brain, label: "Aptitude" },
   { to: "/student/skill-verification", icon: ShieldCheck, label: "Skill Tests" },
+  { to: "/student/mock-interview", icon: Video, label: "Mock Interview" },
   { to: "/student/companies", icon: Building2, label: "Explore Companies" },
-{ to: "/student/grants", icon: Award, label: "Grants" },
+  { to: "/student/grants", icon: Award, label: "Grants" },
   { to: "/student/opensource", icon: Globe, label: "Open Source" },
   { to: "/student/checkout", icon: Crown, label: "Upgrade" },
   { to: "/student/profile", icon: UserCircle, label: "My Profile" },
@@ -59,10 +60,10 @@ export default function StudentLayout() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <SEO title="Student Dashboard" noIndex />
-      {/* Top Navbar — shifts right to clear the sidebar */}
+      {/* Top Navbar - shifts right to clear the sidebar */}
       <Navbar sidebarOffset={sidebarWidth} />
 
-      {/* Sidebar — fixed, full height from top */}
+      {/* Sidebar - fixed, full height from top */}
       <aside
         className={`${
           collapsed ? "w-18" : "w-64"
@@ -78,29 +79,31 @@ export default function StudentLayout() {
             {collapsed ? <ChevronsRight className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
           </button>
 
-          {collapsed ? (
-            user?.profilePic ? (
-              <img src={user.profilePic} alt={user.name} className="w-9 h-9 rounded-full object-cover mx-auto mb-2" />
-            ) : (
-              <div className="w-9 h-9 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-sm font-bold mx-auto mb-2">
-                {user?.name?.charAt(0)?.toUpperCase() ?? "U"}
-              </div>
-            )
-          ) : (
-            <div className="flex items-center gap-3 mb-2">
-              {user?.profilePic ? (
-                <img src={user.profilePic} alt={user.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
+          <Link to="/student/profile" className="block mb-2 no-underline hover:opacity-80 transition-opacity" title="My Profile">
+            {collapsed ? (
+              user?.profilePic ? (
+                <img src={user.profilePic} alt={user.name} className="w-9 h-9 rounded-full object-cover mx-auto" />
               ) : (
-                <div className="w-9 h-9 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-sm font-bold shrink-0">
+                <div className="w-9 h-9 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-sm font-bold mx-auto">
                   {user?.name?.charAt(0)?.toUpperCase() ?? "U"}
                 </div>
-              )}
-              <div className="min-w-0">
-                <h2 className="text-sm font-bold text-gray-900 dark:text-white truncate">{user?.name}</h2>
-                <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+              )
+            ) : (
+              <div className="flex items-center gap-3">
+                {user?.profilePic ? (
+                  <img src={user.profilePic} alt={user.name} className="w-9 h-9 rounded-full object-cover shrink-0" />
+                ) : (
+                  <div className="w-9 h-9 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-sm font-bold shrink-0">
+                    {user?.name?.charAt(0)?.toUpperCase() ?? "U"}
+                  </div>
+                )}
+                <div className="min-w-0">
+                  <h2 className="text-sm font-bold text-gray-900 dark:text-white truncate">{user?.name}</h2>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 truncate">{user?.email}</p>
+                </div>
               </div>
-            </div>
-          )}
+            )}
+          </Link>
         </div>
 
         {/* Nav */}
@@ -141,7 +144,7 @@ export default function StudentLayout() {
         </div>
       </aside>
 
-      {/* Main Content — offset by sidebar width */}
+      {/* Main Content - offset by sidebar width */}
       <main
         className={`${collapsed ? "ml-18" : "ml-64"} pt-24 p-8 transition-all duration-300 overflow-auto`}
       >

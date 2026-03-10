@@ -51,7 +51,7 @@ const features = [
   {
     icon: <Briefcase className="w-5 h-5" />,
     title: "Job-Specific Scoring",
-    description: "Paste a job description to get tailored analysis — see exactly how your resume aligns with the role.",
+    description: "Paste a job description to get tailored analysis - see exactly how your resume aligns with the role.",
     gradient: "from-pink-500 to-pink-600",
   },
   {
@@ -65,7 +65,7 @@ const features = [
 const steps = [
   { step: "01", icon: <Upload className="w-5 h-5" />, title: "Upload Your Resume", description: "Upload your PDF resume and optionally provide a job title and description for targeted analysis." },
   { step: "02", icon: <Brain className="w-5 h-5" />, title: "AI Analyzes Everything", description: "Our AI engine scans your resume for ATS compatibility, keyword density, formatting quality, and content impact." },
-  { step: "03", icon: <TrendingUp className="w-5 h-5" />, title: "Get Actionable Results", description: "Receive your score, detailed breakdown, keyword gaps, and specific improvement suggestions — all in seconds." },
+  { step: "03", icon: <TrendingUp className="w-5 h-5" />, title: "Get Actionable Results", description: "Receive your score, detailed breakdown, keyword gaps, and specific improvement suggestions - all in seconds." },
 ];
 
 const categories = [
@@ -272,7 +272,7 @@ export default function AtsLandingPage() {
               className="inline-flex items-center gap-2 px-8 py-4 bg-gray-950 text-white font-semibold rounded-2xl hover:bg-gray-800 transition-colors shadow-lg shadow-black/10 text-base dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
             >
               <Sparkles className="w-5 h-5" />
-              {isAuthenticated ? "Analyze My Resume" : "Try Now — It's Free"}
+              {isAuthenticated ? "Analyze My Resume" : "Try Now - It's Free"}
             </button>
             <Link
               to={historyHref}
@@ -333,7 +333,7 @@ export default function AtsLandingPage() {
               <span className="text-gradient-accent">ace the ATS</span>
             </h2>
             <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-              Comprehensive AI-powered resume analysis tools — all in one place, completely free.
+              Comprehensive AI-powered resume analysis tools - all in one place, completely free.
             </p>
           </motion.div>
 
@@ -530,7 +530,7 @@ export default function AtsLandingPage() {
         </div>
       </section>
 
-      {/* ── What We Analyze — Compact Grid ── */}
+      {/* ── What We Analyze - Compact Grid ── */}
       <section className="relative py-24 md:py-32 bg-white dark:bg-gray-900 overflow-hidden">
         <div className="max-w-6xl mx-auto px-6">
           <motion.div
@@ -622,7 +622,7 @@ export default function AtsLandingPage() {
                   whileTap={{ scale: 0.98 }}
                   className="px-8 py-4 bg-white text-gray-950 text-base font-semibold rounded-2xl hover:bg-gray-100 transition-all shadow-lg flex items-center gap-2 justify-center"
                 >
-                  {isAuthenticated ? "Get My ATS Score" : "Get Started — It's Free"}
+                  {isAuthenticated ? "Get My ATS Score" : "Get Started - It's Free"}
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
                 <Link to={historyHref} className="no-underline">

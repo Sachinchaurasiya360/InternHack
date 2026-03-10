@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
 import { useParams, Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, TrendingUp, DollarSign, Layers, Clock, Trash2, CheckCircle2, BookOpen, Route } from "lucide-react";
+import { ArrowLeft, TrendingUp, Layers, Clock, Trash2, CheckCircle2, BookOpen } from "lucide-react";
 import api from "../../lib/axios";
 import type { Career, CareerPhase } from "../../lib/types";
 import RoadmapTimeline from "./components/RoadmapTimeline";
@@ -149,11 +149,7 @@ export default function CareerProgressPage() {
         >
           <ArrowLeft className="w-4 h-4" /> My Career Paths
         </Link>
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm text-sm text-gray-600 dark:text-gray-400 mb-6 mx-auto block w-fit">
-          <Route className="w-4 h-4 text-indigo-500" />
-          <span>Career Roadmap</span>
-        </div>
-        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
+        <h1 className="mt-6 font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
           {detail.title.split(" ").slice(0, -1).join(" ")}{" "}
           <span className="text-gradient-accent">{detail.title.split(" ").slice(-1)[0]}</span>
         </h1>
@@ -197,7 +193,7 @@ export default function CareerProgressPage() {
             { value: `${detail.completedSkills}/${detail.totalSkills}`, label: "Skills" },
             { value: `${topicStats.completed}/${topicStats.total}`, label: "Topics" },
             { value: String(detail.phases?.length ?? 0), label: "Phases" },
-            { value: totalWeeks > 0 ? `~${totalWeeks}` : "—", label: "Weeks" },
+            { value: totalWeeks > 0 ? `~${totalWeeks}` : "-", label: "Weeks" },
           ].map((stat) => (
             <div key={stat.label} className="bg-gray-50 dark:bg-gray-800/60 rounded-xl px-3.5 py-3 text-center">
               <p className="text-lg font-bold text-gray-900 dark:text-white tabular-nums">{stat.value}</p>
@@ -221,11 +217,6 @@ export default function CareerProgressPage() {
         transition={{ duration: 0.5, delay: 0.15 }}
         className="flex flex-wrap gap-2.5 mb-6"
       >
-        {detail.avgSalary && (
-          <span className="flex items-center gap-1.5 bg-white dark:bg-gray-900 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400 shadow-sm">
-            <DollarSign className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> {detail.avgSalary}
-          </span>
-        )}
         {detail.demandLevel && (
           <span className="flex items-center gap-1.5 bg-white dark:bg-gray-900 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400 shadow-sm">
             <TrendingUp className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> {detail.demandLevel} demand
@@ -252,7 +243,7 @@ export default function CareerProgressPage() {
           <BookOpen className="w-4 h-4 text-indigo-500" />
         </div>
         <span className="leading-relaxed">
-          <strong className="text-gray-900 dark:text-white">How it works:</strong> Click the checkbox to mark a skill as complete. Click the skill name to expand its subtopics — check off each topic as you learn it. Your topic progress is saved in your browser.
+          <strong className="text-gray-900 dark:text-white">How it works:</strong> Click the checkbox to mark a skill as complete. Click the skill name to expand its subtopics - check off each topic as you learn it. Your topic progress is saved in your browser.
         </span>
       </motion.div>
 

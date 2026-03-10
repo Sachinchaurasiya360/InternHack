@@ -41,14 +41,14 @@ export default function MinimalTemplate({ data }: { data: ResumeData }) {
                   <span className="text-gray-600">{exp.company}</span>
                 </div>
                 <span className="text-[10px] text-gray-400 shrink-0 ml-2">
-                  {exp.startDate} — {exp.current ? "Present" : exp.endDate}
+                  {exp.startDate} - {exp.current ? "Present" : exp.endDate}
                 </span>
               </div>
               {exp.description && (
                 <ul className="mt-1.5 space-y-0.5 text-gray-600">
                   {exp.description.split("\n").filter(Boolean).map((line, i) => (
                     <li key={i} className="flex gap-2">
-                      <span className="text-gray-300 shrink-0">—</span>
+                      <span className="text-gray-300 shrink-0">-</span>
                       <span>{line.replace(/^[-•]\s*/, "")}</span>
                     </li>
                   ))}
@@ -71,7 +71,7 @@ export default function MinimalTemplate({ data }: { data: ResumeData }) {
                 <span className="font-medium text-gray-900">
                   {edu.degree}{edu.field ? `, ${edu.field}` : ""}
                 </span>
-                <span className="text-gray-400 mx-1.5">—</span>
+                <span className="text-gray-400 mx-1.5">-</span>
                 <span className="text-gray-600">{edu.institution}</span>
                 {edu.gpa && <span className="text-gray-400 text-[10px] ml-1.5">GPA: {edu.gpa}</span>}
               </div>
@@ -119,7 +119,7 @@ export default function MinimalTemplate({ data }: { data: ResumeData }) {
           {certifications.map((cert) => (
             <div key={cert.id} className="flex justify-between items-baseline mb-1">
               <span className="text-gray-700">
-                {cert.name}{cert.issuer ? ` — ${cert.issuer}` : ""}
+                {cert.name}{cert.issuer ? ` - ${cert.issuer}` : ""}
               </span>
               {cert.date && <span className="text-[10px] text-gray-400">{cert.date}</span>}
             </div>

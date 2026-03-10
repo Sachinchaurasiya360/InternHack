@@ -77,7 +77,7 @@ export default function CreativeTemplate({ data }: { data: ResumeData }) {
                 <div className="flex justify-between items-baseline">
                   <h3 className="font-bold text-gray-900">{exp.title}</h3>
                   <span className="text-[9px] text-violet-500 font-medium shrink-0 ml-2">
-                    {exp.startDate} — {exp.current ? "Present" : exp.endDate}
+                    {exp.startDate} - {exp.current ? "Present" : exp.endDate}
                   </span>
                 </div>
                 <p className="text-violet-600 text-[10px] font-medium">{exp.company}</p>

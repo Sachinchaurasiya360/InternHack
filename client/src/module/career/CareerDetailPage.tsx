@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useParams, Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, TrendingUp, DollarSign, Layers, Clock, Users, Zap } from "lucide-react";
+import { ArrowLeft, TrendingUp, Layers, Clock, Users, Zap } from "lucide-react";
 import api from "../../lib/axios";
 import type { Career } from "../../lib/types";
 import { useAuthStore } from "../../lib/auth.store";
@@ -152,11 +152,6 @@ export default function CareerDetailPage() {
 
           {/* Stat pills */}
           <motion.div custom={4} initial="hidden" animate="visible" variants={fadeInUp} className="flex flex-wrap gap-3 mb-8">
-            {career.avgSalary && (
-              <span className="flex items-center gap-1.5 bg-white dark:bg-gray-900 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400 shadow-sm">
-                <DollarSign className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> {career.avgSalary}
-              </span>
-            )}
             {career.demandLevel && (
               <span className="flex items-center gap-1.5 bg-white dark:bg-gray-900 px-3.5 py-2 rounded-xl border border-gray-200 dark:border-gray-700 text-sm text-gray-600 dark:text-gray-400 shadow-sm">
                 <TrendingUp className="w-3.5 h-3.5 text-gray-400 dark:text-gray-500" /> {career.demandLevel} demand
@@ -233,7 +228,7 @@ export default function CareerDetailPage() {
                   Click any skill to see its subtopics. Enroll to track progress.
                 </p>
               </div>
-              <span className={`text-xs font-semibold px-3 py-1.5 rounded-full ${diffCfg.bg} ${diffCfg.text}`}>
+              <span className={`text-xs font-semibold ${diffCfg.text}`}>
                 {diffCfg.label}
               </span>
             </div>

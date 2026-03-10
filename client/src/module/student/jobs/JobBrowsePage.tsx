@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Search, MapPin, DollarSign, Clock, Briefcase, X } from "lucide-react";
+import { Search, MapPin, DollarSign, Clock, X } from "lucide-react";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
@@ -94,11 +94,7 @@ export default function JobBrowsePage() {
 
       <div className="relative z-10 max-w-7xl mx-auto px-6 pt-24 pb-16">
         {/* Hero header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-10">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-900 border border-black/10 dark:border-gray-700 shadow-sm text-sm text-gray-600 dark:text-gray-400 mb-6">
-            <Briefcase className="w-4 h-4 text-indigo-500" />
-            <span>Curated Opportunities</span>
-          </div>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="text-center mt-6 mb-10">
           <h1 className="text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
             Find Your Next <span className="text-gradient-accent">Opportunity</span>
           </h1>

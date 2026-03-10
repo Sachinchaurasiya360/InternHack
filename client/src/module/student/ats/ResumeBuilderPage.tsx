@@ -272,7 +272,7 @@ export default function ResumeBuilderPage() {
 
   return (
     <>
-      <SEO title="Resume Builder — InternHack" description="Build your ATS-optimized resume with professional templates" />
+      <SEO title="Resume Builder - InternHack" description="Build your ATS-optimized resume with professional templates" />
 
       <div className="relative max-w-[1440px] mx-auto pb-12">
         {/* Atmospheric background */}
@@ -288,7 +288,7 @@ export default function ResumeBuilderPage() {
           />
         </div>
 
-        {/* Page Header — landing page style */}
+        {/* Page Header - landing page style */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}

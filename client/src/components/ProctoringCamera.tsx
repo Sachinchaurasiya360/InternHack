@@ -93,7 +93,7 @@ export default function ProctoringCamera({ onViolation, onSnapshot, onError, onR
           onClick={() => setMinimized(true)}
           className="absolute top-1 right-1 w-5 h-5 rounded bg-black/50 flex items-center justify-center text-gray-400 hover:text-white text-[10px]"
         >
-          —
+          -
         </button>
       </div>
 

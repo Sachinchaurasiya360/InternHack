@@ -5,7 +5,7 @@ const steps = [
   {
     icon: UserPlus,
     title: "Create your account",
-    description: "Sign up with email or Google in seconds. Choose your role — student or recruiter.",
+    description: "Sign up with email or Google in seconds. Choose your role - student or recruiter.",
   },
   {
     icon: Search,

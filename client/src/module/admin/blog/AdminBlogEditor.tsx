@@ -11,6 +11,7 @@ import {
   Pencil,
 } from "lucide-react";
 import toast from "react-hot-toast";
+import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import type { BlogPost, BlogCategory } from "../../blog/components/BlogCard";
 import { CATEGORY_LABELS } from "../../blog/components/BlogCard";
@@ -137,7 +138,7 @@ export default function AdminBlogEditor() {
   const { data: existingPost, isLoading: loadingPost } = useQuery<{ post: BlogPost }>({
     queryKey: ["admin", "blog", "edit", id],
     queryFn: async () => {
-      // Use admin endpoint — the public slug endpoint won't have all fields for DRAFT posts
+      // Use admin endpoint - the public slug endpoint won't have all fields for DRAFT posts
       const res = await api.get("/blog/admin/posts", { params: { page: 1, limit: 1, search: "" } });
       // Fallback: fetch all and find by id. In a real app the admin detail endpoint would be used.
       // Since the spec only gives us list + slug endpoints, fetch via slug or search the list.
@@ -226,11 +227,7 @@ export default function AdminBlogEditor() {
   };
 
   if (isEditing && loadingPost) {
-    return (
-      <div className="flex items-center justify-center h-64 text-gray-400">
-        <Loader2 className="w-6 h-6 animate-spin" />
-      </div>
-    );
+    return <LoadingScreen compact />;
   }
 
   return (
