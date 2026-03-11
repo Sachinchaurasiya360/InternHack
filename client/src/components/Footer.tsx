@@ -120,7 +120,7 @@ export function Footer() {
             <ul className="space-y-3">
               <li><Link to="/jobs" className={linkClass}>Jobs</Link></li>
               <li><Link to="/external-jobs" className={linkClass}>External Jobs</Link></li>
-              <li><Link to="/careers" className={linkClass}>Career Roadmaps</Link></li>
+              <li><Link to="/learn/careers" className={linkClass}>Career Roadmaps</Link></li>
               <li><Link to="/companies" className={linkClass}>Companies</Link></li>
             </ul>
           </div>

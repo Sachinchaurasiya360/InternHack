@@ -1,0 +1,302 @@
+[
+  {
+    "id": "anchor-tags",
+    "sectionId": "links-and-navigation",
+    "orderIndex": 0,
+    "title": "Anchor Tags",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["a Element", "href Attribute", "target Attribute", "rel Attribute", "download Attribute"],
+    "content": {
+      "explanation": "The anchor element (<a>) is the backbone of the web. It creates hyperlinks that connect one page to another, link to files, email addresses, phone numbers, or any URL. Without anchor tags, the World Wide Web would be a collection of isolated documents with no way to navigate between them. Every time you click a link on a webpage, you are interacting with an anchor element.\n\nThe most important attribute of the anchor tag is href (Hypertext Reference). This attribute specifies the destination URL that the browser should navigate to when the link is clicked. The href value can be an absolute URL (like https://example.com), a relative path (like /about.html), a fragment identifier (like #section), a mailto link (like mailto:user@example.com), or a tel link (like tel:+1234567890). If you omit the href attribute entirely, the element behaves like a placeholder and is not clickable.\n\nThe target attribute controls where the linked document opens. The most common values are _self (default, opens in the same tab), _blank (opens in a new tab or window), _parent (opens in the parent frame), and _top (opens in the full body of the window). When using target=\"_blank\", you should always pair it with rel=\"noopener noreferrer\" for security reasons. Without this, the opened page can access the window.opener property and potentially redirect your page to a malicious URL.\n\nThe rel attribute specifies the relationship between the current page and the linked resource. Common values include noopener (prevents the new page from accessing window.opener), noreferrer (prevents sending the Referer header), nofollow (tells search engines not to follow this link), and external (indicates the link leads to an external site). Multiple rel values can be combined with spaces.\n\nThe download attribute tells the browser to download the linked resource instead of navigating to it. When present without a value, the browser uses the filename from the URL. You can also specify a custom filename as the attribute value, like download=\"report.pdf\". This attribute only works for same-origin URLs or blob: and data: URLs for security reasons.",
+      "codeExamples": [
+        {
+          "title": "Basic Anchor Tag Usage",
+          "code": "<!-- Basic link -->\n<a href=\"https://www.example.com\">Visit Example</a>\n\n<!-- Email link -->\n<a href=\"mailto:contact@example.com\">Send Email</a>\n\n<!-- Phone link -->\n<a href=\"tel:+1234567890\">Call Us</a>\n\n<!-- Link with no destination (placeholder) -->\n<a>Coming Soon</a>",
+          "explanation": "The href attribute accepts different URL schemes. Regular URLs navigate to pages, mailto: opens the default email client, and tel: initiates a phone call on mobile devices. Omitting href creates a non-clickable placeholder."
+        },
+        {
+          "title": "Target and Rel Attributes",
+          "code": "<!-- Opens in same tab (default behavior) -->\n<a href=\"/about\" target=\"_self\">About Us</a>\n\n<!-- Opens in new tab - ALWAYS use rel for security -->\n<a href=\"https://external-site.com\" \n   target=\"_blank\" \n   rel=\"noopener noreferrer\">\n  External Resource\n</a>\n\n<!-- SEO: Tell search engines not to follow -->\n<a href=\"https://user-submitted-link.com\" \n   rel=\"nofollow\">\n  User Submitted Link\n</a>",
+          "explanation": "When opening links in new tabs with target='_blank', always add rel='noopener noreferrer'. Without noopener, the destination page gains access to your page's window.opener object, which is a security vulnerability known as reverse tabnapping."
+        },
+        {
+          "title": "Download Attribute",
+          "code": "<!-- Download with original filename -->\n<a href=\"/files/annual-report.pdf\" download>\n  Download Report\n</a>\n\n<!-- Download with custom filename -->\n<a href=\"/files/report-2024-q4.pdf\" \n   download=\"Annual-Report.pdf\">\n  Download Annual Report\n</a>\n\n<!-- Download an image -->\n<a href=\"/images/logo.png\" download=\"company-logo.png\">\n  Download Logo\n</a>",
+          "explanation": "The download attribute instructs the browser to save the file rather than navigating to it. You can optionally provide a filename that will be suggested to the user. Note that this only works for same-origin URLs due to browser security restrictions."
+        },
+        {
+          "title": "Accessible Link Practices",
+          "code": "<!-- Bad: Non-descriptive link text -->\n<a href=\"/report\">Click here</a>\n\n<!-- Good: Descriptive link text -->\n<a href=\"/report\">View the 2024 Annual Report</a>\n\n<!-- Link with title for additional context -->\n<a href=\"/docs/api\" \n   title=\"Opens the full API documentation\">\n  API Documentation\n</a>\n\n<!-- Image as a link -->\n<a href=\"/\">\n  <img src=\"logo.png\" alt=\"Company Home Page\">\n</a>",
+          "explanation": "Screen readers often read links out of context (e.g., listing all links on a page). Using descriptive text like 'View the 2024 Annual Report' is far more useful than 'Click here' or 'Read more'. When using images as links, the img alt text serves as the link text for assistive technologies."
+        }
+      ],
+      "notes": [
+        "Always use rel='noopener noreferrer' when using target='_blank'. Modern browsers automatically imply noopener for target='_blank', but including it explicitly ensures backward compatibility.",
+        "Link text should describe the destination, not the action. Avoid generic text like 'Click here' or 'Read more' -- screen readers list all links out of context.",
+        "The download attribute only works for same-origin URLs. Cross-origin downloads will be navigated to instead of downloaded unless the server sends appropriate CORS headers."
+      ],
+      "commonPitfalls": [
+        "Using target='_blank' without rel='noopener noreferrer', which exposes your site to reverse tabnapping attacks where the opened page can redirect your original page.",
+        "Using 'Click here' or 'Read more' as link text. This provides no context to screen reader users who navigate by links and hear them listed out of context.",
+        "Forgetting the href attribute entirely and wondering why the element does not look or behave like a link. Without href, an anchor tag is just an inline element with no default link styling.",
+        "Assuming the download attribute works on cross-origin resources. Browsers restrict this for security reasons."
+      ],
+      "interviewTips": [
+        "Explain the difference between _self, _blank, _parent, and _top target values and when each is appropriate.",
+        "Be ready to discuss the security implications of target='_blank' and why rel='noopener noreferrer' is necessary.",
+        "Know the different URL schemes supported by href: http/https, mailto, tel, and fragment identifiers."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "anchor-tags-ex1",
+        "title": "Create Different Link Types",
+        "description": "Create three links: one that goes to 'https://www.google.com' and opens in a new tab (with proper security attributes), one mailto link to 'hello@example.com', and one telephone link to '+1555123456'.",
+        "starterCode": "<!-- Link to Google opening in a new tab -->\n\n<!-- Email link -->\n\n<!-- Phone link -->\n",
+        "solution": "<a href=\"https://www.google.com\" target=\"_blank\" rel=\"noopener noreferrer\">Visit Google</a>\n\n<a href=\"mailto:hello@example.com\">Email Us</a>\n\n<a href=\"tel:+1555123456\">Call Us</a>",
+        "hints": [
+          "Use target='_blank' to open in a new tab and always add rel='noopener noreferrer'",
+          "Email links use the mailto: scheme, phone links use the tel: scheme"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "anchor-tags-ex2",
+        "title": "Downloadable File Links",
+        "description": "Create two download links: one that downloads '/files/data.csv' with its original filename, and another that downloads '/files/img-2024.jpg' with a custom filename of 'photo.jpg'.",
+        "starterCode": "<!-- Download CSV with original filename -->\n\n<!-- Download image with custom filename -->\n",
+        "solution": "<a href=\"/files/data.csv\" download>Download CSV Data</a>\n\n<a href=\"/files/img-2024.jpg\" download=\"photo.jpg\">Download Photo</a>",
+        "hints": [
+          "Use the download attribute without a value to keep the original filename",
+          "Provide a value to the download attribute to set a custom filename"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "internal-external-links",
+    "sectionId": "links-and-navigation",
+    "orderIndex": 1,
+    "title": "Internal & External Links",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Relative URLs", "Absolute URLs", "Path Resolution", "Linking Between Pages", "Base Element"],
+    "content": {
+      "explanation": "Understanding the difference between internal and external links is fundamental to building well-structured websites. Internal links connect pages within the same website, while external links point to resources on other domains. How you write the URL in your href attribute determines how the browser resolves the destination path.\n\nAbsolute URLs specify the complete address of a resource, including the protocol (http:// or https://), domain name, and path. For example, https://www.example.com/about/team.html is an absolute URL. These are primarily used for external links because they work regardless of where the linking page is located. However, using absolute URLs for internal links can cause problems if your domain changes or if you develop locally on a different hostname.\n\nRelative URLs specify the path relative to the current page's location. There are several forms: a simple filename like contact.html links to a file in the same directory; a path like ../about/team.html goes up one directory and then into the about folder; a path starting with / like /about/team.html is relative to the site root, regardless of the current page's location. Root-relative URLs (starting with /) are generally the best choice for internal navigation because they work correctly no matter where the linking page is in the directory structure.\n\nThe <base> element in the HTML <head> can set a default base URL for all relative URLs on the page. For example, <base href=\"https://www.example.com/docs/\"> would cause all relative links on that page to resolve against that base URL instead of the current page's URL. While useful in some scenarios, the base element can cause confusion and unexpected behavior, so it should be used sparingly.\n\nWhen structuring a multi-page website, organize your files in a logical directory hierarchy and use consistent linking patterns. Most modern web projects use root-relative URLs for navigation and asset references. This approach is predictable, easy to maintain, and works correctly even when pages are nested at different depths in the directory structure.",
+      "codeExamples": [
+        {
+          "title": "Absolute vs Relative URLs",
+          "code": "<!-- Absolute URL (full path including domain) -->\n<a href=\"https://www.example.com/products/shoes.html\">\n  View Shoes\n</a>\n\n<!-- Relative to current directory -->\n<a href=\"shoes.html\">View Shoes</a>\n\n<!-- Relative going up one directory -->\n<a href=\"../index.html\">Back to Home</a>\n\n<!-- Root-relative (starts from site root) -->\n<a href=\"/products/shoes.html\">View Shoes</a>",
+          "explanation": "Absolute URLs include the full protocol and domain. Relative URLs are resolved based on the current page location. Root-relative URLs (starting with /) always resolve from the site's root directory, making them the most reliable for internal linking."
+        },
+        {
+          "title": "Multi-Page Site Structure",
+          "code": "<!--\n  Site structure:\n  /\n  ├── index.html\n  ├── about/\n  │   ├── index.html\n  │   └── team.html\n  └── products/\n      ├── index.html\n      └── details.html\n-->\n\n<!-- From /about/team.html linking to other pages -->\n\n<!-- Link to site home (root-relative) -->\n<a href=\"/\">Home</a>\n\n<!-- Link to about index (same directory) -->\n<a href=\"./index.html\">About Overview</a>\n\n<!-- Link to products (root-relative) -->\n<a href=\"/products/\">Products</a>\n\n<!-- Link to products (relative path) -->\n<a href=\"../products/index.html\">Products</a>",
+          "explanation": "When your site has nested directories, root-relative URLs (starting with /) are the safest choice. They resolve the same way regardless of which page contains the link. Relative paths like '../' can become confusing in deep directory structures."
+        },
+        {
+          "title": "The Base Element",
+          "code": "<!DOCTYPE html>\n<html>\n<head>\n  <!-- Sets the base URL for all relative links -->\n  <base href=\"https://www.example.com/docs/\">\n</head>\n<body>\n  <!-- Resolves to: https://www.example.com/docs/guide.html -->\n  <a href=\"guide.html\">User Guide</a>\n\n  <!-- Resolves to: https://www.example.com/docs/api/reference.html -->\n  <a href=\"api/reference.html\">API Reference</a>\n\n  <!-- Absolute URLs are NOT affected by <base> -->\n  <a href=\"https://www.google.com\">Google</a>\n</body>\n</html>",
+          "explanation": "The <base> element changes how all relative URLs on the page are resolved. It can be useful when serving content from a subdirectory, but use it carefully as it affects all relative URLs including links, images, scripts, and stylesheets."
+        },
+        {
+          "title": "Distinguishing Internal and External Links with CSS",
+          "code": "<!-- Internal links -->\n<a href=\"/about\">About Us</a>\n<a href=\"/contact\">Contact</a>\n\n<!-- External links with visual indicator -->\n<a href=\"https://github.com\" \n   target=\"_blank\" \n   rel=\"noopener noreferrer\"\n   class=\"external-link\">\n  GitHub\n</a>\n\n<style>\n  /* Style external links with an icon */\n  .external-link::after {\n    content: \" \\2197\"; /* northeast arrow */\n    font-size: 0.8em;\n  }\n</style>",
+          "explanation": "It is a good UX practice to visually distinguish external links from internal ones. Users should know when a click will take them to a different website. A small arrow icon or different styling helps set this expectation."
+        }
+      ],
+      "notes": [
+        "Use root-relative URLs (starting with /) for internal navigation. They are consistent regardless of page depth and easier to maintain than relative paths.",
+        "Always use absolute URLs for external links. Include the protocol (https://) to avoid ambiguity.",
+        "The <base> element affects ALL relative URLs on the page, including images, stylesheets, and scripts -- not just links. Use it with caution."
+      ],
+      "commonPitfalls": [
+        "Using absolute URLs with your domain for internal links. If the domain changes (e.g., moving from staging to production), all links break. Use root-relative paths instead.",
+        "Confusing relative paths when pages are at different directory depths. A link that works on /about/index.html may break if the same HTML is also used on /about/team/index.html.",
+        "Forgetting the trailing slash on directory URLs. Linking to /about vs /about/ can behave differently depending on server configuration."
+      ],
+      "interviewTips": [
+        "Be able to explain the difference between absolute, relative, and root-relative URLs with examples.",
+        "Know when to use each type and the tradeoffs involved in site maintenance and portability."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "internal-external-links-ex1",
+        "title": "Fix the Broken Links",
+        "description": "You are on the page /blog/2024/post.html. Fix the following links so they correctly point to: the site homepage (/index.html), the blog listing (/blog/index.html), and an external site (https://developer.mozilla.org).",
+        "starterCode": "<!-- Fix: Link to homepage -->\n<a href=\"index.html\">Home</a>\n\n<!-- Fix: Link to blog listing -->\n<a href=\"blog/index.html\">All Posts</a>\n\n<!-- Fix: Link to external site -->\n<a href=\"developer.mozilla.org\">MDN Docs</a>\n",
+        "solution": "<a href=\"/index.html\">Home</a>\n\n<a href=\"/blog/index.html\">All Posts</a>\n\n<a href=\"https://developer.mozilla.org\" target=\"_blank\" rel=\"noopener noreferrer\">MDN Docs</a>",
+        "hints": [
+          "Root-relative URLs start with / and always resolve from the site root",
+          "External links need the full protocol (https://) and should open in a new tab with rel attributes"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "internal-external-links-ex2",
+        "title": "Build a Site Navigation",
+        "description": "Create a navigation section with 4 links for a website: Home (/), About (/about/), Blog (/blog/), and an external link to Twitter (https://twitter.com). Use root-relative paths for internal links and proper attributes for the external link.",
+        "starterCode": "<nav>\n  <!-- Home link -->\n\n  <!-- About link -->\n\n  <!-- Blog link -->\n\n  <!-- External Twitter link -->\n\n</nav>\n",
+        "solution": "<nav>\n  <a href=\"/\">Home</a>\n  <a href=\"/about/\">About</a>\n  <a href=\"/blog/\">Blog</a>\n  <a href=\"https://twitter.com\" target=\"_blank\" rel=\"noopener noreferrer\">Twitter</a>\n</nav>",
+        "hints": [
+          "Use root-relative paths (starting with /) for all internal links",
+          "The external link should use target='_blank' and rel='noopener noreferrer'"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "navigation-menus",
+    "sectionId": "links-and-navigation",
+    "orderIndex": 2,
+    "title": "Navigation Menus",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["nav Element", "Semantic Navigation", "Unordered Lists for Menus", "ARIA Labels", "Accessibility"],
+    "content": {
+      "explanation": "Navigation menus are how users move through a website. HTML provides the <nav> element specifically for this purpose, introduced in HTML5 to give semantic meaning to navigation sections. Before <nav> existed, developers used generic <div> elements with classes like 'navigation' -- the browser and assistive technologies had no built-in way to identify these as navigation regions.\n\nThe <nav> element represents a section of the page that contains navigation links, either within the current document or to other documents. A page can have multiple <nav> elements -- for example, a primary navigation bar at the top and a secondary sidebar navigation. When a page has multiple <nav> elements, use aria-label or aria-labelledby attributes to distinguish them, such as aria-label=\"Primary navigation\" and aria-label=\"Footer navigation\".\n\nThe conventional way to build navigation menus is to use an unordered list (<ul>) containing list items (<li>), each wrapping an anchor tag (<a>). This pattern has been the standard for decades because it provides semantic structure (a list of related links), is inherently accessible (screen readers announce the number of items), and is easy to style with CSS. While it is technically possible to put anchor tags directly inside a nav without lists, the list approach provides better semantics and screen reader support.\n\nAccessibility is critical for navigation. Screen readers use landmark roles to help users jump to different sections of a page. The <nav> element automatically has the role=\"navigation\" landmark, allowing screen reader users to skip directly to it. Additionally, marking the current page in the navigation with aria-current=\"page\" helps users understand where they are in the site structure. Always ensure navigation links have sufficient color contrast and are keyboard-accessible.\n\nResponsive navigation is a key consideration for modern websites. On large screens, navigation is typically displayed as a horizontal bar. On small screens, it often collapses into a hamburger menu or a slide-out drawer. While the responsive behavior is typically handled with CSS and JavaScript, the underlying HTML structure should remain semantic and accessible regardless of the visual presentation.",
+      "codeExamples": [
+        {
+          "title": "Basic Semantic Navigation",
+          "code": "<nav aria-label=\"Primary navigation\">\n  <ul>\n    <li><a href=\"/\">Home</a></li>\n    <li><a href=\"/about\">About</a></li>\n    <li><a href=\"/services\">Services</a></li>\n    <li><a href=\"/contact\">Contact</a></li>\n  </ul>\n</nav>",
+          "explanation": "This is the standard navigation pattern: a <nav> element containing an unordered list of links. The aria-label helps screen reader users distinguish this from other nav elements on the page."
+        },
+        {
+          "title": "Navigation with Current Page Indicator",
+          "code": "<nav aria-label=\"Main menu\">\n  <ul>\n    <li><a href=\"/\">Home</a></li>\n    <li>\n      <a href=\"/products\" aria-current=\"page\">\n        Products\n      </a>\n    </li>\n    <li><a href=\"/pricing\">Pricing</a></li>\n    <li><a href=\"/support\">Support</a></li>\n  </ul>\n</nav>\n\n<style>\n  nav a[aria-current=\"page\"] {\n    font-weight: bold;\n    border-bottom: 2px solid currentColor;\n  }\n</style>",
+          "explanation": "The aria-current='page' attribute indicates which link corresponds to the current page. Screen readers announce this as 'current page', and you can use the attribute selector in CSS to style it visually. This is preferred over adding a CSS class like 'active'."
+        },
+        {
+          "title": "Multiple Navigation Regions",
+          "code": "<!-- Primary nav in header -->\n<header>\n  <nav aria-label=\"Primary navigation\">\n    <ul>\n      <li><a href=\"/\">Home</a></li>\n      <li><a href=\"/products\">Products</a></li>\n      <li><a href=\"/about\">About</a></li>\n    </ul>\n  </nav>\n</header>\n\n<!-- Breadcrumb navigation -->\n<nav aria-label=\"Breadcrumb\">\n  <ol>\n    <li><a href=\"/\">Home</a></li>\n    <li><a href=\"/products\">Products</a></li>\n    <li><span aria-current=\"page\">Widget Pro</span></li>\n  </ol>\n</nav>\n\n<!-- Footer navigation -->\n<footer>\n  <nav aria-label=\"Footer navigation\">\n    <ul>\n      <li><a href=\"/privacy\">Privacy Policy</a></li>\n      <li><a href=\"/terms\">Terms of Service</a></li>\n      <li><a href=\"/sitemap\">Sitemap</a></li>\n    </ul>\n  </nav>\n</footer>",
+          "explanation": "A page can have multiple <nav> elements. Use aria-label to give each one a unique name so screen reader users can distinguish between them. Note that breadcrumbs use an ordered list (<ol>) since the order matters."
+        },
+        {
+          "title": "Navigation with Nested Dropdown",
+          "code": "<nav aria-label=\"Main menu\">\n  <ul>\n    <li><a href=\"/\">Home</a></li>\n    <li>\n      <a href=\"/products\">Products</a>\n      <ul>\n        <li><a href=\"/products/software\">Software</a></li>\n        <li><a href=\"/products/hardware\">Hardware</a></li>\n        <li><a href=\"/products/services\">Services</a></li>\n      </ul>\n    </li>\n    <li><a href=\"/about\">About</a></li>\n    <li><a href=\"/contact\">Contact</a></li>\n  </ul>\n</nav>",
+          "explanation": "Dropdown menus are created by nesting a <ul> inside a <li>. The nested list is typically hidden with CSS and revealed on hover or focus. The HTML structure clearly represents the parent-child relationship between menu items."
+        }
+      ],
+      "notes": [
+        "Only use <nav> for major navigation blocks. Do not wrap every group of links in a <nav> -- it is intended for primary, secondary, and footer navigation sections.",
+        "Breadcrumb navigation should use an ordered list (<ol>) because the sequence matters. Regular menus use unordered lists (<ul>) because the order is not inherently sequential.",
+        "Always make navigation keyboard-accessible. Users should be able to Tab through all links and activate them with Enter."
+      ],
+      "commonPitfalls": [
+        "Wrapping every group of links in a <nav> element. Reserve <nav> for major navigation blocks. A list of links in a blog post sidebar or article footer does not necessarily need <nav>.",
+        "Having multiple <nav> elements without aria-label attributes. Screen readers list all navigation landmarks, and without labels, users cannot tell them apart.",
+        "Using <div> and <span> instead of <ul>, <li>, and <a> for navigation. This loses all semantic meaning and forces you to recreate accessibility features manually."
+      ],
+      "interviewTips": [
+        "Explain why <nav> is semantically better than <div class='nav'> -- it creates an ARIA landmark that assistive technologies can use for navigation.",
+        "Know the difference between aria-label and aria-labelledby and when to use each for navigation elements.",
+        "Be ready to discuss how to make navigation menus accessible, including keyboard support and screen reader considerations."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "navigation-menus-ex1",
+        "title": "Build a Semantic Navigation Bar",
+        "description": "Create a primary navigation menu using the <nav> element with an unordered list. Include links to: Home (/), Products (/products), Blog (/blog), and Contact (/contact). Mark the 'Products' page as the current page. Add an appropriate aria-label.",
+        "starterCode": "<!-- Create the navigation here -->\n",
+        "solution": "<nav aria-label=\"Primary navigation\">\n  <ul>\n    <li><a href=\"/\">Home</a></li>\n    <li><a href=\"/products\" aria-current=\"page\">Products</a></li>\n    <li><a href=\"/blog\">Blog</a></li>\n    <li><a href=\"/contact\">Contact</a></li>\n  </ul>\n</nav>",
+        "hints": [
+          "Use <nav> with an aria-label attribute to identify the navigation",
+          "Use aria-current='page' on the current page's link"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "navigation-menus-ex2",
+        "title": "Create Header and Footer Navigation",
+        "description": "Create a page structure with two separate navigation sections: a header nav with links to Home (/), About (/about), and Services (/services); and a footer nav with links to Privacy (/privacy), Terms (/terms), and Contact (/contact). Use proper semantic elements and distinguish the nav regions with aria-label.",
+        "starterCode": "<header>\n  <!-- Header navigation -->\n</header>\n\n<footer>\n  <!-- Footer navigation -->\n</footer>\n",
+        "solution": "<header>\n  <nav aria-label=\"Primary navigation\">\n    <ul>\n      <li><a href=\"/\">Home</a></li>\n      <li><a href=\"/about\">About</a></li>\n      <li><a href=\"/services\">Services</a></li>\n    </ul>\n  </nav>\n</header>\n\n<footer>\n  <nav aria-label=\"Footer navigation\">\n    <ul>\n      <li><a href=\"/privacy\">Privacy</a></li>\n      <li><a href=\"/terms\">Terms</a></li>\n      <li><a href=\"/contact\">Contact</a></li>\n    </ul>\n  </nav>\n</footer>",
+        "hints": [
+          "Each <nav> needs a unique aria-label to distinguish them for screen readers",
+          "Both navigations follow the same ul > li > a pattern"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "bookmark-links",
+    "sectionId": "links-and-navigation",
+    "orderIndex": 3,
+    "title": "Bookmark Links",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Fragment Identifiers", "id Attribute", "Smooth Scrolling", "Skip Navigation", "Hash Links"],
+    "content": {
+      "explanation": "Bookmark links (also called fragment links or hash links) allow you to link to a specific section within a page rather than to the top of a new page. They work by targeting an element's id attribute using a fragment identifier -- the # symbol followed by the id value. When a user clicks a bookmark link, the browser scrolls to the element with the matching id on the current page.\n\nThe syntax is straightforward: set an id attribute on the target element (e.g., <section id=\"features\">) and create a link with href=\"#features\". You can also link to a specific section on a different page by combining the URL with a fragment, like href=\"/about#team\". When the browser loads the about page, it will automatically scroll to the element with id=\"team\". The id must be unique within the page -- having duplicate ids will cause unpredictable behavior.\n\nSmooth scrolling enhances the user experience by animating the scroll to the target section instead of jumping instantly. The simplest way to enable this is with the CSS property scroll-behavior: smooth on the html element. This single line of CSS makes all anchor-based scrolling smooth throughout the page. For more control, you can use JavaScript's element.scrollIntoView({ behavior: 'smooth' }) method.\n\nSkip navigation links are an important accessibility pattern. They are typically the first element in the page's HTML, allowing keyboard and screen reader users to skip past the header and navigation directly to the main content. Without skip links, keyboard users must Tab through every navigation link on every page before reaching the content. The skip link is usually visually hidden but becomes visible when it receives keyboard focus.\n\nA common pattern is a table of contents at the top of a long article, with each heading linked to its corresponding section via bookmark links. This gives users an overview of the content and lets them jump directly to the section they are interested in. When implementing this, ensure each section heading has a unique id and consider adding a \"Back to top\" link at the end of each section for easy navigation.",
+      "codeExamples": [
+        {
+          "title": "Basic Bookmark Links",
+          "code": "<!-- Table of contents -->\n<nav aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#introduction\">Introduction</a></li>\n    <li><a href=\"#features\">Features</a></li>\n    <li><a href=\"#pricing\">Pricing</a></li>\n    <li><a href=\"#faq\">FAQ</a></li>\n  </ul>\n</nav>\n\n<!-- Target sections -->\n<section id=\"introduction\">\n  <h2>Introduction</h2>\n  <p>Welcome to our product...</p>\n</section>\n\n<section id=\"features\">\n  <h2>Features</h2>\n  <p>Here are the key features...</p>\n</section>\n\n<section id=\"pricing\">\n  <h2>Pricing</h2>\n  <p>Choose a plan...</p>\n</section>\n\n<section id=\"faq\">\n  <h2>FAQ</h2>\n  <p>Common questions...</p>\n</section>",
+          "explanation": "Each section has a unique id attribute. The links in the table of contents use # followed by the id to create bookmark links. Clicking any link scrolls the page to that section."
+        },
+        {
+          "title": "Smooth Scrolling with CSS",
+          "code": "<style>\n  /* Enable smooth scrolling for the entire page */\n  html {\n    scroll-behavior: smooth;\n  }\n\n  /* Add scroll margin to account for fixed headers */\n  section[id] {\n    scroll-margin-top: 80px;\n  }\n</style>\n\n<header style=\"position: fixed; top: 0; height: 70px;\">\n  <nav>\n    <a href=\"#about\">About</a>\n    <a href=\"#work\">Work</a>\n    <a href=\"#contact\">Contact</a>\n  </nav>\n</header>\n\n<section id=\"about\">\n  <h2>About</h2>\n</section>",
+          "explanation": "scroll-behavior: smooth makes all hash link navigation animate smoothly. The scroll-margin-top property adds offset so the section heading is not hidden behind a fixed header. Without scroll-margin-top, the target element would scroll right to the top edge, potentially behind a fixed navbar."
+        },
+        {
+          "title": "Skip Navigation Link",
+          "code": "<body>\n  <!-- Skip link: first element in body -->\n  <a href=\"#main-content\" class=\"skip-link\">\n    Skip to main content\n  </a>\n\n  <header>\n    <nav>\n      <a href=\"/\">Home</a>\n      <a href=\"/about\">About</a>\n      <a href=\"/services\">Services</a>\n      <a href=\"/blog\">Blog</a>\n      <a href=\"/contact\">Contact</a>\n    </nav>\n  </header>\n\n  <main id=\"main-content\">\n    <h1>Page Content Starts Here</h1>\n    <p>...</p>\n  </main>\n</body>\n\n<style>\n  .skip-link {\n    position: absolute;\n    top: -100%;\n    left: 0;\n    padding: 8px 16px;\n    background: #000;\n    color: #fff;\n    z-index: 1000;\n  }\n  /* Visible when focused via keyboard */\n  .skip-link:focus {\n    top: 0;\n  }\n</style>",
+          "explanation": "The skip link is positioned off-screen by default and only appears when a keyboard user tabs to it (the first focusable element). Clicking or pressing Enter jumps past the navigation directly to the main content. This is essential for accessibility compliance."
+        },
+        {
+          "title": "Back-to-Top and Cross-Page Fragments",
+          "code": "<!-- Back to top link -->\n<a href=\"#\" id=\"top\">Back to Top</a>\n\n<!-- Alternative with explicit top target -->\n<a href=\"#top\">Back to Top</a>\n\n<!-- Link to a section on another page -->\n<a href=\"/docs/api#authentication\">\n  API Authentication Docs\n</a>\n\n<!-- Link to top of another page -->\n<a href=\"/about\">\n  About Page\n</a>",
+          "explanation": "href='#' scrolls to the top of the current page. You can also link to a specific section on a different page by appending the fragment identifier to the URL. The browser loads the target page and then scrolls to the element with the matching id."
+        }
+      ],
+      "notes": [
+        "Each id on a page must be unique. Duplicate ids cause bookmark links to behave unpredictably and are invalid HTML.",
+        "Use scroll-margin-top on target elements when you have a fixed or sticky header. Without it, the target element will scroll behind the header.",
+        "Skip navigation links are a WCAG 2.1 success criterion (2.4.1). They are required for accessibility compliance on content-heavy sites."
+      ],
+      "commonPitfalls": [
+        "Forgetting to add scroll-margin-top when using a fixed header. The target section scrolls behind the header, making the heading invisible.",
+        "Using duplicate id values on the same page. The browser will only scroll to the first matching element, and the HTML is technically invalid.",
+        "Not testing skip navigation links. They are invisible by default, so developers often forget to verify they work correctly when focused with a keyboard."
+      ],
+      "interviewTips": [
+        "Explain what fragment identifiers are and how they work with the browser's scrolling behavior.",
+        "Know what skip navigation is and why it is important for accessibility (WCAG 2.4.1 Bypass Blocks).",
+        "Be able to discuss scroll-behavior: smooth vs JavaScript scrollIntoView and the pros and cons of each approach."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "bookmark-links-ex1",
+        "title": "Create a Table of Contents",
+        "description": "Create a table of contents with bookmark links to three sections: 'Getting Started' (id: getting-started), 'Installation' (id: installation), and 'Usage' (id: usage). Then create the three section elements with matching ids and h2 headings. Add smooth scrolling via CSS.",
+        "starterCode": "<style>\n  /* Add smooth scrolling */\n</style>\n\n<!-- Table of contents -->\n<nav>\n  <!-- Add links here -->\n</nav>\n\n<!-- Sections -->\n",
+        "solution": "<style>\n  html {\n    scroll-behavior: smooth;\n  }\n</style>\n\n<nav aria-label=\"Table of contents\">\n  <ul>\n    <li><a href=\"#getting-started\">Getting Started</a></li>\n    <li><a href=\"#installation\">Installation</a></li>\n    <li><a href=\"#usage\">Usage</a></li>\n  </ul>\n</nav>\n\n<section id=\"getting-started\">\n  <h2>Getting Started</h2>\n  <p>Welcome to the guide.</p>\n</section>\n\n<section id=\"installation\">\n  <h2>Installation</h2>\n  <p>Follow these steps to install.</p>\n</section>\n\n<section id=\"usage\">\n  <h2>Usage</h2>\n  <p>Here is how to use the tool.</p>\n</section>",
+        "hints": [
+          "Use scroll-behavior: smooth on the html element",
+          "Each section needs a unique id that matches the href fragment (without the #)"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "bookmark-links-ex2",
+        "title": "Add a Skip Navigation Link",
+        "description": "Add a skip navigation link as the first element in the body that jumps to <main id=\"main-content\">. The link should be visually hidden by default but visible when focused. Write both the HTML and the CSS.",
+        "starterCode": "<body>\n  <!-- Add skip link here -->\n\n  <header>\n    <nav>\n      <a href=\"/\">Home</a>\n      <a href=\"/about\">About</a>\n      <a href=\"/blog\">Blog</a>\n    </nav>\n  </header>\n\n  <main id=\"main-content\">\n    <h1>Welcome</h1>\n  </main>\n</body>\n\n<style>\n  /* Add skip link styles */\n</style>\n",
+        "solution": "<body>\n  <a href=\"#main-content\" class=\"skip-link\">Skip to main content</a>\n\n  <header>\n    <nav>\n      <a href=\"/\">Home</a>\n      <a href=\"/about\">About</a>\n      <a href=\"/blog\">Blog</a>\n    </nav>\n  </header>\n\n  <main id=\"main-content\">\n    <h1>Welcome</h1>\n  </main>\n</body>\n\n<style>\n  .skip-link {\n    position: absolute;\n    top: -100%;\n    left: 0;\n    padding: 8px 16px;\n    background: #000;\n    color: #fff;\n    z-index: 1000;\n  }\n  .skip-link:focus {\n    top: 0;\n  }\n</style>",
+        "hints": [
+          "The skip link must be the very first focusable element in the body",
+          "Use position: absolute with a negative top value to hide it, then reset top to 0 on :focus"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -134,7 +134,7 @@ export default function AptitudeCategoriesPage() {
         className="flex items-center gap-3 mb-8 flex-wrap"
       >
         <Link
-          to={user ? "/student/aptitude/companies" : "/aptitude/companies"}
+          to="/learn/aptitude/companies"
           className="inline-flex items-center gap-2 px-4 py-2.5 bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-xl hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
         >
           <Building2 className="w-4 h-4 text-blue-500" />
@@ -251,7 +251,7 @@ export default function AptitudeCategoriesPage() {
                   {cat.topics.map((topic, tidx) => {
                     const topicPct = topic.questionCount > 0
                       ? Math.round((topic.answeredCount / topic.questionCount) * 100) : 0;
-                    const basePath = user ? "/student/aptitude" : "/aptitude";
+                    const basePath = "/learn/aptitude";
                     const isComplete = topicPct === 100 && topic.questionCount > 0;
 
                     return (

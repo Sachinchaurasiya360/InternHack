@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Search, MapPin, DollarSign, Clock, X } from "lucide-react";
+import { Search, MapPin, DollarSign, Clock, X, Landmark, ChevronRight } from "lucide-react";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
@@ -99,6 +99,28 @@ export default function JobBrowsePage() {
             Find Your Next <span className="text-gradient-accent">Opportunity</span>
           </h1>
           <p className="text-lg text-gray-500 max-w-xl mx-auto">Browse open positions from top companies and kickstart your career</p>
+        </motion.div>
+
+        {/* Government Internships Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.05 }}
+          className="max-w-4xl mx-auto mb-6"
+        >
+          <Link
+            to={isInsideLayout ? "/student/internships" : "/internships"}
+            className="w-full flex items-center gap-4 p-4 bg-white dark:bg-gray-900 rounded-xl border border-emerald-200 dark:border-emerald-800/50 shadow-sm hover:shadow-md hover:border-emerald-300 dark:hover:border-emerald-700 transition-all group no-underline"
+          >
+            <div className="w-10 h-10 rounded-lg bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
+              <Landmark className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-900 dark:text-white">Top 100 Internships in India 2026</p>
+              <p className="text-xs text-gray-500 dark:text-gray-500">Government, PSUs, IITs, Tech Giants & Global Organizations</p>
+            </div>
+            <ChevronRight className="w-4 h-4 text-gray-400 dark:text-gray-500 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors shrink-0" />
+          </Link>
         </motion.div>
 
         {/* Search + Filters */}

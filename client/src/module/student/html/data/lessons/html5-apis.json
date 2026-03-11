@@ -1,0 +1,361 @@
+[
+  {
+    "id": "canvas-basics",
+    "sectionId": "html5-apis",
+    "orderIndex": 0,
+    "title": "Canvas Basics",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Canvas Element", "getContext", "Drawing Shapes", "Canvas Text", "Coordinate System"],
+    "content": {
+      "explanation": "The HTML5 <canvas> element provides a drawable surface that you can use to render graphics, animations, games, data visualizations, and image manipulations using JavaScript. Unlike SVG, which uses a declarative markup approach, canvas is an immediate-mode rendering API — you issue drawing commands that paint pixels directly onto a bitmap, and the canvas does not retain any knowledge of the objects you have drawn.\n\nTo start drawing on a canvas, you first get a reference to the element in the DOM, then call getContext('2d') to obtain a CanvasRenderingContext2D object. This context object exposes all the drawing methods: fillRect(), strokeRect(), arc(), lineTo(), fillText(), drawImage(), and many more. The canvas uses a coordinate system where (0, 0) is the top-left corner, x increases to the right, and y increases downward.\n\nThe canvas drawing model revolves around paths and fill/stroke operations. You begin a path with beginPath(), define its shape using methods like moveTo(), lineTo(), arc(), and bezierCurveTo(), then render it with fill() (solid fill) or stroke() (outline). You control appearance with properties like fillStyle, strokeStyle, lineWidth, lineCap, lineJoin, font, and textAlign. Styles can be solid colors, gradients (createLinearGradient, createRadialGradient), or patterns (createPattern).\n\nText rendering on canvas uses fillText(text, x, y) and strokeText(text, x, y). You control the font with the font property (which accepts CSS font shorthand), alignment with textAlign ('left', 'center', 'right'), and baseline with textBaseline ('top', 'middle', 'alphabetic', 'bottom'). Measuring text width before drawing is possible with measureText(text).width, which is essential for centering or wrapping text.\n\nCanvas is pixel-based, which means it does not scale well on high-DPI displays by default. To render sharp graphics on Retina screens, you need to set the canvas width and height attributes to the display size multiplied by window.devicePixelRatio, then scale the context accordingly. Also, since canvas does not retain drawn objects, you must manage your own scene graph if you need hit detection, animation, or interactivity.",
+      "codeExamples": [
+        {
+          "title": "Setting Up and Drawing Rectangles",
+          "code": "<canvas id=\"myCanvas\" width=\"400\" height=\"300\"></canvas>\n\n<script>\n  const canvas = document.getElementById('myCanvas');\n  const ctx = canvas.getContext('2d');\n\n  // Filled rectangle\n  ctx.fillStyle = '#3b82f6';\n  ctx.fillRect(20, 20, 150, 100);\n\n  // Stroked rectangle (outline only)\n  ctx.strokeStyle = '#ef4444';\n  ctx.lineWidth = 3;\n  ctx.strokeRect(200, 20, 150, 100);\n\n  // Clear a portion (eraser)\n  ctx.clearRect(50, 50, 50, 30);\n</script>",
+          "explanation": "fillRect draws a solid rectangle. strokeRect draws an outline. clearRect erases pixels in the specified region. The coordinate system starts at (0,0) in the top-left corner."
+        },
+        {
+          "title": "Drawing Paths: Lines and Circles",
+          "code": "<canvas id=\"pathCanvas\" width=\"400\" height=\"300\"></canvas>\n\n<script>\n  const canvas = document.getElementById('pathCanvas');\n  const ctx = canvas.getContext('2d');\n\n  // Draw a triangle\n  ctx.beginPath();\n  ctx.moveTo(200, 20);    // Top vertex\n  ctx.lineTo(300, 180);   // Bottom-right\n  ctx.lineTo(100, 180);   // Bottom-left\n  ctx.closePath();        // Connect back to start\n  ctx.fillStyle = '#10b981';\n  ctx.fill();\n  ctx.strokeStyle = '#064e3b';\n  ctx.lineWidth = 2;\n  ctx.stroke();\n\n  // Draw a circle\n  ctx.beginPath();\n  ctx.arc(200, 240, 40, 0, Math.PI * 2); // x, y, radius, startAngle, endAngle\n  ctx.fillStyle = '#f59e0b';\n  ctx.fill();\n\n  // Draw a semicircle\n  ctx.beginPath();\n  ctx.arc(320, 240, 40, 0, Math.PI); // Half circle\n  ctx.fillStyle = '#8b5cf6';\n  ctx.fill();\n</script>",
+          "explanation": "Paths are defined with beginPath, shape commands (moveTo, lineTo, arc), and rendered with fill/stroke. arc() takes center x/y, radius, start angle, and end angle in radians. Math.PI * 2 is a full circle."
+        },
+        {
+          "title": "Drawing Text on Canvas",
+          "code": "<canvas id=\"textCanvas\" width=\"400\" height=\"200\"></canvas>\n\n<script>\n  const canvas = document.getElementById('textCanvas');\n  const ctx = canvas.getContext('2d');\n\n  // Filled text\n  ctx.font = 'bold 32px Arial';\n  ctx.fillStyle = '#1e293b';\n  ctx.textAlign = 'center';\n  ctx.fillText('Hello Canvas!', 200, 50);\n\n  // Stroked text (outline)\n  ctx.font = '28px Georgia';\n  ctx.strokeStyle = '#3b82f6';\n  ctx.lineWidth = 1.5;\n  ctx.strokeText('Outlined Text', 200, 100);\n\n  // Measuring text\n  ctx.font = '16px monospace';\n  const text = 'Measured width demo';\n  const metrics = ctx.measureText(text);\n  ctx.fillStyle = '#64748b';\n  ctx.textAlign = 'left';\n  ctx.fillText(`${text} (${metrics.width.toFixed(1)}px wide)`, 20, 160);\n</script>",
+          "explanation": "fillText renders solid text; strokeText renders outlined text. The font property uses CSS font shorthand. textAlign controls horizontal alignment relative to the x coordinate. measureText returns the pixel width of the text."
+        },
+        {
+          "title": "Gradients and High-DPI Support",
+          "code": "<canvas id=\"hdCanvas\" width=\"400\" height=\"200\"></canvas>\n\n<script>\n  const canvas = document.getElementById('hdCanvas');\n  const ctx = canvas.getContext('2d');\n\n  // High-DPI fix\n  const dpr = window.devicePixelRatio || 1;\n  const rect = canvas.getBoundingClientRect();\n  canvas.width = rect.width * dpr;\n  canvas.height = rect.height * dpr;\n  ctx.scale(dpr, dpr);\n  canvas.style.width = rect.width + 'px';\n  canvas.style.height = rect.height + 'px';\n\n  // Linear gradient\n  const gradient = ctx.createLinearGradient(0, 0, 300, 0);\n  gradient.addColorStop(0, '#3b82f6');\n  gradient.addColorStop(0.5, '#8b5cf6');\n  gradient.addColorStop(1, '#ec4899');\n\n  ctx.fillStyle = gradient;\n  ctx.fillRect(20, 20, 300, 60);\n\n  // Radial gradient\n  const radial = ctx.createRadialGradient(170, 140, 10, 170, 140, 60);\n  radial.addColorStop(0, '#fbbf24');\n  radial.addColorStop(1, '#ef4444');\n\n  ctx.beginPath();\n  ctx.arc(170, 140, 60, 0, Math.PI * 2);\n  ctx.fillStyle = radial;\n  ctx.fill();\n</script>",
+          "explanation": "The High-DPI fix scales the canvas buffer to match the display's pixel ratio, ensuring sharp rendering on Retina screens. Gradients are created as reusable fill styles with color stops at positions between 0 and 1."
+        }
+      ],
+      "notes": [
+        "Canvas is immediate-mode: once you draw something, the canvas forgets about it. To animate, you must clear the canvas and redraw everything each frame using requestAnimationFrame.",
+        "Always set the canvas width and height via HTML attributes or JavaScript, not CSS. CSS scales the bitmap and causes blurry rendering.",
+        "For high-DPI displays, multiply the canvas dimensions by window.devicePixelRatio and scale the context to keep drawing coordinates consistent."
+      ],
+      "commonPitfalls": [
+        "Setting canvas dimensions with CSS instead of HTML attributes. CSS stretches the existing bitmap, causing blurry graphics. Use the width and height attributes directly.",
+        "Forgetting to call beginPath() before starting a new shape. Without it, new shapes connect to previous paths, creating unintended lines.",
+        "Not handling high-DPI displays. Canvas renders at 1x resolution by default, resulting in blurry graphics on Retina screens."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "canvas-basics-ex1",
+        "title": "Draw a Simple Scene",
+        "description": "Create a canvas (500x300) and draw: a blue sky rectangle covering the top half, a green ground rectangle covering the bottom half, a yellow circle as the sun in the top-right area, and centered white text saying 'Canvas World'.",
+        "starterCode": "<canvas id=\"scene\" width=\"500\" height=\"300\"></canvas>\n\n<script>\n  const canvas = document.getElementById('scene');\n  const ctx = canvas.getContext('2d');\n\n  // Draw blue sky (top half)\n\n  // Draw green ground (bottom half)\n\n  // Draw yellow sun (circle in top-right)\n\n  // Draw centered text 'Canvas World'\n\n</script>\n",
+        "solution": "<canvas id=\"scene\" width=\"500\" height=\"300\"></canvas>\n\n<script>\n  const canvas = document.getElementById('scene');\n  const ctx = canvas.getContext('2d');\n\n  // Blue sky\n  ctx.fillStyle = '#87ceeb';\n  ctx.fillRect(0, 0, 500, 150);\n\n  // Green ground\n  ctx.fillStyle = '#22c55e';\n  ctx.fillRect(0, 150, 500, 150);\n\n  // Yellow sun\n  ctx.beginPath();\n  ctx.arc(420, 60, 40, 0, Math.PI * 2);\n  ctx.fillStyle = '#fbbf24';\n  ctx.fill();\n\n  // Centered text\n  ctx.font = 'bold 36px Arial';\n  ctx.fillStyle = '#ffffff';\n  ctx.textAlign = 'center';\n  ctx.fillText('Canvas World', 250, 160);\n</script>",
+        "hints": [
+          "Use fillRect for the sky and ground rectangles. The sky covers y: 0 to 150, the ground covers y: 150 to 300.",
+          "Use arc() with Math.PI * 2 for a full circle. Remember to call beginPath() before drawing the arc."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "canvas-basics-ex2",
+        "title": "Draw a Bar Chart",
+        "description": "Create a canvas (400x300) and draw a simple bar chart with 4 vertical bars representing data values [80, 120, 60, 150]. Each bar should be 50px wide with 30px gaps. Use different colors for each bar and add a label below each one: 'Q1', 'Q2', 'Q3', 'Q4'.",
+        "starterCode": "<canvas id=\"chart\" width=\"400\" height=\"300\"></canvas>\n\n<script>\n  const canvas = document.getElementById('chart');\n  const ctx = canvas.getContext('2d');\n  const data = [80, 120, 60, 150];\n  const labels = ['Q1', 'Q2', 'Q3', 'Q4'];\n  const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];\n\n  // Draw the bars and labels\n\n</script>\n",
+        "solution": "<canvas id=\"chart\" width=\"400\" height=\"300\"></canvas>\n\n<script>\n  const canvas = document.getElementById('chart');\n  const ctx = canvas.getContext('2d');\n  const data = [80, 120, 60, 150];\n  const labels = ['Q1', 'Q2', 'Q3', 'Q4'];\n  const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444'];\n\n  const barWidth = 50;\n  const gap = 30;\n  const startX = 60;\n  const baseY = 250;\n\n  data.forEach((value, i) => {\n    const x = startX + i * (barWidth + gap);\n    const barHeight = value;\n\n    // Draw bar\n    ctx.fillStyle = colors[i];\n    ctx.fillRect(x, baseY - barHeight, barWidth, barHeight);\n\n    // Draw label\n    ctx.fillStyle = '#1e293b';\n    ctx.font = '14px Arial';\n    ctx.textAlign = 'center';\n    ctx.fillText(labels[i], x + barWidth / 2, baseY + 20);\n\n    // Draw value on top\n    ctx.fillText(String(value), x + barWidth / 2, baseY - barHeight - 8);\n  });\n</script>",
+        "hints": [
+          "Calculate each bar's x position as startX + index * (barWidth + gap). Bars draw upward from a baseline.",
+          "Use fillRect(x, baseY - value, barWidth, value) to draw bars that grow upward from the baseline."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "geolocation",
+    "sectionId": "html5-apis",
+    "orderIndex": 1,
+    "title": "Geolocation API",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["navigator.geolocation", "getCurrentPosition", "watchPosition", "Permissions", "Error Handling"],
+    "content": {
+      "explanation": "The Geolocation API allows web applications to access the user's geographical location. It is accessed through the navigator.geolocation object and requires explicit user permission before any location data is shared. This permission model is enforced by the browser — the user sees a prompt asking whether to allow or block location access, and they can revoke it at any time through browser settings.\n\nThe primary method is getCurrentPosition(successCallback, errorCallback, options). When called, the browser requests the user's location from the device (using GPS, Wi-Fi triangulation, cell tower data, or IP geolocation as fallback). On success, the callback receives a GeolocationPosition object containing a coords property with latitude, longitude, accuracy (in meters), and optionally altitude, altitudeAccuracy, heading, and speed. The timestamp property indicates when the position was determined.\n\nFor applications that need continuous location tracking (fitness trackers, navigation, delivery tracking), the watchPosition() method works identically to getCurrentPosition() but fires the success callback every time the device's position changes. It returns a watchId that you must pass to clearWatch(watchId) to stop tracking. Failing to clear a watch drains the device's battery and continues background GPS usage.\n\nThe optional third parameter is an options object with three properties. enableHighAccuracy (boolean) requests GPS-level precision when available, at the cost of battery life and response time. timeout (milliseconds) sets the maximum wait time before the error callback fires with a TIMEOUT error. maximumAge (milliseconds) allows the browser to return a cached position if it is newer than the specified age, reducing GPS queries.\n\nError handling is critical for geolocation. The error callback receives a GeolocationPositionError with a code property: PERMISSION_DENIED (1) means the user blocked the request, POSITION_UNAVAILABLE (2) means the device could not determine its location, and TIMEOUT (3) means the request exceeded the timeout. Your application must handle all three cases gracefully, providing fallback behavior or informative messages. The Geolocation API only works on secure contexts (HTTPS), so it will fail silently on HTTP pages.",
+      "codeExamples": [
+        {
+          "title": "Getting Current Position",
+          "code": "<button id=\"locate-btn\">Get My Location</button>\n<p id=\"location-output\">Click the button to get your location.</p>\n\n<script>\n  const btn = document.getElementById('locate-btn');\n  const output = document.getElementById('location-output');\n\n  btn.addEventListener('click', () => {\n    if (!navigator.geolocation) {\n      output.textContent = 'Geolocation is not supported by your browser.';\n      return;\n    }\n\n    output.textContent = 'Locating...';\n\n    navigator.geolocation.getCurrentPosition(\n      (position) => {\n        const { latitude, longitude, accuracy } = position.coords;\n        output.textContent =\n          `Lat: ${latitude.toFixed(6)}, ` +\n          `Lng: ${longitude.toFixed(6)}, ` +\n          `Accuracy: ${accuracy.toFixed(0)}m`;\n      },\n      (error) => {\n        output.textContent = `Error: ${error.message}`;\n      }\n    );\n  });\n</script>",
+          "explanation": "Always check for navigator.geolocation before calling methods. The success callback receives coords with latitude, longitude, and accuracy. The error callback provides an error message and code."
+        },
+        {
+          "title": "Options: High Accuracy and Timeout",
+          "code": "<script>\n  const options = {\n    enableHighAccuracy: true, // Use GPS if available\n    timeout: 10000,           // Fail after 10 seconds\n    maximumAge: 60000         // Accept cached position up to 1 min old\n  };\n\n  navigator.geolocation.getCurrentPosition(\n    (position) => {\n      console.log('Latitude:', position.coords.latitude);\n      console.log('Longitude:', position.coords.longitude);\n      console.log('Accuracy:', position.coords.accuracy, 'meters');\n      console.log('Altitude:', position.coords.altitude); // May be null\n      console.log('Speed:', position.coords.speed);       // May be null\n      console.log('Heading:', position.coords.heading);   // May be null\n      console.log('Timestamp:', new Date(position.timestamp));\n    },\n    (error) => {\n      switch (error.code) {\n        case error.PERMISSION_DENIED:\n          console.log('User denied location permission.');\n          break;\n        case error.POSITION_UNAVAILABLE:\n          console.log('Location information unavailable.');\n          break;\n        case error.TIMEOUT:\n          console.log('Location request timed out.');\n          break;\n      }\n    },\n    options\n  );\n</script>",
+          "explanation": "enableHighAccuracy uses GPS for precision. timeout sets a maximum wait (ms). maximumAge allows cached results. The error codes cover all failure scenarios — always handle all three."
+        },
+        {
+          "title": "Watching Position (Continuous Tracking)",
+          "code": "<button id=\"start-watch\">Start Tracking</button>\n<button id=\"stop-watch\" disabled>Stop Tracking</button>\n<div id=\"tracker\"></div>\n\n<script>\n  let watchId = null;\n  const tracker = document.getElementById('tracker');\n  const startBtn = document.getElementById('start-watch');\n  const stopBtn = document.getElementById('stop-watch');\n\n  startBtn.addEventListener('click', () => {\n    watchId = navigator.geolocation.watchPosition(\n      (position) => {\n        const { latitude, longitude, speed } = position.coords;\n        tracker.innerHTML = `\n          <p>Lat: ${latitude.toFixed(6)}</p>\n          <p>Lng: ${longitude.toFixed(6)}</p>\n          <p>Speed: ${speed ? (speed * 3.6).toFixed(1) + ' km/h' : 'N/A'}</p>\n          <p>Updated: ${new Date(position.timestamp).toLocaleTimeString()}</p>\n        `;\n      },\n      (error) => {\n        tracker.textContent = `Tracking error: ${error.message}`;\n      },\n      { enableHighAccuracy: true }\n    );\n    startBtn.disabled = true;\n    stopBtn.disabled = false;\n  });\n\n  stopBtn.addEventListener('click', () => {\n    if (watchId !== null) {\n      navigator.geolocation.clearWatch(watchId);\n      watchId = null;\n    }\n    startBtn.disabled = false;\n    stopBtn.disabled = true;\n    tracker.textContent = 'Tracking stopped.';\n  });\n</script>",
+          "explanation": "watchPosition fires the callback each time the position changes. Always store the watchId and call clearWatch() when done to stop GPS usage and save battery. Speed is in m/s — multiply by 3.6 for km/h."
+        },
+        {
+          "title": "Distance Calculation with Haversine Formula",
+          "code": "<script>\n  // Haversine formula: distance between two GPS coordinates\n  function getDistance(lat1, lng1, lat2, lng2) {\n    const R = 6371; // Earth's radius in km\n    const dLat = toRad(lat2 - lat1);\n    const dLng = toRad(lng2 - lng1);\n\n    const a = Math.sin(dLat / 2) ** 2 +\n              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *\n              Math.sin(dLng / 2) ** 2;\n\n    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));\n    return R * c; // Distance in km\n  }\n\n  function toRad(degrees) {\n    return degrees * (Math.PI / 180);\n  }\n\n  // Usage with geolocation\n  const TARGET = { lat: 48.8566, lng: 2.3522 }; // Paris\n\n  navigator.geolocation.getCurrentPosition((pos) => {\n    const dist = getDistance(\n      pos.coords.latitude, pos.coords.longitude,\n      TARGET.lat, TARGET.lng\n    );\n    console.log(`You are ${dist.toFixed(1)} km from Paris.`);\n  });\n</script>",
+          "explanation": "The Haversine formula calculates the great-circle distance between two points on a sphere. It accounts for Earth's curvature, making it accurate for distances from a few meters to thousands of kilometers."
+        }
+      ],
+      "notes": [
+        "The Geolocation API only works on secure contexts (HTTPS). It will not function on plain HTTP pages. Localhost is an exception during development.",
+        "Always check for navigator.geolocation before calling methods. While modern browsers support it universally, feature detection is still good practice.",
+        "Battery impact: enableHighAccuracy and watchPosition both increase GPS usage. Only enable high accuracy when needed, and always call clearWatch() when tracking is no longer required."
+      ],
+      "commonPitfalls": [
+        "Forgetting to handle the error callback. If the user denies permission or GPS is unavailable, the success callback never fires and nothing happens — leaving the user with no feedback.",
+        "Not calling clearWatch() when tracking is done. This keeps GPS active, draining the battery and potentially raising privacy concerns.",
+        "Testing geolocation on HTTP. The API silently fails on insecure origins. Always use HTTPS (or localhost during development)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "geolocation-ex1",
+        "title": "Location Display with Error Handling",
+        "description": "Create a button that fetches the user's location with a 5-second timeout. Display 'Locating...' while waiting. On success, show latitude, longitude, and accuracy. Handle all three error cases (PERMISSION_DENIED, POSITION_UNAVAILABLE, TIMEOUT) with specific messages.",
+        "starterCode": "<button id=\"get-location\">Where Am I?</button>\n<p id=\"result\">Press the button to find your location.</p>\n\n<script>\n  const btn = document.getElementById('get-location');\n  const result = document.getElementById('result');\n\n  btn.addEventListener('click', () => {\n    // Check for geolocation support\n    // Show 'Locating...' message\n    // Call getCurrentPosition with 5000ms timeout\n    // Handle success and all error cases\n  });\n</script>\n",
+        "solution": "<button id=\"get-location\">Where Am I?</button>\n<p id=\"result\">Press the button to find your location.</p>\n\n<script>\n  const btn = document.getElementById('get-location');\n  const result = document.getElementById('result');\n\n  btn.addEventListener('click', () => {\n    if (!navigator.geolocation) {\n      result.textContent = 'Geolocation is not supported by your browser.';\n      return;\n    }\n\n    result.textContent = 'Locating...';\n\n    navigator.geolocation.getCurrentPosition(\n      (position) => {\n        const { latitude, longitude, accuracy } = position.coords;\n        result.textContent =\n          `Latitude: ${latitude.toFixed(6)}, ` +\n          `Longitude: ${longitude.toFixed(6)}, ` +\n          `Accuracy: ${accuracy.toFixed(0)} meters`;\n      },\n      (error) => {\n        switch (error.code) {\n          case error.PERMISSION_DENIED:\n            result.textContent = 'Permission denied. Please allow location access in your browser settings.';\n            break;\n          case error.POSITION_UNAVAILABLE:\n            result.textContent = 'Location unavailable. Your device could not determine its position.';\n            break;\n          case error.TIMEOUT:\n            result.textContent = 'Request timed out. Please try again.';\n            break;\n          default:\n            result.textContent = 'An unknown error occurred.';\n        }\n      },\n      { timeout: 5000 }\n    );\n  });\n</script>",
+        "hints": [
+          "Check navigator.geolocation exists before calling methods. Set timeout: 5000 in the options object.",
+          "Use a switch statement on error.code to handle PERMISSION_DENIED, POSITION_UNAVAILABLE, and TIMEOUT separately."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "geolocation-ex2",
+        "title": "Distance from a Target Location",
+        "description": "Create a page that gets the user's location and calculates the distance to a target location (use New York: lat 40.7128, lng -74.0060). Display both the user's coordinates and the distance in km. Implement the Haversine formula for the calculation.",
+        "starterCode": "<h2>Distance Calculator</h2>\n<button id=\"calc-btn\">Calculate Distance to New York</button>\n<div id=\"output\"></div>\n\n<script>\n  const TARGET = { lat: 40.7128, lng: -74.0060 };\n\n  // Implement Haversine formula\n  function getDistance(lat1, lng1, lat2, lng2) {\n    // Your code here\n  }\n\n  // Get location and calculate distance\n\n</script>\n",
+        "solution": "<h2>Distance Calculator</h2>\n<button id=\"calc-btn\">Calculate Distance to New York</button>\n<div id=\"output\"></div>\n\n<script>\n  const TARGET = { lat: 40.7128, lng: -74.0060 };\n\n  function toRad(deg) {\n    return deg * (Math.PI / 180);\n  }\n\n  function getDistance(lat1, lng1, lat2, lng2) {\n    const R = 6371;\n    const dLat = toRad(lat2 - lat1);\n    const dLng = toRad(lng2 - lng1);\n    const a = Math.sin(dLat / 2) ** 2 +\n              Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) *\n              Math.sin(dLng / 2) ** 2;\n    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));\n    return R * c;\n  }\n\n  const btn = document.getElementById('calc-btn');\n  const output = document.getElementById('output');\n\n  btn.addEventListener('click', () => {\n    if (!navigator.geolocation) {\n      output.textContent = 'Geolocation not supported.';\n      return;\n    }\n\n    output.textContent = 'Getting your location...';\n\n    navigator.geolocation.getCurrentPosition(\n      (position) => {\n        const { latitude, longitude } = position.coords;\n        const distance = getDistance(latitude, longitude, TARGET.lat, TARGET.lng);\n        output.innerHTML =\n          `<p>Your location: ${latitude.toFixed(4)}, ${longitude.toFixed(4)}</p>` +\n          `<p>New York: ${TARGET.lat}, ${TARGET.lng}</p>` +\n          `<p>Distance: ${distance.toFixed(1)} km</p>`;\n      },\n      (error) => {\n        output.textContent = `Error: ${error.message}`;\n      },\n      { timeout: 10000 }\n    );\n  });\n</script>",
+        "hints": [
+          "The Haversine formula uses Earth's radius (6371 km), converts degrees to radians, and calculates the great-circle distance.",
+          "Use Math.sin, Math.cos, Math.atan2, and Math.sqrt for the formula. Convert degrees to radians with deg * (Math.PI / 180)."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "web-storage",
+    "sectionId": "html5-apis",
+    "orderIndex": 2,
+    "title": "Web Storage",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["localStorage", "sessionStorage", "Cookies", "Storage Events", "JSON Serialization"],
+    "content": {
+      "explanation": "The Web Storage API provides two mechanisms for storing key-value pairs in the browser: localStorage and sessionStorage. Both store data as strings, have a synchronous API, and offer approximately 5-10 MB of storage per origin (compared to the 4 KB limit of cookies). Understanding the differences between these storage mechanisms and cookies is a frequent interview topic.\n\nlocalStorage persists data with no expiration. Data stored in localStorage remains available even after the browser is closed and reopened, across tabs and windows of the same origin, and survives browser restarts. It is ideal for user preferences, theme settings, cached data, and any information that should persist across sessions. Data is cleared only when the user explicitly clears browser data or your code calls localStorage.clear() or removeItem().\n\nsessionStorage is scoped to a single browser tab or window. Data persists across page reloads within the same tab but is deleted when the tab is closed. Opening a new tab to the same URL creates a separate sessionStorage. This makes it suitable for single-session data like form progress, wizard state, or temporary authentication tokens. Each tab has its own isolated sessionStorage — data does not leak between tabs.\n\nCookies predate the Web Storage API and serve a different purpose. Cookies are automatically sent with every HTTP request to the matching domain, making them suitable for authentication tokens and server-side session management. They have a 4 KB size limit, support expiration dates (expires/max-age), and can be flagged as HttpOnly (inaccessible to JavaScript), Secure (HTTPS only), and SameSite (CSRF protection). Unlike localStorage and sessionStorage, cookies are part of the HTTP protocol, not just a client-side API.\n\nBoth localStorage and sessionStorage share the same API: setItem(key, value), getItem(key), removeItem(key), clear(), key(index), and the length property. Since values are always strings, you must use JSON.stringify() when storing objects or arrays and JSON.parse() when retrieving them. Failing to serialize complex data types is one of the most common bugs. The storage event fires on other tabs/windows when localStorage changes, enabling cross-tab communication.",
+      "codeExamples": [
+        {
+          "title": "localStorage Basics",
+          "code": "// Store simple values\nlocalStorage.setItem('username', 'john_doe');\nlocalStorage.setItem('theme', 'dark');\nlocalStorage.setItem('fontSize', '16');\n\n// Retrieve values\nconst username = localStorage.getItem('username');\nconsole.log(username); // 'john_doe'\n\n// Store complex data with JSON\nconst user = {\n  name: 'John',\n  email: 'john@example.com',\n  preferences: { theme: 'dark', language: 'en' }\n};\nlocalStorage.setItem('user', JSON.stringify(user));\n\n// Retrieve and parse\nconst stored = JSON.parse(localStorage.getItem('user'));\nconsole.log(stored.name);                  // 'John'\nconsole.log(stored.preferences.theme);      // 'dark'\n\n// Remove specific item\nlocalStorage.removeItem('fontSize');\n\n// Clear all localStorage\n// localStorage.clear();\n\n// Check how many items are stored\nconsole.log('Items stored:', localStorage.length);",
+          "explanation": "setItem stores string key-value pairs. getItem retrieves them. For objects and arrays, serialize with JSON.stringify and deserialize with JSON.parse. removeItem deletes a single key; clear removes everything."
+        },
+        {
+          "title": "sessionStorage for Tab-Scoped Data",
+          "code": "// Track form progress in current tab only\nsessionStorage.setItem('formStep', '2');\nsessionStorage.setItem('formData', JSON.stringify({\n  name: 'Jane',\n  email: 'jane@example.com'\n}));\n\n// Retrieve on page reload (same tab)\nconst step = sessionStorage.getItem('formStep');\nconst data = JSON.parse(sessionStorage.getItem('formData'));\nconsole.log(`Step ${step}:`, data);\n\n// Session counter (resets when tab closes)\nlet visits = parseInt(sessionStorage.getItem('tabVisits') || '0');\nvisits++;\nsessionStorage.setItem('tabVisits', String(visits));\nconsole.log(`Page views this session: ${visits}`);\n\n// Opening a new tab to the same URL creates fresh sessionStorage\n// Each tab is isolated from the others",
+          "explanation": "sessionStorage works identically to localStorage in API, but data is scoped to the current tab. Closing the tab destroys the data. New tabs get fresh storage. Use it for data that should not persist beyond the current session."
+        },
+        {
+          "title": "Cookies vs localStorage vs sessionStorage",
+          "code": "// COOKIES: sent with every HTTP request, 4KB limit\ndocument.cookie = 'token=abc123; max-age=3600; path=/; Secure; SameSite=Strict';\n\n// Reading cookies (string parsing required)\nfunction getCookie(name) {\n  const match = document.cookie.match(\n    new RegExp('(^| )' + name + '=([^;]+)')\n  );\n  return match ? match[2] : null;\n}\nconsole.log('Token:', getCookie('token'));\n\n// Delete a cookie (set max-age to 0)\ndocument.cookie = 'token=; max-age=0; path=/';\n\n// LOCAL STORAGE: 5-10MB, persists forever, not sent to server\nlocalStorage.setItem('preferences', JSON.stringify({ theme: 'dark' }));\n\n// SESSION STORAGE: 5-10MB, tab-scoped, not sent to server\nsessionStorage.setItem('tempData', 'temporary');\n\n// Summary:\n// | Feature          | Cookies    | localStorage | sessionStorage |\n// |-----------------|------------|--------------|----------------|\n// | Size limit      | ~4 KB      | ~5-10 MB     | ~5-10 MB       |\n// | Sent to server  | Yes        | No           | No             |\n// | Expiration      | Settable   | Never        | Tab close      |\n// | Scope           | Domain     | Origin       | Tab + Origin   |\n// | API             | String     | Key-Value    | Key-Value      |",
+          "explanation": "Cookies are for server communication (auth tokens). localStorage is for persistent client data (preferences). sessionStorage is for temporary tab data (form progress). Never store sensitive data in localStorage or sessionStorage — they are accessible to any script on the page."
+        },
+        {
+          "title": "Cross-Tab Communication with Storage Events",
+          "code": "// Tab A: Listen for storage changes from other tabs\nwindow.addEventListener('storage', (event) => {\n  console.log('Storage changed in another tab!');\n  console.log('Key:', event.key);\n  console.log('Old value:', event.oldValue);\n  console.log('New value:', event.newValue);\n  console.log('URL:', event.url);\n\n  // React to logout in another tab\n  if (event.key === 'auth_token' && event.newValue === null) {\n    console.log('User logged out in another tab. Redirecting...');\n    window.location.href = '/login';\n  }\n});\n\n// Tab B: Make a change that triggers the event in Tab A\nlocalStorage.setItem('auth_token', 'new-token-value');\n\n// Later, removing the token triggers the event in all other tabs\nlocalStorage.removeItem('auth_token');\n\n// Note: The storage event fires in OTHER tabs/windows\n// of the same origin, NOT in the tab that made the change.",
+          "explanation": "The storage event fires on all OTHER tabs/windows when localStorage changes. This enables cross-tab communication — useful for syncing logout, theme changes, or cart updates across multiple open tabs."
+        }
+      ],
+      "notes": [
+        "Both localStorage and sessionStorage store values as strings. Always use JSON.stringify/JSON.parse for objects and arrays.",
+        "localStorage persists indefinitely across sessions. sessionStorage is destroyed when the tab closes. Choose based on your data's intended lifetime.",
+        "The storage event only fires in OTHER tabs/windows of the same origin. It does not fire in the tab that made the change.",
+        "Web Storage is synchronous and blocks the main thread. For large datasets, consider IndexedDB instead."
+      ],
+      "commonPitfalls": [
+        "Storing objects without JSON.stringify(). localStorage.setItem('user', { name: 'John' }) stores the string '[object Object]' instead of the actual data.",
+        "Assuming sessionStorage is shared across tabs. Each tab has its own isolated sessionStorage. Only localStorage is shared between tabs of the same origin.",
+        "Storing sensitive data (passwords, tokens) in localStorage. Any JavaScript on the page can read it, making it vulnerable to XSS attacks. Use HttpOnly cookies for sensitive auth tokens."
+      ],
+      "interviewTips": [
+        "Know the key differences: cookies (4KB, sent to server, expirable), localStorage (5-10MB, persistent, client-only), sessionStorage (5-10MB, tab-scoped, client-only).",
+        "Explain when to use each: cookies for auth tokens (HttpOnly, Secure), localStorage for user preferences, sessionStorage for temporary form data.",
+        "Mention security: localStorage is vulnerable to XSS because any script can read it. HttpOnly cookies cannot be read by JavaScript.",
+        "Be ready to explain the storage event for cross-tab communication and how it enables features like synced logout."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "web-storage-ex1",
+        "title": "Theme Preference Persistence",
+        "description": "Build a theme toggle that saves the user's preference to localStorage. When the page loads, check localStorage for a saved theme and apply it. The toggle button should switch between 'light' and 'dark' themes, updating the body's class and saving to localStorage.",
+        "starterCode": "<button id=\"theme-toggle\">Toggle Theme</button>\n\n<script>\n  const btn = document.getElementById('theme-toggle');\n\n  // On page load: check localStorage for saved theme\n\n  // Toggle theme on button click\n  btn.addEventListener('click', () => {\n    // Toggle between 'light' and 'dark'\n    // Update body class\n    // Save to localStorage\n  });\n</script>\n",
+        "solution": "<button id=\"theme-toggle\">Toggle Theme</button>\n\n<script>\n  const btn = document.getElementById('theme-toggle');\n\n  // On page load: check localStorage for saved theme\n  const savedTheme = localStorage.getItem('theme') || 'light';\n  document.body.className = savedTheme;\n  btn.textContent = savedTheme === 'dark' ? 'Switch to Light' : 'Switch to Dark';\n\n  // Toggle theme on button click\n  btn.addEventListener('click', () => {\n    const current = document.body.className;\n    const newTheme = current === 'dark' ? 'light' : 'dark';\n    document.body.className = newTheme;\n    localStorage.setItem('theme', newTheme);\n    btn.textContent = newTheme === 'dark' ? 'Switch to Light' : 'Switch to Dark';\n  });\n</script>",
+        "hints": [
+          "Use localStorage.getItem('theme') on page load with a fallback default: || 'light'",
+          "Toggle by checking the current class and switching to the opposite, then save with localStorage.setItem"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "web-storage-ex2",
+        "title": "Todo List with localStorage",
+        "description": "Build a simple todo list that persists to localStorage. Include an input field and add button to create todos. Display the list with delete buttons. Load saved todos on page load and save after every add/delete.",
+        "starterCode": "<input type=\"text\" id=\"todo-input\" placeholder=\"Add a task...\">\n<button id=\"add-btn\">Add</button>\n<ul id=\"todo-list\"></ul>\n\n<script>\n  const STORAGE_KEY = 'todos';\n  let todos = [];\n\n  // Load from localStorage\n\n  // Render the list\n  function render() {\n    // Clear and rebuild the list\n  }\n\n  // Add a todo\n\n  // Delete a todo\n\n  // Save to localStorage\n  function save() {\n    // Stringify and store\n  }\n</script>\n",
+        "solution": "<input type=\"text\" id=\"todo-input\" placeholder=\"Add a task...\">\n<button id=\"add-btn\">Add</button>\n<ul id=\"todo-list\"></ul>\n\n<script>\n  const STORAGE_KEY = 'todos';\n  let todos = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');\n\n  const input = document.getElementById('todo-input');\n  const addBtn = document.getElementById('add-btn');\n  const list = document.getElementById('todo-list');\n\n  function render() {\n    list.innerHTML = '';\n    todos.forEach((todo, index) => {\n      const li = document.createElement('li');\n      li.textContent = todo;\n      const delBtn = document.createElement('button');\n      delBtn.textContent = 'Delete';\n      delBtn.addEventListener('click', () => deleteTodo(index));\n      li.appendChild(delBtn);\n      list.appendChild(li);\n    });\n  }\n\n  function addTodo() {\n    const text = input.value.trim();\n    if (!text) return;\n    todos.push(text);\n    input.value = '';\n    save();\n    render();\n  }\n\n  function deleteTodo(index) {\n    todos.splice(index, 1);\n    save();\n    render();\n  }\n\n  function save() {\n    localStorage.setItem(STORAGE_KEY, JSON.stringify(todos));\n  }\n\n  addBtn.addEventListener('click', addTodo);\n  input.addEventListener('keydown', (e) => {\n    if (e.key === 'Enter') addTodo();\n  });\n\n  render();\n</script>",
+        "hints": [
+          "Load todos with JSON.parse(localStorage.getItem('todos') || '[]') to handle the first-visit case.",
+          "Call save() (which does JSON.stringify + setItem) after every add and delete, then re-render the list."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "drag-and-drop",
+    "sectionId": "html5-apis",
+    "orderIndex": 3,
+    "title": "Drag & Drop",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["draggable Attribute", "dragstart", "dragover", "drop", "DataTransfer", "Sortable Lists"],
+    "content": {
+      "explanation": "The HTML5 Drag and Drop API enables native drag-and-drop interactions in the browser without any third-party libraries. It works by marking elements as draggable, then listening for a series of events that fire during the drag lifecycle. While the API can feel verbose compared to library-based solutions, understanding it is essential for building custom interactive interfaces.\n\nThe drag lifecycle consists of several events. On the dragged element: dragstart fires when the user begins dragging (this is where you set the data payload), drag fires continuously while dragging, and dragend fires when the drag operation completes (whether it was dropped or cancelled). On the drop target: dragenter fires when the dragged element enters the target, dragover fires continuously while hovering over the target, dragleave fires when the dragged element leaves the target, and drop fires when the user releases the element over the target.\n\nThe DataTransfer object is the core of the drag-and-drop data model. In the dragstart handler, you call event.dataTransfer.setData(type, data) to attach data to the drag operation. Common types include 'text/plain' for simple text and 'application/json' for structured data. In the drop handler, you retrieve the data with event.dataTransfer.getData(type). You can also set the drag image, the allowed effect (copy, move, link), and the drop effect using the DataTransfer properties.\n\nA critical requirement that trips up every beginner: you must call event.preventDefault() in the dragover handler to allow a drop. By default, elements do not accept drops. The default dragover behavior is to reject the drop operation. Without preventDefault(), the drop event will never fire. This single line of code is the most common source of \"my drop handler isn't working\" bugs.\n\nThe API also supports dragging files from the desktop into the browser. When a user drags a file onto a drop zone, the drop event's dataTransfer.files property contains the FileList. Combined with the FileReader API, this enables file upload interfaces, image preview dropzones, and CSV import features — all without a traditional file input.",
+      "codeExamples": [
+        {
+          "title": "Basic Drag and Drop",
+          "code": "<style>\n  .draggable {\n    padding: 12px 20px;\n    background: #3b82f6;\n    color: white;\n    cursor: grab;\n    display: inline-block;\n    margin: 8px;\n  }\n  .dropzone {\n    width: 300px;\n    height: 150px;\n    border: 2px dashed #94a3b8;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    margin-top: 16px;\n  }\n  .dropzone.over {\n    border-color: #3b82f6;\n    background: #eff6ff;\n  }\n</style>\n\n<div class=\"draggable\" draggable=\"true\" id=\"item-1\">Drag me!</div>\n\n<div class=\"dropzone\" id=\"drop-target\">Drop here</div>\n\n<script>\n  const item = document.getElementById('item-1');\n  const zone = document.getElementById('drop-target');\n\n  item.addEventListener('dragstart', (e) => {\n    e.dataTransfer.setData('text/plain', e.target.id);\n    e.dataTransfer.effectAllowed = 'move';\n  });\n\n  zone.addEventListener('dragover', (e) => {\n    e.preventDefault(); // REQUIRED to allow drop\n    zone.classList.add('over');\n  });\n\n  zone.addEventListener('dragleave', () => {\n    zone.classList.remove('over');\n  });\n\n  zone.addEventListener('drop', (e) => {\n    e.preventDefault();\n    zone.classList.remove('over');\n    const id = e.dataTransfer.getData('text/plain');\n    const element = document.getElementById(id);\n    zone.textContent = '';\n    zone.appendChild(element);\n  });\n</script>",
+          "explanation": "The draggable attribute enables dragging. dragstart sets the data payload (the element's id). dragover must call preventDefault() or the drop will be rejected. The drop handler retrieves the data and moves the element."
+        },
+        {
+          "title": "Sortable List",
+          "code": "<style>\n  .sort-list { list-style: none; padding: 0; width: 250px; }\n  .sort-list li {\n    padding: 12px 16px;\n    margin: 4px 0;\n    background: #f1f5f9;\n    border: 1px solid #e2e8f0;\n    cursor: grab;\n  }\n  .sort-list li.dragging { opacity: 0.4; }\n</style>\n\n<ul class=\"sort-list\" id=\"sortable\">\n  <li draggable=\"true\">Item 1</li>\n  <li draggable=\"true\">Item 2</li>\n  <li draggable=\"true\">Item 3</li>\n  <li draggable=\"true\">Item 4</li>\n</ul>\n\n<script>\n  const list = document.getElementById('sortable');\n  let draggedItem = null;\n\n  list.addEventListener('dragstart', (e) => {\n    draggedItem = e.target;\n    e.target.classList.add('dragging');\n    e.dataTransfer.effectAllowed = 'move';\n  });\n\n  list.addEventListener('dragover', (e) => {\n    e.preventDefault();\n    const target = e.target.closest('li');\n    if (target && target !== draggedItem) {\n      const rect = target.getBoundingClientRect();\n      const midY = rect.top + rect.height / 2;\n      if (e.clientY < midY) {\n        list.insertBefore(draggedItem, target);\n      } else {\n        list.insertBefore(draggedItem, target.nextSibling);\n      }\n    }\n  });\n\n  list.addEventListener('dragend', (e) => {\n    e.target.classList.remove('dragging');\n    draggedItem = null;\n  });\n</script>",
+          "explanation": "This creates a reorderable list. During dragover, we calculate whether the cursor is above or below the midpoint of each item, then insert the dragged item before or after accordingly. The visual feedback (opacity) shows which item is being dragged."
+        },
+        {
+          "title": "File Drop Zone",
+          "code": "<style>\n  .file-drop {\n    width: 400px;\n    height: 200px;\n    border: 2px dashed #94a3b8;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    flex-direction: column;\n  }\n  .file-drop.over { border-color: #3b82f6; background: #eff6ff; }\n</style>\n\n<div class=\"file-drop\" id=\"file-zone\">\n  <p>Drop files here</p>\n</div>\n<ul id=\"file-list\"></ul>\n\n<script>\n  const zone = document.getElementById('file-zone');\n  const fileList = document.getElementById('file-list');\n\n  // Prevent default browser behavior (opening the file)\n  ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(evt => {\n    zone.addEventListener(evt, (e) => e.preventDefault());\n  });\n\n  zone.addEventListener('dragenter', () => zone.classList.add('over'));\n  zone.addEventListener('dragleave', () => zone.classList.remove('over'));\n\n  zone.addEventListener('drop', (e) => {\n    zone.classList.remove('over');\n    const files = e.dataTransfer.files;\n\n    Array.from(files).forEach((file) => {\n      const li = document.createElement('li');\n      const size = (file.size / 1024).toFixed(1);\n      li.textContent = `${file.name} (${size} KB) - ${file.type}`;\n      fileList.appendChild(li);\n    });\n  });\n</script>",
+          "explanation": "File drag-and-drop uses the same events but reads from dataTransfer.files instead of getData(). preventDefault() on all drag events prevents the browser from opening the file. The FileList contains File objects with name, size, and type properties."
+        },
+        {
+          "title": "Kanban Board Columns",
+          "code": "<style>\n  .board { display: flex; gap: 16px; }\n  .column {\n    width: 200px;\n    min-height: 200px;\n    background: #f8fafc;\n    border: 1px solid #e2e8f0;\n    padding: 12px;\n  }\n  .column h3 { margin: 0 0 12px; }\n  .task {\n    padding: 8px 12px;\n    background: white;\n    border: 1px solid #e2e8f0;\n    margin-bottom: 8px;\n    cursor: grab;\n  }\n  .column.over { background: #eff6ff; }\n</style>\n\n<div class=\"board\">\n  <div class=\"column\" id=\"todo\">\n    <h3>To Do</h3>\n    <div class=\"task\" draggable=\"true\" id=\"task-1\">Design mockups</div>\n    <div class=\"task\" draggable=\"true\" id=\"task-2\">Write tests</div>\n  </div>\n  <div class=\"column\" id=\"progress\">\n    <h3>In Progress</h3>\n    <div class=\"task\" draggable=\"true\" id=\"task-3\">Build API</div>\n  </div>\n  <div class=\"column\" id=\"done\">\n    <h3>Done</h3>\n  </div>\n</div>\n\n<script>\n  document.querySelectorAll('.task').forEach(task => {\n    task.addEventListener('dragstart', (e) => {\n      e.dataTransfer.setData('text/plain', e.target.id);\n    });\n  });\n\n  document.querySelectorAll('.column').forEach(col => {\n    col.addEventListener('dragover', (e) => {\n      e.preventDefault();\n      col.classList.add('over');\n    });\n    col.addEventListener('dragleave', () => {\n      col.classList.remove('over');\n    });\n    col.addEventListener('drop', (e) => {\n      e.preventDefault();\n      col.classList.remove('over');\n      const id = e.dataTransfer.getData('text/plain');\n      const task = document.getElementById(id);\n      col.appendChild(task);\n    });\n  });\n</script>",
+          "explanation": "A simplified Kanban board with three columns. Tasks can be dragged between columns. Each column listens for dragover (with preventDefault) and drop events. The visual highlight (.over class) shows valid drop targets."
+        }
+      ],
+      "notes": [
+        "You MUST call event.preventDefault() in the dragover handler to allow drops. This is the single most common mistake when implementing drag-and-drop.",
+        "The dataTransfer object is only accessible during dragstart and drop events. You cannot read data during dragover or dragenter.",
+        "For file uploads, remember to prevent the default behavior on all four events (dragenter, dragover, dragleave, drop) to stop the browser from navigating to the file.",
+        "Use effectAllowed (on dragstart) and dropEffect (on dragover) to control the cursor icon and allowed operations (copy, move, link)."
+      ],
+      "commonPitfalls": [
+        "Forgetting event.preventDefault() in dragover. Without it, the drop event never fires. This is by far the most common drag-and-drop bug.",
+        "Trying to read dataTransfer.getData() during dragover. The data is only available in dragstart and drop handlers for security reasons.",
+        "Not preventing default on file drop events, causing the browser to navigate away and open the dropped file instead of handling it in JavaScript."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "drag-and-drop-ex1",
+        "title": "Color Palette Drop",
+        "description": "Create three colored boxes (red, green, blue) that are draggable, and a target box labeled 'Drop a color'. When a colored box is dropped on the target, the target's background should change to that color. Use dataTransfer to pass the color value.",
+        "starterCode": "<style>\n  .color-box {\n    width: 80px; height: 80px;\n    display: inline-block; margin: 8px;\n    cursor: grab;\n  }\n  .target {\n    width: 200px; height: 100px;\n    border: 2px dashed #94a3b8;\n    margin-top: 16px;\n    display: flex; align-items: center; justify-content: center;\n  }\n</style>\n\n<div class=\"color-box\" style=\"background: #ef4444\" draggable=\"true\"></div>\n<div class=\"color-box\" style=\"background: #22c55e\" draggable=\"true\"></div>\n<div class=\"color-box\" style=\"background: #3b82f6\" draggable=\"true\"></div>\n\n<div class=\"target\" id=\"target\">Drop a color</div>\n\n<script>\n  // Add drag-and-drop logic\n</script>\n",
+        "solution": "<style>\n  .color-box {\n    width: 80px; height: 80px;\n    display: inline-block; margin: 8px;\n    cursor: grab;\n  }\n  .target {\n    width: 200px; height: 100px;\n    border: 2px dashed #94a3b8;\n    margin-top: 16px;\n    display: flex; align-items: center; justify-content: center;\n  }\n</style>\n\n<div class=\"color-box\" style=\"background: #ef4444\" draggable=\"true\"></div>\n<div class=\"color-box\" style=\"background: #22c55e\" draggable=\"true\"></div>\n<div class=\"color-box\" style=\"background: #3b82f6\" draggable=\"true\"></div>\n\n<div class=\"target\" id=\"target\">Drop a color</div>\n\n<script>\n  const boxes = document.querySelectorAll('.color-box');\n  const target = document.getElementById('target');\n\n  boxes.forEach(box => {\n    box.addEventListener('dragstart', (e) => {\n      e.dataTransfer.setData('text/plain', e.target.style.background);\n    });\n  });\n\n  target.addEventListener('dragover', (e) => {\n    e.preventDefault();\n  });\n\n  target.addEventListener('drop', (e) => {\n    e.preventDefault();\n    const color = e.dataTransfer.getData('text/plain');\n    target.style.background = color;\n    target.textContent = color;\n  });\n</script>",
+        "hints": [
+          "In dragstart, use e.target.style.background to get the color and store it with setData",
+          "Remember to call preventDefault() in both dragover and drop handlers"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "drag-and-drop-ex2",
+        "title": "Two-Column Task Mover",
+        "description": "Create two columns: 'Available' and 'Selected'. The Available column has 4 draggable task items. Users should be able to drag tasks from Available to Selected and back. Add visual feedback (highlight) when dragging over a valid column.",
+        "starterCode": "<style>\n  .columns { display: flex; gap: 20px; }\n  .col { width: 200px; min-height: 200px; border: 1px solid #e2e8f0; padding: 12px; }\n  .col h3 { margin: 0 0 12px; }\n  .item { padding: 8px; background: #f1f5f9; border: 1px solid #cbd5e1; margin-bottom: 6px; cursor: grab; }\n</style>\n\n<div class=\"columns\">\n  <div class=\"col\" id=\"available\">\n    <h3>Available</h3>\n    <div class=\"item\" draggable=\"true\" id=\"t1\">Task A</div>\n    <div class=\"item\" draggable=\"true\" id=\"t2\">Task B</div>\n    <div class=\"item\" draggable=\"true\" id=\"t3\">Task C</div>\n    <div class=\"item\" draggable=\"true\" id=\"t4\">Task D</div>\n  </div>\n  <div class=\"col\" id=\"selected\">\n    <h3>Selected</h3>\n  </div>\n</div>\n\n<script>\n  // Add bidirectional drag-and-drop\n</script>\n",
+        "solution": "<style>\n  .columns { display: flex; gap: 20px; }\n  .col { width: 200px; min-height: 200px; border: 1px solid #e2e8f0; padding: 12px; }\n  .col h3 { margin: 0 0 12px; }\n  .col.over { background: #eff6ff; border-color: #3b82f6; }\n  .item { padding: 8px; background: #f1f5f9; border: 1px solid #cbd5e1; margin-bottom: 6px; cursor: grab; }\n</style>\n\n<div class=\"columns\">\n  <div class=\"col\" id=\"available\">\n    <h3>Available</h3>\n    <div class=\"item\" draggable=\"true\" id=\"t1\">Task A</div>\n    <div class=\"item\" draggable=\"true\" id=\"t2\">Task B</div>\n    <div class=\"item\" draggable=\"true\" id=\"t3\">Task C</div>\n    <div class=\"item\" draggable=\"true\" id=\"t4\">Task D</div>\n  </div>\n  <div class=\"col\" id=\"selected\">\n    <h3>Selected</h3>\n  </div>\n</div>\n\n<script>\n  document.querySelectorAll('.item').forEach(item => {\n    item.addEventListener('dragstart', (e) => {\n      e.dataTransfer.setData('text/plain', e.target.id);\n      e.dataTransfer.effectAllowed = 'move';\n    });\n  });\n\n  document.querySelectorAll('.col').forEach(col => {\n    col.addEventListener('dragover', (e) => {\n      e.preventDefault();\n      col.classList.add('over');\n    });\n\n    col.addEventListener('dragleave', () => {\n      col.classList.remove('over');\n    });\n\n    col.addEventListener('drop', (e) => {\n      e.preventDefault();\n      col.classList.remove('over');\n      const id = e.dataTransfer.getData('text/plain');\n      const item = document.getElementById(id);\n      col.appendChild(item);\n    });\n  });\n</script>",
+        "hints": [
+          "Both columns need dragover (with preventDefault) and drop handlers to accept items from either direction.",
+          "Store the dragged element's id in dataTransfer.setData, then retrieve it in the drop handler with getData."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "web-workers",
+    "sectionId": "html5-apis",
+    "orderIndex": 4,
+    "title": "Web Workers",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Web Workers", "postMessage", "Dedicated Workers", "Shared Workers", "Offloading Computation"],
+    "content": {
+      "explanation": "JavaScript runs on a single thread in the browser. Every computation, DOM update, event handler, and animation shares that one thread. When a heavy computation runs — processing a large dataset, parsing a big file, or running a complex algorithm — the entire UI freezes because the main thread is blocked. Web Workers solve this by letting you run JavaScript in a background thread, separate from the main thread.\n\nA Web Worker is created by passing a JavaScript file URL to the Worker constructor: new Worker('worker.js'). The worker runs in an isolated context with no access to the DOM, window object, or document. Communication between the main thread and the worker happens exclusively through the postMessage() method and the onmessage event handler. Data is copied (structured clone algorithm) when transferred, not shared, which prevents race conditions.\n\nThe typical workflow is: the main thread creates a worker, sends data to it via postMessage(), the worker processes the data and sends the result back via its own postMessage(), and the main thread receives the result in its onmessage handler. For large data transfers (ArrayBuffers, large arrays), you can use transferable objects to transfer ownership of the data instead of copying it, which is nearly instantaneous regardless of data size.\n\nDedicated Workers (the most common type) are tied to the script that created them. Only the creating script can communicate with them. Shared Workers can be accessed by multiple scripts across different tabs, iframes, or windows of the same origin. Shared Workers use a port-based communication model and are useful for shared resources like WebSocket connections or caches that should be shared across tabs.\n\nWeb Workers have several limitations. They cannot access the DOM (no document, no window.alert). They cannot use some browser APIs (though they can use fetch, setTimeout, IndexedDB, and WebSocket). Each worker has its own global scope (self instead of window). Workers also carry overhead — creating a worker is not free, so do not spawn workers for trivial tasks. The ideal use cases are CPU-intensive computations: image processing, data parsing, sorting large datasets, cryptographic operations, and real-time calculations that would otherwise freeze the UI.",
+      "codeExamples": [
+        {
+          "title": "Basic Worker Communication",
+          "code": "<!-- main.html -->\n<button id=\"run\">Calculate Primes</button>\n<p id=\"result\">Click to find primes up to 1,000,000</p>\n<p id=\"status\">UI stays responsive during calculation</p>\n\n<script>\n  const worker = new Worker('prime-worker.js');\n  const btn = document.getElementById('run');\n  const result = document.getElementById('result');\n\n  btn.addEventListener('click', () => {\n    result.textContent = 'Calculating...';\n    worker.postMessage({ limit: 1000000 });\n  });\n\n  worker.onmessage = (event) => {\n    result.textContent =\n      `Found ${event.data.count} primes in ${event.data.time}ms`;\n  };\n\n  worker.onerror = (error) => {\n    result.textContent = `Worker error: ${error.message}`;\n  };\n</script>\n\n<!-- prime-worker.js -->\n<script>\n  // This runs in the worker thread\n  self.onmessage = (event) => {\n    const { limit } = event.data;\n    const start = performance.now();\n\n    // Sieve of Eratosthenes\n    const sieve = new Uint8Array(limit + 1).fill(1);\n    sieve[0] = sieve[1] = 0;\n    for (let i = 2; i * i <= limit; i++) {\n      if (sieve[i]) {\n        for (let j = i * i; j <= limit; j += i) {\n          sieve[j] = 0;\n        }\n      }\n    }\n\n    const count = sieve.reduce((sum, val) => sum + val, 0);\n    const time = (performance.now() - start).toFixed(1);\n\n    self.postMessage({ count, time });\n  };\n</script>",
+          "explanation": "The main thread sends a message to the worker with the limit. The worker runs the Sieve of Eratosthenes (CPU-intensive) without blocking the UI. When done, it posts the result back. The UI remains responsive throughout."
+        },
+        {
+          "title": "Inline Worker (No Separate File)",
+          "code": "<script>\n  // Create a worker from a Blob (no separate file needed)\n  const workerCode = `\n    self.onmessage = (event) => {\n      const { array } = event.data;\n      // Simulate heavy sorting\n      const sorted = array.slice().sort((a, b) => a - b);\n      self.postMessage({ sorted });\n    };\n  `;\n\n  const blob = new Blob([workerCode], { type: 'application/javascript' });\n  const workerUrl = URL.createObjectURL(blob);\n  const worker = new Worker(workerUrl);\n\n  // Generate random array\n  const bigArray = Array.from(\n    { length: 100000 },\n    () => Math.floor(Math.random() * 1000000)\n  );\n\n  console.log('Sending array to worker...');\n  worker.postMessage({ array: bigArray });\n\n  worker.onmessage = (event) => {\n    const { sorted } = event.data;\n    console.log('First 5:', sorted.slice(0, 5));\n    console.log('Last 5:', sorted.slice(-5));\n    URL.revokeObjectURL(workerUrl); // Clean up\n    worker.terminate(); // Shut down worker\n  };\n</script>",
+          "explanation": "You can create workers without a separate file using Blob and URL.createObjectURL. This is useful in bundled applications. Always call URL.revokeObjectURL and worker.terminate() when done to free resources."
+        },
+        {
+          "title": "Transferable Objects (Zero-Copy)",
+          "code": "<script>\n  const worker = new Worker('image-worker.js');\n\n  // Create a large ArrayBuffer (simulating image data)\n  const buffer = new ArrayBuffer(1024 * 1024 * 4); // 4MB\n  const view = new Uint8Array(buffer);\n  view.fill(128); // Fill with grey pixels\n\n  console.log('Buffer size before transfer:', buffer.byteLength);\n\n  // Transfer ownership (zero-copy, near-instant)\n  worker.postMessage({ pixels: buffer }, [buffer]);\n\n  console.log('Buffer size after transfer:', buffer.byteLength);\n  // Output: 0 — the buffer was transferred, not copied\n\n  worker.onmessage = (event) => {\n    const processed = event.data.pixels;\n    console.log('Processed buffer size:', processed.byteLength);\n    // The processed buffer is now owned by the main thread\n  };\n</script>\n\n<!-- image-worker.js -->\n<script>\n  self.onmessage = (event) => {\n    const pixels = new Uint8Array(event.data.pixels);\n\n    // Invert all pixel values\n    for (let i = 0; i < pixels.length; i++) {\n      pixels[i] = 255 - pixels[i];\n    }\n\n    // Transfer back\n    self.postMessage(\n      { pixels: pixels.buffer },\n      [pixels.buffer]\n    );\n  };\n</script>",
+          "explanation": "The second argument to postMessage is a list of transferable objects. Instead of copying the buffer (slow for large data), ownership is transferred instantly. After transfer, the original buffer becomes empty (byteLength === 0)."
+        },
+        {
+          "title": "Worker Pool Pattern",
+          "code": "<script>\n  class WorkerPool {\n    constructor(workerScript, poolSize = navigator.hardwareConcurrency || 4) {\n      this.workers = [];\n      this.queue = [];\n      this.available = [];\n\n      for (let i = 0; i < poolSize; i++) {\n        const worker = new Worker(workerScript);\n        this.workers.push(worker);\n        this.available.push(worker);\n      }\n    }\n\n    run(data) {\n      return new Promise((resolve, reject) => {\n        const task = { data, resolve, reject };\n\n        if (this.available.length > 0) {\n          this._dispatch(this.available.shift(), task);\n        } else {\n          this.queue.push(task);\n        }\n      });\n    }\n\n    _dispatch(worker, task) {\n      worker.onmessage = (event) => {\n        task.resolve(event.data);\n        if (this.queue.length > 0) {\n          this._dispatch(worker, this.queue.shift());\n        } else {\n          this.available.push(worker);\n        }\n      };\n      worker.onerror = (error) => {\n        task.reject(error);\n        this.available.push(worker);\n      };\n      worker.postMessage(task.data);\n    }\n\n    terminate() {\n      this.workers.forEach(w => w.terminate());\n    }\n  }\n\n  // Usage\n  const pool = new WorkerPool('compute-worker.js', 4);\n\n  async function processAll(items) {\n    const results = await Promise.all(\n      items.map(item => pool.run(item))\n    );\n    console.log('All tasks complete:', results);\n    pool.terminate();\n  }\n</script>",
+          "explanation": "A worker pool reuses a fixed number of workers across many tasks. Tasks are queued when all workers are busy. This avoids the overhead of creating/destroying workers for each task and limits concurrency to the available CPU cores."
+        }
+      ],
+      "notes": [
+        "Web Workers cannot access the DOM. They exist in a separate context with no document, window, or parent references. Communication is solely via postMessage.",
+        "Use transferable objects (ArrayBuffer, MessagePort, OffscreenCanvas) for large data transfers. Transferring is near-instant; copying is proportional to data size.",
+        "navigator.hardwareConcurrency tells you how many CPU cores are available. Use this to size your worker pool appropriately.",
+        "Always call worker.terminate() when you are done with a worker to free the background thread and its memory."
+      ],
+      "commonPitfalls": [
+        "Trying to access the DOM from a worker. Workers have no document or window object. You must send DOM-related data to the main thread and let it update the DOM.",
+        "Creating too many workers. Each worker consumes memory and a thread. Spawning hundreds of workers will degrade performance. Use a pool sized to navigator.hardwareConcurrency.",
+        "Forgetting to call worker.terminate(). Unused workers continue to consume memory. Always terminate workers when they are no longer needed."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "web-workers-ex1",
+        "title": "Fibonacci Worker",
+        "description": "Create an inline Web Worker (using Blob) that calculates the nth Fibonacci number using a loop (not recursion). The main thread should send a number n, and the worker should return the result. Display the result on the page. Test with n = 40.",
+        "starterCode": "<input type=\"number\" id=\"n-input\" value=\"40\">\n<button id=\"calc-btn\">Calculate</button>\n<p id=\"output\">Result will appear here</p>\n\n<script>\n  // Create inline worker that calculates Fibonacci\n\n  // Send n to worker on button click\n\n  // Display result from worker\n\n</script>\n",
+        "solution": "<input type=\"number\" id=\"n-input\" value=\"40\">\n<button id=\"calc-btn\">Calculate</button>\n<p id=\"output\">Result will appear here</p>\n\n<script>\n  const workerCode = `\n    self.onmessage = (event) => {\n      const n = event.data.n;\n      let a = 0, b = 1;\n      for (let i = 2; i <= n; i++) {\n        const temp = a + b;\n        a = b;\n        b = temp;\n      }\n      const result = n <= 0 ? 0 : n === 1 ? 1 : b;\n      self.postMessage({ n, result });\n    };\n  `;\n\n  const blob = new Blob([workerCode], { type: 'application/javascript' });\n  const worker = new Worker(URL.createObjectURL(blob));\n\n  const btn = document.getElementById('calc-btn');\n  const input = document.getElementById('n-input');\n  const output = document.getElementById('output');\n\n  btn.addEventListener('click', () => {\n    const n = parseInt(input.value);\n    output.textContent = 'Calculating...';\n    worker.postMessage({ n });\n  });\n\n  worker.onmessage = (event) => {\n    const { n, result } = event.data;\n    output.textContent = `Fibonacci(${n}) = ${result}`;\n  };\n</script>",
+        "hints": [
+          "Create the worker using new Blob([code], { type: 'application/javascript' }) and URL.createObjectURL.",
+          "Use an iterative loop (not recursion) to calculate Fibonacci. Track two variables a and b, shifting them forward each iteration."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "web-workers-ex2",
+        "title": "Parallel Array Processing",
+        "description": "Create two inline Web Workers. Split a large array (100,000 random numbers) in half. Send each half to a different worker to calculate the sum. When both workers respond, combine their sums and display the total. Use Promise.all to wait for both results.",
+        "starterCode": "<button id=\"run-btn\">Sum 100,000 Numbers</button>\n<p id=\"result\">Click to run parallel sum</p>\n\n<script>\n  // Create sum worker code\n\n  // Generate random array\n\n  // Split array and send to two workers\n\n  // Combine results with Promise.all\n\n</script>\n",
+        "solution": "<button id=\"run-btn\">Sum 100,000 Numbers</button>\n<p id=\"result\">Click to run parallel sum</p>\n\n<script>\n  const sumWorkerCode = `\n    self.onmessage = (event) => {\n      const { chunk, workerId } = event.data;\n      const sum = chunk.reduce((acc, val) => acc + val, 0);\n      self.postMessage({ sum, workerId });\n    };\n  `;\n\n  function createWorker(code) {\n    const blob = new Blob([code], { type: 'application/javascript' });\n    return new Worker(URL.createObjectURL(blob));\n  }\n\n  function runWorker(worker, data) {\n    return new Promise((resolve) => {\n      worker.onmessage = (event) => resolve(event.data);\n      worker.postMessage(data);\n    });\n  }\n\n  const btn = document.getElementById('run-btn');\n  const result = document.getElementById('result');\n\n  btn.addEventListener('click', async () => {\n    result.textContent = 'Processing...';\n\n    const array = Array.from({ length: 100000 }, () => Math.random() * 100);\n    const mid = Math.floor(array.length / 2);\n\n    const worker1 = createWorker(sumWorkerCode);\n    const worker2 = createWorker(sumWorkerCode);\n\n    const [r1, r2] = await Promise.all([\n      runWorker(worker1, { chunk: array.slice(0, mid), workerId: 1 }),\n      runWorker(worker2, { chunk: array.slice(mid), workerId: 2 }),\n    ]);\n\n    const total = r1.sum + r2.sum;\n    result.textContent =\n      `Worker 1: ${r1.sum.toFixed(2)}, ` +\n      `Worker 2: ${r2.sum.toFixed(2)}, ` +\n      `Total: ${total.toFixed(2)}`;\n\n    worker1.terminate();\n    worker2.terminate();\n  });\n</script>",
+        "hints": [
+          "Wrap each worker.postMessage + onmessage in a Promise so you can await the result.",
+          "Use array.slice(0, mid) and array.slice(mid) to split the array, then combine sums from both workers."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

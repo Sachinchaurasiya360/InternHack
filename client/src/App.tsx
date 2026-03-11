@@ -32,6 +32,7 @@ const DsaCompaniesPage = lazy(() => import("./module/student/dsa/DsaCompaniesPag
 const DsaPatternsPage = lazy(() => import("./module/student/dsa/DsaPatternsPage"));
 const DsaBookmarksPage = lazy(() => import("./module/student/dsa/DsaBookmarksPage"));
 const YCCompanyDetailPage = lazy(() => import("./module/student/companies/YCCompanyDetailPage"));
+const GovInternshipsPage = lazy(() => import("./module/student/jobs/GovInternshipsPage"));
 
 // Student pages
 const ApplyPage = lazy(() => import("./module/student/applications/ApplyPage"));
@@ -69,6 +70,17 @@ const SkillTestPage = lazy(() => import("./module/student/skill-verification/Ski
 const SqlExercisePage = lazy(() => import("./module/student/sql/SqlExercisePage"));
 const SqlPlaygroundPage = lazy(() => import("./module/student/sql/SqlPlaygroundPage"));
 const MockInterviewPage = lazy(() => import("./module/student/mock-interview/MockInterviewPage"));
+const LearnLayout = lazy(() => import("./module/student/learn/LearnLayout"));
+const LearnHubPage = lazy(() => import("./module/student/learn/LearnHubPage"));
+const JsLessonsPage = lazy(() => import("./module/student/javascript/JsLessonsPage"));
+const JsSectionPage = lazy(() => import("./module/student/javascript/JsSectionPage"));
+const JsLessonDetailPage = lazy(() => import("./module/student/javascript/JsLessonDetailPage"));
+const HtmlLessonsPage = lazy(() => import("./module/student/html/HtmlLessonsPage"));
+const HtmlSectionPage = lazy(() => import("./module/student/html/HtmlSectionPage"));
+const HtmlLessonDetailPage = lazy(() => import("./module/student/html/HtmlLessonDetailPage"));
+const CssLessonsPage = lazy(() => import("./module/student/css/CssLessonsPage"));
+const CssSectionPage = lazy(() => import("./module/student/css/CssSectionPage"));
+const CssLessonDetailPage = lazy(() => import("./module/student/css/CssLessonDetailPage"));
 
 // Recruiter pages
 const RecruiterLayout = lazy(() => import("./module/recruiter/RecruiterLayout"));
@@ -114,10 +126,9 @@ function App() {
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/jobs" element={<JobBrowsePage />} />
           <Route path="/jobs/:id" element={<JobDetailPage />} />
+          <Route path="/internships" element={<GovInternshipsPage />} />
           <Route path="/external-jobs" element={<ScrapedJobsPage />} />
           <Route path="/external-jobs/:id" element={<ScrapedJobDetailPage />} />
-          <Route path="/careers" element={<CareerExplorePage />} />
-          <Route path="/careers/:slug" element={<CareerDetailPage />} />
           <Route path="/companies" element={<CompanyListPage />} />
           <Route path="/companies/:slug" element={<CompanyDetailPage />} />
           <Route path="/yc/:slug" element={<YCCompanyDetailPage />} />
@@ -127,15 +138,50 @@ function App() {
           <Route path="/opensource" element={<PublicOpenSourcePage />} />
           <Route path="/blog" element={<BlogListPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
-          <Route path="/dsa" element={<DsaTopicsPage />} />
-          <Route path="/dsa/:slug" element={<DsaTopicDetailPage />} />
-          <Route path="/sql" element={<SqlPracticePage />} />
-          <Route path="/sql/playground" element={<SqlPlaygroundPage />} />
-          <Route path="/sql/:sectionSlug" element={<SqlExercisePage />} />
-          <Route path="/sql/:sectionSlug/:exerciseId" element={<SqlExercisePage />} />
-          <Route path="/aptitude" element={<AptitudeCategoriesPage />} />
-          <Route path="/aptitude/companies" element={<AptitudeCompaniesPage />} />
-          <Route path="/aptitude/:slug" element={<AptitudeTopicPage />} />
+          {/* Learning Hub — all learning content under /learn */}
+          <Route path="/learn" element={<LearnLayout />}>
+            <Route index element={<LearnHubPage />} />
+            <Route path="javascript" element={<JsLessonsPage />} />
+            <Route path="javascript/:sectionSlug" element={<JsSectionPage />} />
+            <Route path="javascript/:sectionSlug/:lessonId" element={<JsLessonDetailPage />} />
+            <Route path="html" element={<HtmlLessonsPage />} />
+            <Route path="html/:sectionSlug" element={<HtmlSectionPage />} />
+            <Route path="html/:sectionSlug/:lessonId" element={<HtmlLessonDetailPage />} />
+            <Route path="css" element={<CssLessonsPage />} />
+            <Route path="css/:sectionSlug" element={<CssSectionPage />} />
+            <Route path="css/:sectionSlug/:lessonId" element={<CssLessonDetailPage />} />
+            <Route path="sql" element={<SqlPracticePage />} />
+            <Route path="sql/playground" element={<SqlPlaygroundPage />} />
+            <Route path="sql/:sectionSlug" element={<SqlExercisePage />} />
+            <Route path="sql/:sectionSlug/:exerciseId" element={<SqlExercisePage />} />
+            <Route path="dsa" element={<DsaTopicsPage />} />
+            <Route path="dsa/companies" element={<DsaCompaniesPage />} />
+            <Route path="dsa/patterns" element={<DsaPatternsPage />} />
+            <Route path="dsa/bookmarks" element={<ProtectedRoute role="STUDENT"><DsaBookmarksPage /></ProtectedRoute>} />
+            <Route path="dsa/:slug" element={<DsaTopicDetailPage />} />
+            <Route path="aptitude" element={<AptitudeCategoriesPage />} />
+            <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
+            <Route path="aptitude/:slug" element={<AptitudeTopicPage />} />
+            <Route path="careers" element={<CareerExplorePage />} />
+            <Route path="careers/:slug" element={<CareerDetailPage />} />
+            <Route path="careers/:slug/quiz/:skillId" element={<ProtectedRoute role="STUDENT"><SkillQuizPage /></ProtectedRoute>} />
+          </Route>
+
+          {/* Legacy redirects */}
+          <Route path="/dsa/*" element={<Navigate to="/learn/dsa" replace />} />
+          <Route path="/sql/*" element={<Navigate to="/learn/sql" replace />} />
+          <Route path="/javascript/*" element={<Navigate to="/learn/javascript" replace />} />
+          <Route path="/aptitude/*" element={<Navigate to="/learn/aptitude" replace />} />
+          <Route path="/careers/*" element={<Navigate to="/learn/careers" replace />} />
+          <Route path="/student/learn" element={<Navigate to="/learn" replace />} />
+          <Route path="/student/javascript/*" element={<Navigate to="/learn/javascript" replace />} />
+          <Route path="/html/*" element={<Navigate to="/learn/html" replace />} />
+          <Route path="/css/*" element={<Navigate to="/learn/css" replace />} />
+          <Route path="/student/html/*" element={<Navigate to="/learn/html" replace />} />
+          <Route path="/student/css/*" element={<Navigate to="/learn/css" replace />} />
+          <Route path="/student/sql/*" element={<Navigate to="/learn/sql" replace />} />
+          <Route path="/student/dsa/*" element={<Navigate to="/learn/dsa" replace />} />
+          <Route path="/student/aptitude/*" element={<Navigate to="/learn/aptitude" replace />} />
 
           {/* Standalone proctored test - no layout chrome */}
           <Route path="/test/:testId" element={<ProtectedRoute role="STUDENT"><SkillTestPage /></ProtectedRoute>} />
@@ -146,6 +192,7 @@ function App() {
             <Route index element={<Navigate to="applications" replace />} />
             <Route path="jobs" element={<JobBrowsePage />} />
             <Route path="jobs/:id" element={<JobDetailPage />} />
+            <Route path="internships" element={<GovInternshipsPage />} />
             <Route path="companies" element={<CompanyListPage />} />
             <Route path="companies/:slug" element={<CompanyDetailPage />} />
             <Route path="yc/:slug" element={<YCCompanyDetailPage />} />
@@ -161,19 +208,6 @@ function App() {
             <Route path="ats/latex-editor" element={<LatexResumeEditor />} />
             <Route path="careers" element={<MyCareerPathsPage />} />
             <Route path="careers/:slug" element={<CareerProgressPage />} />
-            <Route path="careers/:slug/quiz/:skillId" element={<SkillQuizPage />} />
-            <Route path="dsa" element={<DsaTopicsPage />} />
-            <Route path="dsa/companies" element={<DsaCompaniesPage />} />
-            <Route path="dsa/patterns" element={<DsaPatternsPage />} />
-            <Route path="dsa/bookmarks" element={<DsaBookmarksPage />} />
-            <Route path="dsa/:slug" element={<DsaTopicDetailPage />} />
-            <Route path="sql" element={<SqlPracticePage />} />
-            <Route path="sql/playground" element={<SqlPlaygroundPage />} />
-            <Route path="sql/:sectionSlug" element={<SqlExercisePage />} />
-            <Route path="sql/:sectionSlug/:exerciseId" element={<SqlExercisePage />} />
-            <Route path="aptitude" element={<AptitudeCategoriesPage />} />
-            <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
-            <Route path="aptitude/:slug" element={<AptitudeTopicPage />} />
             <Route path="skill-verification" element={<SkillVerificationPage />} />
             <Route path="mock-interview" element={<MockInterviewPage />} />
             <Route path="companies/add" element={<AddCompanyPage />} />

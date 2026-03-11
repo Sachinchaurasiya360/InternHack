@@ -2,13 +2,16 @@ import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Code2, CheckCircle2, Building2, Puzzle, Bookmark, BookOpen, TrendingUp, ArrowRight } from "lucide-react";
+import { Code2, CheckCircle2, Building2, Puzzle, Bookmark, BookOpen, TrendingUp, ArrowRight, Lock } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { DsaTopic, DsaProgress } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
 import { LoadingScreen } from "../../../components/LoadingScreen";
+import { LoginGate } from "../../../components/LoginGate";
+
+const FREE_LIMIT = 5;
 
 const DIFFICULTY_COLORS: Record<string, { ring: string; text: string }> = {
   easy:   { ring: "stroke-green-500", text: "text-green-600 dark:text-green-400" },
@@ -54,6 +57,7 @@ function CircularProgress({ progress }: { progress: number }) {
 export default function DsaTopicsPage() {
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<DifficultyTab>("all");
+  const [showGate, setShowGate] = useState(false);
 
   const difficultyParam =
     activeTab === "easy" ? "Easy" :
@@ -152,9 +156,9 @@ export default function DsaTopicsPage() {
         className="flex items-center gap-3 mb-6 flex-wrap"
       >
         {[
-          { to: "/student/dsa/companies", icon: Building2, label: "Companies", iconColor: "text-blue-500" },
-          { to: "/student/dsa/patterns", icon: Puzzle, label: "Patterns", iconColor: "text-purple-500" },
-          ...(user ? [{ to: "/student/dsa/bookmarks", icon: Bookmark, label: "Bookmarks", iconColor: "text-amber-500" }] : []),
+          { to: "/learn/dsa/companies", icon: Building2, label: "Companies", iconColor: "text-blue-500" },
+          { to: "/learn/dsa/patterns", icon: Puzzle, label: "Patterns", iconColor: "text-purple-500" },
+          ...(user ? [{ to: "/learn/dsa/bookmarks", icon: Bookmark, label: "Bookmarks", iconColor: "text-amber-500" }] : []),
         ].map((link) => (
           <Link
             key={link.to}
@@ -252,6 +256,7 @@ export default function DsaTopicsPage() {
             ? Math.round((topic.solvedCount / topic.problemCount) * 100)
             : 0;
           const isComplete = pct === 100;
+          const isLocked = topic.orderIndex >= FREE_LIMIT && !user;
 
           return (
             <motion.div
@@ -260,65 +265,84 @@ export default function DsaTopicsPage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.25 + idx * 0.04 }}
             >
-              <Link
-                to={`/student/dsa/${topic.slug}`}
-                className="group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
-              >
-                {/* Circular progress or step number */}
-                {user ? (
-                  <CircularProgress progress={pct} />
-                ) : (
+              {isLocked ? (
+                <button
+                  onClick={() => setShowGate(true)}
+                  className="w-full group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 opacity-60 hover:opacity-80 transition-all duration-300 text-left cursor-pointer"
+                >
                   <div className="w-16 h-16 shrink-0 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
-                    <span className="font-display text-lg font-bold text-gray-500 dark:text-gray-400">{idx + 1}</span>
+                    <Lock className="w-5 h-5 text-gray-400 dark:text-gray-500" />
                   </div>
-                )}
-
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <h3 className="text-base font-semibold text-gray-950 dark:text-white truncate">
-                      {topic.name}
-                    </h3>
-                    {isComplete && user && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 shrink-0">
-                        Complete
-                      </span>
-                    )}
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-gray-950 dark:text-white truncate mb-1">{topic.name}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mb-2.5">{topic.problemCount} problems</p>
+                    <div className="flex items-center gap-3 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
+                      <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">{topic.problemCount} problems</span>
+                    </div>
                   </div>
-
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mb-2.5">
-                    {topic.problemCount} problems
-                    {user && topic.solvedCount > 0 && ` \u00B7 ${topic.solvedCount} solved`}
-                  </p>
-
-                  {/* Progress bar */}
-                  {user && (
-                    <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                      <motion.div
-                        initial={{ width: 0 }}
-                        animate={{ width: `${pct}%` }}
-                        transition={{ duration: 0.6, delay: 0.25 + idx * 0.04 }}
-                        className={`h-full rounded-full ${
-                          isComplete ? "bg-green-500" : pct > 0 ? "bg-gray-950 dark:bg-white" : "bg-gray-200 dark:bg-gray-700"
-                        }`}
-                      />
+                  <Lock className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0" />
+                </button>
+              ) : (
+                <Link
+                  to={`/learn/dsa/${topic.slug}`}
+                  className="group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
+                >
+                  {/* Circular progress or step number */}
+                  {user ? (
+                    <CircularProgress progress={pct} />
+                  ) : (
+                    <div className="w-16 h-16 shrink-0 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                      <span className="font-display text-lg font-bold text-gray-500 dark:text-gray-400">{idx + 1}</span>
                     </div>
                   )}
 
-                  <div className="flex items-center gap-3 mt-2.5 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
-                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">
-                      {topic.problemCount} problems
-                    </span>
-                    {user && topic.solvedCount > 0 && (
-                      <span className="flex items-center gap-1 text-emerald-500">
-                        <CheckCircle2 className="w-3 h-3" />
-                        {topic.solvedCount} solved
-                      </span>
-                    )}
-                  </div>
-                </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <h3 className="text-base font-semibold text-gray-950 dark:text-white truncate">
+                        {topic.name}
+                      </h3>
+                      {isComplete && user && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 shrink-0">
+                          Complete
+                        </span>
+                      )}
+                    </div>
 
-                <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-              </Link>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mb-2.5">
+                      {topic.problemCount} problems
+                      {user && topic.solvedCount > 0 && ` \u00B7 ${topic.solvedCount} solved`}
+                    </p>
+
+                    {/* Progress bar */}
+                    {user && (
+                      <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                        <motion.div
+                          initial={{ width: 0 }}
+                          animate={{ width: `${pct}%` }}
+                          transition={{ duration: 0.6, delay: 0.25 + idx * 0.04 }}
+                          className={`h-full rounded-full ${
+                            isComplete ? "bg-green-500" : pct > 0 ? "bg-gray-950 dark:bg-white" : "bg-gray-200 dark:bg-gray-700"
+                          }`}
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex items-center gap-3 mt-2.5 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
+                      <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">
+                        {topic.problemCount} problems
+                      </span>
+                      {user && topic.solvedCount > 0 && (
+                        <span className="flex items-center gap-1 text-emerald-500">
+                          <CheckCircle2 className="w-3 h-3" />
+                          {topic.solvedCount} solved
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </Link>
+              )}
             </motion.div>
           );
         })}
@@ -338,6 +362,8 @@ export default function DsaTopicsPage() {
           </motion.div>
         )}
       </div>
+
+      <LoginGate open={showGate} onClose={() => setShowGate(false)} />
     </div>
   );
 }

@@ -1,0 +1,368 @@
+[
+  {
+    "id": "scope-hoisting",
+    "sectionId": "scope-and-execution",
+    "orderIndex": 0,
+    "title": "Scope & Hoisting",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": [
+      "global scope",
+      "function scope",
+      "block scope",
+      "var hoisting",
+      "function hoisting",
+      "let hoisting",
+      "const hoisting",
+      "temporal dead zone",
+      "scope chain"
+    ],
+    "content": {
+      "explanation": "Scope in JavaScript determines the accessibility and lifetime of variables, functions, and objects at any point during code execution. There are three main types of scope: global scope (accessible everywhere), function scope (accessible only within the enclosing function), and block scope (accessible only within the enclosing {} block). Before ES6, JavaScript only had global and function scope via the `var` keyword. The introduction of `let` and `const` added true block scoping, which is now the standard way to declare variables.\n\nHoisting is JavaScript's behavior of moving declarations to the top of their enclosing scope during the compilation phase, before any code is executed. However, hoisting works differently for different declaration types, and this is where most confusion arises. `var` declarations are hoisted to the top of their function (or global) scope, but only the declaration is hoisted — not the initialization. This means a `var` variable exists from the start of its scope but has the value `undefined` until the assignment line is reached.\n\nFunction declarations are fully hoisted — both the name and the entire function body are moved to the top of the scope. This is why you can call a function declaration before it appears in the code. Function expressions (including arrow functions assigned to variables), on the other hand, follow the hoisting rules of whichever keyword they are assigned with — var, let, or const.\n\n`let` and `const` are technically hoisted as well, but they are placed in the Temporal Dead Zone (TDZ) from the start of their block until the declaration line is reached. Accessing a let or const variable in the TDZ throws a ReferenceError. This is intentional — it catches bugs where you accidentally use a variable before declaring it, which `var` silently allows by returning undefined.\n\nThe scope chain is the mechanism JavaScript uses to resolve variable references. When you reference a variable, the engine first looks in the current scope. If it doesn't find it, it looks in the outer (parent) scope, then the next outer scope, and so on, all the way up to the global scope. If the variable is not found anywhere in the chain, a ReferenceError is thrown. This chain is determined at the time the function is defined (lexical scoping), not when it is called — which is the foundation for closures.",
+      "codeExamples": [
+        {
+          "title": "Three types of scope",
+          "code": "// Global scope\nvar globalVar = 'I am global';\n\nfunction outer() {\n  // Function scope\n  var functionVar = 'I am function-scoped';\n\n  if (true) {\n    // Block scope\n    let blockLet = 'I am block-scoped';\n    var blockVar = 'I am function-scoped despite being in a block';\n    console.log(blockLet);  // accessible here\n  }\n\n  console.log(blockVar);   // accessible — var ignores blocks\n  // console.log(blockLet); // ReferenceError — let respects blocks\n}\n\nouter();\nconsole.log(globalVar);    // accessible everywhere\n// console.log(functionVar); // ReferenceError — trapped in outer()",
+          "output": "\"I am block-scoped\"\n\"I am function-scoped despite being in a block\"\n\"I am global\"",
+          "explanation": "var is function-scoped — blockVar declared inside the if block is accessible throughout outer(). let is block-scoped — blockLet is only accessible within the if block. globalVar, declared with var outside any function, is accessible everywhere. functionVar is trapped inside outer() and not accessible from outside."
+        },
+        {
+          "title": "var hoisting vs function hoisting",
+          "code": "// var hoisting: declaration hoisted, not initialization\nconsole.log(x); // undefined, not ReferenceError\nvar x = 10;\nconsole.log(x); // 10\n\n// What the engine actually sees:\n// var x;          ← declaration hoisted\n// console.log(x); ← undefined\n// x = 10;         ← assignment stays\n// console.log(x); ← 10\n\n// Function declaration: FULLY hoisted\nconsole.log(greet('Alice'));\n\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\n// Function expression: follows var rules\nconsole.log(typeof sayBye); // undefined, not a function\nvar sayBye = function(name) {\n  return `Bye, ${name}!`;\n};",
+          "output": "undefined\n10\n\"Hello, Alice!\"\n\"undefined\"",
+          "explanation": "var x is hoisted but its value is undefined until line 3. The greet function declaration is fully hoisted — you can call it before it appears in code. sayBye is a function expression assigned to var, so only the var declaration is hoisted (as undefined) — calling it before the assignment would throw a TypeError."
+        },
+        {
+          "title": "let/const temporal dead zone",
+          "code": "// TDZ: from start of block to declaration line\n{\n  // TDZ for 'value' starts here\n  // console.log(value); // ReferenceError: Cannot access 'value' before initialization\n\n  let value = 42;  // TDZ ends here\n  console.log(value); // 42\n}\n\n// TDZ is per-scope, not per-file\nlet name = 'outer';\n{\n  // This 'name' shadows the outer one\n  // TDZ starts at block opening for this inner 'name'\n  // console.log(name); // ReferenceError — TDZ! Not \"outer\"!\n  let name = 'inner';\n  console.log(name);\n}\nconsole.log(name);",
+          "output": "42\n\"inner\"\n\"outer\"",
+          "explanation": "Inside the block, a new let name declaration shadows the outer one. The TDZ for the inner name starts at the opening brace of the block, so even though there is an outer name variable, trying to access name before the inner declaration throws a ReferenceError. After the block, the outer name is accessible again."
+        },
+        {
+          "title": "Scope chain and variable resolution",
+          "code": "const globalVal = 'global';\n\nfunction outer() {\n  const outerVal = 'outer';\n\n  function middle() {\n    const middleVal = 'middle';\n\n    function inner() {\n      const innerVal = 'inner';\n      // inner can access all parent scopes\n      console.log(innerVal);   // own scope\n      console.log(middleVal);  // parent scope\n      console.log(outerVal);   // grandparent scope\n      console.log(globalVal);  // global scope\n    }\n\n    inner();\n  }\n\n  middle();\n}\n\nouter();",
+          "output": "\"inner\"\n\"middle\"\n\"outer\"\n\"global\"",
+          "explanation": "JavaScript resolves variables by walking up the scope chain. inner() first looks in its own scope, then middle's scope, then outer's scope, then global scope. This chain is established when the functions are defined (lexical scoping), not when they are called."
+        }
+      ],
+      "notes": [
+        "Always prefer let and const over var. They have clearer scoping rules and the TDZ catches bugs that var silently hides.",
+        "Function declarations are fully hoisted, but function expressions and arrow functions are not — they follow the hoisting rules of their declaration keyword.",
+        "The scope chain is determined lexically (by where functions are written in the source code), not dynamically (by where they are called from).",
+        "In strict mode ('use strict'), assigning to an undeclared variable throws a ReferenceError instead of creating a global variable."
+      ],
+      "commonPitfalls": [
+        "Assuming var in a for loop creates a new variable per iteration — it does not. var is function-scoped, so all iterations share the same variable, which is why closures over var loop variables behave unexpectedly.",
+        "Thinking let/const are not hoisted — they are hoisted, but placed in the TDZ. The distinction matters when reasoning about shadowing and error messages.",
+        "Accidentally creating global variables by omitting var/let/const — in non-strict mode, assigning to an undeclared name creates a global variable silently.",
+        "Confusing function declarations with function expressions — `function foo() {}` is fully hoisted, but `const foo = function() {}` is not."
+      ],
+      "interviewTips": [
+        "Be ready to explain the difference between var, let, and const in terms of scope, hoisting, and TDZ — this is one of the most common interview openers.",
+        "Interviewers often show code with var inside loops and ask what the output is — practice tracing through closures with var vs let in for loops.",
+        "Know that the scope chain is fixed at definition time (lexical scope), not call time — this distinction is the key to understanding closures.",
+        "When asked about hoisting, structure your answer around three categories: var (declaration hoisted, value undefined), function declarations (fully hoisted), and let/const (hoisted but in TDZ)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "scope-hoisting-ex1",
+        "title": "Hoisting Prediction",
+        "description": "Predict and verify how var hoisting and function hoisting interact. Declare a function expression with var and a function declaration with the same name. Log the type of the identifier before both declarations, then call the function after both declarations to show which one wins.",
+        "starterCode": "// Exercise: Hoisting prediction\n// 1. Log typeof myFunc before any declaration\n// 2. Declare a var myFunc assigned to a function expression that returns 'expression'\n// 3. Declare a function declaration myFunc that returns 'declaration'\n// 4. Call myFunc() and log the result\n// Note: function declarations are hoisted above var declarations\n\n// Your code here\n",
+        "solution": "console.log(typeof myFunc);\n\nvar myFunc = function() {\n  return 'expression';\n};\n\nfunction myFunc() {\n  return 'declaration';\n}\n\nconsole.log(myFunc());",
+        "expectedOutput": "function\nexpression",
+        "hints": [
+          "Function declarations are fully hoisted (including their body), while var declarations are hoisted but initialized to undefined.",
+          "When both a function declaration and a var share the same name, the function declaration is hoisted first, so typeof before any code runs shows 'function'. But the var assignment on the execution line overwrites it."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "scope-hoisting-ex2",
+        "title": "Scope Chain Resolver",
+        "description": "Create a nested function structure that demonstrates the scope chain. Define a variable with the same name at three different levels (global, outer function, inner function) and log the value from each level to show how JavaScript resolves variable names by walking up the scope chain.",
+        "starterCode": "// Exercise: Scope chain resolver\n// 1. Declare a let variable called 'level' set to 'global'\n// 2. Create a function 'outer' that:\n//    - Declares its own 'level' set to 'outer'\n//    - Creates an 'inner' function that:\n//      - Declares its own 'level' set to 'inner'\n//      - Logs its own 'level'\n//    - Calls inner()\n//    - Logs its own 'level'\n// 3. Call outer()\n// 4. Log the global 'level'\n\n// Your code here\n",
+        "solution": "let level = 'global';\n\nfunction outer() {\n  let level = 'outer';\n\n  function inner() {\n    let level = 'inner';\n    console.log(level);\n  }\n\n  inner();\n  console.log(level);\n}\n\nouter();\nconsole.log(level);",
+        "expectedOutput": "inner\nouter\nglobal",
+        "hints": [
+          "Each function creates its own scope. When a variable with the same name is declared in a nested scope, it shadows the outer variable.",
+          "After inner() finishes, the outer function logs its own 'level' which is 'outer', not 'inner'. Each scope has its own independent binding."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "execution-context",
+    "sectionId": "scope-and-execution",
+    "orderIndex": 1,
+    "title": "Execution Context & Call Stack",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": [
+      "global execution context",
+      "function execution context",
+      "creation phase",
+      "execution phase",
+      "variable environment",
+      "scope chain",
+      "this binding",
+      "call stack",
+      "stack overflow"
+    ],
+    "content": {
+      "explanation": "Every time JavaScript code runs, it executes inside an execution context — an abstract container that holds the information the engine needs to track and run a particular piece of code. Understanding execution contexts is fundamental because they explain how JavaScript manages variable scope, function calls, and the mysterious `this` keyword. There are two main types: the Global Execution Context (created once when your script starts) and Function Execution Contexts (created each time a function is called).\n\nEach execution context goes through two phases. The Creation Phase happens before any code in that context runs. During this phase, three things are set up: the Variable Environment (all var declarations are registered and initialized to undefined, let/const are registered but placed in the TDZ, and function declarations are fully stored), the Scope Chain (a reference to the outer environment is established), and the `this` binding (the value of `this` is determined based on how the function was called). The Execution Phase then runs the code line by line, assigning values to variables and executing function calls.\n\nThe Call Stack is a LIFO (Last In, First Out) data structure that JavaScript uses to keep track of execution contexts. When your script starts, the Global Execution Context is pushed onto the stack. Whenever a function is called, a new Function Execution Context is created and pushed onto the top of the stack. When a function finishes executing (returns a value or reaches the end), its context is popped off the stack, and control returns to the context beneath it.\n\nVisualizing the call stack is crucial for debugging. When you see a stack trace in an error message, you are literally reading the call stack from top to bottom — the top frame is where the error occurred, and each frame below is the function that called it. Browser DevTools let you pause execution and inspect the call stack at any point, which is invaluable for understanding program flow.\n\nStack overflow occurs when the call stack exceeds its maximum size, typically caused by infinite recursion — a function that calls itself without a proper base case. Each recursive call adds a new frame to the stack, and since the stack has a finite size (usually around 10,000-25,000 frames depending on the environment), eventually it runs out of space. Understanding the call stack helps you write correct recursive algorithms and debug stack overflow errors.",
+      "codeExamples": [
+        {
+          "title": "Creation phase vs execution phase",
+          "code": "console.log('--- Creation phase demo ---');\nconsole.log(a);      // var: hoisted, initialized to undefined\n// console.log(b);   // let: hoisted but in TDZ — ReferenceError\nconsole.log(typeof greet); // function: fully hoisted\n\nvar a = 10;\nlet b = 20;\n\nfunction greet() {\n  return 'Hello!';\n}\n\nconsole.log(a);  // 10 — execution phase assigned the value\nconsole.log(b);  // 20 — past the TDZ now\nconsole.log(greet());",
+          "output": "\"--- Creation phase demo ---\"\nundefined\n\"function\"\n10\n20\n\"Hello!\"",
+          "explanation": "During the creation phase, var a is registered as undefined, let b enters the TDZ, and greet is fully available. During the execution phase, values are assigned in order. This two-phase process is what 'hoisting' actually is — it is not literally moving code, it is the creation phase registering declarations before execution begins."
+        },
+        {
+          "title": "Call stack visualization",
+          "code": "function first() {\n  console.log('first start');\n  second();\n  console.log('first end');\n}\n\nfunction second() {\n  console.log('second start');\n  third();\n  console.log('second end');\n}\n\nfunction third() {\n  console.log('third start');\n  console.log('third end');\n}\n\nfirst();\n\n// Call stack states:\n// 1. [global]            → first() called\n// 2. [global, first]     → second() called\n// 3. [global, first, second] → third() called\n// 4. [global, first, second, third] → third logs & returns\n// 5. [global, first, second] → second logs & returns\n// 6. [global, first]     → first logs & returns\n// 7. [global]            → done",
+          "output": "\"first start\"\n\"second start\"\n\"third start\"\n\"third end\"\n\"second end\"\n\"first end\"",
+          "explanation": "Each function call pushes a new context onto the stack. third() finishes first (LIFO), then second(), then first(). The output clearly shows the nesting: functions start in order of calls but end in reverse order. This is why call stacks in error messages show the most recent call at the top."
+        },
+        {
+          "title": "Execution context and this binding",
+          "code": "const obj = {\n  name: 'Widget',\n  getName() {\n    // 'this' is determined by HOW the function is called\n    return this.name;\n  }\n};\n\n// Method call — this = obj\nconsole.log(obj.getName());\n\n// Extracted function — this = undefined (strict) or global (sloppy)\nconst fn = obj.getName;\n// console.log(fn()); // undefined or TypeError in strict mode\n\n// Explicit binding with call\nconsole.log(fn.call({ name: 'Override' }));\n\n// Arrow function captures enclosing this\nconst obj2 = {\n  name: 'Gadget',\n  getNameArrow: function() {\n    const arrow = () => this.name; // captures obj2 as this\n    return arrow();\n  }\n};\n\nconsole.log(obj2.getNameArrow());",
+          "output": "\"Widget\"\n\"Override\"\n\"Gadget\"",
+          "explanation": "When getName is called as obj.getName(), this is obj. When extracted to a standalone variable, this loses its binding. Using .call() explicitly sets this. Arrow functions do not get their own this — they inherit it from the enclosing execution context, which is why obj2.getNameArrow() correctly returns 'Gadget'."
+        },
+        {
+          "title": "Stack overflow with recursion",
+          "code": "// Correct recursion — has a base case\nfunction factorial(n) {\n  if (n <= 1) return 1;  // base case stops recursion\n  return n * factorial(n - 1);\n}\n\nconsole.log(factorial(5));\n// Stack: [global, fact(5), fact(4), fact(3), fact(2), fact(1)]\n// fact(1) returns 1, then unwinds: 2*1=2, 3*2=6, 4*6=24, 5*24=120\n\n// Infinite recursion — no base case\nfunction infinite() {\n  return infinite(); // never stops\n}\n\ntry {\n  infinite();\n} catch (e) {\n  console.log(e.message);\n}\n\n// Stack depth test\nfunction countDepth(n) {\n  try {\n    return countDepth(n + 1);\n  } catch (e) {\n    return n;\n  }\n}\nconsole.log('Max stack depth ~', countDepth(0));",
+          "output": "120\n\"Maximum call stack size exceeded\"\n\"Max stack depth ~\" 12562",
+          "explanation": "factorial has a base case (n <= 1) that stops recursion, allowing the stack to unwind. infinite() has no base case, so it keeps pushing frames until the engine throws a RangeError. The countDepth function measures the approximate stack size by recursing until it hits the limit — typically 10,000-25,000 frames depending on the engine."
+        }
+      ],
+      "notes": [
+        "Every JavaScript program starts with exactly one execution context — the Global Execution Context. In browsers, its this value is the window object.",
+        "The creation phase is what makes hoisting possible — it is not syntactic sugar or code rearrangement, it is a real phase where the engine scans and registers declarations.",
+        "The call stack is single-threaded in JavaScript — only one execution context runs at a time. Asynchronous callbacks are handled via the event loop, not by adding to the current stack.",
+        "Modern engines optimize tail calls in strict mode (Tail Call Optimization), which can prevent stack overflows for properly structured recursive functions — but browser support is limited to Safari."
+      ],
+      "commonPitfalls": [
+        "Assuming the creation phase initializes let/const to undefined like var — it does not. They are in the TDZ and accessing them throws a ReferenceError.",
+        "Confusing the call stack with the event loop — setTimeout callbacks do not sit on the call stack waiting. They are queued in the task queue and only moved to the stack when it is empty.",
+        "Forgetting that each function call creates a brand new execution context — even calling the same function twice creates two separate contexts with independent variable environments.",
+        "Not realizing that this is set during the creation phase based on how the function is called — arrow functions are the exception because they inherit this from the enclosing context."
+      ],
+      "interviewTips": [
+        "Draw the call stack on paper (or a whiteboard) when tracing code — interviewers love to see you visually track execution contexts being pushed and popped.",
+        "When asked 'what is hoisting?', explain it as the creation phase of the execution context, not as 'code being moved to the top' — this shows deeper understanding.",
+        "Be prepared to trace through code that mixes synchronous function calls with setTimeout to demonstrate your understanding of the call stack vs the event loop.",
+        "Know that each execution context has three components: variable environment, scope chain, and this binding. Being able to name all three shows comprehensive understanding."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "execution-context-ex1",
+        "title": "Call Stack Tracer",
+        "description": "Write three functions (push, process, pop) that simulate a call stack trace. 'push' calls 'process', which calls 'pop'. Each function should log when it enters and when it exits, demonstrating the LIFO order of the call stack.",
+        "starterCode": "// Exercise: Call stack tracer\n// 1. Create function 'push' that:\n//    - Logs 'push: entered'\n//    - Calls process()\n//    - Logs 'push: exiting'\n// 2. Create function 'process' that:\n//    - Logs 'process: entered'\n//    - Calls pop()\n//    - Logs 'process: exiting'\n// 3. Create function 'pop' that:\n//    - Logs 'pop: entered'\n//    - Logs 'pop: exiting'\n// 4. Call push()\n\n// Your code here\n",
+        "solution": "function push() {\n  console.log('push: entered');\n  process();\n  console.log('push: exiting');\n}\n\nfunction process() {\n  console.log('process: entered');\n  pop();\n  console.log('process: exiting');\n}\n\nfunction pop() {\n  console.log('pop: entered');\n  console.log('pop: exiting');\n}\n\npush();",
+        "expectedOutput": "push: entered\nprocess: entered\npop: entered\npop: exiting\nprocess: exiting\npush: exiting",
+        "hints": [
+          "Functions enter in the order they are called (push -> process -> pop), but they exit in reverse order because the call stack is LIFO.",
+          "Each function must finish its inner call before it can proceed to its own exit log."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "execution-context-ex2",
+        "title": "This Binding Detective",
+        "description": "Create an object with a method that uses 'this'. Demonstrate three different this bindings: calling the method normally (this = object), using .call() to override this, and using an arrow function to capture the enclosing this.",
+        "starterCode": "// Exercise: This binding detective\n// 1. Create an object 'hero' with property name = 'Batman'\n//    and a method identify() that returns `I am ${this.name}`\n// 2. Log hero.identify() — this is the object\n// 3. Use .call() to invoke identify with { name: 'Superman' }\n// 4. Create an object 'villain' with name = 'Joker' and a method\n//    getIdentity that stores an arrow function referencing this.name\n//    and returns the result of calling that arrow function\n// 5. Log villain.getIdentity()\n\n// Your code here\n",
+        "solution": "const hero = {\n  name: 'Batman',\n  identify() {\n    return `I am ${this.name}`;\n  }\n};\n\nconsole.log(hero.identify());\nconsole.log(hero.identify.call({ name: 'Superman' }));\n\nconst villain = {\n  name: 'Joker',\n  getIdentity() {\n    const arrow = () => `I am ${this.name}`;\n    return arrow();\n  }\n};\n\nconsole.log(villain.getIdentity());",
+        "expectedOutput": "I am Batman\nI am Superman\nI am Joker",
+        "hints": [
+          "When a method is called as obj.method(), 'this' refers to obj. When .call() is used, 'this' is explicitly set to the first argument.",
+          "Arrow functions do not have their own 'this'. They capture 'this' from the enclosing execution context, which is the getIdentity method's context where this = villain."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "currying-memoization",
+    "sectionId": "scope-and-execution",
+    "orderIndex": 2,
+    "title": "Closures Deep Dive — Currying & Memoization",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": [
+      "currying",
+      "partial application",
+      "memoization",
+      "closure",
+      "higher-order functions",
+      "function factories",
+      "caching"
+    ],
+    "content": {
+      "explanation": "Closures are one of the most powerful concepts in JavaScript, and currying and memoization are two of the most impactful patterns that rely on them. A closure occurs when a function retains access to variables from its enclosing scope even after that outer function has returned. This is not a special feature you opt into — it is the default behavior of functions in JavaScript due to lexical scoping. Currying and memoization both exploit this capability to create sophisticated, reusable function patterns.\n\nCurrying is the technique of transforming a function that takes multiple arguments into a sequence of functions that each take a single argument. Instead of calling f(a, b, c), you call f(a)(b)(c). Each intermediate call returns a new function that remembers the previously passed arguments via closure. This is not just an academic exercise — currying enables partial application, where you fix some arguments upfront and pass the rest later. This is enormously useful for creating specialized versions of general functions, such as pre-configuring loggers, validators, or event handlers.\n\nPractical currying shows up in many real-world scenarios. Consider an event handler factory: a curried function that takes a configuration (like log level or analytics category) and returns a handler function. In React, curried functions are commonly used to create onClick handlers that need to know which item was clicked. In functional programming libraries like Ramda, every function is auto-curried by default. Understanding currying transforms how you think about function composition and reuse.\n\nMemoization is an optimization technique where you cache the results of expensive function calls and return the cached result when the same inputs occur again. The cache is stored in a closure — the memoized wrapper function closes over an object (or Map) that maps inputs to outputs. When the function is called, it first checks the cache; if the input has been seen before, it returns the cached value immediately without recomputing. This can turn O(2^n) recursive algorithms into O(n) by eliminating redundant computations.\n\nThe classic memoization example is the Fibonacci sequence. A naive recursive implementation has exponential time complexity because it recalculates the same values over and over — fib(5) calculates fib(3) twice, fib(2) three times, and so on. With memoization, each value is computed only once and stored in the cache. The improvement is dramatic: calculating fib(40) goes from billions of operations to just 40. Writing a generic memoize utility function is a very common interview question, and understanding how it works with closures is essential.\n\nBoth currying and memoization demonstrate why closures are not just a theoretical concept but a practical tool. They show how functions can carry private state (curried arguments, cached results) without relying on global variables or class instances. This functional approach to state management leads to code that is more modular, testable, and composable.",
+      "codeExamples": [
+        {
+          "title": "Currying — transforming multi-arg into single-arg chain",
+          "code": "// Regular function\nfunction add(a, b, c) {\n  return a + b + c;\n}\n\n// Curried version\nfunction curriedAdd(a) {\n  return function(b) {\n    return function(c) {\n      return a + b + c; // closure over a and b\n    };\n  };\n}\n\nconsole.log(add(1, 2, 3));\nconsole.log(curriedAdd(1)(2)(3));\n\n// Partial application — fix some args now, rest later\nconst addFive = curriedAdd(5);\nconst addFiveAndTen = addFive(10);\nconsole.log(addFiveAndTen(3)); // 5 + 10 + 3\nconsole.log(addFiveAndTen(7)); // 5 + 10 + 7\n\n// Arrow function syntax (concise)\nconst multiply = a => b => c => a * b * c;\nconsole.log(multiply(2)(3)(4));",
+          "output": "6\n6\n18\n22\n24",
+          "explanation": "curriedAdd returns a chain of functions, each closing over previously passed arguments. addFive is a partially applied function — it remembers a=5 and waits for b and c. addFiveAndTen remembers a=5 and b=10, ready for the final argument. Each intermediate function creates a closure that persists until the innermost function executes."
+        },
+        {
+          "title": "Practical currying — event handlers and config",
+          "code": "// Logger factory — curried configuration\nconst createLogger = (level) => (module) => (message) => {\n  const timestamp = new Date().toISOString().slice(11, 19);\n  return `[${timestamp}] [${level}] [${module}] ${message}`;\n};\n\nconst errorLog = createLogger('ERROR');\nconst apiError = errorLog('API');\nconst dbError = errorLog('DB');\n\nconsole.log(apiError('Connection timeout'));\nconsole.log(dbError('Query failed'));\nconsole.log(createLogger('INFO')('AUTH')('User logged in'));\n\n// URL builder — reusable base\nconst buildUrl = (base) => (path) => (params) => {\n  const query = Object.entries(params).map(([k, v]) => `${k}=${v}`).join('&');\n  return `${base}${path}?${query}`;\n};\n\nconst api = buildUrl('https://api.example.com');\nconst usersEndpoint = api('/users');\n\nconsole.log(usersEndpoint({ page: 1, limit: 10 }));\nconsole.log(usersEndpoint({ page: 2, limit: 10 }));",
+          "output": "\"[HH:MM:SS] [ERROR] [API] Connection timeout\"\n\"[HH:MM:SS] [ERROR] [DB] Query failed\"\n\"[HH:MM:SS] [INFO] [AUTH] User logged in\"\n\"https://api.example.com/users?page=1&limit=10\"\n\"https://api.example.com/users?page=2&limit=10\"",
+          "explanation": "The logger factory shows practical currying: you configure the level once to get a level-specific logger, then configure the module to get a module-specific logger. The URL builder demonstrates how currying creates reusable, composable function pieces — the base and path are fixed, and only the params change per call."
+        },
+        {
+          "title": "Memoization — caching function results",
+          "code": "// Generic memoize utility\nfunction memoize(fn) {\n  const cache = new Map(); // closure over cache\n  return function(...args) {\n    const key = JSON.stringify(args);\n    if (cache.has(key)) {\n      console.log(`  Cache hit for ${key}`);\n      return cache.get(key);\n    }\n    console.log(`  Computing for ${key}`);\n    const result = fn.apply(this, args);\n    cache.set(key, result);\n    return result;\n  };\n}\n\nconst expensiveSquare = memoize((n) => {\n  // Simulate expensive computation\n  return n * n;\n});\n\nconsole.log(expensiveSquare(4));\nconsole.log(expensiveSquare(4)); // cached!\nconsole.log(expensiveSquare(5));\nconsole.log(expensiveSquare(5)); // cached!",
+          "output": "  Computing for [4]\n16\n  Cache hit for [4]\n16\n  Computing for [5]\n25\n  Cache hit for [5]\n25",
+          "explanation": "The memoize function returns a wrapper that closes over a Map cache. On each call, it serializes the arguments as a key. If the key exists in the cache, it returns the stored result immediately. If not, it computes the result, stores it, and returns it. The cache persists across calls because the wrapper function maintains a closure over it."
+        },
+        {
+          "title": "Fibonacci with memoization — exponential to linear",
+          "code": "// Naive recursive Fibonacci — O(2^n)\nfunction fibSlow(n) {\n  if (n <= 1) return n;\n  return fibSlow(n - 1) + fibSlow(n - 2);\n}\n\n// Memoized Fibonacci — O(n)\nfunction fibFast(n, memo = {}) {\n  if (n in memo) return memo[n];\n  if (n <= 1) return n;\n  memo[n] = fibFast(n - 1, memo) + fibFast(n - 2, memo);\n  return memo[n];\n}\n\n// Compare performance\nconsole.log('fibSlow(10):', fibSlow(10));\nconsole.log('fibFast(10):', fibFast(10));\nconsole.log('fibFast(50):', fibFast(50));\n// fibSlow(50) would take minutes; fibFast(50) is instant\n\n// Using our generic memoize utility\nconst fib = memoize(function(n) {\n  if (n <= 1) return n;\n  return fib(n - 1) + fib(n - 2);\n});\n\nconsole.log('fib(10):', fib(10));",
+          "output": "fibSlow(10): 55\nfibFast(10): 55\nfibFast(50): 12586269025\nfib(10): 55",
+          "explanation": "fibSlow recalculates fib(3) multiple times when computing fib(5). With memoization, each value is computed once and stored — subsequent lookups are O(1). fibFast(50) computes instantly, while fibSlow(50) would take an impractical amount of time. The memo object is passed through the recursive calls, serving as a shared cache."
+        }
+      ],
+      "notes": [
+        "Currying and partial application are related but different — currying transforms f(a,b,c) into f(a)(b)(c), while partial application fixes some arguments and returns a function for the rest.",
+        "Memoization trades space for time — you are using memory to store cached results in exchange for avoiding redundant computation.",
+        "JSON.stringify for cache keys works for primitives and simple objects but fails for functions, circular references, and objects where key order matters. Use a more robust key strategy for complex cases.",
+        "Both patterns demonstrate closures: curried functions close over earlier arguments, and memoized functions close over the cache."
+      ],
+      "commonPitfalls": [
+        "Memoizing impure functions — if the function has side effects or depends on external state, the cached result may be stale or wrong. Only memoize pure functions.",
+        "Forgetting to handle the cache key properly — JSON.stringify({a:1, b:2}) and JSON.stringify({b:2, a:1}) produce different strings even though the objects are logically equal.",
+        "Unbounded cache growth — without an eviction strategy (like LRU), the memoization cache can grow indefinitely and cause memory leaks in long-running applications.",
+        "Over-currying simple functions — currying adds cognitive overhead. Use it when partial application provides genuine value, not as a default style."
+      ],
+      "interviewTips": [
+        "Implement a generic memoize function from scratch — this is a very common interview question. Make sure your implementation handles multiple arguments and uses a Map or object as the cache.",
+        "Be ready to explain how currying relates to closures — each returned function closes over the previously provided argument. Draw the closure chain if asked.",
+        "Fibonacci with memoization is a classic — know both the approach where memo is a parameter and the approach using a generic memoize wrapper around a recursive function.",
+        "Discuss real-world memoization use cases: React.memo for component re-renders, useMemo for expensive calculations, API response caching, and computed property caching."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "currying-memoization-ex1",
+        "title": "Curried Greeting Factory",
+        "description": "Build a curried function that creates greeting messages. The function takes a greeting word, then a title, then a name, and returns the full greeting string. Use partial application to create specialized greeters.",
+        "starterCode": "// Exercise: Curried greeting factory\n// 1. Create a curried function 'greet' that takes three arguments\n//    one at a time: greeting, title, name\n//    and returns `${greeting}, ${title} ${name}!`\n// 2. Create a partial 'formalHello' by calling greet('Hello')\n// 3. Create a partial 'helloDoctor' by calling formalHello('Dr.')\n// 4. Log helloDoctor('Strange')\n// 5. Log helloDoctor('Watson')\n// 6. Log greet('Hey')('Captain')('America')\n\n// Your code here\n",
+        "solution": "const greet = (greeting) => (title) => (name) => {\n  return `${greeting}, ${title} ${name}!`;\n};\n\nconst formalHello = greet('Hello');\nconst helloDoctor = formalHello('Dr.');\n\nconsole.log(helloDoctor('Strange'));\nconsole.log(helloDoctor('Watson'));\nconsole.log(greet('Hey')('Captain')('America'));",
+        "expectedOutput": "Hello, Dr. Strange!\nHello, Dr. Watson!\nHey, Captain America!",
+        "hints": [
+          "Use arrow functions for concise currying: const fn = (a) => (b) => (c) => result.",
+          "Each intermediate call returns a new function that closes over the previously provided argument. formalHello remembers 'Hello', helloDoctor remembers both 'Hello' and 'Dr.'."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "currying-memoization-ex2",
+        "title": "Build a Memoize Utility",
+        "description": "Implement a memoize function that caches results of a pure function. Use it to memoize a function that computes the cube of a number. Demonstrate the cache working by calling with repeated arguments and logging whether each call was computed or retrieved from cache.",
+        "starterCode": "// Exercise: Build a memoize utility\n// 1. Write a function 'memoize' that:\n//    - Takes a function 'fn' as argument\n//    - Returns a new function that caches results\n//    - Uses a Map for the cache, JSON.stringify(args) as key\n//    - Logs 'computed' when calculating a new result\n//    - Logs 'cached' when returning from cache\n// 2. Create a memoized cube function: n => n * n * n\n// 3. Call cube(3) twice and cube(4) twice to show caching\n\n// Your code here\n",
+        "solution": "function memoize(fn) {\n  const cache = new Map();\n  return function (...args) {\n    const key = JSON.stringify(args);\n    if (cache.has(key)) {\n      console.log('cached');\n      return cache.get(key);\n    }\n    console.log('computed');\n    const result = fn(...args);\n    cache.set(key, result);\n    return result;\n  };\n}\n\nconst cube = memoize((n) => n * n * n);\n\nconsole.log(cube(3));\nconsole.log(cube(3));\nconsole.log(cube(4));\nconsole.log(cube(4));",
+        "expectedOutput": "computed\n27\ncached\n27\ncomputed\n64\ncached\n64",
+        "hints": [
+          "The memoize function returns a closure that has access to the cache Map. The cache persists between calls because the returned function closes over it.",
+          "Use JSON.stringify(args) to create a string key from the arguments array. Check cache.has(key) before computing."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "temporal-dead-zone",
+    "sectionId": "scope-and-execution",
+    "orderIndex": 3,
+    "title": "Temporal Dead Zone & Block Scoping",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": [
+      "temporal dead zone",
+      "block scoping",
+      "let in loops",
+      "const in loops",
+      "var vs let closure",
+      "switch statement scoping",
+      "IIFE pattern"
+    ],
+    "content": {
+      "explanation": "The Temporal Dead Zone (TDZ) is the period between entering a scope where a let or const variable is declared and the actual declaration line being executed. During this zone, the variable exists (it has been hoisted) but is in an uninitialized state — any attempt to read, write, or even use typeof on it throws a ReferenceError. The TDZ exists to catch programmer errors: using a variable before it is declared is almost always a bug, and the TDZ ensures you get an immediate, clear error rather than a silent undefined value.\n\nThe TDZ is not a physical region in your code — it is a temporal concept tied to the execution timeline. The zone starts when control enters the scope (the block, function, or module) and ends when the declaration statement is executed. This means the TDZ depends on the order of execution, not the order of lines in the file. A let variable on line 10 is in the TDZ if execution reaches code that references it before line 10 is executed — even if that referencing code appears after line 10 in the source.\n\nBlock scoping with let and const solved one of JavaScript's most notorious problems: the var-in-loops closure bug. When you use var in a for loop, all iterations share the same variable because var is function-scoped. If you create closures inside the loop (like setTimeout callbacks), they all see the final value of the loop variable. With let, each iteration gets its own variable — the loop body behaves as if a new let is declared for each iteration, which is exactly the behavior most developers expect.\n\nSwitch statements have a surprising scoping behavior that trips up even experienced developers. The entire switch block (all cases combined) forms a single block scope. This means a let or const variable declared in one case is technically in scope in all other cases, which can cause TDZ errors or naming conflicts. The solution is to wrap each case body in its own block with curly braces, creating a separate scope for each case.\n\nBefore let and const, the IIFE (Immediately Invoked Function Expression) pattern was the primary way to create block-like scoping. You would wrap code in (function() { ... })() to create a new function scope, isolating variables from the outer scope. While IIFEs are largely obsoleted by block scoping, understanding them helps you read older code and appreciate why let and const were such important additions to the language.",
+      "codeExamples": [
+        {
+          "title": "TDZ in action — when and why it throws",
+          "code": "// TDZ example 1: simple reference before declaration\ntry {\n  console.log(myVar);  // undefined — var is hoisted\n} catch (e) {\n  console.log('var error:', e.message);\n}\nvar myVar = 'hello';\n\ntry {\n  console.log(myLet);  // ReferenceError — in TDZ\n} catch (e) {\n  console.log('let error:', e.message);\n}\nlet myLet = 'hello';\n\n// TDZ example 2: typeof is NOT safe with let/const\ntry {\n  console.log(typeof undeclaredVar);  // 'undefined' — safe\n  console.log(typeof tdzVar);         // ReferenceError!\n} catch (e) {\n  console.log('typeof error:', e.message);\n}\nlet tdzVar = 'value';",
+          "output": "undefined\n\"let error: Cannot access 'myLet' before initialization\"\n\"undefined\"\n\"typeof error: Cannot access 'tdzVar' before initialization\"",
+          "explanation": "var myVar is hoisted and initialized to undefined, so accessing it early works. let myLet is hoisted but placed in the TDZ, so accessing it throws a ReferenceError. Notably, even typeof — which is normally safe for undeclared variables — throws a ReferenceError when used on a variable in the TDZ."
+        },
+        {
+          "title": "var vs let in loops — the classic closure problem",
+          "code": "// Problem: var in a loop with closures\nconst varFns = [];\nfor (var i = 0; i < 3; i++) {\n  varFns.push(function() { return i; });\n}\nconsole.log(varFns[0](), varFns[1](), varFns[2]()); // all 3!\n\n// Solution 1: let in a loop (each iteration gets its own i)\nconst letFns = [];\nfor (let j = 0; j < 3; j++) {\n  letFns.push(function() { return j; });\n}\nconsole.log(letFns[0](), letFns[1](), letFns[2]()); // 0, 1, 2\n\n// Solution 2 (old way): IIFE to capture each value\nconst iifeFns = [];\nfor (var k = 0; k < 3; k++) {\n  iifeFns.push((function(captured) {\n    return function() { return captured; };\n  })(k));\n}\nconsole.log(iifeFns[0](), iifeFns[1](), iifeFns[2]());",
+          "output": "3 3 3\n0 1 2\n0 1 2",
+          "explanation": "With var, all closures share the same variable i, which is 3 after the loop ends. With let, each iteration creates a new j binding — the closures capture different variables. The IIFE approach (pre-ES6) creates a new function scope per iteration, capturing the current value of k as a parameter."
+        },
+        {
+          "title": "TDZ in switch statements",
+          "code": "// Problem: all cases share one block scope\nfunction processStatus(status) {\n  switch (status) {\n    case 'success':\n      // let msg is visible in ALL cases (TDZ in others)\n      let msg = 'Operation succeeded';\n      console.log(msg);\n      break;\n    case 'error':\n      // Uncommenting this would throw: msg is in TDZ here\n      // let msg = 'Failed'; // SyntaxError: already declared\n      console.log('Error case');\n      break;\n  }\n}\n\n// Solution: wrap each case in its own block\nfunction processStatusFixed(status) {\n  switch (status) {\n    case 'success': {\n      let msg = 'Operation succeeded';\n      console.log(msg);\n      break;\n    }\n    case 'error': {\n      let msg = 'Operation failed'; // separate scope — no conflict\n      console.log(msg);\n      break;\n    }\n  }\n}\n\nprocessStatus('success');\nprocessStatusFixed('error');",
+          "output": "\"Operation succeeded\"\n\"Operation failed\"",
+          "explanation": "Without block wrappers, the entire switch body is one scope — you cannot declare the same let variable in two different cases. Adding curly braces around each case body creates separate block scopes, allowing each case to have its own msg variable."
+        },
+        {
+          "title": "Block scoping patterns and IIFE comparison",
+          "code": "// Block scope for temporary variables\n{\n  const temp = [1, 2, 3, 4, 5];\n  const sum = temp.reduce((a, b) => a + b, 0);\n  console.log('Sum inside block:', sum);\n}\n// console.log(temp); // ReferenceError — temp is block-scoped\n\n// Same thing with IIFE (pre-ES6 pattern)\n(function() {\n  var temp = [1, 2, 3, 4, 5];\n  var sum = temp.reduce(function(a, b) { return a + b; }, 0);\n  console.log('Sum inside IIFE:', sum);\n})();\n// console.log(temp); // ReferenceError — temp is function-scoped\n\n// const in for...of (new binding per iteration)\nconst items = ['a', 'b', 'c'];\nconst fns = [];\nfor (const item of items) {\n  fns.push(() => item); // each closure gets its own const item\n}\nconsole.log(fns[0](), fns[1](), fns[2]());",
+          "output": "\"Sum inside block: 15\"\n\"Sum inside IIFE: 15\"\n\"a\" \"b\" \"c\"",
+          "explanation": "Block scoping with {} and let/const achieves the same isolation that IIFEs provided for var. The block approach is cleaner and more readable. In for...of loops, const creates a new binding per iteration just like let does in regular for loops, so closures capture the correct value."
+        }
+      ],
+      "notes": [
+        "The TDZ starts at the beginning of the block, not at the beginning of the file or function. It is scoped to the block where the let/const is declared.",
+        "typeof is NOT safe for variables in the TDZ — it throws a ReferenceError, unlike undeclared variables where typeof returns 'undefined'.",
+        "let in a for loop is special — the spec requires the engine to create a new binding for each iteration, which is why closures work correctly with let but not var.",
+        "IIFEs are still useful for module patterns in environments without ES module support, but for simple block scoping, use {} with let/const instead."
+      ],
+      "commonPitfalls": [
+        "Assuming typeof is always safe — typeof throws a ReferenceError for TDZ variables, which surprises developers who know typeof returns 'undefined' for truly undeclared variables.",
+        "Forgetting that switch cases share a single block scope — declaring let/const in one case without braces makes it visible (but in TDZ) in other cases, leading to confusing errors.",
+        "Using var in loops and expecting each iteration to have its own variable — this is the most common source of closure-related bugs in JavaScript.",
+        "Not realizing that const in for loops works differently than in regular code — for...of and for...in create a new const binding per iteration, but a regular for(const i = 0; ...) throws because you cannot reassign const."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "temporal-dead-zone-ex1",
+        "title": "TDZ Trap Detector",
+        "description": "Write code that demonstrates the TDZ by attempting to access a let variable before its declaration inside a block. Use a try/catch to capture the ReferenceError, then access the variable after the declaration to prove it works once past the TDZ.",
+        "starterCode": "// Exercise: TDZ trap detector\n// 1. Open a block with {}\n// 2. Inside, use try/catch to log the value of a let variable\n//    named 'secret' BEFORE it is declared — catch the error\n//    and log 'TDZ caught: ' followed by the error message\n// 3. Then declare let secret = 'revealed'\n// 4. Log 'After TDZ: ' followed by the value of secret\n// 5. Close the block\n\n// Your code here\n",
+        "solution": "{\n  try {\n    console.log(secret);\n  } catch (e) {\n    console.log('TDZ caught: ' + e.message);\n  }\n\n  let secret = 'revealed';\n  console.log('After TDZ: ' + secret);\n}",
+        "expectedOutput": "TDZ caught: Cannot access 'secret' before initialization\nAfter TDZ: revealed",
+        "hints": [
+          "The TDZ for 'secret' begins at the opening brace of the block and ends when the let declaration is executed.",
+          "Accessing a let variable in its TDZ throws a ReferenceError, not undefined like var would give."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "temporal-dead-zone-ex2",
+        "title": "Var vs Let Loop Closures",
+        "description": "Demonstrate the classic var-in-loop closure bug and fix it with let. Create an array of functions in a loop using var, then do the same with let. Log the results of calling each function to show the difference.",
+        "starterCode": "// Exercise: Var vs let loop closures\n// 1. Create an empty array 'varResults'\n// 2. Use a for loop with var i from 0 to 2, pushing\n//    a function that returns i into varResults\n// 3. Log the result of calling all three functions\n//    using: varResults.map(fn => fn()).join(', ')\n// 4. Create an empty array 'letResults'\n// 5. Use a for loop with let j from 0 to 2, pushing\n//    a function that returns j into letResults\n// 6. Log the result of calling all three functions\n//    using: letResults.map(fn => fn()).join(', ')\n\n// Your code here\n",
+        "solution": "const varResults = [];\nfor (var i = 0; i < 3; i++) {\n  varResults.push(function() { return i; });\n}\nconsole.log(varResults.map(fn => fn()).join(', '));\n\nconst letResults = [];\nfor (let j = 0; j < 3; j++) {\n  letResults.push(function() { return j; });\n}\nconsole.log(letResults.map(fn => fn()).join(', '));",
+        "expectedOutput": "3, 3, 3\n0, 1, 2",
+        "hints": [
+          "var is function-scoped, so all closures share the same 'i' variable. After the loop, i is 3, so every function returns 3.",
+          "let is block-scoped and creates a new binding per loop iteration, so each closure captures its own independent 'j' value."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -1976,4 +1976,77 @@ export class AdminService {
     if (!test) throw new Error("Skill test not found");
     return prisma.skillTest.update({ where: { id: testId }, data: { isActive } });
   }
+
+  // ==================== HACKATHON MANAGEMENT ====================
+
+  async listHackathons(query: {
+    page: number; limit: number; search?: string;
+    status?: string; locationType?: string;
+    sortBy: string; sortOrder: string;
+  }) {
+    const where: Prisma.hackathonWhereInput = {};
+    if (query.status) where.status = query.status;
+    if (query.locationType) where.locationType = query.locationType;
+    if (query.search) {
+      where.OR = [
+        { name: { contains: query.search, mode: "insensitive" } },
+        { organizer: { contains: query.search, mode: "insensitive" } },
+        { ecosystem: { contains: query.search, mode: "insensitive" } },
+      ];
+    }
+    const skip = (query.page - 1) * query.limit;
+    const orderBy: Prisma.hackathonOrderByWithRelationInput = { [query.sortBy]: query.sortOrder };
+    const [hackathons, total] = await Promise.all([
+      prisma.hackathon.findMany({ where, skip, take: query.limit, orderBy }),
+      prisma.hackathon.count({ where }),
+    ]);
+    return {
+      hackathons,
+      pagination: { page: query.page, limit: query.limit, total, totalPages: Math.ceil(total / query.limit) },
+    };
+  }
+
+  async getHackathon(id: number) {
+    const hackathon = await prisma.hackathon.findUnique({ where: { id } });
+    if (!hackathon) throw new Error("Hackathon not found");
+    return hackathon;
+  }
+
+  async createHackathon(input: {
+    name: string; organizer: string; logo?: string; description: string;
+    prizePool: string; startDate: string; endDate: string; location: string;
+    locationType: string; website?: string; tags: string[]; tracks: string[];
+    eligibility?: string; status: string; ecosystem: string; highlights: string[];
+  }) {
+    return prisma.hackathon.create({ data: input });
+  }
+
+  async updateHackathon(id: number, input: Record<string, unknown>) {
+    const hackathon = await prisma.hackathon.findUnique({ where: { id } });
+    if (!hackathon) throw new Error("Hackathon not found");
+    const data: Prisma.hackathonUpdateInput = {};
+    if (input["name"] !== undefined) data.name = input["name"] as string;
+    if (input["organizer"] !== undefined) data.organizer = input["organizer"] as string;
+    if (input["logo"] !== undefined) data.logo = (input["logo"] as string) || null;
+    if (input["description"] !== undefined) data.description = input["description"] as string;
+    if (input["prizePool"] !== undefined) data.prizePool = input["prizePool"] as string;
+    if (input["startDate"] !== undefined) data.startDate = input["startDate"] as string;
+    if (input["endDate"] !== undefined) data.endDate = input["endDate"] as string;
+    if (input["location"] !== undefined) data.location = input["location"] as string;
+    if (input["locationType"] !== undefined) data.locationType = input["locationType"] as string;
+    if (input["website"] !== undefined) data.website = (input["website"] as string) || null;
+    if (input["tags"] !== undefined) data.tags = input["tags"] as string[];
+    if (input["tracks"] !== undefined) data.tracks = input["tracks"] as string[];
+    if (input["eligibility"] !== undefined) data.eligibility = (input["eligibility"] as string) || null;
+    if (input["status"] !== undefined) data.status = input["status"] as string;
+    if (input["ecosystem"] !== undefined) data.ecosystem = input["ecosystem"] as string;
+    if (input["highlights"] !== undefined) data.highlights = input["highlights"] as string[];
+    return prisma.hackathon.update({ where: { id }, data });
+  }
+
+  async deleteHackathon(id: number) {
+    const hackathon = await prisma.hackathon.findUnique({ where: { id } });
+    if (!hackathon) throw new Error("Hackathon not found");
+    return prisma.hackathon.delete({ where: { id } });
+  }
 }

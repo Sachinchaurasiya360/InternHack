@@ -1,0 +1,363 @@
+[
+  {
+    "id": "media-queries",
+    "sectionId": "responsive-design",
+    "orderIndex": 0,
+    "title": "Media Queries",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["@media", "Breakpoints", "min-width", "max-width", "Media Features", "Logical Operators"],
+    "content": {
+      "explanation": "Media queries are the foundation of responsive web design. They allow you to apply CSS rules conditionally based on the characteristics of the user's device or viewport. The most common use case is changing layout and sizing based on viewport width, but media queries can also respond to height, orientation, resolution, color scheme preference, reduced motion preference, and more.\n\nThe basic syntax is @media (condition) { /* styles */ }. The condition is a media feature expression, most commonly a width comparison: @media (min-width: 768px) applies styles when the viewport is 768px or wider, while @media (max-width: 767px) applies styles when the viewport is 767px or narrower. You can combine conditions with logical operators: and (both must be true), or via comma-separation (either can be true), and not (negation).\n\nBreakpoints are the viewport widths at which your layout changes. Common breakpoints align with device categories: 640px (mobile), 768px (tablet), 1024px (small desktop), 1280px (large desktop), and 1536px (extra-large). However, you should choose breakpoints based on where your content breaks, not based on specific device widths. If your layout looks awkward at 820px, add a breakpoint at 820px — do not force it into a predefined device bucket.\n\nThe debate between min-width and max-width breakpoints reflects two design philosophies. min-width is the mobile-first approach: you write base styles for mobile, then layer on complexity for larger screens. max-width is the desktop-first approach: you write base styles for desktop, then override for smaller screens. The industry standard today is mobile-first with min-width, because it results in simpler CSS, better performance on mobile devices (fewer overrides), and a progressive enhancement mindset.\n\nModern CSS also supports media query range syntax using standard comparison operators: @media (width >= 768px) is equivalent to @media (min-width: 768px), and @media (400px <= width <= 800px) creates a range. This newer syntax is more readable and has good browser support. Media queries can also be used in HTML with the media attribute on <link> tags to conditionally load entire stylesheets.",
+      "codeExamples": [
+        {
+          "title": "Basic Media Query Syntax",
+          "code": "/* Base styles (apply to all viewports) */\n.container {\n  padding: 16px;\n  max-width: 100%;\n}\n\n.grid {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 16px;\n}\n\n/* Tablet and up (min-width: 768px) */\n@media (min-width: 768px) {\n  .container {\n    padding: 24px;\n    max-width: 768px;\n    margin: 0 auto;\n  }\n  .grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n\n/* Desktop and up (min-width: 1024px) */\n@media (min-width: 1024px) {\n  .container {\n    max-width: 1024px;\n  }\n  .grid {\n    grid-template-columns: repeat(3, 1fr);\n    gap: 24px;\n  }\n}",
+          "explanation": "Mobile-first approach: base styles define a single column. At 768px, the grid becomes 2 columns. At 1024px, it becomes 3 columns with larger gaps. Each breakpoint adds complexity rather than removing it."
+        },
+        {
+          "title": "Logical Operators and Range Syntax",
+          "code": "/* AND: both conditions must be true */\n@media (min-width: 768px) and (max-width: 1023px) {\n  /* Tablet only */\n  .sidebar { display: none; }\n}\n\n/* OR: comma-separated (either condition) */\n@media (max-width: 640px), (orientation: landscape) and (max-height: 500px) {\n  /* Small screens OR short landscape devices */\n  .hero { min-height: 50vh; }\n}\n\n/* NOT: negate the entire query */\n@media not print {\n  /* Everything except print */\n  .no-print { display: block; }\n}\n\n/* Modern range syntax (well-supported) */\n@media (width >= 768px) {\n  /* Same as min-width: 768px */\n  .card { flex-direction: row; }\n}\n\n@media (400px <= width <= 800px) {\n  /* Width between 400px and 800px */\n  .banner { font-size: 1.25rem; }\n}",
+          "explanation": "The 'and' operator requires both conditions. Commas act as OR. The 'not' operator negates the entire query. Modern range syntax uses >= and <= for more readable conditions."
+        },
+        {
+          "title": "Non-Width Media Features",
+          "code": "/* Dark mode preference */\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #0f172a;\n    --text: #f8fafc;\n    --border: #334155;\n  }\n  body {\n    background: var(--bg);\n    color: var(--text);\n  }\n}\n\n/* Reduced motion preference */\n@media (prefers-reduced-motion: reduce) {\n  *, *::before, *::after {\n    animation-duration: 0.01ms !important;\n    transition-duration: 0.01ms !important;\n  }\n}\n\n/* High-resolution displays */\n@media (min-resolution: 2dppx) {\n  .logo {\n    background-image: url('/logo@2x.png');\n  }\n}\n\n/* Hover capability (touchscreen vs mouse) */\n@media (hover: hover) {\n  .button:hover {\n    background: #2563eb;\n  }\n}\n\n/* Print styles */\n@media print {\n  .navbar, .footer, .sidebar { display: none; }\n  body { font-size: 12pt; }\n}",
+          "explanation": "Media queries go far beyond viewport width. prefers-color-scheme detects dark mode. prefers-reduced-motion respects accessibility settings. hover: hover targets devices with a mouse. print styles hide non-essential elements."
+        },
+        {
+          "title": "Conditional Stylesheet Loading",
+          "code": "<!-- Load different stylesheets based on conditions -->\n<link rel=\"stylesheet\" href=\"base.css\">\n<link rel=\"stylesheet\" href=\"tablet.css\" media=\"(min-width: 768px)\">\n<link rel=\"stylesheet\" href=\"desktop.css\" media=\"(min-width: 1024px)\">\n<link rel=\"stylesheet\" href=\"print.css\" media=\"print\">\n<link rel=\"stylesheet\" href=\"dark.css\" media=\"(prefers-color-scheme: dark)\">\n\n<!-- Note: All stylesheets are downloaded regardless of media match.\n     The media attribute only controls when the styles are applied.\n     However, non-matching stylesheets are loaded with lower priority,\n     so they don't block rendering. -->",
+          "explanation": "Media attributes on link tags control when styles are applied, not when they are downloaded. All files are downloaded, but non-matching ones are low priority and do not block rendering. This is useful for code-splitting CSS."
+        }
+      ],
+      "notes": [
+        "Breakpoints should be based on where your content breaks, not on specific device widths. Design for content, not devices.",
+        "Media queries do not increase CSS specificity. If two rules have the same specificity, the one that appears later in the stylesheet wins.",
+        "Use prefers-reduced-motion to respect accessibility settings. Users who enable this setting may experience motion sickness from animations.",
+        "The modern range syntax (width >= 768px) is supported in all modern browsers and is more readable than min-width/max-width."
+      ],
+      "commonPitfalls": [
+        "Using max-width breakpoints (desktop-first) when the project follows a mobile-first approach. Mixing min-width and max-width in the same project creates confusing, overlapping rules.",
+        "Choosing breakpoints based on specific device widths (e.g., 375px for iPhone). Devices change every year; design for content breakpoints instead.",
+        "Forgetting that media queries do not increase specificity. A rule inside a media query can still be overridden by a more specific selector outside of one."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "media-queries-ex1",
+        "title": "Responsive Navigation",
+        "description": "Create a navigation bar that displays links horizontally on screens 768px and wider, and stacks them vertically on smaller screens. Use a mobile-first approach with min-width. Include 4 links (Home, About, Services, Contact).",
+        "starterCode": "<style>\n  .nav {\n    list-style: none;\n    padding: 0;\n    margin: 0;\n    background: #1e293b;\n  }\n  .nav li a {\n    display: block;\n    padding: 12px 20px;\n    color: white;\n    text-decoration: none;\n  }\n  /* Add media query for horizontal layout on larger screens */\n</style>\n\n<ul class=\"nav\">\n  <li><a href=\"/\">Home</a></li>\n  <li><a href=\"/about\">About</a></li>\n  <li><a href=\"/services\">Services</a></li>\n  <li><a href=\"/contact\">Contact</a></li>\n</ul>\n",
+        "solution": "<style>\n  .nav {\n    list-style: none;\n    padding: 0;\n    margin: 0;\n    background: #1e293b;\n  }\n  .nav li a {\n    display: block;\n    padding: 12px 20px;\n    color: white;\n    text-decoration: none;\n  }\n  .nav li a:hover {\n    background: #334155;\n  }\n\n  @media (min-width: 768px) {\n    .nav {\n      display: flex;\n    }\n    .nav li a {\n      padding: 16px 24px;\n    }\n  }\n</style>\n\n<ul class=\"nav\">\n  <li><a href=\"/\">Home</a></li>\n  <li><a href=\"/about\">About</a></li>\n  <li><a href=\"/services\">Services</a></li>\n  <li><a href=\"/contact\">Contact</a></li>\n</ul>",
+        "hints": [
+          "Base styles (mobile) display links stacked vertically by default (block-level list items).",
+          "At min-width: 768px, add display: flex to the nav to make items sit side by side."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "media-queries-ex2",
+        "title": "Responsive Grid with Three Breakpoints",
+        "description": "Create a grid of 6 cards. On mobile (default), show 1 column. At 640px, show 2 columns. At 1024px, show 3 columns. Each card should have a title and a paragraph. Use a mobile-first approach.",
+        "starterCode": "<style>\n  .card-grid {\n    display: grid;\n    gap: 16px;\n    padding: 16px;\n    /* Default: 1 column */\n  }\n  .card {\n    background: white;\n    border: 1px solid #e2e8f0;\n    border-radius: 8px;\n    padding: 20px;\n  }\n  /* Add breakpoints for 2 and 3 columns */\n</style>\n\n<div class=\"card-grid\">\n  <div class=\"card\"><h3>Card 1</h3><p>Description for card one.</p></div>\n  <div class=\"card\"><h3>Card 2</h3><p>Description for card two.</p></div>\n  <div class=\"card\"><h3>Card 3</h3><p>Description for card three.</p></div>\n  <div class=\"card\"><h3>Card 4</h3><p>Description for card four.</p></div>\n  <div class=\"card\"><h3>Card 5</h3><p>Description for card five.</p></div>\n  <div class=\"card\"><h3>Card 6</h3><p>Description for card six.</p></div>\n</div>\n",
+        "solution": "<style>\n  .card-grid {\n    display: grid;\n    grid-template-columns: 1fr;\n    gap: 16px;\n    padding: 16px;\n  }\n  .card {\n    background: white;\n    border: 1px solid #e2e8f0;\n    border-radius: 8px;\n    padding: 20px;\n  }\n\n  @media (min-width: 640px) {\n    .card-grid {\n      grid-template-columns: repeat(2, 1fr);\n    }\n  }\n\n  @media (min-width: 1024px) {\n    .card-grid {\n      grid-template-columns: repeat(3, 1fr);\n      gap: 24px;\n    }\n  }\n</style>\n\n<div class=\"card-grid\">\n  <div class=\"card\"><h3>Card 1</h3><p>Description for card one.</p></div>\n  <div class=\"card\"><h3>Card 2</h3><p>Description for card two.</p></div>\n  <div class=\"card\"><h3>Card 3</h3><p>Description for card three.</p></div>\n  <div class=\"card\"><h3>Card 4</h3><p>Description for card four.</p></div>\n  <div class=\"card\"><h3>Card 5</h3><p>Description for card five.</p></div>\n  <div class=\"card\"><h3>Card 6</h3><p>Description for card six.</p></div>\n</div>",
+        "hints": [
+          "Start with grid-template-columns: 1fr for single column on mobile.",
+          "Use @media (min-width: 640px) for 2 columns and @media (min-width: 1024px) for 3 columns. Each breakpoint overrides the grid-template-columns."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "mobile-first",
+    "sectionId": "responsive-design",
+    "orderIndex": 1,
+    "title": "Mobile-First Design",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Progressive Enhancement", "min-width Approach", "Common Breakpoints", "Content Priority", "Performance"],
+    "content": {
+      "explanation": "Mobile-first design is a development strategy where you write CSS for the smallest screens first, then progressively add complexity for larger viewports using min-width media queries. This approach is the industry standard for modern responsive web development, recommended by every major CSS framework (Tailwind, Bootstrap, Foundation) and supported by Google's mobile-first indexing.\n\nThe philosophy behind mobile-first is progressive enhancement: start with the essential content and functionality that works on the most constrained devices, then layer on enhancements for users with more screen space, processing power, and bandwidth. This contrasts with graceful degradation (desktop-first), where you build the full experience first and then strip things away for smaller screens. Progressive enhancement results in simpler, more maintainable CSS.\n\nIn practice, mobile-first means your base styles (outside any media query) target mobile devices. These styles define single-column layouts, stacked content, simplified navigation, and appropriate touch-target sizes. Then you add min-width breakpoints to introduce multi-column layouts, sidebars, hover effects, and desktop-specific features. Common breakpoints in a mobile-first system are: 640px (landscape phones/small tablets), 768px (tablets), 1024px (small desktops/laptops), 1280px (desktops), and 1536px (large screens).\n\nMobile-first also has performance benefits. On mobile devices, the browser only applies the base styles and ignores all media query blocks for larger screens. This means less CSS to parse, fewer layout calculations, and faster initial rendering on the devices that need it most. Desktop-first approaches load complex desktop styles on mobile, then override them — wasting bandwidth and processing time.\n\nContent prioritization is a key discipline in mobile-first design. On a small screen, you cannot show everything at once. You must decide what is essential (primary content, key actions, navigation) and what can be hidden, collapsed, or deferred (sidebars, secondary navigation, decorative elements). This forces you to focus on what matters most to users, which often improves the experience on all screen sizes, not just mobile.",
+      "codeExamples": [
+        {
+          "title": "Mobile-First Layout Pattern",
+          "code": "/* Base: Mobile (single column, stacked) */\n.page {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n}\n\n.main-content {\n  padding: 16px;\n  order: 1;\n}\n\n.sidebar {\n  padding: 16px;\n  background: #f8fafc;\n  order: 2;\n}\n\n.hero-title {\n  font-size: 1.5rem;\n  line-height: 1.3;\n}\n\n/* Tablet: side-by-side layout */\n@media (min-width: 768px) {\n  .page {\n    flex-direction: row;\n  }\n  .main-content {\n    flex: 1;\n    padding: 24px;\n    order: 1;\n  }\n  .sidebar {\n    width: 280px;\n    padding: 24px;\n    order: 2;\n  }\n  .hero-title {\n    font-size: 2rem;\n  }\n}\n\n/* Desktop: wider with more spacing */\n@media (min-width: 1024px) {\n  .page {\n    max-width: 1200px;\n    margin: 0 auto;\n  }\n  .sidebar {\n    width: 320px;\n  }\n  .hero-title {\n    font-size: 2.5rem;\n    line-height: 1.2;\n  }\n}",
+          "explanation": "Mobile base: stacked columns, smaller font. At 768px, content and sidebar sit side-by-side. At 1024px, the layout is constrained and centered. Each breakpoint adds complexity, never removes it."
+        },
+        {
+          "title": "Progressive Navigation Enhancement",
+          "code": "/* Mobile: hamburger menu (collapsed by default) */\n.nav-links {\n  display: none;\n  flex-direction: column;\n  background: #1e293b;\n}\n.nav-links.open {\n  display: flex;\n}\n.nav-links a {\n  padding: 14px 20px;\n  color: white;\n  text-decoration: none;\n  border-bottom: 1px solid #334155;\n}\n.menu-toggle {\n  display: block;\n  padding: 12px 16px;\n  background: #1e293b;\n  color: white;\n  border: none;\n  font-size: 1.25rem;\n  cursor: pointer;\n}\n\n/* Tablet+: show full nav, hide toggle */\n@media (min-width: 768px) {\n  .menu-toggle {\n    display: none;\n  }\n  .nav-links {\n    display: flex;\n    flex-direction: row;\n  }\n  .nav-links a {\n    border-bottom: none;\n    padding: 16px 20px;\n  }\n  .nav-links a:hover {\n    background: #334155;\n  }\n}",
+          "explanation": "On mobile, navigation is hidden behind a toggle button. The .open class (toggled via JavaScript) reveals it as a vertical list. At 768px, the toggle disappears and all links display horizontally — no JavaScript needed for the desktop layout."
+        },
+        {
+          "title": "Content Priority Reordering",
+          "code": "/* Mobile: prioritize content over sidebar */\n.layout {\n  display: flex;\n  flex-direction: column;\n}\n.content {\n  order: 1; /* Content first on mobile */\n  padding: 16px;\n}\n.sidebar-left {\n  order: 2; /* Sidebar below content on mobile */\n  padding: 16px;\n  background: #f1f5f9;\n}\n.sidebar-right {\n  order: 3;\n  padding: 16px;\n  background: #f8fafc;\n}\n\n/* Desktop: three-column layout with sidebars on sides */\n@media (min-width: 1024px) {\n  .layout {\n    flex-direction: row;\n  }\n  .sidebar-left {\n    order: 1;\n    width: 200px;\n  }\n  .content {\n    order: 2;\n    flex: 1;\n    padding: 24px;\n  }\n  .sidebar-right {\n    order: 3;\n    width: 250px;\n  }\n}",
+          "explanation": "On mobile, content appears first (most important) with sidebars below. On desktop, CSS order property rearranges them into a three-column layout with sidebars on each side. This ensures mobile users see the most important content immediately."
+        },
+        {
+          "title": "Desktop-First vs Mobile-First Comparison",
+          "code": "/* DESKTOP-FIRST (avoid this) */\n.card-grid-desktop {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  gap: 24px;\n}\n@media (max-width: 1023px) {\n  .card-grid-desktop {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media (max-width: 639px) {\n  .card-grid-desktop {\n    grid-template-columns: 1fr;\n    gap: 12px;\n  }\n}\n\n/* MOBILE-FIRST (prefer this) */\n.card-grid-mobile {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 12px;\n}\n@media (min-width: 640px) {\n  .card-grid-mobile {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n@media (min-width: 1024px) {\n  .card-grid-mobile {\n    grid-template-columns: repeat(4, 1fr);\n    gap: 24px;\n  }\n}",
+          "explanation": "Desktop-first starts complex and strips down. Mobile-first starts simple and builds up. The mobile-first version is easier to read, maintain, and more performant on mobile devices. Both produce the same result."
+        }
+      ],
+      "notes": [
+        "Mobile-first means base styles target mobile, and min-width media queries add complexity for larger screens. This is the industry standard.",
+        "Progressive enhancement: start with what works everywhere, add features for capable devices. Graceful degradation is the opposite (start full, remove for small).",
+        "On mobile, only base styles are applied. Media query blocks for larger screens are parsed but not applied, reducing rendering work.",
+        "Common mobile-first breakpoints: 640px (sm), 768px (md), 1024px (lg), 1280px (xl), 1536px (2xl). These align with Tailwind CSS defaults."
+      ],
+      "commonPitfalls": [
+        "Writing desktop styles first, then overriding with max-width queries for mobile. This results in more CSS, more overrides, and slower mobile rendering.",
+        "Forgetting to set the viewport meta tag: <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">. Without it, mobile browsers render the page at desktop width and scale it down.",
+        "Making touch targets too small on mobile. Buttons and links should be at least 44x44 pixels for comfortable touch interaction (Apple HIG / WCAG recommendation)."
+      ],
+      "interviewTips": [
+        "Define mobile-first: write base CSS for mobile, use min-width media queries to add complexity. Contrast with desktop-first (max-width, removing features).",
+        "Explain the performance benefit: mobile devices only apply base styles, skipping all desktop media queries. Desktop-first loads unnecessary complex styles on mobile.",
+        "Mention the viewport meta tag — without it, responsive design does not work on mobile browsers.",
+        "Know common breakpoints (640, 768, 1024, 1280) and explain that breakpoints should be based on content, not specific devices."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "mobile-first-ex1",
+        "title": "Convert Desktop-First to Mobile-First",
+        "description": "Refactor the following desktop-first CSS to a mobile-first approach. The current code uses max-width breakpoints. Convert it to use min-width breakpoints with the same visual results: 3 columns at 1024px+, 2 columns at 640px-1023px, 1 column below 640px.",
+        "starterCode": "<style>\n  /* Desktop-first (convert this to mobile-first) */\n  .grid {\n    display: grid;\n    grid-template-columns: repeat(3, 1fr);\n    gap: 24px;\n    padding: 24px;\n  }\n  @media (max-width: 1023px) {\n    .grid {\n      grid-template-columns: repeat(2, 1fr);\n      gap: 16px;\n    }\n  }\n  @media (max-width: 639px) {\n    .grid {\n      grid-template-columns: 1fr;\n      gap: 12px;\n      padding: 16px;\n    }\n  }\n</style>\n\n<div class=\"grid\">\n  <div>Card 1</div>\n  <div>Card 2</div>\n  <div>Card 3</div>\n  <div>Card 4</div>\n  <div>Card 5</div>\n  <div>Card 6</div>\n</div>\n",
+        "solution": "<style>\n  /* Mobile-first */\n  .grid {\n    display: grid;\n    grid-template-columns: 1fr;\n    gap: 12px;\n    padding: 16px;\n  }\n  @media (min-width: 640px) {\n    .grid {\n      grid-template-columns: repeat(2, 1fr);\n      gap: 16px;\n    }\n  }\n  @media (min-width: 1024px) {\n    .grid {\n      grid-template-columns: repeat(3, 1fr);\n      gap: 24px;\n      padding: 24px;\n    }\n  }\n</style>\n\n<div class=\"grid\">\n  <div>Card 1</div>\n  <div>Card 2</div>\n  <div>Card 3</div>\n  <div>Card 4</div>\n  <div>Card 5</div>\n  <div>Card 6</div>\n</div>",
+        "hints": [
+          "Start with the smallest screen styles as the base (1 column, 12px gap, 16px padding).",
+          "Add min-width: 640px for 2 columns and min-width: 1024px for 3 columns. Each breakpoint builds upon the previous."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "mobile-first-ex2",
+        "title": "Mobile-First Dashboard Layout",
+        "description": "Build a dashboard layout with a header, sidebar, main content area, and footer. On mobile: everything stacks vertically with content first (using CSS order). At 768px: sidebar and main sit side-by-side. At 1024px: constrain the layout to 1200px and center it. Include the viewport meta tag.",
+        "starterCode": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <!-- Add viewport meta tag -->\n  <title>Dashboard</title>\n  <style>\n    /* Write mobile-first styles */\n  </style>\n</head>\n<body>\n  <header>Dashboard Header</header>\n  <div class=\"layout\">\n    <aside class=\"sidebar\">Sidebar Nav</aside>\n    <main class=\"content\">Main Content Area</main>\n  </div>\n  <footer>Footer</footer>\n</body>\n</html>\n",
+        "solution": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">\n  <title>Dashboard</title>\n  <style>\n    * { margin: 0; box-sizing: border-box; }\n\n    header {\n      background: #1e293b;\n      color: white;\n      padding: 16px;\n    }\n\n    .layout {\n      display: flex;\n      flex-direction: column;\n    }\n\n    .content {\n      padding: 16px;\n      order: 1;\n    }\n\n    .sidebar {\n      padding: 16px;\n      background: #f1f5f9;\n      order: 2;\n    }\n\n    footer {\n      background: #1e293b;\n      color: white;\n      padding: 16px;\n      text-align: center;\n    }\n\n    @media (min-width: 768px) {\n      .layout {\n        flex-direction: row;\n      }\n      .sidebar {\n        width: 240px;\n        order: 1;\n        min-height: calc(100vh - 120px);\n      }\n      .content {\n        flex: 1;\n        padding: 24px;\n        order: 2;\n      }\n    }\n\n    @media (min-width: 1024px) {\n      .layout {\n        max-width: 1200px;\n        margin: 0 auto;\n      }\n      .content {\n        padding: 32px;\n      }\n    }\n  </style>\n</head>\n<body>\n  <header>Dashboard Header</header>\n  <div class=\"layout\">\n    <aside class=\"sidebar\">Sidebar Nav</aside>\n    <main class=\"content\">Main Content Area</main>\n  </div>\n  <footer>Footer</footer>\n</body>\n</html>",
+        "hints": [
+          "The viewport meta tag is: <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\">",
+          "Use CSS order to show main content first on mobile. At 768px, switch to flex-direction: row and reorder sidebar to the left."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "viewport-units",
+    "sectionId": "responsive-design",
+    "orderIndex": 2,
+    "title": "Viewport Units",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["vw", "vh", "vmin", "vmax", "dvh", "svh", "lvh", "Fluid Sizing"],
+    "content": {
+      "explanation": "Viewport units are CSS length units relative to the size of the browser viewport. They enable truly fluid designs that scale proportionally with the browser window, without breakpoints. The four classic viewport units are vw (1% of viewport width), vh (1% of viewport height), vmin (1% of the smaller dimension), and vmax (1% of the larger dimension).\n\n100vw equals the full width of the viewport, and 100vh equals its full height. This makes them ideal for full-screen hero sections (height: 100vh), full-width banners, and proportional sizing. vmin and vmax are particularly useful for maintaining proportions regardless of orientation: on a 1000x600 screen, 1vmin is 6px (1% of 600) and 1vmax is 10px (1% of 1000). vmin is excellent for responsive font sizes that scale well in both portrait and landscape orientations.\n\nThe classic vh unit has a significant problem on mobile browsers. Mobile browsers have dynamic toolbars (address bar, bottom navigation bar) that appear and disappear as the user scrolls. The traditional vh unit represents the viewport height when these toolbars are visible (the smallest state), which means 100vh is often taller than the visible area when toolbars are shown, or shorter than the visible area when toolbars are hidden. This causes content to be cut off or leave gaps.\n\nCSS introduced three new viewport height units to solve this: svh (small viewport height — viewport when all toolbars are shown, the smallest possible), lvh (large viewport height — viewport when all toolbars are hidden, the largest possible), and dvh (dynamic viewport height — the current actual viewport height, which changes as toolbars appear and disappear). Each has a corresponding width unit (svw, lvw, dvw) and min/max variants (svmin, lvmin, dvmin, etc.).\n\nFor most use cases, dvh is the best choice for full-height layouts on mobile because it reflects the actual visible area. Use svh when you need content to always fit without scrolling (even with toolbars visible). Use lvh for background images or decorative elements where a brief gap during toolbar transitions is acceptable. On desktop browsers where toolbars do not change size, all three values are identical to vh.",
+      "codeExamples": [
+        {
+          "title": "Basic Viewport Units",
+          "code": "/* Full-screen hero section */\n.hero {\n  width: 100vw;\n  height: 100vh;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  background: #1e293b;\n  color: white;\n}\n\n/* Half-viewport sections */\n.split-left {\n  width: 50vw;\n  height: 100vh;\n  float: left;\n}\n.split-right {\n  width: 50vw;\n  height: 100vh;\n  float: left;\n}\n\n/* Responsive font sizing with vmin */\n.responsive-title {\n  font-size: 5vmin; /* Scales with the smaller viewport dimension */\n}\n\n/* Square element that adapts to viewport */\n.viewport-square {\n  width: 30vmin;\n  height: 30vmin; /* Always a perfect square */\n}",
+          "explanation": "vw and vh create viewport-proportional sizes. vmin is excellent for responsive typography and maintaining square proportions because it uses the smaller dimension, preventing overflow in either orientation."
+        },
+        {
+          "title": "The Mobile Viewport Problem",
+          "code": "/* PROBLEM: 100vh on mobile can cause overflow */\n.hero-broken {\n  height: 100vh; /* May be taller than visible area on mobile */\n  /* Browser toolbar hides part of the content */\n}\n\n/* SOLUTION 1: Use dvh (dynamic viewport height) */\n.hero-dvh {\n  height: 100dvh; /* Adjusts as toolbars appear/disappear */\n}\n\n/* SOLUTION 2: Use svh (small viewport height) */\n.hero-svh {\n  height: 100svh; /* Always fits even with toolbars shown */\n}\n\n/* SOLUTION 3: Fallback for older browsers */\n.hero-fallback {\n  height: 100vh;              /* Fallback */\n  height: 100dvh;             /* Modern override */\n}\n\n/* SOLUTION 4: JavaScript fallback */\n/* Set --vh custom property via JS:\n   document.documentElement.style\n     .setProperty('--vh', window.innerHeight * 0.01 + 'px');\n*/\n.hero-js {\n  height: calc(var(--vh, 1vh) * 100);\n}",
+          "explanation": "The classic 100vh is unreliable on mobile. dvh dynamically tracks the visible height. svh gives the smallest guaranteed height. The fallback pattern uses vh for old browsers and dvh as a progressive enhancement."
+        },
+        {
+          "title": "Fluid Typography with clamp and Viewport Units",
+          "code": "/* Fluid font sizes that scale between min and max */\nh1 {\n  /* Minimum 1.5rem, scales with 4vw, maximum 3.5rem */\n  font-size: clamp(1.5rem, 4vw, 3.5rem);\n}\n\nh2 {\n  font-size: clamp(1.25rem, 3vw, 2.5rem);\n}\n\np {\n  font-size: clamp(1rem, 1.5vw, 1.25rem);\n  line-height: 1.7;\n}\n\n/* Fluid spacing */\n.section {\n  padding: clamp(24px, 5vw, 80px);\n}\n\n/* Fluid container width */\n.container {\n  width: clamp(320px, 90vw, 1200px);\n  margin: 0 auto;\n}\n\n/* Without clamp (older approach) */\n.legacy-title {\n  font-size: calc(16px + 2vw);\n  /* Problem: no minimum or maximum cap */\n}",
+          "explanation": "clamp(min, preferred, max) combined with viewport units creates fluid typography that scales smoothly without breakpoints. The text never gets smaller than min or larger than max, with smooth scaling in between."
+        },
+        {
+          "title": "svh, lvh, and dvh Comparison",
+          "code": "/* Small viewport height: toolbars visible (smallest) */\n.section-svh {\n  min-height: 100svh;\n  /* Content always fits without scrolling */\n  /* Good for: landing page hero sections */\n}\n\n/* Large viewport height: toolbars hidden (largest) */\n.section-lvh {\n  min-height: 100lvh;\n  /* Fills the full space when toolbars collapse */\n  /* Good for: background images, decorative sections */\n}\n\n/* Dynamic viewport height: tracks actual visible area */\n.section-dvh {\n  min-height: 100dvh;\n  /* Updates in real time as toolbars change */\n  /* Good for: most full-height layouts */\n}\n\n/* Combining with other units */\n.sticky-footer {\n  min-height: 100dvh;\n  display: flex;\n  flex-direction: column;\n}\n.sticky-footer main {\n  flex: 1;\n}\n.sticky-footer footer {\n  /* Footer sticks to the actual bottom of the visible area */\n}\n\n/* Width variants also exist */\n.full-dynamic {\n  width: 100dvw;\n  height: 100dvh;\n}",
+          "explanation": "svh is the safe choice when content must never be clipped. lvh is for full-bleed backgrounds. dvh is the general-purpose replacement for vh on mobile. All three are identical on desktop where toolbars do not change size."
+        }
+      ],
+      "notes": [
+        "1vw = 1% of viewport width. 1vh = 1% of viewport height. vmin uses the smaller dimension, vmax uses the larger.",
+        "On mobile, prefer dvh over vh for full-height layouts. dvh dynamically adjusts as browser toolbars appear and disappear.",
+        "Use clamp() with viewport units for fluid typography: clamp(1rem, 2.5vw, 2rem) scales smoothly between a minimum and maximum size.",
+        "100vw includes the scrollbar width on some browsers, which can cause horizontal overflow. Use width: 100% instead of 100vw for full-width containers."
+      ],
+      "commonPitfalls": [
+        "Using 100vw for full-width sections. On browsers where the scrollbar takes space, 100vw is wider than the visible area, causing a horizontal scrollbar. Use width: 100% instead.",
+        "Using 100vh for mobile full-screen layouts. The classic vh does not account for mobile browser toolbars. Use 100dvh with a vh fallback for older browsers.",
+        "Using viewport units for font size without clamp(). Pure viewport-based font sizes (font-size: 3vw) have no minimum, so text becomes unreadably small on narrow screens and enormous on wide screens."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "viewport-units-ex1",
+        "title": "Full-Screen Hero Section",
+        "description": "Create a full-viewport hero section with centered content. Use 100dvh for height with a vh fallback. Add a responsive title using clamp() with viewport units. The hero should have a dark background with white text.",
+        "starterCode": "<style>\n  * { margin: 0; box-sizing: border-box; }\n  .hero {\n    /* Full viewport height with fallback */\n    /* Center content with flexbox */\n    /* Dark background, white text */\n  }\n  .hero h1 {\n    /* Fluid font size with clamp */\n  }\n  .hero p {\n    /* Fluid paragraph size */\n  }\n</style>\n\n<div class=\"hero\">\n  <div>\n    <h1>Welcome to Our Platform</h1>\n    <p>Build something amazing with modern CSS.</p>\n  </div>\n</div>\n",
+        "solution": "<style>\n  * { margin: 0; box-sizing: border-box; }\n  .hero {\n    height: 100vh;\n    height: 100dvh;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    background: #0f172a;\n    color: white;\n    text-align: center;\n    padding: 24px;\n  }\n  .hero h1 {\n    font-size: clamp(2rem, 5vw, 4rem);\n    margin-bottom: 16px;\n  }\n  .hero p {\n    font-size: clamp(1rem, 2vw, 1.5rem);\n    color: #94a3b8;\n  }\n</style>\n\n<div class=\"hero\">\n  <div>\n    <h1>Welcome to Our Platform</h1>\n    <p>Build something amazing with modern CSS.</p>\n  </div>\n</div>",
+        "hints": [
+          "Declare height: 100vh first, then height: 100dvh on the next line. Browsers that support dvh will use it; older ones fall back to vh.",
+          "Use clamp(min, vw-value, max) for fluid font sizes that scale between minimum and maximum boundaries."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "viewport-units-ex2",
+        "title": "Fluid Card Layout with Viewport Sizing",
+        "description": "Create a responsive card grid where card padding and font sizes scale fluidly with the viewport using clamp() and viewport units. The container should be clamp(320px, 90vw, 1200px) wide. Cards should have fluid padding, fluid heading size, and fluid paragraph size. No media queries needed.",
+        "starterCode": "<style>\n  * { margin: 0; box-sizing: border-box; }\n  body { background: #f1f5f9; padding: clamp(16px, 3vw, 48px); }\n\n  .container {\n    /* Fluid width with clamp */\n    margin: 0 auto;\n  }\n  .grid {\n    display: grid;\n    /* Responsive columns without media queries */\n    gap: clamp(12px, 2vw, 24px);\n  }\n  .card {\n    background: white;\n    border-radius: 8px;\n    /* Fluid padding */\n  }\n  .card h3 {\n    /* Fluid heading size */\n  }\n  .card p {\n    /* Fluid paragraph size */\n  }\n</style>\n\n<div class=\"container\">\n  <div class=\"grid\">\n    <div class=\"card\"><h3>Performance</h3><p>Optimize your application for speed and efficiency.</p></div>\n    <div class=\"card\"><h3>Security</h3><p>Protect your users with modern security practices.</p></div>\n    <div class=\"card\"><h3>Scalability</h3><p>Build systems that grow with your user base.</p></div>\n    <div class=\"card\"><h3>Reliability</h3><p>Ensure uptime and consistent behavior under load.</p></div>\n  </div>\n</div>\n",
+        "solution": "<style>\n  * { margin: 0; box-sizing: border-box; }\n  body { background: #f1f5f9; padding: clamp(16px, 3vw, 48px); }\n\n  .container {\n    width: clamp(320px, 90vw, 1200px);\n    margin: 0 auto;\n  }\n  .grid {\n    display: grid;\n    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n    gap: clamp(12px, 2vw, 24px);\n  }\n  .card {\n    background: white;\n    border-radius: 8px;\n    padding: clamp(16px, 3vw, 32px);\n  }\n  .card h3 {\n    font-size: clamp(1.1rem, 2vw, 1.5rem);\n    margin-bottom: 8px;\n    color: #1e293b;\n  }\n  .card p {\n    font-size: clamp(0.875rem, 1.5vw, 1.05rem);\n    color: #64748b;\n    line-height: 1.6;\n  }\n</style>\n\n<div class=\"container\">\n  <div class=\"grid\">\n    <div class=\"card\"><h3>Performance</h3><p>Optimize your application for speed and efficiency.</p></div>\n    <div class=\"card\"><h3>Security</h3><p>Protect your users with modern security practices.</p></div>\n    <div class=\"card\"><h3>Scalability</h3><p>Build systems that grow with your user base.</p></div>\n    <div class=\"card\"><h3>Reliability</h3><p>Ensure uptime and consistent behavior under load.</p></div>\n  </div>\n</div>",
+        "hints": [
+          "Use grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)) for responsive columns without media queries.",
+          "Apply clamp(min, vw-value, max) to padding, font-size, and gap for fully fluid sizing."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "responsive-images",
+    "sectionId": "responsive-design",
+    "orderIndex": 3,
+    "title": "Responsive Images",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["srcset", "sizes", "picture Element", "object-fit", "Art Direction", "Resolution Switching"],
+    "content": {
+      "explanation": "Responsive images ensure that users download appropriately sized images for their device, saving bandwidth on mobile while delivering sharp visuals on high-resolution screens. Without responsive images, a mobile user on a 375px-wide screen downloads the same 2000px-wide image that a desktop user sees, wasting data and slowing page load. The HTML srcset and sizes attributes, the <picture> element, and CSS object-fit together provide a complete toolkit for responsive image handling.\n\nThe srcset attribute on an <img> tag provides the browser with a list of image sources at different widths or pixel densities. Using width descriptors (e.g., srcset=\"small.jpg 400w, medium.jpg 800w, large.jpg 1200w\"), you tell the browser the intrinsic width of each image. The browser then combines this with the sizes attribute and the viewport width to choose the most appropriate source. The sizes attribute tells the browser how large the image will be displayed: sizes=\"(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw\" means the image occupies 33% of the viewport on desktop, 50% on tablet, and 100% on mobile.\n\nFor pixel density switching (serving 2x images on Retina screens), use density descriptors: srcset=\"logo.png 1x, logo@2x.png 2x, logo@3x.png 3x\". The browser selects the source matching the device's pixel ratio. This is simpler than width descriptors but less flexible — it does not account for the image's display size.\n\nThe <picture> element enables art direction — serving entirely different images based on conditions. Unlike srcset (which lets the browser choose), <picture> gives you explicit control. Use <source> elements with media attributes to specify conditions: a wide landscape photo for desktop, a cropped portrait version for mobile. The browser uses the first matching source and falls back to the <img> element if none match.\n\nCSS object-fit controls how an image fills its container, similar to background-size for background images. object-fit: cover scales the image to fill the container while maintaining aspect ratio (cropping edges if needed). object-fit: contain scales the image to fit entirely within the container (may leave empty space). object-fit: fill stretches the image to fill the container (distorts aspect ratio). Combined with a fixed-size container, object-fit ensures images look good regardless of their original dimensions.",
+      "codeExamples": [
+        {
+          "title": "srcset with Width Descriptors and sizes",
+          "code": "<!-- Browser chooses the best image based on viewport + sizes -->\n<img\n  src=\"image-800.jpg\"\n  srcset=\"\n    image-400.jpg   400w,\n    image-800.jpg   800w,\n    image-1200.jpg 1200w,\n    image-1600.jpg 1600w\n  \"\n  sizes=\"\n    (min-width: 1024px) 33vw,\n    (min-width: 640px) 50vw,\n    100vw\n  \"\n  alt=\"A scenic mountain landscape\"\n  loading=\"lazy\"\n  decoding=\"async\"\n>\n\n<!-- How the browser decides:\n  1. Reads sizes to determine display width (e.g., 33vw on 1200px screen = 400px)\n  2. Multiplies by device pixel ratio (e.g., 400px * 2 = 800px on Retina)\n  3. Chooses the closest srcset image (image-800.jpg)\n-->",
+          "explanation": "srcset lists available image widths (400w, 800w, etc.). sizes tells the browser the display size at each breakpoint. The browser does the math: display width * pixel ratio = needed image width, then picks the closest match from srcset."
+        },
+        {
+          "title": "Pixel Density Descriptors",
+          "code": "<!-- Simple 1x/2x/3x for logos and icons -->\n<img\n  src=\"logo.png\"\n  srcset=\"\n    logo.png    1x,\n    logo@2x.png 2x,\n    logo@3x.png 3x\n  \"\n  alt=\"Company logo\"\n  width=\"200\"\n  height=\"60\"\n>\n\n<!-- Profile avatar with density switching -->\n<img\n  src=\"avatar-100.jpg\"\n  srcset=\"\n    avatar-100.jpg 1x,\n    avatar-200.jpg 2x\n  \"\n  alt=\"User avatar\"\n  width=\"100\"\n  height=\"100\"\n  style=\"border-radius: 50%;\"\n>",
+          "explanation": "Density descriptors (1x, 2x, 3x) are simpler than width descriptors. The browser matches the device's pixel ratio to the right source. Use this for fixed-size images (logos, icons, avatars) where the display size does not change."
+        },
+        {
+          "title": "Art Direction with picture Element",
+          "code": "<!-- Different crops for different screen sizes -->\n<picture>\n  <!-- Wide landscape for desktop -->\n  <source\n    media=\"(min-width: 1024px)\"\n    srcset=\"hero-wide.jpg\"\n  >\n  <!-- Medium crop for tablet -->\n  <source\n    media=\"(min-width: 640px)\"\n    srcset=\"hero-medium.jpg\"\n  >\n  <!-- Tight portrait crop for mobile -->\n  <img\n    src=\"hero-mobile.jpg\"\n    alt=\"Hero image showing the product in use\"\n    loading=\"lazy\"\n  >\n</picture>\n\n<!-- Format switching: serve modern formats with fallback -->\n<picture>\n  <source type=\"image/avif\" srcset=\"photo.avif\">\n  <source type=\"image/webp\" srcset=\"photo.webp\">\n  <img src=\"photo.jpg\" alt=\"Product photo\" loading=\"lazy\">\n</picture>",
+          "explanation": "The picture element gives explicit control over which image loads. Use media attributes for art direction (different crops per screen size). Use type attributes for format switching (AVIF > WebP > JPEG). The img is the fallback."
+        },
+        {
+          "title": "CSS object-fit for Image Containers",
+          "code": "<style>\n  .card-image {\n    width: 100%;\n    height: 200px;\n    overflow: hidden;\n  }\n  /* Cover: fill container, crop excess */\n  .card-image img.cover {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n    object-position: center;\n  }\n  /* Contain: fit inside, may show background */\n  .card-image img.contain {\n    width: 100%;\n    height: 100%;\n    object-fit: contain;\n    background: #f1f5f9;\n  }\n\n  /* Avatar: always a circle, always cropped well */\n  .avatar {\n    width: 80px;\n    height: 80px;\n    border-radius: 50%;\n    object-fit: cover;\n    object-position: top; /* Focus on face */\n  }\n\n  /* Full-width hero with aspect ratio */\n  .hero-image {\n    width: 100%;\n    aspect-ratio: 16 / 9;\n    object-fit: cover;\n  }\n</style>\n\n<div class=\"card-image\">\n  <img class=\"cover\" src=\"photo.jpg\" alt=\"Product\">\n</div>\n\n<img class=\"avatar\" src=\"person.jpg\" alt=\"User photo\">\n\n<img class=\"hero-image\" src=\"banner.jpg\" alt=\"Hero banner\">",
+          "explanation": "object-fit: cover fills the container and crops excess (like background-size: cover). object-fit: contain fits the entire image inside the container. object-position controls the focal point. aspect-ratio maintains proportions without fixed height."
+        }
+      ],
+      "notes": [
+        "srcset with width descriptors lets the browser choose the optimal image. sizes tells it the display size so it can calculate the needed resolution.",
+        "The <picture> element is for art direction (different crops) and format switching (AVIF/WebP/JPEG). srcset is for resolution switching (same image, different sizes).",
+        "Always include loading='lazy' on below-the-fold images. It defers loading until the image is near the viewport, saving bandwidth.",
+        "object-fit: cover is the most common value for card images and avatars. It fills the container while maintaining aspect ratio, cropping the excess."
+      ],
+      "commonPitfalls": [
+        "Using srcset without the sizes attribute. Without sizes, the browser assumes the image occupies 100vw and may download an unnecessarily large file.",
+        "Using the <picture> element when srcset alone would suffice. Picture is for art direction (different crops). For the same image at different resolutions, srcset is simpler and lets the browser optimize.",
+        "Setting width and height in CSS but not on the <img> element. Without intrinsic width/height attributes, the browser cannot calculate the aspect ratio before loading, causing layout shift (CLS)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "responsive-images-ex1",
+        "title": "Resolution-Switching Image Gallery",
+        "description": "Create a 3-column image grid where each image uses srcset with width descriptors (400w, 800w, 1200w) and sizes that match the grid layout (33vw on desktop, 50vw on tablet, 100vw on mobile). Add loading='lazy' and proper alt text.",
+        "starterCode": "<style>\n  .gallery {\n    display: grid;\n    gap: 16px;\n    padding: 16px;\n    grid-template-columns: 1fr;\n  }\n  @media (min-width: 640px) {\n    .gallery { grid-template-columns: repeat(2, 1fr); }\n  }\n  @media (min-width: 1024px) {\n    .gallery { grid-template-columns: repeat(3, 1fr); }\n  }\n  .gallery img {\n    width: 100%;\n    height: 250px;\n    object-fit: cover;\n    border-radius: 8px;\n  }\n</style>\n\n<div class=\"gallery\">\n  <!-- Add 3 images with srcset and sizes -->\n</div>\n",
+        "solution": "<style>\n  .gallery {\n    display: grid;\n    gap: 16px;\n    padding: 16px;\n    grid-template-columns: 1fr;\n  }\n  @media (min-width: 640px) {\n    .gallery { grid-template-columns: repeat(2, 1fr); }\n  }\n  @media (min-width: 1024px) {\n    .gallery { grid-template-columns: repeat(3, 1fr); }\n  }\n  .gallery img {\n    width: 100%;\n    height: 250px;\n    object-fit: cover;\n    border-radius: 8px;\n  }\n</style>\n\n<div class=\"gallery\">\n  <img\n    src=\"photo1-800.jpg\"\n    srcset=\"photo1-400.jpg 400w, photo1-800.jpg 800w, photo1-1200.jpg 1200w\"\n    sizes=\"(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw\"\n    alt=\"Mountain landscape at sunset\"\n    loading=\"lazy\"\n    width=\"800\"\n    height=\"600\"\n  >\n  <img\n    src=\"photo2-800.jpg\"\n    srcset=\"photo2-400.jpg 400w, photo2-800.jpg 800w, photo2-1200.jpg 1200w\"\n    sizes=\"(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw\"\n    alt=\"Forest path with autumn leaves\"\n    loading=\"lazy\"\n    width=\"800\"\n    height=\"600\"\n  >\n  <img\n    src=\"photo3-800.jpg\"\n    srcset=\"photo3-400.jpg 400w, photo3-800.jpg 800w, photo3-1200.jpg 1200w\"\n    sizes=\"(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw\"\n    alt=\"Ocean waves crashing on rocky shore\"\n    loading=\"lazy\"\n    width=\"800\"\n    height=\"600\"\n  >\n</div>",
+        "hints": [
+          "The sizes attribute should match the CSS grid layout: 33vw at 1024px+, 50vw at 640px+, 100vw default.",
+          "Include width and height attributes on each img to prevent layout shift. Add loading='lazy' for deferred loading."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "responsive-images-ex2",
+        "title": "Art-Directed Hero with Picture Element",
+        "description": "Create a hero section using the <picture> element. Serve three different image crops: a wide landscape for desktop (min-width: 1024px), a square crop for tablet (min-width: 640px), and a tall portrait crop for mobile (default). Add a WebP format source for the desktop version with a JPEG fallback.",
+        "starterCode": "<style>\n  .hero {\n    width: 100%;\n    overflow: hidden;\n  }\n  .hero img {\n    width: 100%;\n    height: auto;\n    display: block;\n  }\n</style>\n\n<div class=\"hero\">\n  <!-- Use picture element for art direction -->\n</div>\n",
+        "solution": "<style>\n  .hero {\n    width: 100%;\n    overflow: hidden;\n  }\n  .hero img {\n    width: 100%;\n    height: auto;\n    display: block;\n  }\n</style>\n\n<div class=\"hero\">\n  <picture>\n    <!-- Desktop: wide landscape, WebP with JPEG fallback -->\n    <source\n      media=\"(min-width: 1024px)\"\n      type=\"image/webp\"\n      srcset=\"hero-wide.webp\"\n    >\n    <source\n      media=\"(min-width: 1024px)\"\n      srcset=\"hero-wide.jpg\"\n    >\n    <!-- Tablet: square crop -->\n    <source\n      media=\"(min-width: 640px)\"\n      srcset=\"hero-square.jpg\"\n    >\n    <!-- Mobile: tall portrait (default fallback) -->\n    <img\n      src=\"hero-portrait.jpg\"\n      alt=\"Product hero image showcasing the main features\"\n      loading=\"eager\"\n      width=\"800\"\n      height=\"1000\"\n    >\n  </picture>\n</div>",
+        "hints": [
+          "Order sources from most specific to least. The browser uses the first matching source.",
+          "For WebP with fallback, add two desktop sources: one with type='image/webp' and one without. Both have the same media query."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "container-queries",
+    "sectionId": "responsive-design",
+    "orderIndex": 4,
+    "title": "Container Queries",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["@container", "container-type", "container-name", "Container Units", "Component-Level Responsiveness"],
+    "content": {
+      "explanation": "Container queries are a revolutionary CSS feature that allows elements to respond to the size of their container rather than the viewport. While media queries ask \"how wide is the browser window?\", container queries ask \"how wide is my parent container?\" This fundamentally changes how we build responsive components, because a component can now adapt its layout based on the space available to it, regardless of where it is placed on the page.\n\nTo use container queries, you first define a containment context on the parent element using the container-type property. Setting container-type: inline-size enables queries based on the container's inline (horizontal) dimension. You can also use container-type: size for both dimensions, though inline-size is far more common. The shorthand container property lets you set both the type and an optional name: container: sidebar / inline-size.\n\nOnce a container is established, you use the @container rule (similar to @media) to write conditional styles: @container (min-width: 400px) { /* styles */ }. These styles apply when the container — not the viewport — reaches 400px width. This means a card component can show a horizontal layout in a wide sidebar and a vertical layout in a narrow sidebar, all without any knowledge of the viewport width.\n\nContainer names let you target specific containers when you have nested containment contexts. Without a name, @container matches the nearest ancestor container. With a name — @container sidebar (min-width: 300px) — you explicitly target the container named \"sidebar\". This prevents ambiguity in complex layouts where multiple containers are nested.\n\nContainer queries also introduce container query units: cqw (1% of container width), cqh (1% of container height), cqi (1% of container inline size), cqb (1% of container block size), cqmin (smaller of cqi/cqb), and cqmax (larger of cqi/cqb). These work like viewport units but are relative to the container, enabling truly fluid component-level sizing without any reference to the viewport at all.",
+      "codeExamples": [
+        {
+          "title": "Basic Container Query Setup",
+          "code": "<style>\n  /* Establish containment context */\n  .card-wrapper {\n    container-type: inline-size;\n  }\n\n  /* Base styles (narrow container) */\n  .card {\n    display: flex;\n    flex-direction: column;\n    background: white;\n    border: 1px solid #e2e8f0;\n    border-radius: 8px;\n    overflow: hidden;\n  }\n  .card img {\n    width: 100%;\n    height: 200px;\n    object-fit: cover;\n  }\n  .card-body {\n    padding: 16px;\n  }\n\n  /* When container is wider than 400px */\n  @container (min-width: 400px) {\n    .card {\n      flex-direction: row;\n    }\n    .card img {\n      width: 200px;\n      height: auto;\n    }\n  }\n\n  /* When container is wider than 600px */\n  @container (min-width: 600px) {\n    .card-body {\n      padding: 24px;\n    }\n    .card h3 {\n      font-size: 1.5rem;\n    }\n  }\n</style>\n\n<div class=\"card-wrapper\" style=\"width: 350px;\">\n  <div class=\"card\">\n    <img src=\"photo.jpg\" alt=\"Product\">\n    <div class=\"card-body\">\n      <h3>Product Name</h3>\n      <p>Product description text.</p>\n    </div>\n  </div>\n</div>",
+          "explanation": "The card-wrapper has container-type: inline-size, making it a containment context. The card responds to its container's width, not the viewport. At 400px container width, it switches to a horizontal layout."
+        },
+        {
+          "title": "Named Containers",
+          "code": "<style>\n  /* Named containers for explicit targeting */\n  .main-area {\n    container: main-content / inline-size;\n    flex: 1;\n    padding: 24px;\n  }\n  .sidebar {\n    container: sidebar / inline-size;\n    width: 300px;\n    padding: 16px;\n    background: #f8fafc;\n  }\n\n  /* Target the main content container specifically */\n  @container main-content (min-width: 600px) {\n    .article-grid {\n      display: grid;\n      grid-template-columns: repeat(2, 1fr);\n      gap: 16px;\n    }\n  }\n\n  @container main-content (min-width: 900px) {\n    .article-grid {\n      grid-template-columns: repeat(3, 1fr);\n    }\n  }\n\n  /* Target the sidebar container specifically */\n  @container sidebar (min-width: 250px) {\n    .sidebar-card {\n      display: flex;\n      gap: 12px;\n      align-items: center;\n    }\n  }\n</style>\n\n<div style=\"display: flex;\">\n  <div class=\"main-area\">\n    <div class=\"article-grid\">\n      <div>Article 1</div>\n      <div>Article 2</div>\n      <div>Article 3</div>\n    </div>\n  </div>\n  <div class=\"sidebar\">\n    <div class=\"sidebar-card\">\n      <img src=\"thumb.jpg\" alt=\"\" width=\"60\">\n      <span>Related Post</span>\n    </div>\n  </div>\n</div>",
+          "explanation": "Named containers (container: name / inline-size) prevent ambiguity. @container main-content targets only the main area, not the sidebar. This is essential when components appear in different containers with different widths."
+        },
+        {
+          "title": "Container Query Length Units",
+          "code": "<style>\n  .widget-container {\n    container-type: inline-size;\n    padding: 20px;\n    border: 1px solid #e2e8f0;\n  }\n\n  .widget-title {\n    /* Font size relative to container width */\n    font-size: clamp(1rem, 5cqi, 2rem);\n    margin-bottom: 0.5em;\n  }\n\n  .widget-grid {\n    display: grid;\n    /* Columns sized relative to container */\n    grid-template-columns: repeat(auto-fit, minmax(20cqi, 1fr));\n    gap: 2cqi;\n  }\n\n  .widget-item {\n    padding: 3cqi;\n    background: #f1f5f9;\n    border-radius: 8px;\n  }\n\n  /* cqi = 1% of container inline size\n     cqb = 1% of container block size\n     cqw = 1% of container width\n     cqh = 1% of container height\n     cqmin = smaller of cqi/cqb\n     cqmax = larger of cqi/cqb */\n</style>\n\n<div class=\"widget-container\" style=\"width: 500px;\">\n  <h2 class=\"widget-title\">Dashboard Widget</h2>\n  <div class=\"widget-grid\">\n    <div class=\"widget-item\">Item A</div>\n    <div class=\"widget-item\">Item B</div>\n    <div class=\"widget-item\">Item C</div>\n  </div>\n</div>",
+          "explanation": "Container query units (cqi, cqb, cqw, cqh, cqmin, cqmax) work like viewport units but are relative to the container. 5cqi = 5% of the container's inline size. They enable fully fluid component-level sizing."
+        },
+        {
+          "title": "Reusable Component with Container Queries",
+          "code": "<style>\n  /* Containment on any parent that uses this component */\n  .product-slot {\n    container-type: inline-size;\n  }\n\n  /* The component adapts to its container */\n  .product-card {\n    display: grid;\n    gap: 12px;\n    padding: 16px;\n    background: white;\n    border: 1px solid #e2e8f0;\n    border-radius: 8px;\n  }\n\n  .product-card img {\n    width: 100%;\n    aspect-ratio: 16 / 9;\n    object-fit: cover;\n    border-radius: 4px;\n  }\n\n  /* Narrow: image on top, text below (default) */\n  .product-card .info { text-align: center; }\n  .product-card .price { font-size: 1.25rem; }\n\n  /* Medium: horizontal layout */\n  @container (min-width: 350px) {\n    .product-card {\n      grid-template-columns: 150px 1fr;\n      align-items: center;\n    }\n    .product-card img {\n      aspect-ratio: 1;\n    }\n    .product-card .info { text-align: left; }\n  }\n\n  /* Wide: prominent layout */\n  @container (min-width: 500px) {\n    .product-card {\n      grid-template-columns: 250px 1fr;\n      padding: 20px;\n    }\n    .product-card .price {\n      font-size: 1.5rem;\n      color: #16a34a;\n    }\n  }\n</style>\n\n<!-- Same component, different containers -->\n<div style=\"display: flex; gap: 20px;\">\n  <div class=\"product-slot\" style=\"width: 280px;\">\n    <div class=\"product-card\">\n      <img src=\"product.jpg\" alt=\"Product\">\n      <div class=\"info\">\n        <h3>Widget Pro</h3>\n        <p class=\"price\">$49.99</p>\n      </div>\n    </div>\n  </div>\n  <div class=\"product-slot\" style=\"flex: 1;\">\n    <div class=\"product-card\">\n      <img src=\"product.jpg\" alt=\"Product\">\n      <div class=\"info\">\n        <h3>Widget Pro</h3>\n        <p class=\"price\">$49.99</p>\n      </div>\n    </div>\n  </div>\n</div>",
+          "explanation": "The same product-card component renders differently based on its container width. In a narrow sidebar (280px), it stacks vertically. In a wide main area, it switches to a horizontal layout with larger pricing. The component is completely self-contained."
+        }
+      ],
+      "notes": [
+        "container-type: inline-size is the most common. It enables width-based container queries. Use 'size' for both width and height queries, though this is rarely needed.",
+        "Container queries respond to the container's size, not the viewport. This makes components truly reusable across different layouts.",
+        "Named containers (@container name) prevent ambiguity when multiple containment contexts are nested. Always name containers in complex layouts.",
+        "Container query units (cqi, cqb, etc.) are like viewport units but relative to the container. They enable fluid component-level sizing without any viewport awareness."
+      ],
+      "commonPitfalls": [
+        "Forgetting to set container-type on the parent element. Without it, @container rules have no containment context to query and will not work.",
+        "Setting container-type on the element you want to style. The container is the parent, not the element itself. The container query styles apply to descendants of the container.",
+        "Using container-type: size unnecessarily. It requires explicit height on the container (to prevent circular dependencies). Use inline-size unless you specifically need height-based queries."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "container-queries-ex1",
+        "title": "Adaptive Card Component",
+        "description": "Create a card component that adapts to its container width. In a narrow container (<300px), the card should stack vertically (image on top, text below). At 300px+, it should switch to a horizontal layout (image left, text right). Create two instances: one in a 250px wrapper and one in a 500px wrapper to demonstrate.",
+        "starterCode": "<style>\n  .wrapper {\n    /* Set up as container */\n    border: 1px solid #e2e8f0;\n    padding: 12px;\n    margin: 12px;\n  }\n  .card {\n    display: flex;\n    flex-direction: column;\n    background: white;\n    border-radius: 8px;\n    overflow: hidden;\n    border: 1px solid #f1f5f9;\n  }\n  .card img {\n    width: 100%;\n    height: 150px;\n    object-fit: cover;\n  }\n  .card-body {\n    padding: 12px;\n  }\n  /* Add container query for horizontal layout */\n</style>\n\n<div class=\"wrapper\" style=\"width: 250px;\">\n  <div class=\"card\">\n    <img src=\"photo.jpg\" alt=\"Card image\">\n    <div class=\"card-body\">\n      <h3>Card Title</h3>\n      <p>Card description text here.</p>\n    </div>\n  </div>\n</div>\n\n<div class=\"wrapper\" style=\"width: 500px;\">\n  <div class=\"card\">\n    <img src=\"photo.jpg\" alt=\"Card image\">\n    <div class=\"card-body\">\n      <h3>Card Title</h3>\n      <p>Card description text here.</p>\n    </div>\n  </div>\n</div>\n",
+        "solution": "<style>\n  .wrapper {\n    container-type: inline-size;\n    border: 1px solid #e2e8f0;\n    padding: 12px;\n    margin: 12px;\n  }\n  .card {\n    display: flex;\n    flex-direction: column;\n    background: white;\n    border-radius: 8px;\n    overflow: hidden;\n    border: 1px solid #f1f5f9;\n  }\n  .card img {\n    width: 100%;\n    height: 150px;\n    object-fit: cover;\n  }\n  .card-body {\n    padding: 12px;\n  }\n\n  @container (min-width: 300px) {\n    .card {\n      flex-direction: row;\n    }\n    .card img {\n      width: 180px;\n      height: auto;\n      min-height: 120px;\n    }\n  }\n</style>\n\n<div class=\"wrapper\" style=\"width: 250px;\">\n  <div class=\"card\">\n    <img src=\"photo.jpg\" alt=\"Card image\">\n    <div class=\"card-body\">\n      <h3>Card Title</h3>\n      <p>Card description text here.</p>\n    </div>\n  </div>\n</div>\n\n<div class=\"wrapper\" style=\"width: 500px;\">\n  <div class=\"card\">\n    <img src=\"photo.jpg\" alt=\"Card image\">\n    <div class=\"card-body\">\n      <h3>Card Title</h3>\n      <p>Card description text here.</p>\n    </div>\n  </div>\n</div>",
+        "hints": [
+          "Add container-type: inline-size to the .wrapper class to make it a containment context.",
+          "Use @container (min-width: 300px) to switch flex-direction from column to row."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "container-queries-ex2",
+        "title": "Named Container Dashboard",
+        "description": "Build a dashboard with a named main content area and a named sidebar. The main area should show a grid of stats cards: 1 column when narrow, 2 columns at 500px+, 3 columns at 800px+. The sidebar should switch a user profile card from stacked to horizontal at 250px+. Use named containers to target each area specifically.",
+        "starterCode": "<style>\n  .dashboard { display: flex; gap: 20px; padding: 20px; }\n  /* Define named containers */\n  .main {\n    flex: 1;\n    /* container: main-area / inline-size; */\n  }\n  .sidebar {\n    width: 300px;\n    background: #f8fafc;\n    padding: 16px;\n    /* container: sidebar-area / inline-size; */\n  }\n  .stats-grid {\n    display: grid;\n    gap: 12px;\n  }\n  .stat-card {\n    background: white;\n    border: 1px solid #e2e8f0;\n    padding: 16px;\n    border-radius: 8px;\n  }\n  .profile-card {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    gap: 12px;\n    padding: 16px;\n    background: white;\n    border-radius: 8px;\n  }\n  /* Add named container queries */\n</style>\n\n<div class=\"dashboard\">\n  <div class=\"main\">\n    <div class=\"stats-grid\">\n      <div class=\"stat-card\"><h4>Users</h4><p>1,234</p></div>\n      <div class=\"stat-card\"><h4>Revenue</h4><p>$56,789</p></div>\n      <div class=\"stat-card\"><h4>Orders</h4><p>890</p></div>\n    </div>\n  </div>\n  <div class=\"sidebar\">\n    <div class=\"profile-card\">\n      <img src=\"avatar.jpg\" alt=\"User\" width=\"60\" height=\"60\" style=\"border-radius: 50%;\">\n      <div><strong>Jane Doe</strong><br><small>Admin</small></div>\n    </div>\n  </div>\n</div>\n",
+        "solution": "<style>\n  .dashboard { display: flex; gap: 20px; padding: 20px; }\n  .main {\n    flex: 1;\n    container: main-area / inline-size;\n  }\n  .sidebar {\n    width: 300px;\n    background: #f8fafc;\n    padding: 16px;\n    container: sidebar-area / inline-size;\n  }\n  .stats-grid {\n    display: grid;\n    grid-template-columns: 1fr;\n    gap: 12px;\n  }\n  .stat-card {\n    background: white;\n    border: 1px solid #e2e8f0;\n    padding: 16px;\n    border-radius: 8px;\n  }\n  .profile-card {\n    display: flex;\n    flex-direction: column;\n    align-items: center;\n    gap: 12px;\n    padding: 16px;\n    background: white;\n    border-radius: 8px;\n  }\n\n  @container main-area (min-width: 500px) {\n    .stats-grid {\n      grid-template-columns: repeat(2, 1fr);\n    }\n  }\n\n  @container main-area (min-width: 800px) {\n    .stats-grid {\n      grid-template-columns: repeat(3, 1fr);\n    }\n  }\n\n  @container sidebar-area (min-width: 250px) {\n    .profile-card {\n      flex-direction: row;\n      align-items: center;\n    }\n  }\n</style>\n\n<div class=\"dashboard\">\n  <div class=\"main\">\n    <div class=\"stats-grid\">\n      <div class=\"stat-card\"><h4>Users</h4><p>1,234</p></div>\n      <div class=\"stat-card\"><h4>Revenue</h4><p>$56,789</p></div>\n      <div class=\"stat-card\"><h4>Orders</h4><p>890</p></div>\n    </div>\n  </div>\n  <div class=\"sidebar\">\n    <div class=\"profile-card\">\n      <img src=\"avatar.jpg\" alt=\"User\" width=\"60\" height=\"60\" style=\"border-radius: 50%;\">\n      <div><strong>Jane Doe</strong><br><small>Admin</small></div>\n    </div>\n  </div>\n</div>",
+        "hints": [
+          "Use the container shorthand: container: name / inline-size to set both name and type at once.",
+          "Target specific containers: @container main-area (min-width: 500px) for the main grid, @container sidebar-area (min-width: 250px) for the profile card."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

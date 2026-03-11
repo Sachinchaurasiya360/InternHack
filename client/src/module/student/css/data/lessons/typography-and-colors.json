@@ -1,0 +1,382 @@
+[
+  {
+    "id": "font-properties",
+    "sectionId": "typography-and-colors",
+    "orderIndex": 0,
+    "title": "Font Properties",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["font-family", "font-size", "font-weight", "font-style", "Font Stacks", "System Fonts"],
+    "content": {
+      "explanation": "Typography is the art and technique of arranging type to make written language legible, readable, and visually appealing. In CSS, font properties control the visual characteristics of text -- which typeface is used, how large it appears, how heavy or light the strokes are, and whether it is styled as italic or oblique. Good typography is arguably the single most impactful design choice on a webpage, since the majority of web content is text.\n\nThe font-family property specifies which typeface to use for text. Because you cannot guarantee which fonts are installed on a user's device, CSS uses a font stack -- an ordered list of fonts where the browser uses the first available one. A font stack typically starts with your preferred font, includes one or two similar alternatives, and ends with a generic family keyword (serif, sans-serif, monospace, cursive, or fantasy). The generic family is the ultimate fallback -- every browser has at least one font for each generic family.\n\nThe font-size property sets the size of the text. It accepts various units: pixels (px) provide fixed sizes, em is relative to the parent element's font size, rem is relative to the root element's font size, percentages are relative to the parent, and viewport units (vw, vh) scale with the browser window. In modern CSS, rem is the preferred unit for font sizes because it provides consistency across the page while respecting the user's browser font-size preferences. A base of 1rem equals the root font size, which is typically 16px by default.\n\nThe font-weight property controls the thickness of the text strokes. It accepts keyword values (normal, bold, lighter, bolder) or numeric values from 100 to 900 in increments of 100. Normal text is weight 400, bold is 700. Variable fonts can support any weight value, not just the 100-increment steps. The availability of specific weights depends on whether the font file includes them -- requesting weight 300 on a font that only includes 400 and 700 will cause the browser to fall back to the nearest available weight.\n\nThe font-style property controls whether text is displayed normally, in italic, or in oblique form. Italic text uses a specially designed italic version of the typeface (with different letterforms), while oblique text is simply the normal text slanted. Most fonts include a true italic variant. The font shorthand combines family, size, weight, style, line-height, and variant in a single declaration, though it is less common in modern CSS because its syntax is strict and error-prone.",
+      "codeExamples": [
+        {
+          "title": "Font Stacks and Generic Families",
+          "code": "/* System font stack (modern best practice) */\nbody {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", \n               Roboto, Oxygen, Ubuntu, Cantarell, \n               \"Helvetica Neue\", sans-serif;\n}\n\n/* Serif font stack */\n.article-body {\n  font-family: Georgia, \"Times New Roman\", Times, serif;\n}\n\n/* Monospace font stack (for code) */\ncode, pre {\n  font-family: \"Fira Code\", \"JetBrains Mono\", Consolas, \n               \"Courier New\", monospace;\n}\n\n/* Font name with spaces must be quoted */\n.heading {\n  font-family: \"Playfair Display\", Georgia, serif;\n}",
+          "explanation": "Font stacks provide fallback options. The system font stack uses each operating system's native UI font for the fastest possible rendering. Always end with a generic family (sans-serif, serif, monospace). Font names containing spaces must be wrapped in quotes."
+        },
+        {
+          "title": "Font Size Units",
+          "code": "/* Pixels: fixed size, does not respect user preferences */\n.px-text {\n  font-size: 16px;\n}\n\n/* rem: relative to root (html) font-size -- RECOMMENDED */\n.rem-text {\n  font-size: 1rem;    /* typically 16px */\n}\n.rem-large {\n  font-size: 1.5rem;  /* typically 24px */\n}\n\n/* em: relative to parent's font-size */\n.parent {\n  font-size: 20px;\n}\n.child {\n  font-size: 0.8em;   /* 20px * 0.8 = 16px */\n}\n\n/* Responsive: clamp for fluid typography */\n.fluid-heading {\n  font-size: clamp(1.5rem, 4vw, 3rem);\n  /* Min: 1.5rem, Preferred: 4vw, Max: 3rem */\n}",
+          "explanation": "Use rem for consistent sizing that respects user preferences. Em is useful for component-internal scaling. The clamp() function creates fluid typography that scales smoothly between a minimum and maximum size based on viewport width."
+        },
+        {
+          "title": "Font Weight and Style",
+          "code": "/* Keyword weights */\n.normal  { font-weight: normal; }  /* same as 400 */\n.bold    { font-weight: bold; }    /* same as 700 */\n.lighter { font-weight: lighter; } /* one step lighter than parent */\n.bolder  { font-weight: bolder; }  /* one step bolder than parent */\n\n/* Numeric weights */\n.thin       { font-weight: 100; }\n.light      { font-weight: 300; }\n.regular    { font-weight: 400; }\n.medium     { font-weight: 500; }\n.semibold   { font-weight: 600; }\n.bold-num   { font-weight: 700; }\n.extrabold  { font-weight: 800; }\n.black      { font-weight: 900; }\n\n/* Font style */\n.italic  { font-style: italic; }\n.oblique { font-style: oblique; }\n.normal-style { font-style: normal; }",
+          "explanation": "Numeric weights give precise control. 400 is normal, 700 is bold. Not all fonts support all weights -- if a weight is unavailable, the browser selects the nearest available. Italic uses a specially designed variant; oblique is a computed slant of the normal style."
+        },
+        {
+          "title": "Font Shorthand",
+          "code": "/* Font shorthand: style weight size/line-height family */\n.shorthand {\n  font: italic 700 1.25rem/1.6 Georgia, serif;\n}\n\n/* Equivalent longhand */\n.longhand {\n  font-style: italic;\n  font-weight: 700;\n  font-size: 1.25rem;\n  line-height: 1.6;\n  font-family: Georgia, serif;\n}\n\n/* Minimum required: size and family */\n.minimal {\n  font: 1rem sans-serif;\n}\n\n/* System font keyword */\n.system {\n  font: menu; /* uses the OS menu font */\n}",
+          "explanation": "The font shorthand requires at minimum font-size and font-family. The order matters: style and weight must come before size, and family must be last. line-height is specified with a slash after size. While concise, the shorthand resets all omitted properties to their defaults, which can cause unexpected changes."
+        }
+      ],
+      "notes": [
+        "Use rem for font sizes to respect user browser preferences. Users who set larger default font sizes (for accessibility) will benefit from rem-based sizing.",
+        "Always end font stacks with a generic family keyword (serif, sans-serif, monospace). This guarantees the browser has a fallback.",
+        "The font shorthand resets all omitted font properties to their defaults. If you only want to change font-size, use the individual property instead."
+      ],
+      "commonPitfalls": [
+        "Using only px for font sizes. This ignores user browser preferences for larger text, which is an accessibility concern. Use rem instead.",
+        "Not quoting font-family names that contain spaces. 'Times New Roman' without quotes is interpreted as three separate font names.",
+        "Using the font shorthand without realizing it resets omitted properties. Setting font: 1.5rem serif will reset font-weight to normal and font-style to normal.",
+        "Requesting font weights that the loaded font does not include. The browser may render the wrong weight or synthesize a faux bold that looks poor."
+      ],
+      "interviewTips": [
+        "Explain the difference between em and rem units and when to use each.",
+        "Know what a font stack is and why generic families are important as fallbacks.",
+        "Be ready to discuss fluid typography with clamp() and why it is better than media-query-based approaches."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "font-properties-ex1",
+        "title": "Create a Typography System",
+        "description": "Set the body font to a system font stack ending with sans-serif and a base size of 1rem. Create a .heading class with font-size 2rem, font-weight 700. Create a .subtitle class with font-size 1.25rem, font-weight 300, and italic style. Create a .code class using a monospace font stack with font-size 0.875rem.",
+        "starterCode": "body {\n  /* Base typography */\n}\n\n.heading {\n  /* Heading styles */\n}\n\n.subtitle {\n  /* Subtitle styles */\n}\n\n.code {\n  /* Code styles */\n}\n",
+        "solution": "body {\n  font-family: -apple-system, BlinkMacSystemFont, \"Segoe UI\", Roboto, sans-serif;\n  font-size: 1rem;\n}\n\n.heading {\n  font-size: 2rem;\n  font-weight: 700;\n}\n\n.subtitle {\n  font-size: 1.25rem;\n  font-weight: 300;\n  font-style: italic;\n}\n\n.code {\n  font-family: \"Fira Code\", Consolas, \"Courier New\", monospace;\n  font-size: 0.875rem;\n}",
+        "hints": [
+          "System font stacks start with -apple-system and BlinkMacSystemFont for macOS/iOS",
+          "Use rem units for consistent sizing relative to the root font-size"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "font-properties-ex2",
+        "title": "Fluid Typography with Clamp",
+        "description": "Create a .hero-title class with fluid font-size using clamp() that scales from 2rem minimum, prefers 5vw, and caps at 4.5rem. Set font-weight to 800 and font-family to a serif stack starting with 'Playfair Display'.",
+        "starterCode": ".hero-title {\n  /* Fluid typography */\n}\n",
+        "solution": ".hero-title {\n  font-size: clamp(2rem, 5vw, 4.5rem);\n  font-weight: 800;\n  font-family: \"Playfair Display\", Georgia, \"Times New Roman\", serif;\n}",
+        "hints": [
+          "clamp(min, preferred, max) picks the preferred value, clamped between min and max",
+          "Quote font names that contain spaces"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "text-properties",
+    "sectionId": "typography-and-colors",
+    "orderIndex": 1,
+    "title": "Text Properties",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["text-align", "text-decoration", "text-transform", "line-height", "letter-spacing", "word-spacing"],
+    "content": {
+      "explanation": "While font properties control the typeface and its characteristics, text properties control how text is laid out, decorated, and spaced. These properties affect the visual presentation of text without changing the underlying font. Together with font properties, they form the complete typography toolkit in CSS.\n\nThe text-align property controls horizontal alignment of text within its containing block. Common values are left (default for LTR languages), right, center, and justify. Justified text stretches each line to fill the full width by adjusting word spacing, creating clean left and right edges. While justified text looks clean in print, on the web it can create uneven spacing (known as rivers of white space), especially in narrow columns. The text-align-last property controls the alignment of the last line in a justified block.\n\nThe text-decoration property adds visual decorations to text. The most common use is underline for links and line-through for deleted or irrelevant content. In modern CSS, text-decoration is a shorthand for text-decoration-line (underline, overline, line-through), text-decoration-color, text-decoration-style (solid, double, dotted, dashed, wavy), and text-decoration-thickness. The text-underline-offset property controls the distance between the text and the underline, which is useful for creating stylish link underlines.\n\nThe text-transform property changes the capitalization of text without modifying the source HTML. Values include uppercase (all caps), lowercase (all lowercase), capitalize (first letter of each word capitalized), and none (no transformation). This is preferred over typing text in all caps in HTML because it separates content from presentation and allows the visual style to change without editing content.\n\nThe line-height property controls the vertical spacing between lines of text. It is one of the most important properties for readability. A unitless value like 1.5 means 1.5 times the element's font-size. This is the recommended approach because the computed value scales with font-size changes. Body text typically needs a line-height between 1.4 and 1.8 for comfortable reading, while headings can use tighter line-heights (1.1 to 1.3) because they are shorter. Letter-spacing adjusts the horizontal space between characters, while word-spacing adjusts the space between words.",
+      "codeExamples": [
+        {
+          "title": "Text Alignment",
+          "code": ".left    { text-align: left; }\n.center  { text-align: center; }\n.right   { text-align: right; }\n\n/* Justified text with left-aligned last line */\n.justified {\n  text-align: justify;\n  text-align-last: left;\n}\n\n/* Center a heading, left-align the body */\n.article h1 {\n  text-align: center;\n}\n.article p {\n  text-align: left;\n}",
+          "explanation": "text-align affects all inline content within a block element, not just text. Images and inline-block elements inside a text-align: center container will also be centered. Justify creates clean edges but watch for uneven spacing in narrow columns."
+        },
+        {
+          "title": "Text Decoration",
+          "code": "/* Basic text decorations */\n.underline     { text-decoration: underline; }\n.line-through  { text-decoration: line-through; }\n.overline      { text-decoration: overline; }\n.none          { text-decoration: none; }\n\n/* Modern shorthand: line style color thickness */\n.fancy-underline {\n  text-decoration: underline wavy #007bff 2px;\n}\n\n/* Custom link underline */\na {\n  text-decoration: underline;\n  text-decoration-color: #007bff;\n  text-decoration-thickness: 2px;\n  text-underline-offset: 3px;\n}\na:hover {\n  text-decoration-color: #0056b3;\n  text-decoration-thickness: 3px;\n}",
+          "explanation": "Modern text-decoration sub-properties give fine-grained control. text-underline-offset moves the underline away from the text baseline for a cleaner look. These properties allow creating stylish link underlines without resorting to border-bottom hacks."
+        },
+        {
+          "title": "Text Transform and Spacing",
+          "code": "/* Text transformation */\n.uppercase   { text-transform: uppercase; }\n.lowercase   { text-transform: lowercase; }\n.capitalize  { text-transform: capitalize; }\n\n/* Uppercase with letter-spacing (common pattern) */\n.label {\n  text-transform: uppercase;\n  letter-spacing: 0.1em;\n  font-size: 0.75rem;\n  font-weight: 600;\n}\n\n/* Letter and word spacing */\n.tight    { letter-spacing: -0.02em; } /* tighter */\n.normal   { letter-spacing: normal; }\n.wide     { letter-spacing: 0.05em; }  /* wider */\n.spaced   { word-spacing: 0.2em; }     /* words further apart */",
+          "explanation": "text-transform changes visual capitalization without modifying the HTML. Uppercase text is often paired with wider letter-spacing for readability, a pattern commonly used for labels, buttons, and category tags. Negative letter-spacing tightens text, often used for large headings."
+        },
+        {
+          "title": "Line Height for Readability",
+          "code": "/* Unitless line-height (RECOMMENDED) */\nbody {\n  line-height: 1.6; /* 1.6x the font-size */\n}\n\n/* Headings use tighter line-height */\nh1 {\n  font-size: 2.5rem;\n  line-height: 1.1;\n}\nh2 {\n  font-size: 2rem;\n  line-height: 1.2;\n}\nh3 {\n  font-size: 1.5rem;\n  line-height: 1.3;\n}\n\n/* Why unitless is better than fixed values */\n.parent {\n  font-size: 16px;\n  line-height: 1.5; /* computed: 24px */\n}\n.child {\n  font-size: 32px;\n  /* Inherits unitless 1.5, computed: 48px -- correct! */\n}\n\n.parent-fixed {\n  font-size: 16px;\n  line-height: 24px; /* fixed value */\n}\n.child-fixed {\n  font-size: 32px;\n  /* Inherits fixed 24px -- text overlaps! */\n}",
+          "explanation": "Unitless line-height is recommended because the multiplier is inherited by child elements and recomputed based on each element's own font-size. Fixed values (px or em) are inherited as computed values and do not scale, causing overlap in children with larger font sizes."
+        }
+      ],
+      "notes": [
+        "Always use unitless values for line-height (like 1.5 instead of 24px). Unitless values scale correctly when inherited by child elements with different font sizes.",
+        "Uppercase text should use wider letter-spacing (0.05em to 0.15em) for readability. All-caps text with default spacing is harder to read.",
+        "Use text-transform instead of typing text in uppercase in HTML. This keeps content and presentation separate and makes it easy to change the style later."
+      ],
+      "commonPitfalls": [
+        "Using fixed line-height values (px or em) that get inherited by children with different font sizes, causing text overlap.",
+        "Using text-align: justify in narrow columns, creating rivers of white space. Justified text works best in wide containers.",
+        "Setting letter-spacing too wide or too tight, hurting readability. Subtle adjustments (0.01em to 0.1em) are usually sufficient.",
+        "Removing text-decoration from links without providing another visual indicator. Links must be distinguishable from surrounding text."
+      ],
+      "interviewTips": [
+        "Explain why unitless line-height is preferred over fixed values and how inheritance works differently for each.",
+        "Know the difference between text-decoration (visual decoration) and text-transform (capitalization change).",
+        "Be ready to discuss readability guidelines: 1.4-1.8 line-height for body text, 45-75 characters per line for optimal reading."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "text-properties-ex1",
+        "title": "Style a Category Label",
+        "description": "Create a .category-label class with: uppercase text transform, 0.1em letter-spacing, font-size of 0.75rem, font-weight 600, and a 1px underline with 3px offset. Use #007bff for the underline color.",
+        "starterCode": ".category-label {\n  /* Style the category label */\n}\n",
+        "solution": ".category-label {\n  text-transform: uppercase;\n  letter-spacing: 0.1em;\n  font-size: 0.75rem;\n  font-weight: 600;\n  text-decoration: underline;\n  text-decoration-color: #007bff;\n  text-decoration-thickness: 1px;\n  text-underline-offset: 3px;\n}",
+        "hints": [
+          "Uppercase text benefits from wider letter-spacing for readability",
+          "Use text-underline-offset to control the distance between text and underline"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "text-properties-ex2",
+        "title": "Typography Scale for Readability",
+        "description": "Create styles for body, h1, h2, and p elements. Body should have line-height 1.6. H1 should be 2.5rem with line-height 1.1 and -0.02em letter-spacing. H2 should be 1.75rem with line-height 1.2. P tags should have a max-width of 65ch (for optimal line length) and text-align left.",
+        "starterCode": "body {\n  /* Base line-height */\n}\n\nh1 {\n  /* Large heading */\n}\n\nh2 {\n  /* Section heading */\n}\n\np {\n  /* Paragraph readability */\n}\n",
+        "solution": "body {\n  line-height: 1.6;\n}\n\nh1 {\n  font-size: 2.5rem;\n  line-height: 1.1;\n  letter-spacing: -0.02em;\n}\n\nh2 {\n  font-size: 1.75rem;\n  line-height: 1.2;\n}\n\np {\n  max-width: 65ch;\n  text-align: left;\n}",
+        "hints": [
+          "Use unitless line-height values so they scale with font-size",
+          "The ch unit represents the width of the '0' character -- 65ch is about 65 characters wide"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "web-fonts",
+    "sectionId": "typography-and-colors",
+    "orderIndex": 2,
+    "title": "Web Fonts",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["@font-face", "Google Fonts", "font-display", "Performance", "Variable Fonts", "Self-Hosting"],
+    "content": {
+      "explanation": "Web fonts allow you to use custom typefaces that are not installed on the user's device. Before web fonts, designers were limited to a small set of web-safe fonts (Arial, Times New Roman, Georgia, Verdana, etc.) that were reliably installed across operating systems. The @font-face rule, introduced in CSS3, changed this by allowing fonts to be downloaded from a server and used on the page.\n\nThe @font-face rule defines a custom font by specifying the font family name and the source files. The src property accepts multiple formats for browser compatibility. The modern approach is to use WOFF2 (Web Open Font Format 2) as the primary format -- it offers the best compression (30-50% smaller than WOFF) and is supported by all modern browsers. WOFF is the fallback for older browsers. TTF and OTF are desktop font formats that work in browsers but are significantly larger and should only be used as last-resort fallbacks.\n\nGoogle Fonts is the most popular free web font service, hosting over 1,500 font families. You can include Google Fonts via a <link> tag in HTML or an @import in CSS. However, using Google Fonts via their CDN means the user's browser must connect to Google's servers, which adds latency. Self-hosting the font files (downloading them and serving from your own domain) eliminates this extra connection, reduces DNS lookups, and gives you more control over caching. Tools like google-webfonts-helper make self-hosting easy.\n\nThe font-display property controls how text is rendered while the font is loading. This is critical for performance and user experience. The most common values are swap (shows fallback text immediately, swaps to custom font when loaded -- causes a visible flash but text is always readable), fallback (brief invisible period, then fallback, swaps if font loads quickly), optional (brief invisible period, then may or may not use the custom font based on connection speed), and block (hides text until font loads -- can cause Flash of Invisible Text). font-display: swap is the most widely recommended for body text.\n\nVariable fonts are a modern font technology that packages multiple styles (weights, widths, italics) into a single font file. Instead of loading separate files for Regular, Bold, and Italic, a variable font contains continuous axes that can be adjusted to any value. A variable font with a weight axis can produce any weight from 100 to 900, not just the predefined steps. This dramatically reduces the number of HTTP requests and total file size when using multiple font variations.",
+      "codeExamples": [
+        {
+          "title": "Self-Hosted @font-face",
+          "code": "/* Define custom font with multiple formats */\n@font-face {\n  font-family: \"Inter\";\n  src: url(\"/fonts/inter-regular.woff2\") format(\"woff2\"),\n       url(\"/fonts/inter-regular.woff\") format(\"woff\");\n  font-weight: 400;\n  font-style: normal;\n  font-display: swap;\n}\n\n@font-face {\n  font-family: \"Inter\";\n  src: url(\"/fonts/inter-bold.woff2\") format(\"woff2\"),\n       url(\"/fonts/inter-bold.woff\") format(\"woff\");\n  font-weight: 700;\n  font-style: normal;\n  font-display: swap;\n}\n\n/* Use the custom font */\nbody {\n  font-family: \"Inter\", -apple-system, BlinkMacSystemFont, sans-serif;\n}",
+          "explanation": "Each @font-face rule defines one weight/style combination. WOFF2 is listed first for best compression. font-display: swap ensures text is visible immediately using a fallback, then swaps to the custom font once loaded. Always include system fonts as fallbacks."
+        },
+        {
+          "title": "Google Fonts Integration",
+          "code": "<!-- Method 1: HTML link (recommended for performance) -->\n<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap\" \n      rel=\"stylesheet\">\n\n<!-- Method 2: CSS @import (blocks rendering) -->\n<style>\n  @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap');\n</style>\n\n<!-- Usage -->\n<style>\n  body {\n    font-family: \"Roboto\", sans-serif;\n  }\n</style>",
+          "explanation": "The <link> method with preconnect hints is faster than @import because @import blocks CSS parsing. The preconnect tells the browser to establish connections to Google's font servers early. Only request the weights you actually use to minimize download size."
+        },
+        {
+          "title": "font-display Values Compared",
+          "code": "@font-face {\n  font-family: \"MyFont\";\n  src: url(\"/fonts/myfont.woff2\") format(\"woff2\");\n  \n  /* swap: Show fallback immediately, swap when loaded */\n  /* Best for body text -- text is always visible */\n  font-display: swap;\n}\n\n@font-face {\n  font-family: \"HeadingFont\";\n  src: url(\"/fonts/heading.woff2\") format(\"woff2\");\n  \n  /* optional: Use if loaded quickly, skip otherwise */\n  /* Best for non-critical decorative fonts */\n  font-display: optional;\n}\n\n@font-face {\n  font-family: \"IconFont\";\n  src: url(\"/fonts/icons.woff2\") format(\"woff2\");\n  \n  /* block: Hide text until font loads (up to 3s) */\n  /* Only appropriate for icon fonts where fallback is meaningless */\n  font-display: block;\n}",
+          "explanation": "swap is the default recommendation: text is always visible with a brief flash when the font loads. optional is great for non-essential fonts on slow connections -- the browser may skip loading entirely. block should rarely be used as it hides text, but is appropriate for icon fonts."
+        },
+        {
+          "title": "Variable Fonts",
+          "code": "/* Single variable font file replaces multiple static files */\n@font-face {\n  font-family: \"Inter Variable\";\n  src: url(\"/fonts/Inter-Variable.woff2\") format(\"woff2-variations\");\n  font-weight: 100 900; /* supports any weight in this range */\n  font-style: normal;\n  font-display: swap;\n}\n\n/* Use any weight value, not just 100/200/300 etc */\n.thin     { font-weight: 100; }\n.light    { font-weight: 300; }\n.regular  { font-weight: 400; }\n.medium   { font-weight: 450; } /* variable font can do this! */\n.semibold { font-weight: 600; }\n.bold     { font-weight: 700; }\n.heavy    { font-weight: 850; } /* variable font can do this! */\n\n/* Custom axes via font-variation-settings */\n.custom {\n  font-variation-settings: \"wght\" 625, \"wdth\" 85;\n}",
+          "explanation": "Variable fonts use font-weight: 100 900 to declare the supported range. Unlike static fonts that only support specific steps, variable fonts render any weight smoothly. font-variation-settings provides access to custom axes like width (wdth), optical size (opsz), and designer-defined axes."
+        }
+      ],
+      "notes": [
+        "WOFF2 is the recommended format for web fonts. It has the best compression and is supported by all modern browsers.",
+        "Always include font-display: swap (or optional) in @font-face rules to prevent invisible text during font loading.",
+        "Self-hosting fonts is faster than CDN delivery because it eliminates DNS lookups and extra connections. Download fonts and serve them from your own domain when possible."
+      ],
+      "commonPitfalls": [
+        "Loading too many font weights and styles. Each additional weight/style is a separate HTTP request and download. Only load what you actually use.",
+        "Using @import for Google Fonts instead of <link>. @import blocks CSS parsing, delaying the entire page render.",
+        "Not including font-display in @font-face rules. Without it, browsers may hide text for up to 3 seconds while the font loads (Flash of Invisible Text).",
+        "Forgetting fallback fonts in the font-family stack. If the custom font fails to load, users see the browser's default serif font, which may look broken."
+      ],
+      "interviewTips": [
+        "Explain the font loading process: browser finds font-family in CSS, checks if font is available, downloads if needed, applies font-display strategy.",
+        "Know the tradeoffs between Google Fonts CDN and self-hosting: CDN is easier to set up but adds extra DNS/connections; self-hosting is faster but requires more setup.",
+        "Be ready to discuss performance optimization: limit weights, use WOFF2, preconnect, font-display: swap, and variable fonts."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "web-fonts-ex1",
+        "title": "Self-Host a Custom Font",
+        "description": "Write two @font-face rules to self-host a font called 'CustomSans': one for regular (weight 400, file: custom-regular.woff2) and one for bold (weight 700, file: custom-bold.woff2). Use WOFF2 format only, add font-display: swap, and then apply it to the body with appropriate fallbacks.",
+        "starterCode": "/* Define the font faces */\n\n\n/* Apply to body */\nbody {\n\n}\n",
+        "solution": "@font-face {\n  font-family: \"CustomSans\";\n  src: url(\"/fonts/custom-regular.woff2\") format(\"woff2\");\n  font-weight: 400;\n  font-style: normal;\n  font-display: swap;\n}\n\n@font-face {\n  font-family: \"CustomSans\";\n  src: url(\"/fonts/custom-bold.woff2\") format(\"woff2\");\n  font-weight: 700;\n  font-style: normal;\n  font-display: swap;\n}\n\nbody {\n  font-family: \"CustomSans\", -apple-system, BlinkMacSystemFont, sans-serif;\n}",
+        "hints": [
+          "Each weight needs its own @font-face rule with the same font-family name",
+          "Include font-display: swap to prevent invisible text during loading"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "web-fonts-ex2",
+        "title": "Optimize Google Fonts Loading",
+        "description": "Write the HTML <link> tags to load the 'Poppins' font from Google Fonts in weights 400, 600, and 700 with font-display swap. Include preconnect hints for both fonts.googleapis.com and fonts.gstatic.com. Then write the CSS to apply it to the body.",
+        "starterCode": "<!-- Add preconnect and font link tags -->\n\n\n<style>\n  body {\n    /* Apply the font */\n  }\n</style>\n",
+        "solution": "<link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n<link rel=\"preconnect\" href=\"https://fonts.gstatic.com\" crossorigin>\n<link href=\"https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap\" rel=\"stylesheet\">\n\n<style>\n  body {\n    font-family: \"Poppins\", -apple-system, BlinkMacSystemFont, sans-serif;\n  }\n</style>",
+        "hints": [
+          "Preconnect to both fonts.googleapis.com and fonts.gstatic.com (with crossorigin on the second)",
+          "Specify only the weights you need in the Google Fonts URL to minimize download size"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "colors-and-opacity",
+    "sectionId": "typography-and-colors",
+    "orderIndex": 3,
+    "title": "Colors & Opacity",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Named Colors", "Hex Colors", "RGB", "HSL", "Opacity", "currentColor", "Color Functions"],
+    "content": {
+      "explanation": "Color is one of the most powerful visual tools in web design. CSS provides multiple color formats, each with different strengths. Understanding these formats helps you choose the right one for each situation, maintain consistent color schemes, and create dynamic visual effects. Every CSS property that accepts a color value (color, background-color, border-color, box-shadow, etc.) supports all of these formats.\n\nNamed colors are the simplest format -- CSS defines 148 named colors like red, blue, cornflowerblue, and rebeccapurple. They are easy to read but limited in precision. Hexadecimal (hex) colors represent red, green, and blue channels as two-digit hex values: #RRGGBB. For example, #ff0000 is pure red and #336699 is a muted blue. A shorthand exists for colors with repeating digits: #f00 is the same as #ff0000. Hex with alpha (transparency) uses 8 digits: #336699cc, where the last two digits are the alpha channel.\n\nThe rgb() function specifies colors using Red, Green, and Blue channel values from 0 to 255 (or 0% to 100%). Modern CSS allows an optional alpha value separated by a slash: rgb(51 102 153 / 0.8). The older comma-separated syntax rgb(51, 102, 153) and rgba(51, 102, 153, 0.8) still works but the modern space-separated syntax is preferred. RGB is intuitive when you are thinking in terms of light mixing, but it is difficult to adjust a color's brightness or saturation by changing RGB values.\n\nThe hsl() function is often the most practical format for web development. It specifies colors as Hue (0-360 degrees on the color wheel), Saturation (0%-100%), and Lightness (0%-100%). HSL is powerful because adjusting colors is intuitive: changing the hue rotates around the color wheel, changing saturation makes colors more vivid or more gray, and changing lightness makes colors brighter or darker. This makes it easy to create color palettes: pick a hue, then generate light, medium, and dark variants by adjusting lightness.\n\nThe opacity property controls the transparency of an entire element and all its children. It accepts a value from 0 (completely transparent) to 1 (completely opaque). Unlike alpha channel values in color functions (which only affect the specific color), opacity affects everything inside the element including text, borders, and child elements. The currentColor keyword is a special value that refers to the element's computed color property value. It is useful for making borders, shadows, and SVG fills automatically match the text color.",
+      "codeExamples": [
+        {
+          "title": "Color Format Comparison",
+          "code": "/* All of these represent the same blue color */\n.named  { color: cornflowerblue; }\n.hex    { color: #6495ed; }\n.rgb    { color: rgb(100 149 237); }\n.hsl    { color: hsl(219 79% 66%); }\n\n/* With 80% opacity (same color, 4 ways) */\n.hex-alpha { color: #6495edcc; }\n.rgb-alpha { color: rgb(100 149 237 / 0.8); }\n.hsl-alpha { color: hsl(219 79% 66% / 0.8); }\n\n/* Shorthand hex */\n.red   { color: #f00; }     /* same as #ff0000 */\n.white { color: #fff; }     /* same as #ffffff */\n.gray  { color: #333; }     /* same as #333333 */",
+          "explanation": "All formats can express the same colors. Named colors are limited but readable. Hex is the most common in codebases. RGB is intuitive for light-mixing. HSL is best for creating and adjusting color palettes. Alpha channels add transparency to any format."
+        },
+        {
+          "title": "HSL for Color Palettes",
+          "code": "/* HSL makes it easy to create shade variations */\n:root {\n  /* Primary blue palette: same hue (220), vary lightness */\n  --blue-50:  hsl(220 80% 95%);  /* very light */\n  --blue-100: hsl(220 80% 90%);\n  --blue-200: hsl(220 80% 80%);\n  --blue-300: hsl(220 80% 70%);\n  --blue-400: hsl(220 80% 60%);\n  --blue-500: hsl(220 80% 50%);  /* base color */\n  --blue-600: hsl(220 80% 40%);\n  --blue-700: hsl(220 80% 30%);\n  --blue-800: hsl(220 80% 20%);\n  --blue-900: hsl(220 80% 10%);  /* very dark */\n}\n\n/* Creating muted versions: reduce saturation */\n.muted   { color: hsl(220 20% 50%); }  /* grayish blue */\n.vibrant { color: hsl(220 90% 50%); }  /* vivid blue */",
+          "explanation": "With HSL, you create entire color palettes by keeping the hue constant and varying lightness. Muted versions reduce saturation. This is exactly how design systems like Tailwind CSS generate their color scales."
+        },
+        {
+          "title": "Opacity vs Alpha Channel",
+          "code": "/* opacity affects the ENTIRE element and its children */\n.overlay {\n  background-color: black;\n  color: white;\n  opacity: 0.5;\n  /* Both background AND text are 50% transparent */\n}\n\n/* Alpha channel only affects that specific color */\n.overlay-better {\n  background-color: rgb(0 0 0 / 0.5);\n  color: white;\n  /* Background is 50% transparent, text is fully opaque */\n}\n\n/* Common pattern: semi-transparent overlay */\n.modal-backdrop {\n  position: fixed;\n  inset: 0;\n  background-color: hsl(0 0% 0% / 0.6);\n}\n\n/* Hover state with opacity */\n.card {\n  opacity: 1;\n  transition: opacity 0.2s;\n}\n.card:hover {\n  opacity: 0.8;\n}",
+          "explanation": "Opacity affects everything inside the element. Alpha channels (via rgb/hsl or hex with alpha) only affect the specific color property. For semi-transparent backgrounds with opaque text, use alpha channels, not opacity."
+        },
+        {
+          "title": "currentColor Keyword",
+          "code": "/* currentColor inherits the computed color value */\n.btn {\n  color: #007bff;\n  border: 2px solid currentColor; /* becomes #007bff */\n  background-color: transparent;\n}\n.btn:hover {\n  color: #0056b3;\n  /* Border automatically updates to #0056b3 */\n}\n\n/* currentColor in shadows and SVGs */\n.icon-link {\n  color: #e74c3c;\n  text-decoration: none;\n}\n.icon-link svg {\n  fill: currentColor; /* SVG fill matches text color */\n}\n.icon-link:hover {\n  color: #c0392b;\n  /* SVG fill automatically updates */\n}\n\n/* Useful for consistent focus rings */\n.input:focus {\n  color: #333;\n  outline: 2px solid currentColor;\n  outline-offset: 2px;\n}",
+          "explanation": "currentColor always resolves to the element's computed color value. It is invaluable for keeping borders, shadows, and SVG fills synchronized with the text color. When the color changes (hover, focus, theme), everything using currentColor updates automatically."
+        }
+      ],
+      "notes": [
+        "HSL is the most practical format for creating and maintaining color palettes. Adjusting lightness and saturation is intuitive, unlike trying to adjust RGB channel values.",
+        "Use alpha channels (rgb or hsl with / alpha) instead of the opacity property when you need a transparent background but opaque text.",
+        "currentColor is one of CSS's most underused features. Use it to keep borders, shadows, and SVG fills in sync with text color automatically."
+      ],
+      "commonPitfalls": [
+        "Using the opacity property when you only want a transparent background. Opacity affects all children including text. Use background-color with an alpha channel instead.",
+        "Forgetting that hex alpha is 8 digits (#RRGGBBAA), not 6. #336699 is fully opaque; #33669980 is 50% transparent.",
+        "Using old rgba() and hsla() functions. Modern CSS uses rgb() and hsl() with an optional / alpha parameter. The 'a' variants are deprecated.",
+        "Not considering color contrast for accessibility. Text and background must have a minimum contrast ratio of 4.5:1 for normal text (WCAG AA)."
+      ],
+      "interviewTips": [
+        "Explain the difference between opacity and alpha channel transparency: opacity affects the entire element, alpha only affects the specific color.",
+        "Know how HSL works: Hue is the color (0-360), Saturation is vividness (0-100%), Lightness is brightness (0-100%).",
+        "Be ready to discuss WCAG color contrast requirements: 4.5:1 for normal text, 3:1 for large text."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "colors-and-opacity-ex1",
+        "title": "Create a Color Palette with HSL",
+        "description": "Using CSS custom properties and HSL, create a green color palette with 5 shades. Use hue 145, saturation 65%, and lightness values of 90%, 70%, 45%, 30%, and 15%. Name them --green-100 through --green-900 (skipping by 200). Then apply --green-500 (45% lightness) as a button background color.",
+        "starterCode": ":root {\n  /* Define the green palette */\n}\n\n.btn-green {\n  /* Use the palette */\n}\n",
+        "solution": ":root {\n  --green-100: hsl(145 65% 90%);\n  --green-300: hsl(145 65% 70%);\n  --green-500: hsl(145 65% 45%);\n  --green-700: hsl(145 65% 30%);\n  --green-900: hsl(145 65% 15%);\n}\n\n.btn-green {\n  background-color: var(--green-500);\n  color: white;\n}",
+        "hints": [
+          "Keep hue and saturation constant, only vary the lightness for each shade",
+          "Use var(--green-500) to reference the custom property"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "colors-and-opacity-ex2",
+        "title": "Semi-Transparent Modal Overlay",
+        "description": "Create a .modal-backdrop class that covers the full viewport with a fixed position and a semi-transparent black background (60% opacity). Then create a .modal-content class centered within it that has a white background (fully opaque), 32px padding, and 8px border-radius. Use alpha channels, not the opacity property.",
+        "starterCode": ".modal-backdrop {\n  /* Full-screen semi-transparent backdrop */\n}\n\n.modal-content {\n  /* Centered white card */\n}\n",
+        "solution": ".modal-backdrop {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100%;\n  background-color: hsl(0 0% 0% / 0.6);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.modal-content {\n  background-color: white;\n  padding: 32px;\n  border-radius: 8px;\n  max-width: 500px;\n  width: 90%;\n}",
+        "hints": [
+          "Use hsl(0 0% 0% / 0.6) or rgb(0 0 0 / 0.6) for a 60% transparent black -- NOT the opacity property",
+          "Use flexbox on the backdrop to center the modal content"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "gradients",
+    "sectionId": "typography-and-colors",
+    "orderIndex": 4,
+    "title": "Gradients",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["linear-gradient", "radial-gradient", "conic-gradient", "Repeating Gradients", "Color Stops", "Gradient Direction"],
+    "content": {
+      "explanation": "CSS gradients let you display smooth transitions between two or more colors. They are generated as images by the browser, which means they can be used anywhere an image is accepted -- most commonly in background-image, but also in list-style-image, border-image, and other image-accepting properties. Gradients are resolution-independent (they scale perfectly to any size) and require no HTTP requests, making them a performance-friendly alternative to gradient image files.\n\nLinear gradients create a color transition along a straight line. The direction is specified as an angle (e.g., 45deg) or a keyword (to right, to bottom left). Color stops define where each color appears along the gradient line. By default, colors are evenly distributed, but you can specify exact positions using percentages or length values. You can create hard color transitions (no blending) by placing two different color stops at the same position, which is useful for creating stripes and geometric patterns.\n\nRadial gradients radiate outward from a center point in a circular or elliptical shape. The shape can be specified as circle or ellipse, and the size can be set using keywords (closest-side, farthest-corner, etc.) or explicit dimensions. The center position can be moved using the at keyword: radial-gradient(circle at top left, ...). Radial gradients are excellent for spotlight effects, glowing highlights, and decorative backgrounds.\n\nConic gradients create color transitions that sweep around a center point, like slices of a pie. The colors are distributed around the circumference rather than radiating outward. This makes conic gradients perfect for pie charts, color wheels, and circular progress indicators. The from keyword sets the starting angle: conic-gradient(from 90deg, ...) starts from the right instead of the top.\n\nRepeating gradients (repeating-linear-gradient, repeating-radial-gradient, repeating-conic-gradient) tile the gradient pattern to fill the element. They are powerful for creating striped backgrounds, checkerboard patterns, and complex decorative designs without any images. The key is defining the color stops within a small range -- the browser repeats the pattern to fill the entire element.",
+      "codeExamples": [
+        {
+          "title": "Linear Gradient Basics",
+          "code": "/* Top to bottom (default direction) */\n.gradient-basic {\n  background-image: linear-gradient(#3498db, #2c3e50);\n}\n\n/* Left to right */\n.gradient-horizontal {\n  background-image: linear-gradient(to right, #e74c3c, #f39c12);\n}\n\n/* Diagonal */\n.gradient-diagonal {\n  background-image: linear-gradient(45deg, #8e44ad, #3498db, #2ecc71);\n}\n\n/* Custom color stop positions */\n.gradient-stops {\n  background-image: linear-gradient(\n    to right,\n    #e74c3c 0%,\n    #e74c3c 30%,    /* solid red for first 30% */\n    #f39c12 30%,    /* hard transition to orange */\n    #f39c12 100%\n  );\n}\n\n/* Transparent to color (overlay effect) */\n.gradient-overlay {\n  background-image: linear-gradient(\n    to bottom,\n    transparent,\n    hsl(0 0% 0% / 0.8)\n  );\n}",
+          "explanation": "Linear gradients blend colors along a line. The direction can be keywords (to right, to bottom left) or angles (45deg, 180deg). Placing two color stops at the same position (30%) creates a hard edge. The transparent-to-black pattern is commonly used for text overlays on images."
+        },
+        {
+          "title": "Radial Gradients",
+          "code": "/* Basic circular radial gradient */\n.gradient-radial {\n  background-image: radial-gradient(circle, #3498db, #2c3e50);\n}\n\n/* Elliptical (default shape) */\n.gradient-ellipse {\n  background-image: radial-gradient(ellipse, #e74c3c, #2c3e50);\n}\n\n/* Custom position */\n.gradient-positioned {\n  background-image: radial-gradient(\n    circle at 25% 25%,\n    #f39c12,\n    #e74c3c,\n    #8e44ad\n  );\n}\n\n/* Spotlight / glow effect */\n.spotlight {\n  background-color: #1a1a2e;\n  background-image: radial-gradient(\n    circle at 50% 30%,\n    hsl(220 80% 60% / 0.3),\n    transparent 60%\n  );\n}\n\n/* Sized gradient */\n.gradient-sized {\n  background-image: radial-gradient(\n    circle 100px at center,\n    #3498db,\n    transparent\n  );\n}",
+          "explanation": "Radial gradients expand from a center point outward. Use 'circle' for circular gradients or 'ellipse' (default) to match the element's aspect ratio. The 'at' keyword positions the center. Combining with transparent creates spotlight and glow effects."
+        },
+        {
+          "title": "Conic Gradients",
+          "code": "/* Basic conic gradient (color wheel) */\n.color-wheel {\n  width: 200px;\n  height: 200px;\n  border-radius: 50%;\n  background-image: conic-gradient(\n    red, yellow, lime, aqua, blue, magenta, red\n  );\n}\n\n/* Pie chart with hard stops */\n.pie-chart {\n  width: 200px;\n  height: 200px;\n  border-radius: 50%;\n  background-image: conic-gradient(\n    #3498db 0% 40%,    /* 40% blue */\n    #e74c3c 40% 70%,   /* 30% red */\n    #2ecc71 70% 100%    /* 30% green */\n  );\n}\n\n/* Progress ring */\n.progress-ring {\n  width: 100px;\n  height: 100px;\n  border-radius: 50%;\n  background-image: conic-gradient(\n    from 0deg,\n    #3498db 0% 75%,      /* 75% complete */\n    #e0e0e0 75% 100%     /* remaining */\n  );\n}",
+          "explanation": "Conic gradients sweep colors around a center point like clock hands. Hard color stops (same position for end and start) create pie-chart segments. The 'from' keyword sets the starting angle. Perfect for charts, progress indicators, and decorative elements."
+        },
+        {
+          "title": "Repeating Gradients for Patterns",
+          "code": "/* Diagonal stripes */\n.stripes {\n  background-image: repeating-linear-gradient(\n    45deg,\n    #3498db,\n    #3498db 10px,\n    #2980b9 10px,\n    #2980b9 20px\n  );\n}\n\n/* Horizontal lines (notebook paper) */\n.lined-paper {\n  background-color: white;\n  background-image: repeating-linear-gradient(\n    to bottom,\n    transparent,\n    transparent 31px,\n    #e0e0e0 31px,\n    #e0e0e0 32px\n  );\n}\n\n/* Concentric circles */\n.target {\n  background-image: repeating-radial-gradient(\n    circle,\n    #e74c3c,\n    #e74c3c 10px,\n    white 10px,\n    white 20px\n  );\n}\n\n/* Multiple gradients layered */\n.grid-pattern {\n  background-color: white;\n  background-image:\n    linear-gradient(to right, #e0e0e0 1px, transparent 1px),\n    linear-gradient(to bottom, #e0e0e0 1px, transparent 1px);\n  background-size: 20px 20px;\n}",
+          "explanation": "Repeating gradients tile the pattern. Define color stops within a small range and the browser repeats the pattern. Multiple background-images can be layered (comma-separated) to create complex patterns like grids. background-size controls the tile size."
+        }
+      ],
+      "notes": [
+        "Gradients are CSS images, not colors. Use them with background-image, not background-color. However, the background shorthand accepts both.",
+        "For smooth gradients, use colors that are close on the color wheel. Gradients between complementary colors (e.g., red to green) can produce muddy gray in the middle.",
+        "Multiple gradients can be layered using comma separation in background-image. Earlier gradients are painted on top of later ones."
+      ],
+      "commonPitfalls": [
+        "Applying a gradient to background-color instead of background-image. Gradients are images, not colors, and background-color only accepts color values.",
+        "Creating muddy gradients by blending colors that are far apart on the color wheel. Use intermediate color stops or switch to HSL to ensure smooth transitions.",
+        "Forgetting that gradient angles in CSS go clockwise from the top. 0deg points up, 90deg points right, 180deg points down. This is the opposite of standard math angles.",
+        "Using gradients for large background areas without considering performance. Extremely complex gradients with many stops can impact rendering on low-end devices."
+      ],
+      "interviewTips": [
+        "Know the three gradient types (linear, radial, conic) and when each is appropriate.",
+        "Be able to explain hard vs soft color stops and how to create stripe patterns with gradients.",
+        "Understand that gradients are images and can be used anywhere CSS images are accepted, including border-image and list-style-image."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "gradients-ex1",
+        "title": "Hero Section Gradient Overlay",
+        "description": "Create a .hero class that has a linear gradient overlay going from transparent at the top to 80% opaque black at the bottom. Set minimum height to 400px. This pattern is commonly used to make text readable over background images.",
+        "starterCode": ".hero {\n  /* Create a gradient overlay */\n  min-height: 400px;\n}\n",
+        "solution": ".hero {\n  min-height: 400px;\n  background-image: linear-gradient(\n    to bottom,\n    transparent,\n    hsl(0 0% 0% / 0.8)\n  );\n}",
+        "hints": [
+          "Use linear-gradient with 'to bottom' direction",
+          "Start with transparent and end with a semi-transparent black using HSL with alpha"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "gradients-ex2",
+        "title": "Pie Chart with Conic Gradient",
+        "description": "Create a .pie-chart class that is 200px by 200px, circular (border-radius: 50%), and displays a three-segment pie chart using a conic gradient: 55% blue (#3498db), 25% orange (#f39c12), and 20% green (#2ecc71). Use hard color stops for sharp segment boundaries.",
+        "starterCode": ".pie-chart {\n  /* Create a pie chart */\n}\n",
+        "solution": ".pie-chart {\n  width: 200px;\n  height: 200px;\n  border-radius: 50%;\n  background-image: conic-gradient(\n    #3498db 0% 55%,\n    #f39c12 55% 80%,\n    #2ecc71 80% 100%\n  );\n}",
+        "hints": [
+          "Use conic-gradient with hard stops: end one color and start the next at the same percentage",
+          "55% + 25% = 80%, so the second segment goes from 55% to 80%"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -17,6 +17,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Lock,
+  GraduationCap,
+  Mail,
+  BookOpen,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import { Navbar } from "../../../components/Navbar";
@@ -224,8 +227,69 @@ function YCCard({ company }: { company: YCCompany }) {
   );
 }
 
+// ─── Professor types ──────────────────────────────────────
+interface Professor {
+  id: number;
+  collegeName: string;
+  collegeType: string;
+  department: string;
+  name: string;
+  areaOfInterest: string | null;
+  email: string | null;
+}
+
+interface ProfessorStats {
+  total: number;
+  colleges: { name: string; count: number }[];
+  departments: { name: string; count: number }[];
+}
+
+function ProfessorCard({ professor }: { professor: Professor }) {
+  return (
+    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-indigo-200 dark:hover:border-indigo-800 transition-all duration-300 p-5">
+      <div className="flex items-start gap-3">
+        <div className="w-11 h-11 rounded-lg bg-indigo-50 dark:bg-indigo-900/30 flex items-center justify-center shrink-0">
+          <span className="text-indigo-600 dark:text-indigo-400 font-bold text-sm">
+            {professor.name.charAt(0)}
+          </span>
+        </div>
+        <div className="min-w-0 flex-1">
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+            {professor.name}
+          </h4>
+          <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
+            {professor.collegeName}
+          </p>
+        </div>
+      </div>
+
+      <div className="mt-3 flex items-center gap-1.5 text-xs text-indigo-600 dark:text-indigo-400">
+        <BookOpen className="w-3 h-3 shrink-0" />
+        <span className="truncate">{professor.department}</span>
+      </div>
+
+      {professor.areaOfInterest && (
+        <p className="mt-2 text-xs text-gray-500 dark:text-gray-400 line-clamp-2">
+          {professor.areaOfInterest}
+        </p>
+      )}
+
+      {professor.email && (
+        <a
+          href={`mailto:${professor.email}`}
+          className="mt-3 flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors truncate"
+          onClick={(e) => e.stopPropagation()}
+        >
+          <Mail className="w-3 h-3 shrink-0" />
+          {professor.email}
+        </a>
+      )}
+    </div>
+  );
+}
+
 // ─── Tab type ─────────────────────────────────────────────
-type Tab = "all" | "yc";
+type Tab = "all" | "yc" | "professors";
 
 export default function CompanyListPage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
@@ -248,6 +312,13 @@ export default function CompanyListPage() {
   const [ycIndustry, setYcIndustry] = useState("");
   const [ycPage, setYcPage] = useState(1);
 
+  // Professor filters (local state)
+  const [profSearchInput, setProfSearchInput] = useState("");
+  const [profSearch, setProfSearch] = useState("");
+  const [profCollege, setProfCollege] = useState("");
+  const [profDepartment, setProfDepartment] = useState("");
+  const [profPage, setProfPage] = useState(1);
+
   // Debounce YC search
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -256,6 +327,15 @@ export default function CompanyListPage() {
     }, 400);
     return () => clearTimeout(timer);
   }, [ycSearchInput]);
+
+  // Debounce professor search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setProfSearch(profSearchInput);
+      setProfPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [profSearchInput]);
 
   const selectedCity = searchParams.get("city") || "";
   const search = searchParams.get("search") || "";
@@ -342,6 +422,32 @@ export default function CompanyListPage() {
   const ycCompanies = ycData?.companies ?? [];
   const ycPagination = ycData?.pagination ?? null;
 
+  // ── Professor Stats query ──
+  const { data: profStats } = useQuery<ProfessorStats>({
+    queryKey: queryKeys.professors.stats(),
+    queryFn: () => api.get("/professors/stats").then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // ── Professor list query ──
+  const profQueryParams: Record<string, string | number> = { page: profPage, limit: 24 };
+  if (profSearch) profQueryParams["search"] = profSearch;
+  if (profCollege) profQueryParams["college"] = profCollege;
+  if (profDepartment) profQueryParams["department"] = profDepartment;
+
+  const { data: profData, isLoading: profLoading } = useQuery<{
+    professors: Professor[];
+    pagination: Pagination;
+    premiumRequired?: boolean;
+  }>({
+    queryKey: queryKeys.professors.list(profQueryParams),
+    queryFn: () => api.get("/professors", { params: profQueryParams }).then((r) => r.data),
+    enabled: activeTab === "professors",
+  });
+
+  const professors = profData?.professors ?? [];
+  const profPagination = profData?.pagination ?? null;
+
   return (
     <div className="relative min-h-screen bg-white/50 dark:bg-gray-950">
       {/* Atmospheric background */}
@@ -411,6 +517,20 @@ export default function CompanyListPage() {
             YC Companies
             <span className="px-1.5 py-0.5 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-[10px] font-bold rounded-full border border-orange-100 dark:border-orange-800">
               {ycStats?.total ?? "..."}
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("professors")}
+            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+              activeTab === "professors"
+                ? "bg-white dark:bg-gray-900 text-indigo-700 dark:text-indigo-400 shadow-sm"
+                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            }`}
+          >
+            <GraduationCap className="w-4 h-4" />
+            IIT Professors
+            <span className="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded-full border border-indigo-100 dark:border-indigo-800">
+              {profStats?.total ?? "..."}
             </span>
           </button>
         </div>
@@ -775,6 +895,184 @@ export default function CompanyListPage() {
                     <button
                       onClick={() => setYcPage((p) => Math.min(ycPagination.totalPages, p + 1))}
                       disabled={ycPage >= ycPagination.totalPages}
+                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        )}
+        {/* ── TAB: IIT Professors ───────────────────── */}
+        {activeTab === "professors" && (
+          <>
+            {/* Professor-specific controls */}
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+                <input
+                  type="text"
+                  value={profSearchInput}
+                  onChange={(e) => setProfSearchInput(e.target.value)}
+                  placeholder="Search professors by name, area of interest..."
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-300 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                />
+              </div>
+
+              {/* College dropdown */}
+              <div className="relative group">
+                <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                  <GraduationCap className="w-4 h-4" />
+                  College:{" "}
+                  <span className="font-medium text-gray-900 dark:text-white truncate max-w-25">
+                    {profCollege || "All"}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+                <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[200px] max-h-[280px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl group-hover:block">
+                  <button
+                    onClick={() => { setProfCollege(""); setProfPage(1); }}
+                    className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                      !profCollege
+                        ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-medium"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {(profStats?.colleges ?? []).map((c) => (
+                    <button
+                      key={c.name}
+                      onClick={() => { setProfCollege(c.name); setProfPage(1); }}
+                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                        profCollege === c.name
+                          ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-medium"
+                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      }`}
+                    >
+                      {c.name} ({c.count})
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Department dropdown */}
+              <div className="relative group">
+                <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                  <BookOpen className="w-4 h-4" />
+                  Dept:{" "}
+                  <span className="font-medium text-gray-900 dark:text-white truncate max-w-25">
+                    {profDepartment || "All"}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+                <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[240px] max-h-[280px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl group-hover:block">
+                  <button
+                    onClick={() => { setProfDepartment(""); setProfPage(1); }}
+                    className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                      !profDepartment
+                        ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-medium"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {(profStats?.departments ?? []).map((d) => (
+                    <button
+                      key={d.name}
+                      onClick={() => { setProfDepartment(d.name); setProfPage(1); }}
+                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                        profDepartment === d.name
+                          ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-400 font-medium"
+                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      }`}
+                    >
+                      {d.name} ({d.count})
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Clear professor filters */}
+              {(profSearch || profCollege || profDepartment) && (
+                <button
+                  onClick={() => { setProfSearchInput(""); setProfSearch(""); setProfCollege(""); setProfDepartment(""); setProfPage(1); }}
+                  className="flex items-center gap-1 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
+                >
+                  <X className="w-4 h-4" /> Clear
+                </button>
+              )}
+            </div>
+
+            {/* Professor Results */}
+            {profLoading ? (
+              <LoadingScreen compact />
+            ) : professors.length === 0 ? (
+              <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">
+                  <GraduationCap className="w-9 h-9 text-indigo-400" />
+                </div>
+                <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">
+                  No professors found
+                </h3>
+                <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
+                  Try adjusting your search or filters
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {professors.map((prof, i) => (
+                    <motion.div
+                      key={prof.id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04, duration: 0.35 }}
+                    >
+                      <ProfessorCard professor={prof} />
+                    </motion.div>
+                  ))}
+                </div>
+
+                {/* Premium upgrade banner */}
+                {profData?.premiumRequired && (
+                  <div className="mt-6 flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+                    <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                        First 100 professors are free
+                      </p>
+                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                        Upgrade to Premium to access all {profStats?.total ?? 1584} IIT professors.
+                      </p>
+                    </div>
+                    <Link
+                      to="/pricing"
+                      className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors no-underline"
+                    >
+                      Upgrade
+                    </Link>
+                  </div>
+                )}
+
+                {/* Professor Pagination */}
+                {profPagination && profPagination.totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-3 mt-8">
+                    <button
+                      onClick={() => setProfPage((p) => Math.max(1, p - 1))}
+                      disabled={profPage <= 1}
+                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" /> Prev
+                    </button>
+                    <span className="text-sm text-gray-500 dark:text-gray-500">
+                      Page {profPagination.page} of {profPagination.totalPages}
+                    </span>
+                    <button
+                      onClick={() => setProfPage((p) => Math.min(profPagination.totalPages, p + 1))}
+                      disabled={profPage >= profPagination.totalPages}
                       className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
                     >
                       Next <ChevronRight className="w-4 h-4" />

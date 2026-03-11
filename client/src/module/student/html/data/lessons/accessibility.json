@@ -1,0 +1,378 @@
+[
+  {
+    "id": "wcag-guidelines",
+    "sectionId": "accessibility",
+    "orderIndex": 0,
+    "title": "WCAG Guidelines",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["WCAG Levels", "POUR Principles", "Compliance", "Accessibility Standards", "A/AA/AAA"],
+    "content": {
+      "explanation": "The Web Content Accessibility Guidelines (WCAG) are the internationally recognized standard for making web content accessible to people with disabilities. Published by the World Wide Web Consortium (W3C) through their Web Accessibility Initiative (WAI), WCAG provides a shared framework that governments, organizations, and developers use to evaluate and improve accessibility. The current widely-adopted version is WCAG 2.1, with WCAG 2.2 adding additional criteria.\n\nWCAG is built around four core principles known by the acronym POUR: Perceivable, Operable, Understandable, and Robust. Perceivable means that information and user interface components must be presentable to users in ways they can perceive — this includes providing text alternatives for images, captions for videos, and sufficient color contrast. Operable means all interface components and navigation must be operable through various input methods, including keyboard-only navigation. Understandable requires that information and the operation of the UI must be understandable, with readable text, predictable behavior, and input assistance. Robust means content must be robust enough to be reliably interpreted by a wide variety of user agents, including assistive technologies like screen readers.\n\nWCAG defines three conformance levels: A (minimum), AA (mid-range), and AAA (highest). Level A covers the most basic accessibility requirements — without meeting these, some users will find it impossible to access content. Level AA addresses the most common barriers and is the standard most laws and policies reference. For example, contrast ratios must be at least 4.5:1 for normal text at Level AA, but 7:1 at Level AAA. Most organizations target Level AA compliance as it balances accessibility with practical implementation.\n\nCompliance with WCAG is not just good practice — it is a legal requirement in many jurisdictions. The Americans with Disabilities Act (ADA) in the United States, the European Accessibility Act (EAA) in the EU, and Section 508 of the Rehabilitation Act for US federal agencies all reference WCAG. Lawsuits related to web accessibility have increased significantly, making compliance a business necessity. Tools like axe, Lighthouse, and WAVE can automate some testing, but manual testing with real assistive technologies is essential for thorough compliance.\n\nEach WCAG success criterion has a specific identifier like 1.1.1, where the first number indicates the principle (1 = Perceivable, 2 = Operable, 3 = Understandable, 4 = Robust), the second number indicates the guideline within that principle, and the third is the specific criterion. Understanding this numbering system helps developers quickly locate requirements and communicate about them with team members and stakeholders.",
+      "codeExamples": [
+        {
+          "title": "Perceivable: Text Alternatives",
+          "code": "<!-- Good: Descriptive alt text -->\n<img src=\"chart.png\" alt=\"Bar chart showing Q4 revenue growth of 25% compared to Q3\" />\n\n<!-- Good: Decorative image marked as such -->\n<img src=\"divider.png\" alt=\"\" role=\"presentation\" />\n\n<!-- Good: Video with captions -->\n<video controls>\n  <source src=\"demo.mp4\" type=\"video/mp4\" />\n  <track src=\"captions.vtt\" kind=\"captions\" srclang=\"en\" label=\"English\" />\n  Your browser does not support the video tag.\n</video>\n\n<!-- Bad: Missing alt text -->\n<img src=\"chart.png\" />\n\n<!-- Bad: Unhelpful alt text -->\n<img src=\"chart.png\" alt=\"image\" />",
+          "explanation": "WCAG 1.1.1 (Level A) requires text alternatives for all non-text content. Images need descriptive alt text that conveys the same information. Decorative images should have empty alt attributes. Videos need captions or transcripts."
+        },
+        {
+          "title": "Operable: Keyboard Accessible Navigation",
+          "code": "<!-- Good: Skip navigation link -->\n<a href=\"#main-content\" class=\"skip-link\">Skip to main content</a>\n\n<nav aria-label=\"Main navigation\">\n  <ul>\n    <li><a href=\"/\">Home</a></li>\n    <li><a href=\"/about\">About</a></li>\n    <li><a href=\"/contact\">Contact</a></li>\n  </ul>\n</nav>\n\n<main id=\"main-content\">\n  <h1>Page Title</h1>\n  <!-- Main content here -->\n</main>\n\n<style>\n  .skip-link {\n    position: absolute;\n    top: -40px;\n    left: 0;\n    padding: 8px;\n    background: #000;\n    color: #fff;\n    z-index: 100;\n  }\n  .skip-link:focus {\n    top: 0;\n  }\n</style>",
+          "explanation": "WCAG 2.4.1 (Level A) requires a mechanism to bypass blocks of content repeated on multiple pages. Skip links let keyboard users jump directly to the main content without tabbing through the entire navigation on every page."
+        },
+        {
+          "title": "Understandable: Form Input Assistance",
+          "code": "<!-- Good: Clear labels, error messages, and instructions -->\n<form novalidate>\n  <div>\n    <label for=\"email\">Email Address (required)</label>\n    <input\n      type=\"email\"\n      id=\"email\"\n      name=\"email\"\n      required\n      aria-describedby=\"email-help email-error\"\n      aria-invalid=\"true\"\n    />\n    <span id=\"email-help\">We will never share your email.</span>\n    <span id=\"email-error\" role=\"alert\">\n      Please enter a valid email address (e.g., user@example.com)\n    </span>\n  </div>\n\n  <div>\n    <label for=\"password\">Password (required)</label>\n    <input\n      type=\"password\"\n      id=\"password\"\n      name=\"password\"\n      required\n      aria-describedby=\"password-requirements\"\n    />\n    <span id=\"password-requirements\">\n      Must be at least 8 characters with one uppercase letter and one number.\n    </span>\n  </div>\n</form>",
+          "explanation": "WCAG 3.3.1 (Level A) requires error identification, and 3.3.2 (Level A) requires labels or instructions for user input. Providing clear labels, format hints, and descriptive error messages helps all users complete forms correctly."
+        },
+        {
+          "title": "Color Contrast Requirements",
+          "code": "<!-- Level AA: 4.5:1 for normal text, 3:1 for large text -->\n<style>\n  /* Good: High contrast (passes AA) */\n  .high-contrast {\n    color: #1a1a1a;        /* Dark text */\n    background: #ffffff;   /* White background */\n    /* Ratio: 16.15:1 - passes AAA */\n  }\n\n  /* Acceptable: Passes AA but not AAA */\n  .acceptable {\n    color: #595959;        /* Medium gray */\n    background: #ffffff;\n    /* Ratio: 7:1 - passes AA */\n  }\n\n  /* Bad: Fails AA */\n  .low-contrast {\n    color: #999999;        /* Light gray */\n    background: #ffffff;\n    /* Ratio: 2.85:1 - fails AA */\n  }\n\n  /* Large text (18pt+ or 14pt+ bold): 3:1 ratio needed */\n  .large-text-ok {\n    font-size: 24px;\n    color: #767676;        /* Ratio: 4.54:1 - passes AA for large text */\n    background: #ffffff;\n  }\n</style>\n\n<p class=\"high-contrast\">This text has excellent contrast.</p>\n<p class=\"acceptable\">This text passes AA requirements.</p>\n<p class=\"low-contrast\">This text fails contrast requirements.</p>\n<h2 class=\"large-text-ok\">Large text needs lower contrast.</h2>",
+          "explanation": "WCAG 1.4.3 (Level AA) requires a contrast ratio of at least 4.5:1 for normal text and 3:1 for large text (18pt or 14pt bold). Level AAA (1.4.6) raises this to 7:1 and 4.5:1 respectively. Use browser DevTools or tools like WebAIM Contrast Checker to verify."
+        }
+      ],
+      "notes": [
+        "WCAG Level AA is the standard most legislation and corporate policies reference. Aim for AA at minimum; achieve AAA where practical.",
+        "Automated accessibility testing tools like Lighthouse and axe can catch roughly 30-40% of accessibility issues. Manual testing with keyboard navigation and screen readers is essential for thorough compliance.",
+        "The POUR principles (Perceivable, Operable, Understandable, Robust) are a common interview question. Know what each one means and be able to give an example of a success criterion under each."
+      ],
+      "commonPitfalls": [
+        "Relying solely on color to convey information violates WCAG 1.4.1 (Level A). Always provide an additional visual indicator like an icon, underline, or text label alongside color.",
+        "Assuming automated tools catch all issues. Many accessibility problems — like illogical tab order, missing context, or confusing interactions — require manual testing with assistive technologies.",
+        "Treating accessibility as a one-time checkbox rather than an ongoing process. Content changes, new features, and third-party widgets can all introduce new accessibility barriers."
+      ],
+      "interviewTips": [
+        "Be ready to explain all four POUR principles with concrete examples of HTML elements or patterns that satisfy each one.",
+        "Know the difference between WCAG levels A, AA, and AAA and which level most laws require (AA).",
+        "Mention specific success criteria by number (e.g., 1.1.1 for alt text, 1.4.3 for contrast) to demonstrate deep familiarity with the standard."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "wcag-guidelines-ex1",
+        "title": "Fix Accessibility Violations",
+        "description": "The HTML below has several WCAG violations. Fix them by adding appropriate alt text, labels, and ARIA attributes to make the content accessible.",
+        "starterCode": "<!-- Fix the accessibility issues in this HTML -->\n<img src=\"logo.png\">\n\n<form>\n  <input type=\"text\" placeholder=\"Enter name\">\n  <input type=\"email\" placeholder=\"Enter email\">\n  <button>Submit</button>\n</form>\n\n<div style=\"color: #ccc; background: #fff;\">\n  Important information here\n</div>\n",
+        "solution": "<img src=\"logo.png\" alt=\"Company logo\" />\n\n<form>\n  <label for=\"name\">Name</label>\n  <input type=\"text\" id=\"name\" placeholder=\"Enter name\" required />\n\n  <label for=\"email\">Email</label>\n  <input type=\"email\" id=\"email\" placeholder=\"Enter email\" required />\n\n  <button type=\"submit\">Submit</button>\n</form>\n\n<div style=\"color: #333; background: #fff;\">\n  Important information here\n</div>",
+        "hints": [
+          "Every <img> needs an alt attribute describing its content",
+          "Form inputs must have associated <label> elements with matching for/id attributes",
+          "Light gray text on a white background fails contrast requirements"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "wcag-guidelines-ex2",
+        "title": "Create an Accessible Card Component",
+        "description": "Build an accessible product card with an image, heading, description, price, and a 'Buy Now' button. Make sure it follows WCAG AA guidelines with proper semantics, alt text, and accessible button text.",
+        "starterCode": "<!-- Create an accessible product card -->\n<div>\n  <!-- Product image -->\n  <!-- Product name -->\n  <!-- Product description -->\n  <!-- Price -->\n  <!-- Buy button -->\n</div>\n",
+        "solution": "<article aria-label=\"Product card\">\n  <img src=\"headphones.jpg\" alt=\"Wireless noise-cancelling headphones in matte black\" />\n\n  <h3>Wireless Headphones</h3>\n  <p>Premium noise-cancelling headphones with 30-hour battery life and comfortable over-ear design.</p>\n  <p><strong>$199.99</strong></p>\n\n  <button type=\"button\" aria-label=\"Buy Wireless Headphones for $199.99\">\n    Buy Now\n  </button>\n</article>",
+        "hints": [
+          "Use semantic elements like <article> for self-contained content",
+          "The alt text should describe what the image actually shows, not just say 'product image'",
+          "When multiple 'Buy Now' buttons exist on a page, use aria-label to differentiate them for screen reader users"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "aria-labels-and-roles",
+    "sectionId": "accessibility",
+    "orderIndex": 1,
+    "title": "ARIA Labels & Roles",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["aria-label", "aria-labelledby", "aria-describedby", "ARIA Roles", "Live Regions"],
+    "content": {
+      "explanation": "ARIA (Accessible Rich Internet Applications) is a set of HTML attributes defined by the W3C that provide additional semantic information to assistive technologies. When native HTML elements cannot fully convey the purpose, state, or relationship of UI components, ARIA fills the gap. The ARIA specification defines roles (what an element is), properties (characteristics of the element), and states (current conditions that may change).\n\nThe three most common ARIA labeling attributes are aria-label, aria-labelledby, and aria-describedby. The aria-label attribute provides an accessible name directly as a string — use it when there is no visible text label for an element. The aria-labelledby attribute references the id of another element whose text content should serve as the accessible name — it is stronger than aria-label and should be preferred when a visible label exists. The aria-describedby attribute links to an element that provides additional descriptive information, such as help text or format requirements. Unlike aria-labelledby, it does not replace the accessible name but supplements it.\n\nARIA roles override or supplement the implicit role of an HTML element. Landmark roles like role=\"banner\", role=\"navigation\", role=\"main\", and role=\"contentinfo\" define regions of a page. Widget roles like role=\"dialog\", role=\"tablist\", role=\"tab\", and role=\"tabpanel\" describe interactive components. Document structure roles like role=\"heading\", role=\"list\", and role=\"listitem\" describe content organization. Always prefer native HTML elements (like <nav> instead of <div role=\"navigation\">) — ARIA should only be used when HTML alone cannot express the semantics you need.\n\nARIA live regions allow assistive technologies to announce dynamic content changes without requiring the user to navigate to that part of the page. Setting aria-live=\"polite\" on a container means changes will be announced when the user is idle. Using aria-live=\"assertive\" interrupts the current announcement to deliver the update immediately — use this sparingly for urgent notifications like errors. The role=\"alert\" implicitly sets aria-live=\"assertive\", while role=\"status\" implies aria-live=\"polite\".\n\nThe first rule of ARIA is often stated as: do not use ARIA if you can use a native HTML element or attribute with the semantics and behavior you require. Native HTML elements come with built-in keyboard behavior, focus management, and implicit roles. Adding ARIA to a <div> does not give it keyboard interactivity or focus — you must implement all of that yourself. Misusing ARIA is worse than not using it at all because it can create confusing or contradictory information for assistive technology users.",
+      "codeExamples": [
+        {
+          "title": "aria-label vs aria-labelledby vs aria-describedby",
+          "code": "<!-- aria-label: Inline accessible name (no visible label) -->\n<button aria-label=\"Close dialog\">\n  <svg viewBox=\"0 0 24 24\"><path d=\"M6 6L18 18M6 18L18 6\" /></svg>\n</button>\n\n<!-- aria-labelledby: References a visible label -->\n<h2 id=\"billing-title\">Billing Address</h2>\n<form aria-labelledby=\"billing-title\">\n  <label for=\"street\">Street</label>\n  <input id=\"street\" type=\"text\" />\n</form>\n\n<!-- aria-describedby: Supplementary description -->\n<label for=\"username\">Username</label>\n<input\n  id=\"username\"\n  type=\"text\"\n  aria-describedby=\"username-help username-error\"\n/>\n<span id=\"username-help\">3-20 characters, letters and numbers only.</span>\n<span id=\"username-error\" role=\"alert\">Username is already taken.</span>",
+          "explanation": "aria-label provides an accessible name when no visible text exists. aria-labelledby points to existing visible text to use as the name. aria-describedby adds supplemental info read after the name and role. You can reference multiple IDs with space-separated values."
+        },
+        {
+          "title": "ARIA Landmark Roles",
+          "code": "<!-- Prefer native HTML5 elements over ARIA roles -->\n\n<!-- Native (preferred) -->\n<header>Site Header</header>\n<nav>Navigation</nav>\n<main>Main Content</main>\n<aside>Sidebar</aside>\n<footer>Site Footer</footer>\n\n<!-- ARIA equivalent (use only when native elements are not possible) -->\n<div role=\"banner\">Site Header</div>\n<div role=\"navigation\">Navigation</div>\n<div role=\"main\">Main Content</div>\n<div role=\"complementary\">Sidebar</div>\n<div role=\"contentinfo\">Site Footer</div>\n\n<!-- Multiple navs need labels to distinguish them -->\n<nav aria-label=\"Main navigation\">\n  <ul><li><a href=\"/\">Home</a></li></ul>\n</nav>\n<nav aria-label=\"Footer navigation\">\n  <ul><li><a href=\"/privacy\">Privacy</a></li></ul>\n</nav>",
+          "explanation": "HTML5 semantic elements carry implicit ARIA roles: <header> is 'banner', <nav> is 'navigation', <main> is 'main'. When you have multiple elements of the same type (e.g., two <nav> elements), use aria-label to differentiate them for screen reader users."
+        },
+        {
+          "title": "ARIA Live Regions for Dynamic Content",
+          "code": "<!-- Polite: Announces when user is idle -->\n<div aria-live=\"polite\" id=\"search-results\">\n  <!-- Content updated via JavaScript -->\n</div>\n\n<!-- Assertive: Interrupts current announcement -->\n<div aria-live=\"assertive\" id=\"error-message\">\n  <!-- Urgent errors appear here -->\n</div>\n\n<!-- role=\"alert\" implies aria-live=\"assertive\" -->\n<div role=\"alert\" id=\"form-error\">\n  Please fix the errors before submitting.\n</div>\n\n<!-- role=\"status\" implies aria-live=\"polite\" -->\n<div role=\"status\" id=\"save-status\">\n  All changes saved.\n</div>\n\n<!-- JavaScript to update live region -->\n<script>\nfunction updateResults(count) {\n  document.getElementById('search-results').textContent =\n    `Found ${count} results`;\n  // Screen reader announces: \"Found 15 results\"\n}\n</script>",
+          "explanation": "Live regions tell screen readers to watch for content changes and announce them. Use 'polite' for non-urgent updates (search results, save status) and 'assertive' for urgent ones (error messages). The element must exist in the DOM before content is added for the announcement to work."
+        },
+        {
+          "title": "Widget Roles: Building a Custom Tab Component",
+          "code": "<!-- Accessible tab interface using ARIA roles -->\n<div role=\"tablist\" aria-label=\"Account settings\">\n  <button\n    role=\"tab\"\n    id=\"tab-profile\"\n    aria-selected=\"true\"\n    aria-controls=\"panel-profile\"\n  >\n    Profile\n  </button>\n  <button\n    role=\"tab\"\n    id=\"tab-security\"\n    aria-selected=\"false\"\n    aria-controls=\"panel-security\"\n    tabindex=\"-1\"\n  >\n    Security\n  </button>\n  <button\n    role=\"tab\"\n    id=\"tab-billing\"\n    aria-selected=\"false\"\n    aria-controls=\"panel-billing\"\n    tabindex=\"-1\"\n  >\n    Billing\n  </button>\n</div>\n\n<div\n  role=\"tabpanel\"\n  id=\"panel-profile\"\n  aria-labelledby=\"tab-profile\"\n>\n  <h3>Profile Settings</h3>\n  <p>Edit your profile information here.</p>\n</div>\n\n<div\n  role=\"tabpanel\"\n  id=\"panel-security\"\n  aria-labelledby=\"tab-security\"\n  hidden\n>\n  <h3>Security Settings</h3>\n  <p>Manage your password and two-factor authentication.</p>\n</div>",
+          "explanation": "Tab interfaces require specific ARIA roles (tablist, tab, tabpanel) and states (aria-selected, aria-controls). Only the active tab should be in the tab order (other tabs get tabindex='-1'). Arrow keys navigate between tabs, not Tab key. Each panel is labeled by its corresponding tab via aria-labelledby."
+        }
+      ],
+      "notes": [
+        "The first rule of ARIA: Do not use ARIA if you can use a native HTML element. A <button> already has role='button', keyboard behavior, and focus management built in.",
+        "aria-labelledby takes precedence over aria-label, which takes precedence over the element's text content when computing the accessible name.",
+        "Live regions must exist in the DOM before content changes for announcements to work. Adding a new element with aria-live does not trigger an announcement."
+      ],
+      "commonPitfalls": [
+        "Adding role='button' to a <div> without also making it focusable (tabindex='0') and handling keyboard events (Enter and Space). ARIA roles do not add behavior, only semantics.",
+        "Using aria-live='assertive' for non-urgent updates like search result counts. This interrupts the user and creates a frustrating experience. Use 'polite' for most cases.",
+        "Overusing ARIA when native elements would suffice. A <nav> element already has role='navigation' implicitly — adding role='navigation' is redundant."
+      ],
+      "interviewTips": [
+        "Be able to explain the difference between aria-label, aria-labelledby, and aria-describedby with examples.",
+        "Know the first rule of ARIA and explain why native HTML elements are always preferred over ARIA-enhanced divs."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "aria-labels-and-roles-ex1",
+        "title": "Add ARIA to an Icon Button Bar",
+        "description": "The following toolbar has icon-only buttons with no accessible names. Add appropriate ARIA attributes so screen readers can identify each button's purpose.",
+        "starterCode": "<!-- Add ARIA attributes to make these icon buttons accessible -->\n<div>\n  <button><svg><!-- edit icon --></svg></button>\n  <button><svg><!-- delete icon --></svg></button>\n  <button><svg><!-- share icon --></svg></button>\n  <button><svg><!-- bookmark icon --></svg></button>\n</div>\n",
+        "solution": "<div role=\"toolbar\" aria-label=\"Post actions\">\n  <button aria-label=\"Edit post\"><svg><!-- edit icon --></svg></button>\n  <button aria-label=\"Delete post\"><svg><!-- delete icon --></svg></button>\n  <button aria-label=\"Share post\"><svg><!-- share icon --></svg></button>\n  <button aria-label=\"Bookmark post\"><svg><!-- bookmark icon --></svg></button>\n</div>",
+        "hints": [
+          "Icon-only buttons need aria-label to provide a text alternative",
+          "A group of related buttons can be wrapped in a role='toolbar' container",
+          "Make labels specific: 'Delete post' is better than just 'Delete'"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "aria-labels-and-roles-ex2",
+        "title": "Build an Accessible Notification System",
+        "description": "Create a notification area that announces success messages politely and error messages assertively. Include a status counter that updates as notifications arrive.",
+        "starterCode": "<!-- Create two live regions: one for success, one for errors -->\n<!-- Add a status counter that announces the total -->\n\n<div id=\"notification-area\">\n  <!-- Success messages here -->\n  <!-- Error messages here -->\n</div>\n\n<div id=\"notification-count\">\n  <!-- Show count like: \"3 unread notifications\" -->\n</div>\n",
+        "solution": "<div id=\"notification-area\">\n  <div aria-live=\"polite\" id=\"success-messages\">\n    <p>Your profile has been updated successfully.</p>\n  </div>\n\n  <div aria-live=\"assertive\" id=\"error-messages\">\n    <p role=\"alert\">Failed to save changes. Please try again.</p>\n  </div>\n</div>\n\n<div role=\"status\" id=\"notification-count\">\n  3 unread notifications\n</div>",
+        "hints": [
+          "Use aria-live='polite' for success messages so they do not interrupt the user",
+          "Use aria-live='assertive' or role='alert' for errors that need immediate attention",
+          "role='status' is ideal for counters and non-critical status updates"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "keyboard-navigation",
+    "sectionId": "accessibility",
+    "orderIndex": 2,
+    "title": "Keyboard Navigation",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Tab Order", "tabindex", "Keyboard Traps", "Skip Links", "Focus Indicators"],
+    "content": {
+      "explanation": "Keyboard accessibility is one of the most critical aspects of web accessibility. Many users cannot use a mouse — people with motor disabilities, power users, screen reader users, and anyone with a temporary injury all rely on keyboard navigation. WCAG 2.1.1 (Level A) requires that all functionality be available from a keyboard, and 2.1.2 (Level A) prohibits keyboard traps where a user cannot move focus away from a component using standard keystrokes.\n\nThe natural tab order of a page follows the DOM order. Interactive elements like links, buttons, and form inputs are focusable by default and appear in the tab order automatically. Pressing Tab moves focus forward, Shift+Tab moves backward, Enter activates links and buttons, and Space activates buttons and checkboxes. This built-in behavior is why using semantic HTML is so important — a <button> gets keyboard interaction for free, while a <div> styled as a button requires manual keyboard handling.\n\nThe tabindex attribute controls whether an element is focusable and its position in the tab sequence. A tabindex of 0 adds an element to the natural tab order based on its DOM position — use this when you need custom elements to be focusable. A tabindex of -1 makes an element programmatically focusable (via JavaScript's element.focus()) but removes it from the tab order — useful for elements that should only receive focus through scripts, like inactive tabs or off-screen content. Positive tabindex values (1, 2, 3...) force elements to the front of the tab order, but this is almost universally considered an anti-pattern because it creates a confusing and unpredictable navigation experience.\n\nA keyboard trap occurs when a user can Tab into a component but cannot Tab out of it using normal keyboard interactions. This is a critical accessibility failure. The one exception is modal dialogs, where focus should be intentionally trapped within the dialog while it is open — but even then, pressing Escape must close the dialog and restore focus to the triggering element. Common causes of accidental keyboard traps include embedded third-party widgets, autoplay media players, and custom dropdown menus that capture keyboard events.\n\nSkip links are hidden navigation links that become visible on focus and allow keyboard users to bypass repetitive content blocks like headers and navigation menus. WCAG 2.4.1 (Level A) requires a mechanism to skip repeated content. A typical implementation is an anchor link at the very beginning of the page that jumps to the main content area. The link is visually hidden off-screen by default and slides into view when it receives focus, so it does not affect the visual layout for mouse users.",
+      "codeExamples": [
+        {
+          "title": "Understanding tabindex Values",
+          "code": "<!-- tabindex=\"0\": Added to natural tab order (DOM position) -->\n<div tabindex=\"0\" role=\"button\" onclick=\"handleClick()\">\n  Custom Button\n</div>\n\n<!-- tabindex=\"-1\": Focusable via JS only, not in tab order -->\n<div id=\"modal-content\" tabindex=\"-1\">\n  This panel can receive focus programmatically.\n</div>\n\n<!-- Positive tabindex: AVOID THIS (anti-pattern) -->\n<!-- These would be focused in order 1, 2, 3 before any\n     natural tab order elements -->\n<input tabindex=\"3\" placeholder=\"Focused third\" />\n<input tabindex=\"1\" placeholder=\"Focused first\" />\n<input tabindex=\"2\" placeholder=\"Focused second\" />\n\n<!-- Good practice: Let DOM order determine tab order -->\n<input placeholder=\"Focused first (naturally)\" />\n<input placeholder=\"Focused second (naturally)\" />\n<input placeholder=\"Focused third (naturally)\" />",
+          "explanation": "tabindex='0' makes custom elements keyboard-accessible in the natural flow. tabindex='-1' enables programmatic focus for scripted interactions. Never use positive tabindex values as they break the natural and expected tab order."
+        },
+        {
+          "title": "Implementing a Skip Link",
+          "code": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <style>\n    .skip-link {\n      position: absolute;\n      top: -100%;\n      left: 16px;\n      padding: 12px 24px;\n      background-color: #1a1a2e;\n      color: #ffffff;\n      font-size: 16px;\n      font-weight: 600;\n      text-decoration: none;\n      z-index: 9999;\n      transition: top 0.2s ease;\n    }\n\n    .skip-link:focus {\n      top: 16px;\n    }\n  </style>\n</head>\n<body>\n  <!-- Skip link must be the first focusable element -->\n  <a href=\"#main\" class=\"skip-link\">Skip to main content</a>\n\n  <header>\n    <nav>\n      <a href=\"/\">Home</a>\n      <a href=\"/products\">Products</a>\n      <a href=\"/about\">About</a>\n      <a href=\"/contact\">Contact</a>\n    </nav>\n  </header>\n\n  <main id=\"main\" tabindex=\"-1\">\n    <h1>Welcome to Our Site</h1>\n    <p>Main content starts here.</p>\n  </main>\n</body>\n</html>",
+          "explanation": "The skip link is visually hidden off-screen but appears when it receives keyboard focus. The main element has tabindex='-1' so it can receive programmatic focus when the skip link is activated. This is the first focusable element in the DOM."
+        },
+        {
+          "title": "Keyboard Event Handling for Custom Widgets",
+          "code": "<!-- Making a custom dropdown keyboard accessible -->\n<div class=\"dropdown\">\n  <button\n    id=\"menu-button\"\n    aria-haspopup=\"true\"\n    aria-expanded=\"false\"\n    aria-controls=\"menu-list\"\n  >\n    Options\n  </button>\n\n  <ul id=\"menu-list\" role=\"menu\" hidden>\n    <li role=\"menuitem\" tabindex=\"-1\">Edit</li>\n    <li role=\"menuitem\" tabindex=\"-1\">Duplicate</li>\n    <li role=\"menuitem\" tabindex=\"-1\">Delete</li>\n  </ul>\n</div>\n\n<script>\nconst button = document.getElementById('menu-button');\nconst menu = document.getElementById('menu-list');\nconst items = menu.querySelectorAll('[role=\"menuitem\"]');\n\nbutton.addEventListener('keydown', (e) => {\n  if (e.key === 'ArrowDown' || e.key === 'Enter' || e.key === ' ') {\n    e.preventDefault();\n    openMenu();\n    items[0].focus();\n  }\n});\n\nmenu.addEventListener('keydown', (e) => {\n  const current = document.activeElement;\n  const index = Array.from(items).indexOf(current);\n\n  switch (e.key) {\n    case 'ArrowDown':\n      e.preventDefault();\n      items[(index + 1) % items.length].focus();\n      break;\n    case 'ArrowUp':\n      e.preventDefault();\n      items[(index - 1 + items.length) % items.length].focus();\n      break;\n    case 'Escape':\n      closeMenu();\n      button.focus();\n      break;\n  }\n});\n\nfunction openMenu() {\n  menu.hidden = false;\n  button.setAttribute('aria-expanded', 'true');\n}\n\nfunction closeMenu() {\n  menu.hidden = true;\n  button.setAttribute('aria-expanded', 'false');\n}\n</script>",
+          "explanation": "Custom dropdown menus need keyboard support: Enter/Space/ArrowDown to open, ArrowUp/ArrowDown to navigate items, Escape to close and return focus to the trigger. Menu items use tabindex='-1' so they are focusable via script but not in the main tab order."
+        }
+      ],
+      "notes": [
+        "Always test keyboard navigation by unplugging your mouse and trying to complete all tasks on your page using only Tab, Shift+Tab, Enter, Space, Arrow keys, and Escape.",
+        "The visible focus indicator is required by WCAG 2.4.7 (Level AA). Never use outline: none without providing an alternative focus style.",
+        "DOM order should match visual order. CSS layout techniques like flexbox order or grid placement can create a disconnect between visual and tab order, confusing keyboard users."
+      ],
+      "commonPitfalls": [
+        "Using positive tabindex values to control focus order. This creates an unpredictable experience and becomes impossible to maintain as the page grows. Always use DOM order to control tab sequence.",
+        "Removing the default focus outline with CSS (outline: none) without providing an alternative visible focus indicator, making it impossible for keyboard users to see where they are on the page.",
+        "Creating keyboard traps in modals or custom widgets where users cannot Tab or Escape out of the component."
+      ],
+      "interviewTips": [
+        "Explain the three tabindex values (positive, 0, -1) and when each is appropriate — and why positive values should be avoided.",
+        "Describe how you would implement a skip link and why it matters for keyboard users who would otherwise have to tab through dozens of navigation items on every page load."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "keyboard-navigation-ex1",
+        "title": "Make a Custom Card Keyboard Accessible",
+        "description": "The card below is clickable but not keyboard accessible. Make it focusable, add keyboard activation, and ensure it has a visible focus style.",
+        "starterCode": "<!-- Make this card keyboard accessible -->\n<div class=\"card\" onclick=\"window.location='/article/1'\">\n  <h3>Article Title</h3>\n  <p>Article preview text goes here...</p>\n  <span>Read more</span>\n</div>\n\n<style>\n  .card {\n    padding: 16px;\n    border: 1px solid #ddd;\n    border-radius: 8px;\n    cursor: pointer;\n  }\n</style>\n",
+        "solution": "<div\n  class=\"card\"\n  role=\"link\"\n  tabindex=\"0\"\n  onclick=\"window.location='/article/1'\"\n  onkeydown=\"if(event.key==='Enter') window.location='/article/1'\"\n  aria-label=\"Read Article Title\"\n>\n  <h3>Article Title</h3>\n  <p>Article preview text goes here...</p>\n  <span aria-hidden=\"true\">Read more</span>\n</div>\n\n<style>\n  .card {\n    padding: 16px;\n    border: 1px solid #ddd;\n    border-radius: 8px;\n    cursor: pointer;\n  }\n  .card:focus {\n    outline: 2px solid #005fcc;\n    outline-offset: 2px;\n  }\n</style>",
+        "hints": [
+          "Add tabindex='0' to make the card focusable in the natural tab order",
+          "Add an onkeydown handler that responds to the Enter key",
+          "Add a visible focus style using :focus with outline"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "keyboard-navigation-ex2",
+        "title": "Implement a Skip Navigation Link",
+        "description": "Add a skip navigation link that is visually hidden by default but becomes visible when focused. It should link to the main content area.",
+        "starterCode": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <style>\n    /* Add skip link styles here */\n  </style>\n</head>\n<body>\n  <!-- Add skip link here -->\n\n  <header>\n    <nav>\n      <a href=\"/\">Home</a>\n      <a href=\"/about\">About</a>\n      <a href=\"/services\">Services</a>\n      <a href=\"/blog\">Blog</a>\n      <a href=\"/contact\">Contact</a>\n    </nav>\n  </header>\n\n  <main>\n    <h1>Page Content</h1>\n    <p>The main content of the page.</p>\n  </main>\n</body>\n</html>\n",
+        "solution": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <style>\n    .skip-nav {\n      position: absolute;\n      top: -100%;\n      left: 16px;\n      padding: 12px 24px;\n      background: #1a1a2e;\n      color: #ffffff;\n      font-weight: 600;\n      text-decoration: none;\n      z-index: 9999;\n    }\n    .skip-nav:focus {\n      top: 16px;\n    }\n  </style>\n</head>\n<body>\n  <a href=\"#main-content\" class=\"skip-nav\">Skip to main content</a>\n\n  <header>\n    <nav>\n      <a href=\"/\">Home</a>\n      <a href=\"/about\">About</a>\n      <a href=\"/services\">Services</a>\n      <a href=\"/blog\">Blog</a>\n      <a href=\"/contact\">Contact</a>\n    </nav>\n  </header>\n\n  <main id=\"main-content\" tabindex=\"-1\">\n    <h1>Page Content</h1>\n    <p>The main content of the page.</p>\n  </main>\n</body>\n</html>",
+        "hints": [
+          "Position the link off-screen by default using position: absolute and a negative top value",
+          "Move it into view on :focus so keyboard users can see it",
+          "Add an id to the main element and tabindex='-1' so it can receive focus"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "focus-management",
+    "sectionId": "accessibility",
+    "orderIndex": 3,
+    "title": "Focus Management",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": [":focus-visible", "Focus Trapping", "Focus Restoration", "Modal Focus", "Programmatic Focus"],
+    "content": {
+      "explanation": "Focus management is the practice of controlling which element has keyboard focus at any given time and ensuring that focus moves logically and predictably as users interact with your page. Poor focus management is one of the most common accessibility failures in modern web applications, particularly those with dynamic content, modals, tooltips, and single-page navigation.\n\nThe :focus-visible pseudo-class is a modern CSS feature that applies focus styles only when the browser determines the user is navigating with a keyboard (or another non-pointer device). Unlike :focus, which triggers on every focus event including mouse clicks, :focus-visible intelligently distinguishes between mouse-initiated focus (where outlines feel unnecessary) and keyboard-initiated focus (where outlines are essential). This solves the longstanding tension between designers who want to remove focus outlines and accessibility requirements that mandate visible focus indicators.\n\nFocus trapping is the technique of constraining Tab and Shift+Tab to cycle only through the focusable elements within a specific container, such as a modal dialog. When a modal opens, focus should move to the first focusable element inside it (or the dialog container itself). While the modal is open, pressing Tab at the last focusable element should wrap to the first, and Shift+Tab at the first should wrap to the last. The user must be able to close the modal with the Escape key at any time. Modern HTML provides the <dialog> element with built-in focus trapping via the showModal() method.\n\nFocus restoration is equally important: when a modal, dropdown, or transient UI component closes, focus must return to the element that triggered it. Without this, keyboard users lose their place on the page and have to Tab from the beginning to find where they were. The pattern involves storing a reference to document.activeElement before opening the component, and calling .focus() on that stored reference when the component closes.\n\nIn single-page applications, route changes create a unique focus challenge. When a user navigates to a new \"page\" that is actually dynamically rendered content, focus typically stays on the link or button they clicked — meaning new content loads below or around them without any indication. The solution is to programmatically move focus to the new page's heading or main content area after the route transition. This mimics the natural behavior of a full page load, where the browser resets focus to the top of the document.",
+      "codeExamples": [
+        {
+          "title": ":focus vs :focus-visible",
+          "code": "<style>\n  /* :focus applies on ALL focus events (mouse + keyboard) */\n  .button-focus:focus {\n    outline: 3px solid blue;\n  }\n\n  /* :focus-visible applies only on keyboard navigation */\n  .button-visible:focus-visible {\n    outline: 3px solid blue;\n    outline-offset: 2px;\n  }\n\n  /* Common pattern: Remove default, add :focus-visible */\n  .modern-button:focus {\n    outline: none; /* Remove default for mouse clicks */\n  }\n  .modern-button:focus-visible {\n    outline: 2px solid #005fcc;\n    outline-offset: 2px;\n    border-radius: 4px;\n  }\n\n  /* Global focus-visible styles for all interactive elements */\n  :focus-visible {\n    outline: 2px solid #005fcc;\n    outline-offset: 2px;\n  }\n</style>\n\n<button class=\"button-focus\">Always shows outline</button>\n<button class=\"button-visible\">Outline only on keyboard</button>\n<button class=\"modern-button\">Modern approach</button>",
+          "explanation": ":focus-visible lets you provide visible focus indicators for keyboard users without showing outlines on mouse clicks. This is now supported in all modern browsers and is the recommended approach for focus styling."
+        },
+        {
+          "title": "Focus Trapping in a Modal Dialog",
+          "code": "<!-- Using native <dialog> with built-in focus trapping -->\n<button id=\"open-btn\">Open Settings</button>\n\n<dialog id=\"settings-dialog\" aria-labelledby=\"dialog-title\">\n  <h2 id=\"dialog-title\">Settings</h2>\n\n  <label for=\"theme\">Theme</label>\n  <select id=\"theme\">\n    <option>Light</option>\n    <option>Dark</option>\n  </select>\n\n  <label for=\"font-size\">Font Size</label>\n  <input id=\"font-size\" type=\"number\" value=\"16\" />\n\n  <div>\n    <button id=\"save-btn\">Save</button>\n    <button id=\"cancel-btn\">Cancel</button>\n  </div>\n</dialog>\n\n<script>\nconst openBtn = document.getElementById('open-btn');\nconst dialog = document.getElementById('settings-dialog');\nconst cancelBtn = document.getElementById('cancel-btn');\nconst saveBtn = document.getElementById('save-btn');\n\n// showModal() provides built-in focus trapping and backdrop\nopenBtn.addEventListener('click', () => {\n  dialog.showModal(); // Focus moves into dialog automatically\n});\n\n// Close and restore focus to trigger\ncancelBtn.addEventListener('click', () => {\n  dialog.close();\n  openBtn.focus(); // Restore focus\n});\n\nsaveBtn.addEventListener('click', () => {\n  // Save settings logic...\n  dialog.close();\n  openBtn.focus(); // Restore focus\n});\n\n// Handle Escape key (built-in with <dialog>)\ndialog.addEventListener('close', () => {\n  openBtn.focus(); // Restore focus on any close\n});\n</script>",
+          "explanation": "The native <dialog> element with showModal() provides built-in focus trapping — Tab cycles within the dialog, a backdrop prevents interaction with the page behind it, and Escape closes it. Always restore focus to the triggering element on close."
+        },
+        {
+          "title": "Manual Focus Trap for Custom Modals",
+          "code": "<div id=\"custom-modal\" role=\"dialog\" aria-modal=\"true\" aria-labelledby=\"modal-heading\">\n  <h2 id=\"modal-heading\">Confirm Action</h2>\n  <p>Are you sure you want to delete this item?</p>\n  <button id=\"confirm\">Delete</button>\n  <button id=\"cancel\">Cancel</button>\n</div>\n\n<script>\nfunction trapFocus(element) {\n  const focusableSelectors = [\n    'a[href]', 'button:not([disabled])',\n    'input:not([disabled])', 'select:not([disabled])',\n    'textarea:not([disabled])', '[tabindex]:not([tabindex=\"-1\"])'\n  ].join(', ');\n\n  const focusable = element.querySelectorAll(focusableSelectors);\n  const firstFocusable = focusable[0];\n  const lastFocusable = focusable[focusable.length - 1];\n\n  element.addEventListener('keydown', (e) => {\n    if (e.key !== 'Tab') return;\n\n    if (e.shiftKey) {\n      // Shift+Tab: wrap from first to last\n      if (document.activeElement === firstFocusable) {\n        e.preventDefault();\n        lastFocusable.focus();\n      }\n    } else {\n      // Tab: wrap from last to first\n      if (document.activeElement === lastFocusable) {\n        e.preventDefault();\n        firstFocusable.focus();\n      }\n    }\n  });\n\n  // Focus the first element\n  firstFocusable.focus();\n}\n\n// Usage\nconst modal = document.getElementById('custom-modal');\ntrapFocus(modal);\n</script>",
+          "explanation": "When you cannot use <dialog>, implement focus trapping manually. Query all focusable elements, intercept Tab and Shift+Tab at the boundaries, and wrap focus to create a cycle. Remember to also handle Escape to close the modal."
+        },
+        {
+          "title": "Focus Management in SPA Route Changes",
+          "code": "<!-- Pattern for focus management on route change -->\n<nav>\n  <a href=\"/home\" data-route>Home</a>\n  <a href=\"/about\" data-route>About</a>\n  <a href=\"/contact\" data-route>Contact</a>\n</nav>\n\n<main id=\"app-main\">\n  <h1 id=\"page-title\" tabindex=\"-1\">About Us</h1>\n  <p>Content loads dynamically here...</p>\n</main>\n\n<script>\n// After route change and new content renders:\nfunction onRouteChange() {\n  // Wait for DOM update\n  requestAnimationFrame(() => {\n    const heading = document.getElementById('page-title');\n    if (heading) {\n      heading.focus(); // Move focus to new page heading\n    }\n\n    // Also update document title for screen readers\n    document.title = `About Us - My App`;\n  });\n}\n\n// Announce route change to screen readers\nfunction announceNavigation(pageName) {\n  const announcer = document.getElementById('route-announcer');\n  announcer.textContent = `Navigated to ${pageName}`;\n}\n</script>\n\n<!-- Hidden live region for route announcements -->\n<div\n  id=\"route-announcer\"\n  role=\"status\"\n  aria-live=\"polite\"\n  style=\"position: absolute; width: 1px; height: 1px; overflow: hidden;\"\n></div>",
+          "explanation": "In SPAs, move focus to the main heading after route transitions so keyboard and screen reader users know the page changed. The heading needs tabindex='-1' to receive programmatic focus. A live region can also announce the navigation for screen readers."
+        }
+      ],
+      "notes": [
+        ":focus-visible is supported in all modern browsers (Chrome 86+, Firefox 85+, Safari 15.4+). It is the standard way to provide keyboard-only focus indicators.",
+        "The native <dialog> element with showModal() is the preferred way to create accessible modals. It handles focus trapping, backdrop, Escape key, and inert background automatically.",
+        "Always store document.activeElement before opening a modal or tooltip so you can restore focus when it closes."
+      ],
+      "commonPitfalls": [
+        "Forgetting to restore focus when a modal or dropdown closes. The user's focus disappears and they must Tab from the beginning of the page to find their place.",
+        "Using :focus instead of :focus-visible and then removing the outline for aesthetic reasons, effectively removing focus indicators for keyboard users too.",
+        "Not managing focus after dynamic content changes in SPAs. When new content loads, keyboard focus stays on the clicked link rather than moving to the new content."
+      ],
+      "interviewTips": [
+        "Explain how you would implement focus trapping in a modal dialog, covering Tab wrapping, Escape to close, and focus restoration.",
+        "Describe the difference between :focus and :focus-visible and why :focus-visible is preferred in modern applications."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "focus-management-ex1",
+        "title": "Focus-Visible Styling",
+        "description": "Apply focus styles that only appear during keyboard navigation. Style buttons with a blue outline and links with an underline and color change, both only on :focus-visible.",
+        "starterCode": "<style>\n  /* Add focus-visible styles for buttons and links */\n</style>\n\n<nav>\n  <a href=\"/home\">Home</a>\n  <a href=\"/about\">About</a>\n</nav>\n<main>\n  <button>Save</button>\n  <button>Cancel</button>\n</main>\n",
+        "solution": "<style>\n  a:focus-visible {\n    outline: none;\n    color: #005fcc;\n    text-decoration: underline;\n    text-underline-offset: 4px;\n  }\n\n  button:focus-visible {\n    outline: 2px solid #005fcc;\n    outline-offset: 3px;\n    border-radius: 4px;\n  }\n</style>\n\n<nav>\n  <a href=\"/home\">Home</a>\n  <a href=\"/about\">About</a>\n</nav>\n<main>\n  <button>Save</button>\n  <button>Cancel</button>\n</main>",
+        "hints": [
+          "Use the :focus-visible pseudo-class instead of :focus",
+          "outline-offset adds space between the element and its outline",
+          "Links can use text-decoration changes as an alternative or supplement to outlines"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "focus-management-ex2",
+        "title": "Accessible Modal with Focus Trap",
+        "description": "Create a confirmation dialog using the <dialog> element. When opened, focus should move into the dialog. When closed (via confirm or cancel), focus should return to the button that opened it.",
+        "starterCode": "<!-- Create an accessible modal dialog -->\n<button id=\"delete-btn\">Delete Item</button>\n\n<!-- Add dialog element here -->\n\n<script>\n  // Add open, close, and focus management logic\n</script>\n",
+        "solution": "<button id=\"delete-btn\">Delete Item</button>\n\n<dialog id=\"confirm-dialog\" aria-labelledby=\"confirm-title\">\n  <h2 id=\"confirm-title\">Confirm Deletion</h2>\n  <p>This action cannot be undone. Are you sure?</p>\n  <div>\n    <button id=\"yes-btn\">Yes, Delete</button>\n    <button id=\"no-btn\">Cancel</button>\n  </div>\n</dialog>\n\n<script>\nconst deleteBtn = document.getElementById('delete-btn');\nconst dialog = document.getElementById('confirm-dialog');\nconst yesBtn = document.getElementById('yes-btn');\nconst noBtn = document.getElementById('no-btn');\n\ndeleteBtn.addEventListener('click', () => {\n  dialog.showModal();\n});\n\nyesBtn.addEventListener('click', () => {\n  dialog.close('confirm');\n});\n\nnoBtn.addEventListener('click', () => {\n  dialog.close('cancel');\n});\n\ndialog.addEventListener('close', () => {\n  deleteBtn.focus();\n});\n</script>",
+        "hints": [
+          "Use <dialog> with showModal() for built-in focus trapping",
+          "Listen for the 'close' event on the dialog to restore focus",
+          "dialog.close() can accept a return value to indicate which button was pressed"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "screen-reader-best-practices",
+    "sectionId": "accessibility",
+    "orderIndex": 4,
+    "title": "Screen Reader Best Practices",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Screen Reader Only Text", "Alt Text", "Live Regions", "Testing", "Semantic HTML"],
+    "content": {
+      "explanation": "Screen readers are assistive technologies that convert on-screen content into synthesized speech or braille output. They are used by people who are blind, have low vision, or have cognitive disabilities. Major screen readers include JAWS and NVDA on Windows, VoiceOver on macOS and iOS, and TalkBack on Android. Understanding how screen readers interpret your HTML is fundamental to building truly accessible web experiences.\n\nScreen reader only (sr-only) text is content that is visually hidden from sighted users but remains accessible to screen readers. This is used when visual context makes something obvious to sighted users but that context is not available through the accessibility tree. The standard CSS pattern for sr-only text uses a combination of position: absolute, width/height of 1px, overflow: hidden, and clip to make the element invisible while keeping it in the accessibility tree. Never use display: none or visibility: hidden for this purpose, as those properties remove content from the accessibility tree entirely.\n\nAlt text for images is one of the most impactful accessibility practices. Every informative image must have descriptive alt text that conveys the same information the image provides visually. Decorative images should have an empty alt attribute (alt=\"\") so screen readers skip them. Complex images like charts or infographics need either a lengthy alt text or a nearby text description linked via aria-describedby. Avoid generic alt text like \"image\" or \"photo\" — describe what the image actually shows and why it matters in context.\n\nLive regions are essential for dynamic content that changes after the initial page load. When search results update, a toast notification appears, a chat message arrives, or a countdown timer ticks, screen readers will not automatically announce these changes unless the containing element has appropriate aria-live attributes. The two main values are polite (announced when the user finishes their current activity) and assertive (interrupts immediately). Use aria-atomic=\"true\" when you want the entire region content re-announced on any change, and aria-relevant to specify what types of changes to announce (additions, removals, text, or all).\n\nTesting with screen readers is irreplaceable. While automated tools can catch structural issues like missing alt text or invalid ARIA, they cannot evaluate whether the user experience is actually coherent and usable. A screen reader test involves navigating the page using only keyboard shortcuts: reading by headings (H key in NVDA/JAWS), landmarks (D key), links (K key), and form fields (F key). Listen to how your content is read aloud — does the heading structure make sense? Are form labels clear? Do dynamic updates get announced? Testing with at least one screen reader should be part of every accessibility review.",
+      "codeExamples": [
+        {
+          "title": "Screen Reader Only (sr-only) Text Pattern",
+          "code": "<style>\n  .sr-only {\n    position: absolute;\n    width: 1px;\n    height: 1px;\n    padding: 0;\n    margin: -1px;\n    overflow: hidden;\n    clip: rect(0, 0, 0, 0);\n    white-space: nowrap;\n    border-width: 0;\n  }\n</style>\n\n<!-- Icon button with sr-only label -->\n<button>\n  <svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><!-- trash icon --></svg>\n  <span class=\"sr-only\">Delete item</span>\n</button>\n\n<!-- Badge with sr-only context -->\n<a href=\"/notifications\">\n  <svg aria-hidden=\"true\" viewBox=\"0 0 24 24\"><!-- bell icon --></svg>\n  <span class=\"badge\">5</span>\n  <span class=\"sr-only\">5 unread notifications</span>\n</a>\n\n<!-- Table column with visual abbreviation -->\n<th>\n  Qty\n  <span class=\"sr-only\"> (Quantity)</span>\n</th>",
+          "explanation": "The sr-only class hides text visually while keeping it accessible to screen readers. Use it for icon buttons, badges that need context, and abbreviated table headers. Mark decorative icons with aria-hidden='true' so screen readers skip them."
+        },
+        {
+          "title": "Writing Effective Alt Text",
+          "code": "<!-- Informative image: Describe what it conveys -->\n<img\n  src=\"team-photo.jpg\"\n  alt=\"The engineering team of 12 people standing in front of the office building, smiling\"\n/>\n\n<!-- Functional image: Describe the action -->\n<a href=\"/\">\n  <img src=\"logo.svg\" alt=\"Acme Corp - Go to homepage\" />\n</a>\n\n<!-- Decorative image: Empty alt -->\n<img src=\"decorative-wave.svg\" alt=\"\" />\n\n<!-- Complex image: Link to longer description -->\n<figure>\n  <img\n    src=\"sales-chart.png\"\n    alt=\"Quarterly sales chart showing steady growth\"\n    aria-describedby=\"chart-desc\"\n  />\n  <figcaption id=\"chart-desc\">\n    Sales increased from $2.1M in Q1 to $3.8M in Q4 2025,\n    with the largest jump of 40% occurring between Q2 and Q3.\n  </figcaption>\n</figure>\n\n<!-- Image in a link: Alt describes the destination -->\n<a href=\"/products/headphones\">\n  <img src=\"headphones.jpg\" alt=\"Wireless Noise-Cancelling Headphones - View product details\" />\n</a>",
+          "explanation": "Alt text should describe the purpose and content of the image in context. Functional images describe the action, decorative images use empty alt, and complex images need extended descriptions. Never start alt text with 'image of' or 'picture of' as screen readers already announce the image role."
+        },
+        {
+          "title": "Proper Semantic Structure for Screen Readers",
+          "code": "<!-- Screen readers navigate by headings, landmarks, and lists -->\n\n<!-- Good: Logical heading hierarchy -->\n<main>\n  <h1>Product Catalog</h1>\n\n  <section aria-labelledby=\"electronics-heading\">\n    <h2 id=\"electronics-heading\">Electronics</h2>\n\n    <article>\n      <h3>Wireless Headphones</h3>\n      <p>Premium sound quality with noise cancellation.</p>\n      <p><strong>$199.99</strong></p>\n    </article>\n\n    <article>\n      <h3>Bluetooth Speaker</h3>\n      <p>Portable speaker with 20-hour battery life.</p>\n      <p><strong>$89.99</strong></p>\n    </article>\n  </section>\n\n  <section aria-labelledby=\"books-heading\">\n    <h2 id=\"books-heading\">Books</h2>\n    <!-- More products -->\n  </section>\n</main>\n\n<!-- Bad: Headings used for styling, not structure -->\n<div>\n  <h3>Product Catalog</h3>  <!-- Should be h1 -->\n  <h1>Electronics</h1>      <!-- Should be h2 -->\n  <h5>Wireless Headphones</h5> <!-- Should be h3 -->\n</div>",
+          "explanation": "Screen readers let users navigate by headings (H1-H6). Headings must follow a logical hierarchy without skipping levels. Sections should be labeled with aria-labelledby. This structure lets screen reader users quickly scan the page like a table of contents."
+        },
+        {
+          "title": "Accessible Dynamic Content Updates",
+          "code": "<!-- Search with live result announcements -->\n<div role=\"search\">\n  <label for=\"search\">Search products</label>\n  <input\n    id=\"search\"\n    type=\"search\"\n    aria-describedby=\"search-count\"\n    aria-autocomplete=\"list\"\n    aria-controls=\"results-list\"\n  />\n</div>\n\n<!-- Polite announcement of result count -->\n<div id=\"search-count\" aria-live=\"polite\" aria-atomic=\"true\">\n  Showing 24 of 156 products\n</div>\n\n<ul id=\"results-list\">\n  <li>Product 1</li>\n  <li>Product 2</li>\n</ul>\n\n<!-- Toast notification system -->\n<div\n  id=\"toast-container\"\n  aria-live=\"polite\"\n  aria-relevant=\"additions\"\n  style=\"position: fixed; bottom: 16px; right: 16px;\"\n>\n  <!-- Toasts are appended here by JavaScript -->\n</div>\n\n<script>\nfunction showToast(message, type) {\n  const container = document.getElementById('toast-container');\n  const toast = document.createElement('div');\n  toast.setAttribute('role', type === 'error' ? 'alert' : 'status');\n  toast.textContent = message;\n  container.appendChild(toast);\n\n  setTimeout(() => toast.remove(), 5000);\n}\n\n// Usage:\nshowToast('Item added to cart', 'success');\nshowToast('Failed to save changes', 'error');\n</script>",
+          "explanation": "Dynamic updates need live regions so screen readers announce changes. Use aria-atomic='true' when the whole region should be re-read on any change. Toast notifications should use role='status' for info/success and role='alert' for errors."
+        }
+      ],
+      "notes": [
+        "Never use display: none or visibility: hidden to create screen reader only text. These CSS properties remove content from the accessibility tree. Use the sr-only clip pattern instead.",
+        "Screen readers announce elements in DOM order, not visual order. CSS reordering (flexbox order, grid placement) does not change the screen reader reading order.",
+        "Test with at least one screen reader: VoiceOver (free on Mac), NVDA (free on Windows), or TalkBack (free on Android). Automated tools miss the majority of usability issues."
+      ],
+      "commonPitfalls": [
+        "Writing alt text that says 'image of...' or 'photo of...' — screen readers already announce that an element is an image, so this creates redundant speech like 'image, image of a cat.'",
+        "Forgetting to hide decorative icons and images from screen readers with aria-hidden='true' or empty alt text, causing unnecessary noise.",
+        "Using heading levels based on desired visual size rather than document structure. Screen reader users rely on heading hierarchy to understand page organization."
+      ],
+      "interviewTips": [
+        "Describe how you would test a page with a screen reader: navigate by headings, check form labels, verify dynamic content announcements, and test keyboard flow.",
+        "Explain the difference between display: none, visibility: hidden, and the sr-only CSS pattern in terms of accessibility tree visibility."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "screen-reader-best-practices-ex1",
+        "title": "Add Screen Reader Context to an Icon Dashboard",
+        "description": "The dashboard below uses icon-only indicators with no text. Add sr-only text so screen reader users get the same information sighted users get from the icons and colors.",
+        "starterCode": "<!-- Add sr-only text to provide context for screen reader users -->\n<div class=\"dashboard\">\n  <div class=\"stat\">\n    <svg><!-- green checkmark icon --></svg>\n    <span class=\"number\">42</span>\n  </div>\n\n  <div class=\"stat\">\n    <svg><!-- red X icon --></svg>\n    <span class=\"number\">7</span>\n  </div>\n\n  <div class=\"stat\">\n    <svg><!-- yellow clock icon --></svg>\n    <span class=\"number\">15</span>\n  </div>\n</div>\n",
+        "solution": "<div class=\"dashboard\" role=\"region\" aria-label=\"Application Statistics\">\n  <div class=\"stat\">\n    <svg aria-hidden=\"true\"><!-- green checkmark icon --></svg>\n    <span class=\"number\">42</span>\n    <span class=\"sr-only\">approved applications</span>\n  </div>\n\n  <div class=\"stat\">\n    <svg aria-hidden=\"true\"><!-- red X icon --></svg>\n    <span class=\"number\">7</span>\n    <span class=\"sr-only\">rejected applications</span>\n  </div>\n\n  <div class=\"stat\">\n    <svg aria-hidden=\"true\"><!-- yellow clock icon --></svg>\n    <span class=\"number\">15</span>\n    <span class=\"sr-only\">pending applications</span>\n  </div>\n</div>",
+        "hints": [
+          "Hide decorative SVG icons with aria-hidden='true'",
+          "Add sr-only text after each number to describe what it represents",
+          "Consider adding an aria-label to the container to provide overall context"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "screen-reader-best-practices-ex2",
+        "title": "Create an Accessible Data Table",
+        "description": "Build an accessible data table with proper headers, caption, and scope attributes. Include sr-only text for any abbreviated content.",
+        "starterCode": "<!-- Create an accessible data table for employee data -->\n<!-- Columns: Name, Dept, Salary, Status -->\n<!-- Include at least 3 rows of data -->\n<table>\n  <!-- Add caption, headers with scope, and data rows -->\n</table>\n",
+        "solution": "<table>\n  <caption>Employee Directory - Engineering Department</caption>\n  <thead>\n    <tr>\n      <th scope=\"col\">Name</th>\n      <th scope=\"col\">\n        Dept\n        <span class=\"sr-only\"> (Department)</span>\n      </th>\n      <th scope=\"col\">Salary</th>\n      <th scope=\"col\">Status</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th scope=\"row\">Alice Johnson</th>\n      <td>Engineering</td>\n      <td>$120,000</td>\n      <td>\n        <span aria-hidden=\"true\">Active</span>\n        <span class=\"sr-only\">Employment status: Active</span>\n      </td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Bob Smith</th>\n      <td>Design</td>\n      <td>$105,000</td>\n      <td>\n        <span aria-hidden=\"true\">Active</span>\n        <span class=\"sr-only\">Employment status: Active</span>\n      </td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Carol Davis</th>\n      <td>Engineering</td>\n      <td>$115,000</td>\n      <td>\n        <span aria-hidden=\"true\">On Leave</span>\n        <span class=\"sr-only\">Employment status: On Leave</span>\n      </td>\n    </tr>\n  </tbody>\n</table>",
+        "hints": [
+          "Use <caption> to describe what the table contains",
+          "Add scope='col' to column headers and scope='row' to row headers",
+          "Use sr-only text to expand abbreviated column headers"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -124,7 +124,7 @@ export default function AptitudeCompaniesPage() {
     c.name.toLowerCase().includes(search.toLowerCase())
   );
 
-  const basePath = user ? "/student/aptitude" : "/aptitude";
+  const basePath = "/learn/aptitude";
 
   // ── Company questions view ──
   if (selectedCompany) {

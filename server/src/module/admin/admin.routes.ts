@@ -112,3 +112,10 @@ adminRouter.post("/skill-tests", (req, res, next) => adminController.createAdmin
 adminRouter.put("/skill-tests/:id", (req, res, next) => adminController.updateAdminSkillTest(req, res, next));
 adminRouter.delete("/skill-tests/:id", (req, res, next) => adminController.deleteAdminSkillTest(req, res, next));
 adminRouter.patch("/skill-tests/:id/toggle", (req, res, next) => adminController.toggleSkillTestActive(req, res, next));
+
+// Hackathon Management
+adminRouter.get("/hackathons", (req, res, next) => adminController.listHackathons(req, res, next));
+adminRouter.get("/hackathons/:id", (req, res, next) => adminController.getHackathon(req, res, next));
+adminRouter.post("/hackathons", (req, res, next) => adminController.createHackathon(req, res, next));
+adminRouter.put("/hackathons/:id", (req, res, next) => adminController.updateHackathon(req, res, next));
+adminRouter.delete("/hackathons/:id", (req, res, next) => adminController.deleteHackathon(req, res, next));

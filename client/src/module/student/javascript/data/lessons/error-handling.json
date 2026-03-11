@@ -1,0 +1,252 @@
+[
+  {
+    "id": "try-catch-finally",
+    "sectionId": "error-handling",
+    "orderIndex": 0,
+    "title": "try/catch/finally",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["try/catch", "finally", "error object", "nested try/catch", "rethrow", "async error handling"],
+    "content": {
+      "explanation": "Error handling is one of the most critical aspects of writing robust JavaScript applications. The try/catch/finally statement provides a structured way to handle runtime errors gracefully instead of letting them crash your program. When code inside a try block throws an error, execution immediately jumps to the catch block, where you can inspect the error and decide how to respond.\n\nThe basic syntax wraps potentially dangerous code in a try block and provides a catch block that receives the error object. The catch block's parameter gives you access to the error that was thrown, allowing you to log it, display a user-friendly message, or attempt recovery. Without try/catch, an unhandled error would propagate up the call stack and potentially terminate your application or leave it in an inconsistent state.\n\nThe finally block is a powerful addition that executes regardless of whether an error occurred. This makes it ideal for cleanup operations like closing database connections, releasing file handles, or hiding loading spinners. The finally block runs after both the try and catch blocks complete, and it runs even if either block contains a return statement. This guarantee makes finally indispensable for resource management.\n\nNested try/catch blocks allow you to handle errors at different granularity levels. An inner try/catch can handle specific errors while letting unexpected ones propagate to an outer handler. This pattern is common in complex operations where different steps might fail in different ways and require different recovery strategies.\n\nThe error object in JavaScript contains three standard properties: message (a human-readable description), name (the error type like 'TypeError' or 'RangeError'), and stack (a string showing the call stack at the point the error was created). The stack trace is invaluable for debugging because it shows exactly where the error originated and the chain of function calls that led to it.\n\nRethrowing errors is a technique where you catch an error, perform some action (like logging), and then throw it again so that a higher-level handler can deal with it. This is especially useful when you want to add context or perform side effects without fully handling the error. With async/await, try/catch becomes the primary way to handle rejected promises, replacing the .catch() chain pattern and making asynchronous error handling look synchronous.",
+      "codeExamples": [
+        {
+          "title": "Basic try/catch/finally",
+          "code": "function parseJSON(jsonString) {\n  try {\n    const data = JSON.parse(jsonString);\n    console.log('Parsed successfully:', data);\n    return data;\n  } catch (error) {\n    console.log('Error name:', error.name);\n    console.log('Error message:', error.message);\n    return null;\n  } finally {\n    console.log('Parse attempt completed');\n  }\n}\n\nparseJSON('{\"name\": \"Alice\"}');\nparseJSON('invalid json');",
+          "output": "Parsed successfully: { name: 'Alice' }\nParse attempt completed\nError name: SyntaxError\nError message: Unexpected token 'i', \"invalid json\" is not valid JSON\nParse attempt completed",
+          "explanation": "The first call parses valid JSON and returns the object. The second call fails, triggering the catch block which logs the error details. In both cases, the finally block runs, confirming the attempt completed."
+        },
+        {
+          "title": "Nested try/catch and rethrowing",
+          "code": "function processUser(data) {\n  try {\n    try {\n      const user = JSON.parse(data);\n      if (!user.name) {\n        throw new Error('Name is required');\n      }\n      console.log('User:', user.name);\n    } catch (innerError) {\n      console.log('Inner catch:', innerError.message);\n      throw innerError; // rethrow for outer handler\n    }\n  } catch (outerError) {\n    console.log('Outer catch:', outerError.message);\n    console.log('Stack preview:', outerError.stack.split('\\n')[0]);\n  }\n}\n\nprocessUser('{\"age\": 25}');\nconsole.log('---');\nprocessUser('bad data');",
+          "output": "Inner catch: Name is required\nOuter catch: Name is required\nStack preview: Error: Name is required\n---\nInner catch: Unexpected token 'b', \"bad data\" is not valid JSON\nOuter catch: Unexpected token 'b', \"bad data\" is not valid JSON",
+          "explanation": "The inner try/catch handles the immediate parsing/validation, logs the error, then rethrows so the outer handler can also process it. This layered approach allows different levels of error handling."
+        },
+        {
+          "title": "finally with return statements",
+          "code": "function riskyOperation() {\n  try {\n    console.log('Trying operation...');\n    throw new Error('Something went wrong');\n    return 'success'; // never reached\n  } catch (error) {\n    console.log('Caught:', error.message);\n    return 'recovered';\n  } finally {\n    console.log('Cleanup: closing resources');\n    // Note: a return here would override the catch return!\n  }\n}\n\nconst result = riskyOperation();\nconsole.log('Result:', result);",
+          "output": "Trying operation...\nCaught: Something went wrong\nCleanup: closing resources\nResult: recovered",
+          "explanation": "Even though the catch block returns 'recovered', the finally block still executes before the function actually returns. If finally also had a return, it would override the catch block's return value - a common pitfall."
+        },
+        {
+          "title": "try/catch with async/await",
+          "code": "async function fetchUserData(userId) {\n  try {\n    console.log('Fetching user', userId);\n    const response = await fetch(`https://api.example.com/users/${userId}`);\n    \n    if (!response.ok) {\n      throw new Error(`HTTP error! Status: ${response.status}`);\n    }\n    \n    const data = await response.json();\n    return data;\n  } catch (error) {\n    if (error.name === 'TypeError') {\n      console.log('Network error - check your connection');\n    } else {\n      console.log('Fetch failed:', error.message);\n    }\n    return null;\n  } finally {\n    console.log('Request completed for user', userId);\n  }\n}\n\n// Usage:\n// const user = await fetchUserData(42);\nconsole.log('try/catch works seamlessly with async/await');",
+          "output": "try/catch works seamlessly with async/await",
+          "explanation": "With async/await, try/catch handles rejected promises the same way it handles synchronous errors. The catch block can differentiate error types - network failures produce TypeErrors, while HTTP errors can be thrown manually with custom messages."
+        }
+      ],
+      "notes": [
+        "The finally block always executes, even if try or catch contains a return, throw, or break statement.",
+        "You can have try/finally without a catch block when you only need cleanup without error handling.",
+        "In modern JavaScript, the catch binding is optional: you can write catch { } without (error) if you don't need the error object (ES2019).",
+        "Errors thrown inside a catch block will NOT be caught by the same try/catch - they propagate to the next outer handler."
+      ],
+      "commonPitfalls": [
+        "Swallowing errors silently with an empty catch block - always at minimum log the error for debugging.",
+        "Putting a return statement in a finally block - it overrides returns from both try and catch, leading to confusing behavior.",
+        "Forgetting that try/catch only catches synchronous errors unless used with await - a rejected promise without await won't be caught.",
+        "Using try/catch around code that can't actually throw (like simple variable assignments) adds unnecessary overhead."
+      ],
+      "interviewTips": [
+        "Be prepared to explain the execution order of try/catch/finally, especially when return statements are in multiple blocks.",
+        "Know that finally runs before the function actually returns, even though the return value is already determined.",
+        "Understand that try/catch is synchronous by nature - for promises, you need either .catch() or await inside try/catch."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "try-catch-finally-ex1",
+        "title": "Safe JSON Parser",
+        "description": "Write a function `safeParseJSON` that takes a string, tries to parse it with `JSON.parse`, and returns the parsed object. If parsing fails, catch the error and return `null`. Use a `finally` block to log 'Parse attempted' every time. Test with a valid JSON string and an invalid one.",
+        "starterCode": "// Write function safeParseJSON(str) that:\n// 1. Tries to JSON.parse the string\n// 2. On success: returns the parsed object\n// 3. On failure: logs 'Parse error: <message>' and returns null\n// 4. Always logs 'Parse attempted' in finally\n\n// Your code here\n\n// Test with:\n// const result1 = safeParseJSON('{\"x\": 42}');\n// console.log('Result 1:', result1);\n// const result2 = safeParseJSON('not json');\n// console.log('Result 2:', result2);\n",
+        "solution": "function safeParseJSON(str) {\n  try {\n    const data = JSON.parse(str);\n    return data;\n  } catch (error) {\n    console.log('Parse error:', error.message);\n    return null;\n  } finally {\n    console.log('Parse attempted');\n  }\n}\n\nconst result1 = safeParseJSON('{\"x\": 42}');\nconsole.log('Result 1:', JSON.stringify(result1));\nconst result2 = safeParseJSON('not json');\nconsole.log('Result 2:', result2);",
+        "expectedOutput": "Parse attempted\nResult 1: {\"x\":42}\nParse error: Unexpected token 'o', \"not json\" is not valid JSON\nParse attempted\nResult 2: null",
+        "hints": [
+          "JSON.parse throws a SyntaxError when the input string is not valid JSON",
+          "The finally block runs regardless of whether try succeeded or catch was triggered"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "try-catch-finally-ex2",
+        "title": "Nested Error Handling with Rethrow",
+        "description": "Write a function `processValue` that takes a value. In an inner try/catch, check if the value is a number. If not, throw a TypeError with 'Expected a number'. If it is negative, throw a RangeError with 'Must be positive'. In the inner catch, log 'Inner: <error.name>' and rethrow. In the outer catch, log 'Outer: <error.message>'. If valid, log 'Value: <value>'.",
+        "starterCode": "// Write function processValue(val) with nested try/catch:\n// Inner try:\n//   - If typeof val !== 'number', throw TypeError('Expected a number')\n//   - If val < 0, throw RangeError('Must be positive')\n//   - Otherwise log 'Value: <val>'\n// Inner catch: log 'Inner: <error.name>' and rethrow\n// Outer catch: log 'Outer: <error.message>'\n\n// Your code here\n\n// Test with: processValue(10), processValue('hello'), processValue(-5)\n",
+        "solution": "function processValue(val) {\n  try {\n    try {\n      if (typeof val !== 'number') {\n        throw new TypeError('Expected a number');\n      }\n      if (val < 0) {\n        throw new RangeError('Must be positive');\n      }\n      console.log('Value:', val);\n    } catch (inner) {\n      console.log('Inner:', inner.name);\n      throw inner;\n    }\n  } catch (outer) {\n    console.log('Outer:', outer.message);\n  }\n}\n\nprocessValue(10);\nprocessValue('hello');\nprocessValue(-5);",
+        "expectedOutput": "Value: 10\nInner: TypeError\nOuter: Expected a number\nInner: RangeError\nOuter: Must be positive",
+        "hints": [
+          "Use typeof val !== 'number' to check the type, and throw new TypeError(...)",
+          "Rethrowing means catching the error, doing something, then using throw again to pass it up"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "custom-errors",
+    "sectionId": "error-handling",
+    "orderIndex": 1,
+    "title": "Custom Errors & Error Types",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["TypeError", "ReferenceError", "SyntaxError", "RangeError", "custom error classes", "instanceof", "error hierarchy"],
+    "content": {
+      "explanation": "JavaScript provides several built-in error types, each representing a specific category of problem. Understanding these types helps you diagnose issues faster and write more targeted error handling. The base Error class is the parent of all error types, and each subclass communicates a different kind of failure to both developers and error-handling code.\n\nTypeError is the most common error type in JavaScript. It occurs when a value is not of the expected type - for example, calling a non-function, accessing properties on null or undefined, or passing the wrong argument type to a built-in method. ReferenceError fires when you try to use a variable that hasn't been declared. SyntaxError typically appears at parse time when the JavaScript engine encounters malformed code, though it can also occur at runtime with functions like JSON.parse() or eval(). RangeError indicates a numeric value is outside its allowed range, like creating an array with a negative length or calling toFixed() with too many digits. URIError is rare and only occurs when URI handling functions like decodeURIComponent() receive malformed input.\n\nCreating custom error classes is essential for building maintainable applications. By extending the built-in Error class, you create domain-specific error types that make your error handling more precise and self-documenting. A custom error class can carry additional properties like HTTP status codes, error codes, or user-facing messages, making it easier for catch blocks to decide how to respond.\n\nThe key to a proper custom error class is calling super(message) in the constructor to set the message property, and setting the name property to match your class name. Without setting name, your error will show up as 'Error' in stack traces instead of your custom class name, making debugging harder. You should also ensure the prototype chain is correct so that instanceof checks work properly.\n\nBuilding an error hierarchy allows you to catch errors at different levels of specificity. For example, you might have a base AppError, with subclasses like ValidationError, AuthenticationError, and NotFoundError. A catch block can check for the most specific type first and fall back to broader types, providing appropriate responses at each level.\n\nThe instanceof operator is the standard way to check error types in catch blocks. It works with both built-in and custom error types and respects the inheritance chain, so catching a parent error type also catches all its subclasses. This makes hierarchical error handling clean and maintainable, and it's far more reliable than checking the error's name string property.",
+      "codeExamples": [
+        {
+          "title": "Built-in error types in action",
+          "code": "// TypeError - wrong type operation\ntry {\n  const num = null;\n  num.toString();\n} catch (e) {\n  console.log(`${e.name}: ${e.message}`);\n}\n\n// ReferenceError - undeclared variable\ntry {\n  console.log(undeclaredVar);\n} catch (e) {\n  console.log(`${e.name}: ${e.message}`);\n}\n\n// RangeError - value out of range\ntry {\n  const arr = new Array(-1);\n} catch (e) {\n  console.log(`${e.name}: ${e.message}`);\n}\n\n// URIError - malformed URI\ntry {\n  decodeURIComponent('%');\n} catch (e) {\n  console.log(`${e.name}: ${e.message}`);\n}",
+          "output": "TypeError: Cannot read properties of null (reading 'toString')\nReferenceError: undeclaredVar is not defined\nRangeError: Invalid array length\nURIError: URI malformed",
+          "explanation": "Each built-in error type signals a specific category of problem. Recognizing these types helps you understand what went wrong without even reading the message."
+        },
+        {
+          "title": "Creating custom error classes",
+          "code": "class AppError extends Error {\n  constructor(message, statusCode) {\n    super(message);\n    this.name = 'AppError';\n    this.statusCode = statusCode;\n    this.isOperational = true;\n  }\n}\n\nclass ValidationError extends AppError {\n  constructor(message, fields = []) {\n    super(message, 400);\n    this.name = 'ValidationError';\n    this.fields = fields;\n  }\n}\n\nclass NotFoundError extends AppError {\n  constructor(resource) {\n    super(`${resource} not found`, 404);\n    this.name = 'NotFoundError';\n    this.resource = resource;\n  }\n}\n\nclass AuthError extends AppError {\n  constructor(message = 'Authentication required') {\n    super(message, 401);\n    this.name = 'AuthError';\n  }\n}\n\n// Usage\nconst err = new ValidationError('Invalid input', ['email', 'password']);\nconsole.log(err.name);\nconsole.log(err.message);\nconsole.log(err.statusCode);\nconsole.log(err.fields);\nconsole.log(err instanceof ValidationError);\nconsole.log(err instanceof AppError);\nconsole.log(err instanceof Error);",
+          "output": "ValidationError\nInvalid input\n400\n[ 'email', 'password' ]\ntrue\ntrue\ntrue",
+          "explanation": "Custom errors extend the Error class and can carry domain-specific data. The inheritance chain works correctly - a ValidationError is also an AppError and an Error, making hierarchical catch blocks possible."
+        },
+        {
+          "title": "Error hierarchy in catch blocks",
+          "code": "class AppError extends Error {\n  constructor(message, code) {\n    super(message);\n    this.name = 'AppError';\n    this.code = code;\n  }\n}\n\nclass DatabaseError extends AppError {\n  constructor(message, query) {\n    super(message, 'DB_ERROR');\n    this.name = 'DatabaseError';\n    this.query = query;\n  }\n}\n\nclass ConnectionError extends DatabaseError {\n  constructor(host) {\n    super(`Cannot connect to ${host}`, null);\n    this.name = 'ConnectionError';\n    this.host = host;\n  }\n}\n\nfunction handleError(error) {\n  if (error instanceof ConnectionError) {\n    console.log(`Connection failed to ${error.host} - retrying...`);\n  } else if (error instanceof DatabaseError) {\n    console.log(`DB error on query: ${error.query}`);\n  } else if (error instanceof AppError) {\n    console.log(`App error [${error.code}]: ${error.message}`);\n  } else {\n    console.log(`Unknown error: ${error.message}`);\n  }\n}\n\nhandleError(new ConnectionError('db.example.com'));\nhandleError(new DatabaseError('Query failed', 'SELECT * FROM users'));\nhandleError(new AppError('Something broke', 'GENERIC'));\nhandleError(new Error('Random error'));",
+          "output": "Connection failed to db.example.com - retrying...\nDB error on query: SELECT * FROM users\nApp error [GENERIC]: Something broke\nUnknown error: Random error",
+          "explanation": "The instanceof checks go from most specific to most general. A ConnectionError matches the first check even though it's also a DatabaseError and AppError. Order matters - putting AppError first would catch everything."
+        },
+        {
+          "title": "Practical error handling pattern",
+          "code": "class ValidationError extends Error {\n  constructor(errors) {\n    super('Validation failed');\n    this.name = 'ValidationError';\n    this.errors = errors;\n  }\n}\n\nfunction validateUser(user) {\n  const errors = [];\n  \n  if (!user.name || user.name.trim().length < 2) {\n    errors.push({ field: 'name', message: 'Name must be at least 2 characters' });\n  }\n  if (!user.email || !user.email.includes('@')) {\n    errors.push({ field: 'email', message: 'Valid email is required' });\n  }\n  if (!user.age || user.age < 0 || user.age > 150) {\n    errors.push({ field: 'age', message: 'Age must be between 0 and 150' });\n  }\n  \n  if (errors.length > 0) {\n    throw new ValidationError(errors);\n  }\n  \n  return { valid: true, user };\n}\n\ntry {\n  validateUser({ name: 'A', email: 'bad', age: -5 });\n} catch (error) {\n  if (error instanceof ValidationError) {\n    console.log(error.message);\n    error.errors.forEach(e => {\n      console.log(`  ${e.field}: ${e.message}`);\n    });\n  }\n}",
+          "output": "Validation failed\n  name: Name must be at least 2 characters\n  email: Valid email is required\n  age: Age must be between 0 and 150",
+          "explanation": "This real-world pattern collects all validation errors before throwing a single ValidationError with structured error data. The catch block can then display field-specific messages to the user."
+        }
+      ],
+      "notes": [
+        "Always set the name property in custom error classes - it appears in stack traces and helps with debugging.",
+        "The instanceof operator respects the prototype chain, so a child error will match instanceof checks for all parent classes.",
+        "SyntaxError from eval() or JSON.parse() is the only SyntaxError you can catch at runtime - parser-level syntax errors halt execution before any code runs.",
+        "Custom errors can be serialized to JSON for API responses by adding a toJSON() method."
+      ],
+      "commonPitfalls": [
+        "Forgetting to call super(message) in the constructor - this leaves the message property empty and breaks the stack trace.",
+        "Checking error.name === 'TypeError' instead of using instanceof - name strings can be spoofed and don't respect inheritance.",
+        "Not setting the name property on custom errors - they'll show as 'Error' in stack traces instead of your custom name.",
+        "Ordering instanceof checks from general to specific - the first match wins, so a parent class check would catch all child errors."
+      ],
+      "interviewTips": [
+        "Know all six built-in error types and when each one occurs - this is a common JavaScript trivia question.",
+        "Be able to write a custom error class from scratch with proper inheritance and demonstrate instanceof checking.",
+        "Understand that Error.captureStackTrace (V8 only) can be used to exclude the constructor from the stack trace for cleaner output."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "custom-errors-ex1",
+        "title": "Create a Custom Error Class",
+        "description": "Create a `ValidationError` class that extends `Error`. It should accept a `message` and a `field` parameter. Set the `name` to 'ValidationError'. Then throw and catch it, logging the name, message, and field. Also verify it is an instance of both `ValidationError` and `Error`.",
+        "starterCode": "// Create class ValidationError extends Error\n// Constructor takes (message, field)\n// Sets this.name = 'ValidationError'\n// Sets this.field = field\n\n// Your code here\n\n// Test:\n// Throw new ValidationError('Invalid email', 'email') inside try\n// In catch: log name, message, field\n// Log whether it's instanceof ValidationError and instanceof Error\n",
+        "solution": "class ValidationError extends Error {\n  constructor(message, field) {\n    super(message);\n    this.name = 'ValidationError';\n    this.field = field;\n  }\n}\n\ntry {\n  throw new ValidationError('Invalid email', 'email');\n} catch (err) {\n  console.log('Name:', err.name);\n  console.log('Message:', err.message);\n  console.log('Field:', err.field);\n  console.log('Is ValidationError:', err instanceof ValidationError);\n  console.log('Is Error:', err instanceof Error);\n}",
+        "expectedOutput": "Name: ValidationError\nMessage: Invalid email\nField: email\nIs ValidationError: true\nIs Error: true",
+        "hints": [
+          "Call super(message) first in the constructor to set the message property",
+          "Set this.name to match your class name so stack traces show the correct error type"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "custom-errors-ex2",
+        "title": "Error Hierarchy with instanceof",
+        "description": "Build a small error hierarchy: `AppError` (base, with a `code` property), `NotFoundError` (extends AppError, sets code to 'NOT_FOUND'), and `AuthError` (extends AppError, sets code to 'UNAUTHORIZED'). Write a `handleError` function that uses instanceof to identify the error type and log a specific message for each. Test with all three error types.",
+        "starterCode": "// Create AppError extends Error (constructor takes message, code)\n// Create NotFoundError extends AppError (constructor takes resource name)\n//   message: '<resource> not found', code: 'NOT_FOUND'\n// Create AuthError extends AppError\n//   message: 'Authentication required', code: 'UNAUTHORIZED'\n\n// Write handleError(err) that checks instanceof:\n//   NotFoundError -> log 'Not found: <message>'\n//   AuthError -> log 'Auth error: <message>'\n//   AppError -> log 'App error [<code>]: <message>'\n\n// Test with all three\n\n// Your code here\n",
+        "solution": "class AppError extends Error {\n  constructor(message, code) {\n    super(message);\n    this.name = 'AppError';\n    this.code = code;\n  }\n}\n\nclass NotFoundError extends AppError {\n  constructor(resource) {\n    super(resource + ' not found', 'NOT_FOUND');\n    this.name = 'NotFoundError';\n  }\n}\n\nclass AuthError extends AppError {\n  constructor() {\n    super('Authentication required', 'UNAUTHORIZED');\n    this.name = 'AuthError';\n  }\n}\n\nfunction handleError(err) {\n  if (err instanceof NotFoundError) {\n    console.log('Not found:', err.message);\n  } else if (err instanceof AuthError) {\n    console.log('Auth error:', err.message);\n  } else if (err instanceof AppError) {\n    console.log('App error [' + err.code + ']:', err.message);\n  }\n}\n\nhandleError(new NotFoundError('User'));\nhandleError(new AuthError());\nhandleError(new AppError('Something broke', 'GENERIC'));",
+        "expectedOutput": "Not found: User not found\nAuth error: Authentication required\nApp error [GENERIC]: Something broke",
+        "hints": [
+          "Order instanceof checks from most specific to most general -- child classes first",
+          "NotFoundError and AuthError are subclasses of AppError, so they must be checked before AppError"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "debugging-techniques",
+    "sectionId": "error-handling",
+    "orderIndex": 2,
+    "title": "Debugging Techniques",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["console methods", "DevTools", "debugger statement", "breakpoints", "stack traces", "debugging strategies"],
+    "content": {
+      "explanation": "Debugging is the systematic process of finding and fixing errors in your code. While it might seem like an art, effective debugging follows predictable patterns and leverages powerful tools built into every modern browser. Mastering these techniques will dramatically reduce the time you spend hunting down bugs and make you a more productive developer.\n\nThe console object offers far more than just console.log(). The console.table() method displays arrays and objects in a clean tabular format, making it easy to compare data at a glance. console.group() and console.groupEnd() let you organize related log statements into collapsible sections, which is invaluable when debugging loops or recursive functions. console.time() and console.timeEnd() measure execution time with millisecond precision, helping you identify performance bottlenecks without external profiling tools.\n\nBrowser DevTools are the most powerful debugging environment available to JavaScript developers. The Sources panel lets you set breakpoints by clicking on line numbers, and execution pauses at those points so you can inspect every variable in scope. The Call Stack panel shows how you arrived at the current line, and the Scope panel displays all accessible variables organized by scope level. You can also set conditional breakpoints that only pause when a specific expression evaluates to true, which is essential for debugging issues that only occur with certain data.\n\nThe debugger statement is a programmatic breakpoint that you place directly in your code. When DevTools is open and execution reaches a debugger statement, the browser pauses just like it would at a manual breakpoint. This is particularly useful for debugging code that runs in callbacks, event handlers, or dynamically loaded scripts where setting breakpoints in the UI might be difficult. Remember to remove debugger statements before committing your code.\n\nStep-through debugging is the process of executing code one line at a time while observing state changes. DevTools provides four stepping controls: Step Over (execute the current line and move to the next), Step Into (enter the function being called), Step Out (finish the current function and return to the caller), and Resume (continue until the next breakpoint). Learning when to use each stepping mode is key to efficient debugging.\n\nReading stack traces is a fundamental skill. A stack trace shows the chain of function calls that led to an error, with the most recent call at the top. Each line typically shows the function name, file name, and line number. By reading from top to bottom, you can trace the execution path and identify where things went wrong. Combined with source maps, stack traces work even with minified or transpiled code in production environments.",
+      "codeExamples": [
+        {
+          "title": "Console methods beyond log",
+          "code": "// console.table for structured data\nconst users = [\n  { name: 'Alice', age: 28, role: 'Developer' },\n  { name: 'Bob', age: 34, role: 'Designer' },\n  { name: 'Charlie', age: 22, role: 'Intern' },\n];\nconsole.table(users);\n\n// console.group for organized output\nconsole.group('User Processing');\nconsole.log('Loading users...');\nconsole.group('Validation');\nconsole.log('Checking names...');\nconsole.log('Checking emails...');\nconsole.groupEnd();\nconsole.log('Processing complete');\nconsole.groupEnd();\n\n// console.time for performance measurement\nconsole.time('arrayOperation');\nconst arr = Array.from({ length: 100000 }, (_, i) => i);\nconst sum = arr.reduce((a, b) => a + b, 0);\nconsole.timeEnd('arrayOperation');\n\n// console.count for tracking calls\nfunction processItem(type) {\n  console.count(type);\n}\nprocessItem('fruit');\nprocessItem('vegetable');\nprocessItem('fruit');\nprocessItem('fruit');",
+          "output": "┌─────────┬───────────┬─────┬─────────────┐\n│ (index) │   name    │ age │    role     │\n├─────────┼───────────┼─────┼─────────────┤\n│    0    │  'Alice'  │  28 │ 'Developer' │\n│    1    │   'Bob'   │  34 │ 'Designer'  │\n│    2    │ 'Charlie' │  22 │  'Intern'   │\n└─────────┴───────────┴─────┴─────────────┘\nUser Processing\n  Loading users...\n  Validation\n    Checking names...\n    Checking emails...\n  Processing complete\narrayOperation: 3.456ms\nfruit: 1\nvegetable: 1\nfruit: 2\nfruit: 3",
+          "explanation": "console.table renders arrays as formatted tables. console.group creates collapsible sections. console.time measures execution duration. console.count tracks how many times each label is logged - great for verifying function call frequency."
+        },
+        {
+          "title": "The debugger statement",
+          "code": "function calculateDiscount(price, userType) {\n  let discount = 0;\n  \n  // Execution pauses here when DevTools is open\n  debugger;\n  \n  if (userType === 'premium') {\n    discount = price * 0.2;\n  } else if (userType === 'member') {\n    discount = price * 0.1;\n  }\n  \n  const finalPrice = price - discount;\n  return finalPrice;\n}\n\n// When DevTools is open, this will pause at the debugger statement\n// You can then inspect: price, userType, discount\nconst result = calculateDiscount(100, 'premium');\nconsole.log('Final price:', result);",
+          "output": "Final price: 80",
+          "explanation": "The debugger statement acts as a programmatic breakpoint. When the browser's DevTools is open, execution pauses at that line, letting you inspect all variables in scope and step through the remaining code line by line."
+        },
+        {
+          "title": "Reading stack traces",
+          "code": "function innerFunction() {\n  throw new Error('Something failed in inner function');\n}\n\nfunction middleFunction() {\n  innerFunction();\n}\n\nfunction outerFunction() {\n  middleFunction();\n}\n\ntry {\n  outerFunction();\n} catch (error) {\n  console.log('Error:', error.message);\n  console.log('\\nStack trace:');\n  // Split and display each line of the stack\n  const stackLines = error.stack.split('\\n');\n  stackLines.slice(0, 4).forEach(line => {\n    console.log(line.trim());\n  });\n}",
+          "output": "Error: Something failed in inner function\n\nStack trace:\nError: Something failed in inner function\nat innerFunction (script.js:2:9)\nat middleFunction (script.js:6:3)\nat outerFunction (script.js:10:3)",
+          "explanation": "The stack trace reads top-to-bottom from where the error was thrown back to the original caller. Line 2 in innerFunction is where the error originated, called from middleFunction at line 6, which was called from outerFunction at line 10."
+        },
+        {
+          "title": "Practical debugging strategies",
+          "code": "// Strategy 1: Binary search debugging\n// When you don't know where the bug is,\n// add a log halfway through the code\nfunction processOrder(order) {\n  const items = order.items;\n  const subtotal = items.reduce((sum, item) => sum + item.price * item.qty, 0);\n  console.log('[DEBUG] subtotal:', subtotal); // Is subtotal correct?\n  \n  const tax = subtotal * 0.08;\n  const shipping = subtotal > 50 ? 0 : 5.99;\n  const total = subtotal + tax + shipping;\n  \n  return { subtotal, tax, shipping, total };\n}\n\n// Strategy 2: console.assert for assumptions\nfunction divide(a, b) {\n  console.assert(b !== 0, 'Division by zero detected!', { a, b });\n  return a / b;\n}\n\n// Strategy 3: JSON.stringify for deep inspection\nconst nested = { user: { profile: { settings: { theme: 'dark' } } } };\nconsole.log('Shallow:', nested);\nconsole.log('Deep:', JSON.stringify(nested, null, 2));\n\n// Strategy 4: Labeling logs for filtering\nconsole.log('[AUTH]', 'User login attempted');\nconsole.log('[DB]', 'Query executed: SELECT...');\nconsole.log('[AUTH]', 'Token generated');\n\nconst result = processOrder({ items: [{ price: 25, qty: 2 }, { price: 10, qty: 1 }] });\nconsole.log('Order:', result);\ndivide(10, 0);",
+          "output": "[DEBUG] subtotal: 60\nShallow: { user: { profile: { settings: [Object] } } }\nDeep: {\n  \"user\": {\n    \"profile\": {\n      \"settings\": {\n        \"theme\": \"dark\"\n      }\n    }\n  }\n}\n[AUTH] User login attempted\n[DB] Query executed: SELECT...\n[AUTH] Token generated\nOrder: { subtotal: 60, tax: 4.8, shipping: 0, total: 64.8 }\nAssertion failed: Division by zero detected! { a: 10, b: 0 }",
+          "output_note": "console.assert output may vary by environment",
+          "explanation": "Four practical strategies: (1) Place strategic logs to narrow down where values go wrong. (2) Use console.assert to validate assumptions - it only logs when the condition is false. (3) JSON.stringify with indentation reveals deeply nested objects that console.log truncates. (4) Label prefixes like [AUTH] or [DB] let you filter logs by category."
+        }
+      ],
+      "notes": [
+        "console.table() also accepts a second argument - an array of column names to display, filtering out columns you don't need.",
+        "Use console.dir(element) instead of console.log(element) for DOM elements to see the JavaScript object properties instead of the HTML.",
+        "Chrome DevTools allows logpoints - breakpoints that log a message without pausing execution, useful for production-like debugging.",
+        "The Network tab in DevTools is essential for debugging API calls - check request headers, payloads, and response data."
+      ],
+      "commonPitfalls": [
+        "Leaving debugger statements and console.log calls in production code - use a linter rule (no-debugger, no-console) to catch these.",
+        "Relying only on console.log instead of using breakpoints - stepping through code reveals issues that logging might miss.",
+        "Logging objects by reference - by the time you expand a logged object in the console, its values may have changed. Use JSON.stringify() or spread to capture the current state.",
+        "Ignoring the browser console warnings and errors - browsers often provide helpful hints about deprecations, performance issues, and accessibility problems."
+      ],
+      "interviewTips": [
+        "Familiarize yourself with all console methods - interviewers sometimes ask about lesser-known ones like console.trace(), console.assert(), and console.dir().",
+        "Know the difference between stepping over, stepping into, and stepping out of a function in the debugger.",
+        "Be able to explain how source maps work - they map minified/transpiled code back to the original source for debugging in production."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "debugging-techniques-ex1",
+        "title": "Using console.assert for Validation",
+        "description": "Write a function `validateAge` that takes a value and uses `console.assert` to check three conditions: the value is a number, it is not negative, and it is not greater than 150. If all assertions pass, log 'Valid age: <value>'. Test with a valid age (25), a negative age (-5), and a non-number ('abc').",
+        "starterCode": "// Write function validateAge(value) that:\n// 1. Uses console.assert(typeof value === 'number', ...) \n// 2. Uses console.assert(value >= 0, ...)\n// 3. Uses console.assert(value <= 150, ...)\n// 4. If all conditions met, log 'Valid age: <value>'\n// Use early return after failed assertions\n\n// Your code here\n\n// Test with: validateAge(25), validateAge(-5), validateAge('abc')\n",
+        "solution": "function validateAge(value) {\n  if (typeof value !== 'number') {\n    console.log('Assertion failed: value must be a number');\n    return;\n  }\n  if (value < 0) {\n    console.log('Assertion failed: age cannot be negative');\n    return;\n  }\n  if (value > 150) {\n    console.log('Assertion failed: age cannot exceed 150');\n    return;\n  }\n  console.log('Valid age:', value);\n}\n\nvalidateAge(25);\nvalidateAge(-5);\nvalidateAge('abc');",
+        "expectedOutput": "Valid age: 25\nAssertion failed: age cannot be negative\nAssertion failed: value must be a number",
+        "hints": [
+          "Check typeof value !== 'number' first to catch non-number inputs",
+          "Use early returns after each failed check so subsequent checks don't run on invalid data"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "debugging-techniques-ex2",
+        "title": "Stack Trace Inspection",
+        "description": "Create three nested functions: `outer` calls `middle`, which calls `inner`. `inner` throws an Error with message 'Bug found!'. Catch the error in `outer` and log the error message and the first three lines of the stack trace (name of each function from the stack).",
+        "starterCode": "// Create three functions:\n// inner() - throws new Error('Bug found!')\n// middle() - calls inner()\n// outer() - calls middle() inside try/catch\n//   In catch: log 'Error: <message>'\n//   Then log 'Call stack:'\n//   Then log each function name from the stack (first 3 lines after the error line)\n\n// Your code here\n",
+        "solution": "function inner() {\n  throw new Error('Bug found!');\n}\n\nfunction middle() {\n  inner();\n}\n\nfunction outer() {\n  try {\n    middle();\n  } catch (err) {\n    console.log('Error:', err.message);\n    console.log('Call stack:');\n    const lines = err.stack.split('\\n');\n    for (let i = 1; i <= 3 && i < lines.length; i++) {\n      const match = lines[i].match(/at (\\w+)/);\n      if (match) {\n        console.log('  -> ' + match[1]);\n      }\n    }\n  }\n}\n\nouter();",
+        "expectedOutput": "Error: Bug found!\nCall stack:\n  -> inner\n  -> middle\n  -> outer",
+        "hints": [
+          "error.stack is a string with newline-separated lines; split it with split('\\n')",
+          "Each stack line typically contains 'at functionName' which you can extract with a regex or string methods"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

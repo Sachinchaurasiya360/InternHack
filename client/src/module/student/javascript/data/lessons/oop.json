@@ -1,0 +1,320 @@
+[
+  {
+    "id": "prototypes",
+    "sectionId": "oop",
+    "orderIndex": 0,
+    "title": "Prototypes & Prototype Chain",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["prototype chain", "__proto__", "Object.create", "constructor functions", "hasOwnProperty", "prototypal inheritance"],
+    "content": {
+      "explanation": "Every object in JavaScript has a hidden internal property called [[Prototype]] that points to another object — its prototype. This is the foundation of JavaScript's inheritance model, which is fundamentally different from class-based languages like Java or C++. When you access a property on an object, JavaScript first looks at the object itself. If the property is not found, the engine walks up the prototype chain — checking the object's prototype, then that prototype's prototype, and so on — until it either finds the property or reaches an object whose prototype is null (typically Object.prototype, whose own [[Prototype]] is null).\n\nThere is an important distinction between __proto__ and the prototype property. The __proto__ property (now standardized as Object.getPrototypeOf()) is a getter/setter that exists on every object and points to the object's actual prototype — the object it inherits from. The prototype property, on the other hand, only exists on functions. When a function is used as a constructor with the new keyword, the newly created object's __proto__ is set to the constructor function's prototype property. This is how methods defined on Constructor.prototype become available to all instances.\n\nObject.create() is the most direct way to set up prototypal inheritance. It creates a new object with its [[Prototype]] set to the object you pass as the first argument. This gives you fine-grained control without involving constructor functions or the new keyword. It is frequently used when you want clean delegation chains or when implementing inheritance between constructor functions.\n\nConstructor functions were the original pattern for creating objects with shared behavior in JavaScript. When you call a function with new, four things happen: a new empty object is created, its __proto__ is linked to the constructor's prototype, the constructor runs with this bound to the new object, and the object is returned (unless the constructor explicitly returns a different object). All instances created by the same constructor share methods defined on the constructor's prototype, which is memory-efficient compared to defining methods inside the constructor.\n\nThe hasOwnProperty method and the in operator behave differently when it comes to inherited properties. hasOwnProperty returns true only if the property exists directly on the object, ignoring the prototype chain. The in operator returns true if the property exists anywhere in the prototype chain. Understanding this distinction is critical when iterating over object properties — for...in loops walk the entire chain, which is why you often see hasOwnProperty checks inside them.\n\nPerformance-wise, keeping prototype chains short is generally better. Deep chains mean more lookups when resolving properties. In practice, most chains are only two or three levels deep (instance -> Constructor.prototype -> Object.prototype), so this rarely becomes a bottleneck. However, relying heavily on prototype chain lookups for frequently accessed properties in hot code paths can have a measurable impact. Caching looked-up values in local variables or using direct property assignment are common optimizations.",
+      "codeExamples": [
+        {
+          "title": "Prototype chain and property lookup",
+          "code": "const animal = {\n  eats: true,\n  walk() {\n    return 'Animal walks';\n  }\n};\n\nconst rabbit = Object.create(animal);\nrabbit.jumps = true;\n\nconsole.log(rabbit.jumps);    // own property\nconsole.log(rabbit.eats);     // inherited from animal\nconsole.log(rabbit.walk());   // inherited method\n\nconsole.log(rabbit.__proto__ === animal);           // true\nconsole.log(Object.getPrototypeOf(rabbit) === animal); // true\n\n// Prototype chain: rabbit -> animal -> Object.prototype -> null\nconsole.log(rabbit.__proto__.__proto__ === Object.prototype); // true\nconsole.log(rabbit.__proto__.__proto__.__proto__);            // null",
+          "output": "true\ntrue\nAnimal walks\ntrue\ntrue\ntrue\nnull",
+          "explanation": "rabbit does not have 'eats' or 'walk' directly. JavaScript walks up to animal (its prototype) and finds them there. The chain continues to Object.prototype and finally to null."
+        },
+        {
+          "title": "Constructor functions and prototype",
+          "code": "function Person(name, age) {\n  this.name = name;\n  this.age = age;\n}\n\nPerson.prototype.greet = function() {\n  return `Hi, I'm ${this.name} and I'm ${this.age}`;\n};\n\nPerson.prototype.species = 'Homo sapiens';\n\nconst alice = new Person('Alice', 25);\nconst bob = new Person('Bob', 30);\n\nconsole.log(alice.greet());\nconsole.log(bob.greet());\nconsole.log(alice.species);\n\n// Both share the same prototype object\nconsole.log(alice.__proto__ === bob.__proto__);\nconsole.log(alice.__proto__ === Person.prototype);\n\n// greet is not on the instance itself\nconsole.log(alice.hasOwnProperty('greet'));\nconsole.log(alice.hasOwnProperty('name'));",
+          "output": "Hi, I'm Alice and I'm 25\nHi, I'm Bob and I'm 30\nHomo sapiens\ntrue\ntrue\nfalse\ntrue",
+          "explanation": "Methods on Person.prototype are shared across all instances, saving memory. Instance properties like name and age are unique to each object. hasOwnProperty confirms that greet lives on the prototype, not the instance."
+        },
+        {
+          "title": "Object.create for inheritance between constructors",
+          "code": "function Shape(color) {\n  this.color = color;\n}\n\nShape.prototype.describe = function() {\n  return `A ${this.color} shape`;\n};\n\nfunction Circle(color, radius) {\n  Shape.call(this, color);  // call parent constructor\n  this.radius = radius;\n}\n\n// Set up inheritance: Circle.prototype inherits from Shape.prototype\nCircle.prototype = Object.create(Shape.prototype);\nCircle.prototype.constructor = Circle;  // fix constructor reference\n\nCircle.prototype.area = function() {\n  return Math.PI * this.radius * this.radius;\n};\n\nconst c = new Circle('red', 5);\nconsole.log(c.describe());\nconsole.log(c.area().toFixed(2));\nconsole.log(c instanceof Circle);\nconsole.log(c instanceof Shape);\nconsole.log(c.constructor === Circle);",
+          "output": "A red shape\n78.54\ntrue\ntrue\ntrue",
+          "explanation": "Object.create(Shape.prototype) creates a new object whose __proto__ is Shape.prototype. This becomes Circle's prototype, establishing the inheritance chain. Shape.call(this, color) ensures the parent constructor initializes instance properties."
+        },
+        {
+          "title": "hasOwnProperty vs in operator",
+          "code": "const base = { inherited: true };\nconst obj = Object.create(base);\nobj.own = 'mine';\n\nconsole.log(obj.hasOwnProperty('own'));        // direct property\nconsole.log(obj.hasOwnProperty('inherited'));  // inherited, not own\nconsole.log('own' in obj);                     // found on obj\nconsole.log('inherited' in obj);               // found via chain\nconsole.log('toString' in obj);                // from Object.prototype\nconsole.log(obj.hasOwnProperty('toString'));   // not own\n\n// Safe iteration with hasOwnProperty\nfor (const key in obj) {\n  if (obj.hasOwnProperty(key)) {\n    console.log(`Own: ${key}`);\n  } else {\n    console.log(`Inherited: ${key}`);\n  }\n}",
+          "output": "true\nfalse\ntrue\ntrue\ntrue\nfalse\nOwn: own\nInherited: inherited",
+          "explanation": "hasOwnProperty only returns true for properties directly on the object. The in operator checks the entire prototype chain. This distinction matters in for...in loops where you usually want to skip inherited properties."
+        }
+      ],
+      "notes": [
+        "Object.getPrototypeOf(obj) is the modern, standard way to read an object's prototype. __proto__ is deprecated but still widely supported.",
+        "Modifying a built-in prototype (e.g., Array.prototype) is called monkey-patching and is strongly discouraged in production code.",
+        "Object.create(null) creates an object with no prototype at all — useful for pure dictionaries without inherited methods like toString.",
+        "The prototype chain ends at Object.prototype, whose own [[Prototype]] is null."
+      ],
+      "commonPitfalls": [
+        "Confusing __proto__ (the actual prototype link on every object) with the prototype property (which only exists on functions and is used when constructing new instances).",
+        "Forgetting to reset the constructor property after using Object.create() to set up inheritance — c.constructor would point to the parent instead of the child.",
+        "Using for...in without a hasOwnProperty guard, accidentally iterating over inherited enumerable properties.",
+        "Assigning a new object to Constructor.prototype after instances have been created — existing instances still reference the old prototype object."
+      ],
+      "interviewTips": [
+        "Be ready to draw or verbally trace the prototype chain for a given object, explaining each link from the instance to null.",
+        "Clearly articulate: __proto__ is on every object and points to its prototype; prototype is on functions and becomes the __proto__ of instances created with new.",
+        "Explain how property shadowing works: setting a property on an instance creates an own property that shadows the prototype's property without modifying the prototype.",
+        "Know that Object.create(null) creates a prototype-less object, and explain when this is useful (e.g., safe hash maps)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "prototypes-ex1",
+        "title": "Prototype Chain Builder",
+        "description": "Build a prototype chain using Object.create. Create a 'vehicle' object with a 'type' property and a describe() method. Create a 'car' that inherits from vehicle, adding its own 'brand' property. Verify the chain by checking hasOwnProperty and the in operator on both own and inherited properties.",
+        "starterCode": "// Exercise: Prototype chain builder\n// 1. Create a 'vehicle' object with:\n//    - property type = 'vehicle'\n//    - method describe() that returns `A ${this.type} made by ${this.brand}`\n// 2. Create 'car' using Object.create(vehicle)\n// 3. Set car.brand = 'Toyota' and car.type = 'sedan'\n// 4. Log car.describe()\n// 5. Log car.hasOwnProperty('brand')  — should be true (own)\n// 6. Log car.hasOwnProperty('describe')  — should be false (inherited)\n// 7. Log 'describe' in car  — should be true (found via chain)\n// 8. Log Object.getPrototypeOf(car) === vehicle\n\n// Your code here\n",
+        "solution": "const vehicle = {\n  type: 'vehicle',\n  describe() {\n    return `A ${this.type} made by ${this.brand}`;\n  }\n};\n\nconst car = Object.create(vehicle);\ncar.brand = 'Toyota';\ncar.type = 'sedan';\n\nconsole.log(car.describe());\nconsole.log(car.hasOwnProperty('brand'));\nconsole.log(car.hasOwnProperty('describe'));\nconsole.log('describe' in car);\nconsole.log(Object.getPrototypeOf(car) === vehicle);",
+        "expectedOutput": "A sedan made by Toyota\ntrue\nfalse\ntrue\ntrue",
+        "hints": [
+          "Object.create(vehicle) creates a new object whose [[Prototype]] is vehicle. The new object inherits all of vehicle's properties and methods.",
+          "Setting car.type = 'sedan' creates an own property on car that shadows vehicle.type. hasOwnProperty distinguishes own from inherited properties."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "prototypes-ex2",
+        "title": "Constructor Function with Shared Methods",
+        "description": "Create a constructor function 'Book' that sets title and author as instance properties. Add a 'summary' method on the prototype. Create two instances and verify that both share the same prototype method but have their own instance properties.",
+        "starterCode": "// Exercise: Constructor function with shared methods\n// 1. Create a constructor function 'Book' that accepts\n//    title and author, assigning them to this\n// 2. Add a method 'summary' on Book.prototype that returns\n//    `\"${this.title}\" by ${this.author}`\n// 3. Create book1 = new Book('1984', 'Orwell')\n// 4. Create book2 = new Book('Dune', 'Herbert')\n// 5. Log book1.summary()\n// 6. Log book2.summary()\n// 7. Log whether book1 and book2 share the same prototype\n// 8. Log book1.hasOwnProperty('summary')  — should be false\n// 9. Log book1.hasOwnProperty('title')  — should be true\n\n// Your code here\n",
+        "solution": "function Book(title, author) {\n  this.title = title;\n  this.author = author;\n}\n\nBook.prototype.summary = function () {\n  return `\"${this.title}\" by ${this.author}`;\n};\n\nconst book1 = new Book('1984', 'Orwell');\nconst book2 = new Book('Dune', 'Herbert');\n\nconsole.log(book1.summary());\nconsole.log(book2.summary());\nconsole.log(Object.getPrototypeOf(book1) === Object.getPrototypeOf(book2));\nconsole.log(book1.hasOwnProperty('summary'));\nconsole.log(book1.hasOwnProperty('title'));",
+        "expectedOutput": "\"1984\" by Orwell\n\"Dune\" by Herbert\ntrue\nfalse\ntrue",
+        "hints": [
+          "Methods placed on Constructor.prototype are shared across all instances created with 'new', saving memory compared to defining methods inside the constructor.",
+          "hasOwnProperty returns false for 'summary' because it lives on Book.prototype, not on the instance itself."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "classes-constructors",
+    "sectionId": "oop",
+    "orderIndex": 1,
+    "title": "Classes & Constructors",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["ES6 classes", "constructor", "static methods", "private fields", "getters setters", "class expressions"],
+    "content": {
+      "explanation": "ES6 classes, introduced in 2015, provide a cleaner and more familiar syntax for creating objects and managing inheritance in JavaScript. Under the hood, classes are syntactic sugar over JavaScript's existing prototypal inheritance — the class keyword does not introduce a new object model. A class declaration creates a function (the constructor), and methods defined in the class body are placed on that function's prototype property, exactly as you would do manually with constructor functions.\n\nThe constructor method is a special method that runs when you create a new instance with the new keyword. Each class can have at most one constructor. Inside it, you initialize instance properties using this. If you do not define a constructor, JavaScript provides a default empty one. For subclasses, the default constructor calls super(...args), forwarding all arguments to the parent constructor.\n\nStatic methods and properties belong to the class itself, not to instances. You declare them with the static keyword. They are useful for utility functions that are logically related to the class but do not operate on instance data. For example, a User class might have a static fromJSON(json) method that creates a User from a JSON string. Static methods cannot access this to reference instance data — this inside a static method refers to the class itself.\n\nPrivate fields and methods, denoted by the # prefix, are a relatively recent addition (ES2022). They are truly private — they cannot be accessed or detected from outside the class body. This is enforced by the JavaScript engine, not by convention. Before private fields existed, developers used the underscore prefix (_property) as a naming convention to signal \"do not access directly,\" but this provided no actual enforcement. Private fields solve this problem definitively.\n\nGetters and setters let you define properties that execute a function when read or written. They are defined using the get and set keywords inside a class body. This is powerful for validation, computed properties, or lazy initialization. From the outside, they look like normal property access — the caller does not know a function is running behind the scenes.\n\nClass expressions are an alternative to class declarations. Just like function expressions, you can assign an anonymous or named class to a variable. Named class expressions have their name scoped to the class body, which can be useful for self-referencing. Class expressions are particularly useful when you need to create classes dynamically or pass them as arguments to functions.",
+      "codeExamples": [
+        {
+          "title": "Basic class with constructor and methods",
+          "code": "class Car {\n  constructor(make, model, year) {\n    this.make = make;\n    this.model = model;\n    this.year = year;\n    this.speed = 0;\n  }\n\n  accelerate(amount) {\n    this.speed += amount;\n    return `${this.make} ${this.model} is going ${this.speed} km/h`;\n  }\n\n  brake(amount) {\n    this.speed = Math.max(0, this.speed - amount);\n    return `${this.make} ${this.model} slowed to ${this.speed} km/h`;\n  }\n\n  toString() {\n    return `${this.year} ${this.make} ${this.model}`;\n  }\n}\n\nconst car = new Car('Toyota', 'Camry', 2024);\nconsole.log(car.toString());\nconsole.log(car.accelerate(60));\nconsole.log(car.accelerate(40));\nconsole.log(car.brake(30));\n\n// Proof: methods live on the prototype\nconsole.log(typeof Car.prototype.accelerate);",
+          "output": "2024 Toyota Camry\nToyota Camry is going 60 km/h\nToyota Camry is going 100 km/h\nToyota Camry slowed to 70 km/h\nfunction",
+          "explanation": "The constructor initializes instance properties. Methods like accelerate and brake are defined on Car.prototype, shared across all instances. toString overrides Object.prototype.toString for a custom string representation."
+        },
+        {
+          "title": "Static methods and properties",
+          "code": "class MathUtils {\n  static PI = 3.14159265;\n\n  static circleArea(radius) {\n    return MathUtils.PI * radius * radius;\n  }\n\n  static factorial(n) {\n    if (n <= 1) return 1;\n    return n * MathUtils.factorial(n - 1);\n  }\n\n  static clamp(value, min, max) {\n    return Math.min(Math.max(value, min), max);\n  }\n}\n\nconsole.log(MathUtils.PI);\nconsole.log(MathUtils.circleArea(5).toFixed(2));\nconsole.log(MathUtils.factorial(5));\nconsole.log(MathUtils.clamp(15, 0, 10));\n\n// Static methods are NOT on instances\nconst m = new MathUtils();\nconsole.log(typeof m.circleArea);",
+          "output": "3.14159265\n78.54\n120\n10\nundefined",
+          "explanation": "Static members are accessed via the class name, not instances. They serve as namespace-scoped utilities. Attempting to call a static method on an instance returns undefined because the method is on the constructor function, not on its prototype."
+        },
+        {
+          "title": "Private fields and methods",
+          "code": "class BankAccount {\n  #balance;          // private field\n  #transactionLog;   // private field\n\n  constructor(owner, initialBalance) {\n    this.owner = owner;        // public\n    this.#balance = initialBalance;\n    this.#transactionLog = [];\n  }\n\n  #log(type, amount) {         // private method\n    this.#transactionLog.push({\n      type,\n      amount,\n      date: new Date().toISOString().split('T')[0]\n    });\n  }\n\n  deposit(amount) {\n    if (amount <= 0) throw new Error('Amount must be positive');\n    this.#balance += amount;\n    this.#log('deposit', amount);\n    return this.#balance;\n  }\n\n  withdraw(amount) {\n    if (amount > this.#balance) throw new Error('Insufficient funds');\n    this.#balance -= amount;\n    this.#log('withdrawal', amount);\n    return this.#balance;\n  }\n\n  get balance() {\n    return this.#balance;\n  }\n\n  get history() {\n    return [...this.#transactionLog];  // return copy\n  }\n}\n\nconst acct = new BankAccount('Alice', 1000);\nconsole.log(acct.balance);\nconsole.log(acct.deposit(500));\nconsole.log(acct.withdraw(200));\nconsole.log(acct.history.length);\n\n// Cannot access private fields from outside\ntry {\n  console.log(acct.#balance);\n} catch (e) {\n  console.log(e.message);\n}",
+          "output": "1000\n1500\n1300\n2\nPrivate field '#balance' must be declared in an enclosing class",
+          "explanation": "Private fields (#balance, #transactionLog) and private methods (#log) cannot be accessed from outside the class body. The getter 'balance' provides controlled read access. The history getter returns a copy to prevent external mutation of the internal log."
+        },
+        {
+          "title": "Getters, setters, and class expressions",
+          "code": "// Class expression assigned to a variable\nconst Temperature = class {\n  #celsius;\n\n  constructor(celsius) {\n    this.#celsius = celsius;\n  }\n\n  get celsius() {\n    return this.#celsius;\n  }\n\n  set celsius(value) {\n    if (value < -273.15) {\n      throw new Error('Temperature below absolute zero');\n    }\n    this.#celsius = value;\n  }\n\n  get fahrenheit() {\n    return this.#celsius * 9 / 5 + 32;\n  }\n\n  set fahrenheit(value) {\n    this.celsius = (value - 32) * 5 / 9;  // uses the setter for validation\n  }\n\n  toString() {\n    return `${this.#celsius.toFixed(1)}°C / ${this.fahrenheit.toFixed(1)}°F`;\n  }\n};\n\nconst temp = new Temperature(100);\nconsole.log(temp.toString());\nconsole.log(temp.fahrenheit);\n\ntemp.fahrenheit = 32;\nconsole.log(temp.celsius);\nconsole.log(temp.toString());\n\ntry {\n  temp.celsius = -300;\n} catch (e) {\n  console.log(e.message);\n}",
+          "output": "100.0°C / 212.0°F\n212\n0\n0.0°C / 32.0°F\nTemperature below absolute zero",
+          "explanation": "This class expression demonstrates getters and setters for computed and validated properties. Setting fahrenheit internally uses the celsius setter, which enforces the absolute zero constraint. From the caller's perspective, these look like plain properties."
+        }
+      ],
+      "notes": [
+        "Classes are NOT hoisted like function declarations. A class must be defined before it can be instantiated.",
+        "The typeof a class is 'function' — proof that classes are syntactic sugar over constructor functions.",
+        "Private fields must be declared in the class body before use. You cannot dynamically add private fields.",
+        "All code inside a class body runs in strict mode automatically."
+      ],
+      "commonPitfalls": [
+        "Forgetting that classes are not hoisted — using a class before its declaration throws a ReferenceError, unlike function declarations.",
+        "Trying to access private fields (#) outside the class body — this is a hard SyntaxError, not just undefined.",
+        "Defining a getter without a setter (or vice versa) when both read and write access are needed — writing to a getter-only property silently fails in non-strict mode.",
+        "Calling a class without new — unlike constructor functions, classes always throw a TypeError if invoked without new."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "classes-constructors-ex1",
+        "title": "Class with Static Factory",
+        "description": "Create a 'Player' class with name and score properties, a describe() method, and a static method 'createMVP' that returns a Player with score 100. Demonstrate that the static method is on the class, not on instances.",
+        "starterCode": "// Exercise: Class with static factory\n// 1. Create a class 'Player' with:\n//    - constructor(name, score) that sets both properties\n//    - method describe() returning `${this.name}: ${this.score} pts`\n//    - static method createMVP(name) that returns\n//      new Player(name, 100)\n// 2. Create player1 using new Player('Alice', 50)\n// 3. Create player2 using Player.createMVP('Bob')\n// 4. Log player1.describe()\n// 5. Log player2.describe()\n// 6. Log typeof Player.createMVP  — should be 'function'\n// 7. Log typeof player1.createMVP  — should be 'undefined'\n\n// Your code here\n",
+        "solution": "class Player {\n  constructor(name, score) {\n    this.name = name;\n    this.score = score;\n  }\n\n  describe() {\n    return `${this.name}: ${this.score} pts`;\n  }\n\n  static createMVP(name) {\n    return new Player(name, 100);\n  }\n}\n\nconst player1 = new Player('Alice', 50);\nconst player2 = Player.createMVP('Bob');\n\nconsole.log(player1.describe());\nconsole.log(player2.describe());\nconsole.log(typeof Player.createMVP);\nconsole.log(typeof player1.createMVP);",
+        "expectedOutput": "Alice: 50 pts\nBob: 100 pts\nfunction\nundefined",
+        "hints": [
+          "Static methods are defined with the 'static' keyword and called on the class itself (Player.createMVP), not on instances.",
+          "Inside a static method, 'this' refers to the class, not an instance. You can use 'new Player(...)' or 'new this(...)' to create instances."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "classes-constructors-ex2",
+        "title": "Private Fields with Getter Validation",
+        "description": "Create a 'Wallet' class with a private #balance field. Add a deposit method, a getter for balance, and a setter that rejects negative values. Demonstrate that the private field cannot be accessed directly from outside.",
+        "starterCode": "// Exercise: Private fields with getter validation\n// 1. Create a class 'Wallet' with:\n//    - private field #balance\n//    - constructor(initial) that sets #balance to initial\n//    - method deposit(amount) that adds to #balance and returns #balance\n//    - getter 'balance' that returns #balance\n//    - setter 'balance' that throws 'Cannot set balance directly'\n// 2. Create wallet = new Wallet(50)\n// 3. Log wallet.balance\n// 4. Log wallet.deposit(25)\n// 5. Try to set wallet.balance = 999, catch and log the error message\n// 6. Log wallet.balance to confirm it did not change\n\n// Your code here\n",
+        "solution": "class Wallet {\n  #balance;\n\n  constructor(initial) {\n    this.#balance = initial;\n  }\n\n  deposit(amount) {\n    this.#balance += amount;\n    return this.#balance;\n  }\n\n  get balance() {\n    return this.#balance;\n  }\n\n  set balance(value) {\n    throw new Error('Cannot set balance directly');\n  }\n}\n\nconst wallet = new Wallet(50);\nconsole.log(wallet.balance);\nconsole.log(wallet.deposit(25));\n\ntry {\n  wallet.balance = 999;\n} catch (e) {\n  console.log(e.message);\n}\n\nconsole.log(wallet.balance);",
+        "expectedOutput": "50\n75\nCannot set balance directly\n75",
+        "hints": [
+          "Private fields declared with # are only accessible within the class body. The getter provides controlled read access.",
+          "The setter throws an error to prevent direct modification, forcing users to go through the deposit method."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "inheritance-polymorphism",
+    "sectionId": "oop",
+    "orderIndex": 2,
+    "title": "Inheritance & Polymorphism",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["extends", "super", "method overriding", "polymorphism", "instanceof", "mixins", "composition vs inheritance"],
+    "content": {
+      "explanation": "Inheritance in JavaScript classes is established using the extends keyword. When class Child extends Parent, the child class inherits all methods and properties defined on the parent's prototype. Under the hood, two prototype links are set up: Child.prototype.__proto__ points to Parent.prototype (so instances inherit methods), and Child.__proto__ points to Parent (so static methods are inherited too). This dual-link mechanism is what makes JavaScript's class inheritance work seamlessly.\n\nThe super keyword serves two purposes. Inside a constructor, super() calls the parent class constructor. This is mandatory in any subclass constructor — you must call super() before using this, or JavaScript will throw a ReferenceError. Outside the constructor, super.method() calls a method on the parent's prototype, which is essential when you override a method but still need the parent's behavior as part of your implementation.\n\nMethod overriding is how polymorphism manifests in JavaScript. When a child class defines a method with the same name as one in the parent, the child's version takes precedence. This happens naturally through the prototype chain — since the child's prototype is checked before the parent's, the child's method is found first. Polymorphism means that different objects can respond to the same method call in different ways, and method overriding is the primary mechanism for achieving this.\n\nThe instanceof operator checks whether an object's prototype chain includes a given constructor's prototype. It walks the chain from the object up to null, checking each __proto__ link against the constructor's prototype property. This is useful for type checking in runtime, but it has limitations — it does not work across different JavaScript realms (iframes, for example, have different global constructors).\n\nJavaScript does not support multiple inheritance — a class can only extend one parent. Mixins offer a workaround. A mixin is typically a function that takes a base class and returns a new class extending it with additional behavior. By chaining mixin calls, you can compose multiple behaviors onto a single class without the diamond problem that plagues traditional multiple inheritance.\n\nThe composition vs inheritance debate is crucial in software design. Inheritance creates tight coupling — changes to the parent class ripple through all descendants. Composition, where objects contain instances of other objects and delegate behavior to them, creates looser coupling and more flexibility. The general guidance is to favor composition over inheritance. Use inheritance when there is a clear \"is-a\" relationship (a Dog is an Animal). Use composition when you want to combine behaviors (a Car has an Engine, has Wheels).",
+      "codeExamples": [
+        {
+          "title": "extends and super in constructors",
+          "code": "class Animal {\n  constructor(name, sound) {\n    this.name = name;\n    this.sound = sound;\n  }\n\n  speak() {\n    return `${this.name} says ${this.sound}`;\n  }\n\n  toString() {\n    return `[Animal: ${this.name}]`;\n  }\n}\n\nclass Dog extends Animal {\n  constructor(name, breed) {\n    super(name, 'Woof');   // MUST call super before using this\n    this.breed = breed;\n  }\n\n  fetch(item) {\n    return `${this.name} fetches the ${item}`;\n  }\n}\n\nconst dog = new Dog('Rex', 'German Shepherd');\nconsole.log(dog.speak());     // inherited method\nconsole.log(dog.fetch('ball'));  // own method\nconsole.log(dog.name);        // inherited property\nconsole.log(dog.breed);       // own property\nconsole.log(dog.toString());  // inherited toString",
+          "output": "Rex says Woof\nRex fetches the ball\nRex\nGerman Shepherd\n[Animal: Rex]",
+          "explanation": "Dog extends Animal, inheriting speak() and toString(). The super(name, 'Woof') call invokes Animal's constructor, setting name and sound. Dog adds its own breed property and fetch method."
+        },
+        {
+          "title": "Method overriding and super.method()",
+          "code": "class Shape {\n  constructor(name) {\n    this.name = name;\n  }\n\n  area() {\n    return 0;\n  }\n\n  describe() {\n    return `${this.name} with area ${this.area().toFixed(2)}`;\n  }\n}\n\nclass Rectangle extends Shape {\n  constructor(width, height) {\n    super('Rectangle');\n    this.width = width;\n    this.height = height;\n  }\n\n  area() {\n    return this.width * this.height;\n  }\n\n  describe() {\n    return super.describe() + ` (${this.width}x${this.height})`;\n  }\n}\n\nclass Square extends Rectangle {\n  constructor(side) {\n    super(side, side);\n    this.name = 'Square';  // override name set by super\n  }\n}\n\nconst shapes = [new Shape('Unknown'), new Rectangle(4, 5), new Square(3)];\n\nshapes.forEach(s => {\n  console.log(s.describe());\n});\n\n// Polymorphism in action: same method call, different results\nconsole.log(shapes.map(s => s.area()));",
+          "output": "Unknown with area 0.00\nRectangle with area 20.00 (4x5)\nSquare with area 9.00 (3x3)\n[0, 20, 9]",
+          "explanation": "Each class overrides area() to provide its own calculation. Rectangle.describe() calls super.describe() to include the parent's logic, then appends dimensions. The shapes array demonstrates polymorphism — the same method call produces different output depending on the actual object type."
+        },
+        {
+          "title": "instanceof and prototype chain checking",
+          "code": "class Vehicle {}\nclass Car extends Vehicle {}\nclass ElectricCar extends Car {}\n\nconst tesla = new ElectricCar();\n\nconsole.log(tesla instanceof ElectricCar);  // direct\nconsole.log(tesla instanceof Car);          // parent\nconsole.log(tesla instanceof Vehicle);      // grandparent\nconsole.log(tesla instanceof Object);       // root of all\n\n// How instanceof works under the hood\nfunction myInstanceOf(obj, Constructor) {\n  let proto = Object.getPrototypeOf(obj);\n  while (proto !== null) {\n    if (proto === Constructor.prototype) return true;\n    proto = Object.getPrototypeOf(proto);\n  }\n  return false;\n}\n\nconsole.log(myInstanceOf(tesla, Car));\nconsole.log(myInstanceOf(tesla, Array));",
+          "output": "true\ntrue\ntrue\ntrue\ntrue\nfalse",
+          "explanation": "instanceof walks the prototype chain. Since ElectricCar extends Car which extends Vehicle, tesla is an instance of all three. The myInstanceOf function demonstrates the underlying algorithm — it traverses __proto__ links looking for a match with the constructor's prototype."
+        },
+        {
+          "title": "Mixins and composition vs inheritance",
+          "code": "// Mixin pattern: functions that add behavior to a class\nconst Serializable = (Base) => class extends Base {\n  toJSON() {\n    const obj = {};\n    for (const key of Object.keys(this)) {\n      obj[key] = this[key];\n    }\n    return JSON.stringify(obj);\n  }\n\n  static fromJSON(json) {\n    return Object.assign(new this(), JSON.parse(json));\n  }\n};\n\nconst Timestamped = (Base) => class extends Base {\n  constructor(...args) {\n    super(...args);\n    this.createdAt = new Date().toISOString().split('T')[0];\n  }\n};\n\n// Compose mixins\nclass BaseUser {\n  constructor(name, email) {\n    this.name = name;\n    this.email = email;\n  }\n\n  greet() {\n    return `Hello, ${this.name}`;\n  }\n}\n\nclass User extends Timestamped(Serializable(BaseUser)) {}\n\nconst user = new User('Alice', 'alice@example.com');\nconsole.log(user.greet());\nconsole.log(user.toJSON());\nconsole.log(typeof user.createdAt);\nconsole.log(user instanceof BaseUser);\n\n// Composition alternative\nclass Engine {\n  start() { return 'Engine started'; }\n}\n\nclass Wheels {\n  roll() { return 'Wheels rolling'; }\n}\n\nclass ComposedCar {\n  constructor() {\n    this.engine = new Engine();  // has-a Engine\n    this.wheels = new Wheels();  // has-a Wheels\n  }\n\n  drive() {\n    return `${this.engine.start()} & ${this.wheels.roll()}`;\n  }\n}\n\nconst car = new ComposedCar();\nconsole.log(car.drive());",
+          "output": "Hello, Alice\n{\"name\":\"Alice\",\"email\":\"alice@example.com\",\"createdAt\":\"2026-03-10\"}\nstring\ntrue\nEngine started & Wheels rolling",
+          "explanation": "Mixins compose behavior by wrapping base classes in higher-order functions. User inherits from BaseUser, Serializable, and Timestamped simultaneously. The ComposedCar example shows the alternative: instead of inheriting from Engine and Wheels, the car contains them and delegates. This is composition over inheritance."
+        }
+      ],
+      "notes": [
+        "You must call super() in a subclass constructor before accessing this. Failing to do so is a ReferenceError.",
+        "Static methods are also inherited through extends — Child.staticMethod() works if Parent defines it.",
+        "JavaScript supports only single inheritance. Use mixins or composition to combine behaviors from multiple sources.",
+        "The extends keyword can be followed by any expression that resolves to a constructor — this is what enables the mixin pattern."
+      ],
+      "commonPitfalls": [
+        "Forgetting to call super() in a subclass constructor — this causes a ReferenceError when trying to use this.",
+        "Calling super() with the wrong arguments — the child must pass the arguments that the parent constructor expects.",
+        "Over-using inheritance when composition would be simpler — deep inheritance hierarchies become rigid and hard to modify.",
+        "Assuming instanceof works across iframes or different JavaScript realms — each realm has its own set of built-in constructors."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "inheritance-polymorphism-ex1",
+        "title": "Shape Hierarchy with Polymorphism",
+        "description": "Create a base class 'Shape' with a name and an area() method returning 0. Extend it with 'Circle' (takes radius, area = pi*r^2) and 'Triangle' (takes base and height, area = 0.5*b*h). Override area() in each subclass. Iterate over an array of shapes and call describe() to demonstrate polymorphism.",
+        "starterCode": "// Exercise: Shape hierarchy with polymorphism\n// 1. Create class 'Shape' with:\n//    - constructor(name)\n//    - method area() returning 0\n//    - method describe() returning `${this.name}: area = ${this.area().toFixed(2)}`\n// 2. Create class 'Circle' extending Shape:\n//    - constructor(radius), calls super('Circle')\n//    - override area() to return Math.PI * radius * radius\n// 3. Create class 'Triangle' extending Shape:\n//    - constructor(base, height), calls super('Triangle')\n//    - override area() to return 0.5 * base * height\n// 4. Create an array with new Circle(5) and new Triangle(6, 4)\n// 5. Loop and log describe() for each\n// 6. Log whether circle instanceof Shape\n\n// Your code here\n",
+        "solution": "class Shape {\n  constructor(name) {\n    this.name = name;\n  }\n\n  area() {\n    return 0;\n  }\n\n  describe() {\n    return `${this.name}: area = ${this.area().toFixed(2)}`;\n  }\n}\n\nclass Circle extends Shape {\n  constructor(radius) {\n    super('Circle');\n    this.radius = radius;\n  }\n\n  area() {\n    return Math.PI * this.radius * this.radius;\n  }\n}\n\nclass Triangle extends Shape {\n  constructor(base, height) {\n    super('Triangle');\n    this.base = base;\n    this.height = height;\n  }\n\n  area() {\n    return 0.5 * this.base * this.height;\n  }\n}\n\nconst shapes = [new Circle(5), new Triangle(6, 4)];\n\nfor (const s of shapes) {\n  console.log(s.describe());\n}\n\nconsole.log(shapes[0] instanceof Shape);",
+        "expectedOutput": "Circle: area = 78.54\nTriangle: area = 12.00\ntrue",
+        "hints": [
+          "Each subclass must call super(name) in its constructor before accessing 'this'. Pass the shape name string to the parent.",
+          "describe() is defined on the base class but calls this.area(), which is overridden in each subclass. This is polymorphism -- the same method call produces different results."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "inheritance-polymorphism-ex2",
+        "title": "Method Override with super",
+        "description": "Create a base class 'Logger' with a log(msg) method that returns the message prefixed with '[LOG]'. Create a child class 'TimestampLogger' that overrides log() to prepend a timestamp, calling super.log() to include the parent's prefix. Demonstrate the chain of overrides.",
+        "starterCode": "// Exercise: Method override with super\n// 1. Create class 'Logger' with:\n//    - method log(msg) returning `[LOG] ${msg}`\n// 2. Create class 'TimestampLogger' extending Logger:\n//    - override log(msg) to call super.log(msg) and prepend\n//      '[2026-03-11] ' before the result\n//      Return format: `[2026-03-11] ${super.log(msg)}`\n// 3. Create base = new Logger()\n// 4. Create ts = new TimestampLogger()\n// 5. Log base.log('Server started')\n// 6. Log ts.log('Server started')\n// 7. Log ts instanceof Logger\n\n// Your code here\n",
+        "solution": "class Logger {\n  log(msg) {\n    return `[LOG] ${msg}`;\n  }\n}\n\nclass TimestampLogger extends Logger {\n  log(msg) {\n    return `[2026-03-11] ${super.log(msg)}`;\n  }\n}\n\nconst base = new Logger();\nconst ts = new TimestampLogger();\n\nconsole.log(base.log('Server started'));\nconsole.log(ts.log('Server started'));\nconsole.log(ts instanceof Logger);",
+        "expectedOutput": "[LOG] Server started\n[2026-03-11] [LOG] Server started\ntrue",
+        "hints": [
+          "super.log(msg) inside TimestampLogger calls the parent Logger's log method, returning '[LOG] Server started'. The child then wraps it with the timestamp.",
+          "instanceof checks the entire prototype chain, so a TimestampLogger instance is also an instance of Logger."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "encapsulation-abstraction",
+    "sectionId": "oop",
+    "orderIndex": 3,
+    "title": "Encapsulation & Abstraction",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["encapsulation", "private fields", "closures for data hiding", "getters setters", "abstraction", "information hiding"],
+    "content": {
+      "explanation": "Encapsulation is the principle of bundling data (properties) and the methods that operate on that data into a single unit (an object or class), while restricting direct access to some of the object's internals. The goal is to prevent external code from depending on or accidentally modifying internal implementation details. In JavaScript, encapsulation has evolved through multiple mechanisms: naming conventions, closures, symbols, WeakMaps, and most recently, true private fields with the # syntax.\n\nThe modern approach to encapsulation in JavaScript uses private fields and methods, declared with the # prefix. These are enforced at the language level — attempting to access a #field from outside the class body results in a SyntaxError at parse time, not a runtime error. This is a significant improvement over the underscore convention (_property), which is merely a signal to other developers. Public properties are the interface; private fields are the implementation.\n\nBefore ES2022 private fields existed, closures were the primary way to achieve true data hiding in JavaScript. By defining variables inside a constructor function's scope and exposing only specific methods (the closure) as properties, you could create objects with genuinely inaccessible internal state. This pattern is sometimes called the revealing module pattern when applied to single objects or IIFEs. While closure-based privacy works, it has a cost: every instance gets its own copy of the methods, unlike prototype methods which are shared.\n\nGetters and setters provide controlled access to an object's internal state. Instead of exposing a raw property that anyone can read or write to, you define accessor methods that can validate inputs, compute derived values, log access, or trigger side effects. In classes, they are defined with the get and set keywords and are accessed like regular properties. This is a key part of encapsulation because it lets you change the internal representation without breaking external code that depends on the property.\n\nAbstraction in JavaScript is about hiding complexity and exposing only what is necessary. JavaScript does not have a formal abstract keyword like Java or C#, but you can simulate abstract classes by throwing errors in base class methods that subclasses are expected to override. This pattern ensures that subclasses provide their own implementation. The combination of encapsulation (hide how it works) and abstraction (hide that it works at all) creates clean interfaces that are easy to use and hard to misuse.\n\nA practical example of encapsulation and abstraction together is a user authentication class. External code calls authenticate(password) and gets back a boolean. Internally, the class hashes the password, compares hashes, manages attempt counters, and enforces lockout policies. None of these details leak out. If you later change from bcrypt to argon2, the external interface remains unchanged. This is the power of information hiding — implementation changes do not break consumers.",
+      "codeExamples": [
+        {
+          "title": "Private fields for encapsulation",
+          "code": "class UserAccount {\n  #passwordHash;\n  #loginAttempts;\n  #locked;\n\n  constructor(username, passwordHash) {\n    this.username = username;          // public\n    this.#passwordHash = passwordHash; // private\n    this.#loginAttempts = 0;\n    this.#locked = false;\n  }\n\n  authenticate(inputHash) {\n    if (this.#locked) {\n      return { success: false, message: 'Account locked' };\n    }\n\n    if (inputHash === this.#passwordHash) {\n      this.#loginAttempts = 0;\n      return { success: true, message: 'Login successful' };\n    }\n\n    this.#loginAttempts++;\n    if (this.#loginAttempts >= 3) {\n      this.#locked = true;\n      return { success: false, message: 'Account locked after 3 failed attempts' };\n    }\n\n    return { success: false, message: `Invalid password. ${3 - this.#loginAttempts} attempts remaining` };\n  }\n\n  get isLocked() {\n    return this.#locked;\n  }\n}\n\nconst user = new UserAccount('alice', 'hash123');\nconsole.log(user.authenticate('wrong'));\nconsole.log(user.authenticate('wrong'));\nconsole.log(user.authenticate('wrong'));\nconsole.log(user.isLocked);\nconsole.log(user.authenticate('hash123'));",
+          "output": "{ success: false, message: 'Invalid password. 2 attempts remaining' }\n{ success: false, message: 'Invalid password. 1 attempts remaining' }\n{ success: false, message: 'Account locked after 3 failed attempts' }\ntrue\n{ success: false, message: 'Account locked' }",
+          "explanation": "The password hash, attempt counter, and lock state are all private. External code cannot read the password, reset attempts, or unlock the account — it can only interact through the authenticate method and isLocked getter. This is encapsulation in practice."
+        },
+        {
+          "title": "Closures for data hiding (pre-ES2022)",
+          "code": "function createCounter(initial = 0) {\n  let count = initial;     // truly private — in closure scope\n  const history = [];      // truly private\n\n  return {\n    increment() {\n      count++;\n      history.push({ action: 'inc', value: count });\n      return count;\n    },\n    decrement() {\n      count--;\n      history.push({ action: 'dec', value: count });\n      return count;\n    },\n    getCount() {\n      return count;\n    },\n    getHistory() {\n      return [...history];  // return copy to prevent mutation\n    },\n    reset() {\n      count = initial;\n      history.length = 0;\n      return count;\n    }\n  };\n}\n\nconst counter = createCounter(10);\nconsole.log(counter.increment());\nconsole.log(counter.increment());\nconsole.log(counter.decrement());\nconsole.log(counter.getHistory());\nconsole.log(counter.getCount());\n\n// count and history are NOT accessible\nconsole.log(counter.count);\nconsole.log(counter.history);",
+          "output": "11\n12\n11\n[{ action: 'inc', value: 11 }, { action: 'inc', value: 12 }, { action: 'dec', value: 11 }]\n11\nundefined\nundefined",
+          "explanation": "The count and history variables live in the closure created by createCounter. The returned object's methods close over them, providing controlled access. Directly accessing counter.count returns undefined because it is not a property of the returned object — it is a local variable in the enclosing scope."
+        },
+        {
+          "title": "Getters and setters for controlled access",
+          "code": "class Product {\n  #price;\n  #discount;\n  #name;\n\n  constructor(name, price) {\n    this.#name = name;\n    this.#price = price;\n    this.#discount = 0;\n  }\n\n  get name() {\n    return this.#name;\n  }\n\n  set name(value) {\n    if (typeof value !== 'string' || value.trim().length === 0) {\n      throw new Error('Name must be a non-empty string');\n    }\n    this.#name = value.trim();\n  }\n\n  get price() {\n    return this.#price;\n  }\n\n  set price(value) {\n    if (typeof value !== 'number' || value < 0) {\n      throw new Error('Price must be a non-negative number');\n    }\n    this.#price = value;\n  }\n\n  get discount() {\n    return this.#discount;\n  }\n\n  set discount(percent) {\n    if (percent < 0 || percent > 100) {\n      throw new Error('Discount must be between 0 and 100');\n    }\n    this.#discount = percent;\n  }\n\n  // Computed property — read-only\n  get finalPrice() {\n    return this.#price * (1 - this.#discount / 100);\n  }\n\n  toString() {\n    return `${this.#name}: $${this.finalPrice.toFixed(2)} (${this.#discount}% off)`;\n  }\n}\n\nconst item = new Product('Laptop', 999);\nconsole.log(item.finalPrice);\n\nitem.discount = 20;\nconsole.log(item.toString());\n\nitem.name = 'Gaming Laptop';\nitem.price = 1499;\nitem.discount = 15;\nconsole.log(item.toString());\n\ntry {\n  item.price = -100;\n} catch (e) {\n  console.log(e.message);\n}",
+          "output": "999\nLaptop: $799.20 (20% off)\nGaming Laptop: $1274.15 (15% off)\nPrice must be a non-negative number",
+          "explanation": "Every property is guarded by setters that validate input. The finalPrice getter computes a derived value without storing it separately. If the internal pricing formula changes, external code continues to work because it only accesses finalPrice."
+        },
+        {
+          "title": "Abstract class pattern and information hiding",
+          "code": "// Abstract base class pattern\nclass DataStore {\n  constructor(name) {\n    if (new.target === DataStore) {\n      throw new Error('DataStore is abstract — cannot instantiate directly');\n    }\n    this.name = name;\n  }\n\n  // Abstract methods — subclasses MUST override\n  save(key, value) {\n    throw new Error('save() must be implemented by subclass');\n  }\n\n  load(key) {\n    throw new Error('load() must be implemented by subclass');\n  }\n\n  // Concrete method using abstract methods\n  saveAll(entries) {\n    const results = [];\n    for (const [key, value] of Object.entries(entries)) {\n      this.save(key, value);\n      results.push(key);\n    }\n    return `Saved ${results.length} entries to ${this.name}`;\n  }\n}\n\nclass MemoryStore extends DataStore {\n  #data = new Map();\n\n  constructor() {\n    super('MemoryStore');\n  }\n\n  save(key, value) {\n    this.#data.set(key, value);\n  }\n\n  load(key) {\n    return this.#data.get(key);\n  }\n\n  get size() {\n    return this.#data.size;\n  }\n}\n\n// Cannot instantiate abstract class\ntry {\n  new DataStore('test');\n} catch (e) {\n  console.log(e.message);\n}\n\nconst store = new MemoryStore();\nconsole.log(store.saveAll({ a: 1, b: 2, c: 3 }));\nconsole.log(store.load('b'));\nconsole.log(store.size);\nconsole.log(store instanceof DataStore);",
+          "output": "DataStore is abstract — cannot instantiate directly\nSaved 3 entries to MemoryStore\n2\n3\ntrue",
+          "explanation": "DataStore simulates an abstract class by throwing if instantiated directly (using new.target). Its save() and load() methods throw errors to force subclasses to provide implementations. The concrete saveAll() method works with any subclass that implements the abstract interface. MemoryStore hides its internal Map behind private fields."
+        }
+      ],
+      "notes": [
+        "Private fields (#) are enforced by the engine at the syntax level, making them the strongest form of encapsulation in JavaScript.",
+        "Closures provide true privacy but at the cost of memory — each instance gets its own copy of methods, whereas prototype methods are shared.",
+        "The underscore prefix convention (_property) is not enforced — it is only a developer agreement that the property should not be accessed directly.",
+        "new.target inside a constructor tells you which constructor was actually called with new, enabling the abstract class pattern."
+      ],
+      "commonPitfalls": [
+        "Relying on the underscore convention (_property) for real security — anyone can still access and modify _property freely.",
+        "Returning direct references to internal arrays or objects from getters — external code can mutate them. Always return copies with spread or structuredClone.",
+        "Making everything private — over-encapsulation makes classes hard to extend and test. Only hide true implementation details.",
+        "Forgetting that closure-based privacy means each instance gets its own method copies, increasing memory usage compared to prototype methods."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "encapsulation-abstraction-ex1",
+        "title": "Closure-Based Secret Keeper",
+        "description": "Use the closure pattern (no classes) to create a 'createVault' factory function that hides a secret string. The returned object should have methods to verify a guess and to get a hint (first and last character), but no way to access the secret directly.",
+        "starterCode": "// Exercise: Closure-based secret keeper\n// 1. Write a function 'createVault' that takes a secret string\n// 2. Return an object with:\n//    - verify(guess): returns 'Correct!' if guess === secret,\n//      otherwise 'Wrong!'\n//    - hint(): returns `Starts with '${first}' and ends with '${last}'`\n//      where first and last are the first and last characters of the secret\n// 3. Create vault = createVault('closure')\n// 4. Log vault.verify('wrong')\n// 5. Log vault.hint()\n// 6. Log vault.verify('closure')\n// 7. Log vault.secret  — should be undefined\n\n// Your code here\n",
+        "solution": "function createVault(secret) {\n  return {\n    verify(guess) {\n      return guess === secret ? 'Correct!' : 'Wrong!';\n    },\n    hint() {\n      return `Starts with '${secret[0]}' and ends with '${secret[secret.length - 1]}'`;\n    }\n  };\n}\n\nconst vault = createVault('closure');\nconsole.log(vault.verify('wrong'));\nconsole.log(vault.hint());\nconsole.log(vault.verify('closure'));\nconsole.log(vault.secret);",
+        "expectedOutput": "Wrong!\nStarts with 'c' and ends with 'e'\nCorrect!\nundefined",
+        "hints": [
+          "The 'secret' parameter is a local variable in createVault's scope. The returned methods close over it, but it is never exposed as a property.",
+          "vault.secret is undefined because 'secret' is not a property of the returned object -- it only exists in the closure scope."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "encapsulation-abstraction-ex2",
+        "title": "Encapsulated Score Tracker",
+        "description": "Create a class 'ScoreTracker' with a private #scores array. Add methods to record a score, get the average, and get the top score. The #scores array should never be directly accessible or modifiable from outside.",
+        "starterCode": "// Exercise: Encapsulated score tracker\n// 1. Create class 'ScoreTracker' with:\n//    - private field #scores initialized to []\n//    - method addScore(score) that pushes to #scores\n//    - getter 'average' that returns the mean of all scores\n//      (return 0 if no scores)\n//    - getter 'topScore' that returns the highest score\n//      (return 0 if no scores)\n//    - getter 'count' that returns #scores.length\n// 2. Create tracker = new ScoreTracker()\n// 3. Add scores: 80, 95, 70\n// 4. Log tracker.average\n// 5. Log tracker.topScore\n// 6. Log tracker.count\n\n// Your code here\n",
+        "solution": "class ScoreTracker {\n  #scores = [];\n\n  addScore(score) {\n    this.#scores.push(score);\n  }\n\n  get average() {\n    if (this.#scores.length === 0) return 0;\n    const sum = this.#scores.reduce((a, b) => a + b, 0);\n    return sum / this.#scores.length;\n  }\n\n  get topScore() {\n    if (this.#scores.length === 0) return 0;\n    return Math.max(...this.#scores);\n  }\n\n  get count() {\n    return this.#scores.length;\n  }\n}\n\nconst tracker = new ScoreTracker();\ntracker.addScore(80);\ntracker.addScore(95);\ntracker.addScore(70);\n\nconsole.log(tracker.average);\nconsole.log(tracker.topScore);\nconsole.log(tracker.count);",
+        "expectedOutput": "81.66666666666667\n95\n3",
+        "hints": [
+          "Use Array.prototype.reduce to sum all scores for the average calculation. Divide by the array length.",
+          "Math.max(...this.#scores) spreads the array into individual arguments to find the highest score. The private field ensures no one can tamper with scores externally."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

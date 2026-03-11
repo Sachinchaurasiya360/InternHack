@@ -1,0 +1,307 @@
+[
+  {
+    "id": "meta-tags",
+    "sectionId": "seo-and-meta",
+    "orderIndex": 0,
+    "title": "Meta Tags",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["viewport", "description", "charset", "http-equiv", "robots"],
+    "content": {
+      "explanation": "Meta tags are HTML elements placed in the <head> section of a document that provide metadata about the page. They are not visible to users but are read by browsers, search engines, and social media crawlers to understand your content, control indexing behavior, and configure display settings. A well-crafted set of meta tags improves search engine ranking, controls how your page appears in search results, and ensures proper rendering across devices.\n\nThe charset meta tag declares the character encoding of the document. The standard is <meta charset=\"UTF-8\">, which supports virtually all characters and symbols from all writing systems worldwide. This must be the first element in the <head> section (or at least within the first 1024 bytes) so the browser knows how to decode the rest of the document. Without it, special characters, emojis, and non-Latin scripts may render as garbled text or question marks.\n\nThe viewport meta tag is essential for responsive web design. The tag <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"> tells the browser to set the viewport width to the device's actual width and start at 1x zoom. Without this tag, mobile browsers render the page at a typical desktop width (usually 980px) and then shrink it to fit the screen, making text tiny and unusable. You can also control minimum and maximum scale, and whether the user can zoom — though disabling zoom is an accessibility anti-pattern.\n\nThe description meta tag provides a summary of the page's content. Search engines often display this as the snippet text below the page title in results. The ideal length is 150-160 characters — long enough to be informative, short enough to avoid truncation. A compelling description that includes relevant keywords and a clear value proposition can significantly improve click-through rates from search results, even if it does not directly affect ranking algorithms.\n\nThe robots meta tag controls how search engine crawlers interact with the page. The default behavior is to index the page and follow all links, but you can modify this with directives like noindex (do not include in search results), nofollow (do not follow links on this page), noarchive (do not cache a copy), and nosnippet (do not show a text snippet in results). The http-equiv meta tags provide HTTP header-like behavior: http-equiv=\"refresh\" can redirect pages, http-equiv=\"X-UA-Compatible\" controls IE rendering mode, and http-equiv=\"Content-Security-Policy\" sets security policies. However, actual HTTP headers are generally preferred over http-equiv for security-related settings.",
+      "codeExamples": [
+        {
+          "title": "Essential Meta Tags for Every Page",
+          "code": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <!-- Character encoding (must be first) -->\n  <meta charset=\"UTF-8\" />\n\n  <!-- Viewport for responsive design -->\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n\n  <!-- Page description for search results -->\n  <meta name=\"description\" content=\"Learn HTML meta tags, viewport settings, and SEO best practices. A comprehensive guide for web developers.\" />\n\n  <!-- Page title (not a meta tag, but critical for SEO) -->\n  <title>Meta Tags Guide - Web Development Tutorial</title>\n\n  <!-- Author information -->\n  <meta name=\"author\" content=\"Jane Developer\" />\n\n  <!-- Theme color for mobile browsers -->\n  <meta name=\"theme-color\" content=\"#1a1a2e\" />\n</head>\n<body>\n  <h1>Understanding Meta Tags</h1>\n</body>\n</html>",
+          "explanation": "Every HTML page should have charset, viewport, description, and title at minimum. The charset tag must appear first so the browser knows how to decode subsequent content. The viewport tag enables responsive design on mobile devices."
+        },
+        {
+          "title": "Robots Meta Tag Directives",
+          "code": "<!-- Default: Allow indexing and link following -->\n<meta name=\"robots\" content=\"index, follow\" />\n\n<!-- Block search engines from indexing this page -->\n<meta name=\"robots\" content=\"noindex\" />\n\n<!-- Block indexing AND prevent following links -->\n<meta name=\"robots\" content=\"noindex, nofollow\" />\n\n<!-- Allow indexing but prevent caching -->\n<meta name=\"robots\" content=\"index, noarchive\" />\n\n<!-- Prevent snippet display in search results -->\n<meta name=\"robots\" content=\"nosnippet\" />\n\n<!-- Control snippet length (max characters) -->\n<meta name=\"robots\" content=\"max-snippet:150\" />\n\n<!-- Target specific search engines -->\n<meta name=\"googlebot\" content=\"noindex\" />\n<meta name=\"bingbot\" content=\"noarchive\" />\n\n<!-- Prevent indexing after a specific date -->\n<meta name=\"robots\" content=\"unavailable_after: 2026-12-31\" />",
+          "explanation": "The robots meta tag controls search engine behavior per page. Use noindex for pages like admin dashboards, user profiles, or staging environments. Use nofollow for user-generated content pages where you do not want to pass link equity to external URLs."
+        },
+        {
+          "title": "HTTP-Equiv Meta Tags",
+          "code": "<!-- Content Security Policy -->\n<meta http-equiv=\"Content-Security-Policy\"\n  content=\"default-src 'self'; img-src https:; script-src 'self'\" />\n\n<!-- Page refresh/redirect (use sparingly) -->\n<meta http-equiv=\"refresh\" content=\"5;url=https://example.com/new-page\" />\n\n<!-- IE compatibility mode (legacy) -->\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=edge\" />\n\n<!-- Cache control (prefer HTTP headers instead) -->\n<meta http-equiv=\"Cache-Control\" content=\"no-cache, no-store\" />\n<meta http-equiv=\"Pragma\" content=\"no-cache\" />\n<meta http-equiv=\"Expires\" content=\"0\" />\n\n<!-- Prevent MIME type sniffing -->\n<meta http-equiv=\"X-Content-Type-Options\" content=\"nosniff\" />",
+          "explanation": "http-equiv meta tags simulate HTTP headers. Content-Security-Policy restricts resource loading to prevent XSS attacks. Refresh can auto-redirect but is not recommended for accessibility. For security headers, actual HTTP headers set by the server are more reliable and cannot be bypassed."
+        },
+        {
+          "title": "Viewport Configuration Options",
+          "code": "<!-- Standard responsive viewport (recommended) -->\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n\n<!-- Allow user zooming (accessibility best practice) -->\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, user-scalable=yes\" />\n\n<!-- BAD: Disabling zoom breaks accessibility -->\n<!-- Do NOT use: maximum-scale=1.0 or user-scalable=no -->\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\" />\n\n<!-- Fixed-width viewport (for non-responsive legacy sites) -->\n<meta name=\"viewport\" content=\"width=1024\" />\n\n<!-- Mobile web app capable (iOS) -->\n<meta name=\"apple-mobile-web-app-capable\" content=\"yes\" />\n<meta name=\"apple-mobile-web-app-status-bar-style\" content=\"black-translucent\" />\n<meta name=\"apple-mobile-web-app-title\" content=\"My App\" />",
+          "explanation": "The standard viewport tag sets width to device width and initial zoom to 1x. Never disable user scaling (user-scalable=no or maximum-scale=1) as this prevents users with low vision from zooming in, violating WCAG 1.4.4. Apple-specific meta tags configure iOS home screen web apps."
+        }
+      ],
+      "notes": [
+        "The <meta charset=\"UTF-8\"> tag should be the first element in <head> to ensure correct character decoding from the start of the document.",
+        "Meta descriptions do not directly impact search rankings but significantly affect click-through rates. Write them as compelling summaries that encourage users to click.",
+        "Never use user-scalable=no or maximum-scale=1 in the viewport tag. Preventing zoom is a WCAG 1.4.4 (Level AA) violation that makes your site unusable for people with low vision."
+      ],
+      "commonPitfalls": [
+        "Forgetting the viewport meta tag, causing mobile browsers to render the page at desktop width and shrink everything down, making it unreadable on phones.",
+        "Writing duplicate meta descriptions across multiple pages. Each page should have a unique description that accurately reflects its specific content.",
+        "Using http-equiv='refresh' for redirects instead of proper HTTP 301/302 redirects. Meta refresh does not pass SEO link equity and creates a poor user experience."
+      ],
+      "interviewTips": [
+        "Know the minimum set of meta tags every page needs: charset, viewport, description, and title.",
+        "Explain why disabling zoom with the viewport meta tag is an accessibility violation."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "meta-tags-ex1",
+        "title": "Complete the Head Section",
+        "description": "Fill in the missing meta tags for a blog post page. Include charset, viewport, description, author, and robots tags. The page should be indexable but links should not be followed.",
+        "starterCode": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <!-- Add: charset -->\n  <!-- Add: viewport -->\n  <!-- Add: description (about a CSS Grid tutorial) -->\n  <!-- Add: author -->\n  <!-- Add: robots (index but nofollow) -->\n  <title>CSS Grid Complete Guide - Dev Blog</title>\n</head>\n<body>\n  <article>\n    <h1>The Complete Guide to CSS Grid</h1>\n  </article>\n</body>\n</html>\n",
+        "solution": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n  <meta name=\"description\" content=\"Master CSS Grid layout with this complete guide. Learn grid containers, grid items, template areas, and responsive patterns with practical examples.\" />\n  <meta name=\"author\" content=\"Dev Blog Team\" />\n  <meta name=\"robots\" content=\"index, nofollow\" />\n  <title>CSS Grid Complete Guide - Dev Blog</title>\n</head>\n<body>\n  <article>\n    <h1>The Complete Guide to CSS Grid</h1>\n  </article>\n</body>\n</html>",
+        "hints": [
+          "charset must be UTF-8 and placed first in the head",
+          "The viewport tag needs width=device-width and initial-scale=1",
+          "Keep the description under 160 characters and make it compelling"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "meta-tags-ex2",
+        "title": "Fix the Meta Tag Issues",
+        "description": "The page below has several meta tag problems. Identify and fix all issues including incorrect charset placement, disabled zoom, missing description, and an insecure CSP.",
+        "starterCode": "<!DOCTYPE html>\n<html>\n<head>\n  <title>My App</title>\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no\" />\n  <meta charset=\"UTF-8\" />\n  <meta http-equiv=\"Content-Security-Policy\" content=\"default-src *; script-src * 'unsafe-inline' 'unsafe-eval'\" />\n</head>\n<body>\n  <h1>Welcome to My App</h1>\n</body>\n</html>\n",
+        "solution": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n  <meta name=\"description\" content=\"My App - A modern web application for task management and team collaboration.\" />\n  <meta http-equiv=\"Content-Security-Policy\" content=\"default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'\" />\n  <title>My App - Task Management</title>\n</head>\n<body>\n  <h1>Welcome to My App</h1>\n</body>\n</html>",
+        "hints": [
+          "charset must be the first element in head, before title",
+          "Remove maximum-scale=1 and user-scalable=no to allow zooming",
+          "Add a lang attribute to the html element",
+          "The CSP allowing * and unsafe-eval is dangerously permissive"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "open-graph",
+    "sectionId": "seo-and-meta",
+    "orderIndex": 1,
+    "title": "Open Graph",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["og:title", "og:description", "og:image", "Twitter Cards", "Social Sharing"],
+    "content": {
+      "explanation": "Open Graph (OG) is a protocol created by Facebook (now Meta) in 2010 that allows web pages to control how they appear when shared on social media platforms. When someone shares a link on Facebook, LinkedIn, Slack, Discord, or iMessage, the platform fetches the page and reads its Open Graph meta tags to generate a rich preview card with a title, description, and image. Without OG tags, platforms will attempt to extract information from the page, often producing unattractive or irrelevant previews.\n\nThe four essential Open Graph properties are og:title, og:description, og:image, and og:type. The og:title should be concise and engaging — it can differ from the HTML <title> tag, which is optimized for search engines. The og:description provides a brief summary (usually 2-3 sentences) that appears below the title in the preview card. The og:image specifies the URL of the image to display — this is the single most impactful OG tag because visual previews dramatically increase engagement. The og:type categorizes the content (website, article, product, video, etc.) and tells platforms how to structure the preview.\n\nImage specifications matter significantly for social media previews. The recommended size for og:image is 1200x630 pixels with a 1.91:1 aspect ratio, as this works well across Facebook, LinkedIn, and most other platforms. The image URL must be absolute (not relative) and accessible publicly — platforms fetch it from their servers, so images behind authentication or on localhost will not work. Including og:image:width and og:image:height helps platforms render the preview faster without needing to download the image first.\n\nTwitter uses its own meta tag system called Twitter Cards, which operates alongside Open Graph. The primary Twitter-specific tag is twitter:card, which controls the card layout: summary (small square image), summary_large_image (wide image), player (embedded media), or app (mobile app install). Twitter falls back to Open Graph tags for title, description, and image if its own tags are not present, but the twitter:card type tag must be explicitly set. The twitter:site and twitter:creator tags attribute the content to specific Twitter accounts.\n\nBeyond social media, Open Graph metadata is used by messaging apps (WhatsApp, Telegram, iMessage), project management tools (Jira, Notion), and even search engines for knowledge panels. This makes OG tags a high-impact investment — a few lines of HTML can dramatically improve how your content appears wherever links are shared. Use tools like Facebook's Sharing Debugger, Twitter's Card Validator, and LinkedIn's Post Inspector to test and debug your social previews.",
+      "codeExamples": [
+        {
+          "title": "Essential Open Graph Tags",
+          "code": "<head>\n  <!-- Basic Open Graph tags -->\n  <meta property=\"og:title\" content=\"Complete Guide to CSS Grid Layout\" />\n  <meta property=\"og:description\" content=\"Master CSS Grid with practical examples. Learn grid containers, template areas, auto-placement, and responsive patterns used by top websites.\" />\n  <meta property=\"og:image\" content=\"https://example.com/images/css-grid-guide-og.jpg\" />\n  <meta property=\"og:url\" content=\"https://example.com/blog/css-grid-guide\" />\n  <meta property=\"og:type\" content=\"article\" />\n  <meta property=\"og:site_name\" content=\"Dev Blog\" />\n  <meta property=\"og:locale\" content=\"en_US\" />\n\n  <!-- Image dimensions help platforms render previews faster -->\n  <meta property=\"og:image:width\" content=\"1200\" />\n  <meta property=\"og:image:height\" content=\"630\" />\n  <meta property=\"og:image:alt\" content=\"CSS Grid layout diagram showing a 12-column grid with named areas\" />\n</head>",
+          "explanation": "og:title and og:description can differ from the HTML title and meta description since they serve different purposes (social sharing vs search results). og:url should point to the canonical URL. Always include image dimensions and alt text for accessibility."
+        },
+        {
+          "title": "Twitter Card Tags",
+          "code": "<head>\n  <!-- Twitter Card type (required for Twitter previews) -->\n  <meta name=\"twitter:card\" content=\"summary_large_image\" />\n\n  <!-- Twitter-specific overrides (optional, falls back to OG) -->\n  <meta name=\"twitter:title\" content=\"CSS Grid: The Complete Guide\" />\n  <meta name=\"twitter:description\" content=\"Everything you need to know about CSS Grid in one tutorial.\" />\n  <meta name=\"twitter:image\" content=\"https://example.com/images/css-grid-twitter.jpg\" />\n  <meta name=\"twitter:image:alt\" content=\"CSS Grid layout examples\" />\n\n  <!-- Attribution -->\n  <meta name=\"twitter:site\" content=\"@DevBlog\" />\n  <meta name=\"twitter:creator\" content=\"@janedeveloper\" />\n\n  <!-- Open Graph fallbacks (Twitter reads these if its own tags are missing) -->\n  <meta property=\"og:title\" content=\"Complete Guide to CSS Grid Layout\" />\n  <meta property=\"og:description\" content=\"Master CSS Grid with practical examples and responsive patterns.\" />\n  <meta property=\"og:image\" content=\"https://example.com/images/css-grid-guide-og.jpg\" />\n</head>",
+          "explanation": "Twitter Cards require the twitter:card tag to specify the layout type. Twitter falls back to OG tags for title, description, and image. summary_large_image provides the most visual impact with a wide preview image above the title and description."
+        },
+        {
+          "title": "Open Graph for Different Content Types",
+          "code": "<!-- Article (blog post, news) -->\n<meta property=\"og:type\" content=\"article\" />\n<meta property=\"article:published_time\" content=\"2026-03-01T08:00:00Z\" />\n<meta property=\"article:modified_time\" content=\"2026-03-10T14:30:00Z\" />\n<meta property=\"article:author\" content=\"https://example.com/authors/jane\" />\n<meta property=\"article:section\" content=\"Web Development\" />\n<meta property=\"article:tag\" content=\"CSS\" />\n<meta property=\"article:tag\" content=\"Grid Layout\" />\n\n<!-- Product page -->\n<meta property=\"og:type\" content=\"product\" />\n<meta property=\"product:price:amount\" content=\"49.99\" />\n<meta property=\"product:price:currency\" content=\"USD\" />\n<meta property=\"product:availability\" content=\"in stock\" />\n\n<!-- Video content -->\n<meta property=\"og:type\" content=\"video.other\" />\n<meta property=\"og:video\" content=\"https://example.com/videos/tutorial.mp4\" />\n<meta property=\"og:video:width\" content=\"1280\" />\n<meta property=\"og:video:height\" content=\"720\" />\n<meta property=\"og:video:type\" content=\"video/mp4\" />",
+          "explanation": "Different og:type values unlock additional metadata fields. The article type supports published_time, author, and tags. Product pages can include price and availability. Video pages can embed playable media directly in social previews."
+        },
+        {
+          "title": "Complete Social Sharing Head Section",
+          "code": "<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n\n  <!-- SEO -->\n  <title>10 CSS Grid Tricks Every Developer Should Know | Dev Blog</title>\n  <meta name=\"description\" content=\"Discover 10 powerful CSS Grid techniques including subgrid, auto-fill vs auto-fit, named lines, and responsive patterns without media queries.\" />\n\n  <!-- Open Graph -->\n  <meta property=\"og:type\" content=\"article\" />\n  <meta property=\"og:title\" content=\"10 CSS Grid Tricks You Need to Know\" />\n  <meta property=\"og:description\" content=\"Level up your layout skills with these 10 CSS Grid techniques used by professional frontend developers.\" />\n  <meta property=\"og:image\" content=\"https://devblog.com/og/css-grid-tricks.jpg\" />\n  <meta property=\"og:image:width\" content=\"1200\" />\n  <meta property=\"og:image:height\" content=\"630\" />\n  <meta property=\"og:image:alt\" content=\"10 CSS Grid tricks illustrated with code snippets\" />\n  <meta property=\"og:url\" content=\"https://devblog.com/css-grid-tricks\" />\n  <meta property=\"og:site_name\" content=\"Dev Blog\" />\n  <meta property=\"article:published_time\" content=\"2026-03-01T10:00:00Z\" />\n\n  <!-- Twitter Card -->\n  <meta name=\"twitter:card\" content=\"summary_large_image\" />\n  <meta name=\"twitter:site\" content=\"@DevBlog\" />\n  <meta name=\"twitter:creator\" content=\"@cssmaster\" />\n\n  <!-- Canonical URL -->\n  <link rel=\"canonical\" href=\"https://devblog.com/css-grid-tricks\" />\n</head>",
+          "explanation": "A complete social sharing setup includes SEO meta tags (title, description), Open Graph tags for Facebook and LinkedIn, Twitter Card tags, and a canonical URL. Note how og:title differs from the HTML title — it is shorter and more engaging for social feeds."
+        }
+      ],
+      "notes": [
+        "og:image should be 1200x630 pixels (1.91:1 ratio) for optimal display across all platforms. Images smaller than 600x315 may not generate a rich preview on Facebook.",
+        "Twitter requires the twitter:card meta tag to enable card previews. Without it, shared links show as plain text URLs even if all OG tags are present.",
+        "Use Facebook's Sharing Debugger (developers.facebook.com/tools/debug/) to test your OG tags and force Facebook to re-scrape a page after updates."
+      ],
+      "commonPitfalls": [
+        "Using relative image URLs for og:image. Social media platforms fetch images from their own servers, so the URL must be absolute (starting with https://).",
+        "Setting og:image to a very large file. Platforms typically have timeout limits when fetching images — keep OG images under 1MB for reliable loading.",
+        "Not including og:url, causing duplicate content when the same page is accessible via multiple URLs (with/without www, trailing slashes, query parameters)."
+      ],
+      "interviewTips": [
+        "Explain the difference between HTML meta description (for search engines) and og:description (for social media sharing) and why they might differ.",
+        "Know the four essential OG properties: og:title, og:description, og:image, and og:type."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "open-graph-ex1",
+        "title": "Add Social Sharing Tags to a Blog Post",
+        "description": "Add Open Graph and Twitter Card meta tags to a blog post about JavaScript closures. Use 'summary_large_image' for the Twitter card. Make the social titles shorter and more engaging than the SEO title.",
+        "starterCode": "<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n  <title>Understanding JavaScript Closures: A Comprehensive Guide for Developers | CodeBlog</title>\n  <meta name=\"description\" content=\"Learn everything about JavaScript closures including scope chains, practical use cases, memory management, and common interview questions.\" />\n\n  <!-- Add Open Graph tags -->\n\n  <!-- Add Twitter Card tags -->\n</head>\n",
+        "solution": "<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n  <title>Understanding JavaScript Closures: A Comprehensive Guide for Developers | CodeBlog</title>\n  <meta name=\"description\" content=\"Learn everything about JavaScript closures including scope chains, practical use cases, memory management, and common interview questions.\" />\n\n  <!-- Open Graph tags -->\n  <meta property=\"og:type\" content=\"article\" />\n  <meta property=\"og:title\" content=\"JavaScript Closures Explained Simply\" />\n  <meta property=\"og:description\" content=\"Finally understand closures. Practical examples, real use cases, and the interview questions you need to know.\" />\n  <meta property=\"og:image\" content=\"https://codeblog.com/og/js-closures.jpg\" />\n  <meta property=\"og:image:width\" content=\"1200\" />\n  <meta property=\"og:image:height\" content=\"630\" />\n  <meta property=\"og:image:alt\" content=\"JavaScript closures concept diagram with code examples\" />\n  <meta property=\"og:url\" content=\"https://codeblog.com/blog/javascript-closures\" />\n  <meta property=\"og:site_name\" content=\"CodeBlog\" />\n\n  <!-- Twitter Card tags -->\n  <meta name=\"twitter:card\" content=\"summary_large_image\" />\n  <meta name=\"twitter:site\" content=\"@CodeBlog\" />\n  <meta name=\"twitter:creator\" content=\"@jsauthor\" />\n</head>",
+        "hints": [
+          "og:title should be shorter and more engaging than the HTML title tag",
+          "Image URLs must be absolute (start with https://)",
+          "Twitter falls back to OG tags for title/description/image, so you only need twitter:card, twitter:site, and twitter:creator"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "open-graph-ex2",
+        "title": "Create OG Tags for a Product Page",
+        "description": "Add complete Open Graph tags for an e-commerce product page. Include product-specific OG properties like price and availability, plus standard social sharing tags.",
+        "starterCode": "<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n  <title>Wireless Noise-Cancelling Headphones - TechStore</title>\n\n  <!-- Add Open Graph tags for a product page -->\n  <!-- Include product type, price ($249.99 USD), and availability -->\n  <!-- Add Twitter summary_large_image card -->\n</head>\n",
+        "solution": "<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n  <title>Wireless Noise-Cancelling Headphones - TechStore</title>\n\n  <!-- Open Graph -->\n  <meta property=\"og:type\" content=\"product\" />\n  <meta property=\"og:title\" content=\"Wireless Noise-Cancelling Headphones\" />\n  <meta property=\"og:description\" content=\"Premium over-ear headphones with active noise cancellation, 30-hour battery life, and Hi-Res audio support. Free shipping on orders over $100.\" />\n  <meta property=\"og:image\" content=\"https://techstore.com/images/products/headphones-og.jpg\" />\n  <meta property=\"og:image:width\" content=\"1200\" />\n  <meta property=\"og:image:height\" content=\"630\" />\n  <meta property=\"og:image:alt\" content=\"Black wireless noise-cancelling headphones on white background\" />\n  <meta property=\"og:url\" content=\"https://techstore.com/products/wireless-headphones\" />\n  <meta property=\"og:site_name\" content=\"TechStore\" />\n\n  <!-- Product-specific OG properties -->\n  <meta property=\"product:price:amount\" content=\"249.99\" />\n  <meta property=\"product:price:currency\" content=\"USD\" />\n  <meta property=\"product:availability\" content=\"in stock\" />\n\n  <!-- Twitter Card -->\n  <meta name=\"twitter:card\" content=\"summary_large_image\" />\n  <meta name=\"twitter:site\" content=\"@TechStore\" />\n</head>",
+        "hints": [
+          "Use og:type 'product' to enable product-specific properties",
+          "Product price uses product:price:amount and product:price:currency as separate tags",
+          "Include a compelling description that mentions key features and promotions"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "structured-data",
+    "sectionId": "seo-and-meta",
+    "orderIndex": 2,
+    "title": "Structured Data",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["JSON-LD", "schema.org", "Breadcrumbs", "FAQ Schema", "Rich Results"],
+    "content": {
+      "explanation": "Structured data is a standardized format for providing information about a page and classifying its content. By adding structured data to your HTML, you help search engines understand not just the text on the page but the meaning behind it — whether a number is a price, a rating, or a date; whether a page describes a recipe, a product, a job listing, or an event. This understanding enables search engines to display rich results (also called rich snippets) — enhanced search listings with ratings, prices, images, FAQs, and other interactive elements.\n\nJSON-LD (JavaScript Object Notation for Linked Data) is the format recommended by Google for implementing structured data. It uses a <script type=\"application/ld+json\"> tag in the document head (or body) containing a JSON object that describes the page content. Unlike Microdata or RDFa, JSON-LD does not interleave data with HTML markup, making it cleaner, easier to maintain, and simpler for dynamic sites to generate programmatically. The JSON-LD object references types and properties from schema.org, a shared vocabulary created by Google, Microsoft, Yahoo, and Yandex.\n\nSchema.org defines hundreds of types — from generic ones like Thing, CreativeWork, and Organization to specific ones like Recipe, JobPosting, Event, Product, Course, and FAQPage. Each type has properties that describe it: a Product has name, description, price, and review; a Recipe has ingredients, cookTime, and nutrition. Types can be nested: a Product can contain an AggregateRating which contains ratingValue and reviewCount. The @context field points to schema.org, and @type identifies the schema type.\n\nBreadcrumb structured data tells search engines about the page's position in the site hierarchy. Instead of showing a plain URL in search results, Google can display a breadcrumb trail like \"Home > Blog > CSS > Grid Layout\", which gives users a better understanding of the site structure. FAQ schema (FAQPage type) is particularly powerful — it can make your search result expand with collapsible question-and-answer pairs, dramatically increasing the visual real estate your listing occupies in search results.\n\nTesting and validation are essential. Google's Rich Results Test (search.google.com/test/rich-results) checks whether your structured data is valid and eligible for enhanced display. The Schema Markup Validator (validator.schema.org) validates against the full schema.org vocabulary. Common mistakes include using incorrect types, missing required properties, or providing data that contradicts the visible page content — Google may penalize sites that use structured data deceptively.",
+      "codeExamples": [
+        {
+          "title": "Basic JSON-LD for an Article",
+          "code": "<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Article\",\n  \"headline\": \"Complete Guide to CSS Grid Layout\",\n  \"description\": \"Learn CSS Grid from fundamentals to advanced techniques with practical examples.\",\n  \"image\": \"https://example.com/images/css-grid-hero.jpg\",\n  \"author\": {\n    \"@type\": \"Person\",\n    \"name\": \"Jane Developer\",\n    \"url\": \"https://example.com/authors/jane\"\n  },\n  \"publisher\": {\n    \"@type\": \"Organization\",\n    \"name\": \"Dev Blog\",\n    \"logo\": {\n      \"@type\": \"ImageObject\",\n      \"url\": \"https://example.com/logo.png\"\n    }\n  },\n  \"datePublished\": \"2026-03-01\",\n  \"dateModified\": \"2026-03-10\",\n  \"mainEntityOfPage\": {\n    \"@type\": \"WebPage\",\n    \"@id\": \"https://example.com/blog/css-grid-guide\"\n  }\n}\n</script>",
+          "explanation": "The Article schema tells Google this page is a news or blog article. Required properties include headline, image, author, publisher, and dates. The nested objects (Person, Organization, ImageObject) provide rich type information for each related entity."
+        },
+        {
+          "title": "Breadcrumb Structured Data",
+          "code": "<!-- Visible breadcrumb navigation -->\n<nav aria-label=\"Breadcrumb\">\n  <ol>\n    <li><a href=\"/\">Home</a></li>\n    <li><a href=\"/tutorials\">Tutorials</a></li>\n    <li><a href=\"/tutorials/css\">CSS</a></li>\n    <li aria-current=\"page\">Grid Layout</li>\n  </ol>\n</nav>\n\n<!-- JSON-LD breadcrumb schema -->\n<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"BreadcrumbList\",\n  \"itemListElement\": [\n    {\n      \"@type\": \"ListItem\",\n      \"position\": 1,\n      \"name\": \"Home\",\n      \"item\": \"https://example.com/\"\n    },\n    {\n      \"@type\": \"ListItem\",\n      \"position\": 2,\n      \"name\": \"Tutorials\",\n      \"item\": \"https://example.com/tutorials\"\n    },\n    {\n      \"@type\": \"ListItem\",\n      \"position\": 3,\n      \"name\": \"CSS\",\n      \"item\": \"https://example.com/tutorials/css\"\n    },\n    {\n      \"@type\": \"ListItem\",\n      \"position\": 4,\n      \"name\": \"Grid Layout\"\n    }\n  ]\n}\n</script>",
+          "explanation": "BreadcrumbList schema replaces the raw URL in search results with a readable breadcrumb path. Each ListItem has a position (1-based), name, and item URL. The last item (current page) omits the item URL since it is the page itself."
+        },
+        {
+          "title": "FAQ Schema for Rich Results",
+          "code": "<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"FAQPage\",\n  \"mainEntity\": [\n    {\n      \"@type\": \"Question\",\n      \"name\": \"What is CSS Grid?\",\n      \"acceptedAnswer\": {\n        \"@type\": \"Answer\",\n        \"text\": \"CSS Grid is a two-dimensional layout system that allows you to create complex grid-based layouts using rows and columns. Unlike Flexbox which is one-dimensional, Grid handles both dimensions simultaneously, making it ideal for page-level layouts.\"\n      }\n    },\n    {\n      \"@type\": \"Question\",\n      \"name\": \"What is the difference between CSS Grid and Flexbox?\",\n      \"acceptedAnswer\": {\n        \"@type\": \"Answer\",\n        \"text\": \"CSS Grid is designed for two-dimensional layouts (rows AND columns simultaneously), while Flexbox is designed for one-dimensional layouts (either a row OR a column). Use Grid for overall page layout and Flexbox for component-level alignment within those grid areas.\"\n      }\n    },\n    {\n      \"@type\": \"Question\",\n      \"name\": \"Is CSS Grid supported in all browsers?\",\n      \"acceptedAnswer\": {\n        \"@type\": \"Answer\",\n        \"text\": \"Yes, CSS Grid is supported in all modern browsers including Chrome, Firefox, Safari, and Edge. Global browser support exceeds 97%. The subgrid feature has more recent support, reaching full cross-browser availability in late 2023.\"\n      }\n    }\n  ]\n}\n</script>",
+          "explanation": "FAQPage schema creates expandable Q&A pairs directly in search results, significantly increasing your listing's visual footprint. Each Question has a name (the question text) and an acceptedAnswer with the answer text. The FAQ content must be visible on the page."
+        },
+        {
+          "title": "Product Schema with Reviews",
+          "code": "<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Product\",\n  \"name\": \"Wireless Noise-Cancelling Headphones\",\n  \"image\": [\n    \"https://store.com/images/headphones-front.jpg\",\n    \"https://store.com/images/headphones-side.jpg\"\n  ],\n  \"description\": \"Premium over-ear headphones with active noise cancellation and 30-hour battery.\",\n  \"brand\": {\n    \"@type\": \"Brand\",\n    \"name\": \"AudioPro\"\n  },\n  \"offers\": {\n    \"@type\": \"Offer\",\n    \"url\": \"https://store.com/products/headphones\",\n    \"priceCurrency\": \"USD\",\n    \"price\": \"249.99\",\n    \"availability\": \"https://schema.org/InStock\",\n    \"priceValidUntil\": \"2026-12-31\"\n  },\n  \"aggregateRating\": {\n    \"@type\": \"AggregateRating\",\n    \"ratingValue\": \"4.7\",\n    \"reviewCount\": \"1284\"\n  },\n  \"review\": [\n    {\n      \"@type\": \"Review\",\n      \"reviewRating\": {\n        \"@type\": \"Rating\",\n        \"ratingValue\": \"5\",\n        \"bestRating\": \"5\"\n      },\n      \"author\": {\n        \"@type\": \"Person\",\n        \"name\": \"Alex M.\"\n      },\n      \"reviewBody\": \"Best noise cancellation I have ever experienced. Battery life is incredible.\"\n    }\n  ]\n}\n</script>",
+          "explanation": "Product schema can display price, availability, and star ratings directly in Google search results. The aggregateRating shows the overall score, while individual reviews provide social proof. The offers object must include priceCurrency, price, and availability using schema.org URL values."
+        }
+      ],
+      "notes": [
+        "Google recommends JSON-LD over Microdata or RDFa. JSON-LD keeps structured data separate from HTML, making it easier to maintain and generate dynamically.",
+        "Structured data must accurately reflect the visible page content. Google may issue manual penalties for deceptive or misleading structured data.",
+        "Always test with Google's Rich Results Test before deploying. A valid schema does not guarantee rich results — Google decides whether to display them based on relevance and quality."
+      ],
+      "commonPitfalls": [
+        "Adding FAQ schema for content that is not actually displayed on the page as questions and answers. Google requires the FAQ content to be visible to users.",
+        "Missing required properties for a schema type. For example, a Product without an offers object will not generate price-related rich results.",
+        "Using incorrect availability values. Schema.org uses full URLs like 'https://schema.org/InStock', not plain text like 'in stock'."
+      ],
+      "interviewTips": [
+        "Explain what JSON-LD is and why Google prefers it over Microdata for structured data implementation.",
+        "Name three schema.org types that can generate Google rich results and describe what enhanced information they display in search listings."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "structured-data-ex1",
+        "title": "Create Article Schema",
+        "description": "Write JSON-LD structured data for a blog post titled 'Getting Started with TypeScript'. Include author, publisher, dates, and a hero image. Use proper nested schema types.",
+        "starterCode": "<!-- Add JSON-LD structured data for this blog post -->\n<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Article\"\n  // Add required properties: headline, image, author, publisher, dates\n}\n</script>\n",
+        "solution": "<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Article\",\n  \"headline\": \"Getting Started with TypeScript\",\n  \"description\": \"A beginner-friendly introduction to TypeScript, covering types, interfaces, and how to set up your first project.\",\n  \"image\": \"https://example.com/images/typescript-intro.jpg\",\n  \"author\": {\n    \"@type\": \"Person\",\n    \"name\": \"Sarah Chen\",\n    \"url\": \"https://example.com/authors/sarah\"\n  },\n  \"publisher\": {\n    \"@type\": \"Organization\",\n    \"name\": \"CodeTutorials\",\n    \"logo\": {\n      \"@type\": \"ImageObject\",\n      \"url\": \"https://example.com/logo.png\"\n    }\n  },\n  \"datePublished\": \"2026-03-01\",\n  \"dateModified\": \"2026-03-10\",\n  \"mainEntityOfPage\": {\n    \"@type\": \"WebPage\",\n    \"@id\": \"https://example.com/blog/getting-started-typescript\"\n  }\n}\n</script>",
+        "hints": [
+          "The @context is always 'https://schema.org'",
+          "Author should be a nested Person object with name and url",
+          "Publisher requires a nested Organization with a logo ImageObject"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "structured-data-ex2",
+        "title": "Build FAQ and Breadcrumb Schema",
+        "description": "Create both FAQ and Breadcrumb JSON-LD for a page at /docs/css/flexbox. Include 3 FAQ questions about CSS Flexbox and a breadcrumb trail from Home > Docs > CSS > Flexbox.",
+        "starterCode": "<!-- Add BreadcrumbList JSON-LD -->\n<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"BreadcrumbList\"\n  // Add itemListElement array with 4 items\n}\n</script>\n\n<!-- Add FAQPage JSON-LD -->\n<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"FAQPage\"\n  // Add mainEntity array with 3 questions\n}\n</script>\n",
+        "solution": "<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"BreadcrumbList\",\n  \"itemListElement\": [\n    {\n      \"@type\": \"ListItem\",\n      \"position\": 1,\n      \"name\": \"Home\",\n      \"item\": \"https://example.com/\"\n    },\n    {\n      \"@type\": \"ListItem\",\n      \"position\": 2,\n      \"name\": \"Docs\",\n      \"item\": \"https://example.com/docs\"\n    },\n    {\n      \"@type\": \"ListItem\",\n      \"position\": 3,\n      \"name\": \"CSS\",\n      \"item\": \"https://example.com/docs/css\"\n    },\n    {\n      \"@type\": \"ListItem\",\n      \"position\": 4,\n      \"name\": \"Flexbox\"\n    }\n  ]\n}\n</script>\n\n<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"FAQPage\",\n  \"mainEntity\": [\n    {\n      \"@type\": \"Question\",\n      \"name\": \"What is CSS Flexbox?\",\n      \"acceptedAnswer\": {\n        \"@type\": \"Answer\",\n        \"text\": \"CSS Flexbox is a one-dimensional layout model that distributes space among items in a container and provides alignment capabilities. It excels at laying out items in a single row or column.\"\n      }\n    },\n    {\n      \"@type\": \"Question\",\n      \"name\": \"When should I use Flexbox instead of Grid?\",\n      \"acceptedAnswer\": {\n        \"@type\": \"Answer\",\n        \"text\": \"Use Flexbox for one-dimensional layouts where items flow in a single direction (row or column). Use Grid for two-dimensional layouts where you need to control both rows and columns simultaneously.\"\n      }\n    },\n    {\n      \"@type\": \"Question\",\n      \"name\": \"How do I center an element with Flexbox?\",\n      \"acceptedAnswer\": {\n        \"@type\": \"Answer\",\n        \"text\": \"Set the parent container to display: flex, then use justify-content: center for horizontal centering and align-items: center for vertical centering. Both properties together center the child element in both directions.\"\n      }\n    }\n  ]\n}\n</script>",
+        "hints": [
+          "Use separate <script> tags for each JSON-LD object",
+          "The last breadcrumb item does not need an 'item' URL since it represents the current page",
+          "Each FAQ question needs @type Question with a nested acceptedAnswer of @type Answer"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "sitemap-and-robots",
+    "sectionId": "seo-and-meta",
+    "orderIndex": 3,
+    "title": "Sitemap & Robots",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["sitemap.xml", "robots.txt", "Canonical URLs", "hreflang", "Crawl Control"],
+    "content": {
+      "explanation": "Sitemaps and robots.txt are the primary mechanisms for communicating with search engine crawlers about your site's structure and crawling preferences. While meta tags control behavior on a per-page basis, sitemaps and robots.txt operate at the site level — telling crawlers which pages exist, how important they are, and which areas should or should not be crawled.\n\nA sitemap.xml file is an XML document that lists the URLs on your site along with optional metadata about each URL: when it was last modified (lastmod), how frequently it changes (changefreq), and its relative importance within the site (priority). Sitemaps help search engines discover pages that might not be found through normal crawling — such as pages behind JavaScript navigation, dynamically generated URLs, or newly created content. The sitemap should be submitted to search engines through Google Search Console and Bing Webmaster Tools. Large sites can use sitemap index files that reference multiple sitemaps, with each individual sitemap limited to 50,000 URLs or 50MB.\n\nThe robots.txt file sits at the root of your domain (example.com/robots.txt) and provides directives to web crawlers about which parts of the site they should or should not access. The User-agent directive specifies which crawler the rules apply to (use * for all), Disallow blocks crawling of specific paths, and Allow overrides a Disallow for specific sub-paths. The Sitemap directive points crawlers to your sitemap.xml location. Robots.txt is a suggestion, not a security mechanism — well-behaved crawlers respect it, but malicious bots will ignore it. Never rely on robots.txt to hide sensitive content.\n\nCanonical URLs solve the duplicate content problem. When the same or very similar content is accessible at multiple URLs (with/without www, HTTP vs HTTPS, with query parameters, paginated pages), search engines may not know which version to index and rank. The <link rel=\"canonical\" href=\"...\"> tag in the page head tells search engines which URL is the authoritative version. This consolidates ranking signals to a single URL instead of splitting them across duplicates.\n\nThe hreflang attribute handles international and multilingual content. When your site has the same content in multiple languages or regional variants, hreflang tags tell search engines which version to show to users based on their language and location. Each page includes link tags pointing to all its alternate versions, including itself. The x-default value specifies the fallback page for users whose language or region does not match any specific variant. Incorrect hreflang implementation is one of the most common international SEO mistakes.",
+      "codeExamples": [
+        {
+          "title": "Sitemap.xml Structure",
+          "code": "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<urlset xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n  <url>\n    <loc>https://example.com/</loc>\n    <lastmod>2026-03-10</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>1.0</priority>\n  </url>\n  <url>\n    <loc>https://example.com/blog</loc>\n    <lastmod>2026-03-09</lastmod>\n    <changefreq>daily</changefreq>\n    <priority>0.8</priority>\n  </url>\n  <url>\n    <loc>https://example.com/blog/css-grid-guide</loc>\n    <lastmod>2026-03-01</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.6</priority>\n  </url>\n  <url>\n    <loc>https://example.com/about</loc>\n    <lastmod>2026-01-15</lastmod>\n    <changefreq>yearly</changefreq>\n    <priority>0.4</priority>\n  </url>\n</urlset>\n\n<!-- Sitemap Index (for large sites with multiple sitemaps) -->\n<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n  <sitemap>\n    <loc>https://example.com/sitemap-pages.xml</loc>\n    <lastmod>2026-03-10</lastmod>\n  </sitemap>\n  <sitemap>\n    <loc>https://example.com/sitemap-blog.xml</loc>\n    <lastmod>2026-03-09</lastmod>\n  </sitemap>\n  <sitemap>\n    <loc>https://example.com/sitemap-products.xml</loc>\n    <lastmod>2026-03-08</lastmod>\n  </sitemap>\n</sitemapindex>",
+          "explanation": "Each <url> entry lists a page's location, last modification date, expected change frequency, and priority (0.0 to 1.0). Priority is relative within your site, not compared to other sites. For sites with over 50,000 URLs, use a sitemap index that references multiple sitemaps."
+        },
+        {
+          "title": "Robots.txt Configuration",
+          "code": "# robots.txt - placed at site root: example.com/robots.txt\n\n# Rules for all crawlers\nUser-agent: *\nDisallow: /admin/\nDisallow: /api/\nDisallow: /private/\nDisallow: /search?*\nDisallow: /user/*/settings\nAllow: /api/public/\n\n# Block specific crawlers from heavy pages\nUser-agent: GPTBot\nDisallow: /\n\nUser-agent: CCBot\nDisallow: /\n\n# Slower crawl rate for specific bot\nUser-agent: Bingbot\nCrawl-delay: 5\n\n# Reference sitemap location\nSitemap: https://example.com/sitemap.xml\nSitemap: https://example.com/sitemap-blog.xml",
+          "explanation": "Robots.txt uses User-agent to target specific crawlers, Disallow to block paths, and Allow to make exceptions. Wildcard (*) matches all crawlers. The Sitemap directive tells crawlers where to find your sitemaps. Crawl-delay requests a slower crawl rate. Multiple Sitemap entries can be listed."
+        },
+        {
+          "title": "Canonical URLs",
+          "code": "<!-- Canonical tag: Tell search engines the preferred URL -->\n<head>\n  <link rel=\"canonical\" href=\"https://example.com/blog/css-grid-guide\" />\n</head>\n\n<!-- Problem: Same content at multiple URLs -->\n<!-- https://example.com/blog/css-grid-guide -->\n<!-- https://example.com/blog/css-grid-guide?ref=twitter -->\n<!-- https://www.example.com/blog/css-grid-guide -->\n<!-- http://example.com/blog/css-grid-guide -->\n<!-- All should point to the canonical version above -->\n\n<!-- Canonical on paginated content -->\n<!-- Page 1 (canonical to itself) -->\n<link rel=\"canonical\" href=\"https://example.com/blog?page=1\" />\n\n<!-- Page 2 (canonical to itself, NOT page 1) -->\n<link rel=\"canonical\" href=\"https://example.com/blog?page=2\" />\n\n<!-- Cross-domain canonical (syndicated content) -->\n<!-- On partner-site.com that republishes your content -->\n<link rel=\"canonical\" href=\"https://example.com/blog/original-article\" />",
+          "explanation": "The canonical tag consolidates ranking signals to one URL when content exists at multiple addresses. Each page should have a self-referencing canonical (even if there are no duplicates). For paginated content, each page is canonical to itself. Cross-domain canonicals tell search engines where the original content lives."
+        },
+        {
+          "title": "Hreflang for Multilingual Sites",
+          "code": "<!-- English version (US) -->\n<head>\n  <link rel=\"alternate\" hreflang=\"en-US\" href=\"https://example.com/en/about\" />\n  <link rel=\"alternate\" hreflang=\"en-GB\" href=\"https://example.com/en-gb/about\" />\n  <link rel=\"alternate\" hreflang=\"es\" href=\"https://example.com/es/about\" />\n  <link rel=\"alternate\" hreflang=\"fr\" href=\"https://example.com/fr/about\" />\n  <link rel=\"alternate\" hreflang=\"ja\" href=\"https://example.com/ja/about\" />\n  <link rel=\"alternate\" hreflang=\"x-default\" href=\"https://example.com/about\" />\n</head>\n\n<!-- The same set of hreflang tags must appear on ALL language versions -->\n<!-- Spanish version must include all alternates too -->\n<!-- On https://example.com/es/about: -->\n<head>\n  <link rel=\"alternate\" hreflang=\"en-US\" href=\"https://example.com/en/about\" />\n  <link rel=\"alternate\" hreflang=\"en-GB\" href=\"https://example.com/en-gb/about\" />\n  <link rel=\"alternate\" hreflang=\"es\" href=\"https://example.com/es/about\" />\n  <link rel=\"alternate\" hreflang=\"fr\" href=\"https://example.com/fr/about\" />\n  <link rel=\"alternate\" hreflang=\"ja\" href=\"https://example.com/ja/about\" />\n  <link rel=\"alternate\" hreflang=\"x-default\" href=\"https://example.com/about\" />\n</head>",
+          "explanation": "Every language/region version of a page must include hreflang tags pointing to ALL versions, including itself. The x-default value specifies the fallback for unmatched languages. Hreflang can use language only (es) or language-region (en-US). All versions must cross-reference each other symmetrically."
+        }
+      ],
+      "notes": [
+        "Robots.txt is a crawl directive, not a security measure. Blocked pages can still appear in search results (showing the URL without a snippet) if other pages link to them. Use noindex to fully remove pages from search results.",
+        "Every page should have a self-referencing canonical tag, even if no duplicate versions exist. This prevents issues from query parameters, session IDs, or tracking codes that crawlers might discover.",
+        "Hreflang must be bidirectional — if page A points to page B as an alternate, page B must also point back to page A. Missing return links cause hreflang to be ignored."
+      ],
+      "commonPitfalls": [
+        "Blocking CSS and JavaScript files in robots.txt. Search engines need to render your pages to understand them. Blocking render-critical resources can hurt your rankings significantly.",
+        "Setting the canonical URL to a different page's URL instead of the current page's preferred URL. The canonical should point to the same content, not redirect ranking to unrelated pages.",
+        "Implementing hreflang tags on only some language versions instead of all of them. The tags must be symmetrical — every page must reference every alternate version."
+      ],
+      "interviewTips": [
+        "Explain the difference between robots.txt Disallow and the robots meta tag noindex — Disallow blocks crawling, noindex blocks indexing.",
+        "Describe a scenario where canonical URLs are essential and how they consolidate ranking signals."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "sitemap-and-robots-ex1",
+        "title": "Write a Robots.txt File",
+        "description": "Create a robots.txt file for an e-commerce site. Block the admin panel, user account pages, cart, and checkout from all crawlers. Allow the public API docs. Include a sitemap reference.",
+        "starterCode": "# Create robots.txt for an e-commerce site\n# Block: /admin/, /account/, /cart, /checkout\n# Allow: /api/docs/\n# Include sitemap at: https://shop.com/sitemap.xml\n",
+        "solution": "# robots.txt for shop.com\n\nUser-agent: *\nDisallow: /admin/\nDisallow: /account/\nDisallow: /cart\nDisallow: /checkout\nDisallow: /search?*\nAllow: /api/docs/\n\n# Block AI training crawlers\nUser-agent: GPTBot\nDisallow: /\n\nUser-agent: CCBot\nDisallow: /\n\nSitemap: https://shop.com/sitemap.xml",
+        "hints": [
+          "Each Disallow directive blocks one path and its sub-paths",
+          "Allow overrides Disallow for more specific paths",
+          "The Sitemap directive uses the full URL"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "sitemap-and-robots-ex2",
+        "title": "Add Canonical and Hreflang Tags",
+        "description": "A product page exists in English, Spanish, and French. Add canonical and hreflang tags to the English version. The canonical URL is the English page. Include x-default pointing to the English version.",
+        "starterCode": "<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n  <title>Wireless Headphones - TechStore</title>\n\n  <!-- Add canonical URL -->\n\n  <!-- Add hreflang tags for en, es, fr, and x-default -->\n  <!-- English: https://techstore.com/en/products/headphones -->\n  <!-- Spanish: https://techstore.com/es/products/headphones -->\n  <!-- French: https://techstore.com/fr/products/headphones -->\n</head>\n",
+        "solution": "<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1\" />\n  <title>Wireless Headphones - TechStore</title>\n\n  <!-- Canonical URL -->\n  <link rel=\"canonical\" href=\"https://techstore.com/en/products/headphones\" />\n\n  <!-- Hreflang tags -->\n  <link rel=\"alternate\" hreflang=\"en\" href=\"https://techstore.com/en/products/headphones\" />\n  <link rel=\"alternate\" hreflang=\"es\" href=\"https://techstore.com/es/products/headphones\" />\n  <link rel=\"alternate\" hreflang=\"fr\" href=\"https://techstore.com/fr/products/headphones\" />\n  <link rel=\"alternate\" hreflang=\"x-default\" href=\"https://techstore.com/en/products/headphones\" />\n</head>",
+        "hints": [
+          "The canonical points to the current page's preferred URL",
+          "Include an hreflang entry for every language version, including the current page",
+          "x-default is the fallback for users whose language does not match any specific version"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -1,0 +1,447 @@
+[
+  {
+    "id": "form-basics",
+    "sectionId": "forms-and-inputs",
+    "orderIndex": 0,
+    "title": "Form Basics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["form Element", "action", "method", "GET", "POST", "enctype"],
+    "content": {
+      "explanation": "The <form> element is the container for all interactive controls that allow users to submit data to a server. It is one of the most important elements in HTML because nearly every web application -- from login pages to search bars to checkout flows -- relies on forms to collect user input. Understanding how forms work at the HTML level is essential even when using modern frontend frameworks.\n\nThe action attribute specifies the URL where the form data should be sent when submitted. If omitted, the form submits to the current page URL. The method attribute determines the HTTP method used for submission. The two primary methods are GET and POST. GET appends form data to the URL as query parameters (e.g., /search?q=javascript) and is suitable for non-sensitive, idempotent requests like search queries. POST sends data in the request body, making it suitable for sensitive data (passwords, personal info) and operations that modify server state (creating accounts, placing orders).\n\nThe enctype attribute specifies how form data is encoded before being sent to the server. The default value is application/x-www-form-urlencoded, which encodes data as key=value pairs separated by ampersands. When the form includes file uploads, you must use multipart/form-data, which sends each field as a separate part of the request body. A third option, text/plain, sends data with minimal encoding and is rarely used in production.\n\nForm submission is triggered by clicking a <button type=\"submit\"> or <input type=\"submit\">, or by pressing Enter while focused on a form input. You can prevent the default submission behavior using JavaScript's event.preventDefault() method, which is the standard approach in single-page applications where you want to handle submission with AJAX/fetch instead of a full page navigation.\n\nModern web development typically uses JavaScript to handle form submission via the Fetch API or XMLHttpRequest rather than relying on the browser's native form submission. However, understanding the native form behavior is crucial because it provides the fallback behavior, governs how browsers handle autofill and validation, and is tested in interviews. Progressive enhancement starts with a working HTML form and layers JavaScript on top.",
+      "codeExamples": [
+        {
+          "title": "Basic Form with GET Method",
+          "code": "<form action=\"/search\" method=\"GET\">\n  <label for=\"query\">Search:</label>\n  <input type=\"text\" id=\"query\" name=\"q\" placeholder=\"Enter search term\">\n  <button type=\"submit\">Search</button>\n</form>\n\n<!-- Submitting with \"javascript\" produces:\n     /search?q=javascript -->",
+          "explanation": "A search form using GET. The form data is appended to the URL as query parameters. The name attribute on the input determines the parameter key (q), and the user's input becomes the value."
+        },
+        {
+          "title": "Form with POST Method",
+          "code": "<form action=\"/api/login\" method=\"POST\">\n  <label for=\"email\">Email:</label>\n  <input type=\"email\" id=\"email\" name=\"email\" required>\n\n  <label for=\"password\">Password:</label>\n  <input type=\"password\" id=\"password\" name=\"password\" required>\n\n  <button type=\"submit\">Log In</button>\n</form>",
+          "explanation": "A login form using POST. Sensitive data like passwords should always be sent via POST so they appear in the request body rather than the URL. The required attribute prevents submission if the field is empty."
+        },
+        {
+          "title": "File Upload Form with enctype",
+          "code": "<form action=\"/api/upload\" method=\"POST\" enctype=\"multipart/form-data\">\n  <label for=\"avatar\">Profile Picture:</label>\n  <input type=\"file\" id=\"avatar\" name=\"avatar\" accept=\"image/*\">\n\n  <label for=\"username\">Username:</label>\n  <input type=\"text\" id=\"username\" name=\"username\" required>\n\n  <button type=\"submit\">Upload</button>\n</form>",
+          "explanation": "When a form includes file inputs, you must set enctype to multipart/form-data. Without this, the file will not be transmitted correctly. The accept attribute restricts the file picker to image files."
+        },
+        {
+          "title": "Preventing Default Submission with JavaScript",
+          "code": "<form id=\"signup-form\" action=\"/api/signup\" method=\"POST\">\n  <input type=\"text\" name=\"name\" placeholder=\"Full Name\" required>\n  <input type=\"email\" name=\"email\" placeholder=\"Email\" required>\n  <button type=\"submit\">Sign Up</button>\n</form>\n\n<script>\n  document.getElementById('signup-form')\n    .addEventListener('submit', function(event) {\n      event.preventDefault();\n\n      const formData = new FormData(event.target);\n      fetch('/api/signup', {\n        method: 'POST',\n        body: formData\n      })\n      .then(response => response.json())\n      .then(data => console.log('Success:', data))\n      .catch(error => console.error('Error:', error));\n    });\n</script>",
+          "explanation": "In single-page applications, you typically prevent the browser's default form submission and handle it with JavaScript using the Fetch API. The FormData constructor extracts all named form values automatically."
+        }
+      ],
+      "notes": [
+        "Every form input that should be submitted must have a name attribute. Without it, the field's value is excluded from the form data entirely.",
+        "GET requests have a URL length limit (typically around 2,000 characters) and expose data in the URL. Use POST for large payloads and sensitive data.",
+        "The default enctype (application/x-www-form-urlencoded) works for text data. Switch to multipart/form-data only when the form includes file uploads."
+      ],
+      "commonPitfalls": [
+        "Forgetting to set enctype=\"multipart/form-data\" on forms with file inputs. The file data will not be transmitted correctly with the default encoding.",
+        "Omitting the name attribute on form inputs. Without name, the input's value is completely ignored during form submission, even though it appears on the page.",
+        "Using GET for forms that submit sensitive data like passwords. GET data appears in the URL, browser history, server logs, and can be bookmarked."
+      ],
+      "interviewTips": [
+        "Be ready to explain the difference between GET and POST methods: GET is idempotent, cacheable, and appends data to the URL; POST sends data in the body and is used for state-changing operations.",
+        "Know all three enctype values and when each is appropriate. This is a common interview question for form-handling knowledge."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "form-basics-ex1",
+        "title": "Create a Contact Form",
+        "description": "Build a form that submits to '/api/contact' using POST. Include fields for name (text), email (email), and message (textarea), each with proper labels and name attributes. Add a submit button labeled 'Send Message'.",
+        "starterCode": "<!-- Create a POST form to /api/contact -->\n<!-- Fields: name, email, message (textarea) -->\n<!-- Add a submit button -->\n",
+        "solution": "<form action=\"/api/contact\" method=\"POST\">\n  <label for=\"name\">Name:</label>\n  <input type=\"text\" id=\"name\" name=\"name\" required>\n\n  <label for=\"email\">Email:</label>\n  <input type=\"email\" id=\"email\" name=\"email\" required>\n\n  <label for=\"message\">Message:</label>\n  <textarea id=\"message\" name=\"message\" required></textarea>\n\n  <button type=\"submit\">Send Message</button>\n</form>",
+        "hints": [
+          "Use method=\"POST\" since this form submits user data",
+          "Each input needs a name attribute to be included in the submitted data"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "form-basics-ex2",
+        "title": "File Upload Form",
+        "description": "Create a form that submits to '/api/documents' using POST with the correct enctype for file uploads. Include a text input for 'title' (name=\"title\"), a file input that accepts only PDF files (name=\"document\"), and a submit button.",
+        "starterCode": "<!-- Create a file upload form -->\n<!-- Remember to set the correct enctype -->\n",
+        "solution": "<form action=\"/api/documents\" method=\"POST\" enctype=\"multipart/form-data\">\n  <label for=\"title\">Document Title:</label>\n  <input type=\"text\" id=\"title\" name=\"title\" required>\n\n  <label for=\"document\">Upload PDF:</label>\n  <input type=\"file\" id=\"document\" name=\"document\" accept=\".pdf\">\n\n  <button type=\"submit\">Upload</button>\n</form>",
+        "hints": [
+          "File upload forms require enctype=\"multipart/form-data\"",
+          "Use the accept attribute on the file input to restrict to PDF files: accept=\".pdf\""
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "text-inputs",
+    "sectionId": "forms-and-inputs",
+    "orderIndex": 1,
+    "title": "Text Inputs",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["input type text", "email", "password", "number", "tel", "url", "placeholder", "required"],
+    "content": {
+      "explanation": "The <input> element is the workhorse of HTML forms. By changing its type attribute, you can create a wide variety of input controls. Text-based input types are the most commonly used and include text, email, password, number, tel, and url. Each type provides built-in browser behavior including appropriate keyboard layouts on mobile, native validation rules, and autofill hints.\n\nThe type=\"text\" input is the most basic -- it accepts any text value with no built-in validation. The type=\"email\" input looks the same but provides automatic validation that the entered value matches a standard email format (contains an @ sign and a domain). The type=\"password\" input masks the entered characters for security. On mobile devices, these type attributes trigger different keyboard layouts: email shows the @ key prominently, tel shows a numeric keypad, and url shows .com and / keys.\n\nThe type=\"number\" input restricts entry to numeric values and provides increment/decrement spinner buttons. You can set min, max, and step attributes to constrain the range: for example, <input type=\"number\" min=\"0\" max=\"100\" step=\"5\"> only accepts multiples of 5 between 0 and 100. The type=\"tel\" input is for phone numbers but does not enforce any particular format since phone number formats vary globally; its primary benefit is triggering a phone keypad on mobile devices.\n\nThe placeholder attribute provides hint text that appears inside the input when it is empty. It disappears as soon as the user begins typing. Placeholders should supplement labels, never replace them -- a placeholder alone does not satisfy accessibility requirements because it vanishes once the field has content, leaving users uncertain about what the field expects. The required attribute marks a field as mandatory; the browser will prevent form submission and show a validation message if a required field is empty.\n\nAdditional useful attributes include autocomplete (which hints to the browser what kind of data the field expects for autofill), maxlength and minlength (which constrain the number of characters), readonly (which displays the value but prevents editing), and disabled (which grays out the field and excludes it from form submission). Using the appropriate autocomplete values like 'email', 'current-password', or 'tel' significantly improves the user experience by enabling password managers and address autofill.",
+      "codeExamples": [
+        {
+          "title": "Common Text Input Types",
+          "code": "<form>\n  <label for=\"fullname\">Full Name:</label>\n  <input type=\"text\" id=\"fullname\" name=\"fullname\" \n         placeholder=\"John Doe\" required autocomplete=\"name\">\n\n  <label for=\"email\">Email:</label>\n  <input type=\"email\" id=\"email\" name=\"email\" \n         placeholder=\"john@example.com\" required autocomplete=\"email\">\n\n  <label for=\"password\">Password:</label>\n  <input type=\"password\" id=\"password\" name=\"password\" \n         minlength=\"8\" required autocomplete=\"new-password\">\n\n  <label for=\"phone\">Phone:</label>\n  <input type=\"tel\" id=\"phone\" name=\"phone\" \n         placeholder=\"+91 98765 43210\" autocomplete=\"tel\">\n\n  <label for=\"website\">Website:</label>\n  <input type=\"url\" id=\"website\" name=\"website\" \n         placeholder=\"https://example.com\" autocomplete=\"url\">\n</form>",
+          "explanation": "Each input type triggers appropriate browser behavior: email validates format, password masks characters, tel shows a phone keypad on mobile, and url validates URL format. The autocomplete attributes enable intelligent autofill."
+        },
+        {
+          "title": "Number Input with Constraints",
+          "code": "<form>\n  <label for=\"age\">Age:</label>\n  <input type=\"number\" id=\"age\" name=\"age\" \n         min=\"18\" max=\"120\" step=\"1\" required>\n\n  <label for=\"price\">Price ($):</label>\n  <input type=\"number\" id=\"price\" name=\"price\" \n         min=\"0\" max=\"99999.99\" step=\"0.01\" \n         placeholder=\"29.99\">\n\n  <label for=\"quantity\">Quantity (multiples of 5):</label>\n  <input type=\"number\" id=\"quantity\" name=\"quantity\" \n         min=\"0\" max=\"100\" step=\"5\" value=\"10\">\n</form>",
+          "explanation": "Number inputs support min, max, and step attributes. The step attribute controls the increment amount when using the spinner buttons. Setting step=\"0.01\" allows decimal values with two decimal places, suitable for prices."
+        },
+        {
+          "title": "Input States: readonly, disabled, and autofocus",
+          "code": "<form>\n  <label for=\"user-id\">User ID:</label>\n  <input type=\"text\" id=\"user-id\" name=\"userId\" \n         value=\"USR-001\" readonly>\n\n  <label for=\"deprecated\">Old Field:</label>\n  <input type=\"text\" id=\"deprecated\" name=\"old\" \n         value=\"Not editable\" disabled>\n\n  <label for=\"search\">Search:</label>\n  <input type=\"text\" id=\"search\" name=\"q\" \n         autofocus placeholder=\"Start typing...\">\n</form>",
+          "explanation": "readonly fields are visible and submitted with the form but cannot be edited. disabled fields are grayed out and excluded from form submission entirely. autofocus places the cursor in the field when the page loads. Use autofocus sparingly -- only on the primary input of the page."
+        },
+        {
+          "title": "Text Input with maxlength and Pattern",
+          "code": "<form>\n  <label for=\"username\">Username (3-20 characters, letters and numbers only):</label>\n  <input type=\"text\" id=\"username\" name=\"username\" \n         minlength=\"3\" maxlength=\"20\" \n         pattern=\"[a-zA-Z0-9]+\" \n         title=\"Only letters and numbers, 3-20 characters\" \n         required>\n\n  <label for=\"zipcode\">ZIP Code:</label>\n  <input type=\"text\" id=\"zipcode\" name=\"zipcode\" \n         pattern=\"[0-9]{5}\" \n         title=\"5-digit ZIP code\" \n         maxlength=\"5\" \n         required>\n</form>",
+          "explanation": "The pattern attribute accepts a regular expression that the input value must match. The title attribute provides a custom message shown in the validation tooltip when the pattern does not match. Combined with minlength and maxlength, you can enforce precise format requirements."
+        }
+      ],
+      "notes": [
+        "Always pair placeholder text with a visible <label>. Placeholders disappear when users type and should not be the only indicator of what a field expects.",
+        "Use the most specific input type available. For example, use type=\"email\" for email addresses rather than type=\"text\" to get free validation and better mobile keyboards.",
+        "The autocomplete attribute improves user experience dramatically. Use values like 'name', 'email', 'current-password', 'new-password', 'tel', and 'address-line1' to enable browser autofill."
+      ],
+      "commonPitfalls": [
+        "Using placeholder text as a substitute for labels. Placeholders are not accessible labels; they disappear when the field has content, leaving users unsure of what was expected.",
+        "Forgetting that disabled fields are excluded from form data. If you need a read-only field that still submits its value, use readonly instead of disabled.",
+        "Setting type=\"number\" for fields like phone numbers or ZIP codes. These are not numeric values (you never do math on them) and should use type=\"tel\" or type=\"text\" with a pattern."
+      ],
+      "interviewTips": [
+        "Explain why type=\"tel\" does not validate phone number format -- phone formats vary too widely across countries for built-in validation to be useful. It primarily affects the mobile keyboard.",
+        "Know the difference between readonly and disabled: both prevent editing, but readonly submits with the form while disabled does not."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "text-inputs-ex1",
+        "title": "Registration Form Inputs",
+        "description": "Create a form with five labeled inputs: Full Name (text, required), Email (email, required), Password (password, minlength 8, required), Phone (tel, optional), and Portfolio (url, optional). Use appropriate autocomplete values on each.",
+        "starterCode": "<!-- Create a registration form with 5 input fields -->\n<!-- Use the most appropriate input type for each -->\n",
+        "solution": "<form action=\"/api/register\" method=\"POST\">\n  <label for=\"fullname\">Full Name:</label>\n  <input type=\"text\" id=\"fullname\" name=\"fullname\" required autocomplete=\"name\">\n\n  <label for=\"email\">Email:</label>\n  <input type=\"email\" id=\"email\" name=\"email\" required autocomplete=\"email\">\n\n  <label for=\"password\">Password:</label>\n  <input type=\"password\" id=\"password\" name=\"password\" minlength=\"8\" required autocomplete=\"new-password\">\n\n  <label for=\"phone\">Phone:</label>\n  <input type=\"tel\" id=\"phone\" name=\"phone\" autocomplete=\"tel\">\n\n  <label for=\"portfolio\">Portfolio:</label>\n  <input type=\"url\" id=\"portfolio\" name=\"portfolio\" autocomplete=\"url\">\n\n  <button type=\"submit\">Register</button>\n</form>",
+        "hints": [
+          "Use type=\"email\" for email, type=\"password\" for password, type=\"tel\" for phone, and type=\"url\" for portfolio",
+          "Only the first three fields should have the required attribute"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "text-inputs-ex2",
+        "title": "Constrained Number Input",
+        "description": "Create a form with a number input for 'donation' amount. It should accept values from $5 to $10,000 in increments of $5, with a default value of $25. Add a text input for 'donor name' with a pattern that allows only letters and spaces (3-50 characters). Both fields should be required.",
+        "starterCode": "<!-- Create a donation form -->\n<!-- Number input: min 5, max 10000, step 5, default 25 -->\n<!-- Text input: letters and spaces only, 3-50 chars -->\n",
+        "solution": "<form action=\"/api/donate\" method=\"POST\">\n  <label for=\"donor\">Donor Name:</label>\n  <input type=\"text\" id=\"donor\" name=\"donor\" \n         minlength=\"3\" maxlength=\"50\" \n         pattern=\"[a-zA-Z ]+\" \n         title=\"Letters and spaces only, 3-50 characters\" \n         required>\n\n  <label for=\"donation\">Donation Amount ($):</label>\n  <input type=\"number\" id=\"donation\" name=\"donation\" \n         min=\"5\" max=\"10000\" step=\"5\" value=\"25\" \n         required>\n\n  <button type=\"submit\">Donate</button>\n</form>",
+        "hints": [
+          "Use min, max, step, and value attributes on the number input",
+          "The pattern attribute uses a regex: [a-zA-Z ]+ matches one or more letters or spaces"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "selection-controls",
+    "sectionId": "forms-and-inputs",
+    "orderIndex": 2,
+    "title": "Selection Controls",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["checkbox", "radio", "select", "option", "datalist", "optgroup"],
+    "content": {
+      "explanation": "Selection controls allow users to choose from predefined options rather than typing free-form text. HTML provides several selection mechanisms: checkboxes for multiple selections, radio buttons for single selection from a group, dropdown menus via <select> and <option>, and autocomplete suggestions via <datalist>. Choosing the right control depends on the number of options and whether single or multiple selection is needed.\n\nCheckboxes (input type=\"checkbox\") allow users to toggle individual options on or off independently. Each checkbox operates independently of the others, so users can select any combination. When multiple checkboxes share the same name attribute, they submit as an array of values. Each checkbox should have a unique value attribute that identifies what is being selected. Checkboxes are ideal when users can select zero, one, or many options from a set.\n\nRadio buttons (input type=\"radio\") allow users to select exactly one option from a group. Radio buttons that share the same name attribute form a group, and only one radio button within a group can be selected at a time. Clicking a different radio button in the group automatically deselects the previously selected one. Unlike checkboxes, once a radio button is selected, the user cannot deselect it without choosing a different option (unless you provide a 'None' option). Radio buttons are best for small sets of 2-5 mutually exclusive options.\n\nThe <select> element creates a dropdown menu. Each option is defined with an <option> element, and you can group related options using <optgroup>. Adding the multiple attribute converts the dropdown into a list box where users can select multiple options by holding Ctrl (Cmd on Mac). The size attribute controls how many options are visible at once. For long lists of options, <select> is preferred over radio buttons because it takes up less space.\n\nThe <datalist> element provides autocomplete suggestions for a text input. You connect a <datalist> to an input using the list attribute, which references the datalist's id. Unlike <select>, the user is not restricted to the predefined options -- they can type any value. This makes <datalist> ideal for fields where you want to suggest common values while still allowing custom entries. Browser support for <datalist> is excellent in modern browsers.",
+      "codeExamples": [
+        {
+          "title": "Checkboxes for Multiple Selection",
+          "code": "<fieldset>\n  <legend>Select your skills:</legend>\n\n  <label>\n    <input type=\"checkbox\" name=\"skills\" value=\"html\">\n    HTML\n  </label>\n\n  <label>\n    <input type=\"checkbox\" name=\"skills\" value=\"css\">\n    CSS\n  </label>\n\n  <label>\n    <input type=\"checkbox\" name=\"skills\" value=\"javascript\" checked>\n    JavaScript\n  </label>\n\n  <label>\n    <input type=\"checkbox\" name=\"skills\" value=\"react\">\n    React\n  </label>\n</fieldset>",
+          "explanation": "Each checkbox shares the name 'skills' so they submit as a group. The checked attribute pre-selects JavaScript. Users can select any combination. The <fieldset> and <legend> group the checkboxes and provide an accessible group label."
+        },
+        {
+          "title": "Radio Buttons for Single Selection",
+          "code": "<fieldset>\n  <legend>Select your experience level:</legend>\n\n  <label>\n    <input type=\"radio\" name=\"experience\" value=\"beginner\">\n    Beginner (0-1 years)\n  </label>\n\n  <label>\n    <input type=\"radio\" name=\"experience\" value=\"intermediate\" checked>\n    Intermediate (1-3 years)\n  </label>\n\n  <label>\n    <input type=\"radio\" name=\"experience\" value=\"advanced\">\n    Advanced (3-5 years)\n  </label>\n\n  <label>\n    <input type=\"radio\" name=\"experience\" value=\"expert\">\n    Expert (5+ years)\n  </label>\n</fieldset>",
+          "explanation": "All radio buttons share name='experience', forming a mutual exclusion group. Only one can be selected at a time. The checked attribute sets the default selection to 'Intermediate'. Clicking a different option automatically deselects the current one."
+        },
+        {
+          "title": "Select Dropdown with optgroup",
+          "code": "<label for=\"language\">Preferred Programming Language:</label>\n<select id=\"language\" name=\"language\" required>\n  <option value=\"\">-- Choose a language --</option>\n  <optgroup label=\"Frontend\">\n    <option value=\"javascript\">JavaScript</option>\n    <option value=\"typescript\">TypeScript</option>\n  </optgroup>\n  <optgroup label=\"Backend\">\n    <option value=\"python\">Python</option>\n    <option value=\"java\">Java</option>\n    <option value=\"go\">Go</option>\n  </optgroup>\n  <optgroup label=\"Systems\">\n    <option value=\"rust\">Rust</option>\n    <option value=\"cpp\">C++</option>\n  </optgroup>\n</select>",
+          "explanation": "The <optgroup> element groups related options under a non-selectable label. The first option with an empty value serves as a placeholder; combined with required, it forces the user to make an active selection rather than accidentally submitting the placeholder."
+        },
+        {
+          "title": "Datalist for Autocomplete Suggestions",
+          "code": "<label for=\"framework\">Favorite Framework:</label>\n<input type=\"text\" id=\"framework\" name=\"framework\" \n       list=\"frameworks\" placeholder=\"Type or select...\">\n\n<datalist id=\"frameworks\">\n  <option value=\"React\">\n  <option value=\"Vue\">\n  <option value=\"Angular\">\n  <option value=\"Svelte\">\n  <option value=\"Next.js\">\n  <option value=\"Nuxt\">\n  <option value=\"Astro\">\n</datalist>",
+          "explanation": "The input's list attribute references the datalist's id. As the user types, matching suggestions appear in a dropdown. Unlike <select>, the user can also type a custom value that is not in the list. This is perfect for fields with common but not exhaustive options."
+        }
+      ],
+      "notes": [
+        "Radio buttons in the same group must share the same name attribute. If they have different names, they act as independent controls and multiple selections become possible.",
+        "Always include a placeholder <option> with an empty value as the first option in a required <select>. This forces users to make an active choice.",
+        "Wrap checkboxes and radio buttons in <label> elements. This makes the label text clickable, improving usability especially on mobile devices."
+      ],
+      "commonPitfalls": [
+        "Giving radio buttons in the same group different name attributes. They must share the same name to function as a mutually exclusive group.",
+        "Forgetting to wrap each checkbox/radio in a <label> or associate them via for/id. Without a label, clicking the text next to the input does nothing, and the control is not accessible.",
+        "Using <select> when there are only 2-3 options. Radio buttons are a better UX for small option sets because all options are visible without interaction."
+      ],
+      "interviewTips": [
+        "Know the difference between checkbox and radio: checkboxes allow multiple selections (independent toggles), while radio buttons enforce single selection within a group (mutual exclusion).",
+        "Be able to explain when to use <select> vs radio buttons vs <datalist>: radio for 2-5 mutually exclusive visible options, select for larger sets or space constraints, datalist for suggestions that still allow custom input."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "selection-controls-ex1",
+        "title": "Survey Form with Mixed Controls",
+        "description": "Create a form with: 1) A radio button group (name='plan') for subscription plans: Free, Pro, Enterprise. 2) A checkbox group (name='features') for features: Analytics, API Access, Priority Support. 3) A select dropdown (name='region') with regions: North America, Europe, Asia Pacific. Use fieldset/legend for the radio and checkbox groups.",
+        "starterCode": "<!-- Create a survey form with radio, checkbox, and select -->\n",
+        "solution": "<form>\n  <fieldset>\n    <legend>Subscription Plan:</legend>\n    <label>\n      <input type=\"radio\" name=\"plan\" value=\"free\" checked>\n      Free\n    </label>\n    <label>\n      <input type=\"radio\" name=\"plan\" value=\"pro\">\n      Pro\n    </label>\n    <label>\n      <input type=\"radio\" name=\"plan\" value=\"enterprise\">\n      Enterprise\n    </label>\n  </fieldset>\n\n  <fieldset>\n    <legend>Features:</legend>\n    <label>\n      <input type=\"checkbox\" name=\"features\" value=\"analytics\">\n      Analytics\n    </label>\n    <label>\n      <input type=\"checkbox\" name=\"features\" value=\"api\">\n      API Access\n    </label>\n    <label>\n      <input type=\"checkbox\" name=\"features\" value=\"support\">\n      Priority Support\n    </label>\n  </fieldset>\n\n  <label for=\"region\">Region:</label>\n  <select id=\"region\" name=\"region\" required>\n    <option value=\"\">-- Select Region --</option>\n    <option value=\"na\">North America</option>\n    <option value=\"eu\">Europe</option>\n    <option value=\"apac\">Asia Pacific</option>\n  </select>\n\n  <button type=\"submit\">Submit</button>\n</form>",
+        "hints": [
+          "Radio buttons must share the same name attribute to work as a group",
+          "Use <fieldset> and <legend> to semantically group related controls"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "selection-controls-ex2",
+        "title": "Datalist Autocomplete",
+        "description": "Create a text input for 'city' that has a datalist with these suggestions: Mumbai, Delhi, Bangalore, Hyderabad, Chennai, Pune, Kolkata, Ahmedabad. The user should also be able to type a city not in the list.",
+        "starterCode": "<!-- Create a text input with datalist suggestions for cities -->\n",
+        "solution": "<label for=\"city\">City:</label>\n<input type=\"text\" id=\"city\" name=\"city\" \n       list=\"cities\" placeholder=\"Type or select a city...\">\n\n<datalist id=\"cities\">\n  <option value=\"Mumbai\">\n  <option value=\"Delhi\">\n  <option value=\"Bangalore\">\n  <option value=\"Hyderabad\">\n  <option value=\"Chennai\">\n  <option value=\"Pune\">\n  <option value=\"Kolkata\">\n  <option value=\"Ahmedabad\">\n</datalist>",
+        "hints": [
+          "The input's list attribute must match the datalist's id attribute",
+          "Datalist options use the value attribute; no closing tag content is needed"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "file-and-date-inputs",
+    "sectionId": "forms-and-inputs",
+    "orderIndex": 3,
+    "title": "File & Date Inputs",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["file input", "date", "time", "datetime-local", "color", "range"],
+    "content": {
+      "explanation": "HTML5 introduced several specialized input types that provide native browser UI for common data entry scenarios. File inputs allow users to select files from their device. Date and time inputs provide native date pickers that are consistent with the operating system's conventions. The color input opens a color picker, and the range input creates a slider control. These native controls improve usability and reduce the need for third-party JavaScript libraries.\n\nThe type=\"file\" input opens the operating system's file picker dialog. The accept attribute restricts which file types can be selected (e.g., accept=\"image/*\" for any image, accept=\".pdf,.docx\" for specific extensions). The multiple attribute allows selecting multiple files at once. Remember that forms with file inputs must use enctype=\"multipart/form-data\" for the files to be transmitted correctly. You can access selected files via JavaScript using the input's files property, which returns a FileList object.\n\nDate and time inputs include type=\"date\" (date picker), type=\"time\" (time picker), type=\"datetime-local\" (combined date and time), type=\"month\" (month and year), and type=\"week\" (week number and year). These inputs provide native calendar and clock widgets that match the user's operating system. You can constrain the selectable range using min and max attributes with ISO 8601 format values (e.g., min=\"2026-01-01\" max=\"2026-12-31\"). The step attribute controls the granularity (e.g., step=\"900\" on a time input sets 15-minute intervals).\n\nThe type=\"color\" input opens a color picker and stores the selected color as a hex value (e.g., #ff5733). It always returns a 7-character hex string. The type=\"range\" input creates a slider control for selecting a numeric value within a range. Like type=\"number\", it supports min, max, step, and value attributes, but the slider UI communicates that the exact value is less important than the relative position. A common pattern is to pair a range input with an <output> element that displays the current numeric value.\n\nWhile native date and time inputs have excellent modern browser support, their appearance varies significantly across browsers and operating systems. You cannot style the internal calendar widget with CSS. For applications that require a consistent date picker appearance across all platforms, developers often use JavaScript date picker libraries. However, native inputs should be preferred when possible because they are accessible by default, work with keyboard navigation, and integrate with the device's locale settings.",
+      "codeExamples": [
+        {
+          "title": "File Input with Restrictions",
+          "code": "<form enctype=\"multipart/form-data\" method=\"POST\" action=\"/upload\">\n  <!-- Single image upload -->\n  <label for=\"photo\">Profile Photo:</label>\n  <input type=\"file\" id=\"photo\" name=\"photo\" \n         accept=\"image/png, image/jpeg, image/webp\">\n\n  <!-- Multiple file upload -->\n  <label for=\"docs\">Documents (select multiple):</label>\n  <input type=\"file\" id=\"docs\" name=\"documents\" \n         accept=\".pdf,.doc,.docx\" multiple>\n\n  <button type=\"submit\">Upload</button>\n</form>",
+          "explanation": "The accept attribute constrains file selection. You can use MIME types (image/png) or file extensions (.pdf). The multiple attribute enables multi-file selection. Always set enctype=\"multipart/form-data\" on the form."
+        },
+        {
+          "title": "Date and Time Inputs",
+          "code": "<form>\n  <label for=\"birthday\">Birthday:</label>\n  <input type=\"date\" id=\"birthday\" name=\"birthday\" \n         min=\"1950-01-01\" max=\"2010-12-31\">\n\n  <label for=\"appt-time\">Appointment Time:</label>\n  <input type=\"time\" id=\"appt-time\" name=\"apptTime\" \n         min=\"09:00\" max=\"17:00\" step=\"1800\">\n\n  <label for=\"meeting\">Meeting Date & Time:</label>\n  <input type=\"datetime-local\" id=\"meeting\" name=\"meeting\" \n         min=\"2026-01-01T09:00\" max=\"2026-12-31T18:00\">\n\n  <label for=\"start-month\">Start Month:</label>\n  <input type=\"month\" id=\"start-month\" name=\"startMonth\" \n         min=\"2026-01\" max=\"2027-12\">\n</form>",
+          "explanation": "Date values use ISO 8601 format (YYYY-MM-DD). Time values use 24-hour format (HH:MM). The step attribute on time inputs is in seconds: 1800 = 30 minutes. The min and max attributes constrain the selectable range."
+        },
+        {
+          "title": "Color Picker Input",
+          "code": "<form>\n  <label for=\"bg-color\">Background Color:</label>\n  <input type=\"color\" id=\"bg-color\" name=\"bgColor\" \n         value=\"#3b82f6\">\n\n  <label for=\"text-color\">Text Color:</label>\n  <input type=\"color\" id=\"text-color\" name=\"textColor\" \n         value=\"#1f2937\">\n</form>\n\n<script>\n  document.getElementById('bg-color')\n    .addEventListener('input', function(e) {\n      document.body.style.backgroundColor = e.target.value;\n    });\n</script>",
+          "explanation": "The color input opens the system color picker. Its value is always a 7-character hex string (#rrggbb). The default value sets the initial color. The 'input' event fires as the user adjusts the color in real time."
+        },
+        {
+          "title": "Range Slider with Output Display",
+          "code": "<form>\n  <label for=\"volume\">Volume:</label>\n  <input type=\"range\" id=\"volume\" name=\"volume\" \n         min=\"0\" max=\"100\" step=\"1\" value=\"50\">\n  <output for=\"volume\" id=\"volume-value\">50</output>\n\n  <label for=\"opacity\">Opacity:</label>\n  <input type=\"range\" id=\"opacity\" name=\"opacity\" \n         min=\"0\" max=\"1\" step=\"0.1\" value=\"0.8\">\n  <output for=\"opacity\" id=\"opacity-value\">0.8</output>\n</form>\n\n<script>\n  document.getElementById('volume')\n    .addEventListener('input', function(e) {\n      document.getElementById('volume-value')\n        .textContent = e.target.value;\n    });\n</script>",
+          "explanation": "The range input creates a slider. The <output> element displays the current value and is semantically linked via its for attribute. JavaScript updates the displayed value as the user drags the slider. The step attribute can be decimal for fine-grained control."
+        }
+      ],
+      "notes": [
+        "File inputs cannot have a default value for security reasons. You cannot programmatically set which file is selected -- only the user can choose files through the file picker dialog.",
+        "Date input formats in the UI follow the user's locale, but the underlying value is always ISO 8601 format (YYYY-MM-DD). This means the form submits a standardized date regardless of how it appears to the user.",
+        "The <output> element is the semantic way to display a computed or selected value. Use it with range inputs and for displaying calculated results."
+      ],
+      "commonPitfalls": [
+        "Forgetting enctype=\"multipart/form-data\" on forms with file inputs. Without it, only the file name is submitted instead of the actual file content.",
+        "Expecting date inputs to look the same across browsers. The calendar widget appearance is controlled by the browser and operating system, not by CSS.",
+        "Setting step on time inputs in minutes instead of seconds. The step attribute for time inputs uses seconds (e.g., step=\"900\" for 15 minutes, not step=\"15\")."
+      ],
+      "interviewTips": [
+        "Know that the value of a date input is always in YYYY-MM-DD format regardless of the display format, and that color inputs always return a 7-character hex string.",
+        "Be able to explain the security restriction on file inputs: you cannot programmatically set or read the full file path for security reasons."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "file-and-date-inputs-ex1",
+        "title": "Event Registration Form",
+        "description": "Create a form for event registration with: a date input (name='eventDate', restricted to dates in 2026), a time input (name='eventTime', between 09:00 and 18:00, 30-minute intervals), and a file input (name='ticket', accepting only PDF files). All fields should be required.",
+        "starterCode": "<!-- Create an event registration form -->\n<!-- Date: 2026 only -->\n<!-- Time: 09:00-18:00, 30-min intervals -->\n<!-- File: PDF only -->\n",
+        "solution": "<form action=\"/api/events\" method=\"POST\" enctype=\"multipart/form-data\">\n  <label for=\"eventDate\">Event Date:</label>\n  <input type=\"date\" id=\"eventDate\" name=\"eventDate\" \n         min=\"2026-01-01\" max=\"2026-12-31\" required>\n\n  <label for=\"eventTime\">Event Time:</label>\n  <input type=\"time\" id=\"eventTime\" name=\"eventTime\" \n         min=\"09:00\" max=\"18:00\" step=\"1800\" required>\n\n  <label for=\"ticket\">Upload Ticket (PDF):</label>\n  <input type=\"file\" id=\"ticket\" name=\"ticket\" \n         accept=\".pdf\" required>\n\n  <button type=\"submit\">Register</button>\n</form>",
+        "hints": [
+          "Use min and max with ISO dates (YYYY-MM-DD) to restrict the date range to 2026",
+          "The step on time inputs is in seconds: 30 minutes = 1800 seconds"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "file-and-date-inputs-ex2",
+        "title": "Theme Customizer",
+        "description": "Create a form with: a color input for 'primaryColor' (default #3b82f6), a color input for 'backgroundColor' (default #ffffff), and a range slider for 'fontSize' (min 12, max 32, step 2, default 16). Add an <output> element for the range slider.",
+        "starterCode": "<!-- Create a theme customizer form -->\n<!-- Two color pickers and a range slider -->\n",
+        "solution": "<form>\n  <label for=\"primaryColor\">Primary Color:</label>\n  <input type=\"color\" id=\"primaryColor\" name=\"primaryColor\" \n         value=\"#3b82f6\">\n\n  <label for=\"backgroundColor\">Background Color:</label>\n  <input type=\"color\" id=\"backgroundColor\" name=\"backgroundColor\" \n         value=\"#ffffff\">\n\n  <label for=\"fontSize\">Font Size (px):</label>\n  <input type=\"range\" id=\"fontSize\" name=\"fontSize\" \n         min=\"12\" max=\"32\" step=\"2\" value=\"16\">\n  <output for=\"fontSize\">16</output>\n</form>",
+        "hints": [
+          "Color input default values must be in 7-character hex format (#rrggbb)",
+          "Use the <output> element with a for attribute matching the range input's id"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "form-validation",
+    "sectionId": "forms-and-inputs",
+    "orderIndex": 4,
+    "title": "Form Validation",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["required", "pattern", "minlength", "maxlength", "Custom Validity", "Constraint Validation API"],
+    "content": {
+      "explanation": "Form validation ensures that users provide data in the expected format before it is submitted to the server. HTML5 introduced built-in constraint validation that works without JavaScript, using attributes like required, pattern, minlength, maxlength, min, max, and type-based validation. This client-side validation provides immediate feedback and reduces unnecessary server requests, but it should always be paired with server-side validation because client-side checks can be bypassed.\n\nThe required attribute is the simplest validation constraint. When present on an input, the browser prevents form submission and shows a validation message if the field is empty. For checkboxes, required means the box must be checked. For radio button groups, at least one radio button in the group must have required, and the group must have a selection. For <select> elements, the first <option> must have an empty value for required to work correctly.\n\nThe pattern attribute accepts a regular expression that the input's value must match for the field to be valid. The regex is anchored by default -- it must match the entire value, not just a substring. Common patterns include [A-Za-z]{2,} (letters only, at least 2 characters), [0-9]{6} (exactly 6 digits), and [a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,} (email format). The title attribute should accompany pattern to provide a human-readable description of the expected format, which browsers display in the validation tooltip.\n\nThe minlength and maxlength attributes constrain the number of characters. Unlike min and max (which work with numeric values), these operate on the character count of text input. The browser prevents typing beyond maxlength and shows a validation error if the value is shorter than minlength upon submission. These attributes work on text, email, password, tel, url, and textarea elements.\n\nThe Constraint Validation API provides JavaScript methods for custom validation logic. The setCustomValidity() method on an input element sets a custom error message; passing an empty string clears the error and marks the field as valid. The checkValidity() method returns true if the element satisfies all constraints. The reportValidity() method checks validity and displays the native validation UI. The :valid and :invalid CSS pseudo-classes allow you to style inputs based on their validation state, and :user-valid/:user-invalid (newer) only activate after user interaction.",
+      "codeExamples": [
+        {
+          "title": "Built-in Validation Attributes",
+          "code": "<form>\n  <label for=\"username\">Username (3-20 chars, alphanumeric):</label>\n  <input type=\"text\" id=\"username\" name=\"username\" \n         required minlength=\"3\" maxlength=\"20\" \n         pattern=\"[a-zA-Z0-9_]+\" \n         title=\"3-20 characters, letters, numbers, and underscores only\">\n\n  <label for=\"email\">Email:</label>\n  <input type=\"email\" id=\"email\" name=\"email\" required>\n\n  <label for=\"age\">Age (18-99):</label>\n  <input type=\"number\" id=\"age\" name=\"age\" \n         required min=\"18\" max=\"99\">\n\n  <label for=\"bio\">Bio (10-500 characters):</label>\n  <textarea id=\"bio\" name=\"bio\" \n            required minlength=\"10\" maxlength=\"500\"></textarea>\n\n  <button type=\"submit\">Submit</button>\n</form>",
+          "explanation": "Each field uses appropriate validation attributes. The browser enforces these constraints automatically and shows native error messages when validation fails. No JavaScript is needed for basic validation."
+        },
+        {
+          "title": "Custom Validation with setCustomValidity",
+          "code": "<form id=\"signup-form\">\n  <label for=\"pwd\">Password:</label>\n  <input type=\"password\" id=\"pwd\" name=\"password\" \n         required minlength=\"8\">\n\n  <label for=\"confirm-pwd\">Confirm Password:</label>\n  <input type=\"password\" id=\"confirm-pwd\" name=\"confirmPassword\" \n         required minlength=\"8\">\n\n  <button type=\"submit\">Sign Up</button>\n</form>\n\n<script>\n  const pwd = document.getElementById('pwd');\n  const confirmPwd = document.getElementById('confirm-pwd');\n\n  function validatePasswords() {\n    if (pwd.value !== confirmPwd.value) {\n      confirmPwd.setCustomValidity('Passwords do not match');\n    } else {\n      confirmPwd.setCustomValidity('');\n    }\n  }\n\n  pwd.addEventListener('input', validatePasswords);\n  confirmPwd.addEventListener('input', validatePasswords);\n</script>",
+          "explanation": "setCustomValidity() sets a custom error message. When the string is non-empty, the field is invalid. Passing an empty string marks it as valid. This is the standard way to implement password confirmation matching."
+        },
+        {
+          "title": "Styling Valid and Invalid Fields with CSS",
+          "code": "/* Style invalid fields with a red border */\ninput:invalid,\ntextarea:invalid,\nselect:invalid {\n  border-color: #ef4444;\n}\n\n/* Style valid fields with a green border */\ninput:valid,\ntextarea:valid,\nselect:valid {\n  border-color: #22c55e;\n}\n\n/* Only show validation styles after user interaction */\ninput:user-invalid {\n  border-color: #ef4444;\n  background-color: #fef2f2;\n}\n\ninput:user-valid {\n  border-color: #22c55e;\n  background-color: #f0fdf4;\n}\n\n/* Style the validation message */\ninput:invalid + .error-message {\n  display: block;\n  color: #ef4444;\n  font-size: 0.875rem;\n}",
+          "explanation": "The :valid and :invalid pseudo-classes apply immediately on page load, which can be jarring. The newer :user-valid and :user-invalid pseudo-classes only activate after the user has interacted with the field, providing a better UX. Browser support for :user-valid/:user-invalid is growing but not yet universal."
+        },
+        {
+          "title": "Using the Constraint Validation API",
+          "code": "<form id=\"api-form\" novalidate>\n  <label for=\"code\">Invite Code:</label>\n  <input type=\"text\" id=\"code\" name=\"code\" required \n         pattern=\"[A-Z]{3}-[0-9]{4}\" \n         title=\"Format: ABC-1234\">\n  <span class=\"error\" id=\"code-error\"></span>\n\n  <button type=\"submit\">Verify</button>\n</form>\n\n<script>\n  const form = document.getElementById('api-form');\n  const codeInput = document.getElementById('code');\n  const codeError = document.getElementById('code-error');\n\n  form.addEventListener('submit', function(e) {\n    e.preventDefault();\n\n    if (!codeInput.checkValidity()) {\n      if (codeInput.validity.valueMissing) {\n        codeError.textContent = 'Invite code is required.';\n      } else if (codeInput.validity.patternMismatch) {\n        codeError.textContent = 'Format must be ABC-1234.';\n      }\n      return;\n    }\n\n    codeError.textContent = '';\n    console.log('Valid code:', codeInput.value);\n  });\n</script>",
+          "explanation": "The novalidate attribute on the form disables the browser's native validation UI, allowing you to implement custom error display. The validity object contains boolean properties like valueMissing, patternMismatch, tooShort, tooLong, rangeUnderflow, rangeOverflow, and typeMismatch for granular error handling."
+        }
+      ],
+      "notes": [
+        "Client-side validation improves UX but never replaces server-side validation. Users can bypass client-side checks by disabling JavaScript or modifying the HTML.",
+        "The novalidate attribute on <form> disables the browser's built-in validation UI. Use this when you want to implement custom validation messages with JavaScript.",
+        "The pattern regex is automatically anchored: pattern=\"[A-Z]+\" is equivalent to ^[A-Z]+$ in standard regex. You do not need to add ^ and $ anchors."
+      ],
+      "commonPitfalls": [
+        "Relying solely on client-side validation without server-side validation. Any client-side check can be bypassed, so the server must validate all input independently.",
+        "Forgetting to call setCustomValidity('') to clear a custom error. If you set a custom validity message and never clear it, the field remains permanently invalid.",
+        "Using :invalid CSS styles without considering that empty required fields are invalid on page load, causing red borders before the user has interacted with the form."
+      ],
+      "interviewTips": [
+        "Explain the difference between client-side and server-side validation: client-side is for UX (immediate feedback), server-side is for security (cannot be bypassed).",
+        "Know the validity object properties: valueMissing, typeMismatch, patternMismatch, tooShort, tooLong, rangeUnderflow, rangeOverflow, stepMismatch, and customError.",
+        "Be ready to implement a password confirmation validator using setCustomValidity() -- this is a very common interview coding challenge."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "form-validation-ex1",
+        "title": "Validated Registration Form",
+        "description": "Create a form with: username (required, 3-15 chars, letters/numbers/underscores only via pattern), email (required, type=email), password (required, minlength 8), and age (required, number, 13-120). Add appropriate title attributes for pattern fields.",
+        "starterCode": "<!-- Create a registration form with validation constraints -->\n",
+        "solution": "<form action=\"/api/register\" method=\"POST\">\n  <label for=\"username\">Username:</label>\n  <input type=\"text\" id=\"username\" name=\"username\" \n         required minlength=\"3\" maxlength=\"15\" \n         pattern=\"[a-zA-Z0-9_]+\" \n         title=\"3-15 characters: letters, numbers, and underscores only\">\n\n  <label for=\"email\">Email:</label>\n  <input type=\"email\" id=\"email\" name=\"email\" required>\n\n  <label for=\"password\">Password:</label>\n  <input type=\"password\" id=\"password\" name=\"password\" \n         required minlength=\"8\">\n\n  <label for=\"age\">Age:</label>\n  <input type=\"number\" id=\"age\" name=\"age\" \n         required min=\"13\" max=\"120\">\n\n  <button type=\"submit\">Register</button>\n</form>",
+        "hints": [
+          "Use pattern=\"[a-zA-Z0-9_]+\" for alphanumeric plus underscores",
+          "The title attribute provides the custom message shown when the pattern does not match"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "form-validation-ex2",
+        "title": "Password Confirmation with Custom Validity",
+        "description": "Create a form with password and confirm password fields. Write JavaScript using setCustomValidity() to show 'Passwords do not match' when the values differ. Clear the error when they match. Add event listeners on both fields to check on every input.",
+        "starterCode": "<form id=\"pwd-form\">\n  <label for=\"pwd\">Password:</label>\n  <input type=\"password\" id=\"pwd\" name=\"password\" required minlength=\"8\">\n\n  <label for=\"confirm\">Confirm Password:</label>\n  <input type=\"password\" id=\"confirm\" name=\"confirm\" required minlength=\"8\">\n\n  <button type=\"submit\">Submit</button>\n</form>\n\n<script>\n  // Add password matching validation\n</script>\n",
+        "solution": "<form id=\"pwd-form\">\n  <label for=\"pwd\">Password:</label>\n  <input type=\"password\" id=\"pwd\" name=\"password\" required minlength=\"8\">\n\n  <label for=\"confirm\">Confirm Password:</label>\n  <input type=\"password\" id=\"confirm\" name=\"confirm\" required minlength=\"8\">\n\n  <button type=\"submit\">Submit</button>\n</form>\n\n<script>\n  const pwd = document.getElementById('pwd');\n  const confirm = document.getElementById('confirm');\n\n  function checkMatch() {\n    if (pwd.value !== confirm.value) {\n      confirm.setCustomValidity('Passwords do not match');\n    } else {\n      confirm.setCustomValidity('');\n    }\n  }\n\n  pwd.addEventListener('input', checkMatch);\n  confirm.addEventListener('input', checkMatch);\n</script>",
+        "hints": [
+          "setCustomValidity('message') makes the field invalid; setCustomValidity('') clears the error",
+          "Listen on both password fields so the validation updates when either field changes"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "form-accessibility",
+    "sectionId": "forms-and-inputs",
+    "orderIndex": 5,
+    "title": "Form Accessibility",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["label", "fieldset", "legend", "aria-describedby", "Error Messages", "Accessible Forms"],
+    "content": {
+      "explanation": "Accessible forms ensure that all users, including those using screen readers, keyboard navigation, or other assistive technologies, can successfully complete and submit forms. Accessibility is not an optional enhancement -- it is a fundamental requirement of web development. Many countries have laws (ADA in the US, European Accessibility Act in the EU) that require websites to be accessible, and inaccessible forms exclude a significant portion of users.\n\nThe <label> element is the cornerstone of form accessibility. Every form control must have an associated label that describes what the field expects. There are two ways to associate a label: explicit association using the for attribute (which references the input's id) and implicit association by wrapping the input inside the label element. The explicit approach is generally preferred because it works regardless of DOM structure and gives you more styling flexibility. When a label is properly associated, clicking the label text focuses the corresponding input, which also improves usability for all users.\n\nThe <fieldset> element groups related form controls together, and the <legend> element provides a caption for that group. This pairing is essential for radio button groups and checkbox groups because individual labels describe each option, but the group needs an overall question or category label. Without <fieldset>/<legend>, a screen reader user hearing 'Red' as a radio button label has no context about what 'Red' refers to. With a legend of 'Favorite Color', the screen reader announces 'Favorite Color group, Red radio button'.\n\nThe aria-describedby attribute links a form control to additional descriptive text elsewhere in the DOM. This is commonly used for help text, format hints, and error messages. When a screen reader focuses on an input with aria-describedby, it reads the input's label first and then the referenced description. For error messages, use aria-live=\"polite\" on the error container so that dynamically added error messages are announced without the user needing to re-focus the field.\n\nFor error handling, there are several best practices: display error messages near the field they relate to (typically below), use aria-invalid=\"true\" on fields with errors, associate error messages with the field using aria-describedby, use a visible error summary at the top of the form for longer forms, and ensure errors are announced by placing them in an aria-live region. The color of error messages should not be the only indicator -- always include text or an icon to convey meaning, since some users cannot perceive color differences.",
+      "codeExamples": [
+        {
+          "title": "Explicit vs Implicit Labels",
+          "code": "<!-- Explicit association: for/id -->\n<label for=\"email\">Email Address:</label>\n<input type=\"email\" id=\"email\" name=\"email\" required>\n\n<!-- Implicit association: wrapping -->\n<label>\n  Phone Number:\n  <input type=\"tel\" name=\"phone\">\n</label>\n\n<!-- WRONG: No label association -->\n<p>Username:</p>\n<input type=\"text\" name=\"username\">\n<!-- The text \"Username:\" is NOT associated with the input -->",
+          "explanation": "Explicit labels use for/id to create the association. Implicit labels wrap the input inside the label element. The third example shows a common mistake: adjacent text is not a label. Screen readers will announce the input as 'unlabelled text field'."
+        },
+        {
+          "title": "Fieldset and Legend for Groups",
+          "code": "<form>\n  <fieldset>\n    <legend>Shipping Address</legend>\n    <label for=\"street\">Street:</label>\n    <input type=\"text\" id=\"street\" name=\"street\" required>\n\n    <label for=\"city\">City:</label>\n    <input type=\"text\" id=\"city\" name=\"city\" required>\n\n    <label for=\"zip\">ZIP Code:</label>\n    <input type=\"text\" id=\"zip\" name=\"zip\" \n           pattern=\"[0-9]{5,6}\" required>\n  </fieldset>\n\n  <fieldset>\n    <legend>Delivery Speed</legend>\n    <label>\n      <input type=\"radio\" name=\"delivery\" value=\"standard\" checked>\n      Standard (5-7 days)\n    </label>\n    <label>\n      <input type=\"radio\" name=\"delivery\" value=\"express\">\n      Express (2-3 days)\n    </label>\n    <label>\n      <input type=\"radio\" name=\"delivery\" value=\"overnight\">\n      Overnight (next day)\n    </label>\n  </fieldset>\n</form>",
+          "explanation": "Each <fieldset> groups related controls and <legend> provides the group label. For the radio buttons, the legend 'Delivery Speed' gives context to the individual option labels. A screen reader user would hear 'Delivery Speed group, Standard 5-7 days radio button'."
+        },
+        {
+          "title": "aria-describedby for Help Text and Errors",
+          "code": "<form>\n  <label for=\"password\">Password:</label>\n  <input type=\"password\" id=\"password\" name=\"password\" \n         required minlength=\"8\" \n         aria-describedby=\"pwd-help pwd-error\"\n         aria-invalid=\"false\">\n  <p id=\"pwd-help\" class=\"help-text\">\n    Must be at least 8 characters with one number and one uppercase letter.\n  </p>\n  <p id=\"pwd-error\" class=\"error-text\" \n     role=\"alert\" aria-live=\"polite\">\n  </p>\n</form>\n\n<script>\n  const pwd = document.getElementById('password');\n  const error = document.getElementById('pwd-error');\n\n  pwd.addEventListener('blur', function() {\n    if (pwd.value.length > 0 && pwd.value.length < 8) {\n      error.textContent = 'Password is too short.';\n      pwd.setAttribute('aria-invalid', 'true');\n    } else {\n      error.textContent = '';\n      pwd.setAttribute('aria-invalid', 'false');\n    }\n  });\n</script>",
+          "explanation": "aria-describedby references both the help text and error message. The screen reader reads both when the field is focused. The error container uses role=\"alert\" and aria-live=\"polite\" so that dynamically inserted error messages are announced. aria-invalid indicates whether the field currently has an error."
+        },
+        {
+          "title": "Accessible Error Summary",
+          "code": "<form id=\"reg-form\" novalidate>\n  <div id=\"error-summary\" role=\"alert\" \n       aria-live=\"assertive\" hidden>\n    <h2>Please fix the following errors:</h2>\n    <ul id=\"error-list\"></ul>\n  </div>\n\n  <label for=\"name\">Name:</label>\n  <input type=\"text\" id=\"name\" name=\"name\" required \n         aria-describedby=\"name-error\">\n  <span id=\"name-error\" class=\"field-error\"></span>\n\n  <label for=\"reg-email\">Email:</label>\n  <input type=\"email\" id=\"reg-email\" name=\"email\" required \n         aria-describedby=\"email-error\">\n  <span id=\"email-error\" class=\"field-error\"></span>\n\n  <button type=\"submit\">Register</button>\n</form>\n\n<script>\n  document.getElementById('reg-form')\n    .addEventListener('submit', function(e) {\n      e.preventDefault();\n      const errors = [];\n      const name = document.getElementById('name');\n      const email = document.getElementById('reg-email');\n\n      if (!name.value.trim()) {\n        errors.push({ field: 'name', message: 'Name is required' });\n        document.getElementById('name-error').textContent = 'Name is required';\n        name.setAttribute('aria-invalid', 'true');\n      }\n      if (!email.value.trim()) {\n        errors.push({ field: 'reg-email', message: 'Email is required' });\n        document.getElementById('email-error').textContent = 'Email is required';\n        email.setAttribute('aria-invalid', 'true');\n      }\n\n      const summary = document.getElementById('error-summary');\n      const list = document.getElementById('error-list');\n      if (errors.length > 0) {\n        list.innerHTML = errors.map(e =>\n          '<li><a href=\"#' + e.field + '\">' + e.message + '</a></li>'\n        ).join('');\n        summary.hidden = false;\n        summary.focus();\n      } else {\n        summary.hidden = true;\n        console.log('Form submitted!');\n      }\n    });\n</script>",
+          "explanation": "An error summary at the top of the form lists all errors with links that jump to the offending field. This pattern is essential for long forms where inline errors may be out of view. The summary uses role=\"alert\" and aria-live=\"assertive\" to be announced immediately by screen readers."
+        }
+      ],
+      "notes": [
+        "Every form control must have an accessible name. Use <label> for visible labels, aria-label for visually hidden labels, or aria-labelledby to reference existing text.",
+        "Do not use placeholder as a substitute for <label>. Placeholders disappear when the user types, are not reliably announced by all screen readers, and have poor color contrast by default.",
+        "Error messages should be associated with their field via aria-describedby and placed in an aria-live region so they are announced when they appear dynamically."
+      ],
+      "commonPitfalls": [
+        "Using placeholder text instead of labels. Placeholders disappear on focus or input, leaving users with no indication of what the field expects.",
+        "Forgetting to use <fieldset> and <legend> for radio button and checkbox groups. Without them, screen reader users hear individual option labels without knowing the question or category.",
+        "Relying solely on color to indicate errors (e.g., a red border). Users with color vision deficiencies need text messages or icons to understand that an error has occurred."
+      ],
+      "interviewTips": [
+        "Be able to explain the difference between <label>, aria-label, and aria-labelledby: <label> is for visible labels, aria-label is for invisible labels, and aria-labelledby references the id of existing visible text.",
+        "Know how to make error messages accessible: use aria-describedby to associate them with the field, aria-invalid to indicate error state, and aria-live regions to announce dynamic errors."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "form-accessibility-ex1",
+        "title": "Accessible Grouped Form",
+        "description": "Create a form with two fieldsets. The first fieldset (legend: 'Personal Info') contains labeled inputs for name and email. The second fieldset (legend: 'Notification Preferences') contains labeled checkboxes for 'Email Updates' and 'SMS Alerts'. Every control must have a properly associated label.",
+        "starterCode": "<!-- Create an accessible form with two fieldsets -->\n",
+        "solution": "<form>\n  <fieldset>\n    <legend>Personal Info</legend>\n\n    <label for=\"name\">Name:</label>\n    <input type=\"text\" id=\"name\" name=\"name\" required>\n\n    <label for=\"email\">Email:</label>\n    <input type=\"email\" id=\"email\" name=\"email\" required>\n  </fieldset>\n\n  <fieldset>\n    <legend>Notification Preferences</legend>\n\n    <label>\n      <input type=\"checkbox\" name=\"notifications\" value=\"email\">\n      Email Updates\n    </label>\n\n    <label>\n      <input type=\"checkbox\" name=\"notifications\" value=\"sms\">\n      SMS Alerts\n    </label>\n  </fieldset>\n\n  <button type=\"submit\">Save</button>\n</form>",
+        "hints": [
+          "Use <fieldset> and <legend> to group related controls",
+          "Checkboxes can use implicit labels (wrapped inside <label>) for convenience"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "form-accessibility-ex2",
+        "title": "Form with Accessible Error Messages",
+        "description": "Create an email input with: a visible label, help text below it ('We will never share your email'), and an error message placeholder. Use aria-describedby to link the input to both the help text and error message. Set aria-invalid to 'false' initially. The error and help text should have unique ids.",
+        "starterCode": "<!-- Create an email field with accessible help text and error message -->\n",
+        "solution": "<div>\n  <label for=\"user-email\">Email Address:</label>\n  <input type=\"email\" id=\"user-email\" name=\"email\" \n         required \n         aria-describedby=\"email-help email-error\" \n         aria-invalid=\"false\">\n  <p id=\"email-help\" class=\"help-text\">\n    We will never share your email.\n  </p>\n  <p id=\"email-error\" class=\"error-text\" \n     role=\"alert\" aria-live=\"polite\">\n  </p>\n</div>",
+        "hints": [
+          "aria-describedby accepts multiple space-separated ids to reference both help text and error message",
+          "Use role=\"alert\" and aria-live=\"polite\" on the error container so dynamically added errors are announced"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -110,7 +110,7 @@ export default function CareerCard({ career, index = 0 }: CareerCardProps) {
       className="h-full"
     >
       <Link
-        to={`/careers/${career.slug}`}
+        to={`/learn/careers/${career.slug}`}
         className={`group relative flex flex-col h-full bg-white dark:bg-gray-900 rounded-2xl border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:shadow-gray-100 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline ${cat.border}`}
       >
         <div className="flex flex-col flex-1 p-6">

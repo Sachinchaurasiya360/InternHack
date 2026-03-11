@@ -1,0 +1,373 @@
+[
+  {
+    "id": "flex-container",
+    "sectionId": "flexbox",
+    "orderIndex": 0,
+    "title": "Flex Container",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["display:flex", "flex-direction", "flex-wrap", "flex-flow"],
+    "content": {
+      "explanation": "Flexbox (Flexible Box Layout) is a one-dimensional layout model designed for distributing space and aligning items within a container. Unlike older layout methods (floats, inline-block, tables), Flexbox was purpose-built for component layout and provides powerful alignment capabilities with minimal code. It operates along a single axis at a time -- either a row (horizontal) or a column (vertical) -- which is why it is called one-dimensional.\n\nTo activate Flexbox, you set display: flex on a container element. This makes the element a flex container, and all of its direct children automatically become flex items. By default, flex items are laid out in a single row from left to right, they stretch to fill the container's height, and they shrink to fit if the container is too narrow. The container itself behaves as a block-level element. You can also use display: inline-flex to create an inline-level flex container.\n\nThe flex-direction property controls the main axis -- the primary direction in which flex items are laid out. The four values are row (left to right, the default), row-reverse (right to left), column (top to bottom), and column-reverse (bottom to top). When flex-direction is row, the main axis is horizontal and the cross axis is vertical. When flex-direction is column, the main axis is vertical and the cross axis is horizontal. Understanding which axis is 'main' and which is 'cross' is critical because all Flexbox alignment properties reference these axes.\n\nThe flex-wrap property controls whether flex items are forced onto a single line or can wrap onto multiple lines. The default value nowrap squeezes all items onto one line, shrinking them if necessary. The value wrap allows items to flow onto additional lines when they would overflow the container. The value wrap-reverse wraps in the opposite direction. The shorthand flex-flow combines flex-direction and flex-wrap into a single declaration: flex-flow: row wrap.\n\nA common source of confusion is the relationship between flex-direction and the concepts of 'main axis' and 'cross axis'. In row direction, justify-content works horizontally and align-items works vertically. In column direction, justify-content works vertically and align-items works horizontally. The properties always operate on the same axes (justify on main, align on cross), but which physical direction those axes correspond to changes with flex-direction.",
+      "codeExamples": [
+        {
+          "title": "Basic Flex Container",
+          "code": ".container {\n  display: flex;\n  background-color: #f3f4f6;\n  padding: 16px;\n  gap: 12px;\n}\n\n.item {\n  background-color: #3b82f6;\n  color: white;\n  padding: 20px;\n  border-radius: 8px;\n}",
+          "explanation": "Setting display: flex on the container causes all direct children (.item) to be laid out in a horizontal row. By default, items are placed left to right with no wrapping. The gap property adds consistent spacing between items."
+        },
+        {
+          "title": "flex-direction Values",
+          "code": "/* Default: horizontal left-to-right */\n.row {\n  display: flex;\n  flex-direction: row;\n}\n\n/* Horizontal right-to-left */\n.row-reverse {\n  display: flex;\n  flex-direction: row-reverse;\n}\n\n/* Vertical top-to-bottom */\n.column {\n  display: flex;\n  flex-direction: column;\n}\n\n/* Vertical bottom-to-top */\n.column-reverse {\n  display: flex;\n  flex-direction: column-reverse;\n}",
+          "explanation": "flex-direction controls the main axis. With row, items flow horizontally; with column, items flow vertically. The -reverse variants flip the order without changing the DOM. This is useful for right-aligned navigation or bottom-up stacking."
+        },
+        {
+          "title": "flex-wrap for Multi-Line Layout",
+          "code": ".no-wrap {\n  display: flex;\n  flex-wrap: nowrap; /* default: items shrink to fit */\n}\n\n.wrap {\n  display: flex;\n  flex-wrap: wrap; /* items flow to new lines */\n  gap: 16px;\n}\n\n.wrap .item {\n  width: 200px; /* items maintain width and wrap */\n}",
+          "explanation": "With nowrap (default), items are compressed onto one line even if they overflow. With wrap, items maintain their width and flow to the next line when the container is too narrow. This is essential for responsive card grids."
+        },
+        {
+          "title": "flex-flow Shorthand",
+          "code": "/* Longhand */\n.container-long {\n  display: flex;\n  flex-direction: row;\n  flex-wrap: wrap;\n}\n\n/* Shorthand: flex-flow: <direction> <wrap> */\n.container-short {\n  display: flex;\n  flex-flow: row wrap;\n}\n\n/* Column with wrapping */\n.sidebar {\n  display: flex;\n  flex-flow: column nowrap;\n  height: 100vh;\n}",
+          "explanation": "flex-flow is a shorthand for flex-direction and flex-wrap. The first value is the direction and the second is the wrap behavior. This reduces two declarations to one."
+        }
+      ],
+      "notes": [
+        "Flexbox only affects direct children of the flex container. Grandchildren and deeper descendants are not flex items unless their parent is also a flex container.",
+        "display: flex creates a block-level flex container. Use display: inline-flex when you want the container itself to behave like an inline element (e.g., inside a paragraph of text).",
+        "When flex-direction changes, the meaning of 'main axis' and 'cross axis' swaps. This means justify-content and align-items swap their physical directions too."
+      ],
+      "commonPitfalls": [
+        "Expecting Flexbox properties to affect grandchildren. Only direct children of a flex container become flex items. Nested elements require their own flex containers.",
+        "Forgetting that flex-wrap defaults to nowrap. If your flex items are overflowing or shrinking unexpectedly, you likely need to add flex-wrap: wrap.",
+        "Confusing flex-direction: row-reverse with text-direction/RTL. row-reverse flips the layout order of flex items but does not change the text direction inside those items."
+      ],
+      "interviewTips": [
+        "Be able to explain the difference between the main axis and cross axis and how they change based on flex-direction. This is fundamental to understanding all Flexbox alignment.",
+        "Know the difference between display: flex and display: inline-flex -- flex creates a block-level container while inline-flex creates an inline-level container."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "flex-container-ex1",
+        "title": "Horizontal Navigation Bar",
+        "description": "Create the CSS for a navigation bar (.navbar) that uses Flexbox to lay out its children in a horizontal row with 16px gaps. The items should wrap to a new line on small screens.",
+        "starterCode": "/* Style the .navbar as a flex container */\n/* Horizontal, wrapping, with 16px gap */\n",
+        "solution": ".navbar {\n  display: flex;\n  flex-flow: row wrap;\n  gap: 16px;\n  padding: 12px 24px;\n  list-style: none;\n}",
+        "hints": [
+          "Use display: flex to activate Flexbox layout",
+          "flex-flow: row wrap is the shorthand for flex-direction: row and flex-wrap: wrap"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "flex-container-ex2",
+        "title": "Vertical Sidebar Layout",
+        "description": "Create the CSS for a sidebar (.sidebar) that stacks its children vertically using Flexbox. The sidebar should take the full viewport height (100vh), have 8px gaps between items, and prevent wrapping.",
+        "starterCode": "/* Style the .sidebar as a vertical flex container */\n/* Full height, no wrapping, 8px gap */\n",
+        "solution": ".sidebar {\n  display: flex;\n  flex-direction: column;\n  flex-wrap: nowrap;\n  gap: 8px;\n  height: 100vh;\n  padding: 16px;\n}",
+        "hints": [
+          "Use flex-direction: column to stack items vertically",
+          "Set height: 100vh for full viewport height"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "flex-alignment",
+    "sectionId": "flexbox",
+    "orderIndex": 1,
+    "title": "Flex Alignment",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["justify-content", "align-items", "align-content", "align-self"],
+    "content": {
+      "explanation": "Flexbox provides three main alignment properties: justify-content for aligning items along the main axis, align-items for aligning items along the cross axis, and align-content for distributing space between wrapped lines. Together with align-self (which overrides align-items for individual items), these four properties give you complete control over how flex items are positioned within their container.\n\njustify-content controls the distribution of items along the main axis (horizontal by default). Its values include flex-start (pack items at the start), flex-end (pack items at the end), center (center all items), space-between (first item at start, last item at end, equal space between), space-around (equal space around each item, meaning edges have half the space of gaps between items), and space-evenly (equal space between items and at the edges). The space-between value is the most commonly used for navigation bars and card layouts.\n\nalign-items controls the alignment of items along the cross axis (vertical by default). Its values include stretch (the default, items expand to fill the container height), flex-start (items align to the top), flex-end (items align to the bottom), center (items are vertically centered), and baseline (items align by their text baselines). The stretch default is why flex items in a row naturally become the same height -- each item stretches to match the tallest one.\n\nalign-content only applies when there are multiple lines of flex items (i.e., when flex-wrap is set to wrap and items have wrapped to new lines). It controls how the lines themselves are distributed along the cross axis. Its values mirror justify-content: flex-start, flex-end, center, space-between, space-around, space-evenly, and stretch. If there is only one line of items, align-content has no visible effect.\n\nalign-self is applied to individual flex items (not the container) and overrides the container's align-items value for that specific item. This is useful when most items should be centered but one item needs to be pinned to the top or bottom. The values are the same as align-items: auto (inherit from container), flex-start, flex-end, center, stretch, and baseline. There is no justify-self in Flexbox because the main axis distributes all items collectively via justify-content.",
+      "codeExamples": [
+        {
+          "title": "justify-content Values",
+          "code": ".flex-start { display: flex; justify-content: flex-start; }\n/* |A  B  C              | */\n\n.flex-end { display: flex; justify-content: flex-end; }\n/* |              A  B  C| */\n\n.center { display: flex; justify-content: center; }\n/* |       A  B  C       | */\n\n.space-between { display: flex; justify-content: space-between; }\n/* |A        B        C| */\n\n.space-around { display: flex; justify-content: space-around; }\n/* |  A      B      C  | */\n\n.space-evenly { display: flex; justify-content: space-evenly; }\n/* |   A     B     C   | */",
+          "explanation": "justify-content distributes items along the main axis. space-between puts equal space between items but none at the edges. space-around puts equal space around each item (edges get half-space). space-evenly distributes space equally everywhere."
+        },
+        {
+          "title": "align-items Values",
+          "code": ".container {\n  display: flex;\n  height: 200px;\n  border: 2px solid #e5e7eb;\n}\n\n.align-stretch { align-items: stretch; }\n/* Items fill full height (default) */\n\n.align-start { align-items: flex-start; }\n/* Items align to the top */\n\n.align-end { align-items: flex-end; }\n/* Items align to the bottom */\n\n.align-center { align-items: center; }\n/* Items are vertically centered */\n\n.align-baseline { align-items: baseline; }\n/* Items align by their text baseline */",
+          "explanation": "align-items controls cross-axis alignment. The default stretch makes all items the same height. Center is the most commonly used for vertically centering items. Baseline aligns items by their text content, which is useful when items have different font sizes."
+        },
+        {
+          "title": "Perfect Centering with Flexbox",
+          "code": "/* The simplest way to center anything */\n.center-container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  height: 100vh;\n}\n\n/* Centering a login card */\n.login-page {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-height: 100vh;\n  background-color: #f3f4f6;\n}\n\n.login-card {\n  width: 400px;\n  padding: 32px;\n  background-color: white;\n  border-radius: 12px;\n  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);\n}",
+          "explanation": "Combining justify-content: center and align-items: center on a flex container with a defined height perfectly centers its content both horizontally and vertically. This two-line centering technique is one of the most important CSS patterns to know."
+        },
+        {
+          "title": "align-self for Individual Items",
+          "code": ".container {\n  display: flex;\n  align-items: center;\n  height: 200px;\n  gap: 16px;\n  padding: 16px;\n  border: 2px solid #e5e7eb;\n}\n\n.item {\n  padding: 16px;\n  background-color: #3b82f6;\n  color: white;\n  border-radius: 8px;\n}\n\n/* Override alignment for specific items */\n.item-top {\n  align-self: flex-start;\n}\n\n.item-bottom {\n  align-self: flex-end;\n}\n\n.item-stretch {\n  align-self: stretch;\n}",
+          "explanation": "align-self overrides the container's align-items for a specific item. Here, while the container centers all items by default, individual items can pin themselves to the top, bottom, or stretch to full height."
+        }
+      ],
+      "notes": [
+        "The Flexbox centering trick (justify-content: center + align-items: center) requires the container to have a defined height. Without it, the container collapses to the height of its content and centering has no visible effect.",
+        "align-content only works when flex-wrap is set to wrap and there are multiple lines of items. On a single-line flex container, it has no effect.",
+        "There is no justify-self property in Flexbox. To push a single item to the opposite end, use margin-left: auto (for row) or margin-top: auto (for column) on that item."
+      ],
+      "commonPitfalls": [
+        "Trying to vertically center items in a flex container without setting a height. The container needs explicit height (or min-height) for align-items: center to produce visible centering.",
+        "Using align-content on a single-line flex container (flex-wrap: nowrap). It only affects multi-line containers with wrapped content.",
+        "Confusing justify-content and align-items. justify works on the main axis (horizontal in row), align works on the cross axis (vertical in row). The axes flip when direction changes to column."
+      ],
+      "interviewTips": [
+        "The question 'How do you center a div?' is one of the most common CSS interview questions. The Flexbox answer (display: flex, justify-content: center, align-items: center) is the modern standard.",
+        "Be able to explain the difference between space-between, space-around, and space-evenly and draw the spacing patterns each produces."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "flex-alignment-ex1",
+        "title": "Center a Modal Dialog",
+        "description": "Create CSS for a .modal-overlay that uses Flexbox to center a .modal-box both horizontally and vertically. The overlay should cover the full viewport with a semi-transparent background (rgba(0,0,0,0.5)).",
+        "starterCode": "/* Style the .modal-overlay to center .modal-box */\n",
+        "solution": ".modal-overlay {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  height: 100vh;\n  background-color: rgba(0, 0, 0, 0.5);\n}\n\n.modal-box {\n  background-color: white;\n  padding: 32px;\n  border-radius: 12px;\n  max-width: 500px;\n  width: 90%;\n}",
+        "hints": [
+          "Use justify-content: center for horizontal centering and align-items: center for vertical centering",
+          "The overlay needs a height (100vh) for vertical centering to work"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "flex-alignment-ex2",
+        "title": "Navigation with Spaced Items",
+        "description": "Create CSS for a .nav-bar that distributes items with space-between so the logo (.logo) is on the left and the nav links are on the right. Items should be vertically centered. The nav bar should have a fixed height of 64px.",
+        "starterCode": "/* Style .nav-bar with space-between and vertical centering */\n",
+        "solution": ".nav-bar {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n  height: 64px;\n  padding: 0 24px;\n  background-color: white;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n}\n\n.logo {\n  font-size: 1.25rem;\n  font-weight: 700;\n}\n\n.nav-links {\n  display: flex;\n  gap: 24px;\n  align-items: center;\n}",
+        "hints": [
+          "space-between pushes the first item to the left edge and the last item to the right edge",
+          "align-items: center vertically centers items within the 64px tall container"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "flex-items",
+    "sectionId": "flexbox",
+    "orderIndex": 2,
+    "title": "Flex Items",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["flex-grow", "flex-shrink", "flex-basis", "flex Shorthand"],
+    "content": {
+      "explanation": "While the container properties (justify-content, align-items, etc.) control how items are positioned collectively, the flex item properties control how individual items grow, shrink, and size themselves within the available space. The three core properties are flex-grow, flex-shrink, and flex-basis, which are most commonly used through the flex shorthand.\n\nflex-grow determines how much an item should grow relative to the other flex items when there is extra space in the container. The default value is 0, meaning items do not grow beyond their content size. Setting flex-grow: 1 on all items makes them share the extra space equally. If one item has flex-grow: 2 and the others have flex-grow: 1, the first item gets twice as much of the extra space (not twice the total width -- it gets twice the share of the remaining space after all items' base sizes are accounted for).\n\nflex-shrink determines how much an item should shrink relative to the other flex items when the container is too small to fit all items at their base sizes. The default value is 1, meaning all items shrink equally. Setting flex-shrink: 0 on an item prevents it from shrinking at all, which is useful for fixed-width elements like icons or logos. An item with flex-shrink: 2 will shrink twice as fast as items with flex-shrink: 1.\n\nflex-basis sets the initial main-axis size of a flex item before flex-grow and flex-shrink are applied. It is similar to setting width (in row direction) or height (in column direction), but it is Flexbox-aware and participates in the flex algorithm. The default value is auto, which means the item's size is determined by its content or explicit width/height. You can set flex-basis to a length (200px), a percentage (25%), or content (use the content's intrinsic size). When both width and flex-basis are set, flex-basis takes precedence.\n\nThe flex shorthand combines all three properties: flex: <grow> <shrink> <basis>. The most common values are flex: 1 (equivalent to flex: 1 1 0%, meaning grow equally and start from zero size), flex: auto (equivalent to flex: 1 1 auto, meaning grow equally from content size), flex: none (equivalent to flex: 0 0 auto, meaning fixed size, no grow/shrink), and flex: 0 1 auto (the default). Using the shorthand is strongly recommended because it sets sensible defaults for the values you omit -- notably, flex: 1 sets flex-basis to 0%, while setting only flex-grow: 1 leaves flex-basis at auto, which produces different results.",
+      "codeExamples": [
+        {
+          "title": "flex-grow: Distributing Extra Space",
+          "code": ".container {\n  display: flex;\n  gap: 12px;\n}\n\n/* All items share extra space equally */\n.equal-grow .item {\n  flex-grow: 1;\n}\n\n/* Middle item gets twice the extra space */\n.weighted .item { flex-grow: 1; }\n.weighted .item-main { flex-grow: 2; }\n\n/* Only one item grows to fill remaining space */\n.fill-one .item-expand { flex-grow: 1; }\n/* Other items stay at their content width */",
+          "explanation": "flex-grow distributes the leftover space in the container. When all items have flex-grow: 1, they share equally. When one has a higher value, it gets a proportionally larger share. Items without flex-grow (or flex-grow: 0) keep their natural size."
+        },
+        {
+          "title": "flex-shrink: Controlling Shrinking",
+          "code": ".container {\n  display: flex;\n  width: 600px;\n}\n\n/* Default: all items shrink equally */\n.item {\n  flex-shrink: 1;\n  width: 250px; /* 3 * 250 = 750 > 600, items shrink */\n}\n\n/* Prevent specific items from shrinking */\n.logo {\n  flex-shrink: 0;\n  width: 150px; /* Logo stays 150px no matter what */\n}\n\n.content {\n  flex-shrink: 1;\n  width: 300px; /* Content absorbs all the shrinking */\n}",
+          "explanation": "When items are wider than the container, flex-shrink controls how each item reduces its size. flex-shrink: 0 prevents an item from shrinking, which is important for elements like logos or icons that should maintain a fixed size."
+        },
+        {
+          "title": "flex-basis vs width",
+          "code": ".container {\n  display: flex;\n  gap: 16px;\n}\n\n/* flex-basis sets the starting size before grow/shrink */\n.sidebar {\n  flex-basis: 250px;   /* Start at 250px */\n  flex-grow: 0;        /* Don't grow */\n  flex-shrink: 0;      /* Don't shrink */\n}\n\n.main-content {\n  flex-basis: 0;       /* Start from zero */\n  flex-grow: 1;        /* Grow to fill remaining space */\n}\n\n/* flex-basis takes precedence over width */\n.overridden {\n  width: 300px;        /* Ignored in flex context */\n  flex-basis: 200px;   /* This wins */\n}",
+          "explanation": "flex-basis defines the initial size of a flex item along the main axis. When set to 0, the item starts with no inherent size and relies entirely on flex-grow. When both width and flex-basis are present, flex-basis wins in the flex layout algorithm."
+        },
+        {
+          "title": "flex Shorthand Patterns",
+          "code": ".container {\n  display: flex;\n  gap: 16px;\n}\n\n/* flex: 1 = flex: 1 1 0% (equal size items) */\n.equal-items .item {\n  flex: 1;\n}\n\n/* flex: auto = flex: 1 1 auto (grow from content size) */\n.auto-items .item {\n  flex: auto;\n}\n\n/* flex: none = flex: 0 0 auto (fixed size) */\n.fixed-item {\n  flex: none;\n  width: 200px;\n}\n\n/* Common sidebar + main layout */\n.sidebar {\n  flex: 0 0 280px; /* Fixed 280px sidebar */\n}\n.main {\n  flex: 1;         /* Main fills remaining space */\n}",
+          "explanation": "The flex shorthand is the recommended way to set flex item sizing. flex: 1 makes items equal width (basis is 0%). flex: auto makes items grow from their content width. flex: none makes items fixed-size. The sidebar/main pattern is extremely common."
+        }
+      ],
+      "notes": [
+        "Always use the flex shorthand instead of setting flex-grow, flex-shrink, and flex-basis individually. The shorthand sets more sensible defaults (flex: 1 sets basis to 0%, which is usually what you want).",
+        "flex: 1 and flex: auto produce different results. flex: 1 (basis: 0%) makes items equal width regardless of content. flex: auto (basis: auto) sizes items based on content first, then distributes remaining space.",
+        "flex-grow distributes extra space, not total space. An item with flex-grow: 2 does not become twice as wide as one with flex-grow: 1 -- it gets twice as much of the leftover space."
+      ],
+      "commonPitfalls": [
+        "Thinking flex-grow: 2 makes an item twice as wide as flex-grow: 1. It gets twice the extra space, not twice the total width. The total width depends on the content size (flex-basis) plus the proportional share of remaining space.",
+        "Setting flex-grow: 1 without understanding that it leaves flex-basis at auto (content-based). For equal-width items, use flex: 1 (which sets basis to 0%) instead of just flex-grow: 1.",
+        "Forgetting that flex-basis takes precedence over width in a flex context. If both are set, flex-basis wins, which can cause confusion when refactoring non-flex layouts to Flexbox."
+      ],
+      "interviewTips": [
+        "Know the exact expansion of common flex shorthand values: flex: 1 is 1 1 0%, flex: auto is 1 1 auto, flex: none is 0 0 auto, and the default is 0 1 auto.",
+        "Be prepared to explain the difference between flex: 1 and flex: auto and when to use each. flex: 1 for equal-width columns, flex: auto when you want content to influence the base size."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "flex-items-ex1",
+        "title": "Sidebar and Main Content Layout",
+        "description": "Create a CSS layout where .layout is a flex container. The .sidebar child should be exactly 280px wide and should not grow or shrink. The .main child should fill all remaining space. Use the flex shorthand for both.",
+        "starterCode": "/* Create a sidebar + main layout with flex */\n",
+        "solution": ".layout {\n  display: flex;\n  min-height: 100vh;\n}\n\n.sidebar {\n  flex: 0 0 280px;\n  background-color: #1f2937;\n  color: white;\n  padding: 24px;\n}\n\n.main {\n  flex: 1;\n  padding: 24px;\n}",
+        "hints": [
+          "flex: 0 0 280px means no grow, no shrink, fixed at 280px",
+          "flex: 1 means the item grows to fill all remaining space"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "flex-items-ex2",
+        "title": "Three Equal Columns",
+        "description": "Create a .row flex container with three .col children that are always equal width regardless of their content. Then create a variation .row-weighted where the middle column (.col-wide) takes twice as much space as the other two columns.",
+        "starterCode": "/* Equal columns */\n\n/* Weighted columns: middle is 2x wider */\n",
+        "solution": "/* Equal columns */\n.row {\n  display: flex;\n  gap: 16px;\n}\n\n.row .col {\n  flex: 1;\n}\n\n/* Weighted columns */\n.row-weighted {\n  display: flex;\n  gap: 16px;\n}\n\n.row-weighted .col {\n  flex: 1;\n}\n\n.row-weighted .col-wide {\n  flex: 2;\n}",
+        "hints": [
+          "flex: 1 (which sets flex-basis to 0%) ensures equal width regardless of content",
+          "flex: 2 gives twice the share of available space compared to flex: 1"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "ordering-and-gaps",
+    "sectionId": "flexbox",
+    "orderIndex": 3,
+    "title": "Ordering & Gaps",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["order", "gap", "row-gap", "column-gap", "Visual Reordering"],
+    "content": {
+      "explanation": "Flexbox provides properties for reordering items visually without changing the DOM structure and for adding consistent spacing between items. The order property changes the visual position of flex items, and the gap properties (gap, row-gap, column-gap) add spacing between items without using margins. These properties simplify common layout patterns that were previously difficult to achieve.\n\nThe order property assigns a visual sort order to flex items. By default, all items have order: 0 and appear in their DOM order. Items with lower order values appear first, and items with higher values appear later. Items with the same order value maintain their DOM order relative to each other. You can use negative values (order: -1) to move an item before all default-ordered items. This is powerful for responsive layouts where you might want to reposition elements at different breakpoints.\n\nThe gap property (also called flex-gap) sets the spacing between flex items. Unlike margins, gap only creates space between items, not at the edges of the container. This means you do not need to worry about removing margins from the first or last items -- a problem that plagued older layout approaches. The gap property is a shorthand for row-gap and column-gap, which control vertical and horizontal spacing independently. You can write gap: 16px for uniform spacing or gap: 16px 24px for 16px between rows and 24px between columns.\n\nBefore the gap property was widely supported in Flexbox (it was originally a CSS Grid-only property), developers used margins and negative margins to simulate gaps. A common pattern was margin: 8px on each item and margin: -8px on the container to cancel out the outer edges. The gap property eliminates this hack entirely and is now supported in all modern browsers for both Flexbox and Grid.\n\nOne important consideration with the order property is accessibility. Screen readers and keyboard tab order follow the DOM order, not the visual order set by CSS. If you reorder items with the order property, the visual layout and the tab/reading order will differ, which can confuse keyboard users and screen reader users. Use order for minor visual adjustments, but if you need a fundamentally different order for different screen sizes, consider restructuring your HTML or using CSS Grid's placement properties with caution.",
+      "codeExamples": [
+        {
+          "title": "Reordering Items with order",
+          "code": ".container {\n  display: flex;\n  gap: 12px;\n}\n\n/* DOM order: A, B, C, D */\n/* Visual order: C, A, B, D */\n.item-a { order: 1; }\n.item-b { order: 2; }\n.item-c { order: -1; } /* Moves to front */\n.item-d { order: 3; }\n\n/* Responsive reordering */\n@media (max-width: 768px) {\n  .hero-image { order: -1; } /* Image first on mobile */\n  .hero-text  { order: 0; }  /* Text second on mobile */\n}",
+          "explanation": "Items are sorted by their order value, lowest first. Default is 0. Negative values move items to the front. This is commonly used for responsive layouts where the content order should differ between mobile and desktop."
+        },
+        {
+          "title": "gap Property for Consistent Spacing",
+          "code": "/* Uniform gap */\n.card-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 24px;\n}\n\n/* Different row and column gaps */\n.dashboard {\n  display: flex;\n  flex-wrap: wrap;\n  row-gap: 32px;\n  column-gap: 16px;\n}\n\n/* Shorthand: gap: <row-gap> <column-gap> */\n.layout {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 32px 16px; /* 32px between rows, 16px between columns */\n}",
+          "explanation": "gap creates spacing between items only, not at the container edges. row-gap controls vertical spacing between wrapped lines, and column-gap controls horizontal spacing between items in a line. The gap shorthand takes row-gap first, then column-gap."
+        },
+        {
+          "title": "gap vs Margins: Why gap Is Better",
+          "code": "/* OLD approach: margins + negative margin hack */\n.container-old {\n  display: flex;\n  flex-wrap: wrap;\n  margin: -8px; /* Cancel outer margins */\n}\n.container-old .item {\n  margin: 8px; /* Creates gaps AND outer space */\n}\n\n/* MODERN approach: gap */\n.container-new {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 16px; /* Only between items, not at edges */\n}\n.container-new .item {\n  /* No margin needed */\n}",
+          "explanation": "The old margin approach creates spacing around every item including the outer edges, requiring a negative margin hack on the container to compensate. The gap property cleanly spaces only between items, eliminating the hack."
+        },
+        {
+          "title": "Pushing Items with Auto Margins",
+          "code": ".nav {\n  display: flex;\n  align-items: center;\n  gap: 16px;\n  padding: 0 24px;\n  height: 60px;\n}\n\n/* Push everything after this item to the right */\n.nav-spacer {\n  margin-left: auto;\n}\n\n/* Common pattern: logo left, links right */\n.logo { /* stays left naturally */ }\n.nav-links {\n  margin-left: auto; /* Pushes to the right */\n  display: flex;\n  gap: 16px;\n}",
+          "explanation": "Auto margins in Flexbox consume all available space in the specified direction. margin-left: auto pushes an item (and everything after it) to the right. This is the standard technique for split navigation bars and is more flexible than justify-content: space-between when you need asymmetric spacing."
+        }
+      ],
+      "notes": [
+        "The gap property only adds space between items, never at the container edges. This is different from padding (which adds space inside the container edges) and margins (which add space outside each item).",
+        "The order property only changes visual order, not DOM order. Screen readers and keyboard navigation still follow the DOM order, so use it carefully.",
+        "Auto margins in Flexbox are extremely useful. margin-left: auto on a flex item pushes it and all subsequent items to the right. margin-top: auto on an item in a column pushes it to the bottom (great for sticky footers)."
+      ],
+      "commonPitfalls": [
+        "Overusing the order property to completely rearrange content. Since keyboard and screen reader order follows the DOM, heavy reordering creates accessibility issues.",
+        "Using padding on a flex container and thinking it creates gaps between items. Padding adds space between the container edge and the items, not between the items themselves.",
+        "Forgetting that gap only works between items. If you also need space at the container edges, you still need padding on the container."
+      ],
+      "interviewTips": [
+        "Know the auto margin trick for Flexbox. margin-left: auto pushes items to the right and is the standard way to create split navigation layouts.",
+        "Explain the accessibility implications of the order property: visual order changes but tab order and screen reader order do not, which can create a disconnect for keyboard users."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "ordering-and-gaps-ex1",
+        "title": "Responsive Card Grid with gap",
+        "description": "Create a .card-grid that displays cards in a wrapping flex row with 24px gaps. Each .card should be at least 300px wide and grow to fill available space. On screens narrower than 768px, reduce the gap to 16px.",
+        "starterCode": "/* Create a responsive card grid with gap */\n",
+        "solution": ".card-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 24px;\n}\n\n.card {\n  flex: 1 1 300px;\n  padding: 24px;\n  background-color: white;\n  border-radius: 12px;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n}\n\n@media (max-width: 768px) {\n  .card-grid {\n    gap: 16px;\n  }\n}",
+        "hints": [
+          "flex: 1 1 300px means grow, shrink, with a minimum base width of 300px",
+          "Use a media query to reduce the gap on smaller screens"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "ordering-and-gaps-ex2",
+        "title": "Split Navigation with Auto Margin",
+        "description": "Create a .header flex container with three children: .logo, .search, and .actions. The logo should stay on the left, search should be centered, and actions should be pushed to the far right. Use auto margins to achieve this without space-between (so the search stays centered even if logo and actions have different widths).",
+        "starterCode": "/* Create a split header layout using auto margins */\n",
+        "solution": ".header {\n  display: flex;\n  align-items: center;\n  height: 64px;\n  padding: 0 24px;\n}\n\n.logo {\n  flex: 0 0 auto;\n}\n\n.search {\n  margin-left: auto;\n  margin-right: auto;\n}\n\n.actions {\n  flex: 0 0 auto;\n}",
+        "hints": [
+          "margin-left: auto and margin-right: auto on the middle item will center it",
+          "The logo and actions stay at their natural sizes with flex: 0 0 auto"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "flexbox-patterns",
+    "sectionId": "flexbox",
+    "orderIndex": 4,
+    "title": "Flexbox Patterns",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Centering", "Holy Grail", "Sticky Footer", "Equal-Height Columns", "Layout Patterns"],
+    "content": {
+      "explanation": "Flexbox solves several classic CSS layout problems that were notoriously difficult before its introduction. These patterns -- centering, the holy grail layout, sticky footers, and equal-height columns -- appear constantly in real-world applications and are frequently asked about in interviews. Understanding how to implement each with Flexbox demonstrates mastery of the layout model.\n\nPerfect centering was famously difficult in CSS before Flexbox. The Flexbox solution is just three lines: display: flex, justify-content: center, and align-items: center on the container (plus a defined height). This works for any content -- single elements, groups of elements, text of unknown length. Before Flexbox, developers resorted to hacks like position: absolute with transform: translate(-50%, -50%), or display: table-cell with vertical-align: middle. The Flexbox approach is cleaner, more intuitive, and works without knowing the dimensions of the content.\n\nThe holy grail layout is a classic web design pattern consisting of a header, a three-column main section (navigation sidebar, content area, and aside/ads), and a footer. With Flexbox, the outer container uses flex-direction: column to stack header, main, and footer vertically. The main section is itself a flex container in row direction. The sidebar and aside have fixed widths (flex: 0 0 200px) while the content area fills the remaining space (flex: 1). The main section gets flex: 1 to expand and push the footer down.\n\nThe sticky footer pattern ensures the footer stays at the bottom of the viewport even when the page content is too short to push it there naturally. Without this pattern, short pages leave an awkward gap between the content and the bottom of the screen. The Flexbox solution wraps the entire page in a column flex container with min-height: 100vh, and sets flex: 1 on the main content area so it expands to fill all available space, pushing the footer to the bottom.\n\nEqual-height columns are another problem Flexbox solves effortlessly. In older layout methods, columns with different amounts of content would have different heights, breaking the visual alignment. With Flexbox, items in a row stretch to the height of the tallest item by default (because align-items defaults to stretch). This means card grids and multi-column layouts automatically have uniform heights without any extra effort.\n\nThese patterns can be combined and adapted for complex real-world layouts. A typical application shell might combine the sticky footer pattern with the holy grail layout: the page uses a column flex container (header, main, footer) with the main section containing a sidebar and content area in a row flex container. Understanding how to compose these patterns is what separates a competent CSS developer from a great one.",
+      "codeExamples": [
+        {
+          "title": "Perfect Centering",
+          "code": "/* Center anything horizontally and vertically */\n.center-page {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-height: 100vh;\n}\n\n/* Center multiple items in a column */\n.center-column {\n  display: flex;\n  flex-direction: column;\n  justify-content: center;\n  align-items: center;\n  min-height: 100vh;\n  gap: 24px;\n}\n\n/* Center with a max-width card */\n.login-page {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  min-height: 100vh;\n  padding: 16px;\n  background-color: #f3f4f6;\n}\n\n.login-card {\n  width: 100%;\n  max-width: 420px;\n  padding: 32px;\n  background-color: white;\n  border-radius: 16px;\n  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);\n}",
+          "explanation": "The two-property centering technique works for any content. Adding flex-direction: column stacks centered items vertically. The login card example shows a common real-world pattern with max-width and responsive padding."
+        },
+        {
+          "title": "Holy Grail Layout",
+          "code": ".page {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n}\n\n.header {\n  flex: 0 0 auto;\n  padding: 16px 24px;\n  background-color: #1f2937;\n  color: white;\n}\n\n.main {\n  display: flex;\n  flex: 1;\n}\n\n.sidebar {\n  flex: 0 0 220px;\n  padding: 24px;\n  background-color: #f3f4f6;\n}\n\n.content {\n  flex: 1;\n  padding: 24px;\n}\n\n.aside {\n  flex: 0 0 200px;\n  padding: 24px;\n  background-color: #f9fafb;\n}\n\n.footer {\n  flex: 0 0 auto;\n  padding: 16px 24px;\n  background-color: #1f2937;\n  color: white;\n}\n\n/* Responsive: stack on mobile */\n@media (max-width: 768px) {\n  .main {\n    flex-direction: column;\n  }\n  .sidebar, .aside {\n    flex-basis: auto;\n  }\n}",
+          "explanation": "The page is a column flex container. The main section (flex: 1) is a nested row flex container holding the sidebar, content, and aside. On mobile, the main switches to column direction and the sidebars stack vertically."
+        },
+        {
+          "title": "Sticky Footer",
+          "code": "/* Approach 1: Body as flex container */\nbody {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n  margin: 0;\n}\n\n.site-header {\n  flex: 0 0 auto;\n}\n\n.site-content {\n  flex: 1; /* Grows to push footer down */\n}\n\n.site-footer {\n  flex: 0 0 auto;\n}\n\n/* Approach 2: Wrapper div */\n.page-wrapper {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n}\n\n.page-wrapper main {\n  flex: 1;\n}\n\n.page-wrapper footer {\n  margin-top: auto; /* Alternative: auto margin pushes to bottom */\n}",
+          "explanation": "The key is min-height: 100vh on the column flex container and flex: 1 on the main content. When content is short, the main area expands to fill the viewport, keeping the footer at the bottom. When content is long, the page naturally extends beyond the viewport."
+        },
+        {
+          "title": "Equal-Height Cards",
+          "code": ".card-row {\n  display: flex;\n  gap: 24px;\n}\n\n.card {\n  flex: 1;\n  display: flex;\n  flex-direction: column;\n  background-color: white;\n  border-radius: 12px;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n  overflow: hidden;\n}\n\n.card-image {\n  width: 100%;\n  height: 200px;\n  object-fit: cover;\n}\n\n.card-body {\n  flex: 1;\n  padding: 20px;\n}\n\n.card-footer {\n  padding: 16px 20px;\n  border-top: 1px solid #e5e7eb;\n  margin-top: auto;\n}",
+          "explanation": "Cards in a flex row automatically get equal heights (default align-items: stretch). Each card is itself a column flex container. The card-body uses flex: 1 to fill available space, and the card-footer uses margin-top: auto to pin itself to the bottom regardless of content length."
+        }
+      ],
+      "notes": [
+        "The sticky footer pattern requires min-height: 100vh (not height: 100vh). Using min-height allows the page to scroll naturally when content exceeds the viewport, while height: 100vh would clip the content.",
+        "For equal-height cards, making each card a column flex container with flex: 1 on the body section ensures that buttons or footers align at the bottom of every card, even when content lengths differ.",
+        "The holy grail layout is better implemented with CSS Grid for the overall page structure, while Flexbox excels at one-dimensional component layouts within those grid areas."
+      ],
+      "commonPitfalls": [
+        "Using height: 100vh instead of min-height: 100vh for sticky footer layouts. height: 100vh prevents the page from scrolling when content exceeds the viewport.",
+        "Expecting equal-height cards to work without the container being a flex row. The cards must be direct children of a flex container for the default stretch behavior to apply.",
+        "Not making cards themselves flex column containers. Without this, the card footer cannot be pushed to the bottom with margin-top: auto, causing misaligned buttons across cards."
+      ],
+      "interviewTips": [
+        "The 'how do you center a div' question is arguably the most common CSS interview question. Give the Flexbox answer (display: flex, justify-content: center, align-items: center) and mention it requires a defined height on the container.",
+        "Be ready to implement a sticky footer from scratch. The three requirements are: column flex container, min-height: 100vh, and flex: 1 on the main content area.",
+        "Know when to use Flexbox vs Grid: Flexbox is for one-dimensional layouts (a row OR a column), while Grid is for two-dimensional layouts (rows AND columns simultaneously). Many interviewers ask this directly."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "flexbox-patterns-ex1",
+        "title": "Sticky Footer Page",
+        "description": "Create a page layout with .page-container, .header, .main-content, and .footer. The footer should stick to the bottom of the viewport when content is short, but scroll normally when content is long. Use Flexbox to achieve this.",
+        "starterCode": "/* Create a sticky footer layout */\n",
+        "solution": ".page-container {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n}\n\n.header {\n  flex: 0 0 auto;\n  padding: 16px 24px;\n  background-color: #1f2937;\n  color: white;\n}\n\n.main-content {\n  flex: 1;\n  padding: 24px;\n}\n\n.footer {\n  flex: 0 0 auto;\n  padding: 16px 24px;\n  background-color: #374151;\n  color: white;\n}",
+        "hints": [
+          "The outer container needs min-height: 100vh and flex-direction: column",
+          "The main content area needs flex: 1 to grow and push the footer down"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "flexbox-patterns-ex2",
+        "title": "Equal-Height Card Row",
+        "description": "Create a .card-grid (flex row with wrapping and 20px gap) containing .card children. Each card should have a .card-content section and a .card-action section. Ensure all cards are equal height and the action button is always at the bottom of each card, regardless of content length.",
+        "starterCode": "/* Create equal-height cards with bottom-aligned actions */\n",
+        "solution": ".card-grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 20px;\n}\n\n.card {\n  flex: 1 1 280px;\n  display: flex;\n  flex-direction: column;\n  background-color: white;\n  border-radius: 12px;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n  padding: 24px;\n}\n\n.card-content {\n  flex: 1;\n}\n\n.card-action {\n  margin-top: auto;\n  padding-top: 16px;\n}",
+        "hints": [
+          "Each card must be a flex column container to control internal layout",
+          "Use flex: 1 on .card-content and margin-top: auto on .card-action to push the action to the bottom"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

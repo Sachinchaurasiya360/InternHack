@@ -1,0 +1,293 @@
+[
+  {
+    "id": "table-structure",
+    "sectionId": "tables",
+    "orderIndex": 0,
+    "title": "Table Structure",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["table", "thead", "tbody", "tfoot", "tr", "th", "td"],
+    "content": {
+      "explanation": "HTML tables are used to represent tabular data -- information that is logically organized into rows and columns. The main container element is <table>, and within it you build a grid using <tr> (table row) elements that hold either <th> (table header) or <td> (table data) cells. A properly structured table is not just a visual grid; it carries semantic meaning that assistive technologies rely on to help users navigate and understand the data.\n\nThe <thead>, <tbody>, and <tfoot> elements are structural grouping elements that divide a table into its logical sections. <thead> wraps the header row(s), <tbody> wraps the main data rows, and <tfoot> wraps summary or footer rows. While browsers will render a table without these elements, including them provides important semantic context, allows independent scrolling of the body while keeping headers fixed, and enables better print formatting where headers and footers can repeat on every page.\n\nThe <th> element defines a header cell. By default, browsers render <th> content as bold and centered, while <td> content is normal-weight and left-aligned. More importantly, <th> tells screen readers that a cell is a header, which lets them announce column or row labels as users navigate the table. You should always use <th> for header cells rather than styling <td> elements to look like headers.\n\nThe <tfoot> element is often overlooked but is valuable for summary rows such as totals, averages, or footnotes. Interestingly, in the HTML specification the <tfoot> can be placed before <tbody> in the source code (though it renders at the bottom), but in practice most developers place it after <tbody> for readability. Modern browsers handle both orderings correctly.\n\nWhen building tables, always ensure your rows have a consistent number of cells. Mismatched cell counts cause rendering issues and accessibility problems. Each row within a given section should define the same number of columns (accounting for any colspan attributes), and the total column count should be consistent across <thead>, <tbody>, and <tfoot>.",
+      "codeExamples": [
+        {
+          "title": "Basic Table Structure",
+          "code": "<table>\n  <thead>\n    <tr>\n      <th>Name</th>\n      <th>Age</th>\n      <th>City</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Alice</td>\n      <td>28</td>\n      <td>Mumbai</td>\n    </tr>\n    <tr>\n      <td>Bob</td>\n      <td>32</td>\n      <td>Delhi</td>\n    </tr>\n  </tbody>\n</table>",
+          "explanation": "The most common table pattern: a single header row inside <thead> and data rows inside <tbody>. Each <tr> has the same number of cells to form a consistent grid."
+        },
+        {
+          "title": "Table with thead, tbody, and tfoot",
+          "code": "<table>\n  <thead>\n    <tr>\n      <th>Product</th>\n      <th>Price</th>\n      <th>Quantity</th>\n      <th>Subtotal</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Laptop</td>\n      <td>$999</td>\n      <td>2</td>\n      <td>$1,998</td>\n    </tr>\n    <tr>\n      <td>Mouse</td>\n      <td>$25</td>\n      <td>5</td>\n      <td>$125</td>\n    </tr>\n    <tr>\n      <td>Keyboard</td>\n      <td>$75</td>\n      <td>3</td>\n      <td>$225</td>\n    </tr>\n  </tbody>\n  <tfoot>\n    <tr>\n      <th colspan=\"3\">Total</th>\n      <td>$2,348</td>\n    </tr>\n  </tfoot>\n</table>",
+          "explanation": "The <tfoot> section contains a summary row. Notice how colspan=\"3\" is used on the Total header cell to span across the first three columns, with the total value in the fourth column."
+        },
+        {
+          "title": "Table with Row Headers",
+          "code": "<table>\n  <thead>\n    <tr>\n      <th></th>\n      <th>Q1</th>\n      <th>Q2</th>\n      <th>Q3</th>\n      <th>Q4</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Revenue</th>\n      <td>$10K</td>\n      <td>$15K</td>\n      <td>$12K</td>\n      <td>$20K</td>\n    </tr>\n    <tr>\n      <th>Expenses</th>\n      <td>$8K</td>\n      <td>$9K</td>\n      <td>$11K</td>\n      <td>$10K</td>\n    </tr>\n    <tr>\n      <th>Profit</th>\n      <td>$2K</td>\n      <td>$6K</td>\n      <td>$1K</td>\n      <td>$10K</td>\n    </tr>\n  </tbody>\n</table>",
+          "explanation": "Tables can have both column headers (in <thead>) and row headers (the first cell in each <tbody> row). Using <th> for the row label cells gives screen readers the information they need to announce both the row and column context for any data cell."
+        },
+        {
+          "title": "Multiple tbody Sections",
+          "code": "<table>\n  <thead>\n    <tr>\n      <th>Student</th>\n      <th>Subject</th>\n      <th>Grade</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Alice</td>\n      <td>Math</td>\n      <td>A</td>\n    </tr>\n    <tr>\n      <td>Alice</td>\n      <td>Science</td>\n      <td>B+</td>\n    </tr>\n  </tbody>\n  <tbody>\n    <tr>\n      <td>Bob</td>\n      <td>Math</td>\n      <td>B</td>\n    </tr>\n    <tr>\n      <td>Bob</td>\n      <td>Science</td>\n      <td>A-</td>\n    </tr>\n  </tbody>\n</table>",
+          "explanation": "A table can contain multiple <tbody> elements to group related rows. This is useful for styling or scripting different sections independently, such as grouping rows by student or category."
+        }
+      ],
+      "notes": [
+        "Always use <th> for header cells and <td> for data cells. Never use <td> styled to look bold as a substitute for <th> -- the semantic distinction matters for accessibility.",
+        "The <thead>, <tbody>, and <tfoot> elements are optional but strongly recommended. They enable fixed headers during scrolling and allow headers/footers to repeat across printed pages.",
+        "A table can have only one <thead> and one <tfoot>, but it can contain multiple <tbody> elements to group related rows."
+      ],
+      "commonPitfalls": [
+        "Forgetting to wrap header rows in <thead> and data rows in <tbody>. While the table renders without them, it loses structural semantics and advanced formatting capabilities.",
+        "Using tables for page layout instead of CSS Grid or Flexbox. Tables should only be used for actual tabular data, never for positioning page elements.",
+        "Having inconsistent cell counts across rows, which causes misaligned columns and confuses both browsers and screen readers."
+      ],
+      "interviewTips": [
+        "Be prepared to explain why <thead>, <tbody>, and <tfoot> matter beyond visual appearance -- mention accessibility, print behavior, and fixed-header scrolling.",
+        "Know that tables should only be used for tabular data. Using tables for layout is a well-known anti-pattern that interviewers will test you on."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "table-structure-ex1",
+        "title": "Build a Student Grades Table",
+        "description": "Create a table with a proper thead, tbody, and tfoot. The header row should have columns: Student, Math, Science, Average. Add two data rows for any students with their grades, and a tfoot row showing the class average across all columns.",
+        "starterCode": "<!-- Create a table with thead, tbody, and tfoot -->\n<!-- Header: Student, Math, Science, Average -->\n<!-- Add 2 student rows in tbody -->\n<!-- Add a class average row in tfoot -->\n",
+        "solution": "<table>\n  <thead>\n    <tr>\n      <th>Student</th>\n      <th>Math</th>\n      <th>Science</th>\n      <th>Average</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Alice</td>\n      <td>92</td>\n      <td>88</td>\n      <td>90</td>\n    </tr>\n    <tr>\n      <td>Bob</td>\n      <td>85</td>\n      <td>91</td>\n      <td>88</td>\n    </tr>\n  </tbody>\n  <tfoot>\n    <tr>\n      <th>Class Average</th>\n      <td>88.5</td>\n      <td>89.5</td>\n      <td>89</td>\n    </tr>\n  </tfoot>\n</table>",
+        "hints": [
+          "Use <th> for all header cells in <thead> and for the label cell in <tfoot>",
+          "Each row must have exactly 4 cells to match the column count"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "table-structure-ex2",
+        "title": "Row and Column Headers",
+        "description": "Create a table that shows monthly sales for two products. Use column headers for Jan, Feb, Mar in the thead, and row headers (th) as the first cell of each tbody row for the product names: 'Widget' and 'Gadget'. Leave the top-left header cell empty.",
+        "starterCode": "<!-- Create a table with both column headers and row headers -->\n<!-- Column headers: (empty), Jan, Feb, Mar -->\n<!-- Row headers: Widget, Gadget -->\n<!-- Fill in sample sales numbers -->\n",
+        "solution": "<table>\n  <thead>\n    <tr>\n      <th></th>\n      <th>Jan</th>\n      <th>Feb</th>\n      <th>Mar</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Widget</th>\n      <td>150</td>\n      <td>200</td>\n      <td>180</td>\n    </tr>\n    <tr>\n      <th>Gadget</th>\n      <td>90</td>\n      <td>120</td>\n      <td>110</td>\n    </tr>\n  </tbody>\n</table>",
+        "hints": [
+          "The first cell in the header row is an empty <th> that sits at the intersection of row and column headers",
+          "Use <th> as the first cell in each body row to act as a row header for the product name"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "spanning-rows-columns",
+    "sectionId": "tables",
+    "orderIndex": 1,
+    "title": "Spanning Rows & Columns",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["colspan", "rowspan", "Complex Layouts", "Merged Cells"],
+    "content": {
+      "explanation": "The colspan and rowspan attributes allow a single table cell to stretch across multiple columns or rows, creating merged cells. This is essential for building complex table layouts such as schedules, reports with grouped headers, and invoices where certain labels span across several data columns or rows.\n\nThe colspan attribute specifies how many columns a cell should span horizontally. When you add colspan=\"3\" to a <td> or <th>, that cell occupies the space of three normal cells. The remaining cells in that row must account for the extra width -- you need fewer cell elements in that row since the spanning cell absorbs the positions of the cells it covers.\n\nThe rowspan attribute works vertically, specifying how many rows a cell should span downward. When a cell has rowspan=\"2\", it occupies its position in the current row and extends into the row below. The row below must therefore have one fewer cell element, since the spanning cell from above already fills that position. Getting rowspan arithmetic right is the most common source of table layout bugs.\n\nYou can combine colspan and rowspan on the same cell to create a cell that spans both horizontally and vertically. For example, a cell with colspan=\"2\" rowspan=\"2\" creates a block that covers a 2x2 area in the table grid. While powerful, complex spanning can make tables difficult to maintain and understand, so use it judiciously.\n\nWhen working with spanning cells, the key rule is that the total number of column positions occupied in each row must be equal. Count normal cells as 1 and add colspan values for spanning cells. If a cell from a previous row spans into the current row via rowspan, that counts toward the current row's column total as well. Getting this arithmetic wrong is the leading cause of misaligned tables.",
+      "codeExamples": [
+        {
+          "title": "Using colspan for Grouped Headers",
+          "code": "<table border=\"1\">\n  <thead>\n    <tr>\n      <th rowspan=\"2\">Name</th>\n      <th colspan=\"2\">Contact</th>\n      <th colspan=\"2\">Scores</th>\n    </tr>\n    <tr>\n      <th>Email</th>\n      <th>Phone</th>\n      <th>Math</th>\n      <th>Science</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Alice</td>\n      <td>alice@mail.com</td>\n      <td>555-0101</td>\n      <td>95</td>\n      <td>88</td>\n    </tr>\n    <tr>\n      <td>Bob</td>\n      <td>bob@mail.com</td>\n      <td>555-0202</td>\n      <td>82</td>\n      <td>91</td>\n    </tr>\n  </tbody>\n</table>",
+          "explanation": "This table uses a two-level header. The first header row has 'Name' spanning 2 rows vertically, and 'Contact' and 'Scores' each spanning 2 columns horizontally. The second header row provides the specific sub-headers. Notice the second <tr> in <thead> has only 4 <th> elements because the 'Name' cell from the first row already occupies the first column position."
+        },
+        {
+          "title": "Using rowspan for Grouped Rows",
+          "code": "<table border=\"1\">\n  <thead>\n    <tr>\n      <th>Department</th>\n      <th>Employee</th>\n      <th>Role</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td rowspan=\"2\">Engineering</td>\n      <td>Alice</td>\n      <td>Frontend Dev</td>\n    </tr>\n    <tr>\n      <td>Bob</td>\n      <td>Backend Dev</td>\n    </tr>\n    <tr>\n      <td rowspan=\"3\">Marketing</td>\n      <td>Charlie</td>\n      <td>SEO Specialist</td>\n    </tr>\n    <tr>\n      <td>Diana</td>\n      <td>Content Writer</td>\n    </tr>\n    <tr>\n      <td>Eve</td>\n      <td>Social Media</td>\n    </tr>\n  </tbody>\n</table>",
+          "explanation": "The Department column uses rowspan to group employees by department. 'Engineering' spans 2 rows and 'Marketing' spans 3 rows. Each subsequent row in the group omits the department cell because the spanning cell already covers that column position."
+        },
+        {
+          "title": "Combining colspan and rowspan",
+          "code": "<table border=\"1\">\n  <thead>\n    <tr>\n      <th>Time</th>\n      <th>Monday</th>\n      <th>Tuesday</th>\n      <th>Wednesday</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>9:00</td>\n      <td rowspan=\"2\" colspan=\"2\">Team Workshop</td>\n      <td>Standup</td>\n    </tr>\n    <tr>\n      <td>10:00</td>\n      <td>Code Review</td>\n    </tr>\n    <tr>\n      <td>11:00</td>\n      <td>Sprint Planning</td>\n      <td>Design Sync</td>\n      <td>1-on-1s</td>\n    </tr>\n  </tbody>\n</table>",
+          "explanation": "The 'Team Workshop' cell uses both rowspan=\"2\" and colspan=\"2\" to occupy a 2x2 block covering Monday and Tuesday for the 9:00 and 10:00 time slots. The adjacent rows have fewer cells to account for this block."
+        },
+        {
+          "title": "colspan in Footer for Totals",
+          "code": "<table border=\"1\">\n  <thead>\n    <tr>\n      <th>Item</th>\n      <th>Qty</th>\n      <th>Unit Price</th>\n      <th>Total</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Notebook</td>\n      <td>3</td>\n      <td>$5.00</td>\n      <td>$15.00</td>\n    </tr>\n    <tr>\n      <td>Pen Set</td>\n      <td>2</td>\n      <td>$8.00</td>\n      <td>$16.00</td>\n    </tr>\n  </tbody>\n  <tfoot>\n    <tr>\n      <td colspan=\"3\"><strong>Grand Total</strong></td>\n      <td><strong>$31.00</strong></td>\n    </tr>\n  </tfoot>\n</table>",
+          "explanation": "A common invoice pattern: the footer row uses colspan=\"3\" to merge the first three cells into one label area, leaving the last cell for the total amount."
+        }
+      ],
+      "notes": [
+        "When a cell spans columns or rows, you must reduce the number of cell elements in the affected rows accordingly. The total column positions in every row must remain consistent.",
+        "The border=\"1\" attribute is used in examples for visual clarity. In production, use CSS border properties instead of the HTML border attribute.",
+        "Complex spanning can make tables very hard to maintain. If your table requires extensive spanning, consider whether the data could be restructured into simpler tables."
+      ],
+      "commonPitfalls": [
+        "Forgetting to remove cells from rows that are covered by a rowspan from an earlier row. This results in extra cells that push the layout out of alignment.",
+        "Miscounting column positions when combining colspan and rowspan. Always verify that each row accounts for the same total number of column positions.",
+        "Using colspan=\"0\" or rowspan=\"0\" expecting it to span all remaining columns/rows. While some older specs allowed this, modern browsers do not support it reliably."
+      ],
+      "interviewTips": [
+        "Be able to draw out a table grid on paper and map colspan/rowspan values to it. Interviewers often give you a visual layout and ask you to write the HTML.",
+        "Know the cell-counting rule: for each row, the sum of all cell widths (1 for normal cells, n for colspan=\"n\") plus any rowspan cells from above must equal the total column count."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "spanning-rows-columns-ex1",
+        "title": "Multi-Level Headers",
+        "description": "Create a table with a two-level header. The first header row should have 'Student' spanning 2 rows, and 'Semester 1' and 'Semester 2' each spanning 2 columns. The second header row should have 'Midterm' and 'Final' under each semester. Add one data row with a student name and four scores.",
+        "starterCode": "<!-- Create a table with two-level grouped headers -->\n<!-- First row: Student (rowspan=2), Semester 1 (colspan=2), Semester 2 (colspan=2) -->\n<!-- Second row: Midterm, Final, Midterm, Final -->\n<!-- One data row with sample data -->\n",
+        "solution": "<table>\n  <thead>\n    <tr>\n      <th rowspan=\"2\">Student</th>\n      <th colspan=\"2\">Semester 1</th>\n      <th colspan=\"2\">Semester 2</th>\n    </tr>\n    <tr>\n      <th>Midterm</th>\n      <th>Final</th>\n      <th>Midterm</th>\n      <th>Final</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td>Alice</td>\n      <td>88</td>\n      <td>92</td>\n      <td>85</td>\n      <td>90</td>\n    </tr>\n  </tbody>\n</table>",
+        "hints": [
+          "The second header row only has 4 cells because the 'Student' cell from the first row spans down into it",
+          "Each data row needs 5 cells: one for the name and four for the scores"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "spanning-rows-columns-ex2",
+        "title": "Department Grouping with rowspan",
+        "description": "Create a table with columns: Department, Employee, Salary. Use rowspan to group employees under their department. 'Sales' department has 2 employees (Alice: $50K, Bob: $55K) and 'IT' department has 3 employees (Charlie: $70K, Diana: $65K, Eve: $72K).",
+        "starterCode": "<!-- Create a table grouping employees by department using rowspan -->\n<!-- Columns: Department, Employee, Salary -->\n<!-- Sales: 2 employees, IT: 3 employees -->\n",
+        "solution": "<table>\n  <thead>\n    <tr>\n      <th>Department</th>\n      <th>Employee</th>\n      <th>Salary</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <td rowspan=\"2\">Sales</td>\n      <td>Alice</td>\n      <td>$50K</td>\n    </tr>\n    <tr>\n      <td>Bob</td>\n      <td>$55K</td>\n    </tr>\n    <tr>\n      <td rowspan=\"3\">IT</td>\n      <td>Charlie</td>\n      <td>$70K</td>\n    </tr>\n    <tr>\n      <td>Diana</td>\n      <td>$65K</td>\n    </tr>\n    <tr>\n      <td>Eve</td>\n      <td>$72K</td>\n    </tr>\n  </tbody>\n</table>",
+        "hints": [
+          "The first row of each department group has 3 cells (department + employee + salary)",
+          "Subsequent rows in the group have only 2 cells (employee + salary) because the department cell spans down"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "table-accessibility",
+    "sectionId": "tables",
+    "orderIndex": 2,
+    "title": "Table Accessibility",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["scope", "caption", "summary", "headers Attribute", "Accessible Tables"],
+    "content": {
+      "explanation": "Making tables accessible means ensuring that users who rely on screen readers and other assistive technologies can understand the structure and relationships within your tabular data. A sighted user can visually scan a table and understand which header applies to which data cell, but a screen reader user navigates tables cell by cell and depends on proper markup to announce the relevant headers for each cell.\n\nThe <caption> element provides a title or description for the table. It must be the first child of the <table> element. Screen readers announce the caption before the user enters the table, giving them context about what data the table contains. Think of it as a heading for the table. You can visually hide the caption with CSS if you want screen-reader-only context, but never omit it entirely from accessible tables.\n\nThe scope attribute on <th> elements explicitly declares whether a header applies to a column (scope=\"col\"), a row (scope=\"row\"), a column group (scope=\"colgroup\"), or a row group (scope=\"rowgroup\"). While modern screen readers can often infer scope for simple tables, adding it explicitly removes ambiguity, especially in complex tables with both row and column headers.\n\nThe headers attribute on <td> elements provides an explicit association between a data cell and its header cells by referencing the id values of the relevant <th> elements. This is the most robust approach for complex tables where the automatic header-inference algorithms of assistive technologies might produce incorrect results. For simple tables, scope is sufficient; reserve the headers attribute for tables with multi-level headers or irregular spanning.\n\nThe summary attribute on the <table> element was used in older HTML versions to provide a description of the table's structure for screen reader users. It has been deprecated in HTML5. Instead, use <caption> for a visible description, or provide a paragraph of descriptive text before the table and associate it using aria-describedby. For complex data tables, a brief description of how the table is organized (such as 'rows represent departments, columns represent quarters') helps users form a mental model before navigating the cells.",
+      "codeExamples": [
+        {
+          "title": "Caption and scope Attributes",
+          "code": "<table>\n  <caption>Q1 2026 Sales Report by Region</caption>\n  <thead>\n    <tr>\n      <th scope=\"col\">Region</th>\n      <th scope=\"col\">Revenue</th>\n      <th scope=\"col\">Growth</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th scope=\"row\">North</th>\n      <td>$1.2M</td>\n      <td>+8%</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">South</th>\n      <td>$900K</td>\n      <td>+12%</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">East</th>\n      <td>$1.5M</td>\n      <td>+5%</td>\n    </tr>\n  </tbody>\n</table>",
+          "explanation": "The <caption> gives the table a descriptive title. Column headers use scope=\"col\" and row headers use scope=\"row\", making it clear which headers apply to which direction. A screen reader would announce 'Region: North, Revenue: $1.2M' as the user navigates."
+        },
+        {
+          "title": "Using the headers Attribute for Complex Tables",
+          "code": "<table>\n  <caption>Employee Skills Matrix</caption>\n  <thead>\n    <tr>\n      <th id=\"name\">Name</th>\n      <th id=\"html\">HTML</th>\n      <th id=\"css\">CSS</th>\n      <th id=\"js\">JavaScript</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th id=\"alice\" headers=\"name\">Alice</th>\n      <td headers=\"alice html\">Expert</td>\n      <td headers=\"alice css\">Intermediate</td>\n      <td headers=\"alice js\">Beginner</td>\n    </tr>\n    <tr>\n      <th id=\"bob\" headers=\"name\">Bob</th>\n      <td headers=\"bob html\">Intermediate</td>\n      <td headers=\"bob css\">Expert</td>\n      <td headers=\"bob js\">Expert</td>\n    </tr>\n  </tbody>\n</table>",
+          "explanation": "Each <td> has a headers attribute listing the id values of its associated header cells, separated by spaces. For Alice's HTML skill level, headers=\"alice html\" tells the screen reader that this cell is at the intersection of the 'Alice' row and 'HTML' column."
+        },
+        {
+          "title": "Accessible Table with aria-describedby",
+          "code": "<p id=\"table-desc\">\n  The following table compares pricing plans.\n  Rows represent features and columns represent plan tiers.\n</p>\n<table aria-describedby=\"table-desc\">\n  <caption>Pricing Plan Comparison</caption>\n  <thead>\n    <tr>\n      <th scope=\"col\">Feature</th>\n      <th scope=\"col\">Free</th>\n      <th scope=\"col\">Pro</th>\n      <th scope=\"col\">Enterprise</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th scope=\"row\">Storage</th>\n      <td>5 GB</td>\n      <td>100 GB</td>\n      <td>Unlimited</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Support</th>\n      <td>Community</td>\n      <td>Email</td>\n      <td>24/7 Phone</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Users</th>\n      <td>1</td>\n      <td>10</td>\n      <td>Unlimited</td>\n    </tr>\n  </tbody>\n</table>",
+          "explanation": "The aria-describedby attribute links the table to an external paragraph that explains its structure. This is the modern replacement for the deprecated summary attribute. Combined with <caption>, it gives screen reader users both a title and a structural description."
+        }
+      ],
+      "notes": [
+        "The <caption> element must be the first child of <table>. It serves as the accessible name for the table and is announced by screen readers before the user begins navigating cells.",
+        "Use scope for simple tables and the headers attribute for complex tables with multi-level or irregular headers. You do not need both on the same table.",
+        "The summary attribute is deprecated in HTML5. Use aria-describedby with an external descriptive paragraph instead."
+      ],
+      "commonPitfalls": [
+        "Omitting <caption> on data tables. Without a caption, screen reader users have no context about what the table contains before they start navigating it.",
+        "Using the deprecated summary attribute instead of modern alternatives like aria-describedby. While some screen readers still support summary, it is not part of the HTML5 specification.",
+        "Forgetting scope on <th> elements in tables that have both row and column headers. Without scope, screen readers may guess incorrectly which direction a header applies to."
+      ],
+      "interviewTips": [
+        "Be able to explain the difference between scope and headers attributes and when to use each. Scope is simpler and works for regular tables; headers is for complex spanning scenarios.",
+        "Know that <caption> is the accessible name of a table, and understand the modern replacement for the deprecated summary attribute (aria-describedby)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "table-accessibility-ex1",
+        "title": "Add Accessibility to a Table",
+        "description": "Given the table structure below, add a caption 'Monthly Budget Overview', add scope attributes to all header cells, and use scope=\"row\" for the row headers in tbody.",
+        "starterCode": "<table>\n  <thead>\n    <tr>\n      <th>Category</th>\n      <th>Budget</th>\n      <th>Actual</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th>Rent</th>\n      <td>$1,200</td>\n      <td>$1,200</td>\n    </tr>\n    <tr>\n      <th>Food</th>\n      <td>$400</td>\n      <td>$450</td>\n    </tr>\n  </tbody>\n</table>\n",
+        "solution": "<table>\n  <caption>Monthly Budget Overview</caption>\n  <thead>\n    <tr>\n      <th scope=\"col\">Category</th>\n      <th scope=\"col\">Budget</th>\n      <th scope=\"col\">Actual</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th scope=\"row\">Rent</th>\n      <td>$1,200</td>\n      <td>$1,200</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Food</th>\n      <td>$400</td>\n      <td>$450</td>\n    </tr>\n  </tbody>\n</table>",
+        "hints": [
+          "The <caption> must be the very first child element inside <table>",
+          "Column headers in <thead> get scope=\"col\" and row headers in <tbody> get scope=\"row\""
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "table-accessibility-ex2",
+        "title": "Complex Table with headers Attribute",
+        "description": "Create a 3x3 table (plus headers) with column headers 'Math' and 'Science', row headers 'Alice' and 'Bob', and an empty top-left corner cell. Give each <th> an id attribute and use the headers attribute on each <td> to explicitly associate it with its row and column headers.",
+        "starterCode": "<!-- Create a table with explicit header associations -->\n<!-- Give each th an id -->\n<!-- Use headers attribute on each td -->\n",
+        "solution": "<table>\n  <caption>Student Scores</caption>\n  <thead>\n    <tr>\n      <th id=\"blank\"></th>\n      <th id=\"math\" scope=\"col\">Math</th>\n      <th id=\"science\" scope=\"col\">Science</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th id=\"alice\" scope=\"row\">Alice</th>\n      <td headers=\"alice math\">95</td>\n      <td headers=\"alice science\">88</td>\n    </tr>\n    <tr>\n      <th id=\"bob\" scope=\"row\">Bob</th>\n      <td headers=\"bob math\">82</td>\n      <td headers=\"bob science\">91</td>\n    </tr>\n  </tbody>\n</table>",
+        "hints": [
+          "Each <th> needs a unique id attribute that can be referenced by the headers attribute",
+          "The headers attribute on each <td> should contain a space-separated list of the id values of its associated row and column headers"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "styling-tables",
+    "sectionId": "tables",
+    "orderIndex": 3,
+    "title": "Styling Tables",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["border-collapse", "border-spacing", "Striped Rows", "Table Styling", "CSS Tables"],
+    "content": {
+      "explanation": "By default, HTML tables have no visible borders and minimal styling. Browsers add small padding inside cells and separate borders for each cell, resulting in double borders where cells meet. CSS provides powerful properties to transform plain tables into clean, readable data displays. Understanding these properties is essential for any frontend developer who works with tabular data.\n\nThe border-collapse property is the most important table-specific CSS property. It has two values: separate (the default) and collapse. When set to collapse, adjacent cell borders are merged into a single border, eliminating the double-border effect. When set to separate (the default), each cell maintains its own border, creating visible gaps between cells. In the vast majority of production designs, you want border-collapse: collapse.\n\nThe border-spacing property only applies when border-collapse is set to separate. It controls the gap between cell borders, functioning similarly to the gap property in Flexbox and Grid. You can provide one value for uniform spacing or two values for horizontal and vertical spacing independently: border-spacing: 10px 5px sets 10px horizontal and 5px vertical spacing. This property is ignored when border-collapse is collapse.\n\nStriped rows (zebra striping) significantly improve readability for tables with many rows. The standard approach uses the nth-child pseudo-selector: tr:nth-child(even) or tr:nth-child(odd) to apply a subtle background color to alternating rows. You should apply zebra striping to <tbody> rows specifically (tbody tr:nth-child(even)) to avoid accidentally styling header or footer rows. Adding a hover highlight (tbody tr:hover) further improves usability by helping users track which row they are looking at.\n\nBeyond these fundamentals, modern table styling typically involves: setting consistent padding on th and td cells, left-aligning text by default (headers are sometimes centered), adding a bottom border to each row for horizontal separation, applying a distinct background to <thead> to visually separate it from data, and ensuring the table is responsive. For responsive tables, common strategies include wrapping the table in a container with overflow-x: auto to enable horizontal scrolling on small screens, or restructuring the table into a stacked card layout at narrow widths.",
+      "codeExamples": [
+        {
+          "title": "border-collapse vs separate",
+          "code": "/* Default: borders are separate with gaps */\n.table-separate {\n  border-collapse: separate;\n  border-spacing: 4px;\n}\n.table-separate th,\n.table-separate td {\n  border: 1px solid #ccc;\n  padding: 8px;\n}\n\n/* Collapsed: borders merge into single lines */\n.table-collapsed {\n  border-collapse: collapse;\n}\n.table-collapsed th,\n.table-collapsed td {\n  border: 1px solid #ccc;\n  padding: 8px;\n}",
+          "explanation": "With border-collapse: separate, each cell has its own border and gaps appear between them. With border-collapse: collapse, adjacent borders merge into one, creating a clean grid. Most production tables use collapse."
+        },
+        {
+          "title": "Striped Rows with nth-child",
+          "code": ".styled-table {\n  border-collapse: collapse;\n  width: 100%;\n}\n\n.styled-table th,\n.styled-table td {\n  padding: 12px 16px;\n  text-align: left;\n  border-bottom: 1px solid #e5e7eb;\n}\n\n.styled-table thead th {\n  background-color: #f9fafb;\n  font-weight: 600;\n  color: #374151;\n  border-bottom: 2px solid #d1d5db;\n}\n\n/* Zebra striping on tbody rows only */\n.styled-table tbody tr:nth-child(even) {\n  background-color: #f9fafb;\n}\n\n/* Hover highlight */\n.styled-table tbody tr:hover {\n  background-color: #eff6ff;\n}",
+          "explanation": "This is a production-ready table style. The thead has a distinct background and heavier bottom border. Body rows alternate between white and a light gray, and hovering a row highlights it in light blue. Borders are only on the bottom of each row for a clean, modern look."
+        },
+        {
+          "title": "Responsive Table with Horizontal Scroll",
+          "code": "/* Wrapper enables horizontal scroll on small screens */\n.table-container {\n  width: 100%;\n  overflow-x: auto;\n}\n\n.responsive-table {\n  border-collapse: collapse;\n  width: 100%;\n  min-width: 600px;\n}\n\n.responsive-table th,\n.responsive-table td {\n  padding: 10px 14px;\n  white-space: nowrap;\n  border: 1px solid #e5e7eb;\n}",
+          "explanation": "Wrapping the table in a div with overflow-x: auto enables horizontal scrolling when the table is wider than the viewport. Setting min-width on the table prevents columns from collapsing too small. The white-space: nowrap on cells prevents text from wrapping to keep column widths predictable."
+        },
+        {
+          "title": "Sticky Header Table",
+          "code": ".sticky-table-container {\n  max-height: 400px;\n  overflow-y: auto;\n}\n\n.sticky-table {\n  border-collapse: collapse;\n  width: 100%;\n}\n\n.sticky-table thead th {\n  position: sticky;\n  top: 0;\n  background-color: #1f2937;\n  color: white;\n  padding: 12px 16px;\n  z-index: 1;\n}\n\n.sticky-table td {\n  padding: 10px 16px;\n  border-bottom: 1px solid #e5e7eb;\n}",
+          "explanation": "By placing the table in a scrollable container and applying position: sticky with top: 0 to the thead cells, the header row stays visible as users scroll through long tables. The z-index ensures the header renders above the scrolling body content. Note that sticky headers require border-collapse: collapse and an opaque background on the header to work correctly."
+        }
+      ],
+      "notes": [
+        "Always set border-collapse: collapse on production tables unless you specifically need the separated border look. It eliminates the double-border problem and makes styling more predictable.",
+        "Apply zebra striping to tbody tr elements, not all tr elements, to avoid unintentionally styling header and footer rows.",
+        "For responsive tables, the simplest approach is wrapping the table in a container with overflow-x: auto. More advanced approaches involve restructuring the table at narrow viewports using CSS."
+      ],
+      "commonPitfalls": [
+        "Trying to use border-spacing when border-collapse is set to collapse. The border-spacing property is completely ignored in collapse mode.",
+        "Applying position: sticky to a <thead> element instead of the individual <th> cells inside it. Sticky positioning must be applied to the cells themselves.",
+        "Forgetting to set an opaque background on sticky header cells. Without it, scrolling body content is visible through the header, creating a messy overlap."
+      ],
+      "interviewTips": [
+        "Know the difference between border-collapse: collapse and border-collapse: separate, and when you would use each. Collapse is the standard for clean tables; separate is useful when you want visible gaps between cells.",
+        "Be prepared to explain how to make a table responsive using overflow-x: auto and how to create a sticky header with position: sticky."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "styling-tables-ex1",
+        "title": "Style a Clean Data Table",
+        "description": "Write the CSS for a table with class 'data-table'. It should have collapsed borders, 12px padding on all cells, a light gray (#f3f4f6) background on the thead, a 2px solid #d1d5db bottom border on thead cells, and 1px solid #e5e7eb bottom borders on tbody cells.",
+        "starterCode": "/* Style the .data-table */\n",
+        "solution": ".data-table {\n  border-collapse: collapse;\n  width: 100%;\n}\n\n.data-table th,\n.data-table td {\n  padding: 12px;\n  text-align: left;\n}\n\n.data-table thead th {\n  background-color: #f3f4f6;\n  border-bottom: 2px solid #d1d5db;\n}\n\n.data-table tbody td {\n  border-bottom: 1px solid #e5e7eb;\n}",
+        "hints": [
+          "Set border-collapse: collapse on the table element itself",
+          "Use .data-table thead th to target only header cells and .data-table tbody td for body cells"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "styling-tables-ex2",
+        "title": "Add Zebra Striping and Hover",
+        "description": "Add CSS to the .data-table from the previous exercise to add zebra striping (every even row in tbody gets background #f9fafb) and a hover effect (hovered tbody rows get background #dbeafe). Also make the table responsive by creating a .table-wrapper class with overflow-x: auto.",
+        "starterCode": "/* Add zebra striping, hover, and responsive wrapper */\n",
+        "solution": ".table-wrapper {\n  width: 100%;\n  overflow-x: auto;\n}\n\n.data-table tbody tr:nth-child(even) {\n  background-color: #f9fafb;\n}\n\n.data-table tbody tr:hover {\n  background-color: #dbeafe;\n}",
+        "hints": [
+          "Use tbody tr:nth-child(even) to select only even rows within the body, not the header",
+          "The wrapper div with overflow-x: auto enables horizontal scrolling when the table overflows on small screens"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

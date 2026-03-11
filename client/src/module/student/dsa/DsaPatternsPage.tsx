@@ -36,7 +36,7 @@ export default function DsaPatternsPage() {
       <SEO title="Pattern-based DSA Problems" noIndex />
 
       <div className="mb-6">
-        <Link to="/student/dsa" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-3">
+        <Link to="/learn/dsa" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-3">
           <ArrowLeft className="w-4 h-4" />
           Back to DSA
         </Link>
@@ -113,7 +113,7 @@ export default function DsaPatternsPage() {
                   </span>
                   <div className="flex items-center gap-2 mt-0.5">
                     <Link
-                      to={`/student/dsa/${p.topicSlug}`}
+                      to={`/learn/dsa/${p.topicSlug}`}
                       className="text-[11px] text-indigo-500 hover:text-indigo-600 dark:text-indigo-400"
                     >
                       {p.topicName}

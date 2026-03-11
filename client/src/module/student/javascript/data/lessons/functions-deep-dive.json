@@ -1,0 +1,440 @@
+[
+  {
+    "id": "higher-order-functions-and-callbacks",
+    "sectionId": "functions-deep-dive",
+    "orderIndex": 0,
+    "title": "Higher-Order Functions & Callbacks",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": [
+      "First-Class Functions",
+      "Higher-Order Functions",
+      "Callbacks",
+      "Array HOF Methods",
+      "Callback Hell",
+      "Function Composition"
+    ],
+    "content": {
+      "explanation": "In JavaScript, functions are first-class citizens. This means functions can be assigned to variables, stored in data structures, passed as arguments to other functions, and returned as values from other functions. This foundational concept is what makes JavaScript such a powerful and flexible language for both functional and object-oriented programming paradigms.\n\nA higher-order function (HOF) is any function that either takes one or more functions as arguments, returns a function as its result, or both. This pattern is everywhere in JavaScript. Built-in array methods like forEach, map, filter, and reduce are all higher-order functions because they accept a callback function that defines the operation to perform on each element. Understanding HOFs is essential for writing clean, declarative, and reusable code.\n\nCallbacks are functions passed as arguments to other functions, to be invoked at a later time or when a specific condition is met. The callback pattern is one of the oldest and most fundamental asynchronous patterns in JavaScript. For example, when you attach an event listener, you are passing a callback that will be executed when the event fires. Similarly, setTimeout and setInterval accept callbacks that execute after a delay.\n\nWhile callbacks are powerful, deeply nesting them leads to a problem known as callback hell (or the pyramid of doom). This occurs when multiple asynchronous operations depend on each other, forcing each subsequent operation into a nested callback. The resulting code becomes difficult to read, debug, and maintain. Modern JavaScript addresses this with Promises and async/await, but understanding callbacks is critical because they remain the foundation upon which those abstractions are built.\n\nHigher-order functions also enable powerful patterns like function factories, where a function returns another function pre-configured with certain parameters. This technique is widely used in middleware systems, event handling, and functional programming utilities. Mastering HOFs will make you more effective at working with frameworks like React (where components are often passed as arguments) and Node.js (which relies heavily on callback-based APIs).",
+      "codeExamples": [
+        {
+          "title": "Functions as First-Class Citizens",
+          "code": "// Assigning functions to variables\nconst greet = function(name) {\n  return `Hello, ${name}!`;\n};\n\n// Storing functions in an array\nconst operations = [\n  (a, b) => a + b,\n  (a, b) => a - b,\n  (a, b) => a * b\n];\n\nconsole.log(greet('Alice'));\nconsole.log(operations[0](10, 5));\nconsole.log(operations[1](10, 5));\nconsole.log(operations[2](10, 5));",
+          "output": "Hello, Alice!\n15\n5\n50",
+          "explanation": "Functions can be assigned to variables, stored in arrays, and invoked dynamically. This is what it means for functions to be first-class citizens -- they are treated like any other value."
+        },
+        {
+          "title": "Higher-Order Functions with Array Methods",
+          "code": "const numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];\n\n// map: transform each element\nconst doubled = numbers.map(n => n * 2);\nconsole.log('Doubled:', doubled);\n\n// filter: keep elements that pass a test\nconst evens = numbers.filter(n => n % 2 === 0);\nconsole.log('Evens:', evens);\n\n// reduce: accumulate into a single value\nconst sum = numbers.reduce((acc, n) => acc + n, 0);\nconsole.log('Sum:', sum);\n\n// Chaining HOFs together\nconst result = numbers\n  .filter(n => n % 2 !== 0)\n  .map(n => n * n)\n  .reduce((acc, n) => acc + n, 0);\nconsole.log('Sum of squared odds:', result);",
+          "output": "Doubled: [2, 4, 6, 8, 10, 12, 14, 16, 18, 20]\nEvens: [2, 4, 6, 8, 10]\nSum: 55\nSum of squared odds: 165",
+          "explanation": "Array methods like map, filter, and reduce are higher-order functions because they accept a callback function as an argument. Chaining them together creates expressive, readable data transformation pipelines."
+        },
+        {
+          "title": "Writing a Custom Higher-Order Function",
+          "code": "// A HOF that returns a function (function factory)\nfunction createMultiplier(factor) {\n  return function(number) {\n    return number * factor;\n  };\n}\n\nconst double = createMultiplier(2);\nconst triple = createMultiplier(3);\nconst tenTimes = createMultiplier(10);\n\nconsole.log(double(5));\nconsole.log(triple(5));\nconsole.log(tenTimes(5));\n\n// A HOF that takes a function and enhances it\nfunction withLogging(fn) {\n  return function(...args) {\n    console.log(`Calling with args: ${args}`);\n    const result = fn(...args);\n    console.log(`Result: ${result}`);\n    return result;\n  };\n}\n\nconst add = (a, b) => a + b;\nconst loggedAdd = withLogging(add);\nloggedAdd(3, 4);",
+          "output": "10\n15\n50\nCalling with args: 3,4\nResult: 7",
+          "explanation": "createMultiplier is a function factory that returns a new function configured with a specific factor. withLogging is a decorator-style HOF that wraps any function with logging behavior. These patterns are foundational to functional programming in JavaScript."
+        },
+        {
+          "title": "Callback Hell and Why It Matters",
+          "code": "// Simulating async operations with callbacks\nfunction getUser(userId, callback) {\n  setTimeout(() => {\n    callback({ id: userId, name: 'Alice' });\n  }, 100);\n}\n\nfunction getOrders(user, callback) {\n  setTimeout(() => {\n    callback([{ id: 1, item: 'Laptop' }]);\n  }, 100);\n}\n\nfunction getOrderDetails(order, callback) {\n  setTimeout(() => {\n    callback({ ...order, price: 999, status: 'Delivered' });\n  }, 100);\n}\n\n// Callback hell -- deeply nested, hard to read\ngetUser(1, (user) => {\n  console.log('User:', user.name);\n  getOrders(user, (orders) => {\n    console.log('Orders:', orders.length);\n    getOrderDetails(orders[0], (details) => {\n      console.log('Details:', details.item, '-', details.status);\n    });\n  });\n});",
+          "output": "User: Alice\nOrders: 1\nDetails: Laptop - Delivered",
+          "explanation": "Each asynchronous operation depends on the result of the previous one, forcing deeper nesting. With more operations, this pyramid of doom becomes unmanageable. Promises and async/await solve this by flattening the structure."
+        }
+      ],
+      "notes": [
+        "Every function in JavaScript is an object -- it can have properties and methods, and can be passed around like any other value.",
+        "Array methods like map, filter, reduce, forEach, find, some, and every are all higher-order functions that accept callbacks.",
+        "Higher-order functions are the backbone of functional programming in JavaScript and are used extensively in modern frameworks like React and Express.",
+        "When passing methods as callbacks, be careful with the `this` context -- it may not refer to what you expect (covered in the `this` keyword lesson)."
+      ],
+      "commonPitfalls": [
+        "Forgetting that forEach returns undefined, not a new array. Use map when you need to transform and collect results.",
+        "Using arrow functions as callbacks to object methods when you need access to `this` -- arrow functions do not have their own `this` binding.",
+        "Deeply nesting callbacks instead of using named functions or modern alternatives like Promises and async/await."
+      ],
+      "interviewTips": [
+        "Be ready to explain what makes a function 'higher-order' -- it either takes a function as an argument or returns a function (or both).",
+        "Know how to implement custom versions of map, filter, and reduce from scratch. Interviewers commonly ask for these polyfills.",
+        "Understand that callbacks are synchronous by default. setTimeout callbacks are asynchronous only because setTimeout defers execution to the event loop, not because callbacks are inherently async."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "higher-order-functions-and-callbacks-ex1",
+        "title": "Custom repeat Function",
+        "description": "Write a higher-order function called `repeat` that takes a number `n` and a callback function `action`, then calls `action(i)` for each number from 0 to n-1. Use it to log each index doubled.",
+        "starterCode": "// Write a higher-order function called repeat\n// It takes a number n and a callback action\n// It should call action(i) for i = 0, 1, ..., n-1\nfunction repeat(n, action) {\n  // your code here\n}\n\n// Use repeat to log each index multiplied by 2\nrepeat(5, function(i) {\n  // your code here\n});\n",
+        "solution": "function repeat(n, action) {\n  for (let i = 0; i < n; i++) {\n    action(i);\n  }\n}\n\nrepeat(5, function(i) {\n  console.log(i * 2);\n});\n",
+        "expectedOutput": "0\n2\n4\n6\n8",
+        "hints": [
+          "repeat should loop from 0 to n-1 and call action(i) on each iteration.",
+          "Inside the callback passed to repeat, use console.log to print i * 2."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "higher-order-functions-and-callbacks-ex2",
+        "title": "Function Factory: createGreeter",
+        "description": "Write a function factory called `createGreeter` that takes a greeting string and returns a new function. The returned function takes a name and returns `\"<greeting>, <name>!\"`. Create two greeters (Hello and Howdy) and log the results of calling each with 'Alice' and 'Bob'.",
+        "starterCode": "// Write a function factory called createGreeter\n// It takes a greeting and returns a function\n// The returned function takes a name and returns \"<greeting>, <name>!\"\nfunction createGreeter(greeting) {\n  // your code here\n}\n\n// Create two greeters\nconst sayHello = createGreeter('Hello');\nconst sayHowdy = createGreeter('Howdy');\n\n// Log results of calling each with 'Alice' and 'Bob'\nconsole.log(sayHello('Alice'));\nconsole.log(sayHello('Bob'));\nconsole.log(sayHowdy('Alice'));\nconsole.log(sayHowdy('Bob'));\n",
+        "solution": "function createGreeter(greeting) {\n  return function(name) {\n    return `${greeting}, ${name}!`;\n  };\n}\n\nconst sayHello = createGreeter('Hello');\nconst sayHowdy = createGreeter('Howdy');\n\nconsole.log(sayHello('Alice'));\nconsole.log(sayHello('Bob'));\nconsole.log(sayHowdy('Alice'));\nconsole.log(sayHowdy('Bob'));\n",
+        "expectedOutput": "Hello, Alice!\nHello, Bob!\nHowdy, Alice!\nHowdy, Bob!",
+        "hints": [
+          "createGreeter should return a new function that captures the greeting via closure.",
+          "Use template literals to combine the greeting and name with the required format."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "closures",
+    "sectionId": "functions-deep-dive",
+    "orderIndex": 1,
+    "title": "Closures",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": [
+      "Lexical Scoping",
+      "Closures",
+      "Data Privacy",
+      "Factory Functions",
+      "Module Pattern",
+      "Closure in Loops"
+    ],
+    "content": {
+      "explanation": "To understand closures, you first need to understand lexical scoping. Lexical scoping means that the accessibility of variables is determined by their physical location in the source code. When JavaScript encounters a variable reference, it looks up the scope chain starting from the innermost scope outward until it finds the variable. This lookup is based on where functions are defined (written), not where they are called. This is why it is called 'lexical' -- it depends on the structure of the source text.\n\nA closure is created when a function retains access to variables from its outer (enclosing) scope even after the outer function has finished executing and its execution context has been removed from the call stack. Every function in JavaScript forms a closure over its surrounding lexical environment. However, the term 'closure' is most meaningful when an inner function references variables from an outer function that has already returned. The inner function 'closes over' those variables, keeping them alive in memory.\n\nOne crucial detail that trips up many developers is that closures capture references to variables, not their values at the time the closure is created. This means if the outer variable changes after the closure is created, the closure will see the updated value. This behavior is both powerful and a common source of bugs, especially when closures are created inside loops using `var` (which is function-scoped rather than block-scoped).\n\nClosures have several important practical applications. They enable data privacy by creating variables that cannot be accessed from outside a function, effectively simulating private fields. Factory functions leverage closures to produce customized functions with pre-configured state. Event handlers and timers naturally create closures over the variables in scope when they are defined.\n\nThe module pattern, which was the standard way to organize JavaScript code before ES6 modules, relies entirely on closures. An IIFE (Immediately Invoked Function Expression) creates a private scope, and the returned object contains methods that close over the private variables. Even with modern ES6 modules, closures remain fundamental to patterns like memoization, currying, and state management in frameworks like React (where hooks like useState rely on closures internally).\n\nThe classic closure-in-a-loop problem illustrates why understanding closures matters. When using `var` in a for loop, all iterations share the same variable binding. Closures created inside the loop all reference the same variable, so they all see its final value. Using `let` (which is block-scoped) solves this because each iteration gets its own binding. This is one of the most frequently asked closure questions in interviews.",
+      "codeExamples": [
+        {
+          "title": "Basic Closure -- Retaining Access to Outer Variables",
+          "code": "function createCounter() {\n  let count = 0; // This variable is \"closed over\"\n\n  return {\n    increment() {\n      count++;\n      return count;\n    },\n    decrement() {\n      count--;\n      return count;\n    },\n    getCount() {\n      return count;\n    }\n  };\n}\n\nconst counter = createCounter();\nconsole.log(counter.increment()); // 1\nconsole.log(counter.increment()); // 2\nconsole.log(counter.increment()); // 3\nconsole.log(counter.decrement()); // 2\nconsole.log(counter.getCount());  // 2\n\n// count is not accessible directly\nconsole.log(typeof count); // undefined",
+          "output": "1\n2\n3\n2\n2\nundefined",
+          "explanation": "After createCounter() finishes executing, the count variable would normally be garbage collected. But because the returned object's methods reference count, it stays alive in memory. This is a closure in action -- the inner functions close over the outer variable."
+        },
+        {
+          "title": "Closure Over References, Not Values",
+          "code": "function createFunctions() {\n  let value = 1;\n\n  function getValue() {\n    return value;\n  }\n\n  function setValue(newVal) {\n    value = newVal;\n  }\n\n  return { getValue, setValue };\n}\n\nconst obj = createFunctions();\nconsole.log(obj.getValue()); // 1\nobj.setValue(42);\nconsole.log(obj.getValue()); // 42\n\n// Both functions share the SAME variable reference\nobj.setValue(100);\nconsole.log(obj.getValue()); // 100",
+          "output": "1\n42\n100",
+          "explanation": "Both getValue and setValue close over the same variable `value`. When setValue modifies it, getValue sees the change because closures capture references to variables, not snapshots of their values."
+        },
+        {
+          "title": "The Classic Closure-in-a-Loop Problem",
+          "code": "// Problem with var (function-scoped)\nfunction createHandlersVar() {\n  const handlers = [];\n  for (var i = 0; i < 3; i++) {\n    handlers.push(function() {\n      return i;\n    });\n  }\n  return handlers;\n}\n\nconst varHandlers = createHandlersVar();\nconsole.log(varHandlers[0]()); // 3 (not 0!)\nconsole.log(varHandlers[1]()); // 3 (not 1!)\nconsole.log(varHandlers[2]()); // 3 (not 2!)\n\n// Fix with let (block-scoped)\nfunction createHandlersLet() {\n  const handlers = [];\n  for (let i = 0; i < 3; i++) {\n    handlers.push(function() {\n      return i;\n    });\n  }\n  return handlers;\n}\n\nconst letHandlers = createHandlersLet();\nconsole.log(letHandlers[0]()); // 0\nconsole.log(letHandlers[1]()); // 1\nconsole.log(letHandlers[2]()); // 2",
+          "output": "3\n3\n3\n0\n1\n2",
+          "explanation": "With var, there is only one `i` variable shared across all iterations. All closures reference the same `i`, which is 3 after the loop ends. With let, each iteration gets its own `i` binding, so each closure captures a different value."
+        },
+        {
+          "title": "Module Pattern Using Closures",
+          "code": "const BankAccount = (function() {\n  // Private variables\n  let balance = 0;\n  const transactionLog = [];\n\n  // Private function\n  function logTransaction(type, amount) {\n    transactionLog.push({\n      type,\n      amount,\n      balance,\n      timestamp: new Date().toISOString()\n    });\n  }\n\n  // Public API (returned object)\n  return {\n    deposit(amount) {\n      if (amount <= 0) throw new Error('Amount must be positive');\n      balance += amount;\n      logTransaction('deposit', amount);\n      return balance;\n    },\n    withdraw(amount) {\n      if (amount > balance) throw new Error('Insufficient funds');\n      balance -= amount;\n      logTransaction('withdrawal', amount);\n      return balance;\n    },\n    getBalance() {\n      return balance;\n    },\n    getHistory() {\n      return [...transactionLog]; // Return copy, not reference\n    }\n  };\n})();\n\nconsole.log(BankAccount.deposit(1000));\nconsole.log(BankAccount.withdraw(250));\nconsole.log(BankAccount.getBalance());\nconsole.log(BankAccount.getHistory().length);",
+          "output": "1000\n750\n750\n2",
+          "explanation": "The IIFE creates a private scope. The balance and transactionLog variables are completely hidden from the outside world. Only the returned methods can access them. This was the standard module pattern before ES6 modules."
+        }
+      ],
+      "notes": [
+        "Every function in JavaScript creates a closure, but the term is most relevant when inner functions access outer variables after the outer function has returned.",
+        "Closures keep their referenced variables alive in memory. Be mindful of memory leaks when closures hold references to large objects or DOM elements that are no longer needed.",
+        "The module pattern (IIFE + closure) was the primary way to achieve encapsulation in JavaScript before ES6 modules and class private fields (#).",
+        "React hooks like useState and useEffect rely on closures internally. Understanding closures is essential for debugging stale closure bugs in React."
+      ],
+      "commonPitfalls": [
+        "Assuming closures capture values instead of references. If the closed-over variable changes, the closure sees the new value.",
+        "Using var in loops and expecting each iteration to have its own copy of the variable. Use let or an IIFE wrapper instead.",
+        "Creating closures over large objects unintentionally, leading to memory leaks because the garbage collector cannot free those objects."
+      ],
+      "interviewTips": [
+        "Be prepared to explain closures in one sentence: 'A closure is a function that retains access to its lexical scope even when executed outside that scope.'",
+        "The closure-in-a-loop question (var vs let) is one of the most common JavaScript interview questions. Know both the problem and the solution.",
+        "Know how to use closures to create private variables and methods. This demonstrates understanding of encapsulation without classes.",
+        "If asked about practical uses, mention data privacy, factory functions, memoization, currying, and the module pattern."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "closures-ex1",
+        "title": "Private Score Tracker",
+        "description": "Create a function `createScoreTracker` that uses closures to maintain a private score. It should return an object with three methods: `addPoints(n)` that adds n to the score and returns the new score, `penalty(n)` that subtracts n from the score (minimum 0) and returns the new score, and `getScore()` that returns the current score. Demonstrate it by adding 10, adding 25, applying a penalty of 8, then logging getScore().",
+        "starterCode": "// Create a function that returns an object with\n// addPoints(n), penalty(n), and getScore() methods\n// The score should be private (not directly accessible)\n// penalty should not let the score go below 0\nfunction createScoreTracker() {\n  // your code here\n}\n\nconst tracker = createScoreTracker();\nconsole.log(tracker.addPoints(10));\nconsole.log(tracker.addPoints(25));\nconsole.log(tracker.penalty(8));\nconsole.log(tracker.getScore());\n",
+        "solution": "function createScoreTracker() {\n  let score = 0;\n\n  return {\n    addPoints(n) {\n      score += n;\n      return score;\n    },\n    penalty(n) {\n      score = Math.max(0, score - n);\n      return score;\n    },\n    getScore() {\n      return score;\n    }\n  };\n}\n\nconst tracker = createScoreTracker();\nconsole.log(tracker.addPoints(10));\nconsole.log(tracker.addPoints(25));\nconsole.log(tracker.penalty(8));\nconsole.log(tracker.getScore());\n",
+        "expectedOutput": "10\n35\n27\n27",
+        "hints": [
+          "Declare a `score` variable inside createScoreTracker. The returned methods will close over it.",
+          "Use Math.max(0, score - n) in the penalty method to prevent the score from going negative."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "closures-ex2",
+        "title": "Closure in a Loop Fix",
+        "description": "Given an array of three functions created in a `var` loop, each should return its loop index. The broken version uses `var`, so all functions return 3. Fix it by writing a `createFixedHandlers` function that uses an IIFE inside the loop to capture the correct index for each closure. Log the result of calling each handler.",
+        "starterCode": "// This is broken -- all handlers return 3\nfunction createBrokenHandlers() {\n  const handlers = [];\n  for (var i = 0; i < 3; i++) {\n    handlers.push(function() { return i; });\n  }\n  return handlers;\n}\n\n// Fix this function using an IIFE to capture i\nfunction createFixedHandlers() {\n  const handlers = [];\n  for (var i = 0; i < 3; i++) {\n    // Wrap the push in an IIFE that captures i\n    // your code here\n  }\n  return handlers;\n}\n\nconst fixed = createFixedHandlers();\nconsole.log(fixed[0]());\nconsole.log(fixed[1]());\nconsole.log(fixed[2]());\n",
+        "solution": "function createBrokenHandlers() {\n  const handlers = [];\n  for (var i = 0; i < 3; i++) {\n    handlers.push(function() { return i; });\n  }\n  return handlers;\n}\n\nfunction createFixedHandlers() {\n  const handlers = [];\n  for (var i = 0; i < 3; i++) {\n    (function(captured) {\n      handlers.push(function() { return captured; });\n    })(i);\n  }\n  return handlers;\n}\n\nconst fixed = createFixedHandlers();\nconsole.log(fixed[0]());\nconsole.log(fixed[1]());\nconsole.log(fixed[2]());\n",
+        "expectedOutput": "0\n1\n2",
+        "hints": [
+          "Wrap the handlers.push call inside an IIFE: (function(captured) { ... })(i);",
+          "The IIFE receives i as an argument, creating a new scope with a unique copy of the value for each iteration."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "the-this-keyword",
+    "sectionId": "functions-deep-dive",
+    "orderIndex": 2,
+    "title": "The this Keyword",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": [
+      "Default Binding",
+      "Implicit Binding",
+      "Explicit Binding",
+      "new Binding",
+      "Arrow Functions",
+      "this in Event Handlers"
+    ],
+    "content": {
+      "explanation": "The `this` keyword in JavaScript is one of the most confusing aspects of the language because, unlike most other languages where `this` always refers to the current instance, JavaScript's `this` is determined dynamically at call time based on how a function is invoked. The same function can have different `this` values depending on the calling context. This is fundamentally different from lexical scoping where the context is determined by where code is written.\n\nThere are four main rules that determine what `this` refers to, evaluated in order of precedence. The first is default binding: when a function is called as a standalone function (not as a method, not with new, and not with call/apply/bind), `this` defaults to the global object (window in browsers, global in Node.js). In strict mode, the default binding sets `this` to undefined instead, which helps catch accidental global variable creation.\n\nThe second rule is implicit binding: when a function is called as a method of an object (using dot notation like obj.method()), `this` is set to the object that owns the method. However, this binding is easily lost. If you extract the method from the object and call it standalone, or pass it as a callback, the implicit binding is lost and default binding takes over. This is one of the most common sources of bugs involving `this`.\n\nThe third rule is explicit binding using call(), apply(), or bind(). These methods let you manually specify what `this` should be. call and apply invoke the function immediately with the specified `this`, while bind returns a new function with `this` permanently set. The fourth rule is the `new` binding: when a function is called with the `new` keyword, `this` is set to the newly created object. This is how constructor functions and classes work.\n\nArrow functions introduced in ES6 are a special case that deliberately break from these rules. Arrow functions do not have their own `this` binding. Instead, they inherit `this` from their enclosing lexical scope at the time they are defined. This makes them ideal for callbacks and event handlers where you want to preserve the `this` value of the surrounding code. However, it also means arrow functions should not be used as methods on objects or as constructors.\n\nIn event handlers in the browser, `this` refers to the DOM element that the event listener is attached to (when using regular functions). This is an example of implicit binding -- the browser calls the handler as a method of the element. If you need to access a different `this` inside an event handler (for example, a class instance), you can use an arrow function or bind the handler in advance.",
+      "codeExamples": [
+        {
+          "title": "The Four Binding Rules",
+          "code": "// 1. Default Binding\nfunction showThis() {\n  'use strict';\n  console.log('Default:', this);\n}\nshowThis(); // undefined (strict mode)\n\n// 2. Implicit Binding\nconst user = {\n  name: 'Alice',\n  greet() {\n    console.log('Implicit:', this.name);\n  }\n};\nuser.greet(); // 'Alice'\n\n// 3. Explicit Binding\nfunction introduce(greeting) {\n  console.log(`${greeting}, I'm ${this.name}`);\n}\nconst bob = { name: 'Bob' };\nintroduce.call(bob, 'Hello'); // Explicit via call\n\n// 4. new Binding\nfunction Person(name) {\n  this.name = name;\n}\nconst charlie = new Person('Charlie');\nconsole.log('new:', charlie.name);",
+          "output": "Default: undefined\nImplicit: Alice\nHello, I'm Bob\nnew: Charlie",
+          "explanation": "Each binding rule produces a different `this` value. Default binding gives undefined (strict mode) or global object. Implicit binding uses the calling object. Explicit binding lets you choose. The new keyword creates a fresh object."
+        },
+        {
+          "title": "Losing Implicit Binding",
+          "code": "const calculator = {\n  value: 100,\n  getValue() {\n    return this.value;\n  }\n};\n\n// Works -- implicit binding\nconsole.log(calculator.getValue()); // 100\n\n// Broken -- binding is lost when method is extracted\nconst getValue = calculator.getValue;\nconsole.log(getValue()); // undefined\n\n// Broken -- binding is lost when passed as callback\nfunction executeCallback(cb) {\n  return cb();\n}\nconsole.log(executeCallback(calculator.getValue)); // undefined\n\n// Fix with bind\nconst boundGetValue = calculator.getValue.bind(calculator);\nconsole.log(boundGetValue()); // 100\nconsole.log(executeCallback(boundGetValue)); // 100",
+          "output": "100\nundefined\nundefined\n100\n100",
+          "explanation": "When you assign a method to a variable or pass it as a callback, the implicit binding to the object is lost. The function is now called as a standalone function, so `this` falls back to default binding (undefined in strict mode). Using bind() creates a new function with `this` permanently set."
+        },
+        {
+          "title": "Arrow Functions and this",
+          "code": "const team = {\n  name: 'Engineering',\n  members: ['Alice', 'Bob', 'Charlie'],\n\n  // Regular function -- `this` is the team object\n  listMembersRegular() {\n    console.log(`Team: ${this.name}`);\n    // Regular function callback -- `this` is lost!\n    this.members.forEach(function(member) {\n      // `this` is undefined here (strict) or global\n      console.log(`  ${member} -> ${this?.name || 'LOST'}`);\n    });\n  },\n\n  // Arrow function fixes it\n  listMembersArrow() {\n    console.log(`Team: ${this.name}`);\n    // Arrow function inherits `this` from listMembersArrow\n    this.members.forEach((member) => {\n      console.log(`  ${member} -> ${this.name}`);\n    });\n  }\n};\n\nteam.listMembersRegular();\nconsole.log('---');\nteam.listMembersArrow();",
+          "output": "Team: Engineering\n  Alice -> LOST\n  Bob -> LOST\n  Charlie -> LOST\n---\nTeam: Engineering\n  Alice -> Engineering\n  Bob -> Engineering\n  Charlie -> Engineering",
+          "explanation": "In listMembersRegular, the forEach callback is a regular function, so it gets its own `this` (default binding). In listMembersArrow, the forEach callback is an arrow function that inherits `this` from the enclosing method, preserving access to the team object."
+        },
+        {
+          "title": "this Precedence and Common Pitfalls",
+          "code": "// Precedence: new > explicit > implicit > default\nfunction Foo(name) {\n  this.name = name;\n}\n\nconst obj1 = { name: 'obj1' };\n\n// bind sets this to obj1\nconst BoundFoo = Foo.bind(obj1);\nBoundFoo('bound-call');\nconsole.log(obj1.name); // 'bound-call'\n\n// new overrides bind!\nconst obj2 = new BoundFoo('new-call');\nconsole.log(obj2.name); // 'new-call' (new wins)\nconsole.log(obj1.name); // 'bound-call' (unchanged)\n\n// Pitfall: arrow function as object method\nconst badObj = {\n  value: 42,\n  getValue: () => {\n    // `this` is NOT badObj -- it's the outer scope!\n    return this?.value;\n  }\n};\nconsole.log(badObj.getValue()); // undefined",
+          "output": "bound-call\nnew-call\nbound-call\nundefined",
+          "explanation": "The `new` keyword has the highest precedence and overrides even bind(). Arrow functions used as object methods are a common mistake -- they inherit `this` from where the object literal is evaluated, not from the object itself."
+        }
+      ],
+      "notes": [
+        "The `this` binding is determined at call time, not at definition time. The same function can have different `this` values depending on how it is invoked.",
+        "Arrow functions are the exception -- they capture `this` from their enclosing lexical scope when they are defined and cannot be rebound.",
+        "In strict mode ('use strict'), the default binding sets `this` to undefined rather than the global object, preventing accidental global variable mutations."
+      ],
+      "commonPitfalls": [
+        "Using arrow functions as object methods. Arrow functions inherit `this` from the enclosing scope, which is usually the module or global scope, not the object.",
+        "Passing an object method as a callback without binding it. The implicit binding is lost and `this` becomes undefined (strict) or global.",
+        "Forgetting that `this` inside a nested regular function is not the same as `this` in the outer function. Use arrow functions, bind, or assign `this` to a variable (const self = this) to preserve context."
+      ],
+      "interviewTips": [
+        "Memorize the four binding rules in order of precedence: new > explicit (call/apply/bind) > implicit (dot notation) > default (standalone).",
+        "Be ready to trace `this` through code examples. Interviewers love giving tricky code snippets and asking what `this` refers to at each point.",
+        "Know why arrow functions do not work as constructors (no `this` binding, no prototype) and why they should not be used as object methods.",
+        "A common trick question: 'Can you change the `this` of an arrow function with call or bind?' The answer is no."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "the-this-keyword-ex1",
+        "title": "Fix Lost this with Arrow Function",
+        "description": "The `playlist` object below has a `logSongs` method that uses a regular function as the forEach callback, causing `this` to be lost. Fix `logSongs` so it correctly logs each song with the playlist name by using an arrow function for the callback.",
+        "starterCode": "const playlist = {\n  name: 'Road Trip',\n  songs: ['Bohemian Rhapsody', 'Hotel California', 'Stairway to Heaven'],\n  logSongs() {\n    // Fix the forEach callback so this.name works correctly\n    this.songs.forEach(function(song) {\n      console.log(this.name + ': ' + song);\n    });\n  }\n};\n\nplaylist.logSongs();\n",
+        "solution": "const playlist = {\n  name: 'Road Trip',\n  songs: ['Bohemian Rhapsody', 'Hotel California', 'Stairway to Heaven'],\n  logSongs() {\n    this.songs.forEach((song) => {\n      console.log(this.name + ': ' + song);\n    });\n  }\n};\n\nplaylist.logSongs();\n",
+        "expectedOutput": "Road Trip: Bohemian Rhapsody\nRoad Trip: Hotel California\nRoad Trip: Stairway to Heaven",
+        "hints": [
+          "Replace the regular function(song) callback with an arrow function (song) => to inherit `this` from logSongs.",
+          "Arrow functions do not have their own `this`, so they use the `this` of the enclosing method."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "the-this-keyword-ex2",
+        "title": "Implicit vs Explicit Binding",
+        "description": "Create an object `person` with a `name` property set to 'Alice' and a `sayName` method that logs `'My name is <name>'`. Then create another object `anotherPerson` with `name` set to 'Bob'. Use the `call` method to invoke `person.sayName` with `anotherPerson` as the context. Finally, create a `boundSayName` using `bind` with `anotherPerson` and call it.",
+        "starterCode": "// Create a person object with name 'Alice' and a sayName method\nconst person = {\n  name: 'Alice',\n  sayName() {\n    // log 'My name is <name>'\n  }\n};\n\nconst anotherPerson = { name: 'Bob' };\n\n// 1. Call person.sayName() normally (implicit binding)\nperson.sayName();\n\n// 2. Use call to invoke sayName with anotherPerson as this\n// your code here\n\n// 3. Use bind to create boundSayName bound to anotherPerson, then call it\n// your code here\n",
+        "solution": "const person = {\n  name: 'Alice',\n  sayName() {\n    console.log('My name is ' + this.name);\n  }\n};\n\nconst anotherPerson = { name: 'Bob' };\n\nperson.sayName();\nperson.sayName.call(anotherPerson);\nconst boundSayName = person.sayName.bind(anotherPerson);\nboundSayName();\n",
+        "expectedOutput": "My name is Alice\nMy name is Bob\nMy name is Bob",
+        "hints": [
+          "Use person.sayName.call(anotherPerson) to invoke the method with Bob as the context.",
+          "Use person.sayName.bind(anotherPerson) to create a permanently bound function, then call it."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "call-bind-apply",
+    "sectionId": "functions-deep-dive",
+    "orderIndex": 3,
+    "title": "call, bind, apply",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": [
+      "Function.prototype.call",
+      "Function.prototype.apply",
+      "Function.prototype.bind",
+      "Method Borrowing",
+      "Partial Application"
+    ],
+    "content": {
+      "explanation": "Every function in JavaScript inherits three powerful methods from Function.prototype: call, apply, and bind. These methods give you explicit control over the `this` context when invoking a function. While they all serve a similar purpose -- setting the value of `this` -- they differ in how arguments are passed and whether the function is invoked immediately or returned as a new function.\n\nFunction.prototype.call() invokes the function immediately with a specified `this` value and individual arguments passed one after another. The first argument to call() becomes `this` inside the function, and subsequent arguments are passed as the function's parameters. This is useful when you know the exact arguments you want to pass and want to invoke the function immediately with a different context.\n\nFunction.prototype.apply() works almost identically to call(), but with one key difference: instead of passing arguments individually, you pass them as an array (or array-like object). This is particularly useful when you have a dynamic list of arguments, such as when forwarding arguments from one function to another. Before the spread operator existed, apply() was the standard way to pass an array of arguments to a function. For example, Math.max.apply(null, [1, 2, 3]) was the way to find the maximum of an array before Math.max(...arr) was possible.\n\nFunction.prototype.bind() is different from call and apply because it does not invoke the function immediately. Instead, it returns a new function with `this` permanently bound to the specified value. Any additional arguments passed to bind are prepended to the arguments of the new function, enabling a technique called partial application. The bound function's `this` cannot be changed by subsequent call, apply, or bind calls (though the `new` operator can override it). This makes bind ideal for creating callbacks that need a fixed context.\n\nThese methods have several practical use cases. Method borrowing allows you to use methods from one object on another, like using Array.prototype.slice on arguments objects or NodeLists. Partial application with bind lets you create specialized versions of general functions by pre-filling some arguments. In class-based components and event handlers, bind is commonly used to ensure methods retain their correct `this` context when passed as callbacks.\n\nUnderstanding how to implement polyfills for call, apply, and bind is a common interview requirement. The basic idea behind a call polyfill is to temporarily attach the function as a method of the target object, invoke it, and then remove it. This leverages implicit binding to set `this` correctly. The bind polyfill returns a new function that uses apply internally to invoke the original function with the correct context.",
+      "codeExamples": [
+        {
+          "title": "call vs apply vs bind",
+          "code": "function introduce(greeting, punctuation) {\n  console.log(`${greeting}, I'm ${this.name}${punctuation}`);\n}\n\nconst person = { name: 'Alice' };\n\n// call -- invoke immediately, args passed individually\nintroduce.call(person, 'Hello', '!');\n\n// apply -- invoke immediately, args passed as array\nintroduce.apply(person, ['Hi', '.']);\n\n// bind -- returns a new function, does NOT invoke\nconst boundIntroduce = introduce.bind(person, 'Hey');\nboundIntroduce('!!'); // 'Hey' was pre-filled by bind\n\n// bind with all arguments pre-filled (full partial application)\nconst fullyBound = introduce.bind(person, 'Greetings', '~');\nfullyBound(); // No arguments needed",
+          "output": "Hello, I'm Alice!\nHi, I'm Alice.\nHey, I'm Alice!!\nGreetings, I'm Alice~",
+          "explanation": "call passes arguments individually, apply passes them as an array, and bind returns a new function. bind can also pre-fill arguments (partial application), so the returned function needs fewer arguments."
+        },
+        {
+          "title": "Method Borrowing",
+          "code": "// Borrowing Array methods for array-like objects\nfunction sumArguments() {\n  // arguments is array-like but not an array\n  // Borrow Array.prototype.reduce to sum values\n  const sum = Array.prototype.reduce.call(\n    arguments,\n    (acc, val) => acc + val,\n    0\n  );\n  return sum;\n}\n\nconsole.log(sumArguments(1, 2, 3, 4, 5)); // 15\n\n// Borrowing methods between objects\nconst logger = {\n  prefix: '[LOG]',\n  log(message) {\n    console.log(`${this.prefix} ${message}`);\n  }\n};\n\nconst errorLogger = { prefix: '[ERROR]' };\nconst warnLogger = { prefix: '[WARN]' };\n\n// Borrow logger's log method with different contexts\nlogger.log.call(errorLogger, 'Something failed');\nlogger.log.call(warnLogger, 'Deprecated API used');\nlogger.log('Normal message');",
+          "output": "15\n[ERROR] Something failed\n[WARN] Deprecated API used\n[LOG] Normal message",
+          "explanation": "Method borrowing uses call/apply to invoke a method from one object in the context of another. This is especially useful for array-like objects (arguments, NodeLists) that need array methods but are not actual arrays."
+        },
+        {
+          "title": "Partial Application with bind",
+          "code": "// General-purpose tax calculator\nfunction calculatePrice(taxRate, price) {\n  const tax = price * taxRate;\n  return {\n    price,\n    tax: tax.toFixed(2),\n    total: (price + tax).toFixed(2)\n  };\n}\n\n// Create specialized versions using bind\nconst calcUSPrice = calculatePrice.bind(null, 0.0725); // 7.25% tax\nconst calcUKPrice = calculatePrice.bind(null, 0.20);   // 20% VAT\nconst calcTaxFree = calculatePrice.bind(null, 0);       // No tax\n\nconsole.log('US:', calcUSPrice(100));\nconsole.log('UK:', calcUKPrice(100));\nconsole.log('Free:', calcTaxFree(100));\n\n// Partial application for event handling\nfunction handleClick(action, event) {\n  console.log(`Action: ${action}, Target: ${event.target}`);\n}\n\n// Pre-fill the action, event will be passed by the handler\nconst handleSave = handleClick.bind(null, 'save');\nconst handleDelete = handleClick.bind(null, 'delete');\n// Usage: button.addEventListener('click', handleSave);",
+          "output": "US: { price: 100, tax: '7.25', total: '107.25' }\nUK: { price: 100, tax: '20.00', total: '120.00' }\nFree: { price: 100, tax: '0.00', total: '100.00' }",
+          "explanation": "bind with null as the first argument ignores the this context and just pre-fills arguments. This creates specialized functions from general-purpose ones, reducing repetition and improving readability."
+        },
+        {
+          "title": "Simplified Polyfill for call and bind",
+          "code": "// Simplified polyfill for Function.prototype.call\nFunction.prototype.myCall = function(context, ...args) {\n  // If context is null/undefined, default to globalThis\n  context = context ?? globalThis;\n  // Use a unique symbol to avoid property name collisions\n  const fnKey = Symbol('fn');\n  // Temporarily attach this function as a method\n  context[fnKey] = this;\n  // Invoke with implicit binding (context.fn())\n  const result = context[fnKey](...args);\n  // Clean up\n  delete context[fnKey];\n  return result;\n};\n\n// Simplified polyfill for Function.prototype.bind\nFunction.prototype.myBind = function(context, ...boundArgs) {\n  const originalFn = this;\n  return function(...callArgs) {\n    return originalFn.apply(context, [...boundArgs, ...callArgs]);\n  };\n};\n\n// Test the polyfills\nfunction greet(greeting) {\n  return `${greeting}, ${this.name}`;\n}\n\nconst user = { name: 'Alice' };\nconsole.log(greet.myCall(user, 'Hello'));\n\nconst boundGreet = greet.myBind(user, 'Hi');\nconsole.log(boundGreet());",
+          "output": "Hello, Alice\nHi, Alice",
+          "explanation": "The call polyfill works by temporarily attaching the function as a method of the context object, invoking it (which triggers implicit binding), and then cleaning up. The bind polyfill returns a new function that uses apply to invoke the original function with the correct context and merged arguments."
+        }
+      ],
+      "notes": [
+        "call and apply invoke the function immediately; bind returns a new function without invoking it.",
+        "The key difference between call and apply is argument passing: call takes individual arguments while apply takes an array. A mnemonic: 'A for apply, A for array.'",
+        "bind supports partial application -- you can pre-fill arguments when creating the bound function, and pass the remaining arguments when calling it.",
+        "With the spread operator (...), the distinction between call and apply is less important in modern code. fn.call(ctx, ...args) and fn.apply(ctx, args) behave identically."
+      ],
+      "commonPitfalls": [
+        "Forgetting that bind returns a new function rather than invoking the original. Writing obj.method.bind(obj) without calling or assigning the result is a no-op.",
+        "Calling bind multiple times expecting to change the context. Once a function is bound, subsequent bind calls cannot change its `this` value (they can only prepend arguments).",
+        "Using call/apply/bind on arrow functions expecting to set their `this`. Arrow functions ignore the `this` argument of call, apply, and bind."
+      ],
+      "interviewTips": [
+        "Writing polyfills for call, apply, and bind is one of the most frequently asked interview questions. Practice implementing them from scratch.",
+        "Know the precedence: a bound function's `this` cannot be overridden by call or apply, but the `new` operator can override it.",
+        "Be ready to explain practical use cases: method borrowing (Array.prototype.slice.call), partial application (bind), and forwarding arguments (apply with arguments object)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "call-bind-apply-ex1",
+        "title": "Method Borrowing with call",
+        "description": "You have a `mathUtils` object with an `average` method that calculates the average of `this.scores`. Use `call` to borrow `mathUtils.average` and compute the average for two other objects (`studentA` and `studentB`) that also have a `scores` array. Log both averages.",
+        "starterCode": "const mathUtils = {\n  scores: [],\n  average() {\n    const sum = this.scores.reduce((a, b) => a + b, 0);\n    return sum / this.scores.length;\n  }\n};\n\nconst studentA = { scores: [80, 90, 100] };\nconst studentB = { scores: [70, 75, 85, 90] };\n\n// Use call to borrow mathUtils.average for studentA and studentB\n// Log both results\n",
+        "solution": "const mathUtils = {\n  scores: [],\n  average() {\n    const sum = this.scores.reduce((a, b) => a + b, 0);\n    return sum / this.scores.length;\n  }\n};\n\nconst studentA = { scores: [80, 90, 100] };\nconst studentB = { scores: [70, 75, 85, 90] };\n\nconsole.log(mathUtils.average.call(studentA));\nconsole.log(mathUtils.average.call(studentB));\n",
+        "expectedOutput": "90\n80",
+        "hints": [
+          "Use mathUtils.average.call(studentA) to invoke the average method with studentA as the `this` context.",
+          "Inside the average method, `this.scores` will refer to the scores array of whichever object you pass to call."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "call-bind-apply-ex2",
+        "title": "Partial Application with bind",
+        "description": "Write a function `formatCurrency(symbol, amount)` that returns a formatted string like `\"$100.00\"`. Use `bind` to create two specialized functions: `formatUSD` (pre-fills '$') and `formatEUR` (pre-fills 'EUR '). Log the result of calling each with the amount 49.99 and 1250.",
+        "starterCode": "// Write a formatCurrency function that takes a symbol and amount\n// and returns the symbol followed by the amount with 2 decimal places\nfunction formatCurrency(symbol, amount) {\n  // your code here\n}\n\n// Use bind to create specialized formatters\n// formatUSD pre-fills '$'\n// formatEUR pre-fills 'EUR '\n\n// Log: formatUSD(49.99), formatUSD(1250), formatEUR(49.99), formatEUR(1250)\n",
+        "solution": "function formatCurrency(symbol, amount) {\n  return symbol + amount.toFixed(2);\n}\n\nconst formatUSD = formatCurrency.bind(null, '$');\nconst formatEUR = formatCurrency.bind(null, 'EUR ');\n\nconsole.log(formatUSD(49.99));\nconsole.log(formatUSD(1250));\nconsole.log(formatEUR(49.99));\nconsole.log(formatEUR(1250));\n",
+        "expectedOutput": "$49.99\n$1250.00\nEUR 49.99\nEUR 1250.00",
+        "hints": [
+          "Use amount.toFixed(2) to format the number with 2 decimal places.",
+          "bind(null, '$') pre-fills the first argument (symbol) with '$'. The null means we don't need a specific `this` context."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "iife-and-function-patterns",
+    "sectionId": "functions-deep-dive",
+    "orderIndex": 4,
+    "title": "IIFE & Function Patterns",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": [
+      "IIFE",
+      "Module Pattern",
+      "Avoiding Global Pollution",
+      "Named vs Anonymous Functions",
+      "Function Composition"
+    ],
+    "content": {
+      "explanation": "An Immediately Invoked Function Expression (IIFE, pronounced 'iffy') is a function that is defined and executed at the same time. The syntax involves wrapping a function expression in parentheses and then immediately calling it with another pair of parentheses. The outer parentheses are necessary to tell the JavaScript parser to treat the function as an expression rather than a declaration. Without them, the parser would see the `function` keyword and expect a function declaration, which cannot be immediately invoked.\n\nIIFEs were historically one of the most important patterns in JavaScript because they solved a critical problem: global scope pollution. Before ES6 modules and block-scoped variables (let/const), all variables declared with `var` at the top level became global properties. In large applications with multiple scripts loaded via script tags, this led to naming collisions and difficult-to-debug bugs. IIFEs create a new function scope, isolating all variables declared inside from the global scope.\n\nThe module pattern builds directly on IIFEs. By returning an object from an IIFE, you expose a public API while keeping internal implementation details private. This was the standard way to create modular, encapsulated code in JavaScript before native ES6 module support. Libraries like jQuery, Underscore, and Lodash were all structured as IIFEs that exposed a single global variable.\n\nIIFEs can be either named or anonymous. Anonymous IIFEs are more common, but named IIFEs offer benefits: the name appears in stack traces for easier debugging, and the function can reference itself for recursion. In modern JavaScript, the primary reasons to use IIFEs have diminished significantly. ES6 modules provide proper encapsulation with import/export, and block-scoped variables (let/const) eliminate the global pollution problem within blocks. However, IIFEs still appear in legacy codebases, bundler output, and specific scenarios like creating block-scoped variables in contexts where block scoping is not available.\n\nFunction composition is another important pattern that builds on the concept of functions as values. Composition means combining two or more functions to produce a new function where the output of one function becomes the input of the next. The compose function (right to left) and pipe function (left to right) are utility functions that automate this chaining. This pattern is fundamental in functional programming and appears in libraries like Ramda, lodash/fp, and Redux middleware. Understanding composition helps you write small, focused, reusable functions that can be combined to solve complex problems.",
+      "codeExamples": [
+        {
+          "title": "IIFE Syntax and Variations",
+          "code": "// Standard IIFE\n(function() {\n  const secret = 'hidden from global scope';\n  console.log('IIFE executed:', secret);\n})();\n\n// IIFE with parameters\n(function(name, version) {\n  console.log(`${name} v${version}`);\n})('MyApp', '1.0');\n\n// Arrow function IIFE\n(() => {\n  console.log('Arrow IIFE executed');\n})();\n\n// Named IIFE (useful for debugging and recursion)\n(function factorial(n) {\n  if (n <= 1) return 1;\n  return n * factorial(n - 1);\n})(5); // result: 120\n\n// IIFE returning a value\nconst config = (function() {\n  const env = 'production';\n  const apiUrl = 'https://api.example.com';\n  return { env, apiUrl };\n})();\nconsole.log(config);",
+          "output": "IIFE executed: hidden from global scope\nMyApp v1.0\nArrow IIFE executed\n{ env: 'production', apiUrl: 'https://api.example.com' }",
+          "explanation": "IIFEs are wrapped in parentheses to make the parser treat them as expressions. They can take parameters, use arrow syntax, be named for recursion, and return values that get assigned to variables."
+        },
+        {
+          "title": "Avoiding Global Pollution with IIFEs",
+          "code": "// Without IIFE -- pollutes global scope\nvar counter = 0;  // global!\nvar utils = {};    // global!\n\n// With IIFE -- everything stays private\nconst MyLibrary = (function() {\n  // Private -- not accessible outside\n  var internalCounter = 0;\n  var cache = {};\n\n  function privateHelper(key) {\n    return cache[key] || null;\n  }\n\n  // Public API\n  return {\n    increment() {\n      return ++internalCounter;\n    },\n    getCount() {\n      return internalCounter;\n    },\n    store(key, value) {\n      cache[key] = value;\n    },\n    retrieve(key) {\n      return privateHelper(key);\n    }\n  };\n})();\n\nMyLibrary.store('user', 'Alice');\nconsole.log(MyLibrary.retrieve('user'));\nconsole.log(MyLibrary.increment());\nconsole.log(MyLibrary.increment());\nconsole.log(MyLibrary.getCount());\n\n// Private members are inaccessible\nconsole.log(typeof internalCounter); // undefined\nconsole.log(typeof cache);           // undefined",
+          "output": "Alice\n1\n2\n2\nundefined\nundefined",
+          "explanation": "The IIFE creates a private scope. Only the returned object is exposed as MyLibrary. The internal counter, cache, and helper function are completely hidden. This was the standard library pattern before ES6 modules."
+        },
+        {
+          "title": "Modern Alternatives to IIFE",
+          "code": "// ES6 Modules (the modern replacement for IIFE module pattern)\n// file: mathUtils.js\n// let internalState = 0; // module-scoped, not global\n// export function add(a, b) { return a + b; }\n// export function multiply(a, b) { return a * b; }\n\n// Block scoping with let/const replaces IIFE for isolation\n{\n  const blockScoped = 'only accessible in this block';\n  let counter = 0;\n  counter++;\n  console.log('Block:', blockScoped, counter);\n}\n// console.log(blockScoped); // ReferenceError\n\n// But IIFE is still useful for async initialization\nconst db = await (async function() {\n  // Simulate async initialization\n  const connection = { host: 'localhost', ready: true };\n  console.log('Database initialized');\n  return connection;\n})();\nconsole.log('DB ready:', db.ready);\n\n// IIFE for one-time complex initialization\nconst SUPPORTED_FORMATS = (function() {\n  const base = ['jpg', 'png', 'gif'];\n  const modern = ['webp', 'avif'];\n  return Object.freeze([...base, ...modern]);\n})();\nconsole.log('Formats:', SUPPORTED_FORMATS);",
+          "output": "Block: only accessible in this block 1\nDatabase initialized\nDB ready: true\nFormats: [ 'jpg', 'png', 'gif', 'webp', 'avif' ]",
+          "explanation": "Block scoping with let/const and ES6 modules have replaced most IIFE use cases. However, IIFEs remain useful for async initialization and complex one-time computations that produce a constant value."
+        },
+        {
+          "title": "Function Composition",
+          "code": "// Basic composition -- output of one function feeds into the next\nconst trim = str => str.trim();\nconst toLowerCase = str => str.toLowerCase();\nconst replaceSpaces = str => str.replace(/\\s+/g, '-');\n\n// Manual composition\nconst slug = replaceSpaces(toLowerCase(trim('  Hello World  ')));\nconsole.log('Manual:', slug);\n\n// Pipe utility (left to right)\nfunction pipe(...fns) {\n  return function(value) {\n    return fns.reduce((acc, fn) => fn(acc), value);\n  };\n}\n\n// Compose utility (right to left)\nfunction compose(...fns) {\n  return function(value) {\n    return fns.reduceRight((acc, fn) => fn(acc), value);\n  };\n}\n\nconst createSlug = pipe(trim, toLowerCase, replaceSpaces);\nconsole.log('Pipe:', createSlug('  Hello World  '));\n\nconst createSlug2 = compose(replaceSpaces, toLowerCase, trim);\nconsole.log('Compose:', createSlug2('  Hello World  '));\n\n// Composing data transformations\nconst double = n => n * 2;\nconst addTen = n => n + 10;\nconst square = n => n * n;\n\nconst transform = pipe(double, addTen, square);\nconsole.log('Transform 3:', transform(3)); // ((3*2)+10)^2 = 256\nconsole.log('Transform 5:', transform(5)); // ((5*2)+10)^2 = 400",
+          "output": "Manual: hello-world\nPipe: hello-world\nCompose: hello-world\nTransform 3: 256\nTransform 5: 400",
+          "explanation": "Pipe applies functions left to right (the way you read). Compose applies right to left (matching mathematical notation). Both create reusable transformation pipelines from small, focused functions."
+        }
+      ],
+      "notes": [
+        "IIFEs must be wrapped in parentheses to be treated as expressions. Without parentheses, the parser treats the `function` keyword as the start of a declaration.",
+        "In modern JavaScript, ES6 modules and block-scoped variables (let/const) have replaced most IIFE use cases. However, IIFEs still appear in legacy code, bundler output, and async initialization patterns.",
+        "Function composition is a powerful technique for building complex operations from simple, testable, reusable functions. Libraries like Ramda and lodash/fp provide optimized compose and pipe utilities."
+      ],
+      "commonPitfalls": [
+        "Forgetting the wrapping parentheses around the function expression, which causes a syntax error because the parser sees a function declaration.",
+        "Overusing IIFEs in modern code when a simple block scope with let/const would suffice. Use IIFEs only when they provide a clear benefit.",
+        "Creating overly long composition chains that become hard to debug. Keep composed functions simple and give the composed result a descriptive name."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "iife-and-function-patterns-ex1",
+        "title": "IIFE Module Pattern",
+        "description": "Create a `TodoModule` using the IIFE module pattern. It should have a private `todos` array and expose three methods: `add(item)` that pushes an item string to the array and returns the new length, `list()` that returns a shallow copy of the array, and `count()` that returns the number of items. Demonstrate by adding three items, logging the count, and logging the list.",
+        "starterCode": "// Create a TodoModule using the IIFE module pattern\n// Private: todos array\n// Public: add(item), list(), count()\nconst TodoModule = (function() {\n  // your code here\n})();\n\n// Add three items\nTodoModule.add('Learn closures');\nTodoModule.add('Practice IIFE');\nTodoModule.add('Master composition');\n\n// Log the count and the list\nconsole.log(TodoModule.count());\nconsole.log(TodoModule.list());\n",
+        "solution": "const TodoModule = (function() {\n  const todos = [];\n\n  return {\n    add(item) {\n      todos.push(item);\n      return todos.length;\n    },\n    list() {\n      return [...todos];\n    },\n    count() {\n      return todos.length;\n    }\n  };\n})();\n\nTodoModule.add('Learn closures');\nTodoModule.add('Practice IIFE');\nTodoModule.add('Master composition');\n\nconsole.log(TodoModule.count());\nconsole.log(TodoModule.list());\n",
+        "expectedOutput": "3\n[\"Learn closures\", \"Practice IIFE\", \"Master composition\"]",
+        "hints": [
+          "Declare a private todos array inside the IIFE, then return an object with add, list, and count methods.",
+          "In list(), return [...todos] to give callers a copy rather than a direct reference to the private array."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "iife-and-function-patterns-ex2",
+        "title": "Build a pipe Utility",
+        "description": "Write a `pipe` function that takes any number of single-argument functions and returns a new function that applies them left-to-right. Then create a pipeline that: trims a string, converts it to lowercase, and replaces spaces with underscores. Test it with '  Hello World  ' and '  FOO BAR BAZ  '.",
+        "starterCode": "// Write a pipe function that takes ...fns and returns\n// a function that applies them left to right\nfunction pipe(...fns) {\n  // your code here\n}\n\n// Create individual transformation functions\nconst trim = str => str.trim();\n// create toLowerCase\n// create replaceSpacesWithUnderscores (replace /\\s+/g with '_')\n\n// Create the pipeline using pipe\n// const toSnakeCase = pipe(trim, toLowerCase, replaceSpacesWithUnderscores);\n\n// Test with these inputs:\n// console.log(toSnakeCase('  Hello World  '));\n// console.log(toSnakeCase('  FOO BAR BAZ  '));\n",
+        "solution": "function pipe(...fns) {\n  return function(value) {\n    return fns.reduce((acc, fn) => fn(acc), value);\n  };\n}\n\nconst trim = str => str.trim();\nconst toLowerCase = str => str.toLowerCase();\nconst replaceSpacesWithUnderscores = str => str.replace(/\\s+/g, '_');\n\nconst toSnakeCase = pipe(trim, toLowerCase, replaceSpacesWithUnderscores);\n\nconsole.log(toSnakeCase('  Hello World  '));\nconsole.log(toSnakeCase('  FOO BAR BAZ  '));\n",
+        "expectedOutput": "hello_world\nfoo_bar_baz",
+        "hints": [
+          "pipe returns a function that uses reduce to pass the value through each function in sequence: fns.reduce((acc, fn) => fn(acc), value).",
+          "Use str.replace(/\\s+/g, '_') to replace all whitespace sequences with underscores."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -1,0 +1,344 @@
+[
+  {
+    "id": "introduction-to-css",
+    "sectionId": "css-fundamentals",
+    "orderIndex": 0,
+    "title": "Introduction to CSS",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["CSS", "Inline Styles", "Internal Stylesheet", "External Stylesheet", "Separation of Concerns"],
+    "content": {
+      "explanation": "CSS stands for Cascading Style Sheets. It is the language used to control the visual presentation of HTML documents — colors, fonts, spacing, layout, animations, and more. Without CSS, web pages would be plain text with default browser styling (black text on a white background with Times New Roman font). CSS is what transforms raw HTML structure into visually appealing, user-friendly interfaces.\n\nThere are three ways to apply CSS to an HTML document. Inline styles use the style attribute directly on an element: <p style=\"color: red;\">. Internal (embedded) stylesheets use a <style> element inside the <head> section of the HTML document. External stylesheets are separate .css files linked via <link rel=\"stylesheet\" href=\"styles.css\"> in the <head>. External stylesheets are the recommended approach for production websites because they separate content (HTML) from presentation (CSS), can be cached by browsers for faster loading, and can be shared across multiple pages.\n\nCSS works by selecting HTML elements and applying property-value pairs to them. A CSS rule consists of a selector (which elements to target) and a declaration block (what styles to apply). The declaration block is enclosed in curly braces {} and contains one or more declarations. Each declaration has a property name, a colon, a value, and a semicolon: color: blue;. Multiple declarations are separated by semicolons. The selector can target elements by tag name, class, ID, attributes, and many other criteria.\n\nWhen the browser encounters a CSS stylesheet, it parses the rules and matches selectors to elements in the DOM. This matching process happens in a specific order determined by the cascade — CSS rules can come from multiple sources (browser defaults, user stylesheets, author stylesheets) and may conflict. The cascade resolves conflicts using specificity (how specific the selector is), source order (later rules override earlier ones), and importance (!important declarations). Understanding the cascade is key to predicting which styles will be applied.\n\nCSS has evolved significantly since its introduction in 1996. CSS1 covered basic text and color properties. CSS2 added positioning, z-index, and media types. CSS3 brought transforms, transitions, animations, flexbox, grid, custom properties (variables), and much more. Today, CSS is a living standard with new features continuously being added. Modern CSS is incredibly powerful — many things that used to require JavaScript (like hover effects, scroll animations, and responsive layouts) can now be done with CSS alone.",
+      "codeExamples": [
+        {
+          "title": "Three Ways to Apply CSS",
+          "code": "<!-- Method 1: Inline styles (avoid for production) -->\n<p style=\"color: blue; font-size: 18px;\">Inline styled text</p>\n\n<!-- Method 2: Internal stylesheet -->\n<head>\n  <style>\n    .highlight {\n      background-color: yellow;\n      padding: 4px 8px;\n    }\n  </style>\n</head>\n\n<!-- Method 3: External stylesheet (recommended) -->\n<head>\n  <link rel=\"stylesheet\" href=\"styles.css\">\n</head>",
+          "explanation": "Inline styles have the highest specificity but are hard to maintain. Internal stylesheets work for single pages. External stylesheets are the standard — they separate concerns, enable caching, and can be reused across pages."
+        },
+        {
+          "title": "Anatomy of a CSS Rule",
+          "code": "/* selector { property: value; } */\n\n/* Element selector */\np {\n  color: #333333;\n  font-size: 16px;\n  line-height: 1.6;\n}\n\n/* Class selector */\n.card {\n  background-color: white;\n  border: 1px solid #e0e0e0;\n  border-radius: 8px;\n  padding: 20px;\n  margin-bottom: 16px;\n}\n\n/* ID selector */\n#main-header {\n  background-color: #1a1a2e;\n  color: white;\n  padding: 16px 24px;\n}\n\n/* Multiple declarations in one rule */\n.button {\n  display: inline-block;\n  padding: 10px 20px;\n  background-color: #3b82f6;\n  color: white;\n  border: none;\n  border-radius: 4px;\n  cursor: pointer;\n  font-size: 14px;\n}",
+          "explanation": "A CSS rule has a selector and a declaration block. The selector targets elements, and the declaration block contains property-value pairs separated by semicolons. CSS properties use kebab-case (hyphenated lowercase)."
+        },
+        {
+          "title": "CSS Comments and Organization",
+          "code": "/* This is a CSS comment */\n\n/* ================================\n   RESET & BASE STYLES\n   ================================ */\n* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\nbody {\n  font-family: Arial, sans-serif;\n  line-height: 1.6;\n  color: #333;\n}\n\n/* ================================\n   TYPOGRAPHY\n   ================================ */\nh1, h2, h3 {\n  margin-bottom: 12px;\n  font-weight: 700;\n}\n\n/* ================================\n   LAYOUT\n   ================================ */\n.container {\n  max-width: 1200px;\n  margin: 0 auto;\n  padding: 0 20px;\n}",
+          "explanation": "CSS comments use /* */. Organize your stylesheets into logical sections with comment headers. This makes large stylesheets navigable and maintainable."
+        }
+      ],
+      "notes": [
+        "Always use external stylesheets for production websites. They enable browser caching, can be shared across pages, and keep your HTML clean.",
+        "CSS properties are case-insensitive, but convention is to use lowercase. Values can be case-sensitive depending on the property (e.g., font-family names).",
+        "The order of declarations within a rule does not matter, but the order of rules in the stylesheet does — later rules can override earlier ones (assuming equal specificity)."
+      ],
+      "commonPitfalls": [
+        "Overusing inline styles. They have the highest specificity, making them hard to override, and they mix presentation with content.",
+        "Forgetting the semicolon at the end of a declaration. The last declaration in a block technically does not need one, but always include it — adding a new property later without a preceding semicolon will break the rule.",
+        "Not linking the CSS file correctly. The href path in <link> must be correct relative to the HTML file. A wrong path silently fails with no error message."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "introduction-to-css-ex1",
+        "title": "Style with an Internal Stylesheet",
+        "description": "Create an HTML page with an internal stylesheet in the <head>. Add CSS rules to: make all <h1> elements color #2563eb and font-size 32px, make all <p> elements color #4b5563 and line-height 1.8. Add an h1 'Welcome' and a paragraph 'This page uses CSS.' in the body.",
+        "starterCode": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>CSS Intro</title>\n  <!-- Add your internal stylesheet here -->\n</head>\n<body>\n  <!-- Add h1 and p here -->\n</body>\n</html>\n",
+        "solution": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>CSS Intro</title>\n  <style>\n    h1 {\n      color: #2563eb;\n      font-size: 32px;\n    }\n    p {\n      color: #4b5563;\n      line-height: 1.8;\n    }\n  </style>\n</head>\n<body>\n  <h1>Welcome</h1>\n  <p>This page uses CSS.</p>\n</body>\n</html>",
+        "hints": [
+          "Use a <style> element inside <head> for internal stylesheets",
+          "CSS rules follow the pattern: selector { property: value; }"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "introduction-to-css-ex2",
+        "title": "Create Styled Components",
+        "description": "Write CSS rules (just the CSS, no HTML needed) for: a .card class with background-color white, padding 24px, border-radius 8px, and border of 1px solid #e5e7eb. Also style a .card-title class with font-size 20px, color #111827, and margin-bottom 8px.",
+        "starterCode": "/* Style the card and card-title classes */\n",
+        "solution": ".card {\n  background-color: white;\n  padding: 24px;\n  border-radius: 8px;\n  border: 1px solid #e5e7eb;\n}\n\n.card-title {\n  font-size: 20px;\n  color: #111827;\n  margin-bottom: 8px;\n}",
+        "hints": [
+          "Class selectors start with a dot: .card",
+          "Each declaration ends with a semicolon"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "basic-selectors",
+    "sectionId": "css-fundamentals",
+    "orderIndex": 1,
+    "title": "Basic Selectors",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Element Selector", "Class Selector", "ID Selector", "Universal Selector", "Grouping Selectors", "Attribute Selectors"],
+    "content": {
+      "explanation": "CSS selectors are patterns used to target HTML elements for styling. They are the 'addressing system' of CSS — they tell the browser which elements a set of style declarations should apply to. Mastering selectors is fundamental to writing efficient and maintainable CSS, because the selector determines both what gets styled and how specific (and therefore how hard to override) that styling is.\n\nThe element (type) selector targets all elements of a given HTML tag name. Writing p { color: gray; } styles every <p> element on the page. The class selector, prefixed with a dot (.), targets elements that have a specific class attribute. Writing .error { color: red; } styles every element with class=\"error\". The ID selector, prefixed with a hash (#), targets the single element with a matching id attribute. Writing #logo { width: 200px; } styles the element with id=\"logo\". An element can have multiple classes (class=\"btn btn-primary large\") but should have at most one unique id.\n\nThe universal selector (*) matches every element on the page. It is commonly used in CSS resets (* { margin: 0; padding: 0; box-sizing: border-box; }) to normalize default browser styles. While powerful, the universal selector should be used sparingly because it matches everything, which can have performance implications on very large pages and may produce unexpected results.\n\nGrouping selectors allow you to apply the same styles to multiple selectors without repeating the declaration block. Instead of writing separate rules for h1, h2, and h3, you can combine them: h1, h2, h3 { font-family: Georgia, serif; }. The selectors are separated by commas. Each selector in the group is independent — h1, .title, #hero-text { color: blue; } will match all h1 elements, all elements with class 'title', and the element with id 'hero-text'.\n\nAttribute selectors target elements based on their attributes or attribute values. The simplest form [href] matches any element with an href attribute. You can match exact values with [type=\"email\"], partial matches with [class*=\"btn\"] (contains 'btn'), prefix matches with [href^=\"https\"] (starts with 'https'), and suffix matches with [src$=\".png\"] (ends with '.png'). Attribute selectors are powerful for styling form inputs by type, links by protocol, and more.",
+      "codeExamples": [
+        {
+          "title": "Element, Class, and ID Selectors",
+          "code": "/* Element selector: targets ALL <p> elements */\np {\n  font-size: 16px;\n  line-height: 1.6;\n}\n\n/* Class selector: targets elements with class=\"highlight\" */\n.highlight {\n  background-color: #fef3c7;\n  padding: 2px 6px;\n  border-radius: 3px;\n}\n\n/* ID selector: targets the ONE element with id=\"nav\" */\n#nav {\n  background-color: #1e293b;\n  padding: 12px 24px;\n}\n\n/* Multiple classes on one element */\n.btn {\n  padding: 8px 16px;\n  border: none;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n.btn-primary {\n  background-color: #2563eb;\n  color: white;\n}\n\n.btn-danger {\n  background-color: #dc2626;\n  color: white;\n}",
+          "explanation": "Element selectors match all instances of a tag. Class selectors (dot prefix) match elements with that class — one element can have multiple classes. ID selectors (hash prefix) match a single unique element."
+        },
+        {
+          "title": "Universal and Grouping Selectors",
+          "code": "/* Universal selector: matches EVERY element */\n* {\n  margin: 0;\n  padding: 0;\n  box-sizing: border-box;\n}\n\n/* Grouping: same styles for multiple selectors */\nh1,\nh2,\nh3,\nh4 {\n  font-family: Georgia, serif;\n  color: #1f2937;\n  margin-bottom: 12px;\n}\n\n/* Mix different selector types in a group */\n.subtitle,\n.caption,\nsmall {\n  font-size: 14px;\n  color: #6b7280;\n}\n\n/* Without grouping, you would need to repeat: */\n/*\nh1 { font-family: Georgia, serif; color: #1f2937; margin-bottom: 12px; }\nh2 { font-family: Georgia, serif; color: #1f2937; margin-bottom: 12px; }\nh3 { font-family: Georgia, serif; color: #1f2937; margin-bottom: 12px; }\n*/",
+          "explanation": "The universal selector (*) targets everything and is useful for CSS resets. Grouping selectors with commas lets you apply the same styles to multiple selectors, keeping your CSS DRY (Don't Repeat Yourself)."
+        },
+        {
+          "title": "Attribute Selectors",
+          "code": "/* Has attribute */\n[title] {\n  cursor: help;\n  border-bottom: 1px dotted #999;\n}\n\n/* Exact value match */\ninput[type=\"email\"] {\n  border: 2px solid #3b82f6;\n}\n\ninput[type=\"password\"] {\n  border: 2px solid #8b5cf6;\n}\n\n/* Starts with (^=) */\na[href^=\"https\"] {\n  color: green;\n}\n\n/* Ends with ($=) */\na[href$=\".pdf\"] {\n  color: #dc2626;\n}\n\n/* Contains (*=) */\n[class*=\"col-\"] {\n  float: left;\n  padding: 0 15px;\n}",
+          "explanation": "Attribute selectors match elements based on their attributes. [attr] checks presence, [attr=\"val\"] matches exact value, [attr^=\"val\"] matches prefix, [attr$=\"val\"] matches suffix, and [attr*=\"val\"] matches substring."
+        }
+      ],
+      "notes": [
+        "Prefer class selectors over ID selectors for styling. IDs have very high specificity and are harder to override. Reserve IDs for JavaScript targeting and fragment links.",
+        "Element selectors have the lowest specificity. They are good for base styles but are easily overridden by class or ID selectors.",
+        "The universal selector (*) has zero specificity — it does not add any weight to specificity calculations.",
+        "An element can have multiple classes separated by spaces: class=\"btn btn-large btn-primary\". Each class can be targeted independently."
+      ],
+      "commonPitfalls": [
+        "Using IDs for styling instead of classes. IDs have high specificity (0,1,0,0) making them hard to override. They also cannot be reused — use classes for styling patterns.",
+        "Forgetting that the universal selector matches everything, including elements you may not expect like <html> and <body>.",
+        "Confusing grouping (comma) with combinators (space, >, +, ~). A comma separates independent selectors, while combinators describe relationships between elements."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "basic-selectors-ex1",
+        "title": "Style with Different Selectors",
+        "description": "Write CSS rules for: all <a> elements should have color #2563eb and no text-decoration, elements with class 'active' should have font-weight bold and color #059669, and the element with id 'banner' should have background-color #1e293b and color white and padding 20px.",
+        "starterCode": "/* Write your selector rules */\n",
+        "solution": "a {\n  color: #2563eb;\n  text-decoration: none;\n}\n\n.active {\n  font-weight: bold;\n  color: #059669;\n}\n\n#banner {\n  background-color: #1e293b;\n  color: white;\n  padding: 20px;\n}",
+        "hints": [
+          "Element selectors use just the tag name, class selectors use a dot prefix, ID selectors use a hash prefix",
+          "text-decoration: none removes the underline from links"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "basic-selectors-ex2",
+        "title": "Grouping and Attribute Selectors",
+        "description": "Write CSS rules for: group h1 and h2 selectors to share font-family 'Georgia, serif' and color #1f2937. Then write an attribute selector that targets all <input> elements with type='text' and gives them border 1px solid #d1d5db, padding 8px, and border-radius 4px.",
+        "starterCode": "/* Write grouped and attribute selectors */\n",
+        "solution": "h1,\nh2 {\n  font-family: Georgia, serif;\n  color: #1f2937;\n}\n\ninput[type=\"text\"] {\n  border: 1px solid #d1d5db;\n  padding: 8px;\n  border-radius: 4px;\n}",
+        "hints": [
+          "Separate grouped selectors with commas",
+          "Attribute selectors use square brackets: element[attribute=\"value\"]"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "properties-and-values",
+    "sectionId": "css-fundamentals",
+    "orderIndex": 2,
+    "title": "Properties & Values",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["CSS Properties", "Property Values", "Shorthand Properties", "Color Values", "Keywords", "Vendor Prefixes"],
+    "content": {
+      "explanation": "CSS properties define what aspect of an element you want to style, and values define how you want to style it. There are hundreds of CSS properties covering everything from text formatting (color, font-size, text-align) to layout (display, position, flex) to visual effects (transform, opacity, filter). Each property accepts specific types of values — color values for color properties, length values for sizing, keywords for display modes, etc.\n\nProperties can be categorized into several groups. Text properties control typography: font-family, font-size, font-weight, line-height, text-align, text-transform, letter-spacing, word-spacing. Box model properties control spacing and sizing: width, height, padding, margin, border. Display and layout properties control how elements are arranged: display, position, flex, grid. Visual properties control appearance: background-color, color, opacity, box-shadow, border-radius. Understanding which properties exist and what values they accept is the core skill of CSS.\n\nShorthand properties let you set multiple related properties in a single declaration. For example, instead of writing padding-top: 10px; padding-right: 20px; padding-bottom: 10px; padding-left: 20px; you can write padding: 10px 20px; (vertical horizontal). Common shorthand properties include margin, padding, border, background, font, flex, and grid. Shorthand values follow specific ordering rules — for margin and padding, the order is top, right, bottom, left (clockwise from top). If you provide fewer values, they are duplicated: two values means vertical/horizontal, one value applies to all four sides.\n\nCSS colors can be specified in multiple formats. Named colors (red, blue, cornflowerblue) are human-readable but limited to 147 predefined names. Hexadecimal codes (#ff0000, #f00) are the most common format, using RGB values in base-16. RGB/RGBA functions (rgb(255, 0, 0), rgba(255, 0, 0, 0.5)) specify red, green, blue channels with an optional alpha (opacity) channel. HSL/HSLA functions (hsl(0, 100%, 50%)) use hue (0-360 degrees), saturation, and lightness — many developers find HSL more intuitive for adjusting colors.\n\nVendor prefixes like -webkit-, -moz-, -ms-, and -o- were historically needed for experimental CSS properties. As browsers adopted standards, the need for prefixes has largely disappeared for most properties. Modern build tools like Autoprefixer can automatically add needed prefixes based on your browser support targets. In 2026, you rarely need to write vendor prefixes manually for standard properties. However, some cutting-edge features may still require them.",
+      "codeExamples": [
+        {
+          "title": "Common CSS Properties by Category",
+          "code": "/* Typography */\n.text-content {\n  font-family: 'Inter', Arial, sans-serif;\n  font-size: 16px;\n  font-weight: 400;\n  line-height: 1.6;\n  color: #374151;\n  text-align: left;\n  text-transform: none;\n  letter-spacing: 0.01em;\n}\n\n/* Box Model */\n.box {\n  width: 300px;\n  height: 200px;\n  padding: 20px;\n  margin: 16px 0;\n  border: 1px solid #e5e7eb;\n  border-radius: 8px;\n}\n\n/* Visual */\n.card {\n  background-color: #ffffff;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n  opacity: 1;\n}\n\n/* Layout */\n.container {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n  max-width: 1200px;\n  margin: 0 auto;\n}",
+          "explanation": "CSS properties fall into categories: typography (fonts, text), box model (sizing, spacing), visual (colors, shadows), and layout (display, positioning). Learning the most common properties in each category is key."
+        },
+        {
+          "title": "Shorthand Properties",
+          "code": "/* MARGIN shorthand */\n.box-a { margin: 10px; }                /* all sides: 10px */\n.box-b { margin: 10px 20px; }           /* vertical: 10px, horizontal: 20px */\n.box-c { margin: 10px 20px 30px; }      /* top: 10, horizontal: 20, bottom: 30 */\n.box-d { margin: 10px 20px 30px 40px; } /* top, right, bottom, left */\n\n/* BORDER shorthand */\n.bordered {\n  border: 2px solid #3b82f6; /* width style color */\n}\n\n/* BACKGROUND shorthand */\n.hero {\n  background: #1e293b url('bg.jpg') no-repeat center / cover;\n  /* color image repeat position / size */\n}\n\n/* FONT shorthand */\n.heading {\n  font: bold 24px/1.4 Georgia, serif;\n  /* weight size/line-height family */\n}\n\n/* Longhand equivalents of margin: 10px 20px */\n/*\n  margin-top: 10px;\n  margin-right: 20px;\n  margin-bottom: 10px;\n  margin-left: 20px;\n*/",
+          "explanation": "Shorthand properties combine multiple related properties into one declaration. Margin and padding use clockwise order: top, right, bottom, left. Border combines width, style, and color. Shorthand keeps CSS concise."
+        },
+        {
+          "title": "Color Formats",
+          "code": "/* Named colors (147 available) */\n.named { color: coral; }\n.named2 { color: cornflowerblue; }\n\n/* Hexadecimal */\n.hex-full { color: #ff6347; }  /* Full 6-digit hex */\n.hex-short { color: #f63; }   /* 3-digit shorthand (same as #ff6633) */\n.hex-alpha { color: #ff634780; } /* 8-digit hex with alpha (50% opacity) */\n\n/* RGB and RGBA */\n.rgb { color: rgb(255, 99, 71); }\n.rgba { color: rgba(255, 99, 71, 0.5); } /* 50% opacity */\n\n/* HSL and HSLA */\n.hsl { color: hsl(9, 100%, 64%); }  /* hue, saturation, lightness */\n.hsla { color: hsla(9, 100%, 64%, 0.5); }\n\n/* Modern CSS color syntax (space-separated) */\n.modern-rgb { color: rgb(255 99 71 / 0.5); }\n.modern-hsl { color: hsl(9 100% 64% / 0.5); }",
+          "explanation": "CSS supports multiple color formats. Hex codes are the most common. HSL is often easier to work with when you need to adjust lightness or saturation. RGBA and HSLA add transparency via the alpha channel."
+        }
+      ],
+      "notes": [
+        "Shorthand properties reset omitted sub-properties to their initial values. For example, background: red resets background-image, background-position, etc. to defaults.",
+        "The font shorthand requires at minimum font-size and font-family. Other values like weight and line-height are optional.",
+        "CSS custom properties (variables) let you define reusable values: --primary: #3b82f6; then use them with var(--primary).",
+        "Modern CSS color syntax uses spaces instead of commas and a slash for alpha: rgb(255 99 71 / 0.5)."
+      ],
+      "commonPitfalls": [
+        "Confusing the shorthand value order for margin/padding. The order is clockwise: top, right, bottom, left. A common mnemonic is 'TRouBLe' (TRBL).",
+        "Using shorthand properties when you only want to change one sub-property. Writing background: red will reset background-image and other background sub-properties. Use background-color: red instead.",
+        "Forgetting that font-family values with spaces must be quoted: font-family: 'Times New Roman', serif. Unquoted multi-word names will fail silently."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "properties-and-values-ex1",
+        "title": "Style a Card Component",
+        "description": "Write CSS for a .profile-card class with: width 350px, padding 24px on all sides, background-color #ffffff, border-radius 12px, box-shadow 0 2px 8px rgba(0,0,0,0.1), and font-family 'Inter', sans-serif.",
+        "starterCode": "/* Style the profile card */\n",
+        "solution": ".profile-card {\n  width: 350px;\n  padding: 24px;\n  background-color: #ffffff;\n  border-radius: 12px;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);\n  font-family: 'Inter', sans-serif;\n}",
+        "hints": [
+          "padding: 24px applies 24px to all four sides",
+          "box-shadow takes offset-x, offset-y, blur-radius, and color values"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "properties-and-values-ex2",
+        "title": "Use Shorthand Properties",
+        "description": "Rewrite the following longhand CSS using shorthand properties:\nmargin-top: 10px; margin-right: 20px; margin-bottom: 30px; margin-left: 20px;\nborder-width: 2px; border-style: dashed; border-color: #6366f1;\npadding-top: 16px; padding-right: 24px; padding-bottom: 16px; padding-left: 24px;",
+        "starterCode": ".element {\n  /* Rewrite using shorthand properties */\n}\n",
+        "solution": ".element {\n  margin: 10px 20px 30px;\n  border: 2px dashed #6366f1;\n  padding: 16px 24px;\n}",
+        "hints": [
+          "When top and bottom differ but left and right are the same, use 3-value shorthand: top horizontal bottom",
+          "Border shorthand combines width, style, and color in that order"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "css-units",
+    "sectionId": "css-fundamentals",
+    "orderIndex": 3,
+    "title": "CSS Units",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["px", "em", "rem", "Percentage", "vw", "vh", "ch", "fr", "Absolute Units", "Relative Units"],
+    "content": {
+      "explanation": "CSS units define the size of lengths, widths, heights, font sizes, margins, and more. Choosing the right unit is crucial for building responsive, accessible, and maintainable layouts. CSS units fall into two categories: absolute units (fixed size regardless of context) and relative units (size relative to something else like the parent element, root element, or viewport).\n\nThe pixel (px) is the most commonly used absolute unit. One CSS pixel corresponds to roughly 1/96th of an inch, though on high-DPI screens (Retina displays), a CSS pixel may map to multiple physical pixels. Pixels provide precise, predictable sizing — 16px is always 16px regardless of parent or root font size. They are ideal for borders, shadows, and fixed-width elements where exact dimensions are needed. However, pixels do not scale with user font-size preferences, making them less ideal for font sizes in accessible designs.\n\nThe em and rem units are relative to font sizes and are essential for scalable, accessible designs. 1em equals the computed font-size of the element's parent. If a parent has font-size: 16px, then 1em = 16px for its children. The problem with em is compounding — nested elements multiply their em values. 1rem (root em) solves this by always being relative to the root <html> element's font-size (typically 16px by default). Most modern CSS uses rem for font sizes and spacing because it scales consistently without compounding, and it respects user browser settings for default font size.\n\nPercentage (%) values are relative to the parent element's corresponding property. Width: 50% means half the parent's width. Margin-left: 10% means 10% of the parent's width (not height — percentage margins and paddings always reference the parent's width). Percentages are fundamental for fluid layouts that adapt to different screen sizes. They are especially useful combined with max-width for responsive containers.\n\nViewport units (vw, vh, vmin, vmax) are relative to the browser viewport dimensions. 1vw = 1% of the viewport width, and 1vh = 1% of the viewport height. They are perfect for full-screen sections (height: 100vh), responsive typography (font-size: 5vw), and viewport-relative spacing. The ch unit equals the width of the '0' character in the current font, making it ideal for setting max-width on text content for optimal readability (max-width: 65ch). The fr unit (fraction) is used exclusively in CSS Grid to distribute available space — 1fr takes one equal share of remaining space.",
+      "codeExamples": [
+        {
+          "title": "Absolute vs Relative Units",
+          "code": "/* Absolute: px (most common) */\n.fixed-box {\n  width: 300px;\n  height: 200px;\n  border: 2px solid #333;\n  padding: 16px;\n}\n\n/* Relative: em (relative to parent font-size) */\n.parent {\n  font-size: 16px;\n}\n.child {\n  font-size: 1.25em;    /* 16 * 1.25 = 20px */\n  padding: 1em;         /* 20px (uses own computed font-size) */\n  margin-bottom: 0.5em; /* 10px */\n}\n\n/* Relative: rem (relative to root <html> font-size) */\nhtml {\n  font-size: 16px; /* Browser default */\n}\n.heading {\n  font-size: 2rem;   /* 32px, always */\n  margin-bottom: 1rem; /* 16px, always */\n}\n.body-text {\n  font-size: 1rem;   /* 16px, always */\n  line-height: 1.6;  /* Unitless: 1.6 * font-size = 25.6px */\n}",
+          "explanation": "Pixels are absolute and predictable. em compounds with nesting — a 1.2em inside a 1.2em parent becomes 1.44x the grandparent's size. rem avoids compounding by always referencing the root font-size."
+        },
+        {
+          "title": "Percentages and Viewport Units",
+          "code": "/* Percentage: relative to parent */\n.container {\n  width: 90%;\n  max-width: 1200px;\n  margin: 0 auto; /* Center horizontally */\n}\n\n.sidebar {\n  width: 25%; /* 25% of parent width */\n}\n\n.main-content {\n  width: 75%;\n}\n\n/* Viewport units */\n.hero-section {\n  height: 100vh;  /* Full viewport height */\n  width: 100vw;   /* Full viewport width */\n}\n\n.half-screen {\n  height: 50vh;   /* Half the viewport height */\n}\n\n/* Responsive font sizing with clamp */\n.responsive-title {\n  font-size: clamp(1.5rem, 4vw, 3rem);\n  /* Min: 24px, Scales: 4% of viewport, Max: 48px */\n}",
+          "explanation": "Percentages are relative to the parent element. Viewport units are relative to the browser window. clamp() combines a minimum, preferred, and maximum value for responsive sizing."
+        },
+        {
+          "title": "Special Units: ch and fr",
+          "code": "/* ch unit: width of the '0' character */\n.article-text {\n  max-width: 65ch; /* Optimal reading width (~65 characters) */\n  margin: 0 auto;\n  font-size: 1.125rem;\n  line-height: 1.7;\n}\n\n.code-block {\n  max-width: 80ch; /* Wider for code */\n  overflow-x: auto;\n}\n\n/* fr unit: fractions of available space (Grid only) */\n.grid-layout {\n  display: grid;\n  grid-template-columns: 1fr 2fr 1fr;\n  /* Three columns: 25% | 50% | 25% of available space */\n  gap: 20px;\n}\n\n.grid-sidebar {\n  display: grid;\n  grid-template-columns: 250px 1fr;\n  /* Fixed sidebar + flexible main area */\n  gap: 24px;\n}",
+          "explanation": "The ch unit is based on the width of the '0' character, ideal for setting readable line lengths. The fr unit distributes remaining space in grid layouts — 1fr 2fr gives 1/3 and 2/3 of available space."
+        }
+      ],
+      "notes": [
+        "Use rem for font sizes and spacing to ensure consistency and accessibility. Users who increase their browser's default font size will see your text scale properly with rem.",
+        "Use px for borders, shadows, and small fixed elements where exact dimensions matter.",
+        "The unitless value for line-height (e.g., line-height: 1.6) is preferred because it multiplies by the element's own font-size, avoiding inheritance issues.",
+        "Percentage-based paddings and margins always refer to the parent's width, even for vertical (top/bottom) values."
+      ],
+      "commonPitfalls": [
+        "Using em for nested elements where the values compound. A 1.5em inside a 1.5em parent results in 2.25 times the grandparent's font-size. Use rem instead for predictable sizing.",
+        "Setting height: 100% without ensuring the parent has an explicit height. Percentage heights require the parent chain to have defined heights all the way up.",
+        "Using 100vw without accounting for the scrollbar. On Windows, 100vw includes the scrollbar width, causing a horizontal overflow. Use width: 100% instead for full-width sections."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "css-units-ex1",
+        "title": "Build a Responsive Layout",
+        "description": "Write CSS for a .page-container with max-width 1200px, width 90%, and margin 0 auto. Inside it, style .article with font-size 1.125rem, line-height 1.7, and max-width 65ch. Style .heading with font-size 2.5rem and margin-bottom 1.5rem.",
+        "starterCode": "/* Style the responsive layout */\n",
+        "solution": ".page-container {\n  max-width: 1200px;\n  width: 90%;\n  margin: 0 auto;\n}\n\n.article {\n  font-size: 1.125rem;\n  line-height: 1.7;\n  max-width: 65ch;\n}\n\n.heading {\n  font-size: 2.5rem;\n  margin-bottom: 1.5rem;\n}",
+        "hints": [
+          "margin: 0 auto centers a block element horizontally when it has a defined width",
+          "rem units are relative to the root font-size (16px by default)"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "css-units-ex2",
+        "title": "Full-Screen Hero with Grid",
+        "description": "Write CSS for a .hero class with height 100vh, display flex, justify-content center, and align-items center. Then write a .grid-layout class with display grid, grid-template-columns using 1fr 2fr 1fr (three columns), and gap 24px.",
+        "starterCode": "/* Style the hero section and grid layout */\n",
+        "solution": ".hero {\n  height: 100vh;\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n.grid-layout {\n  display: grid;\n  grid-template-columns: 1fr 2fr 1fr;\n  gap: 24px;\n}",
+        "hints": [
+          "100vh means 100% of the viewport height — a full-screen section",
+          "The fr unit distributes available space proportionally in grid layouts"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "inheritance-and-cascade",
+    "sectionId": "css-fundamentals",
+    "orderIndex": 4,
+    "title": "Inheritance & Cascade",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["Cascade", "Specificity", "Inheritance", "!important", "Source Order", "Initial Values", "Computed Values"],
+    "content": {
+      "explanation": "The 'C' in CSS stands for 'Cascading,' and understanding the cascade is arguably the most important concept in CSS. The cascade is the algorithm that determines which CSS declarations are applied when multiple rules target the same element with conflicting property values. It considers three main factors in order: importance and origin, specificity, and source order.\n\nThe cascade resolves conflicts by first checking importance. Declarations marked with !important override all normal declarations. Among normal declarations, styles from the author (your CSS) take precedence over user styles (user-defined browser settings) which take precedence over browser defaults (user-agent stylesheet). Within the same importance level, the cascade uses specificity to determine the winner. If specificity is also equal, the last rule in source order wins. This layered resolution is why CSS works the way it does.\n\nSpecificity is a scoring system that determines which selector 'wins' when multiple selectors target the same element. It is calculated as a tuple of four values: inline styles count (thousands), ID selectors (hundreds), class/attribute/pseudo-class selectors (tens), and element/pseudo-element selectors (ones). For example, #header .nav a has specificity (0, 1, 1, 1) — one ID, one class, one element. A selector with higher specificity always wins regardless of source order. Inline styles (style=\"\") have the highest specificity short of !important.\n\nInheritance is a separate mechanism from the cascade. Certain CSS properties, when applied to a parent element, are automatically passed down to all descendants. Inherited properties are typically text-related: color, font-family, font-size, line-height, text-align, visibility, cursor, and others. Non-inherited properties include most box model and layout properties: width, height, margin, padding, border, display, position, background. You can force inheritance with the inherit keyword (border: inherit) or reset to initial values with the initial keyword.\n\nThe !important declaration should be used sparingly. It overrides all other declarations regardless of specificity, which makes debugging CSS much harder. The only way to override an !important rule is with another !important rule of equal or higher specificity. Overuse of !important leads to specificity wars where developers keep escalating to override each other's styles. Legitimate uses include utility classes (like .hidden { display: none !important; }) and overriding third-party library styles. In general, if you need !important, it often means your selector strategy needs restructuring.",
+      "codeExamples": [
+        {
+          "title": "The Cascade in Action",
+          "code": "/* Browser default (user-agent): color is black */\n\n/* Author stylesheet: */\np {\n  color: gray;          /* Specificity: 0,0,0,1 */\n}\n\n.intro {\n  color: blue;          /* Specificity: 0,0,1,0 - wins over p */\n}\n\n#welcome {\n  color: green;         /* Specificity: 0,1,0,0 - wins over .intro */\n}\n\n/* Source order: later rules win at equal specificity */\n.text { color: red; }\n.text { color: purple; }  /* purple wins — same specificity, later in source */\n\n/* !important overrides everything */\n.override {\n  color: orange !important;  /* Wins over all normal declarations */\n}",
+          "explanation": "The cascade resolves conflicts: 1) !important beats everything, 2) Higher specificity beats lower, 3) Later source order beats earlier (at equal specificity). This is how CSS determines which styles apply."
+        },
+        {
+          "title": "Inheritance",
+          "code": "/* Properties that inherit: */\nbody {\n  color: #333;            /* Inherited by ALL descendants */\n  font-family: Arial, sans-serif;  /* Inherited */\n  font-size: 16px;        /* Inherited */\n  line-height: 1.6;       /* Inherited */\n}\n\n/* All text inside body is now gray, Arial, 16px */\n/* You only need to override where different: */\nh1 {\n  font-size: 2rem;        /* Override inherited font-size */\n  color: #111;            /* Override inherited color */\n}\n\n/* Properties that do NOT inherit: */\n.parent {\n  border: 2px solid red;  /* NOT inherited by children */\n  padding: 20px;          /* NOT inherited */\n  margin: 16px;           /* NOT inherited */\n  background: #f0f0f0;    /* NOT inherited */\n}\n\n/* Force inheritance or reset: */\n.child {\n  border: inherit;        /* Explicitly inherit border from parent */\n  color: initial;         /* Reset to browser default (black) */\n  margin: unset;          /* Inherit if inheritable, else initial */\n}",
+          "explanation": "Text-related properties (color, font, line-height) inherit automatically from parent to child. Box model properties (margin, padding, border, background) do not. Use inherit, initial, or unset keywords to control this behavior."
+        },
+        {
+          "title": "Specificity Calculation",
+          "code": "/* Specificity format: (inline, IDs, classes, elements) */\n\np { }                          /* 0,0,0,1 */\n.card { }                      /* 0,0,1,0 */\n#header { }                    /* 0,1,0,0 */\np.intro { }                    /* 0,0,1,1 */\ndiv p.intro { }                /* 0,0,1,2 */\n#header .nav a { }             /* 0,1,1,1 */\n#header .nav a.active { }      /* 0,1,2,1 */\n\n/* Inline styles (highest without !important) */\n/* <p style=\"color: red;\"> */  /* 1,0,0,0 */\n\n/* Practical example: which color wins? */\n.card .title { color: blue; }      /* 0,0,2,0 */\ndiv.card h2.title { color: red; }  /* 0,0,2,2 */\n/* Red wins: 0,0,2,2 > 0,0,2,0 */\n\n#main .title { color: green; }     /* 0,1,1,0 */\n/* Green wins over both: ID selector beats classes */",
+          "explanation": "Specificity is calculated as a tuple. IDs (0,1,0,0) always beat classes (0,0,1,0) regardless of how many classes you chain. The universal selector (*) and combinators (+, >, ~) add zero specificity."
+        },
+        {
+          "title": "Avoiding !important",
+          "code": "/* BAD: Specificity war with !important */\n.button {\n  background: blue !important;\n}\n.button.danger {\n  background: red !important;  /* Need !important to override */\n}\n.button.danger.confirmed {\n  background: darkred !important;  /* Escalating... */\n}\n\n/* GOOD: Use proper specificity instead */\n.button {\n  background: blue;\n}\n.button.danger {\n  background: red;       /* Higher specificity, no !important needed */\n}\n.button.danger.confirmed {\n  background: darkred;   /* Even higher specificity */\n}\n\n/* Acceptable uses of !important: */\n.visually-hidden {\n  position: absolute !important;\n  width: 1px !important;\n  height: 1px !important;\n  overflow: hidden !important;\n  clip: rect(0, 0, 0, 0) !important;\n}",
+          "explanation": "Avoid !important by using proper selector specificity. Chaining classes increases specificity naturally. Reserve !important for utility classes and overriding third-party styles."
+        }
+      ],
+      "notes": [
+        "The cascade checks: 1) !important, 2) Specificity, 3) Source order. This is the fundamental algorithm of CSS.",
+        "Specificity is NOT a decimal number. 11 classes (0,0,11,0) will NEVER beat 1 ID (0,1,0,0). Each specificity position is independent.",
+        "Set inheritable properties like color and font on the body element. All descendants inherit them, reducing repetition.",
+        "The unset keyword resets a property to its inherited value if it normally inherits, or to its initial value if it does not."
+      ],
+      "commonPitfalls": [
+        "Treating specificity as a decimal number. 0,0,15,0 does NOT beat 0,1,0,0. Fifteen class selectors will never override a single ID selector.",
+        "Overusing !important to fix styling issues instead of fixing the selector specificity. This leads to !important chains that are nearly impossible to debug.",
+        "Assuming all properties inherit. Box model properties (margin, padding, border, width, height) and layout properties (display, position) do NOT inherit from parent elements.",
+        "Not understanding source order. When two selectors have identical specificity, the one that appears later in the CSS file wins."
+      ],
+      "interviewTips": [
+        "Be able to explain the three factors of the cascade in order: importance, specificity, source order.",
+        "Know how to calculate specificity: inline=1000, ID=100, class/attribute/pseudo-class=10, element/pseudo-element=1.",
+        "Understand which properties inherit (text-related) and which do not (box model, layout).",
+        "Know that the universal selector (*) has zero specificity and that combinators do not affect specificity.",
+        "Be ready to explain why !important should be avoided and what alternatives exist (increasing selector specificity, restructuring CSS)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "inheritance-and-cascade-ex1",
+        "title": "Predict the Cascade",
+        "description": "Given the following CSS, what color will the paragraph text be? Write a CSS comment with your answer and explanation. Then write the minimal CSS change needed to make it green WITHOUT using !important.\n\n.container p { color: blue; }\np.intro { color: red; }\np { color: gray; }",
+        "starterCode": ".container p { color: blue; }  /* Specificity: ? */\np.intro { color: red; }        /* Specificity: ? */\np { color: gray; }             /* Specificity: ? */\n\n/* For a <div class=\"container\"><p class=\"intro\">Text</p></div> */\n/* What color is the text? Write your answer below: */\n\n/* Make the text green without !important: */\n",
+        "solution": ".container p { color: blue; }  /* Specificity: 0,0,1,1 */\np.intro { color: red; }        /* Specificity: 0,0,1,1 */\np { color: gray; }             /* Specificity: 0,0,0,1 */\n\n/* For a <div class=\"container\"><p class=\"intro\">Text</p></div> */\n/* Answer: RED. Both .container p and p.intro have specificity 0,0,1,1 */\n/* but p.intro comes later in source order, so it wins. */\n\n/* Make the text green without !important: */\n.container p.intro { color: green; }  /* Specificity: 0,0,2,1 - wins */",
+        "hints": [
+          "Calculate specificity for each selector: classes count as (0,0,1,0) and elements as (0,0,0,1)",
+          "When specificity is equal, the rule that appears later in the source wins"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "inheritance-and-cascade-ex2",
+        "title": "Use Inheritance Effectively",
+        "description": "Write CSS that sets base styles on the body element: color #374151, font-family 'Inter' sans-serif, font-size 16px, line-height 1.6. Then override only what is needed: h1 should be color #111827 and font-size 2.5rem, and .muted should be color #9ca3af. Do not repeat font-family or line-height in the child selectors.",
+        "starterCode": "/* Set base styles on body and minimal overrides on children */\n",
+        "solution": "body {\n  color: #374151;\n  font-family: 'Inter', sans-serif;\n  font-size: 16px;\n  line-height: 1.6;\n}\n\nh1 {\n  color: #111827;\n  font-size: 2.5rem;\n}\n\n.muted {\n  color: #9ca3af;\n}",
+        "hints": [
+          "Text properties like color, font-family, font-size, and line-height are inherited by all descendants",
+          "Child elements only need to declare properties that differ from the inherited values"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

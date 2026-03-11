@@ -1,0 +1,380 @@
+[
+  {
+    "id": "images",
+    "sectionId": "images-and-media",
+    "orderIndex": 0,
+    "title": "Images",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["img Element", "src Attribute", "alt Attribute", "width and height", "Responsive Images", "srcset"],
+    "content": {
+      "explanation": "Images are a fundamental part of the web experience. The <img> element is a void (self-closing) element used to embed images into an HTML document. Unlike most HTML elements, <img> does not have a closing tag. It requires at minimum the src attribute, which specifies the path to the image file, and should always include the alt attribute for accessibility.\n\nThe alt attribute provides alternative text that describes the image. This text is displayed when the image cannot be loaded, is read aloud by screen readers for visually impaired users, and is used by search engines to understand the image content. Writing good alt text is both an accessibility requirement and an SEO best practice. If an image is purely decorative and adds no informational value, use an empty alt attribute (alt=\"\") to tell assistive technologies to skip it.\n\nSpecifying width and height attributes on images is important for performance. When the browser knows the dimensions before the image loads, it can reserve the correct amount of space in the layout, preventing Cumulative Layout Shift (CLS) -- a Core Web Vital metric. Without explicit dimensions, the page content jumps and reflows as images load, creating a poor user experience. You can set these attributes in HTML and still make images responsive with CSS by adding width: 100% and height: auto.\n\nThe srcset attribute enables responsive images by providing multiple image sources at different resolutions. The browser chooses the most appropriate image based on the device's screen size, pixel density, and network conditions. This is critical for performance: serving a 4000px-wide hero image to a mobile phone wastes bandwidth and slows page load. The srcset attribute works with the sizes attribute to give the browser enough information to make the optimal choice.\n\nModern image formats like WebP and AVIF offer significantly better compression than JPEG and PNG. You can use the <picture> element to serve modern formats with fallbacks for older browsers. The browser evaluates each <source> in order and uses the first format it supports, falling back to the <img> element if none of the sources are compatible.",
+      "codeExamples": [
+        {
+          "title": "Basic Image with Alt Text",
+          "code": "<!-- Basic image -->\n<img src=\"/images/sunset.jpg\" alt=\"Orange sunset over the Pacific Ocean\">\n\n<!-- Image with explicit dimensions -->\n<img src=\"/images/profile.jpg\" \n     alt=\"Jane Smith, Senior Developer\" \n     width=\"200\" \n     height=\"200\">\n\n<!-- Decorative image (skip for screen readers) -->\n<img src=\"/images/divider.png\" alt=\"\" role=\"presentation\">\n\n<!-- Image with loading attribute -->\n<img src=\"/images/hero.jpg\" \n     alt=\"Mountain landscape\" \n     width=\"1200\" \n     height=\"600\" \n     loading=\"lazy\">",
+          "explanation": "Always provide meaningful alt text that describes the image content and purpose. Use empty alt='' for purely decorative images. Include width and height to prevent layout shifts. The loading='lazy' attribute defers loading off-screen images until the user scrolls near them."
+        },
+        {
+          "title": "Responsive Images with srcset",
+          "code": "<!-- srcset with width descriptors -->\n<img src=\"/images/hero-800.jpg\"\n     srcset=\"/images/hero-400.jpg 400w,\n            /images/hero-800.jpg 800w,\n            /images/hero-1200.jpg 1200w,\n            /images/hero-1600.jpg 1600w\"\n     sizes=\"(max-width: 600px) 100vw,\n            (max-width: 1200px) 50vw,\n            33vw\"\n     alt=\"Mountain landscape hero image\"\n     width=\"1600\" \n     height=\"900\">\n\n<!-- srcset with pixel density descriptors -->\n<img src=\"/images/logo.png\"\n     srcset=\"/images/logo.png 1x,\n            /images/logo@2x.png 2x,\n            /images/logo@3x.png 3x\"\n     alt=\"Company Logo\"\n     width=\"150\" \n     height=\"50\">",
+          "explanation": "Width descriptors (400w, 800w) tell the browser each image's actual width. The sizes attribute tells the browser how wide the image will be displayed at different viewport widths. The browser combines this information to pick the optimal image. Pixel density descriptors (1x, 2x, 3x) are simpler and used for fixed-size images like logos."
+        },
+        {
+          "title": "Picture Element for Format Fallbacks",
+          "code": "<picture>\n  <!-- Modern format: AVIF (best compression) -->\n  <source srcset=\"/images/photo.avif\" type=\"image/avif\">\n  \n  <!-- Modern format: WebP (good compression) -->\n  <source srcset=\"/images/photo.webp\" type=\"image/webp\">\n  \n  <!-- Fallback: JPEG (universal support) -->\n  <img src=\"/images/photo.jpg\" \n       alt=\"Team photo at the annual retreat\"\n       width=\"800\" \n       height=\"600\">\n</picture>",
+          "explanation": "The <picture> element lets you serve modern image formats with automatic fallbacks. Browsers evaluate sources top-to-bottom and use the first supported format. The <img> tag is required as the final fallback and is where you put the alt text and dimensions."
+        },
+        {
+          "title": "Art Direction with Picture",
+          "code": "<!-- Different crops for different screen sizes -->\n<picture>\n  <!-- Mobile: vertical crop -->\n  <source media=\"(max-width: 600px)\" \n          srcset=\"/images/hero-mobile.jpg\">\n  \n  <!-- Tablet: square crop -->\n  <source media=\"(max-width: 1024px)\" \n          srcset=\"/images/hero-tablet.jpg\">\n  \n  <!-- Desktop: wide panoramic -->\n  <img src=\"/images/hero-desktop.jpg\" \n       alt=\"Panoramic city skyline at night\"\n       width=\"1600\" \n       height=\"600\">\n</picture>",
+          "explanation": "Art direction uses the <picture> element with media queries to serve completely different image crops for different screen sizes. This is different from srcset, which serves the same image at different resolutions. Art direction is for when you need a different composition or crop on mobile vs desktop."
+        }
+      ],
+      "notes": [
+        "Always include alt text on images. The only exception is purely decorative images, which should have alt='' (empty string, not omitted).",
+        "Always set width and height attributes on images to prevent Cumulative Layout Shift (CLS). You can still make them responsive with CSS.",
+        "Use loading='lazy' on images below the fold to improve initial page load performance. Do not use it on images visible in the initial viewport."
+      ],
+      "commonPitfalls": [
+        "Omitting the alt attribute entirely. This is different from alt='' (which intentionally marks an image as decorative). Missing alt is an accessibility violation and invalid HTML.",
+        "Not specifying width and height, causing layout shift as images load. This hurts your Core Web Vitals CLS score.",
+        "Serving oversized images to all devices. A 4000px-wide image on a 375px-wide phone wastes bandwidth. Use srcset to serve appropriately sized images.",
+        "Using loading='lazy' on above-the-fold hero images. This delays their loading and hurts Largest Contentful Paint (LCP)."
+      ],
+      "interviewTips": [
+        "Explain the difference between srcset with width descriptors vs pixel density descriptors and when to use each.",
+        "Know the difference between the <picture> element for art direction and srcset for resolution switching.",
+        "Be ready to discuss image optimization strategies: modern formats (WebP, AVIF), lazy loading, and responsive images."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "images-ex1",
+        "title": "Responsive Image with srcset",
+        "description": "Create an image element that displays a photo with the following sources: small.jpg (400px wide), medium.jpg (800px wide), large.jpg (1200px wide). The image should be 100vw on screens up to 600px, and 50vw on larger screens. Use medium.jpg as the default src. Add appropriate alt text, width, height, and lazy loading.",
+        "starterCode": "<!-- Create a responsive image -->\n",
+        "solution": "<img src=\"medium.jpg\"\n     srcset=\"small.jpg 400w,\n            medium.jpg 800w,\n            large.jpg 1200w\"\n     sizes=\"(max-width: 600px) 100vw, 50vw\"\n     alt=\"A scenic landscape photograph\"\n     width=\"1200\"\n     height=\"800\"\n     loading=\"lazy\">",
+        "hints": [
+          "Use width descriptors (e.g., 400w) in srcset to tell the browser each image's pixel width",
+          "The sizes attribute uses media conditions to tell the browser how wide the image will display"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "images-ex2",
+        "title": "Picture Element with Format Fallbacks",
+        "description": "Create a <picture> element that serves three formats: photo.avif (AVIF), photo.webp (WebP), and photo.jpg (JPEG fallback). Include proper alt text and dimensions (width: 600, height: 400) on the fallback img element.",
+        "starterCode": "<!-- Create a picture element with format fallbacks -->\n",
+        "solution": "<picture>\n  <source srcset=\"photo.avif\" type=\"image/avif\">\n  <source srcset=\"photo.webp\" type=\"image/webp\">\n  <img src=\"photo.jpg\" alt=\"A detailed product photograph\" width=\"600\" height=\"400\">\n</picture>",
+        "hints": [
+          "List sources from most modern (AVIF) to least modern (JPEG)",
+          "The type attribute tells the browser the MIME type so it can skip unsupported formats"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "figures-and-captions",
+    "sectionId": "images-and-media",
+    "orderIndex": 1,
+    "title": "Figures & Captions",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["figure Element", "figcaption Element", "Semantic Grouping", "Accessible Captions", "When to Use figure"],
+    "content": {
+      "explanation": "The <figure> element represents self-contained content that is referenced from the main content flow but could be moved to an appendix, sidebar, or separate page without affecting the main document's meaning. Think of it like a figure in a textbook -- it supplements the text but is not part of the text itself. The <figcaption> element provides a caption or legend for the figure.\n\nWhile <figure> is most commonly used with images, it is not limited to them. A figure can contain code snippets, diagrams, charts, tables, audio clips, videos, equations, or any content that is referenced as a unit from the surrounding text. The key semantic meaning is that the figure is self-contained and referenced from the main flow. If removing the content would disrupt the document's meaning, it probably should not be a figure.\n\nThe <figcaption> element must be a direct child of <figure> and should be either the first or last child element. It provides a visible caption that describes the figure content. Unlike the alt attribute on images (which is for screen readers and when images fail to load), figcaption is visible to all users and typically provides context, attribution, or explanatory text. When both alt and figcaption are present, they should serve different purposes -- alt describes the image content, while figcaption provides context about why it is shown.\n\nUsing <figure> and <figcaption> provides semantic meaning that helps both search engines and assistive technologies understand the relationship between the content and its caption. Screen readers announce figures as a distinct content group, and the figcaption is associated with the figure automatically. This is much better than using a <div> with a <p> below it, which has no semantic connection between the image and its description.",
+      "codeExamples": [
+        {
+          "title": "Basic Figure with Image and Caption",
+          "code": "<figure>\n  <img src=\"/images/chart-revenue.png\" \n       alt=\"Bar chart showing quarterly revenue from Q1 to Q4 2024\"\n       width=\"600\" \n       height=\"400\">\n  <figcaption>\n    Figure 1: Quarterly revenue growth in 2024, \n    showing a 23% increase from Q1 to Q4.\n  </figcaption>\n</figure>",
+          "explanation": "The <figure> wraps both the image and its caption. The alt attribute describes what the image looks like (a bar chart), while the figcaption provides analytical context (the 23% growth trend). These serve different purposes and complement each other."
+        },
+        {
+          "title": "Figure with Code Snippet",
+          "code": "<figure>\n  <pre><code>\nfunction greet(name) {\n  return `Hello, ${name}!`;\n}\n\nconsole.log(greet(\"World\"));\n  </code></pre>\n  <figcaption>\n    Example 3: A simple greeting function using \n    template literals (ES6+).\n  </figcaption>\n</figure>",
+          "explanation": "Figures are not just for images. Code snippets, especially those referenced in the surrounding text ('as shown in Example 3'), are perfect candidates for the figure element. The figcaption describes what the code demonstrates."
+        },
+        {
+          "title": "Multiple Images in a Single Figure",
+          "code": "<figure>\n  <img src=\"/images/before.jpg\" \n       alt=\"Kitchen before renovation: outdated cabinets and flooring\"\n       width=\"400\" height=\"300\">\n  <img src=\"/images/after.jpg\" \n       alt=\"Kitchen after renovation: modern white cabinets and hardwood floors\"\n       width=\"400\" height=\"300\">\n  <figcaption>\n    Before and after: Kitchen renovation completed \n    in March 2024 by HomeDesign Co.\n  </figcaption>\n</figure>",
+          "explanation": "A single <figure> can contain multiple images when they form a logical group. The figcaption describes the entire set. Each image still has its own alt text describing its individual content."
+        },
+        {
+          "title": "Figure with Attribution",
+          "code": "<figure>\n  <img src=\"/images/starry-night.jpg\" \n       alt=\"The Starry Night painting: swirling blue sky with bright stars over a village\"\n       width=\"800\" height=\"640\">\n  <figcaption>\n    <cite>The Starry Night</cite> by Vincent van Gogh, 1889. \n    Oil on canvas, 73.7 cm x 92.1 cm. \n    Museum of Modern Art, New York.\n  </figcaption>\n</figure>\n\n<!-- Blockquote as a figure -->\n<figure>\n  <blockquote>\n    <p>The only way to do great work is to love what you do.</p>\n  </blockquote>\n  <figcaption>\n    -- <cite>Steve Jobs</cite>, Stanford Commencement, 2005\n  </figcaption>\n</figure>",
+          "explanation": "Figures are ideal for content that needs attribution. The figcaption can include <cite> elements for proper attribution. Blockquotes with attribution are another common use of the figure element."
+        }
+      ],
+      "notes": [
+        "The <figcaption> must be a direct child of <figure> and should be either the first or last child -- not placed in the middle between other content.",
+        "Not every image needs a <figure>. Use it only when the image is self-contained content referenced from the text (like 'see Figure 1'). Inline images in the text flow do not need figure wrappers.",
+        "The alt attribute and figcaption serve different purposes: alt describes the image for accessibility; figcaption provides context visible to all users."
+      ],
+      "commonPitfalls": [
+        "Wrapping every single image in a <figure>. Only use figure for self-contained content that is referenced from the main text. A hero banner or inline decorative image does not need a figure wrapper.",
+        "Making the alt text and figcaption identical. They should complement each other: alt describes what the image shows, figcaption explains its significance or provides attribution.",
+        "Placing the figcaption outside the <figure> element. It must be a direct child of figure to maintain the semantic relationship."
+      ],
+      "interviewTips": [
+        "Explain when to use <figure> vs a plain <img> -- the key is whether the content is self-contained and referenced from the main flow.",
+        "Know that <figure> is not just for images -- it can wrap code blocks, quotes, tables, diagrams, and any self-contained content."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "figures-and-captions-ex1",
+        "title": "Create an Image Figure with Caption",
+        "description": "Create a <figure> element containing an image (src: 'chart.png', appropriate alt text, 600x400 dimensions) and a <figcaption> that reads 'Figure 1: Monthly active users from January to December 2024.'",
+        "starterCode": "<!-- Create a figure with image and caption -->\n",
+        "solution": "<figure>\n  <img src=\"chart.png\" \n       alt=\"Line chart showing monthly active users trending upward throughout 2024\" \n       width=\"600\" \n       height=\"400\">\n  <figcaption>Figure 1: Monthly active users from January to December 2024.</figcaption>\n</figure>",
+        "hints": [
+          "The <figcaption> must be a direct child of <figure>",
+          "The alt text should describe the image content, while figcaption provides context"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "figures-and-captions-ex2",
+        "title": "Blockquote Figure with Attribution",
+        "description": "Create a <figure> containing a <blockquote> with the text 'In the middle of difficulty lies opportunity.' and a <figcaption> attributing it to Albert Einstein. Use the <cite> element for the author's name.",
+        "starterCode": "<!-- Create a blockquote figure with attribution -->\n",
+        "solution": "<figure>\n  <blockquote>\n    <p>In the middle of difficulty lies opportunity.</p>\n  </blockquote>\n  <figcaption>-- <cite>Albert Einstein</cite></figcaption>\n</figure>",
+        "hints": [
+          "Wrap the quote text in a <blockquote> with a <p> inside",
+          "Use the <cite> element inside figcaption for the author's name"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "audio",
+    "sectionId": "images-and-media",
+    "orderIndex": 2,
+    "title": "Audio",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["audio Element", "source Element", "controls Attribute", "autoplay", "Audio Formats", "preload"],
+    "content": {
+      "explanation": "The <audio> element embeds sound content in an HTML document. Before HTML5, embedding audio required third-party plugins like Flash or Java applets. The native <audio> element provides a standardized, accessible way to play audio directly in the browser without any plugins. It supports multiple audio formats and provides built-in playback controls.\n\nThe controls attribute is essential -- it displays the browser's default audio player UI with play/pause, progress bar, volume control, and timestamp. Without the controls attribute, the audio element is invisible and the user has no way to interact with it (unless you build custom controls with JavaScript). Always include controls unless you have a specific reason to hide the player and are providing custom UI.\n\nMultiple audio formats should be provided using <source> elements inside the <audio> tag to ensure broad browser compatibility. The most widely supported formats are MP3 (audio/mpeg), which works in all modern browsers; WAV (audio/wav), which is uncompressed and large but universally supported; OGG Vorbis (audio/ogg), which is open-source and supported in Firefox, Chrome, and Edge; and AAC (audio/aac), which is used by Apple devices. The browser evaluates sources from top to bottom and plays the first format it supports.\n\nThe autoplay attribute starts playback automatically when the page loads. However, most modern browsers block autoplay for audio with sound to prevent an annoying user experience. Autoplay is generally only allowed when the audio is muted (which is pointless for audio-only content) or after the user has interacted with the page. The preload attribute hints how much data the browser should preload: none (no preloading), metadata (only duration and dimensions), or auto (preload the entire file). Use preload=\"none\" for pages with many audio files to save bandwidth.\n\nAccessibility for audio content requires providing text alternatives. This can include transcripts for podcasts and spoken content, captions for audio that accompanies video, and descriptive text explaining what the audio contains. The <audio> element should also include fallback text between the opening and closing tags for browsers that do not support it, though this is rarely needed with modern browsers.",
+      "codeExamples": [
+        {
+          "title": "Basic Audio with Controls",
+          "code": "<!-- Simple audio player -->\n<audio controls>\n  <source src=\"/audio/podcast.mp3\" type=\"audio/mpeg\">\n  <source src=\"/audio/podcast.ogg\" type=\"audio/ogg\">\n  Your browser does not support the audio element.\n</audio>",
+          "explanation": "The controls attribute provides the default browser audio player. Multiple <source> elements provide format fallbacks. The text between the tags is shown in browsers that do not support <audio> (extremely rare today)."
+        },
+        {
+          "title": "Audio with Preload and Loop",
+          "code": "<!-- Background music (preload metadata only) -->\n<audio controls preload=\"metadata\">\n  <source src=\"/audio/ambient.mp3\" type=\"audio/mpeg\">\n  <source src=\"/audio/ambient.ogg\" type=\"audio/ogg\">\n</audio>\n\n<!-- Looping audio -->\n<audio controls loop>\n  <source src=\"/audio/rain-sounds.mp3\" type=\"audio/mpeg\">\n</audio>\n\n<!-- Muted by default -->\n<audio controls muted preload=\"auto\">\n  <source src=\"/audio/preview.mp3\" type=\"audio/mpeg\">\n</audio>",
+          "explanation": "preload='metadata' loads only the duration and basic info, saving bandwidth. The loop attribute restarts playback when the audio ends. The muted attribute starts the audio muted, which also enables autoplay in most browsers."
+        },
+        {
+          "title": "Audio with Accessible Transcript",
+          "code": "<figure>\n  <figcaption>\n    <strong>Episode 42: Web Accessibility Fundamentals</strong>\n  </figcaption>\n  <audio controls preload=\"metadata\">\n    <source src=\"/audio/ep42.mp3\" type=\"audio/mpeg\">\n    <source src=\"/audio/ep42.ogg\" type=\"audio/ogg\">\n    Your browser does not support audio playback.\n  </audio>\n  <details>\n    <summary>View Transcript</summary>\n    <p>Host: Welcome to episode 42 where we discuss \n    web accessibility fundamentals...</p>\n    <p>Guest: Thanks for having me. Accessibility is \n    not just about compliance...</p>\n  </details>\n</figure>",
+          "explanation": "Wrapping audio in a <figure> with <figcaption> provides semantic context. The <details>/<summary> pattern provides a collapsible transcript, making the content accessible to deaf and hard-of-hearing users without cluttering the page."
+        },
+        {
+          "title": "Multiple Audio Tracks on a Page",
+          "code": "<section>\n  <h2>Sound Effects Library</h2>\n  \n  <article>\n    <h3>Thunder</h3>\n    <audio controls preload=\"none\">\n      <source src=\"/sfx/thunder.mp3\" type=\"audio/mpeg\">\n    </audio>\n  </article>\n  \n  <article>\n    <h3>Rain</h3>\n    <audio controls preload=\"none\">\n      <source src=\"/sfx/rain.mp3\" type=\"audio/mpeg\">\n    </audio>\n  </article>\n  \n  <article>\n    <h3>Wind</h3>\n    <audio controls preload=\"none\">\n      <source src=\"/sfx/wind.mp3\" type=\"audio/mpeg\">\n    </audio>\n  </article>\n</section>",
+          "explanation": "When a page has multiple audio players, use preload='none' to prevent the browser from downloading all files simultaneously. This saves significant bandwidth and improves page load time."
+        }
+      ],
+      "notes": [
+        "Always include the controls attribute unless you are building a custom player with JavaScript. Without controls, the audio element is invisible.",
+        "MP3 (audio/mpeg) has universal browser support and is the safest single-format choice if you can only provide one format.",
+        "Avoid autoplay for audio content. Most browsers block it, and auto-playing audio is one of the most annoying web patterns for users."
+      ],
+      "commonPitfalls": [
+        "Using autoplay without muted. Modern browsers block auto-playing audio that is not muted. Even with muted autoplay, users generally dislike unexpected media playback.",
+        "Not providing fallback formats. While MP3 is widely supported, providing OGG as a fallback ensures compatibility with all browsers and respects open-format preferences.",
+        "Using preload='auto' on pages with many audio files. This causes the browser to download all files on page load, wasting bandwidth and slowing the page.",
+        "Forgetting to provide transcripts for audio content. This makes the content inaccessible to deaf and hard-of-hearing users and misses SEO opportunities."
+      ],
+      "interviewTips": [
+        "Know the common audio formats (MP3, OGG, WAV, AAC) and their browser support characteristics.",
+        "Be able to explain autoplay policies in modern browsers and why they exist.",
+        "Discuss accessibility requirements for audio content, particularly the need for transcripts."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "audio-ex1",
+        "title": "Create an Audio Player with Fallbacks",
+        "description": "Create an audio player with controls that provides two source formats: an MP3 file (song.mp3) and an OGG file (song.ogg). Set preload to 'metadata' and include fallback text for unsupported browsers.",
+        "starterCode": "<!-- Create an audio player -->\n",
+        "solution": "<audio controls preload=\"metadata\">\n  <source src=\"song.mp3\" type=\"audio/mpeg\">\n  <source src=\"song.ogg\" type=\"audio/ogg\">\n  Your browser does not support the audio element.\n</audio>",
+        "hints": [
+          "Use the <audio> tag with the controls attribute for the built-in player UI",
+          "Place <source> elements inside <audio> with the type attribute for each format"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "audio-ex2",
+        "title": "Podcast Player with Transcript",
+        "description": "Create a podcast audio player wrapped in a <figure> element. Include a <figcaption> with the title 'Episode 1: Getting Started'. Use song.mp3 as the source with preload set to 'metadata'. Add a collapsible transcript section using <details> and <summary> with some placeholder transcript text.",
+        "starterCode": "<!-- Create a podcast player with transcript -->\n",
+        "solution": "<figure>\n  <figcaption><strong>Episode 1: Getting Started</strong></figcaption>\n  <audio controls preload=\"metadata\">\n    <source src=\"song.mp3\" type=\"audio/mpeg\">\n    Your browser does not support the audio element.\n  </audio>\n  <details>\n    <summary>View Transcript</summary>\n    <p>Welcome to Episode 1 of our podcast. Today we will be discussing how to get started with web development...</p>\n  </details>\n</figure>",
+        "hints": [
+          "Use <figure> with <figcaption> to semantically group the player with its title",
+          "Use <details> and <summary> to create a collapsible transcript section"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "video",
+    "sectionId": "images-and-media",
+    "orderIndex": 3,
+    "title": "Video",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["video Element", "poster Attribute", "controls", "source Element", "Responsive Video", "Video Formats"],
+    "content": {
+      "explanation": "The <video> element embeds video content in an HTML document, providing native playback without requiring third-party plugins. Similar to the <audio> element, it supports multiple source formats, built-in controls, and various attributes to control playback behavior. Video is one of the most engaging content types on the web, and using the native element correctly is essential for performance and accessibility.\n\nThe poster attribute specifies an image to show before the video starts playing. This is the thumbnail that represents the video content. Without a poster, browsers typically show the first frame of the video, which might be a black screen or an unrepresentative frame. A well-chosen poster image gives users a preview of what the video contains and makes the page look polished before any video data is loaded.\n\nVideo format support varies across browsers, but two formats cover nearly all modern browsers: MP4 with H.264 codec (video/mp4), which has universal support, and WebM with VP9 codec (video/webm), which offers better compression and is supported in Chrome, Firefox, and Edge. Always provide MP4 as a fallback since it works everywhere. Provide <source> elements in order of preference, with the most efficient format first and the most compatible format last.\n\nMaking videos responsive requires CSS since the <video> element behaves like a replaced element with intrinsic dimensions. The simplest approach is setting max-width: 100% and height: auto on the video element. For maintaining aspect ratios in flexible layouts, the modern CSS aspect-ratio property or the traditional padding-bottom trick on a wrapper div can be used. For embedded videos from platforms like YouTube (using iframes), a responsive wrapper is essential.\n\nVideo content should be accessible. Provide captions using the <track> element with WebVTT (.vtt) files. Captions are essential for deaf and hard-of-hearing users and also benefit users watching in noisy environments or who prefer reading. Provide at minimum a captions track, and ideally also descriptions and subtitles in multiple languages. The <track> element supports kinds including subtitles, captions, descriptions, chapters, and metadata.",
+      "codeExamples": [
+        {
+          "title": "Basic Video with Controls and Poster",
+          "code": "<video controls \n       poster=\"/images/video-thumbnail.jpg\" \n       width=\"800\" \n       height=\"450\">\n  <source src=\"/video/intro.webm\" type=\"video/webm\">\n  <source src=\"/video/intro.mp4\" type=\"video/mp4\">\n  Your browser does not support the video element.\n</video>",
+          "explanation": "The poster attribute shows a thumbnail before playback. Multiple <source> elements provide format fallbacks. WebM is listed first for browsers that support it (better compression), with MP4 as the universal fallback."
+        },
+        {
+          "title": "Video with Captions Track",
+          "code": "<video controls \n       poster=\"/images/lecture-thumb.jpg\"\n       width=\"800\" \n       height=\"450\"\n       preload=\"metadata\">\n  <source src=\"/video/lecture.mp4\" type=\"video/mp4\">\n  \n  <!-- Captions for deaf/hard-of-hearing -->\n  <track kind=\"captions\" \n         src=\"/captions/lecture-en.vtt\" \n         srclang=\"en\" \n         label=\"English\" \n         default>\n  \n  <!-- Subtitles in Spanish -->\n  <track kind=\"subtitles\" \n         src=\"/captions/lecture-es.vtt\" \n         srclang=\"es\" \n         label=\"Spanish\">\n  \n  <!-- Chapter markers -->\n  <track kind=\"chapters\" \n         src=\"/captions/lecture-chapters.vtt\" \n         srclang=\"en\">\n</video>",
+          "explanation": "The <track> element adds text tracks to video. 'captions' include sound effects and speaker identification; 'subtitles' are translations of dialogue. The 'default' attribute auto-enables the English captions. Chapter tracks allow navigation to specific sections."
+        },
+        {
+          "title": "Responsive Video with CSS",
+          "code": "<!-- HTML -->\n<video class=\"responsive-video\" \n       controls \n       poster=\"/images/demo-poster.jpg\">\n  <source src=\"/video/demo.mp4\" type=\"video/mp4\">\n</video>\n\n<style>\n  /* Simple responsive video */\n  .responsive-video {\n    max-width: 100%;\n    height: auto;\n  }\n\n  /* Fixed aspect ratio container (16:9) */\n  .video-container {\n    position: relative;\n    width: 100%;\n    aspect-ratio: 16 / 9;\n  }\n  .video-container video {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n  }\n</style>",
+          "explanation": "Setting max-width: 100% and height: auto makes the video scale down on small screens while maintaining its aspect ratio. The aspect-ratio property provides a clean way to enforce 16:9 or other ratios. object-fit: cover fills the container without distortion."
+        },
+        {
+          "title": "Video with Playback Attributes",
+          "code": "<!-- Muted autoplay (for hero background videos) -->\n<video autoplay muted loop playsinline \n       poster=\"/images/bg-poster.jpg\">\n  <source src=\"/video/background.webm\" type=\"video/webm\">\n  <source src=\"/video/background.mp4\" type=\"video/mp4\">\n</video>\n\n<!-- Controlled preloading -->\n<video controls \n       preload=\"none\" \n       poster=\"/images/tutorial-thumb.jpg\"\n       width=\"640\" \n       height=\"360\">\n  <source src=\"/video/tutorial.mp4\" type=\"video/mp4\">\n</video>",
+          "explanation": "Muted autoplay with loop is the pattern for background hero videos. The playsinline attribute prevents iOS from forcing fullscreen playback. preload='none' is important for pages with multiple videos to avoid downloading all of them on page load."
+        }
+      ],
+      "notes": [
+        "Always provide a poster image. Without one, users see a black rectangle or the first video frame, which may not represent the content well.",
+        "MP4 (H.264) is the universally supported video format. Always include it as a fallback even if you also provide WebM.",
+        "Use the playsinline attribute for videos that should play inline on iOS. Without it, iOS Safari forces fullscreen playback."
+      ],
+      "commonPitfalls": [
+        "Using autoplay without muted. Browsers block autoplay of unmuted video. The only reliable autoplay pattern is autoplay muted, typically used for decorative background videos.",
+        "Not providing a poster image, resulting in a blank or black rectangle before playback. This looks unprofessional and gives users no preview of the content.",
+        "Forgetting the playsinline attribute for inline videos on iOS. Without it, tapping play on an iPhone opens the video in fullscreen mode.",
+        "Not providing captions via <track> elements. This makes video content inaccessible to deaf and hard-of-hearing users."
+      ],
+      "interviewTips": [
+        "Explain the difference between captions and subtitles in the <track> element: captions include non-speech audio descriptions, subtitles are translations.",
+        "Know the common video formats (MP4/H.264, WebM/VP9) and their browser support and compression tradeoffs.",
+        "Be ready to discuss strategies for responsive video and maintaining aspect ratios."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "video-ex1",
+        "title": "Create a Video Player with Captions",
+        "description": "Create a video player with controls, a poster image (poster.jpg), MP4 source (video.mp4), and an English captions track (captions.vtt) set as default. Include proper dimensions (width: 800, height: 450) and preload set to 'metadata'.",
+        "starterCode": "<!-- Create a video player with captions -->\n",
+        "solution": "<video controls \n       poster=\"poster.jpg\" \n       width=\"800\" \n       height=\"450\" \n       preload=\"metadata\">\n  <source src=\"video.mp4\" type=\"video/mp4\">\n  <track kind=\"captions\" \n         src=\"captions.vtt\" \n         srclang=\"en\" \n         label=\"English\" \n         default>\n  Your browser does not support the video element.\n</video>",
+        "hints": [
+          "The poster attribute specifies the thumbnail image shown before playback",
+          "Use the <track> element with kind='captions' and add the 'default' attribute to enable it automatically"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "video-ex2",
+        "title": "Background Hero Video",
+        "description": "Create a muted, auto-playing, looping background video that plays inline on iOS. Use hero-bg.webm (WebM) and hero-bg.mp4 (MP4) as sources. Include a poster image (hero-poster.jpg). Do not include controls since this is a decorative background video. Wrap it in a div with class 'hero' and add CSS to make it fill the container.",
+        "starterCode": "<!-- Create a hero background video -->\n<div class=\"hero\">\n\n</div>\n\n<style>\n  .hero {\n    position: relative;\n    width: 100%;\n    height: 100vh;\n    overflow: hidden;\n  }\n  /* Add video styles */\n</style>\n",
+        "solution": "<div class=\"hero\">\n  <video autoplay muted loop playsinline poster=\"hero-poster.jpg\">\n    <source src=\"hero-bg.webm\" type=\"video/webm\">\n    <source src=\"hero-bg.mp4\" type=\"video/mp4\">\n  </video>\n</div>\n\n<style>\n  .hero {\n    position: relative;\n    width: 100%;\n    height: 100vh;\n    overflow: hidden;\n  }\n  .hero video {\n    width: 100%;\n    height: 100%;\n    object-fit: cover;\n  }\n</style>",
+        "hints": [
+          "Background videos need autoplay, muted, loop, and playsinline attributes but NOT controls",
+          "Use object-fit: cover to fill the container without distortion"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "embedding-content",
+    "sectionId": "images-and-media",
+    "orderIndex": 4,
+    "title": "Embedding Content",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["iframe Element", "embed Element", "object Element", "sandbox Attribute", "Security", "Responsive Embeds"],
+    "content": {
+      "explanation": "Embedding allows you to include external content from other websites or services directly within your page. The most common method is the <iframe> (inline frame) element, which loads a completely separate HTML document inside a rectangular region on your page. Iframes are used extensively for embedding YouTube videos, Google Maps, social media posts, payment forms, and third-party widgets.\n\nThe <iframe> element creates a nested browsing context -- essentially a browser window within your page. The src attribute specifies the URL of the page to embed. Important attributes include width and height for sizing, title for accessibility (screen readers announce the iframe by its title), and loading=\"lazy\" for performance. The frameborder attribute is deprecated in HTML5; use CSS border: none instead.\n\nSecurity is a critical concern with iframes. The sandbox attribute restricts what the embedded content can do. Without sandbox, an embedded page has the same capabilities as if the user navigated to it directly, including running scripts, submitting forms, and using popups. The sandbox attribute with no value applies maximum restrictions. You can selectively allow capabilities with values like allow-scripts, allow-same-origin, allow-forms, and allow-popups. Always sandbox untrusted content.\n\nThe <embed> and <object> elements are older ways to embed content but are still occasionally used. <embed> is a void element that embeds external content, often used for plugins (though Flash is dead, PDF embeds still use it). <object> is more feature-rich and can include fallback content between its tags. In practice, <iframe> has replaced most use cases for both elements. The main remaining use for <object> is embedding SVG files with fallback images, and <embed> is sometimes used for inline PDF viewing.\n\nMaking embedded content responsive, especially videos, requires a wrapper technique because iframes have fixed dimensions. The modern approach uses the CSS aspect-ratio property on a container. The traditional approach uses the padding-bottom percentage trick to maintain a 16:9 or other aspect ratio. Both methods ensure the embed scales proportionally on different screen sizes while maintaining the correct aspect ratio.",
+      "codeExamples": [
+        {
+          "title": "Basic iframe Embedding",
+          "code": "<!-- Embed a YouTube video -->\n<iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" \n        width=\"560\" \n        height=\"315\" \n        title=\"Video: Introduction to Web Development\"\n        loading=\"lazy\"\n        allowfullscreen>\n</iframe>\n\n<!-- Embed Google Maps -->\n<iframe src=\"https://maps.google.com/maps?q=new+york&output=embed\" \n        width=\"600\" \n        height=\"450\" \n        title=\"Map of New York City\"\n        loading=\"lazy\"\n        style=\"border: none;\">\n</iframe>",
+          "explanation": "The title attribute is essential for accessibility -- screen readers announce it so users know what the iframe contains. Use loading='lazy' for embeds below the fold. The allowfullscreen attribute enables the fullscreen button in video players."
+        },
+        {
+          "title": "Sandboxed iframe for Security",
+          "code": "<!-- Maximum restrictions (nothing allowed) -->\n<iframe src=\"https://untrusted-site.com/widget\" \n        sandbox\n        title=\"Third-party widget\">\n</iframe>\n\n<!-- Selective permissions -->\n<iframe src=\"https://payment-form.example.com\" \n        sandbox=\"allow-scripts allow-forms allow-same-origin\"\n        title=\"Payment form\">\n</iframe>\n\n<!-- Allow popups for OAuth flows -->\n<iframe src=\"https://auth-widget.example.com\" \n        sandbox=\"allow-scripts allow-popups allow-same-origin\"\n        title=\"Login widget\">\n</iframe>",
+          "explanation": "The sandbox attribute with no value applies all restrictions: no scripts, no forms, no popups, no same-origin access. Add specific allow-* values to grant only the permissions the embedded content needs. This follows the principle of least privilege."
+        },
+        {
+          "title": "Responsive iframe Embed",
+          "code": "<!-- Modern approach with aspect-ratio -->\n<div class=\"embed-container\">\n  <iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" \n          title=\"Tutorial video\"\n          allowfullscreen>\n  </iframe>\n</div>\n\n<style>\n  .embed-container {\n    position: relative;\n    width: 100%;\n    aspect-ratio: 16 / 9;\n  }\n  .embed-container iframe {\n    position: absolute;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    border: none;\n  }\n</style>",
+          "explanation": "The aspect-ratio CSS property sets the container to maintain a 16:9 ratio at any width. The iframe is positioned absolutely inside to fill the container completely. This ensures the video scales properly on all screen sizes."
+        },
+        {
+          "title": "Object and Embed Elements",
+          "code": "<!-- Embed a PDF document -->\n<object data=\"/docs/report.pdf\" \n        type=\"application/pdf\" \n        width=\"800\" \n        height=\"600\">\n  <p>Your browser does not support PDF viewing. \n     <a href=\"/docs/report.pdf\">Download the PDF</a>.\n  </p>\n</object>\n\n<!-- Embed an SVG with fallback -->\n<object data=\"/images/diagram.svg\" \n        type=\"image/svg+xml\" \n        width=\"400\" \n        height=\"300\">\n  <img src=\"/images/diagram.png\" \n       alt=\"System architecture diagram\">\n</object>\n\n<!-- Simple embed (void element, no fallback) -->\n<embed src=\"/docs/report.pdf\" \n       type=\"application/pdf\" \n       width=\"800\" \n       height=\"600\">",
+          "explanation": "The <object> element can include fallback content between its tags, shown when the primary content cannot be displayed. This makes it useful for PDF embeds with download fallbacks and SVG embeds with PNG fallbacks. <embed> is simpler but offers no fallback mechanism."
+        }
+      ],
+      "notes": [
+        "Always include a title attribute on iframes for accessibility. Screen readers use it to describe the embedded content.",
+        "Use the sandbox attribute on iframes loading third-party content. Grant only the minimum permissions required.",
+        "The X-Frame-Options and Content-Security-Policy headers control whether a page can be embedded in an iframe. Not all sites allow embedding."
+      ],
+      "commonPitfalls": [
+        "Embedding iframes without the sandbox attribute when loading untrusted content. This gives the embedded page full capabilities including script execution and form submission.",
+        "Omitting the title attribute on iframes. Screen reader users have no way to identify what the iframe contains without it.",
+        "Not handling the case where a site blocks iframe embedding via X-Frame-Options or CSP headers. The iframe will show a blank page or error with no explanation.",
+        "Using fixed pixel dimensions on iframes without a responsive wrapper. The embed will overflow or be too small on different screen sizes."
+      ],
+      "interviewTips": [
+        "Explain the security risks of iframes and how the sandbox attribute mitigates them.",
+        "Know the difference between <iframe>, <embed>, and <object> and when each is appropriate.",
+        "Be ready to discuss how X-Frame-Options and Content-Security-Policy frame-ancestors control whether a page can be embedded."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "embedding-content-ex1",
+        "title": "Create a Sandboxed iframe",
+        "description": "Create an iframe that embeds 'https://example.com/widget'. Add sandbox restrictions that allow scripts and forms but nothing else. Include a title of 'Feedback Widget', set dimensions to 500x400, and use lazy loading.",
+        "starterCode": "<!-- Create a sandboxed iframe -->\n",
+        "solution": "<iframe src=\"https://example.com/widget\" \n        sandbox=\"allow-scripts allow-forms\" \n        title=\"Feedback Widget\" \n        width=\"500\" \n        height=\"400\" \n        loading=\"lazy\"\n        style=\"border: none;\">\n</iframe>",
+        "hints": [
+          "The sandbox attribute with specific allow-* values grants only those permissions",
+          "Always include a title attribute for accessibility"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "embedding-content-ex2",
+        "title": "Responsive Video Embed",
+        "description": "Create a responsive 16:9 video embed container. Embed a YouTube video (use 'https://www.youtube.com/embed/dQw4w9WgXcQ' as the src). The iframe should have no border, fill its container completely, have a descriptive title, and support fullscreen. Write both the HTML and CSS.",
+        "starterCode": "<!-- Create a responsive embed -->\n\n<style>\n  /* Add responsive embed styles */\n</style>\n",
+        "solution": "<div class=\"video-embed\">\n  <iframe src=\"https://www.youtube.com/embed/dQw4w9WgXcQ\" \n          title=\"Introduction to HTML and CSS\"\n          allowfullscreen>\n  </iframe>\n</div>\n\n<style>\n  .video-embed {\n    position: relative;\n    width: 100%;\n    aspect-ratio: 16 / 9;\n  }\n  .video-embed iframe {\n    position: absolute;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    border: none;\n  }\n</style>",
+        "hints": [
+          "Use aspect-ratio: 16 / 9 on the container to maintain the ratio",
+          "Position the iframe absolutely inside the container and set width and height to 100%"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from "react";
-import { Link, useLocation } from "react-router";
+import { Link } from "react-router";
 import {
   ArrowLeft,
   Database,
@@ -43,9 +43,7 @@ const SAMPLE_QUERIES = [
 ];
 
 export default function SqlPlaygroundPage() {
-  const location = useLocation();
-  const isStudentRoute = location.pathname.startsWith("/student");
-  const backPath = isStudentRoute ? "/student/sql" : "/sql";
+  const backPath = "/learn/sql";
 
   const [code, setCode] = useState("SELECT name, continent, population\nFROM world\nORDER BY population DESC\nLIMIT 10;");
   const [results, setResults] = useState<QueryResult[]>([]);

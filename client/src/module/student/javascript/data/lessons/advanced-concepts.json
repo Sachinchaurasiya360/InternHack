@@ -1,0 +1,393 @@
+[
+  {
+    "id": "proxy-reflect",
+    "sectionId": "advanced-concepts",
+    "orderIndex": 0,
+    "title": "Proxy & Reflect",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Proxy", "Reflect", "Traps", "Meta-programming", "Validation", "Reactivity"],
+    "content": {
+      "explanation": "The Proxy object in JavaScript enables you to create a wrapper around another object that can intercept and redefine fundamental operations such as property lookup, assignment, enumeration, and function invocation. Introduced in ES6, proxies are one of the most powerful meta-programming features in the language and form the backbone of reactivity systems in modern frameworks like Vue.js 3.\n\nA Proxy is created using the constructor new Proxy(target, handler), where target is the original object you want to wrap and handler is an object containing \"traps\" — methods that intercept operations on the target. There are 13 available traps including get, set, has, deleteProperty, apply, construct, ownKeys, and more. Each trap corresponds to an internal object operation defined by the ECMAScript specification.\n\nThe Reflect API was introduced alongside Proxy and provides methods that mirror every proxy trap. Reflect.get(), Reflect.set(), Reflect.has(), and so on perform the default behavior for each trap. Using Reflect inside your trap handlers is considered best practice because it ensures you maintain the correct behavior while adding your custom logic on top. For example, calling Reflect.set(target, prop, value, receiver) in a set trap performs the default property assignment while letting you add validation or logging.\n\nOne of the most common use cases for proxies is validation. By intercepting the set trap, you can enforce type constraints, range checks, or schema validation before any value is actually written to the object. Another powerful pattern is using the get trap for logging, auto-populating defaults, or creating \"virtual\" properties that are computed on the fly.\n\nRevocable proxies, created with Proxy.revocable(target, handler), return both the proxy and a revoke function. Once revoke() is called, any further interaction with the proxy throws a TypeError. This is useful for granting temporary access to an object that can be completely cut off later, which is valuable in security-sensitive contexts.\n\nFrameworks leverage proxies extensively. Vue.js 3's entire reactivity system is built on Proxy, replacing the Object.defineProperty approach used in Vue 2. This allows Vue to detect property additions and deletions, array mutations, and nested object changes automatically — something that was impossible with the older approach.",
+      "codeExamples": [
+        {
+          "title": "Basic Proxy with get and set traps",
+          "code": "const user = { name: 'Alice', age: 25 };\n\nconst handler = {\n  get(target, prop, receiver) {\n    console.log(`Reading property \"${prop}\"`);\n    return Reflect.get(target, prop, receiver);\n  },\n  set(target, prop, value, receiver) {\n    console.log(`Setting \"${prop}\" to ${value}`);\n    return Reflect.set(target, prop, value, receiver);\n  }\n};\n\nconst proxy = new Proxy(user, handler);\n\nconsole.log(proxy.name);\nproxy.age = 26;\nconsole.log(proxy.age);",
+          "output": "Reading property \"name\"\nAlice\nSetting \"age\" to 26\nReading property \"age\"\n26",
+          "explanation": "Every property access triggers the get trap and every assignment triggers the set trap. Reflect methods are used to perform the default operation after our custom logging."
+        },
+        {
+          "title": "Validation proxy with set trap",
+          "code": "const validator = {\n  set(target, prop, value) {\n    if (prop === 'age') {\n      if (typeof value !== 'number') {\n        throw new TypeError('Age must be a number');\n      }\n      if (value < 0 || value > 150) {\n        throw new RangeError('Age must be between 0 and 150');\n      }\n    }\n    if (prop === 'email') {\n      if (typeof value !== 'string' || !value.includes('@')) {\n        throw new TypeError('Invalid email address');\n      }\n    }\n    return Reflect.set(target, prop, value);\n  }\n};\n\nconst person = new Proxy({}, validator);\nperson.age = 25;       // OK\nperson.email = 'a@b.com'; // OK\nconsole.log(person.age, person.email);\n\ntry {\n  person.age = -5;\n} catch (e) {\n  console.log(e.message);\n}\n\ntry {\n  person.email = 'invalid';\n} catch (e) {\n  console.log(e.message);\n}",
+          "output": "25 a@b.com\nAge must be between 0 and 150\nInvalid email address",
+          "explanation": "The set trap validates values before they are assigned. Invalid values throw descriptive errors without ever reaching the underlying object."
+        },
+        {
+          "title": "has trap and deleteProperty trap",
+          "code": "const secrets = { password: 'abc123', apiKey: 'xyz789', name: 'App' };\nconst hidden = ['password', 'apiKey'];\n\nconst handler = {\n  has(target, prop) {\n    if (hidden.includes(prop)) return false;\n    return Reflect.has(target, prop);\n  },\n  deleteProperty(target, prop) {\n    if (hidden.includes(prop)) {\n      throw new Error(`Cannot delete protected property \"${prop}\"`);\n    }\n    return Reflect.deleteProperty(target, prop);\n  },\n  ownKeys(target) {\n    return Reflect.ownKeys(target).filter(k => !hidden.includes(k));\n  }\n};\n\nconst safe = new Proxy(secrets, handler);\n\nconsole.log('password' in safe);\nconsole.log('name' in safe);\nconsole.log(Object.keys(safe));\n\ntry {\n  delete safe.password;\n} catch (e) {\n  console.log(e.message);\n}",
+          "output": "false\ntrue\n[ 'name' ]\nCannot delete protected property \"password\"",
+          "explanation": "The has trap hides sensitive properties from 'in' checks, ownKeys hides them from Object.keys(), and deleteProperty prevents their removal. The actual data still exists on the target but is inaccessible through the proxy."
+        },
+        {
+          "title": "Revocable proxy",
+          "code": "const data = { value: 42 };\nconst { proxy, revoke } = Proxy.revocable(data, {\n  get(target, prop) {\n    return Reflect.get(target, prop);\n  }\n});\n\nconsole.log(proxy.value);\n\nrevoke();\n\ntry {\n  console.log(proxy.value);\n} catch (e) {\n  console.log(e.constructor.name + ': ' + e.message);\n}",
+          "output": "42\nTypeError: Cannot perform 'get' on a proxy that has been revoked",
+          "explanation": "Proxy.revocable returns a proxy and a revoke function. After calling revoke(), any operation on the proxy throws a TypeError. This provides a clean way to cut off access to an object."
+        }
+      ],
+      "notes": [
+        "Proxies cannot be polyfilled — they require native engine support (ES6+).",
+        "Reflect methods always return a boolean for success/failure instead of throwing, making them safer to use in trap implementations.",
+        "Vue 3 uses Proxy for its reactivity system, replacing Vue 2's Object.defineProperty approach.",
+        "There are 13 proxy traps in total, matching 13 internal object operations defined by the spec.",
+        "Proxies add a small performance overhead — avoid using them on extremely hot code paths."
+      ],
+      "commonPitfalls": [
+        "Forgetting to return Reflect's result in set traps — returning undefined is treated as false in strict mode, causing a TypeError.",
+        "Trying to proxy a non-extensible or frozen object — some traps have invariant constraints that must be respected.",
+        "Not forwarding the receiver argument to Reflect.get/set — this breaks getter/setter behavior on the target.",
+        "Using proxies when simpler patterns like getters/setters would suffice — proxies are powerful but add complexity."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "proxy-reflect-ex1",
+        "title": "Negative Index Proxy",
+        "description": "Create a Proxy around an array that supports negative indexing (like Python). When someone accesses index -1, it should return the last element, -2 the second-to-last, etc. Positive indexes should work normally. Create the proxy for the array [10, 20, 30, 40, 50] and log the results of accessing index 1, index -1, and index -2.",
+        "starterCode": "const arr = [10, 20, 30, 40, 50];\n\n// Create a proxy with a get trap that handles negative indexes\nconst proxy = new Proxy(arr, {\n  // your get trap here\n});\n\nconsole.log(proxy[1]);\nconsole.log(proxy[-1]);\nconsole.log(proxy[-2]);",
+        "solution": "const arr = [10, 20, 30, 40, 50];\n\nconst proxy = new Proxy(arr, {\n  get(target, prop, receiver) {\n    const index = Number(prop);\n    if (Number.isInteger(index) && index < 0) {\n      return Reflect.get(target, target.length + index, receiver);\n    }\n    return Reflect.get(target, prop, receiver);\n  }\n});\n\nconsole.log(proxy[1]);\nconsole.log(proxy[-1]);\nconsole.log(proxy[-2]);",
+        "expectedOutput": "20\n50\n40",
+        "hints": [
+          "Convert the property name to a number with Number(prop) and check if it is a negative integer.",
+          "For negative indexes, add target.length to the index to get the real position."
+        ],
+        "difficulty": "Hard"
+      },
+      {
+        "id": "proxy-reflect-ex2",
+        "title": "Read-Only Proxy",
+        "description": "Create a Proxy that makes an object completely read-only. Any attempt to set a property should throw an Error with the message 'Cannot modify read-only object'. Any attempt to delete a property should also throw with 'Cannot delete from read-only object'. Reading properties should work normally. Test it with an object { name: 'Alice', age: 25 }.",
+        "starterCode": "const user = { name: 'Alice', age: 25 };\n\n// Create a read-only proxy\nconst readOnly = new Proxy(user, {\n  // your traps here\n});\n\nconsole.log(readOnly.name);\nconsole.log(readOnly.age);\n\ntry {\n  readOnly.name = 'Bob';\n} catch (e) {\n  console.log(e.message);\n}\n\ntry {\n  delete readOnly.age;\n} catch (e) {\n  console.log(e.message);\n}",
+        "solution": "const user = { name: 'Alice', age: 25 };\n\nconst readOnly = new Proxy(user, {\n  get(target, prop, receiver) {\n    return Reflect.get(target, prop, receiver);\n  },\n  set(target, prop, value) {\n    throw new Error('Cannot modify read-only object');\n  },\n  deleteProperty(target, prop) {\n    throw new Error('Cannot delete from read-only object');\n  }\n});\n\nconsole.log(readOnly.name);\nconsole.log(readOnly.age);\n\ntry {\n  readOnly.name = 'Bob';\n} catch (e) {\n  console.log(e.message);\n}\n\ntry {\n  delete readOnly.age;\n} catch (e) {\n  console.log(e.message);\n}",
+        "expectedOutput": "Alice\n25\nCannot modify read-only object\nCannot delete from read-only object",
+        "hints": [
+          "Use the set trap to intercept property assignments and throw an Error.",
+          "Use the deleteProperty trap to intercept delete operations and throw an Error."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "regular-expressions",
+    "sectionId": "advanced-concepts",
+    "orderIndex": 1,
+    "title": "Regular Expressions",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["RegExp", "Pattern Matching", "Flags", "Character Classes", "Quantifiers", "Groups", "Lookahead", "Lookbehind"],
+    "content": {
+      "explanation": "Regular expressions (regex) are patterns used to match character combinations in strings. JavaScript supports regex as first-class objects through the RegExp constructor and regex literal syntax. They are indispensable for tasks like form validation, text parsing, search-and-replace operations, and data extraction from strings.\n\nThere are two ways to create a regex in JavaScript: the literal syntax /pattern/flags and the constructor new RegExp('pattern', 'flags'). The literal syntax is evaluated at parse time and is preferred when the pattern is known ahead of time. The constructor is useful when the pattern is dynamic — for example, when building a regex from user input. JavaScript supports several flags: g (global — find all matches), i (case-insensitive), m (multiline — ^ and $ match line boundaries), s (dotAll — . matches newlines), u (Unicode), and y (sticky — matches from lastIndex).\n\nCharacter classes let you match categories of characters. \\d matches any digit (0-9), \\w matches word characters (letters, digits, underscore), \\s matches whitespace, and . matches any character except newline (unless the s flag is set). You can define custom character classes with brackets: [abc] matches a, b, or c, while [^abc] matches anything except those characters. Ranges are supported too: [a-z] matches any lowercase letter.\n\nQuantifiers control how many times a pattern element should repeat. * means zero or more, + means one or more, ? means zero or one, {n} means exactly n times, {n,} means n or more, and {n,m} means between n and m times. By default quantifiers are greedy (match as much as possible); appending ? makes them lazy (match as little as possible).\n\nGroups and capturing are essential for extracting parts of a match. Parentheses () create a capturing group that stores the matched substring. Non-capturing groups (?:) group patterns without capturing. Named groups (?<name>pattern) let you assign meaningful names to captures, making the code self-documenting. Backreferences like \\1 refer to previously captured groups within the same pattern.\n\nLookahead and lookbehind assertions match a position without consuming characters. Positive lookahead (?=pattern) succeeds if pattern matches ahead, negative lookahead (?!pattern) succeeds if it does not. Positive lookbehind (?<=pattern) and negative lookbehind (?<!pattern) work similarly but look behind the current position. These are powerful for complex matching requirements like finding a word only when preceded or followed by specific text.",
+      "codeExamples": [
+        {
+          "title": "Creating regex and using flags",
+          "code": "// Literal syntax\nconst re1 = /hello/i;\nconsole.log(re1.test('Hello World'));\n\n// Constructor syntax (useful for dynamic patterns)\nconst searchTerm = 'world';\nconst re2 = new RegExp(searchTerm, 'gi');\nconsole.log('Hello World'.match(re2));\n\n// Flags overview\nconst text = 'Line1\\nLine2\\nLine3';\nconsole.log(text.match(/^Line\\d/gm));\n\n// dotAll flag\nconsole.log(/foo.bar/.test('foo\\nbar'));\nconsole.log(/foo.bar/s.test('foo\\nbar'));",
+          "output": "true\n[ 'World' ]\n[ 'Line1', 'Line2', 'Line3' ]\nfalse\ntrue",
+          "explanation": "The i flag enables case-insensitive matching. The g flag finds all matches. The m flag makes ^ and $ match at line boundaries. The s flag makes . match newline characters."
+        },
+        {
+          "title": "Character classes and quantifiers",
+          "code": "const str = 'Phone: 123-456-7890, Email: test@example.com';\n\n// \\d+ matches one or more digits\nconsole.log(str.match(/\\d+/g));\n\n// \\w+ matches word characters\nconsole.log('hello world 123'.match(/\\w+/g));\n\n// Custom character class\nconsole.log('gray grey'.match(/gr[ae]y/g));\n\n// Negated character class\nconsole.log('abc123'.match(/[^a-z]+/g));\n\n// Quantifiers: greedy vs lazy\nconst html = '<b>bold</b> and <i>italic</i>';\nconsole.log(html.match(/<.+>/g));    // greedy\nconsole.log(html.match(/<.+?>/g));   // lazy",
+          "output": "[ '123', '456', '7890' ]\n[ 'hello', 'world', '123' ]\n[ 'gray', 'grey' ]\n[ '123' ]\n[ '<b>bold</b> and <i>italic</i>' ]\n[ '<b>', '</b>', '<i>', '</i>' ]",
+          "explanation": "Greedy quantifiers match as much text as possible, so <.+> captures everything between the first < and the last >. Lazy quantifiers (adding ?) match as little as possible, giving you individual tags."
+        },
+        {
+          "title": "Groups, named groups, and backreferences",
+          "code": "// Capturing groups\nconst dateStr = '2025-03-10';\nconst match = dateStr.match(/(\\d{4})-(\\d{2})-(\\d{2})/);\nconsole.log(`Year: ${match[1]}, Month: ${match[2]}, Day: ${match[3]}`);\n\n// Named groups\nconst namedMatch = dateStr.match(/(?<year>\\d{4})-(?<month>\\d{2})-(?<day>\\d{2})/);\nconsole.log(namedMatch.groups);\n\n// Backreference — match repeated words\nconst repeated = 'the the quick brown fox fox';\nconsole.log(repeated.match(/\\b(\\w+)\\s+\\1\\b/g));\n\n// Non-capturing group\nconst urls = 'http://a.com https://b.com';\nconsole.log(urls.match(/(?:https?):\\/\\/\\S+/g));",
+          "output": "Year: 2025, Month: 03, Day: 10\n{ year: '2025', month: '03', day: '10' }\n[ 'the the', 'fox fox' ]\n[ 'http://a.com', 'https://b.com' ]",
+          "explanation": "Named groups make regex results self-documenting. Backreference \\1 refers to the first captured group, useful for finding duplicated words. Non-capturing groups (?:) group without creating a capture entry."
+        },
+        {
+          "title": "Lookahead, lookbehind, and common patterns",
+          "code": "// Positive lookahead: match digits followed by 'px'\nconsole.log('12px 5em 30px'.match(/\\d+(?=px)/g));\n\n// Negative lookahead: match digits NOT followed by 'px'\nconsole.log('12px 5em 30px'.match(/\\d+(?!px)\\b/g));\n\n// Positive lookbehind: match amount after $\nconsole.log('$100 and €200 and $50'.match(/(?<=\\$)\\d+/g));\n\n// Email validation pattern\nconst emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$/;\nconsole.log(emailRegex.test('user@example.com'));\nconsole.log(emailRegex.test('invalid@.com'));\n\n// String methods with regex\nconst text = 'Hello World';\nconsole.log(text.search(/world/i));\nconsole.log(text.replace(/world/i, 'JavaScript'));\nconsole.log('a,b,,c'.split(/,+/));",
+          "output": "[ '12', '30' ]\n[ '5' ]\n[ '100', '50' ]\ntrue\nfalse\n6\nHello JavaScript\n[ 'a', 'b', 'c' ]",
+          "explanation": "Lookahead and lookbehind assertions match a position without including the looked-at text in the result. They enable precise matching based on surrounding context."
+        }
+      ],
+      "notes": [
+        "Use regex literals /pattern/ when the pattern is static, and new RegExp() when it is dynamic.",
+        "matchAll() returns an iterator of all matches with full capture group information — prefer it over match() with the g flag when you need group data.",
+        "The u flag enables full Unicode support, which is important for matching emoji and non-Latin characters correctly.",
+        "Regex performance can degrade dramatically with nested quantifiers — avoid patterns like (a+)+ which cause catastrophic backtracking."
+      ],
+      "commonPitfalls": [
+        "Forgetting to escape special characters like . + * ? when you want to match them literally — use \\. for a literal dot.",
+        "Using .* greedily when parsing HTML or nested structures — this almost always matches too much. Use non-greedy .*? or be more specific.",
+        "Not anchoring patterns with ^ and $ for full-string validation — without anchors, /\\d+/ will match '123' inside 'abc123def'.",
+        "Forgetting that the g flag makes the regex stateful — calling test() repeatedly advances lastIndex, which can cause alternating true/false results."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "regular-expressions-ex1",
+        "title": "Extract Dates with Regex",
+        "description": "Write a regex pattern that matches dates in the format YYYY-MM-DD and use it to extract all dates from a given string. Use capturing groups to extract the year, month, and day from the first match. Log the array of all matched dates, then log the year, month, and day separately.",
+        "starterCode": "const text = 'Events: 2025-03-10, meeting on 2025-12-25, deadline 2026-01-15';\n\n// Create a regex to match YYYY-MM-DD dates\nconst dateRegex = // your regex here\n\n// Find all dates in the text\nconst allDates = text.match(dateRegex);\nconsole.log(allDates);\n\n// Extract year, month, day from the first date\nconst firstMatch = text.match(/* your non-global regex here */);\nconsole.log('Year:', firstMatch[1]);\nconsole.log('Month:', firstMatch[2]);\nconsole.log('Day:', firstMatch[3]);",
+        "solution": "const text = 'Events: 2025-03-10, meeting on 2025-12-25, deadline 2026-01-15';\n\nconst dateRegex = /\\d{4}-\\d{2}-\\d{2}/g;\n\nconst allDates = text.match(dateRegex);\nconsole.log(allDates);\n\nconst firstMatch = text.match(/(\\d{4})-(\\d{2})-(\\d{2})/);\nconsole.log('Year:', firstMatch[1]);\nconsole.log('Month:', firstMatch[2]);\nconsole.log('Day:', firstMatch[3]);",
+        "expectedOutput": "[ '2025-03-10', '2025-12-25', '2026-01-15' ]\nYear: 2025\nMonth: 03\nDay: 10",
+        "hints": [
+          "Use \\d{4} to match exactly 4 digits for the year, \\d{2} for month and day.",
+          "Use the g flag for finding all matches, but remove it when you need capturing groups from the first match."
+        ],
+        "difficulty": "Hard"
+      },
+      {
+        "id": "regular-expressions-ex2",
+        "title": "Password Strength Validator",
+        "description": "Write a function that uses regex to validate password strength. A strong password must: (1) be at least 8 characters long, (2) contain at least one uppercase letter, (3) contain at least one lowercase letter, (4) contain at least one digit. Use separate regex tests for each rule. Test it with 'hello' (weak), 'Hello123' (strong), and 'ALLCAPS1' (weak - no lowercase).",
+        "starterCode": "function isStrongPassword(password) {\n  // Check each rule using regex .test()\n  // Return true only if all rules pass\n}\n\nconsole.log(isStrongPassword('hello'));\nconsole.log(isStrongPassword('Hello123'));\nconsole.log(isStrongPassword('ALLCAPS1'));",
+        "solution": "function isStrongPassword(password) {\n  const hasMinLength = password.length >= 8;\n  const hasUppercase = /[A-Z]/.test(password);\n  const hasLowercase = /[a-z]/.test(password);\n  const hasDigit = /\\d/.test(password);\n  return hasMinLength && hasUppercase && hasLowercase && hasDigit;\n}\n\nconsole.log(isStrongPassword('hello'));\nconsole.log(isStrongPassword('Hello123'));\nconsole.log(isStrongPassword('ALLCAPS1'));",
+        "expectedOutput": "false\ntrue\nfalse",
+        "hints": [
+          "Use separate regex patterns: /[A-Z]/ for uppercase, /[a-z]/ for lowercase, /\\d/ for digits.",
+          "Check password.length >= 8 for the minimum length requirement."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "memory-management",
+    "sectionId": "advanced-concepts",
+    "orderIndex": 2,
+    "title": "Memory Management & Garbage Collection",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Memory Allocation", "Garbage Collection", "Mark-and-Sweep", "Memory Leaks", "WeakRef", "FinalizationRegistry", "DevTools"],
+    "content": {
+      "explanation": "JavaScript is a garbage-collected language, meaning developers do not manually allocate and free memory as they would in C or C++. However, understanding how memory works under the hood is crucial for writing performant applications and avoiding memory leaks that can degrade performance or crash long-running applications like SPAs and Node.js servers.\n\nMemory in JavaScript is divided into two main areas: the stack and the heap. The stack stores primitive values (numbers, strings, booleans, undefined, null, symbols, bigints) and function call frames. It operates in a last-in-first-out manner and is extremely fast. The heap stores objects, arrays, functions, and other reference types. Variables on the stack hold references (pointers) to objects on the heap. When you assign an object to a new variable, both variables point to the same heap location — this is why objects are shared by reference.\n\nThe primary garbage collection algorithm in modern JavaScript engines (V8, SpiderMonkey, JavaScriptCore) is mark-and-sweep. The garbage collector starts from root references (global object, currently executing function's local variables, closures) and traverses all reachable objects, marking them as alive. Any object not reachable from any root is considered garbage and its memory is reclaimed. An older algorithm, reference counting, tracked how many references pointed to each object and freed it when the count reached zero. Reference counting fails with circular references (A references B which references A), which is why mark-and-sweep replaced it.\n\nMemory leaks occur when objects that are no longer needed remain reachable. The most common sources are: accidental global variables (assigning to undeclared variables in non-strict mode), forgotten timers and intervals (setInterval callbacks holding references), detached DOM nodes (removing an element from the DOM while a JavaScript variable still references it), and closures that capture large scopes unintentionally. Each of these keeps objects in memory longer than necessary, causing the heap to grow over time.\n\nES2021 introduced WeakRef and FinalizationRegistry for advanced memory management. A WeakRef holds a weak reference to an object that does not prevent garbage collection. You can dereference it with .deref(), which returns the object if it still exists or undefined if it has been collected. FinalizationRegistry lets you register a callback that runs after an object is garbage collected. These are low-level tools intended for caches and resource management, not everyday code.\n\nChrome DevTools provides excellent memory profiling tools. The Memory tab lets you take heap snapshots, record allocation timelines, and compare snapshots to identify retained objects. The Performance tab shows garbage collection pauses. To diagnose a leak: take a snapshot, perform the suspected leaking action, take another snapshot, and compare — objects that grow but should not are likely leaks.",
+      "codeExamples": [
+        {
+          "title": "Stack vs heap allocation",
+          "code": "// Primitives — stored on the stack (copied by value)\nlet a = 10;\nlet b = a;   // independent copy\nb = 20;\nconsole.log(a, b);\n\n// Objects — stored on the heap (copied by reference)\nlet obj1 = { x: 1 };\nlet obj2 = obj1;  // both point to same heap object\nobj2.x = 99;\nconsole.log(obj1.x, obj2.x);\n\n// Proving reference sharing\nconsole.log(obj1 === obj2);",
+          "output": "10 20\n99 99\ntrue",
+          "explanation": "Primitives are independent copies on the stack. Objects are references to the same heap location, so mutating through one variable affects all references."
+        },
+        {
+          "title": "Common memory leaks",
+          "code": "// 1. Accidental global (non-strict mode)\nfunction leakyGlobal() {\n  // 'use strict'; // uncomment to catch this error\n  leaked = 'I am a global variable now!';\n}\n\n// 2. Forgotten timer\nfunction startLeakyTimer() {\n  const bigData = new Array(1000000).fill('x');\n  const id = setInterval(() => {\n    // bigData is captured in closure — never freed\n    if (bigData.length > 0) {\n      console.log('Timer running...');\n    }\n  }, 1000);\n  // Fix: store id and call clearInterval(id) when done\n  return id;\n}\n\n// 3. Detached DOM node\nfunction domLeak() {\n  const el = document.createElement('div');\n  document.body.appendChild(el);\n  const ref = el;  // strong reference\n  document.body.removeChild(el);\n  // 'ref' still holds the detached DOM node in memory\n  // Fix: set ref = null after removal\n}\n\n// 4. Closure holding a large scope\nfunction closureLeak() {\n  const hugeArray = new Array(1000000).fill(0);\n  return function() {\n    // This closure captures the entire scope including hugeArray\n    return 'I only need this string';\n  };\n}",
+          "output": "(demonstrates leak patterns — no direct output)",
+          "explanation": "Each example shows a different memory leak pattern. Accidental globals persist forever. Forgotten timers keep closure variables alive. Detached DOM nodes stay in memory if referenced. Closures capture their entire enclosing scope."
+        },
+        {
+          "title": "WeakRef and FinalizationRegistry",
+          "code": "// WeakRef — does not prevent garbage collection\nlet bigObject = { data: new Array(10000).fill('important') };\nconst weakRef = new WeakRef(bigObject);\n\nconsole.log(weakRef.deref()?.data.length); // 10000\n\n// If we remove the strong reference, the object can be GC'd\nbigObject = null;\n// After GC runs, weakRef.deref() returns undefined\n// (Cannot force GC in user code — this is engine-dependent)\n\n// FinalizationRegistry — callback after GC\nconst registry = new FinalizationRegistry((heldValue) => {\n  console.log(`Object with id \"${heldValue}\" was garbage collected`);\n});\n\nlet obj = { name: 'temporary' };\nregistry.register(obj, 'temp-obj-1');\n// When obj is GC'd, the callback fires with 'temp-obj-1'\n\nconsole.log('WeakRef and FinalizationRegistry registered');",
+          "output": "10000\nWeakRef and FinalizationRegistry registered",
+          "explanation": "WeakRef lets you hold a reference that does not prevent garbage collection. FinalizationRegistry triggers a cleanup callback after an object is collected. Both are useful for caches and resource management."
+        }
+      ],
+      "notes": [
+        "JavaScript engines use generational garbage collection — short-lived objects are collected quickly in the 'young generation', while long-lived objects are promoted to the 'old generation' and collected less frequently.",
+        "You cannot force garbage collection from user code — calling gc() is only available in Node.js with the --expose-gc flag and is not standard.",
+        "WeakRef and FinalizationRegistry should not be relied upon for critical logic — the timing of garbage collection is non-deterministic.",
+        "Memory profiling in Chrome DevTools: Memory tab > Heap Snapshot > take snapshots before and after an action, then compare."
+      ],
+      "commonPitfalls": [
+        "Adding event listeners without removing them — each listener keeps its closure alive. Always removeEventListener when the element is no longer needed.",
+        "Storing large objects in module-level variables or caches without expiration — these persist for the lifetime of the application.",
+        "Circular references between closures and DOM elements — while mark-and-sweep handles object cycles, the closure-DOM pattern can still leak in older browsers.",
+        "Using console.log with large objects in development — the DevTools console retains references to logged objects, preventing GC."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "memory-management-ex1",
+        "title": "Stack vs Heap Behavior",
+        "description": "Demonstrate the difference between stack (primitive) and heap (reference) behavior. Create two variables a and b where a = { count: 1 } and b = a. Mutate b.count to 5. Then create two primitives x = 10 and y = x, and change y to 99. Log the values of a.count, b.count, x, and y to prove that objects share references while primitives are independent copies.",
+        "starterCode": "// Object reference behavior\nconst a = { count: 1 };\nconst b = // ?\n// Mutate via b\n\n// Primitive copy behavior\nlet x = 10;\nlet y = // ?\n// Change y\n\nconsole.log('a.count:', a.count);\nconsole.log('b.count:', b.count);\nconsole.log('x:', x);\nconsole.log('y:', y);\nconsole.log('a === b:', a === b);",
+        "solution": "const a = { count: 1 };\nconst b = a;\nb.count = 5;\n\nlet x = 10;\nlet y = x;\ny = 99;\n\nconsole.log('a.count:', a.count);\nconsole.log('b.count:', b.count);\nconsole.log('x:', x);\nconsole.log('y:', y);\nconsole.log('a === b:', a === b);",
+        "expectedOutput": "a.count: 5\nb.count: 5\nx: 10\ny: 99\na === b: true",
+        "hints": [
+          "Assigning an object to another variable copies the reference, not the object itself.",
+          "Primitives are copied by value, so changing one does not affect the other."
+        ],
+        "difficulty": "Hard"
+      },
+      {
+        "id": "memory-management-ex2",
+        "title": "WeakMap Cache",
+        "description": "Create a simple cache using WeakMap that associates metadata with objects without preventing garbage collection. Create a WeakMap called cache. Create two objects: user1 = { name: 'Alice' } and user2 = { name: 'Bob' }. Store computed metadata for each (e.g., { accessCount: 1 } for user1 and { accessCount: 5 } for user2). Log whether the cache has each user and their metadata. Then show that WeakMap does not support size or iteration by logging typeof cache.size and typeof cache.forEach.",
+        "starterCode": "// Create a WeakMap cache\n\n// Create objects\n\n// Store metadata in the cache\n\n// Retrieve and log\n\n// Show WeakMap limitations",
+        "solution": "const cache = new WeakMap();\n\nconst user1 = { name: 'Alice' };\nconst user2 = { name: 'Bob' };\n\ncache.set(user1, { accessCount: 1 });\ncache.set(user2, { accessCount: 5 });\n\nconsole.log('has user1:', cache.has(user1));\nconsole.log('has user2:', cache.has(user2));\nconsole.log('user1 meta:', cache.get(user1));\nconsole.log('user2 meta:', cache.get(user2));\nconsole.log('typeof size:', typeof cache.size);\nconsole.log('typeof forEach:', typeof cache.forEach);",
+        "expectedOutput": "has user1: true\nhas user2: true\nuser1 meta: { accessCount: 1 }\nuser2 meta: { accessCount: 5 }\ntypeof size: undefined\ntypeof forEach: undefined",
+        "hints": [
+          "WeakMap uses .set(key, value), .get(key), and .has(key) just like Map.",
+          "WeakMap does not have .size or iteration methods because keys can be garbage collected at any time."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "functional-programming",
+    "sectionId": "advanced-concepts",
+    "orderIndex": 3,
+    "title": "Functional Programming Patterns",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Pure Functions", "Immutability", "Composition", "Higher-Order Functions", "Currying", "Partial Application", "Monads"],
+    "content": {
+      "explanation": "Functional programming (FP) is a programming paradigm that treats computation as the evaluation of mathematical functions and avoids changing state or mutable data. While JavaScript is a multi-paradigm language, its first-class functions, closures, and expression-based nature make it an excellent host for functional patterns. Understanding FP is increasingly important as React (with hooks), Redux, and many modern libraries are built on functional principles.\n\nThe cornerstone of FP is the pure function: a function that always produces the same output for the same input and produces no side effects. Side effects include modifying external variables, writing to the DOM, making network requests, or logging to the console. Pure functions are easy to test (no mocking needed), easy to reason about (no hidden state), safe to memoize (same input guarantees same output), and safe to parallelize. Identifying and isolating side effects from pure logic is a key skill.\n\nImmutability means never modifying data after creation. Instead of mutating an object or array, you create a new copy with the desired changes. JavaScript provides several tools for this: Object.freeze() makes an object shallowly immutable, the spread operator creates shallow copies with modifications, and structuredClone() creates deep copies. Libraries like Immer provide convenient immutable updates through a mutable-looking API. Immutability prevents bugs caused by shared mutable state and makes it easy to implement features like undo/redo and time-travel debugging.\n\nFunction composition is the practice of combining simple functions to build more complex ones. The compose() function chains functions right-to-left (mathematical convention), while pipe() chains them left-to-right (more readable). Both take multiple functions and return a new function that passes its input through the chain. For example, pipe(trim, toLowerCase, removeSpaces) creates a function that trims, lowercases, and removes spaces in sequence. This is a powerful way to build data transformation pipelines.\n\nPartial application and currying are related but distinct concepts. Partial application fixes some arguments of a function, returning a new function that takes the remaining arguments. Currying transforms a function that takes multiple arguments into a chain of functions that each take a single argument. While currying always produces unary functions, partial application can fix any number of arguments. Both enable code reuse and point-free style programming.\n\nThe concept of monads from category theory appears in JavaScript through Promise. A monad is a design pattern that wraps a value, provides a method to transform the wrapped value (map/then), and supports chaining. Promise.then() takes a function that receives the unwrapped value and returns a new Promise, allowing you to chain transformations. Array is also a monad — flatMap() corresponds to the monadic bind operation. Understanding this connection helps you see the unifying pattern behind Promise chains, array transformations, and optional chaining.",
+      "codeExamples": [
+        {
+          "title": "Pure functions vs impure functions",
+          "code": "// Pure: same input always gives same output, no side effects\nfunction add(a, b) {\n  return a + b;\n}\n\nfunction formatName(first, last) {\n  return `${first.trim()} ${last.trim()}`;\n}\n\nconsole.log(add(2, 3));           // always 5\nconsole.log(formatName(' Alice ', ' Smith '));\n\n// Impure: depends on external state\nlet count = 0;\nfunction increment() {\n  count += 1;  // side effect: mutates external variable\n  return count;\n}\nconsole.log(increment()); // 1\nconsole.log(increment()); // 2 — different output for same (no) input\n\n// Impure made pure\nfunction pureIncrement(n) {\n  return n + 1;  // no side effects, deterministic\n}\nconsole.log(pureIncrement(0)); // always 1\nconsole.log(pureIncrement(0)); // always 1",
+          "output": "5\nAlice Smith\n1\n2\n1\n1",
+          "explanation": "Pure functions are deterministic and side-effect-free. The impure increment() modifies external state, making it unpredictable. The pure version takes state as input and returns new state."
+        },
+        {
+          "title": "Immutability patterns",
+          "code": "// Object.freeze — shallow immutability\nconst config = Object.freeze({ host: 'localhost', port: 3000 });\n// config.port = 8080; // silently fails (throws in strict mode)\nconsole.log(config.port);\n\n// Spread operator for immutable updates\nconst user = { name: 'Alice', age: 25, role: 'dev' };\nconst updated = { ...user, age: 26 };\nconsole.log(user.age, updated.age);\nconsole.log(user === updated);\n\n// Immutable array operations\nconst nums = [1, 2, 3, 4, 5];\nconst withSix = [...nums, 6];             // add\nconst withoutThree = nums.filter(n => n !== 3); // remove\nconst doubled = nums.map(n => n * 2);     // transform\nconsole.log(nums);          // original unchanged\nconsole.log(withSix);\nconsole.log(withoutThree);\nconsole.log(doubled);\n\n// Deep clone with structuredClone\nconst nested = { a: { b: { c: 1 } } };\nconst deep = structuredClone(nested);\ndeep.a.b.c = 999;\nconsole.log(nested.a.b.c, deep.a.b.c);",
+          "output": "3000\n25 26\nfalse\n[ 1, 2, 3, 4, 5 ]\n[ 1, 2, 3, 4, 5, 6 ]\n[ 1, 2, 4, 5 ]\n[ 2, 4, 6, 8, 10 ]\n1 999",
+          "explanation": "Immutable patterns always create new data structures instead of modifying existing ones. Object.freeze prevents mutations, spread creates shallow copies, and structuredClone handles deep nesting."
+        },
+        {
+          "title": "Function composition: compose and pipe",
+          "code": "// compose: right-to-left execution\nconst compose = (...fns) =>\n  (x) => fns.reduceRight((acc, fn) => fn(acc), x);\n\n// pipe: left-to-right execution (more intuitive)\nconst pipe = (...fns) =>\n  (x) => fns.reduce((acc, fn) => fn(acc), x);\n\nconst trim = (s) => s.trim();\nconst toLower = (s) => s.toLowerCase();\nconst split = (s) => s.split(' ');\nconst join = (arr) => arr.join('-');\n\n// Build a slug generator using pipe\nconst slugify = pipe(trim, toLower, split, join);\n\nconsole.log(slugify('  Hello World  '));\nconsole.log(slugify('  Functional Programming  '));\n\n// Same thing with compose (reversed order)\nconst slugifyCompose = compose(join, split, toLower, trim);\nconsole.log(slugifyCompose('  Compose Example  '));",
+          "output": "hello-world\nfunctional-programming\ncompose-example",
+          "explanation": "pipe() applies functions left-to-right, which reads like a step-by-step transformation. compose() applies right-to-left, matching mathematical notation. Both create reusable transformation pipelines."
+        },
+        {
+          "title": "Currying and partial application",
+          "code": "// Currying: transform f(a, b, c) into f(a)(b)(c)\nfunction curry(fn) {\n  return function curried(...args) {\n    if (args.length >= fn.length) {\n      return fn.apply(this, args);\n    }\n    return (...nextArgs) => curried(...args, ...nextArgs);\n  };\n}\n\nconst multiply = curry((a, b, c) => a * b * c);\nconsole.log(multiply(2)(3)(4));     // fully curried\nconsole.log(multiply(2, 3)(4));     // partial + curried\nconsole.log(multiply(2, 3, 4));     // all at once\n\n// Practical use: creating specialized functions\nconst add = curry((a, b) => a + b);\nconst add10 = add(10);\nconsole.log([1, 2, 3].map(add10));\n\n// Partial application (without full currying)\nfunction partial(fn, ...presetArgs) {\n  return (...laterArgs) => fn(...presetArgs, ...laterArgs);\n}\n\nconst greet = (greeting, name) => `${greeting}, ${name}!`;\nconst sayHello = partial(greet, 'Hello');\nconst sayGoodbye = partial(greet, 'Goodbye');\nconsole.log(sayHello('Alice'));\nconsole.log(sayGoodbye('Bob'));",
+          "output": "24\n24\n24\n[ 11, 12, 13 ]\nHello, Alice!\nGoodbye, Bob!",
+          "explanation": "Currying converts a multi-argument function into a chain of single-argument functions. Partial application fixes some arguments upfront. Both create specialized, reusable function variants."
+        }
+      ],
+      "notes": [
+        "React's useState returns new state (immutable update) rather than mutating — this is a direct application of FP principles.",
+        "Redux reducers must be pure functions: (state, action) => newState with no side effects.",
+        "Function composition is the FP equivalent of Unix pipes — small, focused tools chained together.",
+        "JavaScript arrays have built-in FP methods: map, filter, reduce, flatMap, every, some."
+      ],
+      "commonPitfalls": [
+        "Confusing currying with partial application — currying always produces unary functions, partial application can fix any number of arguments.",
+        "Using Object.freeze and expecting deep immutability — it only freezes the top level. Nested objects are still mutable.",
+        "Over-abstracting with composition when a simple function would be clearer — use FP patterns when they genuinely improve readability.",
+        "Forgetting that map, filter, reduce create new arrays — chaining many of them on large arrays creates multiple intermediate arrays."
+      ],
+      "interviewTips": [
+        "Be ready to explain pure functions with concrete examples and identify side effects in code snippets.",
+        "Know how to write compose() and pipe() from scratch — both are one-liners with reduce/reduceRight.",
+        "Explain the difference between currying and partial application with code examples.",
+        "Mention real-world usage: React hooks, Redux reducers, RxJS operators are all built on FP patterns."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "functional-programming-ex1",
+        "title": "Build a Pipe Function",
+        "description": "Implement a pipe() function that takes any number of single-argument functions and returns a new function that passes its input through each function left-to-right. Then create a data pipeline using pipe that: (1) takes a string, (2) trims whitespace, (3) converts to uppercase, (4) appends '!' at the end. Test it with '  hello world  '.",
+        "starterCode": "// Implement pipe\nfunction pipe(...fns) {\n  // your code here\n}\n\n// Create transformation functions\n\n// Build the pipeline\nconst shout = pipe(/* your functions */);\n\nconsole.log(shout('  hello world  '));",
+        "solution": "function pipe(...fns) {\n  return (x) => fns.reduce((acc, fn) => fn(acc), x);\n}\n\nconst trim = (s) => s.trim();\nconst toUpper = (s) => s.toUpperCase();\nconst exclaim = (s) => s + '!';\n\nconst shout = pipe(trim, toUpper, exclaim);\n\nconsole.log(shout('  hello world  '));",
+        "expectedOutput": "HELLO WORLD!",
+        "hints": [
+          "pipe() should use Array.prototype.reduce to pass the value through each function.",
+          "The accumulator starts as the input value and each function transforms it."
+        ],
+        "difficulty": "Hard"
+      },
+      {
+        "id": "functional-programming-ex2",
+        "title": "Implement Curry",
+        "description": "Write a curry() function that transforms a multi-argument function into a chain of single-argument calls. Curry a function add(a, b, c) that returns a + b + c. Demonstrate that it works with: curry(add)(1)(2)(3), curry(add)(1, 2)(3), and curry(add)(1, 2, 3). Log all three results.",
+        "starterCode": "function curry(fn) {\n  // your code here\n}\n\nfunction add(a, b, c) {\n  return a + b + c;\n}\n\nconst curriedAdd = curry(add);\n\nconsole.log(curriedAdd(1)(2)(3));\nconsole.log(curriedAdd(1, 2)(3));\nconsole.log(curriedAdd(1, 2, 3));",
+        "solution": "function curry(fn) {\n  return function curried(...args) {\n    if (args.length >= fn.length) {\n      return fn(...args);\n    }\n    return (...nextArgs) => curried(...args, ...nextArgs);\n  };\n}\n\nfunction add(a, b, c) {\n  return a + b + c;\n}\n\nconst curriedAdd = curry(add);\n\nconsole.log(curriedAdd(1)(2)(3));\nconsole.log(curriedAdd(1, 2)(3));\nconsole.log(curriedAdd(1, 2, 3));",
+        "expectedOutput": "6\n6\n6",
+        "hints": [
+          "Compare args.length to fn.length to know if enough arguments have been collected.",
+          "If not enough arguments, return a new function that collects more and calls curried with all accumulated args."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "design-patterns",
+    "sectionId": "advanced-concepts",
+    "orderIndex": 4,
+    "title": "Design Patterns",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Singleton", "Observer", "PubSub", "Factory", "Module", "Strategy", "Decorator"],
+    "content": {
+      "explanation": "Design patterns are proven, reusable solutions to commonly occurring problems in software design. They are not specific algorithms or code snippets but rather templates for how to structure code to solve particular types of problems. In JavaScript, design patterns take on unique forms because of the language's prototypal inheritance, first-class functions, and dynamic typing. Understanding these patterns helps you write more maintainable, scalable, and communicable code.\n\nThe Singleton pattern ensures that a class or module has only one instance and provides a global point of access to it. In JavaScript, the simplest singleton is a plain object literal or an ES module — since ES modules are cached after first import, any exported object is effectively a singleton. The class-based singleton uses a static method that returns the existing instance or creates one if none exists. Singletons are useful for shared state managers, configuration objects, and database connections.\n\nThe Observer pattern (also known as PubSub or Event Emitter) defines a one-to-many dependency between objects so that when one object changes state, all its dependents are notified. This is the pattern behind DOM events, Node.js EventEmitter, RxJS observables, and state management libraries. You create a subject that maintains a list of subscribers and provides subscribe, unsubscribe, and notify methods. This pattern decouples the producer of events from their consumers.\n\nThe Factory pattern provides an interface for creating objects without specifying their exact class. Instead of using new directly, you call a factory function that decides which type of object to create based on input parameters. This is especially useful when object creation involves complex logic, when you want to centralize creation logic, or when the specific type is determined at runtime. JavaScript's dynamic nature makes factories particularly natural — a factory can return plain objects without needing class hierarchies.\n\nThe Module pattern uses closures (or IIFE) to create private scope, exposing only a public API. Before ES modules, this was the primary way to achieve encapsulation in JavaScript. The Strategy pattern defines a family of interchangeable algorithms, allowing the algorithm to vary independently from clients that use it. The Decorator pattern dynamically adds behavior to an object or function without modifying its original code. In JavaScript, higher-order functions are natural decorators — you wrap a function to add logging, caching, validation, or retry logic.\n\nChoosing the right pattern depends on the problem. Use Singleton for shared global state, Observer for event-driven communication, Factory when creation logic is complex or polymorphic, Module for encapsulation, Strategy when you need swappable algorithms, and Decorator when you want to extend behavior without subclassing. The key is recognizing the problem shape — patterns are about intent, not just structure.",
+      "codeExamples": [
+        {
+          "title": "Singleton pattern",
+          "code": "// Module-based singleton (simplest in ES modules)\n// config.js — the exported object is cached by the module system\n// export const config = { apiUrl: '...', debug: false };\n\n// Class-based singleton\nclass Database {\n  static #instance = null;\n\n  constructor(connectionString) {\n    if (Database.#instance) {\n      return Database.#instance;\n    }\n    this.connectionString = connectionString;\n    this.connected = false;\n    Database.#instance = this;\n  }\n\n  connect() {\n    this.connected = true;\n    console.log(`Connected to ${this.connectionString}`);\n  }\n}\n\nconst db1 = new Database('postgres://localhost:5432');\nconst db2 = new Database('mysql://localhost:3306');\n\nconsole.log(db1 === db2);\nconsole.log(db2.connectionString);\ndb1.connect();",
+          "output": "true\npostgres://localhost:5432\nConnected to postgres://localhost:5432",
+          "explanation": "The constructor returns the existing instance if one exists. Both db1 and db2 are the same object. The second connection string is ignored because the instance was already created."
+        },
+        {
+          "title": "Observer / Event Emitter pattern",
+          "code": "class EventEmitter {\n  #listeners = new Map();\n\n  on(event, callback) {\n    if (!this.#listeners.has(event)) {\n      this.#listeners.set(event, new Set());\n    }\n    this.#listeners.get(event).add(callback);\n    return () => this.off(event, callback); // return unsubscribe fn\n  }\n\n  off(event, callback) {\n    this.#listeners.get(event)?.delete(callback);\n  }\n\n  emit(event, ...args) {\n    this.#listeners.get(event)?.forEach(cb => cb(...args));\n  }\n}\n\nconst bus = new EventEmitter();\n\nconst unsub = bus.on('user:login', (user) => {\n  console.log(`Welcome, ${user.name}!`);\n});\n\nbus.on('user:login', (user) => {\n  console.log(`Logging analytics for ${user.name}`);\n});\n\nbus.emit('user:login', { name: 'Alice' });\n\nunsub(); // remove first listener\nbus.emit('user:login', { name: 'Bob' });",
+          "output": "Welcome, Alice!\nLogging analytics for Alice\nLogging analytics for Bob",
+          "explanation": "The EventEmitter decouples event producers from consumers. Listeners subscribe to named events and are called when those events are emitted. The on() method returns an unsubscribe function for easy cleanup."
+        },
+        {
+          "title": "Factory and Strategy patterns",
+          "code": "// Factory pattern\nfunction createNotification(type, message) {\n  const base = { message, timestamp: Date.now() };\n\n  switch (type) {\n    case 'email':\n      return { ...base, type: 'email', send: () => console.log(`Email: ${message}`) };\n    case 'sms':\n      return { ...base, type: 'sms', send: () => console.log(`SMS: ${message}`) };\n    case 'push':\n      return { ...base, type: 'push', send: () => console.log(`Push: ${message}`) };\n    default:\n      throw new Error(`Unknown notification type: ${type}`);\n  }\n}\n\nconst n1 = createNotification('email', 'Your order shipped');\nconst n2 = createNotification('sms', 'Code: 123456');\nn1.send();\nn2.send();\n\n// Strategy pattern\nconst sortStrategies = {\n  byName: (a, b) => a.name.localeCompare(b.name),\n  byAge: (a, b) => a.age - b.age,\n  byScore: (a, b) => b.score - a.score,\n};\n\nfunction sortUsers(users, strategyName) {\n  return [...users].sort(sortStrategies[strategyName]);\n}\n\nconst users = [\n  { name: 'Charlie', age: 30, score: 85 },\n  { name: 'Alice', age: 25, score: 92 },\n  { name: 'Bob', age: 28, score: 78 },\n];\n\nconsole.log(sortUsers(users, 'byName').map(u => u.name));\nconsole.log(sortUsers(users, 'byAge').map(u => u.name));\nconsole.log(sortUsers(users, 'byScore').map(u => u.name));",
+          "output": "Email: Your order shipped\nSMS: Code: 123456\n[ 'Alice', 'Bob', 'Charlie' ]\n[ 'Alice', 'Bob', 'Charlie' ]\n[ 'Alice', 'Charlie', 'Bob' ]",
+          "explanation": "The factory centralizes object creation logic based on type. The strategy pattern allows swapping sort algorithms at runtime without modifying the sort function itself."
+        },
+        {
+          "title": "Decorator pattern with higher-order functions",
+          "code": "// Decorator: withLogging\nfunction withLogging(fn) {\n  return function (...args) {\n    console.log(`Calling ${fn.name}(${args.join(', ')})`);\n    const result = fn.apply(this, args);\n    console.log(`Result: ${result}`);\n    return result;\n  };\n}\n\n// Decorator: withCache (memoization)\nfunction withCache(fn) {\n  const cache = new Map();\n  return function (...args) {\n    const key = JSON.stringify(args);\n    if (cache.has(key)) {\n      console.log(`Cache hit for ${fn.name}(${args.join(', ')})`);\n      return cache.get(key);\n    }\n    const result = fn.apply(this, args);\n    cache.set(key, result);\n    return result;\n  };\n}\n\nfunction multiply(a, b) {\n  return a * b;\n}\n\nconst loggedMultiply = withLogging(multiply);\nloggedMultiply(3, 4);\n\nconst cachedMultiply = withCache(multiply);\nconsole.log(cachedMultiply(5, 6));\nconsole.log(cachedMultiply(5, 6));\nconsole.log(cachedMultiply(7, 8));",
+          "output": "Calling multiply(3, 4)\nResult: 12\n30\nCache hit for multiply(5, 6)\n30\n56",
+          "explanation": "Higher-order functions naturally implement the Decorator pattern. withLogging adds logging without modifying the original function. withCache adds memoization. Decorators can be stacked: withLogging(withCache(fn))."
+        }
+      ],
+      "notes": [
+        "ES modules are natural singletons — the module is evaluated once and the exported values are cached.",
+        "The Observer pattern is the foundation of DOM events (addEventListener), Node.js streams, and RxJS.",
+        "React's higher-order components (HOCs) are an application of the Decorator pattern.",
+        "JavaScript's dynamic typing makes the Factory pattern more flexible than in statically-typed languages — no class hierarchies needed."
+      ],
+      "commonPitfalls": [
+        "Overusing Singleton — it introduces global state which makes testing and reasoning harder. Prefer dependency injection when possible.",
+        "Memory leaks in Observer pattern — forgetting to unsubscribe listeners leads to retained references and growing listener lists.",
+        "Creating complex class hierarchies for Factory when simple object literals with different shapes would suffice in JavaScript.",
+        "Applying patterns for the sake of patterns — use them when they solve a real problem, not to demonstrate knowledge."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "design-patterns-ex1",
+        "title": "Build an Event Emitter",
+        "description": "Implement a simple EventEmitter class with three methods: on(event, callback) to subscribe, off(event, callback) to unsubscribe, and emit(event, ...args) to fire an event. Subscribe two listeners to the 'data' event, emit 'data' with the argument 'hello', then remove one listener and emit again with 'world'.",
+        "starterCode": "class EventEmitter {\n  constructor() {\n    // your code here\n  }\n\n  on(event, callback) {\n    // your code here\n  }\n\n  off(event, callback) {\n    // your code here\n  }\n\n  emit(event, ...args) {\n    // your code here\n  }\n}\n\nconst emitter = new EventEmitter();\n\nconst listener1 = (msg) => console.log('Listener 1:', msg);\nconst listener2 = (msg) => console.log('Listener 2:', msg);\n\nemitter.on('data', listener1);\nemitter.on('data', listener2);\n\nemitter.emit('data', 'hello');\n\nemitter.off('data', listener1);\n\nemitter.emit('data', 'world');",
+        "solution": "class EventEmitter {\n  constructor() {\n    this.listeners = {};\n  }\n\n  on(event, callback) {\n    if (!this.listeners[event]) {\n      this.listeners[event] = [];\n    }\n    this.listeners[event].push(callback);\n  }\n\n  off(event, callback) {\n    if (!this.listeners[event]) return;\n    this.listeners[event] = this.listeners[event].filter(cb => cb !== callback);\n  }\n\n  emit(event, ...args) {\n    if (!this.listeners[event]) return;\n    this.listeners[event].forEach(cb => cb(...args));\n  }\n}\n\nconst emitter = new EventEmitter();\n\nconst listener1 = (msg) => console.log('Listener 1:', msg);\nconst listener2 = (msg) => console.log('Listener 2:', msg);\n\nemitter.on('data', listener1);\nemitter.on('data', listener2);\n\nemitter.emit('data', 'hello');\n\nemitter.off('data', listener1);\n\nemitter.emit('data', 'world');",
+        "expectedOutput": "Listener 1: hello\nListener 2: hello\nListener 2: world",
+        "hints": [
+          "Store listeners as an object where keys are event names and values are arrays of callback functions.",
+          "Use Array.prototype.filter in off() to remove the specific callback by reference."
+        ],
+        "difficulty": "Hard"
+      },
+      {
+        "id": "design-patterns-ex2",
+        "title": "Memoization Decorator",
+        "description": "Write a memoize(fn) higher-order function that caches results of expensive function calls. If the function is called again with the same arguments, return the cached result instead of recomputing. Test it with a function that computes factorial. Call memoizedFactorial(5) twice and memoizedFactorial(3) once, logging each result. Also log 'Computing...' inside the original function to show it only computes once per unique argument.",
+        "starterCode": "function memoize(fn) {\n  // your code here\n}\n\nfunction factorial(n) {\n  console.log('Computing...');\n  if (n <= 1) return 1;\n  return n * factorial(n - 1);\n}\n\nconst memoizedFactorial = memoize(factorial);\n\nconsole.log(memoizedFactorial(5));\nconsole.log(memoizedFactorial(5));\nconsole.log(memoizedFactorial(3));",
+        "solution": "function memoize(fn) {\n  const cache = new Map();\n  return function(...args) {\n    const key = JSON.stringify(args);\n    if (cache.has(key)) {\n      return cache.get(key);\n    }\n    const result = fn.apply(this, args);\n    cache.set(key, result);\n    return result;\n  };\n}\n\nfunction factorial(n) {\n  console.log('Computing...');\n  if (n <= 1) return 1;\n  return n * factorial(n - 1);\n}\n\nconst memoizedFactorial = memoize(factorial);\n\nconsole.log(memoizedFactorial(5));\nconsole.log(memoizedFactorial(5));\nconsole.log(memoizedFactorial(3));",
+        "expectedOutput": "Computing...\n120\n120\nComputing...\n6",
+        "hints": [
+          "Use a Map with JSON.stringify(args) as the key to cache results.",
+          "Check if the cache already has the key before calling the original function."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

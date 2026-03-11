@@ -110,7 +110,7 @@ export default function DsaCompaniesPage() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="text-center mb-10 mt-6"
       >
-        <Link to="/student/dsa" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4 no-underline">
+        <Link to="/learn/dsa" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4 no-underline">
           <ArrowLeft className="w-4 h-4" />
           Back to DSA
         </Link>
@@ -241,7 +241,7 @@ export default function DsaCompaniesPage() {
                     </span>
                     <div className="flex items-center gap-2 mt-1">
                       <Link
-                        to={`/student/dsa/${p.topicSlug}`}
+                        to={`/learn/dsa/${p.topicSlug}`}
                         onClick={(e) => e.stopPropagation()}
                         className="text-[11px] text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors no-underline"
                       >

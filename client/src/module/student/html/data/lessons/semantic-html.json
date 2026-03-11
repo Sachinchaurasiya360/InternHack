@@ -1,0 +1,359 @@
+[
+  {
+    "id": "semantic-elements",
+    "sectionId": "semantic-html",
+    "orderIndex": 0,
+    "title": "Semantic Elements",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Semantic HTML", "Accessibility", "SEO", "div vs Semantic", "Document Outline"],
+    "content": {
+      "explanation": "Semantic HTML refers to using HTML elements that carry meaning about the structure and content of a web page, rather than relying solely on generic containers like <div> and <span>. When you use a <nav> element instead of <div class=\"nav\">, you are communicating to browsers, screen readers, search engines, and other developers that this section contains navigation links. This distinction is the core idea behind semantic markup.\n\nThe importance of semantic HTML cannot be overstated. For accessibility, screen readers rely on semantic elements to build a navigable outline of the page. A visually impaired user can jump directly to the <main> content, skip to the <nav>, or browse through <article> elements without wading through a sea of meaningless divs. Without semantics, assistive technology has no landmarks to anchor to, and the user experience degrades severely.\n\nFrom an SEO perspective, search engines parse the document structure to understand what content is most important. A heading inside an <article> carries more weight than a heading inside a random <div>. Google and other crawlers use semantic signals to determine relevance, page structure, and content hierarchy. Sites with proper semantic markup consistently rank better for structured content queries.\n\nThe <div> element is not inherently bad. It is a generic container with no semantic meaning, and it still has a place in layouts where you need a wrapper purely for styling purposes (flex containers, grid wrappers, etc.). The mistake is using <div> when a more meaningful element exists. If a block of content is a self-contained article, use <article>. If it is a thematic grouping, use <section>. Reserve <div> for cases where no semantic element fits.\n\nHTML5 introduced a rich set of semantic elements: <header>, <footer>, <nav>, <main>, <article>, <section>, <aside>, <figure>, <figcaption>, <details>, <summary>, <mark>, <time>, and more. Learning when to use each one is a skill that separates professional front-end developers from beginners. The goal is not to eliminate all divs, but to choose the most meaningful element for each piece of content.",
+      "codeExamples": [
+        {
+          "title": "Non-Semantic vs Semantic Markup",
+          "code": "<!-- Non-semantic (div soup) -->\n<div class=\"header\">\n  <div class=\"nav\">\n    <a href=\"/\">Home</a>\n    <a href=\"/about\">About</a>\n  </div>\n</div>\n<div class=\"main-content\">\n  <div class=\"article\">\n    <div class=\"title\">My Blog Post</div>\n    <div class=\"content\">Lorem ipsum...</div>\n  </div>\n</div>\n<div class=\"footer\">Copyright 2026</div>\n\n<!-- Semantic (meaningful structure) -->\n<header>\n  <nav>\n    <a href=\"/\">Home</a>\n    <a href=\"/about\">About</a>\n  </nav>\n</header>\n<main>\n  <article>\n    <h1>My Blog Post</h1>\n    <p>Lorem ipsum...</p>\n  </article>\n</main>\n<footer>Copyright 2026</footer>",
+          "explanation": "The semantic version conveys the same visual result but provides meaningful structure. Screen readers can identify the navigation, main content, and footer regions. Search engines can isolate the article content."
+        },
+        {
+          "title": "Document Outline with Semantic Elements",
+          "code": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Semantic Page</title>\n</head>\n<body>\n  <header>\n    <h1>My Website</h1>\n    <nav aria-label=\"Primary\">\n      <ul>\n        <li><a href=\"/\">Home</a></li>\n        <li><a href=\"/blog\">Blog</a></li>\n        <li><a href=\"/contact\">Contact</a></li>\n      </ul>\n    </nav>\n  </header>\n\n  <main>\n    <h2>Latest Posts</h2>\n    <article>\n      <h3>Understanding Semantic HTML</h3>\n      <p>Published on <time datetime=\"2026-03-11\">March 11, 2026</time></p>\n      <p>Semantic HTML improves accessibility and SEO...</p>\n    </article>\n  </main>\n\n  <aside>\n    <h2>Related Links</h2>\n    <ul>\n      <li><a href=\"/resources\">Resources</a></li>\n    </ul>\n  </aside>\n\n  <footer>\n    <p>&copy; 2026 My Website</p>\n  </footer>\n</body>\n</html>",
+          "explanation": "This page uses header, nav, main, article, aside, and footer to create a clear document outline. Each element serves a specific role, making the page navigable for both humans and machines."
+        },
+        {
+          "title": "When to Use div vs Semantic Elements",
+          "code": "<!-- Use div for styling-only wrappers -->\n<div class=\"grid grid-cols-3 gap-4\">\n  <article class=\"card\">\n    <h3>Post Title</h3>\n    <p>Post excerpt...</p>\n  </article>\n  <article class=\"card\">\n    <h3>Post Title</h3>\n    <p>Post excerpt...</p>\n  </article>\n  <article class=\"card\">\n    <h3>Post Title</h3>\n    <p>Post excerpt...</p>\n  </article>\n</div>\n\n<!-- Use section for thematic groupings -->\n<section aria-labelledby=\"features-heading\">\n  <h2 id=\"features-heading\">Features</h2>\n  <div class=\"flex gap-4\">\n    <div class=\"feature-card\">\n      <h3>Fast</h3>\n      <p>Lightning-fast performance.</p>\n    </div>\n    <div class=\"feature-card\">\n      <h3>Secure</h3>\n      <p>Enterprise-grade security.</p>\n    </div>\n  </div>\n</section>",
+          "explanation": "The grid wrapper is a <div> because it exists purely for CSS layout. Each card inside is an <article> because it represents a self-contained piece of content. The section groups related features under a heading. Feature cards use <div> because individual features are not standalone articles."
+        }
+      ],
+      "notes": [
+        "Semantic HTML is not about replacing every <div> — it is about choosing the right element for the content's meaning. Use <div> when no semantic element fits.",
+        "Screen readers use semantic landmarks (header, nav, main, footer) to let users jump between page regions. Without them, navigation becomes linear and tedious.",
+        "The <main> element should appear only once per page and should not be nested inside <article>, <aside>, <header>, or <footer>."
+      ],
+      "commonPitfalls": [
+        "Wrapping everything in <div> elements with class names that describe their role (e.g., <div class=\"header\">) instead of using the actual <header> element.",
+        "Using semantic elements for styling purposes rather than meaning. For example, using <article> just because you want a bordered card, even when the content is not a self-contained composition.",
+        "Nesting <main> inside other landmark elements. The <main> element represents the dominant content of the <body> and should be a direct child of <body> or a layout wrapper."
+      ],
+      "interviewTips": [
+        "Explain that semantic HTML improves accessibility (screen reader navigation), SEO (search engine understanding), and maintainability (developer comprehension).",
+        "Be ready to list at least 6-8 semantic elements and explain when to use each one.",
+        "Mention that semantic elements create implicit ARIA landmarks — for example, <nav> is equivalent to role=\"navigation\"."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "semantic-elements-ex1",
+        "title": "Convert Div Soup to Semantic HTML",
+        "description": "Refactor the following non-semantic markup to use proper semantic HTML elements. Replace divs with appropriate semantic tags while keeping the same content structure.",
+        "starterCode": "<!-- Refactor this to use semantic HTML -->\n<div class=\"header\">\n  <div class=\"logo\">MySite</div>\n  <div class=\"navigation\">\n    <a href=\"/\">Home</a>\n    <a href=\"/about\">About</a>\n    <a href=\"/contact\">Contact</a>\n  </div>\n</div>\n<div class=\"main\">\n  <div class=\"post\">\n    <div class=\"post-title\">Hello World</div>\n    <div class=\"post-body\">Welcome to my blog.</div>\n  </div>\n</div>\n<div class=\"footer\">\n  <div class=\"copyright\">2026 MySite</div>\n</div>\n",
+        "solution": "<header>\n  <div class=\"logo\">MySite</div>\n  <nav>\n    <a href=\"/\">Home</a>\n    <a href=\"/about\">About</a>\n    <a href=\"/contact\">Contact</a>\n  </nav>\n</header>\n<main>\n  <article>\n    <h1>Hello World</h1>\n    <p>Welcome to my blog.</p>\n  </article>\n</main>\n<footer>\n  <p>&copy; 2026 MySite</p>\n</footer>",
+        "hints": [
+          "Replace <div class=\"header\"> with the <header> element",
+          "Navigation links should be wrapped in a <nav> element",
+          "The main content area should use <main>, and the blog post is a self-contained piece — use <article>"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "semantic-elements-ex2",
+        "title": "Build a Semantic Blog Layout",
+        "description": "Create a complete semantic HTML page for a blog. Include a site header with navigation, a main section with two articles (each having a title, date using <time>, and paragraph), a sidebar with related links, and a footer.",
+        "starterCode": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>My Blog</title>\n</head>\n<body>\n  <!-- Build the semantic structure here -->\n\n</body>\n</html>\n",
+        "solution": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>My Blog</title>\n</head>\n<body>\n  <header>\n    <h1>My Blog</h1>\n    <nav aria-label=\"Primary\">\n      <ul>\n        <li><a href=\"/\">Home</a></li>\n        <li><a href=\"/blog\">Blog</a></li>\n        <li><a href=\"/about\">About</a></li>\n      </ul>\n    </nav>\n  </header>\n\n  <main>\n    <article>\n      <h2>First Post</h2>\n      <p>Published on <time datetime=\"2026-03-10\">March 10, 2026</time></p>\n      <p>This is the first blog post content.</p>\n    </article>\n    <article>\n      <h2>Second Post</h2>\n      <p>Published on <time datetime=\"2026-03-11\">March 11, 2026</time></p>\n      <p>This is the second blog post content.</p>\n    </article>\n  </main>\n\n  <aside>\n    <h2>Related Links</h2>\n    <ul>\n      <li><a href=\"/resources\">Resources</a></li>\n      <li><a href=\"/tutorials\">Tutorials</a></li>\n    </ul>\n  </aside>\n\n  <footer>\n    <p>&copy; 2026 My Blog</p>\n  </footer>\n</body>\n</html>",
+        "hints": [
+          "Use <header> for the site header containing the title and <nav>",
+          "Wrap blog posts in <article> tags inside <main>",
+          "Use <time datetime=\"YYYY-MM-DD\"> for machine-readable dates and <aside> for the sidebar"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "header-footer-nav",
+    "sectionId": "semantic-html",
+    "orderIndex": 1,
+    "title": "Header, Footer & Nav",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["header", "footer", "nav", "main", "Landmark Roles", "Skip Links"],
+    "content": {
+      "explanation": "The <header>, <footer>, <nav>, and <main> elements are the four foundational landmark elements in HTML5. They define the major structural regions of a web page and serve as navigation anchors for assistive technologies. Understanding how to use them correctly is essential for building accessible, well-structured websites.\n\nThe <header> element represents introductory content for its nearest ancestor sectioning content or the page itself. When used as a direct child of <body>, it acts as the site-wide banner. But <header> can also appear inside <article> or <section> elements to represent the heading group of that specific section. A page can have multiple <header> elements, but the top-level one typically contains the site logo, primary navigation, and possibly a search form.\n\nThe <footer> element works symmetrically to <header>. At the page level, it typically contains copyright notices, contact links, social media icons, and secondary navigation. Like <header>, it can also appear inside <article> or <section> elements — for example, an article footer might contain author information, publication date, and share buttons. The page-level footer automatically maps to the ARIA contentinfo landmark role.\n\nThe <nav> element identifies a section of navigation links. It should wrap major navigation blocks — primary site navigation, pagination, breadcrumbs, or table of contents. Not every group of links needs a <nav>; a list of links in a footer paragraph does not require it. When you have multiple <nav> elements on a page (common with primary nav and footer nav), use aria-label to differentiate them so screen reader users can distinguish between them.\n\nThe <main> element represents the dominant content of the page — the content unique to that specific page, excluding headers, footers, sidebars, and navigation that repeat across pages. There must be only one visible <main> element per page (you can have hidden ones for single-page app routing). The <main> element must not be nested inside <header>, <footer>, <nav>, or <aside>. It maps to the ARIA main landmark role and is the target for \"skip to main content\" links.",
+      "codeExamples": [
+        {
+          "title": "Page-Level Landmarks",
+          "code": "<body>\n  <a href=\"#main-content\" class=\"skip-link\">Skip to main content</a>\n\n  <header>\n    <div class=\"logo\">\n      <a href=\"/\">BrandName</a>\n    </div>\n    <nav aria-label=\"Primary navigation\">\n      <ul>\n        <li><a href=\"/\">Home</a></li>\n        <li><a href=\"/products\">Products</a></li>\n        <li><a href=\"/about\">About</a></li>\n        <li><a href=\"/contact\">Contact</a></li>\n      </ul>\n    </nav>\n  </header>\n\n  <main id=\"main-content\">\n    <h1>Welcome to BrandName</h1>\n    <p>Your one-stop shop for quality products.</p>\n  </main>\n\n  <footer>\n    <nav aria-label=\"Footer navigation\">\n      <a href=\"/privacy\">Privacy Policy</a>\n      <a href=\"/terms\">Terms of Service</a>\n    </nav>\n    <p>&copy; 2026 BrandName. All rights reserved.</p>\n  </footer>\n</body>",
+          "explanation": "This structure creates clear page landmarks. The skip link lets keyboard users bypass navigation. Both nav elements have aria-labels to differentiate them. The main element has an id that the skip link targets."
+        },
+        {
+          "title": "Headers and Footers Inside Articles",
+          "code": "<main>\n  <article>\n    <header>\n      <h2>Understanding CSS Grid</h2>\n      <p>By <a href=\"/authors/jane\">Jane Doe</a></p>\n      <time datetime=\"2026-03-11\">March 11, 2026</time>\n    </header>\n\n    <p>CSS Grid is a two-dimensional layout system...</p>\n    <p>Unlike Flexbox, Grid handles both rows and columns...</p>\n\n    <footer>\n      <p>Tags: <a href=\"/tags/css\">CSS</a>, <a href=\"/tags/layout\">Layout</a></p>\n      <p>Share: <a href=\"#\">Twitter</a> | <a href=\"#\">LinkedIn</a></p>\n    </footer>\n  </article>\n</main>",
+          "explanation": "The article has its own header (title, author, date) and footer (tags, share links). These are distinct from the page-level header and footer. This pattern is common for blog posts, news articles, and product cards."
+        },
+        {
+          "title": "Multiple Nav Elements",
+          "code": "<header>\n  <nav aria-label=\"Primary\">\n    <ul>\n      <li><a href=\"/\">Home</a></li>\n      <li><a href=\"/docs\">Docs</a></li>\n      <li><a href=\"/blog\">Blog</a></li>\n    </ul>\n  </nav>\n</header>\n\n<main>\n  <article>\n    <h1>Documentation</h1>\n    <nav aria-label=\"Table of contents\">\n      <ol>\n        <li><a href=\"#intro\">Introduction</a></li>\n        <li><a href=\"#setup\">Setup</a></li>\n        <li><a href=\"#api\">API Reference</a></li>\n      </ol>\n    </nav>\n    <section id=\"intro\">\n      <h2>Introduction</h2>\n      <p>Welcome to the documentation...</p>\n    </section>\n  </article>\n</main>\n\n<footer>\n  <nav aria-label=\"Footer\">\n    <a href=\"/sitemap\">Sitemap</a>\n    <a href=\"/rss\">RSS Feed</a>\n  </nav>\n</footer>",
+          "explanation": "Three nav elements serve different purposes: primary site navigation, an in-page table of contents, and footer links. The aria-label on each one ensures screen readers can announce which navigation the user is entering."
+        }
+      ],
+      "notes": [
+        "A page can have multiple <header> and <footer> elements (inside articles, sections), but the page-level ones serve as ARIA banner and contentinfo landmarks.",
+        "Always add aria-label to differentiate multiple <nav> elements. Screen readers announce these labels, e.g., 'Primary navigation' vs 'Footer navigation'.",
+        "The <main> element must be unique and visible only once per page. It should not be nested inside landmark elements like header, footer, nav, or aside.",
+        "Skip links (a hidden link to #main-content) are a WCAG requirement for keyboard accessibility. They become visible on focus."
+      ],
+      "commonPitfalls": [
+        "Placing the <main> element inside <header> or <footer>. The <main> element must be a top-level structural element, not nested inside other landmarks.",
+        "Using <nav> for every group of links. Reserve <nav> for major navigation blocks. A list of social media links in the footer does not need a <nav> wrapper unless it is a significant navigation section.",
+        "Forgetting to label multiple <nav> elements with aria-label. Without labels, screen reader users cannot distinguish between 'Primary navigation' and 'Footer navigation'."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "header-footer-nav-ex1",
+        "title": "Build a Complete Page Layout",
+        "description": "Create an HTML page with a site header containing a logo and primary navigation (Home, Services, Portfolio, Contact), a main content area with a heading and paragraph, and a footer with copyright text and a secondary navigation (Privacy, Terms). Include a skip link.",
+        "starterCode": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Page Layout</title>\n</head>\n<body>\n  <!-- Add skip link -->\n\n  <!-- Add header with nav -->\n\n  <!-- Add main content -->\n\n  <!-- Add footer with secondary nav -->\n\n</body>\n</html>\n",
+        "solution": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>Page Layout</title>\n</head>\n<body>\n  <a href=\"#main\" class=\"skip-link\">Skip to main content</a>\n\n  <header>\n    <div class=\"logo\">MySite</div>\n    <nav aria-label=\"Primary navigation\">\n      <ul>\n        <li><a href=\"/\">Home</a></li>\n        <li><a href=\"/services\">Services</a></li>\n        <li><a href=\"/portfolio\">Portfolio</a></li>\n        <li><a href=\"/contact\">Contact</a></li>\n      </ul>\n    </nav>\n  </header>\n\n  <main id=\"main\">\n    <h1>Welcome to MySite</h1>\n    <p>We build modern web experiences.</p>\n  </main>\n\n  <footer>\n    <nav aria-label=\"Footer navigation\">\n      <a href=\"/privacy\">Privacy</a>\n      <a href=\"/terms\">Terms</a>\n    </nav>\n    <p>&copy; 2026 MySite</p>\n  </footer>\n</body>\n</html>",
+        "hints": [
+          "The skip link should be an anchor tag pointing to #main, placed at the very top of <body>",
+          "Use aria-label on each <nav> to distinguish primary from footer navigation"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "header-footer-nav-ex2",
+        "title": "Article with Its Own Header and Footer",
+        "description": "Create a blog article inside a <main> element. The article should have its own <header> with a title (h2), author name, and published date using <time>. The article body should have two paragraphs. The article should also have a <footer> with tags and share links.",
+        "starterCode": "<main>\n  <!-- Create an article with its own header and footer -->\n\n</main>\n",
+        "solution": "<main>\n  <article>\n    <header>\n      <h2>Getting Started with Semantic HTML</h2>\n      <p>By <a href=\"/authors/alex\">Alex Johnson</a></p>\n      <p><time datetime=\"2026-03-11\">March 11, 2026</time></p>\n    </header>\n\n    <p>Semantic HTML is the practice of using HTML elements that convey meaning about the content they contain. This approach improves accessibility, SEO, and code maintainability.</p>\n    <p>By choosing the right elements, you create a document that is understandable by browsers, screen readers, and search engine crawlers alike.</p>\n\n    <footer>\n      <p>Tags: <a href=\"/tags/html\">HTML</a>, <a href=\"/tags/accessibility\">Accessibility</a></p>\n      <p>Share: <a href=\"#\">Twitter</a> | <a href=\"#\">LinkedIn</a></p>\n    </footer>\n  </article>\n</main>",
+        "hints": [
+          "The <header> and <footer> inside an article are scoped to that article, not the page",
+          "Use the <time> element with a datetime attribute in ISO format (YYYY-MM-DD)"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "article-and-section",
+    "sectionId": "semantic-html",
+    "orderIndex": 2,
+    "title": "Article & Section",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["article", "section", "aside", "Sectioning Content", "Content Grouping"],
+    "content": {
+      "explanation": "The <article> and <section> elements are two of the most commonly confused semantic elements in HTML5. While both are sectioning content elements that contribute to the document outline, they serve fundamentally different purposes. Understanding the distinction is crucial for writing meaningful markup.\n\nThe <article> element represents a self-contained composition that could be independently distributed or reused. The key test is syndication: if the content makes sense on its own when extracted from the page — shared in an RSS feed, embedded on another site, or read in a news aggregator — it qualifies as an <article>. Blog posts, news stories, forum posts, product cards, user comments, and interactive widgets are all valid uses of <article>.\n\nThe <section> element represents a thematic grouping of content, typically with a heading. Unlike <article>, a <section> does not need to make sense in isolation. It groups related content within a page — a chapter of a document, a tab panel, or a distinct area of a dashboard. The HTML spec recommends that a <section> should almost always have a heading (h1-h6) as a child. If you cannot think of a natural heading for the group, a <div> might be more appropriate.\n\nThe <aside> element deserves mention here because it often gets confused with <section>. An <aside> represents content that is tangentially related to the content around it — sidebars, pull quotes, advertising, groups of related links, or supplementary information. The content in an <aside> should be related to but not essential to the main content. If removing the <aside> does not diminish the main content's meaning, you have used it correctly.\n\nA common pattern is nesting these elements. Articles can contain sections (e.g., a long blog post divided into chapters), and sections can contain articles (e.g., a \"Latest Posts\" section containing multiple article cards). You can also nest articles within articles — for example, a blog post article containing comment articles. The nesting should reflect the actual content hierarchy, not the visual layout.",
+      "codeExamples": [
+        {
+          "title": "Article vs Section vs Div",
+          "code": "<!-- Article: self-contained, syndicatable -->\n<article>\n  <h2>How to Learn CSS Grid</h2>\n  <p>CSS Grid is a powerful layout system...</p>\n  <p>Start by understanding grid containers and grid items...</p>\n</article>\n\n<!-- Section: thematic grouping with heading -->\n<section>\n  <h2>Our Services</h2>\n  <p>We offer web design, development, and consulting.</p>\n  <ul>\n    <li>UI/UX Design</li>\n    <li>Full-Stack Development</li>\n    <li>Technical Consulting</li>\n  </ul>\n</section>\n\n<!-- Div: no semantic meaning, for styling only -->\n<div class=\"grid grid-cols-2 gap-4\">\n  <div class=\"card\">Card A</div>\n  <div class=\"card\">Card B</div>\n</div>",
+          "explanation": "The article stands alone as a blog post. The section groups related service information under a heading. The div is a layout wrapper with no semantic meaning — it exists only for CSS Grid styling."
+        },
+        {
+          "title": "Section Containing Articles",
+          "code": "<main>\n  <section aria-labelledby=\"latest-heading\">\n    <h2 id=\"latest-heading\">Latest Articles</h2>\n    <article>\n      <h3>Understanding Flexbox</h3>\n      <p>Flexbox is a one-dimensional layout model...</p>\n      <a href=\"/posts/flexbox\">Read more</a>\n    </article>\n    <article>\n      <h3>CSS Custom Properties</h3>\n      <p>CSS variables allow you to define reusable values...</p>\n      <a href=\"/posts/custom-properties\">Read more</a>\n    </article>\n    <article>\n      <h3>Responsive Typography</h3>\n      <p>Using clamp() for fluid font sizes...</p>\n      <a href=\"/posts/responsive-typography\">Read more</a>\n    </article>\n  </section>\n\n  <section aria-labelledby=\"popular-heading\">\n    <h2 id=\"popular-heading\">Popular This Week</h2>\n    <article>\n      <h3>JavaScript Closures Explained</h3>\n      <p>A closure gives access to an outer function's scope...</p>\n    </article>\n  </section>\n</main>",
+          "explanation": "The page has two thematic sections — 'Latest Articles' and 'Popular This Week'. Each section groups related articles. The aria-labelledby attribute connects each section to its heading for better accessibility."
+        },
+        {
+          "title": "Article with Sections and Aside",
+          "code": "<article>\n  <header>\n    <h1>Complete Guide to Semantic HTML</h1>\n    <p>By Sarah Chen | <time datetime=\"2026-03-11\">March 11, 2026</time></p>\n  </header>\n\n  <section>\n    <h2>Introduction</h2>\n    <p>Semantic HTML is the backbone of accessible web development...</p>\n  </section>\n\n  <section>\n    <h2>Key Elements</h2>\n    <p>HTML5 introduced several new semantic elements...</p>\n  </section>\n\n  <aside>\n    <h3>Related Reading</h3>\n    <ul>\n      <li><a href=\"/aria-guide\">WAI-ARIA Guide</a></li>\n      <li><a href=\"/a11y-checklist\">Accessibility Checklist</a></li>\n    </ul>\n  </aside>\n\n  <section>\n    <h2>Conclusion</h2>\n    <p>By using semantic elements, you build a better web...</p>\n  </section>\n</article>",
+          "explanation": "A long article is divided into sections (chapters). An aside within the article contains tangentially related links. This is a common pattern for documentation and long-form content."
+        },
+        {
+          "title": "Nested Articles (Comments)",
+          "code": "<article>\n  <h2>Is TypeScript Worth Learning?</h2>\n  <p>TypeScript adds static typing to JavaScript...</p>\n\n  <section>\n    <h3>Comments</h3>\n    <article>\n      <header>\n        <strong>UserA</strong>\n        <time datetime=\"2026-03-11T10:30\">10:30 AM</time>\n      </header>\n      <p>Absolutely! TypeScript has saved me hours of debugging.</p>\n    </article>\n    <article>\n      <header>\n        <strong>UserB</strong>\n        <time datetime=\"2026-03-11T11:15\">11:15 AM</time>\n      </header>\n      <p>The learning curve is worth it for larger projects.</p>\n    </article>\n  </section>\n</article>",
+          "explanation": "The blog post is an article. Each comment is also a self-contained article nested inside. Comments are grouped in a section with a heading. This accurately represents the content hierarchy."
+        }
+      ],
+      "notes": [
+        "The syndication test: if the content makes sense when extracted and shared independently (RSS, social media embed), use <article>. Otherwise, consider <section>.",
+        "Every <section> should have a heading. If you cannot think of a heading for the group, a <div> is probably more appropriate.",
+        "Articles and sections can be nested in any combination that reflects the content hierarchy. The nesting should represent meaning, not layout."
+      ],
+      "commonPitfalls": [
+        "Using <section> as a generic container in place of <div>. Section is for thematic groupings with headings, not a styled wrapper.",
+        "Using <article> for every card or box on the page. Only use <article> for content that is truly self-contained and independently meaningful.",
+        "Confusing <aside> with a sidebar layout. While an aside is often visually rendered as a sidebar, the element represents tangentially related content, not a positioning directive."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "article-and-section-ex1",
+        "title": "News Page Structure",
+        "description": "Build a news page with two sections: 'Breaking News' containing 2 article cards (each with h3 title and paragraph), and 'Opinion' containing 1 article. Use aria-labelledby to connect sections to their headings.",
+        "starterCode": "<main>\n  <!-- Create 'Breaking News' section with 2 articles -->\n\n  <!-- Create 'Opinion' section with 1 article -->\n\n</main>\n",
+        "solution": "<main>\n  <section aria-labelledby=\"breaking-heading\">\n    <h2 id=\"breaking-heading\">Breaking News</h2>\n    <article>\n      <h3>New Framework Released</h3>\n      <p>A new JavaScript framework promises to revolutionize web development with built-in reactivity and zero configuration.</p>\n    </article>\n    <article>\n      <h3>CSS Nesting Now Supported</h3>\n      <p>All major browsers now support native CSS nesting, reducing the need for preprocessors like Sass.</p>\n    </article>\n  </section>\n\n  <section aria-labelledby=\"opinion-heading\">\n    <h2 id=\"opinion-heading\">Opinion</h2>\n    <article>\n      <h3>Why Semantic HTML Still Matters</h3>\n      <p>In an age of JavaScript frameworks, the fundamentals of semantic markup remain critical for accessibility and SEO.</p>\n    </article>\n  </section>\n</main>",
+        "hints": [
+          "Use aria-labelledby on each <section> pointing to the id of its heading element",
+          "Each news item is a self-contained article with its own h3 heading"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "article-and-section-ex2",
+        "title": "Blog Post with Comments",
+        "description": "Create a blog post article with a header (title, author, date), two content sections (Introduction, Main Points), an aside with related links, and a comments section containing two nested comment articles. Each comment should have a username, time, and message.",
+        "starterCode": "<!-- Create the blog post article structure -->\n",
+        "solution": "<article>\n  <header>\n    <h1>Mastering CSS Layouts</h1>\n    <p>By <a href=\"/authors/taylor\">Taylor Reed</a></p>\n    <p><time datetime=\"2026-03-11\">March 11, 2026</time></p>\n  </header>\n\n  <section>\n    <h2>Introduction</h2>\n    <p>CSS layout has evolved dramatically over the past decade. From floats and clearfixes to Flexbox and Grid, modern CSS provides powerful tools for any layout challenge.</p>\n  </section>\n\n  <section>\n    <h2>Main Points</h2>\n    <p>Flexbox excels at one-dimensional layouts while Grid handles two-dimensional layouts. Understanding when to use each is key to efficient CSS.</p>\n  </section>\n\n  <aside>\n    <h3>Related Reading</h3>\n    <ul>\n      <li><a href=\"/posts/flexbox\">Flexbox Guide</a></li>\n      <li><a href=\"/posts/grid\">Grid Guide</a></li>\n    </ul>\n  </aside>\n\n  <section>\n    <h3>Comments</h3>\n    <article>\n      <header>\n        <strong>DevMike</strong>\n        <time datetime=\"2026-03-11T14:30\">2:30 PM</time>\n      </header>\n      <p>Great article! The section on Grid really helped me understand when to use it over Flexbox.</p>\n    </article>\n    <article>\n      <header>\n        <strong>CSSFan</strong>\n        <time datetime=\"2026-03-11T15:00\">3:00 PM</time>\n      </header>\n      <p>Would love to see a follow-up on container queries!</p>\n    </article>\n  </section>\n</article>",
+        "hints": [
+          "The blog post itself is an <article>. Divide the content into <section> elements for each chapter.",
+          "Each comment is a self-contained <article> nested inside a comments <section>",
+          "Use <aside> for the related reading links since they are tangentially related to the main content"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "figure-and-details",
+    "sectionId": "semantic-html",
+    "orderIndex": 3,
+    "title": "Figure & Details",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["figure", "figcaption", "details", "summary", "dialog", "Interactive Elements"],
+    "content": {
+      "explanation": "HTML5 introduced several specialized semantic elements for common content patterns. The <figure> and <figcaption> pair provides a standard way to associate captions with images, code blocks, diagrams, and other referenced content. The <details> and <summary> pair creates native disclosure widgets without JavaScript. The <dialog> element provides a built-in modal/dialog box. These elements reduce the need for custom JavaScript solutions and improve accessibility out of the box.\n\nThe <figure> element represents self-contained content that is referenced from the main flow of the document but could be moved to an appendix, sidebar, or separate page without affecting the main content's meaning. Figures are typically images, illustrations, diagrams, code snippets, or tables. The <figcaption> element provides the caption and must be either the first or last child of <figure>. Importantly, <figure> is not just for images — any content that deserves a caption can be wrapped in a figure.\n\nThe <details> element creates a disclosure widget that the user can open and close without any JavaScript. Its child <summary> element provides the visible label when the widget is closed. Everything else inside <details> is hidden until the user clicks to expand it. The open attribute controls the initial state. This is perfect for FAQs, collapsible sections, and progressive disclosure patterns. The browser handles all the toggle behavior natively, including keyboard accessibility.\n\nThe <dialog> element represents a dialog box or interactive component such as a modal window, confirmation dialog, or alert. Unlike building modals with divs and CSS, the native <dialog> element provides built-in focus trapping, keyboard handling (Escape to close), and the ::backdrop pseudo-element for overlay styling. You control it programmatically with the showModal() and close() methods. The showModal() method opens the dialog as a modal (blocking interaction with the rest of the page), while show() opens it as a non-modal dialog.\n\nThese elements share a common philosophy: use native HTML capabilities before reaching for JavaScript. Native elements come with built-in accessibility, keyboard support, and consistent behavior across browsers. Custom implementations often miss edge cases — focus trapping, screen reader announcements, keyboard navigation — that native elements handle automatically.",
+      "codeExamples": [
+        {
+          "title": "Figure with Different Content Types",
+          "code": "<!-- Figure with image -->\n<figure>\n  <img src=\"/images/chart.png\" alt=\"Sales data for Q1 2026\">\n  <figcaption>Figure 1: Q1 2026 sales showed a 15% increase over Q4 2025.</figcaption>\n</figure>\n\n<!-- Figure with code block -->\n<figure>\n  <pre><code>const greeting = (name) => {\n  return `Hello, ${name}!`;\n};</code></pre>\n  <figcaption>Example: An arrow function that returns a greeting string.</figcaption>\n</figure>\n\n<!-- Figure with blockquote -->\n<figure>\n  <blockquote>\n    \"The best way to predict the future is to invent it.\"\n  </blockquote>\n  <figcaption>Alan Kay, 1971</figcaption>\n</figure>",
+          "explanation": "Figures work with any referenced content: images, code blocks, quotes, diagrams, tables. The figcaption provides context that helps users understand what they are looking at."
+        },
+        {
+          "title": "Details and Summary Patterns",
+          "code": "<!-- Basic FAQ accordion -->\n<details>\n  <summary>What is semantic HTML?</summary>\n  <p>Semantic HTML uses elements that describe the meaning of content, such as &lt;article&gt;, &lt;nav&gt;, and &lt;header&gt;, rather than generic &lt;div&gt; elements.</p>\n</details>\n\n<details>\n  <summary>Why does it matter?</summary>\n  <p>It improves accessibility for screen readers, helps search engines understand your content, and makes code more maintainable.</p>\n</details>\n\n<!-- Open by default -->\n<details open>\n  <summary>Getting Started (expanded by default)</summary>\n  <p>Start by replacing your most common div patterns with semantic alternatives.</p>\n  <ol>\n    <li>Replace div.header with &lt;header&gt;</li>\n    <li>Replace div.nav with &lt;nav&gt;</li>\n    <li>Replace div.footer with &lt;footer&gt;</li>\n  </ol>\n</details>",
+          "explanation": "The details/summary pattern creates native collapsible sections. No JavaScript is needed. The open attribute controls the initial state. Users can click the summary or press Enter/Space to toggle."
+        },
+        {
+          "title": "Native Dialog Element",
+          "code": "<!-- Dialog element in HTML -->\n<button id=\"open-btn\">Open Dialog</button>\n\n<dialog id=\"my-dialog\">\n  <h2>Confirm Action</h2>\n  <p>Are you sure you want to delete this item?</p>\n  <form method=\"dialog\">\n    <button value=\"cancel\">Cancel</button>\n    <button value=\"confirm\">Confirm</button>\n  </form>\n</dialog>\n\n<script>\n  const dialog = document.getElementById('my-dialog');\n  const openBtn = document.getElementById('open-btn');\n\n  openBtn.addEventListener('click', () => {\n    dialog.showModal(); // Opens as modal with backdrop\n  });\n\n  dialog.addEventListener('close', () => {\n    console.log('Dialog result:', dialog.returnValue);\n  });\n</script>",
+          "explanation": "The dialog element with showModal() provides focus trapping, Escape key to close, and a ::backdrop pseudo-element. The form method='dialog' automatically closes the dialog and sets returnValue to the clicked button's value."
+        },
+        {
+          "title": "Styling Details and Dialog",
+          "code": "<!-- Custom styled details -->\n<style>\n  details {\n    border: 1px solid #e2e8f0;\n    border-radius: 8px;\n    padding: 16px;\n    margin-bottom: 8px;\n  }\n  details[open] {\n    background-color: #f8fafc;\n  }\n  summary {\n    cursor: pointer;\n    font-weight: 600;\n    padding: 4px 0;\n  }\n  summary::marker {\n    color: #3b82f6;\n  }\n  dialog::backdrop {\n    background: rgba(0, 0, 0, 0.5);\n    backdrop-filter: blur(4px);\n  }\n  dialog {\n    border: none;\n    border-radius: 12px;\n    padding: 24px;\n    max-width: 400px;\n    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);\n  }\n</style>\n\n<details>\n  <summary>Styled Collapsible Section</summary>\n  <p>This section has custom borders, background, and marker color.</p>\n</details>",
+          "explanation": "Both details and dialog are fully stylable with CSS. The [open] attribute selector targets the expanded state. The ::marker pseudo-element styles the disclosure triangle. The ::backdrop pseudo-element styles the modal overlay."
+        }
+      ],
+      "notes": [
+        "The <figure> element is not restricted to images. Use it for any content that is referenced from the main flow and benefits from a caption: code blocks, quotes, diagrams, tables, and more.",
+        "The <details> element is supported in all modern browsers and requires zero JavaScript. It handles keyboard accessibility (Enter/Space to toggle) automatically.",
+        "The <dialog> element's showModal() method automatically handles focus trapping, Escape key dismissal, and backdrop display. Always prefer it over custom modal implementations.",
+        "Use <form method=\"dialog\"> inside a <dialog> to automatically close it when a button is clicked, with the button's value accessible via dialog.returnValue."
+      ],
+      "commonPitfalls": [
+        "Using <figure> only for images. Figures can wrap code examples, blockquotes, diagrams, tables, and any content that deserves a caption.",
+        "Adding JavaScript toggle logic to details/summary elements. The browser handles open/close behavior natively. Only add JavaScript if you need custom animations or tracking.",
+        "Building modals with <div> and CSS instead of using <dialog>. Custom modals often miss focus trapping, Escape key handling, and proper ARIA attributes that <dialog> provides for free."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "figure-and-details-ex1",
+        "title": "Image Gallery with Figures",
+        "description": "Create a gallery of three figures. The first should contain an image with alt text and a caption. The second should contain a code block (pre/code) with a caption. The third should contain a blockquote with an attribution caption.",
+        "starterCode": "<!-- Create three figures with different content types -->\n\n",
+        "solution": "<figure>\n  <img src=\"/images/sunset.jpg\" alt=\"A sunset over the ocean with orange and purple sky\">\n  <figcaption>Figure 1: Sunset at Pacific Beach, captured in February 2026.</figcaption>\n</figure>\n\n<figure>\n  <pre><code>function fibonacci(n) {\n  if (n <= 1) return n;\n  return fibonacci(n - 1) + fibonacci(n - 2);\n}</code></pre>\n  <figcaption>Figure 2: Recursive Fibonacci function in JavaScript.</figcaption>\n</figure>\n\n<figure>\n  <blockquote>\n    \"Talk is cheap. Show me the code.\"\n  </blockquote>\n  <figcaption>Linus Torvalds, creator of Linux and Git.</figcaption>\n</figure>",
+        "hints": [
+          "Each figure wraps the content element (img, pre/code, or blockquote) and a figcaption",
+          "The figcaption should be the last child of each figure element"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "figure-and-details-ex2",
+        "title": "FAQ with Details and Summary",
+        "description": "Build an FAQ section with 3 collapsible questions using details/summary. The first question should be expanded by default. Each answer should contain a paragraph. Wrap the entire FAQ in a section with an h2 heading.",
+        "starterCode": "<!-- Build the FAQ section -->\n",
+        "solution": "<section>\n  <h2>Frequently Asked Questions</h2>\n\n  <details open>\n    <summary>What languages do I need to learn for web development?</summary>\n    <p>The core languages are HTML, CSS, and JavaScript. HTML structures the content, CSS styles it, and JavaScript adds interactivity. From there, you can learn frameworks like React, Vue, or Angular.</p>\n  </details>\n\n  <details>\n    <summary>How long does it take to become a web developer?</summary>\n    <p>It varies by individual, but most people can build basic websites within 3-6 months of consistent study. Becoming job-ready typically takes 6-12 months of dedicated practice and project building.</p>\n  </details>\n\n  <details>\n    <summary>Do I need a computer science degree?</summary>\n    <p>No. Many successful web developers are self-taught or have completed bootcamps. What matters most is your portfolio, practical skills, and ability to solve problems. A CS degree is helpful but not required.</p>\n  </details>\n</section>",
+        "hints": [
+          "Add the 'open' attribute (no value needed) to the first <details> element to expand it by default",
+          "Each <details> must have a <summary> as its first child, followed by the answer content"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "wai-aria-roles",
+    "sectionId": "semantic-html",
+    "orderIndex": 4,
+    "title": "WAI-ARIA Roles",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["WAI-ARIA", "role Attribute", "Landmark Roles", "aria-label", "aria-live", "Accessible Names"],
+    "content": {
+      "explanation": "WAI-ARIA (Web Accessibility Initiative - Accessible Rich Internet Applications) is a specification that defines a set of attributes you can add to HTML elements to communicate additional semantics to assistive technologies. ARIA roles, states, and properties fill the gaps where native HTML semantics fall short, particularly for custom interactive components like tabs, modals, drag-and-drop interfaces, and live-updating regions.\n\nThe role attribute defines what an element is or does. ARIA defines several categories of roles. Landmark roles (banner, navigation, main, complementary, contentinfo, form, region, search) mirror the semantic HTML elements — <header> implicitly has role=\"banner\", <nav> has role=\"navigation\", and so on. Widget roles (button, tab, tabpanel, dialog, slider, menuitem, etc.) describe interactive components. Document structure roles (article, heading, list, listitem, img, toolbar, etc.) describe non-interactive structures.\n\nThe first rule of ARIA is: do not use ARIA if you can use a native HTML element instead. A <button> is always better than <div role=\"button\"> because the native element comes with built-in keyboard handling, focus management, and form submission. ARIA does not add behavior — it only communicates semantics. If you use role=\"button\" on a div, you must manually add keyboard event handlers (Enter and Space), tabindex=\"0\" for focus, and visual focus indicators. The native <button> gives you all of this for free.\n\nARIA states and properties convey dynamic information about elements. Key attributes include: aria-label (provides an accessible name when visible text is insufficient), aria-labelledby (points to the id of the element that labels this one), aria-describedby (points to a description), aria-expanded (whether a collapsible section is open), aria-hidden (hides element from screen readers), aria-live (announces dynamic content changes), aria-required, and aria-disabled. These attributes let screen readers announce current states and relationships that are visually apparent but not expressed in the DOM.\n\nARIA live regions are particularly important for single-page applications. When content updates dynamically (notifications, chat messages, form validation errors), screen readers need to be told about changes. Setting aria-live=\"polite\" on a container means the screen reader will announce changes at the next convenient pause. Setting aria-live=\"assertive\" interrupts whatever the screen reader is currently saying to announce the change immediately. Use assertive sparingly — only for critical alerts and errors.",
+      "codeExamples": [
+        {
+          "title": "Native HTML vs ARIA Roles",
+          "code": "<!-- Prefer native HTML elements (built-in semantics + behavior) -->\n<button>Save</button>\n<nav>\n  <a href=\"/home\">Home</a>\n</nav>\n<main>\n  <h1>Page Title</h1>\n</main>\n\n<!-- ARIA equivalents (require manual behavior implementation) -->\n<div role=\"button\" tabindex=\"0\"\n     onkeydown=\"if(event.key==='Enter'||event.key===' ')this.click()\">\n  Save\n</div>\n<div role=\"navigation\">\n  <a href=\"/home\">Home</a>\n</div>\n<div role=\"main\">\n  <div role=\"heading\" aria-level=\"1\">Page Title</div>\n</div>\n\n<!-- The native versions are ALWAYS preferred.\n     They include keyboard handling, focus, and\n     form behavior for free. -->",
+          "explanation": "The native HTML elements on top provide the same semantics as the ARIA roles below, plus built-in keyboard handling, focus management, and other behaviors. ARIA only adds semantics — never behavior."
+        },
+        {
+          "title": "ARIA Labels and Descriptions",
+          "code": "<!-- aria-label: provides accessible name directly -->\n<button aria-label=\"Close dialog\">\n  <svg viewBox=\"0 0 24 24\"><path d=\"M6 18L18 6M6 6l12 12\"/></svg>\n</button>\n\n<!-- aria-labelledby: references another element's text -->\n<section aria-labelledby=\"pricing-title\">\n  <h2 id=\"pricing-title\">Pricing Plans</h2>\n  <p>Choose the plan that fits your needs.</p>\n</section>\n\n<!-- aria-describedby: provides additional description -->\n<label for=\"password\">Password</label>\n<input type=\"password\" id=\"password\"\n       aria-describedby=\"password-help\">\n<p id=\"password-help\">\n  Must be at least 8 characters with one uppercase letter and one number.\n</p>\n\n<!-- Combining labels for complex components -->\n<div role=\"group\" aria-labelledby=\"shipping-label\">\n  <h3 id=\"shipping-label\">Shipping Address</h3>\n  <label for=\"street\">Street</label>\n  <input id=\"street\" type=\"text\">\n  <label for=\"city\">City</label>\n  <input id=\"city\" type=\"text\">\n</div>",
+          "explanation": "aria-label directly sets the accessible name (used for icon buttons). aria-labelledby points to visible text that names the element. aria-describedby provides supplementary information announced after the element's name and role."
+        },
+        {
+          "title": "ARIA Live Regions",
+          "code": "<!-- Polite: announced at next pause -->\n<div aria-live=\"polite\" id=\"status\">\n  <!-- Status messages appear here -->\n</div>\n\n<!-- Assertive: interrupts immediately -->\n<div aria-live=\"assertive\" role=\"alert\" id=\"error\">\n  <!-- Critical errors appear here -->\n</div>\n\n<script>\n  // When a form is submitted successfully:\n  document.getElementById('status').textContent =\n    'Your changes have been saved.';\n  // Screen reader announces: \"Your changes have been saved.\"\n\n  // When a critical error occurs:\n  document.getElementById('error').textContent =\n    'Session expired. Please log in again.';\n  // Screen reader immediately announces the error\n</script>\n\n<!-- Common live region patterns -->\n<!-- Toast notifications -->\n<div aria-live=\"polite\" role=\"status\" class=\"toast-container\">\n</div>\n\n<!-- Form validation -->\n<div aria-live=\"polite\">\n  <span class=\"error\">Email address is required.</span>\n</div>",
+          "explanation": "Live regions tell screen readers to announce content changes. Use 'polite' for non-urgent updates (save confirmations, status changes). Use 'assertive' only for critical alerts that require immediate attention."
+        },
+        {
+          "title": "ARIA States for Interactive Widgets",
+          "code": "<!-- Expandable section -->\n<button aria-expanded=\"false\"\n        aria-controls=\"faq-answer-1\"\n        onclick=\"toggleFaq(this)\">\n  What is WAI-ARIA?\n</button>\n<div id=\"faq-answer-1\" hidden>\n  <p>WAI-ARIA is a specification for accessible web applications...</p>\n</div>\n\n<!-- Tab interface -->\n<div role=\"tablist\" aria-label=\"Product information\">\n  <button role=\"tab\" aria-selected=\"true\"\n          aria-controls=\"panel-desc\" id=\"tab-desc\">\n    Description\n  </button>\n  <button role=\"tab\" aria-selected=\"false\"\n          aria-controls=\"panel-reviews\" id=\"tab-reviews\">\n    Reviews\n  </button>\n</div>\n<div role=\"tabpanel\" id=\"panel-desc\"\n     aria-labelledby=\"tab-desc\">\n  <p>This product features...</p>\n</div>\n<div role=\"tabpanel\" id=\"panel-reviews\"\n     aria-labelledby=\"tab-reviews\" hidden>\n  <p>Customer reviews...</p>\n</div>\n\n<script>\n  function toggleFaq(button) {\n    const expanded = button.getAttribute('aria-expanded') === 'true';\n    button.setAttribute('aria-expanded', String(!expanded));\n    const content = document.getElementById(\n      button.getAttribute('aria-controls')\n    );\n    content.hidden = expanded;\n  }\n</script>",
+          "explanation": "aria-expanded communicates whether a collapsible section is open. aria-controls links a button to the element it controls. For tabs, aria-selected marks the active tab, and role='tabpanel' with aria-labelledby creates the association between tab and panel."
+        }
+      ],
+      "notes": [
+        "First rule of ARIA: do not use ARIA if a native HTML element or attribute provides the semantics you need. Native elements include built-in behavior; ARIA only provides semantics.",
+        "aria-label overrides the element's visible text for screen readers. Use it for icon buttons and elements where the visible text is insufficient or absent.",
+        "aria-live='polite' waits for the screen reader to finish its current announcement. aria-live='assertive' interrupts immediately. Use assertive only for critical alerts.",
+        "Setting aria-hidden='true' hides an element from the accessibility tree but keeps it visually visible. This is useful for decorative icons or redundant text."
+      ],
+      "commonPitfalls": [
+        "Using role='button' on a <div> without adding tabindex='0', keyboard event handlers (Enter and Space), and focus styles. ARIA adds semantics only, not behavior.",
+        "Overusing aria-live='assertive'. It interrupts the screen reader and can be disorienting. Use 'polite' for most updates and reserve 'assertive' for critical errors.",
+        "Setting aria-hidden='true' on focusable elements. If a screen reader user tabs to a hidden element, they hear nothing, which is confusing. Remove focusable elements from the tab order before hiding them."
+      ],
+      "interviewTips": [
+        "Emphasize the first rule of ARIA: prefer native HTML elements. Interviewers want to hear that you understand native semantics are the foundation, and ARIA fills gaps.",
+        "Be ready to explain the difference between aria-label, aria-labelledby, and aria-describedby — and when to use each one.",
+        "Know the landmark roles (banner, navigation, main, complementary, contentinfo) and which HTML elements map to them implicitly.",
+        "Explain aria-live regions and how they enable screen readers to announce dynamic content changes in SPAs."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "wai-aria-roles-ex1",
+        "title": "Accessible Icon Buttons",
+        "description": "Create three icon-only buttons: a close button (X), a menu button (hamburger), and a search button (magnifying glass). Since there is no visible text, each button must have an accessible name using aria-label. Use simple text symbols as placeholders for the icons.",
+        "starterCode": "<!-- Create three accessible icon buttons -->\n<!-- Close button -->\n\n<!-- Menu button -->\n\n<!-- Search button -->\n\n",
+        "solution": "<button aria-label=\"Close\">\n  &#10005;\n</button>\n\n<button aria-label=\"Open menu\">\n  &#9776;\n</button>\n\n<button aria-label=\"Search\">\n  &#128269;\n</button>",
+        "hints": [
+          "Use aria-label on each button to provide the accessible name since there is no visible text",
+          "Use native <button> elements — never <div role='button'> — to get built-in keyboard handling"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "wai-aria-roles-ex2",
+        "title": "Accessible Expandable FAQ",
+        "description": "Build an FAQ section with two expandable questions. Each question should be a <button> with aria-expanded (initially false) and aria-controls pointing to the answer's id. Each answer should be a hidden div. Add a JavaScript function that toggles the expanded state and visibility when a button is clicked.",
+        "starterCode": "<!-- Build the accessible FAQ -->\n<section aria-labelledby=\"faq-heading\">\n  <h2 id=\"faq-heading\">FAQ</h2>\n\n  <!-- Question 1 -->\n\n  <!-- Question 2 -->\n\n</section>\n\n<script>\n  // Add the toggle function\n</script>\n",
+        "solution": "<section aria-labelledby=\"faq-heading\">\n  <h2 id=\"faq-heading\">FAQ</h2>\n\n  <button aria-expanded=\"false\" aria-controls=\"answer-1\" onclick=\"toggleAnswer(this)\">\n    What is ARIA?\n  </button>\n  <div id=\"answer-1\" hidden>\n    <p>ARIA stands for Accessible Rich Internet Applications. It provides attributes to make web content more accessible to assistive technologies.</p>\n  </div>\n\n  <button aria-expanded=\"false\" aria-controls=\"answer-2\" onclick=\"toggleAnswer(this)\">\n    When should I use ARIA?\n  </button>\n  <div id=\"answer-2\" hidden>\n    <p>Use ARIA only when native HTML elements cannot provide the needed semantics. Always prefer semantic HTML elements first.</p>\n  </div>\n</section>\n\n<script>\n  function toggleAnswer(button) {\n    const isExpanded = button.getAttribute('aria-expanded') === 'true';\n    button.setAttribute('aria-expanded', String(!isExpanded));\n    const answerId = button.getAttribute('aria-controls');\n    const answer = document.getElementById(answerId);\n    answer.hidden = isExpanded;\n  }\n</script>",
+        "hints": [
+          "aria-expanded should be 'false' initially and toggle between 'true' and 'false' on click",
+          "aria-controls should match the id of the answer div. Use the hidden attribute to show/hide answers."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

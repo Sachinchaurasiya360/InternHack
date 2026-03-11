@@ -366,7 +366,7 @@ function SkillItem({
             )}
             {skill.hasQuiz && !skill.verifiedAt && interactive && careerSlug && (
               <Link
-                to={`/student/careers/${careerSlug}/quiz/${skill.id}`}
+                to={`/learn/careers/${careerSlug}/quiz/${skill.id}`}
                 onClick={(e) => e.stopPropagation()}
                 className="text-xs font-semibold px-2.5 py-1 rounded-lg border bg-violet-50 text-violet-600 border-violet-100 dark:bg-violet-900/30 dark:text-violet-400 dark:border-violet-800 flex items-center gap-1 no-underline hover:bg-violet-100 dark:hover:bg-violet-900/50 transition-colors"
               >

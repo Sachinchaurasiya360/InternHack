@@ -6,7 +6,6 @@ import api from "../../lib/axios";
 import type { Career } from "../../lib/types";
 import { useAuthStore } from "../../lib/auth.store";
 import RoadmapTimeline from "./components/RoadmapTimeline";
-import { Navbar } from "../../components/Navbar";
 import { LoadingScreen } from "../../components/LoadingScreen";
 import { SEO } from "../../components/SEO";
 import toast from "react-hot-toast";
@@ -60,20 +59,12 @@ export default function CareerDetailPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
-        <Navbar />
-        <LoadingScreen />
-      </div>
-    );
+    return <LoadingScreen />;
   }
 
   if (!career) {
     return (
-      <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
-        <Navbar />
-        <div className="text-center pt-40 text-gray-500">Career not found</div>
-      </div>
+      <div className="text-center py-20 text-gray-500">Career not found</div>
     );
   }
 
@@ -82,13 +73,12 @@ export default function CareerDetailPage() {
   const diffCfg = DIFFICULTY_CONFIG[career.difficulty] ?? { bg: "bg-gray-50 dark:bg-gray-800", text: "text-gray-600 dark:text-gray-400", label: career.difficulty };
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+    <div>
       <SEO
         title={`${career.title} Career Roadmap`}
         description={career.description?.slice(0, 160) || `Explore the ${career.title} career roadmap with step-by-step learning phases, skills, and resources.`}
         keywords={`${career.title}, career roadmap, ${career.category}, learning path, skill development`}
       />
-      <Navbar />
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-[#fafafa] dark:bg-gray-950 pt-24 pb-16 px-6">
@@ -111,7 +101,7 @@ export default function CareerDetailPage() {
         <div className="relative z-10 max-w-4xl mx-auto">
           <motion.div custom={0} initial="hidden" animate="visible" variants={fadeInUp}>
             <Link
-              to="/careers"
+              to="/learn/careers"
               className="inline-flex items-center gap-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm mb-6 no-underline transition-colors"
             >
               <ArrowLeft className="w-4 h-4" /> Back to Careers

@@ -1,0 +1,387 @@
+[
+  {
+    "id": "custom-properties",
+    "sectionId": "advanced-techniques",
+    "orderIndex": 0,
+    "title": "Custom Properties",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["var()", ":root", "Fallback Values", "Scope", "Dynamic Theming"],
+    "content": {
+      "explanation": "CSS Custom Properties (also called CSS Variables) are entities defined by authors that contain specific values to be reused throughout a document. Defined using the -- prefix (e.g., --primary-color: #3b82f6) and accessed using the var() function, they bring the power of variables to CSS without needing a preprocessor like Sass or Less. Unlike preprocessor variables that are compiled away at build time, custom properties are live in the browser — they cascade, inherit, can be scoped, and can be changed dynamically with JavaScript.\n\nCustom properties are typically defined on the :root pseudo-class (which represents the <html> element) to make them globally available. However, they follow the same cascade and inheritance rules as any CSS property. A custom property defined on a specific element or class overrides the global value within that scope. This scoping behavior is what makes custom properties incredibly powerful for component-based architectures — a card component can define its own --card-padding that only affects cards, without polluting the global namespace.\n\nThe var() function retrieves the value of a custom property. It accepts an optional second argument as a fallback value: var(--color, #333) uses #333 if --color is not defined. Fallback values can themselves contain var() references, enabling chains like var(--theme-color, var(--default-color, blue)). If a custom property is set to an invalid value for the property it is used in, the property receives its inherited value (not the fallback) — this is called the \"invalid at computed-value time\" behavior.\n\nDynamic theming is the most powerful application of custom properties. By defining a theme as a set of custom properties on :root, you can switch themes by changing just the variable values — either through a class toggle on the <html> element or via JavaScript's element.style.setProperty(). Dark mode becomes trivial: define light theme variables on :root and dark theme variables on :root.dark or [data-theme=\"dark\"], then toggle the class or attribute. Every element referencing those variables updates automatically.\n\nCustom properties can store any valid CSS value: colors, lengths, numbers, strings, and even entire property values like a complete box-shadow or gradient. They can be used in calc() expressions (calc(var(--spacing) * 2)), combined with other values (border: var(--border-width) solid var(--border-color)), and even animated in modern browsers that support @property for registered custom properties. The @property at-rule lets you declare the type, inheritance, and initial value of a custom property, enabling smooth transitions between values.",
+      "codeExamples": [
+        {
+          "title": "Defining and Using Custom Properties",
+          "code": "/* Define global custom properties on :root */\n:root {\n  --color-primary: #3b82f6;\n  --color-secondary: #8b5cf6;\n  --color-text: #1f2937;\n  --color-bg: #ffffff;\n  --spacing-sm: 8px;\n  --spacing-md: 16px;\n  --spacing-lg: 32px;\n  --radius: 8px;\n  --shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n  --font-body: 'Inter', system-ui, sans-serif;\n}\n\n/* Using custom properties */\n.card {\n  background: var(--color-bg);\n  color: var(--color-text);\n  padding: var(--spacing-lg);\n  border-radius: var(--radius);\n  box-shadow: var(--shadow);\n  font-family: var(--font-body);\n}\n\n.button {\n  background: var(--color-primary);\n  color: white;\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-radius: var(--radius);\n  border: none;\n}\n\n/* Fallback values */\n.element {\n  color: var(--accent-color, #e11d48);\n  font-size: var(--custom-size, 16px);\n  margin: var(--custom-margin, var(--spacing-md));\n}",
+          "explanation": "Custom properties defined on :root are globally available. The var() function retrieves values with optional fallbacks. Fallbacks can be nested var() calls. Once defined, changing a single variable value updates every element that references it."
+        },
+        {
+          "title": "Scoping Custom Properties",
+          "code": "/* Global defaults */\n:root {\n  --button-bg: #3b82f6;\n  --button-text: #ffffff;\n  --button-padding: 10px 20px;\n  --button-radius: 6px;\n}\n\n/* Base button uses global variables */\n.button {\n  background: var(--button-bg);\n  color: var(--button-text);\n  padding: var(--button-padding);\n  border-radius: var(--button-radius);\n  border: none;\n  cursor: pointer;\n}\n\n/* Variant overrides via scoped custom properties */\n.button-danger {\n  --button-bg: #ef4444;\n  --button-text: #ffffff;\n}\n\n.button-outline {\n  --button-bg: transparent;\n  --button-text: #3b82f6;\n  border: 2px solid var(--button-text);\n}\n\n.button-large {\n  --button-padding: 14px 32px;\n  --button-radius: 10px;\n  font-size: 18px;\n}\n\n/* Component-scoped variables */\n.card {\n  --card-padding: 24px;\n  --card-bg: white;\n  padding: var(--card-padding);\n  background: var(--card-bg);\n}\n\n.card.compact {\n  --card-padding: 12px;\n}",
+          "explanation": "Custom properties cascade and inherit like regular CSS. Defining a variable on a specific class overrides it within that element's scope. This enables component variants without duplicating property declarations — just change the variable values."
+        },
+        {
+          "title": "Dark Mode with Custom Properties",
+          "code": "/* Light theme (default) */\n:root {\n  --bg-primary: #ffffff;\n  --bg-secondary: #f3f4f6;\n  --text-primary: #111827;\n  --text-secondary: #6b7280;\n  --border-color: #e5e7eb;\n  --shadow-color: rgba(0, 0, 0, 0.1);\n  --accent: #3b82f6;\n}\n\n/* Dark theme */\n:root[data-theme=\"dark\"] {\n  --bg-primary: #111827;\n  --bg-secondary: #1f2937;\n  --text-primary: #f9fafb;\n  --text-secondary: #9ca3af;\n  --border-color: #374151;\n  --shadow-color: rgba(0, 0, 0, 0.4);\n  --accent: #60a5fa;\n}\n\n/* Auto dark mode based on system preference */\n@media (prefers-color-scheme: dark) {\n  :root:not([data-theme=\"light\"]) {\n    --bg-primary: #111827;\n    --bg-secondary: #1f2937;\n    --text-primary: #f9fafb;\n    --text-secondary: #9ca3af;\n    --border-color: #374151;\n    --shadow-color: rgba(0, 0, 0, 0.4);\n    --accent: #60a5fa;\n  }\n}\n\n/* Components reference variables — no duplication needed */\nbody {\n  background: var(--bg-primary);\n  color: var(--text-primary);\n}\n\n.card {\n  background: var(--bg-secondary);\n  border: 1px solid var(--border-color);\n  box-shadow: 0 2px 8px var(--shadow-color);\n}\n\n/* Toggle theme with JavaScript */\n<script>\nfunction toggleTheme() {\n  const current = document.documentElement.getAttribute('data-theme');\n  const next = current === 'dark' ? 'light' : 'dark';\n  document.documentElement.setAttribute('data-theme', next);\n  localStorage.setItem('theme', next);\n}\n</script>",
+          "explanation": "Define your entire color palette as custom properties. Dark mode just redefines those variables — all components automatically adapt without any additional CSS. The data-theme attribute approach allows manual toggle that overrides system preference."
+        },
+        {
+          "title": "Dynamic Properties with JavaScript and @property",
+          "code": "/* Change custom properties with JavaScript */\n<script>\nconst root = document.documentElement;\n\n// Set a custom property\nroot.style.setProperty('--accent', '#e11d48');\n\n// Read a custom property\nconst accent = getComputedStyle(root).getPropertyValue('--accent');\nconsole.log(accent); // #e11d48\n\n// Remove a custom property (revert to inherited/fallback)\nroot.style.removeProperty('--accent');\n\n// Dynamic spacing based on input\nfunction updateSpacing(value) {\n  root.style.setProperty('--spacing-unit', value + 'px');\n}\n</script>\n\n/* @property: Register typed custom properties (enables animation) */\n@property --gradient-angle {\n  syntax: '<angle>';\n  initial-value: 0deg;\n  inherits: false;\n}\n\n.gradient-box {\n  --gradient-angle: 0deg;\n  background: conic-gradient(\n    from var(--gradient-angle),\n    #3b82f6,\n    #8b5cf6,\n    #ec4899,\n    #3b82f6\n  );\n  transition: --gradient-angle 0.5s ease;\n}\n\n.gradient-box:hover {\n  --gradient-angle: 180deg;\n}\n\n/* Animating custom properties with @keyframes */\n@keyframes rotateGradient {\n  to { --gradient-angle: 360deg; }\n}\n\n.animated-gradient {\n  animation: rotateGradient 3s linear infinite;\n}",
+          "explanation": "JavaScript can read, set, and remove custom properties in real time. The @property at-rule registers a custom property with a specific type (angle, color, length, etc.), which enables the browser to interpolate and animate between values — something not possible with unregistered custom properties."
+        }
+      ],
+      "notes": [
+        "Custom properties cascade and inherit like regular CSS properties. A variable defined on a parent is available to all descendants unless overridden.",
+        "The 'invalid at computed-value time' behavior means if a custom property is set to a value that is invalid for the property it is used in, the property falls back to its inherited value, NOT the var() fallback. The fallback only applies when the variable itself is undefined.",
+        "The @property at-rule enables animating custom properties by declaring their type. Without @property, transitions between custom property values produce an instant jump instead of smooth interpolation."
+      ],
+      "commonPitfalls": [
+        "Confusing var() fallback behavior: the fallback only triggers when the variable is not defined at all, not when it is defined but invalid for that property context.",
+        "Defining too many variables on :root when they should be scoped to components. This creates a bloated global namespace and makes it hard to understand which components use which variables.",
+        "Assuming custom properties can be transitioned without @property registration. Unregistered custom properties change instantly — only registered ones with a declared syntax can be smoothly interpolated."
+      ],
+      "interviewTips": [
+        "Explain the difference between CSS custom properties and Sass variables: custom properties are live at runtime, cascade, and can be changed with JavaScript; Sass variables are compiled away at build time.",
+        "Describe how you would implement a dark mode toggle using only CSS custom properties and a data attribute."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "custom-properties-ex1",
+        "title": "Create a Themeable Component System",
+        "description": "Define a set of custom properties for a button component that supports default, danger, and success variants. The base button should use variables, and each variant should only override the relevant variables.",
+        "starterCode": "/* Define base button variables */\n:root {\n  /* Add button custom properties */\n}\n\n.button {\n  /* Use variables for bg, text color, padding, radius */\n}\n\n/* Danger variant: red theme */\n.button-danger {\n  /* Override only the color variables */\n}\n\n/* Success variant: green theme */\n.button-success {\n  /* Override only the color variables */\n}\n",
+        "solution": ":root {\n  --btn-bg: #3b82f6;\n  --btn-text: #ffffff;\n  --btn-padding-y: 10px;\n  --btn-padding-x: 20px;\n  --btn-radius: 6px;\n  --btn-hover-bg: #2563eb;\n}\n\n.button {\n  background: var(--btn-bg);\n  color: var(--btn-text);\n  padding: var(--btn-padding-y) var(--btn-padding-x);\n  border-radius: var(--btn-radius);\n  border: none;\n  cursor: pointer;\n  transition: background 0.2s ease;\n}\n\n.button:hover {\n  background: var(--btn-hover-bg);\n}\n\n.button-danger {\n  --btn-bg: #ef4444;\n  --btn-hover-bg: #dc2626;\n}\n\n.button-success {\n  --btn-bg: #22c55e;\n  --btn-hover-bg: #16a34a;\n}",
+        "hints": [
+          "Define variables on :root for global defaults",
+          "The base .button class uses var() for all customizable properties",
+          "Variants only redefine the variables they need to change — the var() references resolve automatically"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "custom-properties-ex2",
+        "title": "Light and Dark Theme Toggle",
+        "description": "Create a complete light/dark theme system using custom properties. Define colors for background, text, borders, and accent on :root for light mode and on [data-theme='dark'] for dark mode. Apply them to body, card, and button elements.",
+        "starterCode": "/* Light theme */\n:root {\n  /* Define color variables */\n}\n\n/* Dark theme */\n:root[data-theme=\"dark\"] {\n  /* Override color variables */\n}\n\nbody {\n  /* Use variables */\n}\n\n.card {\n  /* Use variables */\n}\n\n.button {\n  /* Use variables */\n}\n",
+        "solution": ":root {\n  --bg: #ffffff;\n  --bg-card: #f9fafb;\n  --text: #111827;\n  --text-muted: #6b7280;\n  --border: #e5e7eb;\n  --accent: #3b82f6;\n  --accent-hover: #2563eb;\n}\n\n:root[data-theme=\"dark\"] {\n  --bg: #0f172a;\n  --bg-card: #1e293b;\n  --text: #f1f5f9;\n  --text-muted: #94a3b8;\n  --border: #334155;\n  --accent: #60a5fa;\n  --accent-hover: #93c5fd;\n}\n\nbody {\n  background-color: var(--bg);\n  color: var(--text);\n  transition: background-color 0.3s ease, color 0.3s ease;\n}\n\n.card {\n  background-color: var(--bg-card);\n  border: 1px solid var(--border);\n  border-radius: 12px;\n  padding: 24px;\n  color: var(--text);\n}\n\n.card p {\n  color: var(--text-muted);\n}\n\n.button {\n  background-color: var(--accent);\n  color: white;\n  padding: 10px 20px;\n  border: none;\n  border-radius: 6px;\n  cursor: pointer;\n  transition: background-color 0.2s ease;\n}\n\n.button:hover {\n  background-color: var(--accent-hover);\n}",
+        "hints": [
+          "Define all theme colors as custom properties on :root",
+          "Override the same variable names on :root[data-theme='dark']",
+          "Add transition on background-color and color for smooth theme switching",
+          "Test by adding data-theme='dark' to the html element"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "calc-and-clamp",
+    "sectionId": "advanced-techniques",
+    "orderIndex": 1,
+    "title": "Calc & Clamp",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["calc()", "min()", "max()", "clamp()", "Fluid Typography"],
+    "content": {
+      "explanation": "CSS mathematical functions — calc(), min(), max(), and clamp() — allow you to perform calculations directly in your stylesheets, mixing different units and creating responsive values without media queries. These functions evaluate at computed-value time, meaning the browser performs the calculation for each element based on its actual context, making them incredibly powerful for responsive design.\n\ncalc() performs arithmetic operations on CSS values, and its most powerful feature is the ability to mix different units. You can subtract a fixed pixel value from a percentage (width: calc(100% - 32px)), combine rem and viewport units (font-size: calc(1rem + 0.5vw)), or perform complex multi-term calculations. The four operations are + (addition), - (subtraction), * (multiplication), and / (division). Addition and subtraction operators must have whitespace on both sides, while multiplication and division do not require it (though it improves readability).\n\nThe min() function returns the smallest of its comma-separated arguments. It is useful for setting maximum constraints: width: min(100%, 600px) means the element will be 100% of its parent but never exceed 600px — effectively a max-width without needing an extra property. The max() function returns the largest value: font-size: max(16px, 1.2vw) ensures text is never smaller than 16px regardless of viewport size. Both functions accept two or more arguments and can mix units.\n\nThe clamp() function takes three arguments — minimum, preferred, and maximum — and returns the preferred value clamped between the min and max bounds. The syntax is clamp(min, preferred, max). For example, clamp(16px, 2.5vw, 24px) sets a font size that scales with the viewport but never drops below 16px or exceeds 24px. This single function replaces the common pattern of setting a base size with a min-width/max-width or the min(max()) nesting pattern.\n\nFluid typography is the most impactful application of clamp(). Instead of defining discrete font sizes at breakpoints with media queries, fluid typography scales smoothly and continuously with the viewport width. The formula clamp(minSize, preferredSize, maxSize) where preferredSize uses viewport units creates text that looks good at every screen width. A typical body text setup might be font-size: clamp(1rem, 0.9rem + 0.5vw, 1.25rem), which scales from 16px to 20px across viewports. The same technique works for spacing, padding, margins, and any length property — creating truly fluid layouts.",
+      "codeExamples": [
+        {
+          "title": "calc() Mixing Units",
+          "code": "/* Subtract fixed value from percentage */\n.sidebar-layout {\n  display: grid;\n  grid-template-columns: 250px calc(100% - 250px - 24px);\n  gap: 24px;\n}\n\n/* Full viewport height minus fixed header and footer */\n.main-content {\n  min-height: calc(100vh - 64px - 48px); /* header 64px, footer 48px */\n}\n\n/* Responsive padding that shrinks proportionally */\n.container {\n  padding: calc(16px + 2vw);\n}\n\n/* Centering trick with calc */\n.centered-element {\n  width: 300px;\n  margin-left: calc(50% - 150px); /* 50% minus half the width */\n}\n\n/* Using calc with custom properties */\n:root {\n  --header-height: 64px;\n  --sidebar-width: 280px;\n  --gap: 24px;\n}\n\n.main {\n  margin-left: calc(var(--sidebar-width) + var(--gap));\n  min-height: calc(100vh - var(--header-height));\n  padding: calc(var(--gap) * 2);\n}",
+          "explanation": "calc() shines when combining different units: percentages with pixels, viewport units with rems, custom properties with fixed values. This is impossible with static CSS values. Remember: + and - require spaces on both sides."
+        },
+        {
+          "title": "min() and max() for Responsive Constraints",
+          "code": "/* min() acts like a max-width in a single property */\n.container {\n  width: min(100%, 1200px);\n  /* Equivalent to: width: 100%; max-width: 1200px; */\n  margin: 0 auto;\n  padding: 0 min(5vw, 48px);\n  /* Padding scales with viewport but caps at 48px */\n}\n\n/* max() ensures minimum values */\n.text {\n  font-size: max(16px, 1.2vw);\n  /* Never smaller than 16px, grows with viewport */\n}\n\n/* Responsive gap that is at least 16px */\n.grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));\n  gap: max(16px, 2vw);\n}\n\n/* Image that fills container but has max dimensions */\n.hero-image {\n  width: min(100%, 800px);\n  height: min(60vh, 500px);\n}\n\n/* min() with multiple values */\n.flexible-element {\n  width: min(100%, 50vw, 600px);\n  /* Takes the smallest of all three */\n}",
+          "explanation": "min() picks the smallest value — use it where you would use max-width. max() picks the largest value — use it where you would use min-width. Both accept multiple arguments and mix units freely."
+        },
+        {
+          "title": "clamp() for Fluid Sizing",
+          "code": "/* Fluid typography */\n:root {\n  /* Scale from 16px to 20px across viewports */\n  --text-body: clamp(1rem, 0.9rem + 0.5vw, 1.25rem);\n\n  /* Scale from 24px to 48px */\n  --text-h1: clamp(1.5rem, 1rem + 3vw, 3rem);\n\n  /* Scale from 20px to 36px */\n  --text-h2: clamp(1.25rem, 0.9rem + 2vw, 2.25rem);\n}\n\nbody {\n  font-size: var(--text-body);\n}\n\nh1 { font-size: var(--text-h1); }\nh2 { font-size: var(--text-h2); }\n\n/* Fluid spacing */\n.section {\n  padding: clamp(24px, 5vw, 80px);\n  /* Min 24px, max 80px, scales with viewport */\n}\n\n.card-grid {\n  gap: clamp(16px, 2vw, 32px);\n}\n\n/* Fluid container width */\n.container {\n  width: clamp(320px, 90vw, 1200px);\n  margin: 0 auto;\n}\n\n/* Fluid border-radius */\n.hero-card {\n  border-radius: clamp(8px, 2vw, 24px);\n}",
+          "explanation": "clamp(min, preferred, max) returns the preferred value clamped to the bounds. For fluid typography, use 'rem + vw' in the preferred value so font sizes scale smoothly. The formula 0.9rem + 0.5vw creates a gentle scaling curve that works well for body text."
+        },
+        {
+          "title": "Complete Fluid Design System",
+          "code": "/* Fluid design system without media queries */\n:root {\n  /* Typography scale */\n  --fs-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);\n  --fs-sm: clamp(0.875rem, 0.8rem + 0.35vw, 1rem);\n  --fs-base: clamp(1rem, 0.9rem + 0.5vw, 1.125rem);\n  --fs-lg: clamp(1.125rem, 0.9rem + 1vw, 1.5rem);\n  --fs-xl: clamp(1.25rem, 0.8rem + 2vw, 2rem);\n  --fs-2xl: clamp(1.5rem, 0.8rem + 3vw, 3rem);\n  --fs-3xl: clamp(2rem, 1rem + 4vw, 4rem);\n\n  /* Spacing scale */\n  --space-xs: clamp(4px, 0.5vw, 8px);\n  --space-sm: clamp(8px, 1vw, 16px);\n  --space-md: clamp(16px, 2vw, 24px);\n  --space-lg: clamp(24px, 4vw, 48px);\n  --space-xl: clamp(48px, 6vw, 80px);\n  --space-2xl: clamp(64px, 10vw, 128px);\n}\n\n/* Usage */\n.hero {\n  padding: var(--space-2xl) var(--space-lg);\n}\n\n.hero h1 {\n  font-size: var(--fs-3xl);\n  margin-bottom: var(--space-md);\n}\n\n.hero p {\n  font-size: var(--fs-lg);\n  max-width: clamp(320px, 60vw, 640px);\n}\n\n.section {\n  padding: var(--space-xl) var(--space-lg);\n}\n\n.card {\n  padding: var(--space-md);\n  border-radius: clamp(8px, 1vw, 16px);\n}",
+          "explanation": "A fluid design system defines typography and spacing scales using clamp() variables. Every size scales continuously with the viewport — no media queries needed. The rem + vw formula ensures scaling is relative to both root font size and viewport width."
+        }
+      ],
+      "notes": [
+        "In calc(), the + and - operators MUST have whitespace on both sides. calc(100%-32px) is invalid; calc(100% - 32px) is correct.",
+        "clamp() is equivalent to max(MIN, min(PREFERRED, MAX)). Knowing this equivalence helps when you need to support older browsers that have min/max but not clamp.",
+        "Fluid typography using clamp() with 'rem + vw' respects the user's font size preferences (via rem) while also scaling with the viewport (via vw). This is more accessible than using vw alone."
+      ],
+      "commonPitfalls": [
+        "Forgetting the required whitespace around + and - operators in calc(). This silently fails and the browser ignores the entire declaration.",
+        "Using only vw units for fluid typography without a rem base. Pure viewport units ignore user font-size preferences, which is an accessibility issue. Always combine vw with rem.",
+        "Nesting too many calc() expressions when min(), max(), or clamp() would be cleaner. For example, width: calc(min(100%, 600px)) is unnecessarily complex — use width: min(100%, 600px) directly."
+      ],
+      "interviewTips": [
+        "Explain the difference between calc(), min(), max(), and clamp() with practical examples of when to use each.",
+        "Describe how you would implement fluid typography that scales with the viewport but respects minimum and maximum bounds."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "calc-and-clamp-ex1",
+        "title": "Fluid Typography Scale",
+        "description": "Create a fluid typography system using clamp() for body text, h1, h2, and h3. Body should range from 16px to 18px, h1 from 32px to 64px, h2 from 24px to 40px, h3 from 20px to 28px.",
+        "starterCode": ":root {\n  /* Define fluid font size variables using clamp() */\n  /* Body: 16px to 18px */\n  /* H1: 32px to 64px */\n  /* H2: 24px to 40px */\n  /* H3: 20px to 28px */\n}\n\nbody { /* Use body variable */ }\nh1   { /* Use h1 variable */ }\nh2   { /* Use h2 variable */ }\nh3   { /* Use h3 variable */ }\n",
+        "solution": ":root {\n  --fs-body: clamp(1rem, 0.95rem + 0.25vw, 1.125rem);\n  --fs-h1: clamp(2rem, 1rem + 4vw, 4rem);\n  --fs-h2: clamp(1.5rem, 1rem + 2vw, 2.5rem);\n  --fs-h3: clamp(1.25rem, 1rem + 1vw, 1.75rem);\n}\n\nbody { font-size: var(--fs-body); }\nh1   { font-size: var(--fs-h1); }\nh2   { font-size: var(--fs-h2); }\nh3   { font-size: var(--fs-h3); }",
+        "hints": [
+          "Convert px to rem by dividing by 16 (e.g., 32px = 2rem)",
+          "The preferred value should use rem + vw for accessible scaling",
+          "Larger headings need more vw influence for dramatic scaling"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "calc-and-clamp-ex2",
+        "title": "Responsive Layout with calc() and clamp()",
+        "description": "Build a page layout with a fixed sidebar (280px), fluid main content, and a sticky header (64px). Use calc() for the main content area dimensions and clamp() for padding/gaps that scale with the viewport.",
+        "starterCode": ":root {\n  --sidebar-width: 280px;\n  --header-height: 64px;\n}\n\n.header {\n  height: var(--header-height);\n  position: sticky;\n  top: 0;\n}\n\n.layout {\n  display: flex;\n}\n\n.sidebar {\n  width: var(--sidebar-width);\n}\n\n.main {\n  /* Calculate width subtracting sidebar */\n  /* Calculate min-height subtracting header */\n  /* Add fluid padding using clamp */\n}\n",
+        "solution": ":root {\n  --sidebar-width: 280px;\n  --header-height: 64px;\n  --layout-gap: clamp(16px, 2vw, 32px);\n}\n\n.header {\n  height: var(--header-height);\n  position: sticky;\n  top: 0;\n}\n\n.layout {\n  display: flex;\n  gap: var(--layout-gap);\n}\n\n.sidebar {\n  width: var(--sidebar-width);\n  flex-shrink: 0;\n}\n\n.main {\n  width: calc(100% - var(--sidebar-width) - var(--layout-gap));\n  min-height: calc(100vh - var(--header-height));\n  padding: clamp(16px, 3vw, 48px);\n}",
+        "hints": [
+          "Use calc(100% - sidebar - gap) for the main content width",
+          "Use calc(100vh - header) for the minimum content height",
+          "Use clamp() for padding that scales between mobile and desktop sizes"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "filters-and-blend-modes",
+    "sectionId": "advanced-techniques",
+    "orderIndex": 2,
+    "title": "Filters & Blend Modes",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["filter", "backdrop-filter", "mix-blend-mode", "background-blend-mode", "Visual Effects"],
+    "content": {
+      "explanation": "CSS filters and blend modes provide Photoshop-like visual effects directly in the browser, eliminating the need for image editing software to create blurred backgrounds, color overlays, grayscale effects, and sophisticated visual compositions. These properties are GPU-accelerated and can be animated, making them powerful tools for creating polished, dynamic interfaces.\n\nThe filter property applies graphical effects to an element and all its children. Available filter functions include blur() for Gaussian blur, brightness() for lightening or darkening, contrast() for adjusting contrast, grayscale() for desaturation, saturate() for color intensity, hue-rotate() for shifting colors, invert() for color inversion, sepia() for a warm vintage tone, opacity() for transparency (similar to the opacity property but can be combined in a filter chain), and drop-shadow() for shadows that follow the element's alpha channel (unlike box-shadow which follows the box). Multiple filters can be chained in a single declaration and are applied in order.\n\nThe backdrop-filter property applies the same filter effects, but to the area behind the element rather than the element itself. This is the foundation of the frosted glass (glassmorphism) effect that became popular in modern UI design. By setting a semi-transparent background on an element and applying backdrop-filter: blur(), the content behind the element appears blurred while the element itself remains crisp. This is commonly used for navigation bars, modal overlays, and notification panels.\n\nThe mix-blend-mode property controls how an element's colors blend with the colors of its parent and siblings — like Photoshop layer blend modes. Common modes include multiply (darkens by multiplying colors), screen (lightens by screening colors), overlay (combines multiply and screen), darken (keeps the darker of the two colors), lighten (keeps the lighter), color-dodge (brightens the base), difference (subtracts colors), and luminosity (uses the luminosity of the element with the hue and saturation of the background).\n\nThe background-blend-mode property works specifically on an element's background layers — blending a background-image with a background-color or blending multiple background images with each other. This is useful for creating duotone effects (a colored overlay on an image), tinting images, and combining patterns. Unlike mix-blend-mode which affects how the element blends with its surroundings, background-blend-mode is self-contained within the element's own backgrounds.",
+      "codeExamples": [
+        {
+          "title": "CSS Filter Functions",
+          "code": "/* Individual filter functions */\n.blur       { filter: blur(4px); }\n.bright     { filter: brightness(1.3); }\n.contrast   { filter: contrast(1.5); }\n.grayscale  { filter: grayscale(100%); }\n.saturate   { filter: saturate(2); }\n.hue-rotate { filter: hue-rotate(90deg); }\n.invert     { filter: invert(100%); }\n.sepia      { filter: sepia(80%); }\n\n/* Chaining multiple filters */\n.vintage {\n  filter: sepia(60%) contrast(1.1) brightness(0.9) saturate(1.3);\n}\n\n/* Hover effect: grayscale to color */\n.team-photo {\n  filter: grayscale(100%);\n  transition: filter 0.4s ease;\n}\n.team-photo:hover {\n  filter: grayscale(0%);\n}\n\n/* drop-shadow follows alpha channel (unlike box-shadow) */\n.png-icon {\n  /* box-shadow would create a rectangular shadow */\n  /* drop-shadow follows the actual shape of the PNG */\n  filter: drop-shadow(2px 4px 6px rgba(0, 0, 0, 0.3));\n}\n\n/* Disabled/loading state */\n.disabled {\n  filter: grayscale(100%) opacity(0.5);\n  pointer-events: none;\n}",
+          "explanation": "Filters are applied in declaration order. Chaining them creates compound effects like the vintage filter. drop-shadow is more versatile than box-shadow because it traces the element's actual shape, including transparent PNG regions and CSS clip-paths."
+        },
+        {
+          "title": "Backdrop Filter: Frosted Glass Effect",
+          "code": "/* Glassmorphism card */\n.glass-card {\n  background: rgba(255, 255, 255, 0.15);\n  backdrop-filter: blur(12px);\n  border: 1px solid rgba(255, 255, 255, 0.2);\n  border-radius: 16px;\n  padding: 24px;\n}\n\n/* Frosted glass navbar */\n.navbar {\n  position: sticky;\n  top: 0;\n  z-index: 50;\n  background: rgba(255, 255, 255, 0.8);\n  backdrop-filter: blur(10px) saturate(180%);\n  border-bottom: 1px solid rgba(0, 0, 0, 0.1);\n}\n\n/* Dark mode variant */\n.navbar-dark {\n  background: rgba(15, 23, 42, 0.8);\n  backdrop-filter: blur(10px) saturate(180%);\n  border-bottom: 1px solid rgba(255, 255, 255, 0.1);\n}\n\n/* Modal overlay with blurred background */\n.modal-overlay {\n  position: fixed;\n  inset: 0;\n  background: rgba(0, 0, 0, 0.4);\n  backdrop-filter: blur(4px);\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n/* Fallback for browsers without backdrop-filter support */\n@supports not (backdrop-filter: blur(1px)) {\n  .glass-card {\n    background: rgba(255, 255, 255, 0.9);\n  }\n}",
+          "explanation": "backdrop-filter blurs or modifies the content behind an element. The element itself needs a semi-transparent background for the effect to be visible. Combine blur with saturate for a vibrant frosted look. Always provide a fallback with @supports for older browsers."
+        },
+        {
+          "title": "Mix Blend Modes",
+          "code": "/* Text that blends with background */\n.blend-text {\n  font-size: 72px;\n  font-weight: 900;\n  color: white;\n  mix-blend-mode: difference;\n  /* Text will always be readable regardless of background */\n}\n\n/* Colored overlay on image */\n.image-overlay {\n  position: relative;\n}\n.image-overlay::after {\n  content: '';\n  position: absolute;\n  inset: 0;\n  background: #3b82f6;\n  mix-blend-mode: multiply;\n}\n\n/* Interesting text effects */\n.knockout-text {\n  background: url('pattern.jpg');\n  color: white;\n  mix-blend-mode: screen;\n  /* Creates a knockout/reveal effect */\n}\n\n/* Common blend modes compared */\n.multiply  { mix-blend-mode: multiply; }   /* Darkens */\n.screen    { mix-blend-mode: screen; }     /* Lightens */\n.overlay   { mix-blend-mode: overlay; }    /* Contrast boost */\n.darken    { mix-blend-mode: darken; }     /* Keeps darker pixels */\n.lighten   { mix-blend-mode: lighten; }    /* Keeps lighter pixels */\n.dodge     { mix-blend-mode: color-dodge; } /* Bright highlights */\n.difference{ mix-blend-mode: difference; }  /* Invert effect */",
+          "explanation": "mix-blend-mode controls how an element's colors interact with those behind it. multiply darkens (good for colored overlays on images), screen lightens, and difference creates an auto-contrast effect that keeps text readable over any background."
+        },
+        {
+          "title": "Background Blend Mode: Image Effects",
+          "code": "/* Duotone effect: Image + solid color */\n.duotone {\n  background-image: url('photo.jpg');\n  background-color: #3b82f6;\n  background-blend-mode: multiply;\n  background-size: cover;\n}\n\n/* Different duotone colors */\n.duotone-warm {\n  background-image: url('photo.jpg');\n  background-color: #f59e0b;\n  background-blend-mode: overlay;\n  background-size: cover;\n}\n\n/* Gradient overlay on image */\n.gradient-overlay {\n  background:\n    linear-gradient(to bottom, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.8)),\n    url('hero.jpg');\n  background-blend-mode: normal;\n  background-size: cover;\n}\n\n/* Multiple backgrounds blending */\n.pattern-blend {\n  background:\n    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px),\n    linear-gradient(135deg, #667eea 0%, #764ba2 100%);\n  background-blend-mode: overlay;\n}\n\n/* Hover duotone reveal */\n.image-card {\n  background-image: url('photo.jpg');\n  background-color: #8b5cf6;\n  background-blend-mode: multiply;\n  background-size: cover;\n  transition: background-color 0.4s ease;\n}\n.image-card:hover {\n  background-color: transparent;\n  /* Reveals the original unblended image */\n}",
+          "explanation": "background-blend-mode blends an element's background layers together. The duotone effect (image + solid color + multiply) is used on many modern sites. Setting background-color to transparent on hover smoothly reveals the original image."
+        }
+      ],
+      "notes": [
+        "filter applies effects to the element and its children. backdrop-filter applies effects to the content behind the element. Do not confuse the two.",
+        "backdrop-filter requires the element to have a semi-transparent or partially transparent background to see the effect. A fully opaque background covers the backdrop entirely.",
+        "Filters and blend modes are GPU-accelerated and generally perform well in animations. However, blur() is the most expensive filter — keep blur radius small and avoid animating it on many elements simultaneously."
+      ],
+      "commonPitfalls": [
+        "Applying backdrop-filter on an element with a fully opaque background. The filter works but is invisible because the opaque background covers the blurred area behind it.",
+        "Forgetting that filter affects all children. If you blur a container, all text and images inside it will also be blurred. Use backdrop-filter instead to blur only the background.",
+        "Not providing a @supports fallback for backdrop-filter. Some older browsers do not support it, so provide an opaque or semi-transparent background as a fallback."
+      ],
+      "interviewTips": [
+        "Explain the difference between filter and backdrop-filter with a practical example like a frosted glass navbar.",
+        "Describe how you would create a duotone image effect using only CSS (background-image + background-color + background-blend-mode: multiply)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "filters-and-blend-modes-ex1",
+        "title": "Frosted Glass Card",
+        "description": "Create a frosted glass card using backdrop-filter. The card should have a semi-transparent white background, a blur effect on the backdrop, and a subtle border. Include a @supports fallback.",
+        "starterCode": ".glass-card {\n  padding: 32px;\n  border-radius: 16px;\n\n  /* Add semi-transparent background */\n  /* Add backdrop blur */\n  /* Add border */\n}\n\n/* Add @supports fallback */\n",
+        "solution": ".glass-card {\n  padding: 32px;\n  border-radius: 16px;\n  background: rgba(255, 255, 255, 0.2);\n  backdrop-filter: blur(12px) saturate(180%);\n  border: 1px solid rgba(255, 255, 255, 0.3);\n  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);\n}\n\n@supports not (backdrop-filter: blur(1px)) {\n  .glass-card {\n    background: rgba(255, 255, 255, 0.85);\n  }\n}",
+        "hints": [
+          "Use rgba for the background with low alpha (0.15-0.25) to let the backdrop show through",
+          "Combine blur() with saturate() for a vibrant glass effect",
+          "The @supports fallback should increase the background opacity to compensate for missing blur"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "filters-and-blend-modes-ex2",
+        "title": "Image Gallery with Filter Effects",
+        "description": "Create an image card that starts with a grayscale + slight blur effect and transitions to full color and sharpness on hover. Add a colored overlay using mix-blend-mode that fades out on hover.",
+        "starterCode": ".image-card {\n  position: relative;\n  overflow: hidden;\n  border-radius: 12px;\n}\n\n.image-card img {\n  width: 100%;\n  display: block;\n  /* Add grayscale + blur filter */\n  /* Add transition */\n}\n\n.image-card:hover img {\n  /* Remove filters */\n}\n\n.image-card::after {\n  content: '';\n  position: absolute;\n  inset: 0;\n  /* Add colored overlay with blend mode */\n  /* Add transition */\n}\n\n.image-card:hover::after {\n  /* Fade out overlay */\n}\n",
+        "solution": ".image-card {\n  position: relative;\n  overflow: hidden;\n  border-radius: 12px;\n}\n\n.image-card img {\n  width: 100%;\n  display: block;\n  filter: grayscale(80%) blur(1px);\n  transition: filter 0.4s ease, transform 0.4s ease;\n}\n\n.image-card:hover img {\n  filter: grayscale(0%) blur(0px);\n  transform: scale(1.05);\n}\n\n.image-card::after {\n  content: '';\n  position: absolute;\n  inset: 0;\n  background: #3b82f6;\n  mix-blend-mode: multiply;\n  opacity: 0.6;\n  transition: opacity 0.4s ease;\n}\n\n.image-card:hover::after {\n  opacity: 0;\n}",
+        "hints": [
+          "Use filter: grayscale() with blur() on the image for the initial muted look",
+          "The ::after pseudo-element creates a color overlay with mix-blend-mode: multiply",
+          "Fade the overlay by transitioning its opacity to 0 on hover",
+          "Add a subtle scale transform on hover for extra polish"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "clip-path-and-shapes",
+    "sectionId": "advanced-techniques",
+    "orderIndex": 3,
+    "title": "Clip Path & Shapes",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["clip-path", "polygon()", "circle()", "ellipse()", "shape-outside"],
+    "content": {
+      "explanation": "CSS clip-path allows you to create complex shapes by clipping (masking) elements to a defined region. Only the portion of the element inside the clipping region is visible; everything outside is hidden. Unlike border-radius which only creates rounded rectangles, clip-path can create any shape imaginable — triangles, hexagons, stars, custom polygons, and smooth curves. The clipped content is still in the document flow, occupying its original rectangular space.\n\nThe polygon() function is the most versatile clip-path shape. It defines a shape using a series of x,y coordinate pairs that form the vertices of a polygon. Coordinates can be percentages (relative to the element's dimensions) or absolute lengths. For example, polygon(50% 0%, 100% 100%, 0% 100%) creates a triangle with the top point centered and the base at the bottom. Points are connected in order, and the path is automatically closed. You can create any polygon — triangles, pentagons, hexagons, arrows, chevrons, and completely custom shapes.\n\nThe circle() function creates a circular clip at a given radius and position. The syntax is circle(radius at centerX centerY). If omitted, the circle is centered in the element. The ellipse() function works similarly but accepts two radii for horizontal and vertical axes: ellipse(radiusX radiusY at centerX centerY). The inset() function creates a rectangle inset from the edges, with optional rounded corners: inset(top right bottom left round borderRadius). This is useful for animated reveals where you expand from a small rectangle to the full element.\n\nClip-path is animatable, making it a powerful tool for creative transitions. You can transition between shapes with the same number of vertices (e.g., one polygon to another polygon with the same number of points), circles with different radii, or insets with different dimensions. The browser smoothly interpolates between the coordinate values. This enables dramatic reveal effects, morphing shapes, and creative hover transitions that go far beyond standard CSS capabilities.\n\nThe shape-outside property is related but serves a different purpose: it defines a shape that inline content (text) wraps around when used with floated elements. While clip-path clips the visual rendering of an element, shape-outside affects the flow of surrounding content. Combining both on the same element — clip-path for the visual shape and shape-outside for text wrapping — creates magazine-style layouts where text flows around non-rectangular images.",
+      "codeExamples": [
+        {
+          "title": "Basic Clip-Path Shapes",
+          "code": "/* Triangle */\n.triangle {\n  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);\n}\n\n/* Pentagon */\n.pentagon {\n  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);\n}\n\n/* Hexagon */\n.hexagon {\n  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);\n}\n\n/* Arrow pointing right */\n.arrow {\n  clip-path: polygon(0% 20%, 60% 20%, 60% 0%, 100% 50%, 60% 100%, 60% 80%, 0% 80%);\n}\n\n/* Chevron */\n.chevron {\n  clip-path: polygon(0% 0%, 75% 0%, 100% 50%, 75% 100%, 0% 100%, 25% 50%);\n}\n\n/* Star */\n.star {\n  clip-path: polygon(\n    50% 0%, 61% 35%, 98% 35%, 68% 57%,\n    79% 91%, 50% 70%, 21% 91%, 32% 57%,\n    2% 35%, 39% 35%\n  );\n}\n\n/* Diamond */\n.diamond {\n  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);\n}",
+          "explanation": "polygon() defines shapes with x,y vertex coordinates as percentages of the element's width and height. 0% 0% is top-left, 100% 100% is bottom-right. The browser connects vertices in order and closes the path automatically. More vertices create more complex shapes."
+        },
+        {
+          "title": "Circle, Ellipse, and Inset",
+          "code": "/* Circle: radius at position */\n.circle-clip {\n  clip-path: circle(50% at 50% 50%); /* Full circle centered */\n}\n.circle-small {\n  clip-path: circle(30% at 50% 50%); /* Smaller circle */\n}\n.circle-offset {\n  clip-path: circle(40% at 30% 40%); /* Off-center circle */\n}\n\n/* Ellipse: radiusX radiusY at position */\n.ellipse-clip {\n  clip-path: ellipse(50% 35% at 50% 50%);\n}\n\n/* Inset: top right bottom left with optional rounding */\n.inset-clip {\n  clip-path: inset(10% 10% 10% 10%);\n}\n.inset-rounded {\n  clip-path: inset(5% round 20px);\n}\n\n/* Animated circle reveal */\n.reveal {\n  clip-path: circle(0% at 50% 50%);\n  transition: clip-path 0.6s ease-out;\n}\n.reveal.active {\n  clip-path: circle(75% at 50% 50%);\n}\n\n/* Animated inset reveal (curtain effect) */\n.curtain {\n  clip-path: inset(0 50% 0 50%);\n  transition: clip-path 0.5s ease;\n}\n.curtain.open {\n  clip-path: inset(0 0 0 0);\n}",
+          "explanation": "circle() and ellipse() create curved clipping regions. inset() creates rectangular clips with optional rounding — useful for reveal animations. All these shapes are smoothly animatable via CSS transitions."
+        },
+        {
+          "title": "Animated Clip-Path Transitions",
+          "code": "/* Hover morph: rectangle to circle */\n.morph {\n  clip-path: inset(0 round 8px);\n  transition: clip-path 0.4s ease;\n}\n.morph:hover {\n  clip-path: circle(50% at 50% 50%);\n}\n\n/* Polygon morphing (same number of points required) */\n.shape-morph {\n  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n  transition: clip-path 0.5s cubic-bezier(0.4, 0, 0.2, 1);\n}\n.shape-morph:hover {\n  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);\n}\n\n/* Diagonal reveal on scroll */\n.diagonal-reveal {\n  clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);\n  transition: clip-path 0.8s ease;\n}\n.diagonal-reveal.visible {\n  clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);\n}\n\n/* Creative page transition */\n@keyframes wipeIn {\n  from {\n    clip-path: circle(0% at 50% 50%);\n  }\n  to {\n    clip-path: circle(100% at 50% 50%);\n  }\n}\n\n.page-enter {\n  animation: wipeIn 0.8s ease-out forwards;\n}",
+          "explanation": "Clip-path transitions work when the shapes have the same type and number of points. Polygons must have equal vertex counts to morph smoothly. Circle and inset animations are smooth by default. These create dramatic reveal and morphing effects."
+        },
+        {
+          "title": "Shape-Outside for Text Wrapping",
+          "code": "/* Float an image with circular text wrapping */\n.circular-image {\n  float: left;\n  width: 200px;\n  height: 200px;\n  border-radius: 50%;\n  clip-path: circle(50%);\n  shape-outside: circle(50%);\n  margin-right: 20px;\n}\n\n/* Text wraps around the actual circle, not the bounding box */\n\n/* Custom polygon text wrap */\n.diamond-float {\n  float: left;\n  width: 200px;\n  height: 200px;\n  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);\n  shape-outside: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);\n  shape-margin: 16px; /* Adds space between shape and text */\n}\n\n/* Elliptical text wrap */\n.ellipse-float {\n  float: right;\n  width: 250px;\n  height: 300px;\n  clip-path: ellipse(50% 50%);\n  shape-outside: ellipse(50% 50%);\n  shape-margin: 12px;\n}\n\n/* Using an image's alpha channel for text wrapping */\n.alpha-shape {\n  float: left;\n  width: 200px;\n  shape-outside: url('shape.png');\n  shape-image-threshold: 0.5;\n  shape-margin: 10px;\n}",
+          "explanation": "shape-outside defines the area around which inline content wraps when used with float. Combining clip-path (visual) with shape-outside (flow) creates magazine-style layouts. shape-margin adds breathing room between the shape edge and wrapping text."
+        }
+      ],
+      "notes": [
+        "Clip-path does not change the element's box model. The element still occupies its full rectangular space in the layout — only the visual rendering is clipped.",
+        "For smooth clip-path animations between polygons, both the start and end polygons must have the same number of vertices. If they differ, add extra vertices at the same position to match counts.",
+        "shape-outside only works on floated elements. It has no effect on elements that are not floated."
+      ],
+      "commonPitfalls": [
+        "Trying to animate between polygons with different numbers of vertices. The transition will not work — add extra coincident points to the simpler shape to match the vertex count of the complex shape.",
+        "Forgetting that clip-path clips interactive areas too. Clicks outside the clipped region will not register on the element, which can confuse users if the clickable area does not match the visible shape.",
+        "Using shape-outside without float. The property only affects text flow around floated elements and is completely ignored on non-floated elements."
+      ],
+      "interviewTips": [
+        "Explain the difference between clip-path (visual clipping) and shape-outside (text flow wrapping) and when you would use each.",
+        "Describe how to create an animated reveal effect using clip-path transitions."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "clip-path-and-shapes-ex1",
+        "title": "Create Shape Badges",
+        "description": "Create three badges using clip-path: a hexagonal badge, a diamond badge, and an arrow-shaped badge. Each should be 120x120px with a colored background and centered text.",
+        "starterCode": ".badge {\n  width: 120px;\n  height: 120px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: white;\n  font-weight: bold;\n}\n\n.badge-hexagon {\n  background: #3b82f6;\n  /* Add hexagon clip-path */\n}\n\n.badge-diamond {\n  background: #8b5cf6;\n  /* Add diamond clip-path */\n}\n\n.badge-arrow {\n  background: #10b981;\n  /* Add arrow clip-path */\n}\n",
+        "solution": ".badge {\n  width: 120px;\n  height: 120px;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  color: white;\n  font-weight: bold;\n}\n\n.badge-hexagon {\n  background: #3b82f6;\n  clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%);\n}\n\n.badge-diamond {\n  background: #8b5cf6;\n  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);\n}\n\n.badge-arrow {\n  background: #10b981;\n  clip-path: polygon(0% 20%, 60% 20%, 60% 0%, 100% 50%, 60% 100%, 60% 80%, 0% 80%);\n}",
+        "hints": [
+          "A hexagon has 6 vertices, alternating between two heights",
+          "A diamond has 4 vertices at the midpoints of each edge",
+          "An arrow combines a rectangle body with a triangular point"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "clip-path-and-shapes-ex2",
+        "title": "Animated Clip-Path Image Reveal",
+        "description": "Create an image that starts fully hidden (clipped to nothing) and reveals itself with a circular expanding clip-path animation when the .visible class is added. Add a polygon hover effect that morphs the image from a rectangle to a rotated diamond.",
+        "starterCode": ".image-reveal {\n  width: 400px;\n  height: 300px;\n  overflow: hidden;\n}\n\n.image-reveal img {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n\n  /* Start fully clipped (hidden) */\n  /* Add transition */\n}\n\n.image-reveal.visible img {\n  /* Reveal with expanding circle */\n}\n\n/* Bonus: Rectangle to diamond morph on hover */\n.morph-image {\n  /* Start as rectangle */\n  /* Add transition */\n}\n\n.morph-image:hover {\n  /* Morph to diamond */\n}\n",
+        "solution": ".image-reveal {\n  width: 400px;\n  height: 300px;\n  overflow: hidden;\n}\n\n.image-reveal img {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n  clip-path: circle(0% at 50% 50%);\n  transition: clip-path 0.8s cubic-bezier(0.4, 0, 0.2, 1);\n}\n\n.image-reveal.visible img {\n  clip-path: circle(75% at 50% 50%);\n}\n\n.morph-image {\n  clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 0% 100%);\n  transition: clip-path 0.5s ease;\n}\n\n.morph-image:hover {\n  clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);\n}",
+        "hints": [
+          "Use circle(0%) as the starting state to fully hide the image",
+          "Expand to circle(75%) or larger to reveal the full image",
+          "Both the rectangle and diamond polygons need exactly 4 vertices for smooth morphing",
+          "A rectangle is (0% 0%, 100% 0%, 100% 100%, 0% 100%)"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "scroll-snap",
+    "sectionId": "advanced-techniques",
+    "orderIndex": 4,
+    "title": "Scroll Snap",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["scroll-snap-type", "scroll-snap-align", "mandatory vs proximity", "Scroll Containers", "Scroll Padding"],
+    "content": {
+      "explanation": "CSS Scroll Snap provides native, performant snapping behavior for scrollable containers — ensuring that scrolling always lands on specific snap points rather than stopping at random positions. This creates the polished, app-like scrolling experience seen in image carousels, full-page scroll sections, card galleries, and mobile-style swipe interfaces, all without JavaScript libraries or custom scroll event handlers.\n\nThe scroll-snap-type property is applied to the scroll container (the element with overflow: scroll or overflow: auto). It takes two values: the axis (x for horizontal, y for vertical, both for both, or block/inline for logical axes) and the strictness (mandatory or proximity). This activates scroll snapping on the container, making it a scroll snap container. The children inside it are the potential snap targets.\n\nThe mandatory vs proximity distinction is critical. With mandatory snapping, the scroll container always snaps to the nearest snap point after any scroll action — even a tiny 1px scroll will cause the view to jump to the next section. This is ideal for full-page sections and image carousels where you always want exactly one item visible. With proximity snapping, the container only snaps if the scroll position is close enough to a snap point — if the user scrolls to a position between snap points that is not near either one, the scroll stops there naturally. Proximity is better for long content pages where snapping should feel optional and assistive.\n\nThe scroll-snap-align property is applied to the child elements (snap targets) within the scroll container. It specifies which part of the child should align with which part of the container: start aligns the start edges, center aligns the centers, and end aligns the end edges. For horizontal carousels, start is most common (each card's left edge aligns with the container's left edge). For full-page vertical sections, start or center works well.\n\nAdditional properties fine-tune the behavior. scroll-padding on the container creates inset from the container edges where snap points align — useful when a fixed header overlaps the snap area. scroll-margin on individual children adds offset around each snap target. scroll-snap-stop: always on a child prevents the user from skipping over that item during fast scrolling (the default normal allows flying past items). These properties together create polished scroll experiences that rival JavaScript-based solutions with zero runtime cost.",
+      "codeExamples": [
+        {
+          "title": "Horizontal Card Carousel",
+          "code": "/* Scroll container */\n.carousel {\n  display: flex;\n  gap: 16px;\n  overflow-x: auto;\n  scroll-snap-type: x mandatory;\n  scroll-padding: 0 24px; /* Account for container padding */\n  padding: 0 24px;\n\n  /* Hide scrollbar (optional) */\n  scrollbar-width: none;\n}\n.carousel::-webkit-scrollbar {\n  display: none;\n}\n\n/* Snap targets */\n.carousel-card {\n  flex: 0 0 280px; /* Fixed width, no shrink */\n  scroll-snap-align: start;\n  border-radius: 12px;\n  overflow: hidden;\n  background: white;\n  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);\n}\n\n.carousel-card img {\n  width: 100%;\n  height: 180px;\n  object-fit: cover;\n}\n\n.carousel-card .content {\n  padding: 16px;\n}\n\n<!-- HTML -->\n<div class=\"carousel\">\n  <div class=\"carousel-card\">\n    <img src=\"img1.jpg\" alt=\"Card 1\" />\n    <div class=\"content\"><h3>Card 1</h3></div>\n  </div>\n  <div class=\"carousel-card\">\n    <img src=\"img2.jpg\" alt=\"Card 2\" />\n    <div class=\"content\"><h3>Card 2</h3></div>\n  </div>\n  <!-- More cards... -->\n</div>",
+          "explanation": "The container gets scroll-snap-type: x mandatory for horizontal snapping. Each card gets scroll-snap-align: start so the left edge of each card aligns with the left edge of the container. scroll-padding offsets the snap point to account for container padding."
+        },
+        {
+          "title": "Full-Page Vertical Sections",
+          "code": "/* Full-page scroll container */\n.page-container {\n  height: 100vh;\n  overflow-y: auto;\n  scroll-snap-type: y mandatory;\n}\n\n/* Each section fills the viewport */\n.section {\n  height: 100vh;\n  scroll-snap-align: start;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.section:nth-child(1) { background: #1a1a2e; color: white; }\n.section:nth-child(2) { background: #16213e; color: white; }\n.section:nth-child(3) { background: #0f3460; color: white; }\n.section:nth-child(4) { background: #533483; color: white; }\n\n/* Prevent skipping sections during fast scroll */\n.section {\n  scroll-snap-stop: always;\n}\n\n<!-- HTML -->\n<div class=\"page-container\">\n  <section class=\"section\"><h1>Section 1</h1></section>\n  <section class=\"section\"><h1>Section 2</h1></section>\n  <section class=\"section\"><h1>Section 3</h1></section>\n  <section class=\"section\"><h1>Section 4</h1></section>\n</div>",
+          "explanation": "y mandatory ensures every scroll ends exactly on a section boundary. Each section is 100vh so it fills the viewport. scroll-snap-stop: always prevents users from flying past sections during fast swipe gestures — each section must be visited."
+        },
+        {
+          "title": "Mandatory vs Proximity Snapping",
+          "code": "/* Mandatory: ALWAYS snaps to nearest point */\n.mandatory-container {\n  overflow-y: auto;\n  scroll-snap-type: y mandatory;\n  height: 400px;\n}\n\n.mandatory-container .item {\n  height: 400px; /* Same as container */\n  scroll-snap-align: start;\n}\n\n/* Proximity: Only snaps when close to a snap point */\n.proximity-container {\n  overflow-y: auto;\n  scroll-snap-type: y proximity;\n  height: 400px;\n}\n\n.proximity-container .item {\n  min-height: 300px; /* Variable heights */\n  scroll-snap-align: start;\n}\n\n/* Proximity is better for content-heavy pages */\n.article-sections {\n  scroll-snap-type: y proximity;\n}\n\n.article-sections section {\n  scroll-snap-align: start;\n  /* Sections have varying heights based on content */\n  /* Proximity allows natural scrolling between sections */\n  /* Only snaps when scroll stops near a section boundary */\n}",
+          "explanation": "mandatory always snaps — best for fixed-size items like carousels and full-page sections. proximity only snaps when you stop near a snap point — best for variable-height content where forced snapping would feel jarring. Choose based on your content structure."
+        },
+        {
+          "title": "Scroll Padding and Snap Margins",
+          "code": "/* scroll-padding on container: offset for sticky header */\n.container {\n  overflow-y: auto;\n  scroll-snap-type: y mandatory;\n  scroll-padding-top: 80px; /* Height of sticky header */\n}\n\n.sticky-header {\n  position: sticky;\n  top: 0;\n  height: 80px;\n  z-index: 10;\n  background: white;\n}\n\n.section {\n  scroll-snap-align: start;\n  /* Snaps to 80px from the top, below the header */\n}\n\n/* scroll-margin on children: per-item offset */\n.gallery-item {\n  scroll-snap-align: center;\n  scroll-margin: 16px; /* Adds space around this snap target */\n}\n\n/* Combining for a complete layout */\n.page {\n  overflow-y: auto;\n  scroll-snap-type: y proximity;\n  scroll-padding: 80px 0 0 0; /* Top padding for header */\n}\n\n.page section {\n  scroll-snap-align: start;\n  scroll-margin-top: 16px; /* Extra breathing room */\n  min-height: 50vh;\n  padding: 48px 24px;\n}\n\n/* Horizontal carousel with peek effect */\n.peek-carousel {\n  display: flex;\n  overflow-x: auto;\n  scroll-snap-type: x mandatory;\n  scroll-padding-inline: 32px;\n}\n\n.peek-carousel .card {\n  flex: 0 0 85%; /* Show a peek of the next card */\n  scroll-snap-align: center;\n  scroll-margin-inline: 8px;\n}",
+          "explanation": "scroll-padding on the container offsets where snap points align — essential when a sticky header would overlap snapped content. scroll-margin on individual items adds per-element offset. For peek carousels, use smaller flex-basis with center alignment to show partial next/previous items."
+        }
+      ],
+      "notes": [
+        "scroll-snap-type goes on the scroll container (the element with overflow). scroll-snap-align goes on the children that should be snap targets.",
+        "For mandatory snapping to work well, snap targets should be the same size as the container (or a consistent fraction of it). Variable-size content works better with proximity snapping.",
+        "scroll-snap-stop: always is important for mobile touch devices where fast swipe gestures can skip multiple items. It forces the scroll to stop at every snap point."
+      ],
+      "commonPitfalls": [
+        "Putting scroll-snap-type on the children instead of the scroll container. The container needs scroll-snap-type; the children need scroll-snap-align.",
+        "Using mandatory snapping with variable-height content. If sections are much taller than the viewport, mandatory snapping makes it impossible to scroll through the middle of a section — the snap always jumps to the start.",
+        "Forgetting scroll-padding when using a sticky header. Without it, snapped content will be hidden behind the fixed header."
+      ],
+      "interviewTips": [
+        "Explain the difference between mandatory and proximity scroll snapping and when to use each.",
+        "Describe how you would build a pure CSS image carousel using scroll-snap properties."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "scroll-snap-ex1",
+        "title": "Horizontal Image Carousel",
+        "description": "Build a horizontal scroll-snap carousel that displays one image at a time. Cards should snap to the center. Use mandatory snapping to ensure one card is always fully visible.",
+        "starterCode": ".carousel {\n  display: flex;\n  overflow-x: auto;\n  /* Add scroll snap properties */\n}\n\n.carousel-item {\n  flex: 0 0 100%;\n  /* Add snap alignment */\n}\n\n.carousel-item img {\n  width: 100%;\n  height: 300px;\n  object-fit: cover;\n  border-radius: 12px;\n}\n",
+        "solution": ".carousel {\n  display: flex;\n  gap: 16px;\n  overflow-x: auto;\n  scroll-snap-type: x mandatory;\n  scroll-padding: 0 16px;\n  padding: 0 16px;\n  scrollbar-width: none;\n}\n\n.carousel::-webkit-scrollbar {\n  display: none;\n}\n\n.carousel-item {\n  flex: 0 0 calc(100% - 32px);\n  scroll-snap-align: center;\n  scroll-snap-stop: always;\n}\n\n.carousel-item img {\n  width: 100%;\n  height: 300px;\n  object-fit: cover;\n  border-radius: 12px;\n}",
+        "hints": [
+          "Set scroll-snap-type: x mandatory on the container for horizontal snapping",
+          "Use scroll-snap-align: center on items to center each card in view",
+          "scroll-snap-stop: always prevents skipping cards during fast swipes",
+          "Hide the scrollbar with scrollbar-width: none and ::-webkit-scrollbar"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "scroll-snap-ex2",
+        "title": "Full-Page Scroll Sections with Header Offset",
+        "description": "Create a full-page vertical scroll experience with 4 sections. Each section should fill the viewport. Account for a 72px sticky header using scroll-padding. Use mandatory snapping with scroll-snap-stop: always.",
+        "starterCode": ".page {\n  height: 100vh;\n  overflow-y: auto;\n  /* Add vertical mandatory snap */\n  /* Add scroll padding for header */\n}\n\n.header {\n  position: sticky;\n  top: 0;\n  height: 72px;\n  background: white;\n  z-index: 10;\n}\n\n.section {\n  height: 100vh;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  /* Add snap alignment */\n  /* Prevent skipping */\n}\n",
+        "solution": ".page {\n  height: 100vh;\n  overflow-y: auto;\n  scroll-snap-type: y mandatory;\n  scroll-padding-top: 72px;\n}\n\n.header {\n  position: sticky;\n  top: 0;\n  height: 72px;\n  background: white;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n  z-index: 10;\n  display: flex;\n  align-items: center;\n  padding: 0 24px;\n}\n\n.section {\n  height: 100vh;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  scroll-snap-align: start;\n  scroll-snap-stop: always;\n}\n\n.section:nth-child(1) { background: #0f172a; color: white; }\n.section:nth-child(2) { background: #1e293b; color: white; }\n.section:nth-child(3) { background: #334155; color: white; }\n.section:nth-child(4) { background: #475569; color: white; }",
+        "hints": [
+          "scroll-padding-top on the container offsets snap points below the sticky header",
+          "Each section needs scroll-snap-align: start to snap its top edge",
+          "scroll-snap-stop: always ensures every section is visited during fast scrolls",
+          "The page container needs both height: 100vh and overflow-y: auto"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

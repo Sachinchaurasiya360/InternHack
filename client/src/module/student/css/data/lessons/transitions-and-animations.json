@@ -1,0 +1,386 @@
+[
+  {
+    "id": "transitions",
+    "sectionId": "transitions-and-animations",
+    "orderIndex": 0,
+    "title": "CSS Transitions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["transition-property", "transition-duration", "transition-timing-function", "transition-delay", "Shorthand"],
+    "content": {
+      "explanation": "CSS transitions provide a way to animate changes in CSS property values smoothly over a specified duration instead of having them take effect instantly. When a property value changes — triggered by a pseudo-class like :hover, :focus, or :active, or by adding/removing a class via JavaScript — the transition interpolates between the old and new values, creating a smooth visual effect. Transitions are the simplest form of CSS animation and are ideal for state changes like hover effects, focus states, and toggle interactions.\n\nThe transition-property specifies which CSS properties should be animated. You can target a specific property (like opacity, transform, or background-color), list multiple properties separated by commas, or use the keyword all to transition every animatable property. Using all is convenient but can cause unexpected animations and performance issues — it is better practice to explicitly list only the properties you intend to animate. Not all CSS properties are animatable; properties like display, font-family, and position cannot be transitioned because there are no intermediate values between their states.\n\nThe transition-duration sets how long the animation takes to complete, specified in seconds (s) or milliseconds (ms). A duration of 0.2s to 0.3s feels snappy and responsive for hover effects, while 0.4s to 0.6s works well for more significant changes like expanding panels or sliding drawers. Durations below 0.1s feel instant (defeating the purpose of the transition), and durations above 1s feel sluggish and delay user interaction.\n\nThe transition-timing-function controls the acceleration curve of the transition — how the speed varies over the duration. Built-in keywords include ease (starts slow, speeds up, slows down — the default), linear (constant speed), ease-in (starts slow), ease-out (ends slow), and ease-in-out (starts and ends slow). For more control, the cubic-bezier() function lets you define custom curves. The steps() function creates a stepped animation with discrete jumps rather than smooth interpolation — useful for sprite sheet animations.\n\nThe transition-delay adds a wait time before the transition begins, also specified in seconds or milliseconds. Delays are useful for creating staggered animations on multiple elements or preventing accidental triggers on hover. A small delay (0.05s-0.1s) on dropdown menus prevents them from opening when a user's cursor briefly passes over the trigger. The shorthand transition property combines all four values: property duration timing-function delay. Multiple transitions can be specified on a single element by comma-separating them, allowing different durations and timing functions for different properties.",
+      "codeExamples": [
+        {
+          "title": "Basic Transition Properties",
+          "code": "/* Individual transition properties */\n.button {\n  background-color: #3b82f6;\n  color: white;\n  padding: 12px 24px;\n  border: none;\n  border-radius: 8px;\n  cursor: pointer;\n\n  transition-property: background-color, transform;\n  transition-duration: 0.3s;\n  transition-timing-function: ease;\n  transition-delay: 0s;\n}\n\n.button:hover {\n  background-color: #2563eb;\n  transform: translateY(-2px);\n}\n\n.button:active {\n  transform: translateY(0);\n  transition-duration: 0.1s; /* Faster on click */\n}\n\n/* Shorthand equivalent */\n.button-shorthand {\n  transition: background-color 0.3s ease, transform 0.3s ease;\n}",
+          "explanation": "The transition is defined on the base state, not the :hover state. When the user hovers, the browser smoothly interpolates background-color and transform over 0.3 seconds. On :active, a shorter duration makes the press feel more responsive."
+        },
+        {
+          "title": "Timing Functions Compared",
+          "code": ".box {\n  width: 80px;\n  height: 80px;\n  background: #3b82f6;\n  transition: transform 1s;\n}\n\n/* Different timing functions */\n.linear       { transition-timing-function: linear; }\n.ease         { transition-timing-function: ease; }\n.ease-in      { transition-timing-function: ease-in; }\n.ease-out     { transition-timing-function: ease-out; }\n.ease-in-out  { transition-timing-function: ease-in-out; }\n\n/* Custom cubic-bezier curves */\n.bounce {\n  transition-timing-function: cubic-bezier(0.68, -0.55, 0.27, 1.55);\n}\n.snappy {\n  transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);\n}\n\n/* Steps for discrete jumps */\n.step-animation {\n  transition-timing-function: steps(4, end);\n}\n\n/* On hover, all boxes move right */\n.container:hover .box {\n  transform: translateX(300px);\n}",
+          "explanation": "linear moves at constant speed. ease (default) starts slow, accelerates, then decelerates. ease-in starts slow and accelerates. ease-out starts fast and decelerates. cubic-bezier() allows custom curves — values outside 0-1 on the y-axis create overshoot/bounce effects."
+        },
+        {
+          "title": "Multiple Transitions with Different Timings",
+          "code": ".card {\n  background: white;\n  padding: 24px;\n  border-radius: 12px;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n  opacity: 1;\n\n  /* Different duration and timing for each property */\n  transition:\n    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),\n    box-shadow 0.3s ease,\n    opacity 0.2s ease;\n}\n\n.card:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);\n}\n\n.card.hidden {\n  opacity: 0;\n  transform: translateY(20px);\n}\n\n/* Staggered delays on child elements */\n.card:nth-child(1) { transition-delay: 0s; }\n.card:nth-child(2) { transition-delay: 0.1s; }\n.card:nth-child(3) { transition-delay: 0.2s; }\n.card:nth-child(4) { transition-delay: 0.3s; }",
+          "explanation": "Comma-separated transitions let you animate different properties with different durations and timing functions. Staggered delays on child elements create a cascading animation effect as cards appear one after another."
+        },
+        {
+          "title": "Transition Gotchas and Best Practices",
+          "code": "/* BAD: 'all' can cause unexpected transitions */\n.bad-example {\n  transition: all 0.3s ease;\n  /* This will also animate width, height, margin, padding\n     if any of those change, potentially causing layout thrashing */\n}\n\n/* GOOD: Explicitly list properties */\n.good-example {\n  transition: transform 0.3s ease, opacity 0.3s ease;\n}\n\n/* Cannot transition display property */\n.no-transition {\n  display: none;\n  transition: opacity 0.3s; /* This will NOT work */\n}\n\n/* Workaround: Use opacity + visibility instead of display */\n.fade-element {\n  opacity: 1;\n  visibility: visible;\n  transition: opacity 0.3s ease, visibility 0.3s ease;\n}\n.fade-element.hidden {\n  opacity: 0;\n  visibility: hidden;\n}\n\n/* Prefer transform/opacity for smooth 60fps transitions */\n.smooth {\n  /* Good: GPU-accelerated */\n  transition: transform 0.3s ease, opacity 0.3s ease;\n}\n.janky {\n  /* Bad: Triggers layout recalculation */\n  transition: width 0.3s ease, height 0.3s ease, top 0.3s ease;\n}",
+          "explanation": "Avoid transition: all — be explicit. Display cannot be transitioned; use opacity + visibility instead. For smooth 60fps performance, prefer transitioning transform and opacity (composited properties) over layout-triggering properties like width, height, top, and left."
+        }
+      ],
+      "notes": [
+        "Define transitions on the base state, not on the :hover or :active state. The transition property tells the browser how to animate when any change occurs, regardless of the trigger.",
+        "The display property cannot be transitioned. To fade elements in and out, use opacity combined with visibility (which can be transitioned).",
+        "For smooth 60fps transitions, stick to transform and opacity. These properties are handled by the GPU compositor and do not trigger expensive layout recalculations."
+      ],
+      "commonPitfalls": [
+        "Using transition: all instead of specifying exact properties. This can cause unexpected animations on unrelated property changes and waste GPU resources.",
+        "Trying to transition the display property (e.g., from none to block). Display has no intermediate values and cannot be animated. Use opacity and visibility instead.",
+        "Setting transitions on the :hover state instead of the base state. This means the transition only applies when hovering, not when the cursor leaves, causing an abrupt snap-back."
+      ],
+      "interviewTips": [
+        "Know which properties are GPU-accelerated (transform, opacity) versus layout-triggering (width, height, top, left) and why this matters for performance.",
+        "Explain the difference between transition-timing-function values and when you would use a custom cubic-bezier."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "transitions-ex1",
+        "title": "Animated Button Hover Effect",
+        "description": "Create a button that smoothly changes background color, lifts up (translateY), and gains a shadow on hover. Use appropriate durations and timing functions for a polished feel.",
+        "starterCode": ".button {\n  background-color: #6366f1;\n  color: white;\n  padding: 12px 32px;\n  border: none;\n  border-radius: 8px;\n  font-size: 16px;\n  cursor: pointer;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);\n\n  /* Add transition */\n}\n\n.button:hover {\n  /* Add hover styles */\n}\n",
+        "solution": ".button {\n  background-color: #6366f1;\n  color: white;\n  padding: 12px 32px;\n  border: none;\n  border-radius: 8px;\n  font-size: 16px;\n  cursor: pointer;\n  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);\n\n  transition:\n    background-color 0.25s ease,\n    transform 0.25s cubic-bezier(0.4, 0, 0.2, 1),\n    box-shadow 0.25s ease;\n}\n\n.button:hover {\n  background-color: #4f46e5;\n  transform: translateY(-2px);\n  box-shadow: 0 8px 16px rgba(99, 102, 241, 0.3);\n}\n\n.button:active {\n  transform: translateY(0);\n  transition-duration: 0.1s;\n}",
+        "hints": [
+          "List each property separately in the transition shorthand for different control",
+          "0.2s-0.3s is the sweet spot for hover effects",
+          "Add an :active state with shorter duration for responsive click feedback"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "transitions-ex2",
+        "title": "Fade-In Card with Staggered Delay",
+        "description": "Create a card component that fades in and slides up from its hidden state. Apply staggered transition delays to 4 cards so they appear one after another.",
+        "starterCode": ".card {\n  background: white;\n  padding: 24px;\n  border-radius: 12px;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n\n  /* Add base hidden state and transitions */\n}\n\n.card.visible {\n  /* Add visible state */\n}\n\n/* Add staggered delays for cards 1-4 */\n",
+        "solution": ".card {\n  background: white;\n  padding: 24px;\n  border-radius: 12px;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n  opacity: 0;\n  transform: translateY(20px);\n  transition:\n    opacity 0.4s ease,\n    transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);\n}\n\n.card.visible {\n  opacity: 1;\n  transform: translateY(0);\n}\n\n.card:nth-child(1) { transition-delay: 0s; }\n.card:nth-child(2) { transition-delay: 0.1s; }\n.card:nth-child(3) { transition-delay: 0.2s; }\n.card:nth-child(4) { transition-delay: 0.3s; }",
+        "hints": [
+          "Start with opacity: 0 and a slight translateY offset in the base state",
+          "Use nth-child to apply increasing transition-delay values",
+          "A 0.1s increment between cards creates a smooth cascade effect"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "transforms",
+    "sectionId": "transitions-and-animations",
+    "orderIndex": 1,
+    "title": "CSS Transforms",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["translate", "rotate", "scale", "skew", "transform-origin"],
+    "content": {
+      "explanation": "CSS transforms allow you to modify the visual rendering of an element by translating (moving), rotating, scaling, or skewing it in 2D or 3D space. Transforms do not affect the document flow — the element's original position in the layout is preserved, and surrounding elements are not displaced. This makes transforms ideal for animations and visual effects because they are handled by the GPU compositor, avoiding expensive layout recalculations.\n\nThe translate() function moves an element from its current position. translate(x, y) accepts length values or percentages (where 100% equals the element's own width or height). Individual axis functions translateX() and translateY() move along a single axis. A common pattern is using translate(-50%, -50%) combined with position: absolute, top: 50%, left: 50% to perfectly center an element. For 3D effects, translateZ() moves the element along the depth axis (toward or away from the viewer) and requires a perspective value on the parent.\n\nThe rotate() function spins an element around a fixed point. It accepts angle values in degrees (deg), radians (rad), gradians (grad), or turns (turn). Positive values rotate clockwise; negative values rotate counter-clockwise. For 3D rotation, rotateX() tilts forward/backward, rotateY() tilts left/right, and rotateZ() is equivalent to the 2D rotate(). The rotate3d(x, y, z, angle) function rotates around an arbitrary axis defined by a vector.\n\nThe scale() function resizes an element. scale(1) is the original size, scale(1.5) is 150%, and scale(0.5) is 50%. It accepts one value (uniform scaling) or two values (x-axis and y-axis independently). Negative scale values mirror the element: scaleX(-1) creates a horizontal flip. Scaling does not change the element's computed dimensions in the layout — a scaled-up element can overflow its container without affecting siblings.\n\nThe transform-origin property defines the point around which transforms are applied. The default is center center (50% 50%), meaning transforms radiate from the element's center. You can set it to any combination of keywords (top, right, bottom, left, center), percentages, or length values. For example, transform-origin: top left makes rotation pivot from the top-left corner, and transform-origin: 0 100% pivots from the bottom-left. For 3D transforms, a third value sets the z-axis origin. Multiple transforms can be chained in a single transform property — they are applied right to left, so the order matters.",
+      "codeExamples": [
+        {
+          "title": "Translate: Moving Elements",
+          "code": "/* Basic translation */\n.move-right {\n  transform: translateX(100px);\n}\n.move-down {\n  transform: translateY(50px);\n}\n.move-diagonal {\n  transform: translate(100px, 50px);\n}\n\n/* Percentage-based (relative to element's own size) */\n.shift-half {\n  transform: translateX(50%); /* Move right by half its own width */\n}\n\n/* Perfect centering pattern */\n.centered {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}\n\n/* Hover slide effect */\n.slide-link {\n  display: inline-block;\n  transition: transform 0.3s ease;\n}\n.slide-link:hover {\n  transform: translateX(8px);\n}",
+          "explanation": "translate() moves an element without affecting layout flow. Percentage values are relative to the element's own dimensions, not the parent — this is what makes the centering trick work. translateX/Y are shorthand for single-axis movement."
+        },
+        {
+          "title": "Rotate and Scale",
+          "code": "/* Rotation */\n.rotate-45 {\n  transform: rotate(45deg);\n}\n.rotate-quarter {\n  transform: rotate(0.25turn); /* Same as 90deg */\n}\n.rotate-counter {\n  transform: rotate(-90deg);\n}\n\n/* Scale */\n.grow {\n  transform: scale(1.2); /* 120% size */\n}\n.shrink {\n  transform: scale(0.8); /* 80% size */\n}\n.stretch-wide {\n  transform: scaleX(1.5); /* 150% width only */\n}\n.flip-horizontal {\n  transform: scaleX(-1); /* Mirror horizontally */\n}\n.flip-vertical {\n  transform: scaleY(-1); /* Mirror vertically */\n}\n\n/* Hover effects */\n.avatar {\n  border-radius: 50%;\n  transition: transform 0.3s ease;\n}\n.avatar:hover {\n  transform: scale(1.1) rotate(5deg);\n}",
+          "explanation": "Rotation angles can be in deg, rad, grad, or turn. Positive values rotate clockwise. Scale values above 1 enlarge and below 1 shrink. Negative scale values create mirror effects. Multiple transforms can be combined in one declaration."
+        },
+        {
+          "title": "Transform Origin",
+          "code": "/* Default: center center */\n.default-origin {\n  transform-origin: center center;\n  transform: rotate(45deg);\n}\n\n/* Rotate from top-left corner */\n.top-left-origin {\n  transform-origin: top left;\n  transform: rotate(45deg);\n}\n\n/* Scale from bottom-right */\n.bottom-right-origin {\n  transform-origin: bottom right;\n  transform: scale(1.5);\n}\n\n/* Practical example: Dropdown menu that grows from top */\n.dropdown {\n  transform-origin: top center;\n  transform: scaleY(0);\n  opacity: 0;\n  transition: transform 0.2s ease, opacity 0.2s ease;\n}\n.dropdown.open {\n  transform: scaleY(1);\n  opacity: 1;\n}\n\n/* Tooltip that grows from its arrow */\n.tooltip-bottom {\n  transform-origin: top center;\n  transform: scale(0.8);\n  opacity: 0;\n  transition: transform 0.15s ease, opacity 0.15s ease;\n}\n.trigger:hover .tooltip-bottom {\n  transform: scale(1);\n  opacity: 1;\n}",
+          "explanation": "transform-origin defines the pivot point for all transforms. For a dropdown, setting origin to 'top center' makes it appear to grow downward from its trigger. For tooltips, the origin should match where the arrow points to create a natural expansion effect."
+        },
+        {
+          "title": "Chaining Multiple Transforms",
+          "code": "/* Transforms are applied right to left */\n.element {\n  /* First translates, then rotates, then scales */\n  transform: scale(1.2) rotate(45deg) translateX(100px);\n}\n\n/* Order matters! These produce different results: */\n.order-a {\n  /* Moves 100px right, then rotates (around new position) */\n  transform: rotate(45deg) translateX(100px);\n}\n.order-b {\n  /* Rotates first, then moves along the rotated X axis */\n  transform: translateX(100px) rotate(45deg);\n}\n\n/* 3D transforms */\n.perspective-container {\n  perspective: 800px; /* Depth for 3D effect */\n}\n.card-3d {\n  transition: transform 0.5s ease;\n  transform-style: preserve-3d;\n}\n.card-3d:hover {\n  transform: rotateY(15deg) rotateX(-5deg);\n}\n\n/* Card flip effect */\n.flip-card {\n  perspective: 1000px;\n}\n.flip-inner {\n  transition: transform 0.6s ease;\n  transform-style: preserve-3d;\n}\n.flip-card:hover .flip-inner {\n  transform: rotateY(180deg);\n}",
+          "explanation": "Transforms chain right to left. rotate(45deg) translateX(100px) first moves 100px along the original X axis then rotates, while translateX(100px) rotate(45deg) first rotates then moves along the now-rotated axis. For 3D, set perspective on the parent and preserve-3d on the transformed element."
+        }
+      ],
+      "notes": [
+        "Transforms do not affect document flow. The element's original space is preserved in the layout, and surrounding elements do not move. This is why transforms are so performance-friendly.",
+        "When chaining transforms, they are applied right to left. The order matters and produces different visual results.",
+        "For 3D transforms, always set perspective on the parent container (typically 600-1200px) and transform-style: preserve-3d on the transformed element."
+      ],
+      "commonPitfalls": [
+        "Forgetting that transform order matters. rotate(45deg) translateX(100px) produces a completely different result than translateX(100px) rotate(45deg).",
+        "Using translate with percentages and expecting them to be relative to the parent. Percentage values in translate() are relative to the element's own dimensions.",
+        "Applying 3D transforms without setting perspective on the parent element. Without perspective, 3D transforms appear flat and have no depth effect."
+      ],
+      "interviewTips": [
+        "Explain why transforms are GPU-accelerated and do not cause layout reflow, making them ideal for animations.",
+        "Describe the centering pattern using position: absolute + top/left: 50% + translate(-50%, -50%) and why it works."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "transforms-ex1",
+        "title": "Create a Hover Card Effect",
+        "description": "Build a card that lifts up, slightly rotates, and scales up on hover. Set the transform-origin to bottom center so the card appears to tilt away from the viewer.",
+        "starterCode": ".card {\n  width: 280px;\n  padding: 24px;\n  background: white;\n  border-radius: 12px;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n\n  /* Add transform-origin and transition */\n}\n\n.card:hover {\n  /* Add transform: translate + rotate + scale */\n  /* Add enhanced shadow */\n}\n",
+        "solution": ".card {\n  width: 280px;\n  padding: 24px;\n  background: white;\n  border-radius: 12px;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n  transform-origin: bottom center;\n  transition:\n    transform 0.3s cubic-bezier(0.4, 0, 0.2, 1),\n    box-shadow 0.3s ease;\n}\n\n.card:hover {\n  transform: translateY(-8px) rotate(-1deg) scale(1.02);\n  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.15);\n}",
+        "hints": [
+          "Set transform-origin to bottom center so rotation pivots from the card's base",
+          "Keep rotation subtle (1-3 degrees) for a polished effect",
+          "Combine translateY, rotate, and scale in a single transform declaration"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "transforms-ex2",
+        "title": "CSS-Only Card Flip",
+        "description": "Create a card that flips to reveal its back side on hover using 3D transforms. The front shows a question and the back shows the answer.",
+        "starterCode": "<!-- HTML structure -->\n<div class=\"flip-card\">\n  <div class=\"flip-inner\">\n    <div class=\"flip-front\">\n      <p>What does CSS stand for?</p>\n    </div>\n    <div class=\"flip-back\">\n      <p>Cascading Style Sheets</p>\n    </div>\n  </div>\n</div>\n\n<style>\n.flip-card {\n  width: 300px;\n  height: 200px;\n  /* Add perspective */\n}\n\n.flip-inner {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  /* Add transition and 3D styles */\n}\n\n.flip-card:hover .flip-inner {\n  /* Add rotation */\n}\n\n.flip-front, .flip-back {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 12px;\n  /* Add backface-visibility */\n}\n\n.flip-front {\n  background: #3b82f6;\n  color: white;\n}\n\n.flip-back {\n  background: #10b981;\n  color: white;\n  /* Add rotation for back face */\n}\n</style>\n",
+        "solution": "<div class=\"flip-card\">\n  <div class=\"flip-inner\">\n    <div class=\"flip-front\">\n      <p>What does CSS stand for?</p>\n    </div>\n    <div class=\"flip-back\">\n      <p>Cascading Style Sheets</p>\n    </div>\n  </div>\n</div>\n\n<style>\n.flip-card {\n  width: 300px;\n  height: 200px;\n  perspective: 1000px;\n}\n\n.flip-inner {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  transition: transform 0.6s ease;\n  transform-style: preserve-3d;\n}\n\n.flip-card:hover .flip-inner {\n  transform: rotateY(180deg);\n}\n\n.flip-front, .flip-back {\n  position: absolute;\n  width: 100%;\n  height: 100%;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n  border-radius: 12px;\n  backface-visibility: hidden;\n}\n\n.flip-front {\n  background: #3b82f6;\n  color: white;\n}\n\n.flip-back {\n  background: #10b981;\n  color: white;\n  transform: rotateY(180deg);\n}\n</style>",
+        "hints": [
+          "Set perspective on the outer container to enable 3D depth",
+          "Use transform-style: preserve-3d on the inner wrapper so children exist in 3D space",
+          "Both faces need backface-visibility: hidden to hide when facing away",
+          "The back face must start pre-rotated 180deg so it faces backward initially"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "keyframe-animations",
+    "sectionId": "transitions-and-animations",
+    "orderIndex": 2,
+    "title": "Keyframe Animations",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["@keyframes", "animation-name", "animation-duration", "animation-iteration-count", "from/to"],
+    "content": {
+      "explanation": "While CSS transitions animate between two states (a start and an end), CSS keyframe animations allow you to define complex multi-step animations with full control over intermediate states. Using the @keyframes at-rule, you define named animation sequences with any number of waypoints, each specifying CSS property values at a given point in the timeline. These animations can run automatically on page load, loop indefinitely, run in reverse, and pause/resume — far more flexible than transitions.\n\nThe @keyframes rule defines the animation sequence. You give it a name and specify waypoints using percentage values from 0% (start) to 100% (end). The keywords from and to are aliases for 0% and 100% respectively. Each waypoint contains the CSS properties and values the element should have at that point in the timeline. The browser interpolates between waypoints, creating smooth transitions between each defined state. You can add as many waypoints as needed — 25%, 50%, 75%, or any percentage.\n\nTo apply an animation, you use the animation-name property on an element, referencing the @keyframes name. The animation-duration specifies how long one cycle takes (required — without it, the animation defaults to 0s and never plays). The animation-iteration-count controls how many times the animation repeats: a number like 3 plays it three times, and the keyword infinite loops it forever. These are the minimum properties needed to get an animation running.\n\nUnlike transitions, keyframe animations run immediately when applied (or after any animation-delay). They do not require a trigger like :hover or a class change. This makes them perfect for loading spinners, attention-grabbing entry animations, continuous ambient effects, and any motion that should occur without user interaction. However, they are heavier than transitions — for simple two-state changes triggered by user actions, transitions remain the better choice.\n\nA common pattern is combining @keyframes with class toggling for triggered animations. You define the animation in CSS and add the class via JavaScript when you want it to play. To replay the animation, you must remove the class, force a reflow (by reading a layout property), and re-add the class. For entry animations, you can define keyframes that start with the hidden state (opacity: 0, translateY) and end with the visible state, applying the animation when elements enter the viewport via the Intersection Observer API.",
+      "codeExamples": [
+        {
+          "title": "Basic @keyframes Syntax",
+          "code": "/* Simple fade-in animation */\n@keyframes fadeIn {\n  from {\n    opacity: 0;\n  }\n  to {\n    opacity: 1;\n  }\n}\n\n.fade-in {\n  animation-name: fadeIn;\n  animation-duration: 0.5s;\n}\n\n/* Multi-step bounce animation */\n@keyframes bounce {\n  0% {\n    transform: translateY(0);\n  }\n  25% {\n    transform: translateY(-30px);\n  }\n  50% {\n    transform: translateY(0);\n  }\n  75% {\n    transform: translateY(-15px);\n  }\n  100% {\n    transform: translateY(0);\n  }\n}\n\n.bouncing {\n  animation-name: bounce;\n  animation-duration: 1s;\n  animation-iteration-count: infinite;\n}\n\n/* Slide in from left with fade */\n@keyframes slideInLeft {\n  from {\n    transform: translateX(-100px);\n    opacity: 0;\n  }\n  to {\n    transform: translateX(0);\n    opacity: 1;\n  }\n}\n\n.slide-in {\n  animation: slideInLeft 0.6s ease-out;\n}",
+          "explanation": "@keyframes defines the animation waypoints. 'from' and 'to' are shorthand for 0% and 100%. Multiple percentage stops create complex multi-step animations. The bounce example creates a realistic bouncing effect by varying the height at four points in the timeline."
+        },
+        {
+          "title": "Loading Spinner with Keyframes",
+          "code": "/* Rotating spinner */\n@keyframes spin {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n\n.spinner {\n  width: 40px;\n  height: 40px;\n  border: 4px solid #e5e7eb;\n  border-top-color: #3b82f6;\n  border-radius: 50%;\n  animation: spin 0.8s linear infinite;\n}\n\n/* Pulsing dot loader */\n@keyframes pulse {\n  0%, 100% {\n    transform: scale(1);\n    opacity: 1;\n  }\n  50% {\n    transform: scale(1.5);\n    opacity: 0.5;\n  }\n}\n\n.dot {\n  width: 12px;\n  height: 12px;\n  border-radius: 50%;\n  background: #3b82f6;\n  animation: pulse 1.2s ease-in-out infinite;\n}\n\n/* Stagger dots for a wave effect */\n.dot:nth-child(2) { animation-delay: 0.2s; }\n.dot:nth-child(3) { animation-delay: 0.4s; }",
+          "explanation": "The spinner uses a linear timing function for constant rotation speed. The pulse animation uses grouped percentage stops (0%, 100%) to make start and end identical. Staggered animation-delay on multiple dots creates a wave/ripple loading indicator."
+        },
+        {
+          "title": "Typing Effect with Keyframes",
+          "code": "/* Typewriter animation */\n@keyframes typing {\n  from {\n    width: 0;\n  }\n  to {\n    width: 20ch; /* 20 characters wide */\n  }\n}\n\n@keyframes blink {\n  0%, 100% {\n    border-color: transparent;\n  }\n  50% {\n    border-color: #333;\n  }\n}\n\n.typewriter {\n  font-family: monospace;\n  font-size: 20px;\n  overflow: hidden;\n  white-space: nowrap;\n  border-right: 3px solid #333;\n  width: 0;\n\n  animation:\n    typing 2s steps(20, end) forwards,\n    blink 0.8s step-end infinite;\n}\n\n/* Shake animation for error feedback */\n@keyframes shake {\n  0%, 100% { transform: translateX(0); }\n  10%, 30%, 50%, 70%, 90% { transform: translateX(-4px); }\n  20%, 40%, 60%, 80% { transform: translateX(4px); }\n}\n\n.error-shake {\n  animation: shake 0.5s ease-in-out;\n}",
+          "explanation": "The typewriter effect uses the ch unit (width of the '0' character in the current font) and steps() timing to reveal characters one at a time. The blink animation on the cursor uses step-end for a discrete on/off effect. Multiple animations can be comma-separated on a single element."
+        },
+        {
+          "title": "Entry Animations with Intersection Observer",
+          "code": "@keyframes fadeInUp {\n  from {\n    opacity: 0;\n    transform: translateY(30px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n\n/* Hidden by default */\n.animate-on-scroll {\n  opacity: 0;\n}\n\n/* Animated when visible */\n.animate-on-scroll.visible {\n  animation: fadeInUp 0.6s ease-out forwards;\n}\n\n/* Staggered children */\n.animate-on-scroll.visible:nth-child(1) { animation-delay: 0s; }\n.animate-on-scroll.visible:nth-child(2) { animation-delay: 0.15s; }\n.animate-on-scroll.visible:nth-child(3) { animation-delay: 0.3s; }\n\n<script>\nconst observer = new IntersectionObserver((entries) => {\n  entries.forEach(entry => {\n    if (entry.isIntersecting) {\n      entry.target.classList.add('visible');\n      observer.unobserve(entry.target); // Animate once\n    }\n  });\n}, { threshold: 0.1 });\n\ndocument.querySelectorAll('.animate-on-scroll').forEach(el => {\n  observer.observe(el);\n});\n</script>",
+          "explanation": "Elements start hidden (opacity: 0) and receive the animation when they enter the viewport. IntersectionObserver triggers class addition when 10% of the element is visible. Using unobserve ensures each element animates only once. animation-fill-mode: forwards keeps the final state."
+        }
+      ],
+      "notes": [
+        "Animations run as soon as they are applied. Unlike transitions, they do not need a trigger event. Use animation-delay to postpone the start.",
+        "Grouping percentage stops like 0%, 100% { ... } applies the same styles at multiple waypoints, which is useful for creating seamless loops.",
+        "The animation shorthand order is: name, duration, timing-function, delay, iteration-count, direction, fill-mode, play-state."
+      ],
+      "commonPitfalls": [
+        "Forgetting to set animation-duration. Without it (or with 0s), the animation completes instantly and appears not to work.",
+        "Not using animation-fill-mode: forwards when you want the element to stay in its final animated state. Without it, the element snaps back to its pre-animation values.",
+        "Creating janky animations by animating layout properties (width, height, top) inside keyframes. Stick to transform and opacity for smooth 60fps performance."
+      ],
+      "interviewTips": [
+        "Explain the difference between CSS transitions and keyframe animations: transitions need a trigger and have two states, while keyframes run automatically and support unlimited waypoints.",
+        "Describe how to create a loading spinner using pure CSS keyframes."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "keyframe-animations-ex1",
+        "title": "Create a Loading Spinner",
+        "description": "Build a CSS-only loading spinner using @keyframes and a border trick. The spinner should rotate continuously at a constant speed.",
+        "starterCode": "/* Define the spin keyframes */\n\n.spinner {\n  width: 48px;\n  height: 48px;\n  border-radius: 50%;\n\n  /* Add border styling (gray border with blue top) */\n  /* Add animation */\n}\n",
+        "solution": "@keyframes spin {\n  from {\n    transform: rotate(0deg);\n  }\n  to {\n    transform: rotate(360deg);\n  }\n}\n\n.spinner {\n  width: 48px;\n  height: 48px;\n  border-radius: 50%;\n  border: 4px solid #e5e7eb;\n  border-top-color: #3b82f6;\n  animation: spin 0.8s linear infinite;\n}",
+        "hints": [
+          "Use border with a different color on border-top to create the spinner visual",
+          "Use linear timing so the rotation speed is constant",
+          "Set animation-iteration-count to infinite for continuous spinning"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "keyframe-animations-ex2",
+        "title": "Multi-Step Attention Animation",
+        "description": "Create a 'notification bell' animation that swings left and right with decreasing intensity, like a bell that has been struck. It should play once when the .ring class is added.",
+        "starterCode": "/* Create a bell swing keyframe animation */\n/* It should swing: 15deg, -15deg, 10deg, -10deg, 5deg, -5deg, 0 */\n\n@keyframes bellSwing {\n  /* Define waypoints */\n}\n\n.bell {\n  display: inline-block;\n  font-size: 32px;\n  transform-origin: top center;\n}\n\n.bell.ring {\n  /* Apply the animation */\n}\n",
+        "solution": "@keyframes bellSwing {\n  0% { transform: rotate(0deg); }\n  15% { transform: rotate(15deg); }\n  30% { transform: rotate(-15deg); }\n  45% { transform: rotate(10deg); }\n  60% { transform: rotate(-10deg); }\n  75% { transform: rotate(5deg); }\n  85% { transform: rotate(-5deg); }\n  100% { transform: rotate(0deg); }\n}\n\n.bell {\n  display: inline-block;\n  font-size: 32px;\n  transform-origin: top center;\n}\n\n.bell.ring {\n  animation: bellSwing 0.8s ease-in-out;\n}",
+        "hints": [
+          "Set transform-origin to top center so the bell swings from its hanging point",
+          "Decrease the rotation angle at each waypoint to simulate friction/damping",
+          "No iteration-count needed since it defaults to 1 (play once)"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "animation-properties",
+    "sectionId": "transitions-and-animations",
+    "orderIndex": 3,
+    "title": "Animation Properties",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["animation-fill-mode", "animation-direction", "animation-play-state", "animation-delay", "Shorthand"],
+    "content": {
+      "explanation": "Beyond the basic animation-name, animation-duration, and animation-iteration-count covered in the keyframes lesson, CSS provides several additional properties that give you fine-grained control over how animations behave before, during, and after playback. Understanding these properties is the difference between a functional animation and a polished, production-ready one.\n\nThe animation-fill-mode property is arguably the most important of the advanced animation properties. It controls what CSS values are applied to the element before and after the animation runs. The default value none means the element reverts to its pre-animation styles after the animation completes. The value forwards retains the final keyframe values after the animation ends — essential when your animation moves an element to its final position. The value backwards applies the first keyframe values during the animation-delay period before the animation starts. The value both combines forwards and backwards behavior.\n\nThe animation-direction property controls whether the animation plays forward, backward, or alternates. The default normal plays from 0% to 100%. The value reverse plays from 100% to 0%. The value alternate plays forward on odd iterations and backward on even iterations, creating a smooth back-and-forth effect without needing to define return keyframes. The value alternate-reverse starts backward and alternates. Alternate is particularly useful for breathing effects, pulsing, and pendulum-like motions.\n\nThe animation-play-state property toggles between running and paused. This is useful for pause/play controls, reducing motion when the user scrolls past an animated section, or responding to user preferences. Combined with :hover, you can create animations that pause when the user hovers (or vice versa). It is also useful for the prefers-reduced-motion media query, where you can set animation-play-state: paused to respect user accessibility preferences.\n\nThe animation shorthand combines all animation properties in a single declaration. The recommended order is: name, duration, timing-function, delay, iteration-count, direction, fill-mode, play-state. Multiple animations can be comma-separated. While the shorthand is convenient, the longhand properties are sometimes clearer for complex animations with many settings. A common production pattern is to define reusable animation utilities (like .animate-fade-in, .animate-slide-up) with sensible defaults that can be customized with CSS custom properties for duration, delay, and timing.",
+      "codeExamples": [
+        {
+          "title": "animation-fill-mode Explained",
+          "code": "@keyframes slideRight {\n  from { transform: translateX(0); }\n  to   { transform: translateX(200px); }\n}\n\n/* none (default): Reverts to original position after animation */\n.fill-none {\n  animation: slideRight 1s ease;\n  animation-fill-mode: none;\n  /* After: snaps back to translateX(0) */\n}\n\n/* forwards: Keeps the final keyframe values */\n.fill-forwards {\n  animation: slideRight 1s ease;\n  animation-fill-mode: forwards;\n  /* After: stays at translateX(200px) */\n}\n\n/* backwards: Applies first keyframe during delay */\n@keyframes fadeIn {\n  from { opacity: 0; }\n  to   { opacity: 1; }\n}\n\n.fill-backwards {\n  opacity: 1; /* Initial value */\n  animation: fadeIn 1s ease 2s; /* 2s delay */\n  animation-fill-mode: backwards;\n  /* During 2s delay: opacity is 0 (from first keyframe) */\n  /* Without backwards: opacity would be 1 during delay */\n}\n\n/* both: Combines forwards + backwards */\n.fill-both {\n  animation: slideRight 1s ease 0.5s;\n  animation-fill-mode: both;\n  /* During delay: at translateX(0) */\n  /* After: stays at translateX(200px) */\n}",
+          "explanation": "fill-mode controls the element's state before the delay period (backwards) and after the animation ends (forwards). 'forwards' is the most commonly used — without it, elements snap back to their pre-animation state. 'both' is the safest choice when using animation-delay."
+        },
+        {
+          "title": "animation-direction for Back-and-Forth Motion",
+          "code": "@keyframes slideX {\n  from { transform: translateX(0); }\n  to   { transform: translateX(100px); }\n}\n\n/* normal: 0% -> 100%, 0% -> 100%, ... */\n.direction-normal {\n  animation: slideX 1s ease infinite;\n  animation-direction: normal;\n}\n\n/* reverse: 100% -> 0%, 100% -> 0%, ... */\n.direction-reverse {\n  animation: slideX 1s ease infinite;\n  animation-direction: reverse;\n}\n\n/* alternate: 0%->100%, 100%->0%, 0%->100%, ... */\n.direction-alternate {\n  animation: slideX 1s ease infinite;\n  animation-direction: alternate;\n}\n\n/* Practical: Breathing/pulsing effect */\n@keyframes breathe {\n  from {\n    transform: scale(1);\n    opacity: 0.7;\n  }\n  to {\n    transform: scale(1.05);\n    opacity: 1;\n  }\n}\n\n.breathing-element {\n  animation: breathe 2s ease-in-out infinite alternate;\n}\n\n/* Pendulum swing */\n@keyframes pendulum {\n  from { transform: rotate(-30deg); }\n  to   { transform: rotate(30deg); }\n}\n\n.pendulum {\n  transform-origin: top center;\n  animation: pendulum 1.5s ease-in-out infinite alternate;\n}",
+          "explanation": "alternate creates smooth back-and-forth motion by automatically reversing on even iterations. This eliminates the need to define return keyframes manually. Combined with infinite and ease-in-out, it creates natural oscillating motions like breathing and swinging."
+        },
+        {
+          "title": "animation-play-state and Accessibility",
+          "code": "/* Pause animation on hover */\n.carousel {\n  animation: scroll 20s linear infinite;\n}\n.carousel:hover {\n  animation-play-state: paused;\n}\n\n/* Respect reduced motion preferences */\n@media (prefers-reduced-motion: reduce) {\n  * {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    transition-duration: 0.01ms !important;\n  }\n}\n\n/* Alternative: Pause specific animations */\n@media (prefers-reduced-motion: reduce) {\n  .animated-element {\n    animation-play-state: paused;\n  }\n\n  /* Keep essential animations but simplify them */\n  .loading-spinner {\n    animation-duration: 1.5s; /* Slower, less jarring */\n  }\n}\n\n/* Toggle play/pause with JavaScript */\n<button onclick=\"toggleAnimation()\">Pause/Play</button>\n\n<style>\n  .paused {\n    animation-play-state: paused;\n  }\n</style>\n\n<script>\nfunction toggleAnimation() {\n  document.querySelector('.animated')\n    .classList.toggle('paused');\n}\n</script>",
+          "explanation": "animation-play-state: paused freezes the animation at its current position. The prefers-reduced-motion media query detects users who have enabled reduced motion in their OS settings — always respect this preference by slowing or stopping decorative animations."
+        },
+        {
+          "title": "Animation Shorthand and Multiple Animations",
+          "code": "/* Shorthand order:\n   name | duration | timing | delay | count | direction | fill | play-state */\n\n/* Single animation shorthand */\n.element {\n  animation: fadeIn 0.5s ease-out 0.2s 1 normal forwards running;\n}\n\n/* Common shorthand patterns */\n.fade-in {\n  animation: fadeIn 0.5s ease-out forwards;\n}\n.spin {\n  animation: rotate 1s linear infinite;\n}\n.pulse {\n  animation: pulse 2s ease-in-out infinite alternate;\n}\n\n/* Multiple animations on one element */\n.fancy-entrance {\n  animation:\n    fadeIn 0.5s ease-out forwards,\n    slideUp 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards,\n    glow 2s ease-in-out 0.5s infinite alternate;\n}\n\n/* Reusable animation utilities with custom properties */\n.animate {\n  --duration: 0.5s;\n  --delay: 0s;\n  --timing: ease-out;\n}\n\n.animate-fade-in {\n  animation: fadeIn var(--duration) var(--timing) var(--delay) forwards;\n}\n\n.animate-slide-up {\n  animation: slideUp var(--duration) var(--timing) var(--delay) forwards;\n}\n\n/* Override timing per element */\n.hero-title {\n  --duration: 0.8s;\n  --delay: 0.3s;\n}",
+          "explanation": "The shorthand packs all animation properties into one line. Multiple animations are comma-separated. Using CSS custom properties creates reusable animation utilities where individual elements can customize timing and delay without rewriting the animation declaration."
+        }
+      ],
+      "notes": [
+        "animation-fill-mode: forwards is required in most practical animations to prevent the element from snapping back to its original state after the animation ends.",
+        "animation-direction: alternate is perfect for infinite looping animations that should smoothly reverse — it halves the @keyframes you need to write.",
+        "Always include a prefers-reduced-motion media query to stop or simplify animations for users who have requested reduced motion in their OS settings."
+      ],
+      "commonPitfalls": [
+        "Forgetting animation-fill-mode: forwards, causing elements to snap back to their pre-animation position after the animation completes. This is the most common keyframe animation bug.",
+        "Using animation-direction: alternate but forgetting that the total visual cycle takes 2x the duration (one forward + one reverse). Adjust duration or iteration count accordingly.",
+        "Ignoring the prefers-reduced-motion media query. Users with vestibular disorders, motion sensitivity, or seizure conditions rely on this setting to avoid disorienting animations."
+      ],
+      "interviewTips": [
+        "Explain animation-fill-mode with a concrete example of why 'forwards' matters for entrance animations.",
+        "Describe how you would implement accessible animations that respect the prefers-reduced-motion user preference."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "animation-properties-ex1",
+        "title": "Breathing Glow Effect",
+        "description": "Create a notification badge that continuously glows with a breathing effect using animation-direction: alternate. The glow should pulse smoothly between dim and bright states.",
+        "starterCode": "/* Define a glow keyframe animation */\n\n.notification-badge {\n  width: 12px;\n  height: 12px;\n  border-radius: 50%;\n  background: #ef4444;\n\n  /* Add breathing glow animation */\n}\n",
+        "solution": "@keyframes glow {\n  from {\n    box-shadow: 0 0 4px rgba(239, 68, 68, 0.4);\n    transform: scale(1);\n  }\n  to {\n    box-shadow: 0 0 12px rgba(239, 68, 68, 0.8);\n    transform: scale(1.1);\n  }\n}\n\n.notification-badge {\n  width: 12px;\n  height: 12px;\n  border-radius: 50%;\n  background: #ef4444;\n  animation: glow 1.5s ease-in-out infinite alternate;\n}\n\n@media (prefers-reduced-motion: reduce) {\n  .notification-badge {\n    animation: none;\n  }\n}",
+        "hints": [
+          "Use box-shadow for the glow effect and scale for subtle size change",
+          "animation-direction: alternate creates the back-and-forth breathing without extra keyframes",
+          "Include a prefers-reduced-motion media query to disable the animation for sensitive users"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "animation-properties-ex2",
+        "title": "Staggered Fade-In List with Fill Mode",
+        "description": "Create a list of items that fade in and slide up one by one with staggered delays. Each item should start invisible and remain visible after animating (use fill-mode). Include reduced motion support.",
+        "starterCode": "/* Define fadeInUp keyframes */\n\n.list-item {\n  /* Start invisible */\n  /* Add animation with fill-mode */\n}\n\n/* Add staggered delays for items 1-5 */\n\n/* Add reduced motion support */\n",
+        "solution": "@keyframes fadeInUp {\n  from {\n    opacity: 0;\n    transform: translateY(20px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n\n.list-item {\n  opacity: 0;\n  animation: fadeInUp 0.5s ease-out forwards;\n}\n\n.list-item:nth-child(1) { animation-delay: 0s; }\n.list-item:nth-child(2) { animation-delay: 0.1s; }\n.list-item:nth-child(3) { animation-delay: 0.15s; }\n.list-item:nth-child(4) { animation-delay: 0.2s; }\n.list-item:nth-child(5) { animation-delay: 0.25s; }\n\n@media (prefers-reduced-motion: reduce) {\n  .list-item {\n    opacity: 1;\n    animation: none;\n  }\n}",
+        "hints": [
+          "Set opacity: 0 on the base element so items start hidden",
+          "animation-fill-mode: forwards (or just 'forwards' in shorthand) keeps items visible after animating",
+          "In the reduced-motion fallback, set opacity: 1 and animation: none so items are visible without animation"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "animation-performance",
+    "sectionId": "transitions-and-animations",
+    "orderIndex": 4,
+    "title": "Animation Performance",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["GPU Acceleration", "will-change", "Compositing", "Layout Thrashing", "requestAnimationFrame"],
+    "content": {
+      "explanation": "Animation performance is critical for delivering smooth, 60 frames-per-second experiences. When animations drop below 60fps, users perceive visual stuttering known as jank. Understanding how the browser renders content and which CSS properties trigger expensive operations is essential for building performant animations. The rendering pipeline consists of four main stages: Style calculation, Layout, Paint, and Composite — and your animation performance depends entirely on which of these stages your animated properties trigger.\n\nThe browser's rendering pipeline processes changes through these stages. Style calculation determines which CSS rules apply to each element. Layout (also called reflow) calculates the position and size of every element on the page. Paint fills in pixels — drawing text, colors, images, borders, and shadows. Compositing assembles the painted layers into the final image displayed on screen. The key insight is that properties like width, height, margin, padding, top, left, and font-size trigger layout, which causes the browser to recalculate the geometry of potentially the entire page. This is extremely expensive and nearly impossible to maintain at 60fps.\n\nThe two CSS properties that only trigger the composite stage are transform and opacity. Because compositing happens on the GPU (graphics processing unit), these properties can be animated at 60fps even on low-powered devices. Transform handles all movement (translate), sizing (scale), and rotation, while opacity handles visibility. By restricting animations to only these two properties, you ensure the browser can skip Layout and Paint entirely, using only the fast GPU compositor. This is called promoting an element to its own compositor layer.\n\nThe will-change property hints to the browser that a property is about to be animated, allowing it to pre-optimize by promoting the element to its own layer. Setting will-change: transform on an element before animating it avoids the one-frame delay that can occur when the browser creates a new layer on the fly. However, will-change consumes GPU memory — every promoted layer takes up VRAM. Never apply will-change to too many elements or leave it permanently on elements that are not actively animating. Set it just before the animation (e.g., on :hover of the parent) and remove it after.\n\nFor JavaScript-driven animations, requestAnimationFrame (rAF) is essential. It synchronizes your animation updates with the browser's refresh cycle, ensuring smooth 60fps rendering. Unlike setInterval or setTimeout, which fire at arbitrary times and can cause frame drops, rAF fires right before the next repaint. To avoid layout thrashing (the performance killer caused by reading and writing layout properties in a loop), batch all DOM reads together, then batch all DOM writes together. Reading a layout property (offsetWidth, getBoundingClientRect) forces the browser to recalculate layout synchronously — doing this repeatedly in a loop is called forced synchronous layout and is a major source of jank.\n\nProfiling animation performance should be done with browser DevTools. Chrome's Performance panel shows frame rates, GPU memory, and identifies long frames. The Rendering tab has options to highlight layers, show paint flashing, and display FPS counters. Enable \"Paint flashing\" to see which areas are being repainted — ideally, only the animated element should flash green. The Layers panel shows which elements have been promoted to compositor layers and how much GPU memory they use.",
+      "codeExamples": [
+        {
+          "title": "Good vs Bad Animated Properties",
+          "code": "/* BAD: Triggers layout recalculation (expensive) */\n.bad-animation {\n  transition: width 0.3s, height 0.3s, top 0.3s, left 0.3s;\n}\n.bad-animation:hover {\n  width: 300px;   /* Triggers Layout */\n  height: 200px;  /* Triggers Layout */\n  top: 50px;      /* Triggers Layout */\n  left: 100px;    /* Triggers Layout */\n}\n\n/* GOOD: Only triggers compositing (GPU-accelerated) */\n.good-animation {\n  transition: transform 0.3s, opacity 0.3s;\n}\n.good-animation:hover {\n  transform: translate(100px, 50px) scale(1.5);\n  opacity: 0.8;\n}\n\n/* Instead of animating width/height, use scale */\n.expand-bad {\n  transition: width 0.3s;\n}\n.expand-bad:hover {\n  width: 200%;  /* Triggers layout for entire page */\n}\n\n.expand-good {\n  transition: transform 0.3s;\n}\n.expand-good:hover {\n  transform: scaleX(2);  /* Only compositing, no layout */\n}\n\n/* Instead of animating top/left, use translate */\n.move-bad  { transition: left 0.3s; }\n.move-good { transition: transform 0.3s; }\n\n.move-bad:hover  { left: 100px; }\n.move-good:hover { transform: translateX(100px); }",
+          "explanation": "Properties like width, height, top, and left trigger layout recalculation for potentially the entire page. Transform and opacity skip Layout and Paint, going directly to the GPU compositor. Always use transform as a replacement: translate instead of top/left, scale instead of width/height."
+        },
+        {
+          "title": "Using will-change Correctly",
+          "code": "/* GOOD: Apply will-change just before animation */\n.card {\n  transition: transform 0.3s ease;\n}\n.card-container:hover .card {\n  will-change: transform;\n}\n.card:hover {\n  transform: translateY(-8px);\n}\n\n/* GOOD: Apply on elements that will definitely animate */\n.modal {\n  will-change: transform, opacity;\n  /* Remove after animation via JavaScript */\n}\n\n/* BAD: Applying to everything wastes GPU memory */\n* {\n  will-change: transform; /* Never do this! */\n}\n\n/* BAD: Applying to too many static elements */\n.every-list-item {\n  will-change: transform; /* 1000 items = 1000 GPU layers */\n}\n\n/* GOOD: Apply via JavaScript when needed */\n<script>\nconst element = document.querySelector('.animated');\n\nelement.addEventListener('mouseenter', () => {\n  element.style.willChange = 'transform';\n});\n\nelement.addEventListener('transitionend', () => {\n  element.style.willChange = 'auto'; // Clean up\n});\n</script>\n\n/* Alternative: Use transform: translateZ(0) to force layer */\n.force-layer {\n  transform: translateZ(0); /* Creates compositor layer */\n  /* or */ backface-visibility: hidden;\n}",
+          "explanation": "will-change tells the browser to pre-create a compositor layer. Apply it only to elements that will actually animate, and remove it afterward. Each layer consumes GPU memory — promoting too many elements degrades performance instead of improving it."
+        },
+        {
+          "title": "requestAnimationFrame for Smooth JS Animations",
+          "code": "// BAD: Using setInterval for animation\nlet position = 0;\nsetInterval(() => {\n  position += 2;\n  element.style.transform = `translateX(${position}px)`;\n}, 16); // Tries to hit 60fps but drifts\n\n// GOOD: Using requestAnimationFrame\nlet pos = 0;\nfunction animate() {\n  pos += 2;\n  element.style.transform = `translateX(${pos}px)`;\n\n  if (pos < 300) {\n    requestAnimationFrame(animate);\n  }\n}\nrequestAnimationFrame(animate);\n\n// BEST: Time-based animation with rAF\nlet startTime = null;\nconst duration = 1000; // 1 second\nconst distance = 300;  // 300px\n\nfunction animateSmooth(timestamp) {\n  if (!startTime) startTime = timestamp;\n  const elapsed = timestamp - startTime;\n  const progress = Math.min(elapsed / duration, 1);\n\n  // Ease-out curve\n  const eased = 1 - Math.pow(1 - progress, 3);\n\n  element.style.transform = `translateX(${eased * distance}px)`;\n\n  if (progress < 1) {\n    requestAnimationFrame(animateSmooth);\n  }\n}\nrequestAnimationFrame(animateSmooth);\n\n// Cancel animation when needed\nconst animId = requestAnimationFrame(animate);\ncancelAnimationFrame(animId);",
+          "explanation": "requestAnimationFrame syncs with the browser's refresh rate for smooth 60fps animation. Time-based animation calculates position from elapsed time rather than fixed increments, ensuring consistent speed regardless of frame rate. The easing function creates natural deceleration."
+        },
+        {
+          "title": "Avoiding Layout Thrashing",
+          "code": "// BAD: Layout thrashing (read-write-read-write pattern)\nconst items = document.querySelectorAll('.item');\nitems.forEach(item => {\n  const height = item.offsetHeight; // Read (forces layout)\n  item.style.height = height * 2 + 'px'; // Write (invalidates layout)\n  // Next iteration reads again, forcing another layout!\n});\n\n// GOOD: Batch reads, then batch writes\nconst items2 = document.querySelectorAll('.item');\n\n// Batch all reads first\nconst heights = Array.from(items2).map(item => item.offsetHeight);\n\n// Then batch all writes\nitems2.forEach((item, i) => {\n  item.style.height = heights[i] * 2 + 'px';\n});\n\n// GOOD: Use requestAnimationFrame for writes\nfunction updateLayout(elements) {\n  // Read phase\n  const measurements = elements.map(el => ({\n    width: el.offsetWidth,\n    height: el.offsetHeight\n  }));\n\n  // Write phase (batched in next frame)\n  requestAnimationFrame(() => {\n    elements.forEach((el, i) => {\n      el.style.transform = `scale(${200 / measurements[i].width})`;\n    });\n  });\n}\n\n// BEST: Use CSS transforms instead of layout properties\n// This avoids layout calculations entirely\nelement.style.transform = 'scale(2)'; // No layout triggered",
+          "explanation": "Layout thrashing occurs when you interleave reading and writing layout properties, forcing the browser to recalculate layout on each read. Batch all reads together, then all writes. Better yet, use transforms instead of layout properties to avoid triggering layout entirely."
+        }
+      ],
+      "notes": [
+        "Only transform and opacity are truly GPU-composited. All other animated properties trigger either Layout (width, height, margin, padding, top, left) or Paint (background, color, border, box-shadow) stages.",
+        "will-change should be treated as a last resort, not a default optimization. Each promoted layer uses GPU memory. Apply it programmatically before animation and clean it up afterward.",
+        "Chrome DevTools Performance panel is the best tool for diagnosing animation jank. Look for long frames (red bars), layout events in the flame chart, and paint flashing to identify unnecessary repaints."
+      ],
+      "commonPitfalls": [
+        "Animating width, height, margin, or padding instead of using transform: scale(). Layout-triggering properties force the browser to recalculate geometry for potentially the entire document tree.",
+        "Applying will-change to every element or leaving it permanently on elements. This wastes GPU memory and can actually degrade performance. Each compositor layer has a memory cost.",
+        "Using setInterval/setTimeout for JavaScript animations instead of requestAnimationFrame. Timer-based animations are not synced with the display refresh rate and cause frame drops."
+      ],
+      "interviewTips": [
+        "Explain the browser rendering pipeline (Style, Layout, Paint, Composite) and which CSS properties trigger which stages.",
+        "Describe why transform and opacity are the only properties recommended for animation and what GPU compositing means in practice.",
+        "Explain layout thrashing with an example and how to fix it by batching reads and writes."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "animation-performance-ex1",
+        "title": "Refactor Janky Animations",
+        "description": "The CSS below animates layout-triggering properties. Refactor it to use only GPU-accelerated properties (transform and opacity) while achieving the same visual effect.",
+        "starterCode": "/* Refactor these animations to use transform/opacity only */\n.card {\n  position: relative;\n  width: 200px;\n  height: 150px;\n  background: white;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n  transition: width 0.3s, height 0.3s, top 0.3s, left 0.3s, box-shadow 0.3s;\n}\n\n.card:hover {\n  width: 240px;\n  height: 180px;\n  top: -10px;\n  left: -20px;\n  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);\n}\n",
+        "solution": ".card {\n  width: 200px;\n  height: 150px;\n  background: white;\n  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);\n  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.3s ease;\n}\n\n.card:hover {\n  transform: scale(1.2) translate(-20px, -10px);\n  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);\n}",
+        "hints": [
+          "Replace width/height changes with transform: scale()",
+          "Replace top/left changes with transform: translate()",
+          "Combine scale and translate in a single transform declaration",
+          "box-shadow triggers Paint but not Layout, so it is acceptable for non-critical animations"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "animation-performance-ex2",
+        "title": "Implement requestAnimationFrame Animation",
+        "description": "Write a JavaScript function that smoothly animates an element from opacity 0 to opacity 1 over 800ms using requestAnimationFrame with time-based progress and an ease-out curve.",
+        "starterCode": "function fadeIn(element) {\n  // Implement time-based fade-in using requestAnimationFrame\n  // Duration: 800ms\n  // Easing: ease-out (cubic)\n  // Set opacity using element.style.opacity\n}\n\n// Usage:\nfadeIn(document.getElementById('myElement'));\n",
+        "solution": "function fadeIn(element) {\n  let startTime = null;\n  const duration = 800;\n\n  element.style.willChange = 'opacity';\n\n  function animate(timestamp) {\n    if (!startTime) startTime = timestamp;\n    const elapsed = timestamp - startTime;\n    const progress = Math.min(elapsed / duration, 1);\n\n    // Ease-out cubic curve\n    const eased = 1 - Math.pow(1 - progress, 3);\n\n    element.style.opacity = eased;\n\n    if (progress < 1) {\n      requestAnimationFrame(animate);\n    } else {\n      element.style.willChange = 'auto';\n    }\n  }\n\n  requestAnimationFrame(animate);\n}\n\nfadeIn(document.getElementById('myElement'));",
+        "hints": [
+          "Store the start timestamp on the first frame and calculate elapsed time on each subsequent frame",
+          "Clamp progress between 0 and 1 using Math.min",
+          "An ease-out cubic curve: eased = 1 - (1 - progress)^3",
+          "Clean up will-change when the animation completes"
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

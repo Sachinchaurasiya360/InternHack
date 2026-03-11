@@ -1,0 +1,411 @@
+[
+  {
+    "id": "template-literals",
+    "sectionId": "es6-plus",
+    "orderIndex": 0,
+    "title": "Template Literals & Tagged Templates",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["template literals", "string interpolation", "multi-line strings", "tagged templates", "String.raw"],
+    "content": {
+      "explanation": "Template literals, introduced in ES6, are string literals delimited by backticks (`) instead of single or double quotes. They provide two major improvements over traditional strings: expression interpolation using ${...} syntax and native multi-line string support. These features make string construction cleaner, more readable, and less error-prone than manual concatenation.\n\nExpression interpolation is the most commonly used feature of template literals. Any valid JavaScript expression placed inside ${...} is evaluated and converted to a string. This includes variables, function calls, arithmetic operations, ternary expressions, and even other template literals. The expressions are evaluated in the surrounding scope, so you have full access to all variables and functions available at that point in your code.\n\nMulti-line strings with template literals preserve actual line breaks in the source code. With traditional strings, you needed escape characters (\\n) or array joining to create multi-line content. Template literals let you write the string exactly as it should appear, making it much easier to construct HTML templates, SQL queries, or any formatted text directly in your code.\n\nTagged template literals are a more advanced feature that lets you process template literals with a custom function. A tag function receives the static string parts as an array and the interpolated values as separate arguments. This opens up powerful patterns like automatic escaping for HTML or SQL injection prevention, internationalization, styled-components in React, and custom string formatting.\n\nString.raw is a built-in tag function that returns the raw string without processing escape sequences. This is particularly useful when working with regular expressions, Windows file paths, or any string where you want backslashes to remain as literal characters. String.raw`\\n` produces the two characters \\ and n, not a newline.\n\nIn practice, template literals have largely replaced string concatenation in modern JavaScript. They're used extensively in frameworks like React (JSX expressions), testing libraries (snapshot descriptions), logging, and template engines. The tagged template pattern powers libraries like styled-components, GraphQL's gql tag, and lit-html, demonstrating how a simple language feature can enable entirely new programming paradigms.",
+      "codeExamples": [
+        {
+          "title": "Basic interpolation and multi-line strings",
+          "code": "const name = 'Alice';\nconst age = 28;\nconst role = 'Developer';\n\n// Expression interpolation\nconsole.log(`Hello, ${name}! You are ${age} years old.`);\nconsole.log(`Next year you'll be ${age + 1}.`);\nconsole.log(`Role: ${role.toUpperCase()}`);\nconsole.log(`Status: ${age >= 18 ? 'Adult' : 'Minor'}`);\n\n// Multi-line strings\nconst html = `\n<div class=\"card\">\n  <h2>${name}</h2>\n  <p>Age: ${age}</p>\n  <span>${role}</span>\n</div>\n`;\nconsole.log(html);\n\n// Nested template literals\nconst items = ['Apple', 'Banana', 'Cherry'];\nconst list = `<ul>\n${items.map(item => `  <li>${item}</li>`).join('\\n')}\n</ul>`;\nconsole.log(list);",
+          "output": "Hello, Alice! You are 28 years old.\nNext year you'll be 29.\nRole: DEVELOPER\nStatus: Adult\n\n<div class=\"card\">\n  <h2>Alice</h2>\n  <p>Age: 28</p>\n  <span>Developer</span>\n</div>\n\n<ul>\n  <li>Apple</li>\n  <li>Banana</li>\n  <li>Cherry</li>\n</ul>",
+          "explanation": "Template literals support any JavaScript expression inside ${}. Multi-line strings preserve formatting. You can even nest template literals inside interpolation expressions, as shown in the list-building example."
+        },
+        {
+          "title": "Tagged template literals",
+          "code": "// A tag function receives strings array and values\nfunction highlight(strings, ...values) {\n  return strings.reduce((result, str, i) => {\n    const value = values[i] !== undefined ? `**${values[i]}**` : '';\n    return result + str + value;\n  }, '');\n}\n\nconst product = 'JavaScript Course';\nconst price = 49.99;\nconsole.log(highlight`Buy ${product} for only $${price} today!`);\n\n// HTML escaping tag\nfunction safeHTML(strings, ...values) {\n  const escape = (str) => String(str)\n    .replace(/&/g, '&amp;')\n    .replace(/</g, '&lt;')\n    .replace(/>/g, '&gt;')\n    .replace(/\"/g, '&quot;');\n  \n  return strings.reduce((result, str, i) => {\n    const value = values[i] !== undefined ? escape(values[i]) : '';\n    return result + str + value;\n  }, '');\n}\n\nconst userInput = '<script>alert(\"XSS\")</script>';\nconsole.log(safeHTML`<p>User said: ${userInput}</p>`);",
+          "output": "Buy **JavaScript Course** for only $**49.99** today!\n<p>User said: &lt;script&gt;alert(&quot;XSS&quot;)&lt;/script&gt;</p>",
+          "explanation": "The highlight tag wraps interpolated values in asterisks. The safeHTML tag escapes HTML special characters in values, preventing XSS attacks. Both demonstrate how tag functions receive the static string parts and dynamic values separately."
+        },
+        {
+          "title": "String.raw and practical tag patterns",
+          "code": "// String.raw preserves escape sequences as-is\nconsole.log(`Line 1\\nLine 2`);\nconsole.log(String.raw`Line 1\\nLine 2`);\n\n// Useful for regex patterns\nconst pattern = String.raw`\\d+\\.\\d+`;\nconsole.log('Pattern:', pattern);\nconsole.log(new RegExp(pattern).test('3.14'));\n\n// Simple i18n tag\nconst translations = {\n  'Hello, !': 'Hola, !',\n  'You have  items': 'Tienes  articulos'\n};\n\nfunction i18n(strings, ...values) {\n  const key = strings.join(' ');\n  const template = translations[key] || key;\n  const parts = template.split(' ');\n  \n  let result = '';\n  let valueIndex = 0;\n  for (const part of parts) {\n    if (part === '' && valueIndex < values.length) {\n      result += values[valueIndex++];\n    } else {\n      result += (result ? ' ' : '') + part;\n    }\n  }\n  return result;\n}\n\nconst user = 'Carlos';\nconsole.log(`Hello, ${user}!`);",
+          "output": "Line 1\nLine 2\nLine 1\\nLine 2\nPattern: \\d+\\.\\d+\ntrue\nHello, Carlos!",
+          "explanation": "String.raw prevents escape sequence processing, keeping backslashes literal. This is essential for regex patterns where you'd otherwise need double escaping. The i18n example shows how tagged templates can enable translation systems."
+        }
+      ],
+      "notes": [
+        "Template literals are not faster or slower than string concatenation for simple cases - modern engines optimize both equally.",
+        "You can use backticks inside template literals by escaping them: `\\``.",
+        "Tagged template functions can return any type, not just strings - styled-components returns React components.",
+        "The strings array in a tag function always has one more element than the values array (strings[values.length] is the trailing text)."
+      ],
+      "commonPitfalls": [
+        "Forgetting that template literal whitespace is significant - indented multi-line strings will contain those spaces in the output.",
+        "Using template literals for simple strings with no interpolation - regular quotes are cleaner when there's nothing to interpolate.",
+        "Not escaping backticks inside template literals when they're part of the intended string content.",
+        "Assuming ${} evaluates lazily - the expression is evaluated immediately when the template literal is reached, not when the string is used."
+      ],
+      "interviewTips": [
+        "Know how tagged templates receive their arguments - the strings array and rest parameters for values.",
+        "Understand that String.raw is the only built-in tag function, and be able to explain when you'd use it.",
+        "Be ready to implement a simple tag function for HTML sanitization or string formatting."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "template-literals-ex1",
+        "title": "Build a User Profile Card",
+        "description": "Use template literals with interpolation to build a formatted user profile string. Given a user object, produce a multi-line card using expression interpolation including a ternary expression and a method call.",
+        "starterCode": "// Build a profile card using template literals\nconst user = { name: 'Jordan', age: 24, role: 'designer' };\n\n// TODO: Use a template literal to create a multi-line card string\n// - Line 1: \"Name: Jordan\"\n// - Line 2: \"Age: 24 (Adult)\" — use a ternary: age >= 18 ? 'Adult' : 'Minor'\n// - Line 3: \"Role: DESIGNER\" — use .toUpperCase()\n// Log the card with console.log\n",
+        "solution": "const user = { name: 'Jordan', age: 24, role: 'designer' };\n\nconst card = `Name: ${user.name}\nAge: ${user.age} (${user.age >= 18 ? 'Adult' : 'Minor'})\nRole: ${user.role.toUpperCase()}`;\nconsole.log(card);",
+        "expectedOutput": "Name: Jordan\nAge: 24 (Adult)\nRole: DESIGNER",
+        "hints": [
+          "Use backticks to create the template literal and ${} for interpolation.",
+          "A ternary inside ${} works just like any other expression: ${condition ? 'yes' : 'no'}."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "template-literals-ex2",
+        "title": "Write a Tagged Template that Uppercases Values",
+        "description": "Create a tagged template function called 'shout' that converts all interpolated values to uppercase while keeping the static string parts unchanged.",
+        "starterCode": "// TODO: Implement the 'shout' tag function\n// It receives (strings, ...values)\n// Return a string where every interpolated value is uppercased\nfunction shout(strings, ...values) {\n  // your code here\n}\n\nconst item = 'coffee';\nconst size = 'large';\nconsole.log(shout`I want a ${size} ${item} please`);\n",
+        "solution": "function shout(strings, ...values) {\n  return strings.reduce((result, str, i) => {\n    const value = i < values.length ? String(values[i]).toUpperCase() : '';\n    return result + str + value;\n  }, '');\n}\n\nconst item = 'coffee';\nconst size = 'large';\nconsole.log(shout`I want a ${size} ${item} please`);",
+        "expectedOutput": "I want a LARGE COFFEE please",
+        "hints": [
+          "The strings array has one more element than the values array.",
+          "Use reduce to interleave the static strings with the uppercased values."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "modules",
+    "sectionId": "es6-plus",
+    "orderIndex": 1,
+    "title": "Modules",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["named exports", "default exports", "import/export", "dynamic import", "module scope", "CommonJS", "ES Modules"],
+    "content": {
+      "explanation": "JavaScript modules are a way to organize code into separate files where each file has its own scope. Before ES6 modules, JavaScript had no native module system, and developers relied on patterns like IIFEs, AMD, and CommonJS (Node.js) to achieve encapsulation. ES Modules (ESM) became the standard, providing static import and export syntax that enables tree-shaking, static analysis, and better tooling support.\n\nNamed exports allow you to export multiple values from a module. Each export is identified by its name, and importing code must use the same name (or rename with 'as'). You can export variables, functions, classes, or any binding either inline with the declaration or in a collected export statement at the bottom of the file. Named exports are ideal when a module provides multiple utilities or components.\n\nDefault exports allow a module to export one primary value. Each module can have only one default export, and the importing code can give it any name. Default exports are commonly used for the main class or function of a module, like a React component or an Express router. You can mix default and named exports in the same module, though this is less common.\n\nThe 'as' keyword allows renaming during both export and import. This resolves naming conflicts when importing from multiple modules that export identically named values. Re-exporting with 'export { x } from ./module' lets you create barrel files (index.js) that aggregate exports from multiple files into a single import point, simplifying the public API of a package.\n\nDynamic import() returns a promise that resolves to the module object, enabling code splitting and lazy loading. Unlike static imports which must be at the top level, dynamic imports can appear anywhere - inside functions, conditionals, or event handlers. This is essential for performance optimization in large applications, loading features on demand rather than upfront.\n\nES Modules differ from CommonJS in several fundamental ways. ESM uses import/export while CJS uses require/module.exports. ESM imports are statically analyzed at parse time, enabling tree-shaking, while CJS is evaluated at runtime. ESM creates live bindings (importing a value reflects changes made in the exporting module), while CJS copies values. ESM files run in strict mode automatically, while CJS does not. In Node.js, you can use ESM with .mjs extensions or by setting \"type\": \"module\" in package.json.",
+      "codeExamples": [
+        {
+          "title": "Named exports and imports",
+          "code": "// --- math.js ---\n// Inline named exports\nexport const PI = 3.14159;\nexport const E = 2.71828;\n\nexport function add(a, b) {\n  return a + b;\n}\n\nexport function multiply(a, b) {\n  return a * b;\n}\n\n// --- app.js ---\n// Import specific names\nimport { PI, add, multiply } from './math.js';\n\nconsole.log(`PI = ${PI}`);\nconsole.log(`2 + 3 = ${add(2, 3)}`);\nconsole.log(`4 * 5 = ${multiply(4, 5)}`);\n\n// Import all as namespace\nimport * as MathUtils from './math.js';\nconsole.log(`E = ${MathUtils.E}`);\n\n// Rename on import\nimport { add as sum } from './math.js';\nconsole.log(`Renamed: ${sum(10, 20)}`);",
+          "output": "PI = 3.14159\n2 + 3 = 5\n4 * 5 = 20\nE = 2.71828\nRenamed: 30",
+          "explanation": "Named exports require curly braces on import and must match the exported name (unless renamed with 'as'). The namespace import (import * as) groups all exports under a single object."
+        },
+        {
+          "title": "Default exports and mixing with named exports",
+          "code": "// --- Logger.js ---\nclass Logger {\n  constructor(prefix) {\n    this.prefix = prefix;\n  }\n  \n  log(message) {\n    console.log(`[${this.prefix}] ${message}`);\n  }\n  \n  error(message) {\n    console.error(`[${this.prefix} ERROR] ${message}`);\n  }\n}\n\n// Default export\nexport default Logger;\n\n// Named exports alongside default\nexport const LOG_LEVELS = ['debug', 'info', 'warn', 'error'];\nexport function createLogger(prefix) {\n  return new Logger(prefix);\n}\n\n// --- app.js ---\n// Default import (any name works)\nimport AppLogger from './Logger.js';\n// Or combine default and named\nimport Logger, { LOG_LEVELS, createLogger } from './Logger.js';\n\nconst logger = new Logger('APP');\nlogger.log('Application started');\nconsole.log('Levels:', LOG_LEVELS);\n\nconst dbLogger = createLogger('DB');\ndbLogger.log('Connected');",
+          "output": "[APP] Application started\nLevels: [ 'debug', 'info', 'warn', 'error' ]\n[DB] Connected",
+          "explanation": "A module's default export is imported without curly braces and can be given any name. When combining default and named imports, the default comes first, followed by named imports in curly braces."
+        },
+        {
+          "title": "Re-exporting and barrel files",
+          "code": "// --- utils/string.js ---\nexport function capitalize(str) {\n  return str.charAt(0).toUpperCase() + str.slice(1);\n}\nexport function slugify(str) {\n  return str.toLowerCase().replace(/\\s+/g, '-');\n}\n\n// --- utils/array.js ---\nexport function unique(arr) {\n  return [...new Set(arr)];\n}\nexport function chunk(arr, size) {\n  const chunks = [];\n  for (let i = 0; i < arr.length; i += size) {\n    chunks.push(arr.slice(i, i + size));\n  }\n  return chunks;\n}\n\n// --- utils/index.js (barrel file) ---\nexport { capitalize, slugify } from './string.js';\nexport { unique, chunk } from './array.js';\n// Can also rename: export { capitalize as cap } from './string.js';\n\n// --- app.js ---\n// Single clean import from the barrel\nimport { capitalize, unique, chunk } from './utils/index.js';\n\nconsole.log(capitalize('hello'));\nconsole.log(unique([1, 2, 2, 3, 3]));\nconsole.log(chunk([1, 2, 3, 4, 5], 2));",
+          "output": "Hello\n[ 1, 2, 3 ]\n[ [ 1, 2 ], [ 3, 4 ], [ 5 ] ]",
+          "explanation": "Barrel files (index.js) re-export from multiple modules, creating a single entry point. Instead of importing from multiple paths, consumers import everything from one location. This pattern is common in component libraries and utility packages."
+        },
+        {
+          "title": "Dynamic import and CommonJS vs ESM",
+          "code": "// Dynamic import - loads module on demand\nasync function loadFeature(featureName) {\n  try {\n    const module = await import(`./features/${featureName}.js`);\n    module.init();\n    console.log(`Feature '${featureName}' loaded`);\n  } catch (error) {\n    console.log(`Feature '${featureName}' not available`);\n  }\n}\n\n// Conditional loading\nconst isAdmin = true;\nif (isAdmin) {\n  // Only loaded when needed\n  // const { AdminPanel } = await import('./AdminPanel.js');\n  console.log('Admin module would load here');\n}\n\n// CommonJS vs ES Modules comparison:\n// ---- CommonJS (Node.js traditional) ----\n// const fs = require('fs');           // synchronous\n// module.exports = { myFunc };        // single export object\n// exports.helper = helperFunc;        // named export shorthand\n\n// ---- ES Modules ----\n// import fs from 'fs';               // static, hoisted\n// export default myFunc;             // default export\n// export { helper };                 // named export\n\n// Key differences:\nconsole.log('ESM: static analysis, tree-shaking, live bindings');\nconsole.log('CJS: runtime evaluation, value copying, dynamic');\nconsole.log('ESM: always strict mode');\nconsole.log('CJS: non-strict by default');",
+          "output": "Admin module would load here\nESM: static analysis, tree-shaking, live bindings\nCJS: runtime evaluation, value copying, dynamic\nESM: always strict mode\nCJS: non-strict by default",
+          "explanation": "Dynamic import() returns a promise, enabling lazy loading. The key differences between ESM and CJS affect bundling, tree-shaking, and runtime behavior. Most modern projects use ESM, but understanding CJS is essential for Node.js compatibility."
+        }
+      ],
+      "notes": [
+        "ES Modules are always in strict mode - you don't need 'use strict' at the top.",
+        "Static imports are hoisted - they're evaluated before any code in the module runs, regardless of where they appear.",
+        "In Node.js, use .mjs extension or set \"type\": \"module\" in package.json to use ES Modules.",
+        "import.meta provides metadata about the current module, like import.meta.url for the module's URL."
+      ],
+      "commonPitfalls": [
+        "Trying to use import/export in a script without type=\"module\" in the HTML script tag - browsers treat scripts as classic by default.",
+        "Circular dependencies - Module A imports B which imports A. ESM handles this better than CJS, but the imported values may be undefined if the export hasn't been evaluated yet.",
+        "Forgetting that dynamic import() returns a promise - you must await it or use .then() to access the module.",
+        "Exporting a mutable variable and expecting the importing module to see a snapshot - ESM exports are live bindings, so changes in the exporting module are reflected in importing modules."
+      ],
+      "interviewTips": [
+        "Explain the difference between ESM and CommonJS clearly - static vs dynamic, live bindings vs copies, strict mode by default.",
+        "Know what tree-shaking is and why ESM enables it (static analysis at build time).",
+        "Be prepared to explain how circular dependencies work in ESM vs CJS."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "modules-ex1",
+        "title": "Simulate Named Exports with an Object",
+        "description": "Since we cannot use actual import/export in a single-file exercise, simulate a module by creating an object called 'MathModule' with properties PI, add, and multiply. Then log the results of using these properties, demonstrating the concept of named exports.",
+        "starterCode": "// Simulate a module's named exports as object properties\n// TODO: Create a MathModule object with:\n//   - PI: 3.14159\n//   - add(a, b): returns a + b\n//   - multiply(a, b): returns a * b\n\n// TODO: Destructure MathModule to get PI, add, multiply\n// (this simulates: import { PI, add, multiply } from './math.js')\n\n// TODO: Log:\n//   \"PI = 3.14159\"\n//   \"2 + 3 = 5\"\n//   \"4 * 5 = 20\"\n",
+        "solution": "const MathModule = {\n  PI: 3.14159,\n  add(a, b) { return a + b; },\n  multiply(a, b) { return a * b; }\n};\n\nconst { PI, add, multiply } = MathModule;\n\nconsole.log(`PI = ${PI}`);\nconsole.log(`2 + 3 = ${add(2, 3)}`);\nconsole.log(`4 * 5 = ${multiply(4, 5)}`);",
+        "expectedOutput": "PI = 3.14159\n2 + 3 = 5\n4 * 5 = 20",
+        "hints": [
+          "Destructuring an object is conceptually the same as importing named exports: const { a, b } = obj.",
+          "Use template literals to format the output strings."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "modules-ex2",
+        "title": "Simulate Default and Named Exports Together",
+        "description": "Create a simulated module that has a default export (a Logger class) and a named export (a LOG_LEVELS array). Demonstrate extracting both, creating a logger instance, and using it.",
+        "starterCode": "// Simulate a module with default + named exports\n// TODO: Create a LoggerModule object with:\n//   - default: a Logger class with constructor(prefix) and a log(msg) method\n//     that logs \"[prefix] msg\"\n//   - LOG_LEVELS: ['debug', 'info', 'warn', 'error']\n\n// TODO: Extract the default as 'Logger' and destructure LOG_LEVELS\n// TODO: Create a logger with prefix 'APP', call logger.log('started')\n// TODO: Log the LOG_LEVELS array\n",
+        "solution": "const LoggerModule = {\n  default: class Logger {\n    constructor(prefix) { this.prefix = prefix; }\n    log(msg) { console.log(`[${this.prefix}] ${msg}`); }\n  },\n  LOG_LEVELS: ['debug', 'info', 'warn', 'error']\n};\n\nconst Logger = LoggerModule.default;\nconst { LOG_LEVELS } = LoggerModule;\n\nconst logger = new Logger('APP');\nlogger.log('started');\nconsole.log('Levels:', LOG_LEVELS.join(', '));",
+        "expectedOutput": "[APP] started\nLevels: debug, info, warn, error",
+        "hints": [
+          "A default export can be simulated with a 'default' property on the module object.",
+          "Use .join(', ') to produce a comma-separated string from the array."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "symbols-iterators",
+    "sectionId": "es6-plus",
+    "orderIndex": 2,
+    "title": "Symbols & Iterators",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Symbol", "Symbol.for", "Symbol.iterator", "Symbol.toPrimitive", "iterator protocol", "custom iterables", "for...of"],
+    "content": {
+      "explanation": "Symbols are a primitive data type introduced in ES6 that represent unique, immutable identifiers. Unlike strings, every Symbol() call creates a completely unique value, even if given the same description. This uniqueness makes symbols perfect for property keys that will never collide with other keys, including those from third-party code or future language additions.\n\nThe primary purpose of symbols is to create property keys that are guaranteed to be unique. When you add a symbol-keyed property to an object, it won't interfere with any string-keyed properties. Symbol properties don't appear in for...in loops, Object.keys(), or JSON.stringify(), making them semi-private. However, they're not truly private - Object.getOwnPropertySymbols() and Reflect.ownKeys() can still access them.\n\nSymbol.for() creates symbols in a global symbol registry. Unlike Symbol(), calling Symbol.for('key') with the same key always returns the same symbol, enabling cross-realm symbol sharing. This is useful when multiple parts of your application (or different iframes) need to reference the same symbol. Symbol.keyFor() retrieves the key for a globally registered symbol.\n\nWell-known symbols are built-in symbol constants that customize core language behavior. Symbol.iterator defines the default iterator for an object (used by for...of, spread, and destructuring). Symbol.toPrimitive controls how an object is converted to a primitive value. Symbol.hasInstance customizes instanceof behavior. These well-known symbols are JavaScript's metaprogramming hooks.\n\nThe iterator protocol defines a standard way for objects to produce a sequence of values. An iterator is any object with a next() method that returns { value, done } objects. The value property contains the current element, and done is a boolean indicating whether the sequence is complete. When done is true, the value is typically undefined. Built-in iterables like arrays, strings, Maps, and Sets all implement this protocol.\n\nMaking custom objects iterable requires implementing the Symbol.iterator method, which must return an iterator object. Once an object is iterable, it works with for...of loops, the spread operator, destructuring assignment, Array.from(), Promise.all(), and any other construct that expects an iterable. This protocol creates a unified interface for sequential data access, regardless of the underlying data structure.",
+      "codeExamples": [
+        {
+          "title": "Symbols as unique property keys",
+          "code": "// Every symbol is unique\nconst sym1 = Symbol('id');\nconst sym2 = Symbol('id');\nconsole.log(sym1 === sym2);\nconsole.log(sym1.toString());\nconsole.log(sym1.description);\n\n// Using symbols as object keys\nconst ID = Symbol('id');\nconst user = {\n  name: 'Alice',\n  [ID]: 12345\n};\n\nconsole.log(user[ID]);\nconsole.log(user.name);\n\n// Symbol properties are hidden from normal enumeration\nconsole.log(Object.keys(user));\nconsole.log(JSON.stringify(user));\n\n// But accessible via specific methods\nconsole.log(Object.getOwnPropertySymbols(user));\nconsole.log(Reflect.ownKeys(user));\n\n// Global symbol registry\nconst globalSym1 = Symbol.for('app.id');\nconst globalSym2 = Symbol.for('app.id');\nconsole.log(globalSym1 === globalSym2);\nconsole.log(Symbol.keyFor(globalSym1));",
+          "output": "false\nSymbol(id)\nid\n12345\nAlice\n[ 'name' ]\n{\"name\":\"Alice\"}\n[ Symbol(id) ]\n[ 'name', Symbol(id) ]\ntrue\napp.id",
+          "explanation": "Two Symbol('id') calls create different symbols despite the same description. Symbol-keyed properties are invisible to Object.keys() and JSON.stringify() but accessible via getOwnPropertySymbols(). Symbol.for() uses a global registry where the same key always returns the same symbol."
+        },
+        {
+          "title": "Well-known symbols: Symbol.toPrimitive and Symbol.hasInstance",
+          "code": "// Symbol.toPrimitive - customize type coercion\nclass Currency {\n  constructor(amount, code) {\n    this.amount = amount;\n    this.code = code;\n  }\n  \n  [Symbol.toPrimitive](hint) {\n    switch (hint) {\n      case 'number':  return this.amount;\n      case 'string':  return `${this.amount} ${this.code}`;\n      default:        return this.amount; // 'default' hint\n    }\n  }\n}\n\nconst price = new Currency(49.99, 'USD');\nconsole.log(`Price: ${price}`);           // string hint\nconsole.log(price + 10);                  // default hint\nconsole.log(+price);                      // number hint\nconsole.log(price > 40);                  // number hint\n\n// Symbol.hasInstance - customize instanceof\nclass EvenNumber {\n  static [Symbol.hasInstance](num) {\n    return typeof num === 'number' && num % 2 === 0;\n  }\n}\n\nconsole.log(4 instanceof EvenNumber);\nconsole.log(5 instanceof EvenNumber);\nconsole.log('hello' instanceof EvenNumber);",
+          "output": "Price: 49.99 USD\n59.99\n49.99\ntrue\ntrue\nfalse\nfalse",
+          "explanation": "Symbol.toPrimitive receives a hint ('string', 'number', or 'default') indicating what type the engine expects. Symbol.hasInstance lets a class define custom instanceof behavior - here EvenNumber matches any even number."
+        },
+        {
+          "title": "Iterator protocol and custom iterables",
+          "code": "// Manual iterator usage\nconst arr = ['a', 'b', 'c'];\nconst iterator = arr[Symbol.iterator]();\n\nconsole.log(iterator.next());\nconsole.log(iterator.next());\nconsole.log(iterator.next());\nconsole.log(iterator.next());\n\n// Custom iterable: Range\nclass Range {\n  constructor(start, end, step = 1) {\n    this.start = start;\n    this.end = end;\n    this.step = step;\n  }\n  \n  [Symbol.iterator]() {\n    let current = this.start;\n    const end = this.end;\n    const step = this.step;\n    \n    return {\n      next() {\n        if (current <= end) {\n          const value = current;\n          current += step;\n          return { value, done: false };\n        }\n        return { value: undefined, done: true };\n      }\n    };\n  }\n}\n\nconst range = new Range(1, 5);\nfor (const num of range) {\n  process.stdout.write(num + ' ');\n}\nconsole.log();\n\n// Works with spread and destructuring\nconsole.log([...new Range(0, 10, 2)]);\nconst [first, second, third] = new Range(100, 110, 5);\nconsole.log(first, second, third);",
+          "output": "{ value: 'a', done: false }\n{ value: 'b', done: false }\n{ value: 'c', done: false }\n{ value: undefined, done: true }\n1 2 3 4 5 \n[ 0, 2, 4, 6, 8, 10 ]\n100 105 110",
+          "explanation": "The iterator protocol requires a next() method returning {value, done}. Implementing Symbol.iterator makes objects work with for...of, spread, destructuring, and Array.from(). The Range class demonstrates creating a reusable iterable with configurable start, end, and step."
+        },
+        {
+          "title": "Making a linked list iterable",
+          "code": "class Node {\n  constructor(value, next = null) {\n    this.value = value;\n    this.next = next;\n  }\n}\n\nclass LinkedList {\n  constructor() {\n    this.head = null;\n    this.size = 0;\n  }\n  \n  push(value) {\n    this.head = new Node(value, this.head);\n    this.size++;\n    return this;\n  }\n  \n  [Symbol.iterator]() {\n    let current = this.head;\n    return {\n      next() {\n        if (current) {\n          const value = current.value;\n          current = current.next;\n          return { value, done: false };\n        }\n        return { value: undefined, done: true };\n      }\n    };\n  }\n}\n\nconst list = new LinkedList();\nlist.push('C').push('B').push('A');\n\n// for...of works\nfor (const item of list) {\n  process.stdout.write(item + ' -> ');\n}\nconsole.log('null');\n\n// Spread works\nconsole.log('Array:', [...list]);\n\n// Destructuring works\nconst [head, ...rest] = list;\nconsole.log('Head:', head);\nconsole.log('Rest:', rest);",
+          "output": "A -> B -> C -> null\nArray: [ 'A', 'B', 'C' ]\nHead: A\nRest: [ 'B', 'C' ]",
+          "explanation": "By implementing Symbol.iterator, the LinkedList becomes a first-class iterable. It works seamlessly with for...of, spread, and destructuring. The iterator walks through nodes following the next pointers until it reaches null."
+        }
+      ],
+      "notes": [
+        "Symbols cannot be coerced to strings implicitly - you must use .toString() or .description explicitly.",
+        "There are 13 well-known symbols in the specification, each hooking into a different language behavior.",
+        "The iterable protocol (Symbol.iterator) and iterator protocol (next()) are separate - an object can be an iterator without being iterable.",
+        "String, Array, TypedArray, Map, and Set are all built-in iterables."
+      ],
+      "commonPitfalls": [
+        "Using symbol keys and expecting them to survive JSON serialization - JSON.stringify() completely ignores symbol-keyed properties.",
+        "Confusing Symbol() with Symbol.for() - the former always creates a unique symbol, the latter uses a shared global registry.",
+        "Forgetting to return { value: undefined, done: true } when the iteration is complete - returning just { done: true } without value works but can cause issues with some consumers.",
+        "Creating an iterator that never sets done to true - this causes infinite loops with spread (...) or Array.from()."
+      ],
+      "interviewTips": [
+        "Be able to implement a custom iterable from scratch - this is a common interview coding exercise.",
+        "Know the difference between iterable (has Symbol.iterator) and iterator (has next()) - an object can implement both.",
+        "Understand how for...of uses the iterator protocol internally and how it differs from for...in."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "symbols-iterators-ex1",
+        "title": "Symbol Uniqueness and Global Registry",
+        "description": "Demonstrate that Symbol() always creates unique symbols, and that Symbol.for() returns the same symbol for the same key. Also show that symbol-keyed properties are hidden from Object.keys().",
+        "starterCode": "// TODO: Create two symbols with the same description 'token'\nconst s1 = undefined; // replace\nconst s2 = undefined; // replace\n\n// TODO: Log whether s1 === s2 (should be false)\n\n// TODO: Create two global symbols with key 'app.token' using Symbol.for\nconst g1 = undefined; // replace\nconst g2 = undefined; // replace\n\n// TODO: Log whether g1 === g2 (should be true)\n\n// TODO: Create an object with a string key 'name' = 'Alice'\n//       and a symbol key using s1 with value 'secret'\n// TODO: Log Object.keys(obj) — symbol should be hidden\n// TODO: Log obj[s1] to access the symbol-keyed property\n",
+        "solution": "const s1 = Symbol('token');\nconst s2 = Symbol('token');\nconsole.log(s1 === s2);\n\nconst g1 = Symbol.for('app.token');\nconst g2 = Symbol.for('app.token');\nconsole.log(g1 === g2);\n\nconst obj = { name: 'Alice', [s1]: 'secret' };\nconsole.log(Object.keys(obj));\nconsole.log(obj[s1]);",
+        "expectedOutput": "false\ntrue\n[ 'name' ]\nsecret",
+        "hints": [
+          "Symbol('desc') always creates a unique symbol regardless of the description.",
+          "Use computed property syntax [symbol]: value to set a symbol-keyed property."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "symbols-iterators-ex2",
+        "title": "Custom Iterable: Countdown",
+        "description": "Create a Countdown class that takes a start number and is iterable. When iterated with for...of, it should yield values from start down to 1. Use Symbol.iterator and the iterator protocol.",
+        "starterCode": "// TODO: Create a Countdown class\n// - constructor(start) stores the starting number\n// - implement [Symbol.iterator]() that returns an iterator\n// - the iterator yields start, start-1, ..., 1\n\n// After implementing, this code should work:\n// const c = new Countdown(5);\n// for (const n of c) { process.stdout.write(n + ' '); }\n// console.log();\n// console.log([...new Countdown(3)]);\n",
+        "solution": "class Countdown {\n  constructor(start) {\n    this.start = start;\n  }\n\n  [Symbol.iterator]() {\n    let current = this.start;\n    return {\n      next() {\n        if (current >= 1) {\n          return { value: current--, done: false };\n        }\n        return { value: undefined, done: true };\n      }\n    };\n  }\n}\n\nconst c = new Countdown(5);\nfor (const n of c) {\n  process.stdout.write(n + ' ');\n}\nconsole.log();\nconsole.log([...new Countdown(3)]);",
+        "expectedOutput": "5 4 3 2 1 \n[ 3, 2, 1 ]",
+        "hints": [
+          "Symbol.iterator must return an object with a next() method.",
+          "next() returns { value, done: false } while counting, then { value: undefined, done: true } when finished."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "generators",
+    "sectionId": "es6-plus",
+    "orderIndex": 3,
+    "title": "Generators",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["function*", "yield", "generator iterator", "two-way communication", "yield*", "infinite sequences", "async generators"],
+    "content": {
+      "explanation": "Generators are special functions declared with the function* syntax that can pause and resume their execution. When called, a generator function doesn't run its body immediately - instead, it returns a generator object that conforms to both the iterable and iterator protocols. Each call to the generator's next() method resumes execution from where it last paused until it hits the next yield expression or returns.\n\nThe yield keyword is what makes generators powerful. When execution reaches a yield expression, the generator pauses and produces a value to the caller. The state of the function - local variables, execution position, and scope - is preserved between yields. This is fundamentally different from regular functions, which must run to completion once called. The ability to pause and resume makes generators ideal for lazy evaluation, producing values on demand rather than computing everything upfront.\n\nGenerators support two-way communication through the next() method. When you call generator.next(value), the value you pass becomes the result of the yield expression inside the generator. This means yield is both an output (producing a value) and an input (receiving a value) mechanism. The first next() call starts the generator, and any value passed to the first next() is ignored since there's no yield expression waiting to receive it.\n\nThe yield* expression delegates iteration to another iterable or generator. When a generator encounters yield*, it yields each value from the delegated iterable before continuing with its own code. This enables composition - breaking complex generator logic into smaller, reusable generator functions. yield* also forwards next() values and return values, making delegation transparent.\n\nInfinite sequences are one of the most elegant applications of generators. Since generators produce values lazily, you can create a generator that conceptually produces an infinite number of values without consuming infinite memory. Consumers take only what they need. Common examples include ID generators, Fibonacci sequences, and infinite range counters. Combined with destructuring or itertools-like utilities, infinite generators become powerful building blocks.\n\nHistorically, generators were used with libraries like co.js to manage asynchronous flow before async/await existed. A generator would yield promises, and a runner function would await each promise and feed the result back via next(). While async/await has replaced this pattern, understanding it provides insight into how async/await works under the hood. Today, generators remain valuable for lazy iteration, state machines, data streaming, and custom control flow.",
+      "codeExamples": [
+        {
+          "title": "Basic generators and yield",
+          "code": "function* greetings() {\n  console.log('Generator started');\n  yield 'Hello';\n  console.log('Resumed after first yield');\n  yield 'World';\n  console.log('Resumed after second yield');\n  return 'Done!';\n}\n\nconst gen = greetings();\nconsole.log('Created generator');\n\nconsole.log(gen.next());\nconsole.log(gen.next());\nconsole.log(gen.next());\nconsole.log(gen.next());\n\n// Generators are iterable\nfunction* colors() {\n  yield 'red';\n  yield 'green';\n  yield 'blue';\n}\n\nconsole.log('\\nfor...of:');\nfor (const color of colors()) {\n  process.stdout.write(color + ' ');\n}\nconsole.log();\nconsole.log('Spread:', [...colors()]);",
+          "output": "Created generator\nGenerator started\n{ value: 'Hello', done: false }\nResumed after first yield\n{ value: 'World', done: false }\nResumed after second yield\n{ value: 'Done!', done: true }\n{ value: undefined, done: true }\n\nfor...of:\nred green blue \nSpread: [ 'red', 'green', 'blue' ]",
+          "explanation": "The generator body doesn't execute until the first next() call. Each yield pauses execution and produces a value. The return value has done: true. Note that for...of and spread don't include the return value (only yielded values)."
+        },
+        {
+          "title": "Two-way communication with yield",
+          "code": "function* conversation() {\n  const name = yield 'What is your name?';\n  const age = yield `Hello ${name}! How old are you?`;\n  return `${name} is ${age} years old.`;\n}\n\nconst chat = conversation();\n\n// First next() starts the generator\nconsole.log(chat.next());           // yields the first question\n// Pass value back through next()\nconsole.log(chat.next('Alice'));     // 'Alice' becomes name\nconsole.log(chat.next(28));          // 28 becomes age\n\n// Practical: accumulator generator\nfunction* runningTotal() {\n  let total = 0;\n  while (true) {\n    const value = yield total;\n    if (value === null) return total;\n    total += value;\n  }\n}\n\nconst acc = runningTotal();\nconsole.log('\\nRunning total:');\nconsole.log(acc.next().value);     // 0 (initial)\nconsole.log(acc.next(10).value);   // 10\nconsole.log(acc.next(20).value);   // 30\nconsole.log(acc.next(5).value);    // 35\nconsole.log(acc.next(null));       // done, returns 35",
+          "output": "{ value: 'What is your name?', done: false }\n{ value: 'Hello Alice! How old are you?', done: false }\n{ value: 'Alice is 28 years old.', done: true }\n\nRunning total:\n0\n10\n30\n35\n{ value: 35, done: true }",
+          "explanation": "Values passed to next() become the result of the yield expression inside the generator. The first next() starts execution - its argument is ignored. The running total accumulator demonstrates stateful two-way communication."
+        },
+        {
+          "title": "yield* delegation and infinite sequences",
+          "code": "// yield* delegates to another iterable\nfunction* inner() {\n  yield 'a';\n  yield 'b';\n  return 'inner done'; // return value of yield*\n}\n\nfunction* outer() {\n  yield 1;\n  const result = yield* inner(); // delegates to inner\n  console.log('Inner returned:', result);\n  yield 2;\n}\n\nconsole.log([...outer()]);\n\n// Infinite Fibonacci generator\nfunction* fibonacci() {\n  let a = 0, b = 1;\n  while (true) {\n    yield a;\n    [a, b] = [b, a + b];\n  }\n}\n\n// Take first N values from infinite generator\nfunction take(n, iterable) {\n  const result = [];\n  for (const value of iterable) {\n    result.push(value);\n    if (result.length >= n) break;\n  }\n  return result;\n}\n\nconsole.log('\\nFirst 10 Fibonacci:', take(10, fibonacci()));\n\n// Infinite ID generator\nfunction* idGenerator(prefix = 'id') {\n  let counter = 1;\n  while (true) {\n    yield `${prefix}_${String(counter).padStart(4, '0')}`;\n    counter++;\n  }\n}\n\nconst ids = idGenerator('user');\nconsole.log(ids.next().value);\nconsole.log(ids.next().value);\nconsole.log(ids.next().value);",
+          "output": "Inner returned: inner done\n[ 1, 'a', 'b', 2 ]\n\nFirst 10 Fibonacci: [ 0, 1, 1, 2, 3, 5, 8, 13, 21, 34 ]\nuser_0001\nuser_0002\nuser_0003",
+          "explanation": "yield* delegates to inner generator, yielding each of its values. The return value of the inner generator becomes the result of yield*. Infinite generators like Fibonacci work because values are produced lazily - only computed when requested."
+        },
+        {
+          "title": "Practical generator patterns",
+          "code": "// Paginated data fetcher (simulated)\nfunction* paginate(items, pageSize) {\n  for (let i = 0; i < items.length; i += pageSize) {\n    yield {\n      page: Math.floor(i / pageSize) + 1,\n      data: items.slice(i, i + pageSize),\n      hasMore: i + pageSize < items.length\n    };\n  }\n}\n\nconst allItems = Array.from({ length: 12 }, (_, i) => `item_${i + 1}`);\nconst pages = paginate(allItems, 4);\n\nlet page = pages.next();\nwhile (!page.done) {\n  console.log(`Page ${page.value.page}:`, page.value.data.join(', '));\n  console.log(`  Has more: ${page.value.hasMore}`);\n  page = pages.next();\n}\n\n// State machine generator\nfunction* trafficLight() {\n  while (true) {\n    yield 'GREEN';\n    yield 'YELLOW';\n    yield 'RED';\n  }\n}\n\nconst light = trafficLight();\nconst sequence = [];\nfor (let i = 0; i < 7; i++) {\n  sequence.push(light.next().value);\n}\nconsole.log('\\nTraffic lights:', sequence.join(' -> '));",
+          "output": "Page 1: item_1, item_2, item_3, item_4\n  Has more: true\nPage 2: item_5, item_6, item_7, item_8\n  Has more: true\nPage 3: item_9, item_10, item_11, item_12\n  Has more: false\n\nTraffic lights: GREEN -> YELLOW -> RED -> GREEN -> YELLOW -> RED -> GREEN",
+          "explanation": "Pagination produces data in chunks on demand. The state machine cycles through traffic light states infinitely. Both demonstrate generators' strength: managing sequential state without external variables or complex logic."
+        }
+      ],
+      "notes": [
+        "Generator functions cannot be used as constructors - calling new on a generator function throws a TypeError.",
+        "The generator's return() method forces the generator to complete early, and throw() injects an error into the generator at the yield point.",
+        "Arrow functions cannot be generators - there is no =>* syntax.",
+        "Async generators (async function*) combine generators with async/await, yielding promises that are automatically awaited."
+      ],
+      "commonPitfalls": [
+        "Forgetting that the first next() call's argument is ignored - the generator hasn't reached a yield yet to receive the value.",
+        "Using for...of with a generator and expecting to get the return value - for...of only iterates yielded values, not the return value.",
+        "Creating infinite generators without a way to break out - always provide a termination condition or use take/limit utilities.",
+        "Confusing yield (pause and produce) with return (terminate generator) - yielded values have done: false, returned values have done: true."
+      ],
+      "interviewTips": [
+        "Be able to implement a custom iterator using a generator - it's much simpler than manual next() object creation.",
+        "Understand how generators relate to async/await conceptually - async functions are essentially generators that yield promises.",
+        "Know practical use cases: lazy evaluation, infinite sequences, stateful iteration, and data pipeline processing."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "generators-ex1",
+        "title": "Range Generator",
+        "description": "Write a generator function called 'range' that takes start, end, and optional step parameters. It should yield numbers from start up to and including end, incrementing by step. Then iterate it with for...of and also spread it into an array.",
+        "starterCode": "// TODO: Write a generator function* range(start, end, step = 1)\n// It should yield numbers from start up to and including end\n\n// After implementing, run:\n// for (const n of range(1, 5)) { process.stdout.write(n + ' '); }\n// console.log();\n// console.log([...range(0, 20, 5)]);\n",
+        "solution": "function* range(start, end, step = 1) {\n  for (let i = start; i <= end; i += step) {\n    yield i;\n  }\n}\n\nfor (const n of range(1, 5)) {\n  process.stdout.write(n + ' ');\n}\nconsole.log();\nconsole.log([...range(0, 20, 5)]);",
+        "expectedOutput": "1 2 3 4 5 \n[ 0, 5, 10, 15, 20 ]",
+        "hints": [
+          "Use function* to declare a generator. Use yield inside a for loop.",
+          "Generators are iterable, so for...of and spread work automatically."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "generators-ex2",
+        "title": "Infinite Powers of Two Generator",
+        "description": "Create an infinite generator called 'powersOfTwo' that yields 1, 2, 4, 8, 16, ... (successive powers of 2). Write a 'take' helper function that collects the first N values from any iterable. Use them together to get the first 8 powers of two.",
+        "starterCode": "// TODO: Write an infinite generator function* powersOfTwo()\n// It should yield 1, 2, 4, 8, 16, ... (multiply by 2 each time)\n\n// TODO: Write a take(n, iterable) function\n// It collects the first n values from any iterable into an array\n\n// After implementing, run:\n// console.log(take(8, powersOfTwo()));\n",
+        "solution": "function* powersOfTwo() {\n  let value = 1;\n  while (true) {\n    yield value;\n    value *= 2;\n  }\n}\n\nfunction take(n, iterable) {\n  const result = [];\n  for (const value of iterable) {\n    result.push(value);\n    if (result.length >= n) break;\n  }\n  return result;\n}\n\nconsole.log(take(8, powersOfTwo()));",
+        "expectedOutput": "[\n  1, 2,  4,  8,\n  16, 32, 64, 128\n]",
+        "hints": [
+          "Use while (true) to make the generator infinite. Multiply the current value by 2 after each yield.",
+          "In the take function, break out of the for...of loop once you have collected n values."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "es2020-plus",
+    "sectionId": "es6-plus",
+    "orderIndex": 4,
+    "title": "ES2020+ Features",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["optional chaining", "nullish coalescing", "BigInt", "globalThis", "Promise.allSettled", "logical assignment", "Array.at", "Object.hasOwn"],
+    "content": {
+      "explanation": "JavaScript continues to evolve with annual releases that add practical features addressing real-world pain points. ES2020 and subsequent versions introduced several operators and methods that eliminate common patterns of boilerplate code and make the language more expressive. These features are now widely supported in all modern browsers and Node.js versions.\n\nOptional chaining (?.) is perhaps the most impactful addition since async/await. It allows you to safely access deeply nested properties without checking each level for null or undefined. Before optional chaining, accessing user.address.city required checking if user exists, then if user.address exists. With ?., the expression user?.address?.city short-circuits and returns undefined if any part of the chain is nullish. Optional chaining works with property access (obj?.prop), bracket notation (obj?.[expr]), and method calls (obj?.method()).\n\nNullish coalescing (??) provides a default value specifically when the left operand is null or undefined. Unlike the logical OR (||) operator, which treats any falsy value (0, '', false, NaN) as triggering the fallback, ?? only triggers on null or undefined. This distinction is critical when 0, empty strings, or false are valid values in your application. For example, config.timeout ?? 3000 correctly preserves a timeout of 0, while config.timeout || 3000 would incorrectly override it.\n\nBigInt is a numeric type that can represent integers of arbitrary size, solving the limitation of the Number type which can only safely represent integers up to 2^53 - 1. BigInt literals end with 'n' (like 42n), and you can perform arithmetic on them. However, BigInt and Number cannot be mixed in operations - you must explicitly convert between them. BigInt is essential for cryptography, financial calculations with large numbers, and working with database IDs that exceed Number.MAX_SAFE_INTEGER.\n\nES2020 also introduced Promise.allSettled(), which waits for all promises to complete regardless of whether they resolve or reject. Unlike Promise.all() which short-circuits on the first rejection, allSettled() gives you the outcome of every promise. Each result object has a status of 'fulfilled' or 'rejected', with either a value or reason property. globalThis provides a universal way to access the global object across environments (window in browsers, global in Node.js, self in workers).\n\nES2021 brought logical assignment operators (??=, ||=, &&=) that combine logical operations with assignment. x ??= y assigns y to x only if x is null or undefined. x ||= y assigns if x is falsy. x &&= y assigns if x is truthy. These are shorthand for common patterns and make initialization and conditional updates more concise.\n\nES2022 introduced several practical additions. Array.at() accepts negative indices, making it easy to access elements from the end of an array (arr.at(-1) for the last element). Object.hasOwn() is a static method that replaces the awkward Object.prototype.hasOwnProperty.call() pattern. Top-level await allows using await outside of async functions in ES modules, simplifying module initialization that depends on asynchronous operations.",
+      "codeExamples": [
+        {
+          "title": "Optional chaining and nullish coalescing",
+          "code": "// Optional chaining - safe property access\nconst user = {\n  name: 'Alice',\n  address: {\n    city: 'Portland'\n  }\n};\n\nconsole.log(user?.address?.city);\nconsole.log(user?.phone?.number);\nconsole.log(user?.address?.zipCode?.toString());\n\n// Optional method call\nconst obj = {\n  greet: () => 'Hello!'\n};\nconsole.log(obj.greet?.());\nconsole.log(obj.farewell?.());\n\n// Optional bracket notation\nconst data = { users: ['Alice', 'Bob'] };\nconsole.log(data?.users?.[0]);\nconsole.log(data?.admins?.[0]);\n\n// Nullish coalescing vs logical OR\nconst config = { timeout: 0, title: '', debug: false };\n\nconsole.log('\\n--- ?? vs || ---');\nconsole.log('timeout ??:', config.timeout ?? 3000);   // 0 (preserved)\nconsole.log('timeout ||:', config.timeout || 3000);   // 3000 (wrong!)\nconsole.log('title ??:', config.title ?? 'Default');   // '' (preserved)\nconsole.log('title ||:', config.title || 'Default');   // Default (wrong!)\nconsole.log('debug ??:', config.debug ?? true);        // false (preserved)\nconsole.log('missing ??:', config.missing ?? 'fallback');",
+          "output": "Portland\nundefined\nundefined\nHello!\nundefined\nAlice\nundefined\n\n--- ?? vs || ---\ntimeout ??: 0\ntimeout ||: 3000\ntitle ??: \ntitle ||: Default\ndebug ??: false\nmissing ??: fallback",
+          "explanation": "Optional chaining returns undefined if any link in the chain is null/undefined, preventing 'Cannot read property of undefined' errors. Nullish coalescing (??) only falls back on null/undefined, correctly preserving falsy values like 0, '', and false."
+        },
+        {
+          "title": "BigInt and Promise.allSettled",
+          "code": "// BigInt for large integers\nconsole.log('Max safe integer:', Number.MAX_SAFE_INTEGER);\nconsole.log('Overflow:', Number.MAX_SAFE_INTEGER + 1 === Number.MAX_SAFE_INTEGER + 2);\n\nconst big1 = 9007199254740993n; // literal\nconst big2 = BigInt('999999999999999999');\nconsole.log('BigInt addition:', big1 + big2);\nconsole.log('BigInt multiply:', 100n * 200n);\nconsole.log('BigInt compare:', 42n === 42, 42n == 42);\nconsole.log('Type:', typeof 42n);\n\n// Promise.allSettled - get all results\nasync function fetchAll() {\n  const results = await Promise.allSettled([\n    Promise.resolve('User data'),\n    Promise.reject(new Error('Network error')),\n    Promise.resolve('Settings loaded'),\n    Promise.reject(new Error('Auth failed'))\n  ]);\n  \n  results.forEach((result, i) => {\n    if (result.status === 'fulfilled') {\n      console.log(`Task ${i}: SUCCESS - ${result.value}`);\n    } else {\n      console.log(`Task ${i}: FAILED - ${result.reason.message}`);\n    }\n  });\n  \n  const successes = results.filter(r => r.status === 'fulfilled');\n  console.log(`\\n${successes.length}/${results.length} tasks succeeded`);\n}\n\nfetchAll();",
+          "output": "Max safe integer: 9007199254740991\nOverflow: true\nBigInt addition: 10007199254740992n\nBigInt multiply: 20000n\nBigInt compare: false true\nType: bigint\nTask 0: SUCCESS - User data\nTask 1: FAILED - Network error\nTask 2: SUCCESS - Settings loaded\nTask 3: FAILED - Auth failed\n\n2/4 tasks succeeded",
+          "explanation": "BigInt handles numbers beyond Number.MAX_SAFE_INTEGER without precision loss. Note: === is false between BigInt and Number but == is true. Promise.allSettled never rejects - it waits for all promises and reports each outcome."
+        },
+        {
+          "title": "Logical assignment operators (ES2021)",
+          "code": "// Nullish coalescing assignment (??=)\nconst defaults = { theme: null, fontSize: undefined, lang: 'en' };\n\ndefaults.theme ??= 'dark';        // null -> assigns\ndefaults.fontSize ??= 16;         // undefined -> assigns\ndefaults.lang ??= 'fr';           // 'en' -> keeps\nconsole.log(defaults);\n\n// Logical OR assignment (||=)\nconst options = { retries: 0, verbose: false, name: '' };\n\noptions.retries ||= 3;            // 0 is falsy -> assigns (caution!)\noptions.verbose ||= true;         // false is falsy -> assigns\noptions.name ||= 'anonymous';     // '' is falsy -> assigns\nconsole.log(options);\n\n// Logical AND assignment (&&=)\nconst user = { name: 'Alice', session: 'abc123' };\n\nuser.name &&= user.name.toUpperCase();    // truthy -> transforms\nuser.session &&= null;                    // truthy -> assigns null (logout)\nuser.nickname &&= 'Ali';                  // undefined -> keeps\nconsole.log(user);\n\n// Practical: initializing nested defaults\nconst config = {};\nconfig.database ??= {};\nconfig.database.host ??= 'localhost';\nconfig.database.port ??= 5432;\nconsole.log(config);",
+          "output": "{ theme: 'dark', fontSize: 16, lang: 'en' }\n{ retries: 3, verbose: true, name: 'anonymous' }\n{ name: 'ALICE', session: null }\n{ database: { host: 'localhost', port: 5432 } }",
+          "explanation": "??= only assigns when the left side is null/undefined. ||= assigns when falsy (be careful with 0 and ''). &&= only assigns when the left side is truthy - useful for conditional transformations. These operators are shorthand for common if-assign patterns."
+        },
+        {
+          "title": "Array.at(), Object.hasOwn(), and more (ES2022)",
+          "code": "// Array.at() - negative indexing\nconst fruits = ['Apple', 'Banana', 'Cherry', 'Date', 'Elderberry'];\n\nconsole.log('First:', fruits.at(0));\nconsole.log('Last:', fruits.at(-1));\nconsole.log('Second to last:', fruits.at(-2));\n// Compare with old way:\nconsole.log('Old way last:', fruits[fruits.length - 1]);\n\n// Also works on strings\nconst str = 'Hello';\nconsole.log('Last char:', str.at(-1));\n\n// Object.hasOwn() - cleaner hasOwnProperty\nconst config = { debug: false, port: 3000 };\nconst inherited = Object.create(config);\ninherited.host = 'localhost';\n\nconsole.log('\\n--- Object.hasOwn ---');\nconsole.log(Object.hasOwn(inherited, 'host'));   // own\nconsole.log(Object.hasOwn(inherited, 'port'));   // inherited\nconsole.log(Object.hasOwn(inherited, 'debug')); // inherited\n\n// Safe even with null-prototype objects\nconst bare = Object.create(null);\nbare.key = 'value';\n// bare.hasOwnProperty('key');  // TypeError!\nconsole.log(Object.hasOwn(bare, 'key')); // works\n\n// String.matchAll (ES2020)\nconst text = 'Price: $42.50, Tax: $3.40, Total: $45.90';\nconst regex = /\\$(\\d+\\.\\d+)/g;\n\nconsole.log('\\n--- matchAll ---');\nfor (const match of text.matchAll(regex)) {\n  console.log(`Found ${match[0]} at index ${match.index}, amount: ${match[1]}`);\n}\n\n// globalThis\nconsole.log('\\nglobalThis === global:', globalThis === global);",
+          "output": "First: Apple\nLast: Elderberry\nSecond to last: Date\nOld way last: Elderberry\nLast char: o\n\n--- Object.hasOwn ---\ntrue\nfalse\nfalse\ntrue\n\n--- matchAll ---\nFound $42.50 at index 7, amount: 42.50\nFound $3.40 at index 19, amount: 3.40\nFound $45.90 at index 32, amount: 45.90\n\nglobalThis === global: true",
+          "explanation": "Array.at(-1) is cleaner than arr[arr.length - 1] for end-of-array access. Object.hasOwn() is safer than hasOwnProperty - it works on null-prototype objects and doesn't require call(). String.matchAll returns an iterator of all regex matches with capture groups."
+        }
+      ],
+      "notes": [
+        "Optional chaining short-circuits the entire rest of the expression - in a?.b.c, if a is null, b.c is never evaluated.",
+        "You cannot mix BigInt and Number in arithmetic - you must convert explicitly with BigInt() or Number().",
+        "Top-level await only works in ES Modules, not in CommonJS or classic scripts.",
+        "Object.hasOwn() is the recommended replacement for Object.prototype.hasOwnProperty.call() in all new code."
+      ],
+      "commonPitfalls": [
+        "Using || when you should use ?? - this incorrectly replaces legitimate falsy values like 0, '', and false with defaults.",
+        "Trying to serialize BigInt with JSON.stringify() - it throws a TypeError. You need a custom replacer or convert to string first.",
+        "Chaining optional access too aggressively - user?.name?. is unnecessary if user is guaranteed to have a name property when it exists.",
+        "Using ||= to set defaults for numeric fields - it will override 0, which might be a valid value. Use ??= instead."
+      ],
+      "interviewTips": [
+        "Be crystal clear on the difference between ?? and || - this is a very common interview question with concrete edge cases around 0, '', and false.",
+        "Know that optional chaining works with method calls (obj?.method()) and dynamic property access (obj?.[key]).",
+        "Understand why Promise.allSettled() exists alongside Promise.all() - it's for fire-and-forget scenarios where you want all results regardless of individual failures."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "es2020-plus-ex1",
+        "title": "Safe Config Reader with Optional Chaining",
+        "description": "Given a nested config object with some missing branches, use optional chaining (?.) to safely read values and nullish coalescing (??) to provide defaults. Show the difference between ?? and || for a falsy-but-valid value.",
+        "starterCode": "const config = {\n  server: {\n    host: 'localhost',\n    port: 0\n  },\n  // database key is missing entirely\n  logging: {\n    level: 'info'\n  }\n};\n\n// TODO: Use optional chaining + nullish coalescing to:\n// 1. Read config.server.host, default 'unknown' -> should be 'localhost'\n// 2. Read config.database?.port, default 5432 -> should be 5432 (database missing)\n// 3. Read config.logging?.file?.path, default 'stdout' -> should be 'stdout'\n// 4. Show the ?? vs || difference for config.server.port (which is 0)\n//    Log: \"port ??: \" + result with ??   (should preserve 0)\n//    Log: \"port ||: \" + result with ||   (should replace with 3000)\n",
+        "solution": "const config = {\n  server: {\n    host: 'localhost',\n    port: 0\n  },\n  logging: {\n    level: 'info'\n  }\n};\n\nconsole.log('host:', config.server?.host ?? 'unknown');\nconsole.log('db port:', config.database?.port ?? 5432);\nconsole.log('log path:', config.logging?.file?.path ?? 'stdout');\nconsole.log('port ??:', config.server.port ?? 3000);\nconsole.log('port ||:', config.server.port || 3000);",
+        "expectedOutput": "host: localhost\ndb port: 5432\nlog path: stdout\nport ??: 0\nport ||: 3000",
+        "hints": [
+          "Optional chaining returns undefined when any part of the chain is null/undefined.",
+          "?? only falls back on null or undefined, while || falls back on any falsy value (0, '', false)."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "es2020-plus-ex2",
+        "title": "Logical Assignment and Array.at()",
+        "description": "Use nullish coalescing assignment (??=) to fill in missing defaults on a settings object, then use Array.at() to access elements from the end of an array.",
+        "starterCode": "// TODO: Start with this settings object\nconst settings = { theme: null, fontSize: undefined, language: 'en' };\n\n// TODO: Use ??= to assign defaults:\n//   theme -> 'dark'      (null, so assigns)\n//   fontSize -> 14       (undefined, so assigns)\n//   language -> 'fr'     (already 'en', so keeps)\n// Log the settings object\n\n// TODO: Create an array: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri']\n// Use .at() to log:\n//   \"First: Mon\"\n//   \"Last: Fri\"\n//   \"Second to last: Thu\"\n",
+        "solution": "const settings = { theme: null, fontSize: undefined, language: 'en' };\n\nsettings.theme ??= 'dark';\nsettings.fontSize ??= 14;\nsettings.language ??= 'fr';\nconsole.log(settings);\n\nconst days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri'];\nconsole.log('First:', days.at(0));\nconsole.log('Last:', days.at(-1));\nconsole.log('Second to last:', days.at(-2));",
+        "expectedOutput": "{ theme: 'dark', fontSize: 14, language: 'en' }\nFirst: Mon\nLast: Fri\nSecond to last: Thu",
+        "hints": [
+          "??= only assigns when the current value is null or undefined. 'en' is neither, so it stays.",
+          "Array.at(-1) returns the last element, .at(-2) returns the second-to-last."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

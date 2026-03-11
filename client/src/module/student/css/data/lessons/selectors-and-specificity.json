@@ -1,0 +1,347 @@
+[
+  {
+    "id": "class-and-id-selectors",
+    "sectionId": "selectors-and-specificity",
+    "orderIndex": 0,
+    "title": "Class & ID Selectors",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Class Selectors", "ID Selectors", "Multi-class Selectors", "Naming Conventions", "BEM", "When to Use Class vs ID"],
+    "content": {
+      "explanation": "Class and ID selectors are the two most commonly used CSS selectors for targeting specific elements. While both let you apply styles to particular elements, they serve different purposes and have different rules. Understanding when to use each one — and following good naming conventions — is a foundational CSS skill.\n\nClass selectors, written with a dot prefix (.classname), are the workhorse of CSS styling. An element can have multiple classes (class=\"card featured large\"), and multiple elements can share the same class. This makes classes perfect for reusable styling patterns. You can chain class selectors to target elements with multiple specific classes: .card.featured targets elements that have both the 'card' AND 'featured' classes. You can also combine class selectors with element selectors: p.intro targets only <p> elements with the class 'intro'.\n\nID selectors, written with a hash prefix (#idname), target a single unique element on the page. Each ID must appear only once per document. IDs have much higher specificity than classes (0,1,0,0 vs 0,0,1,0), which means ID-based styles are harder to override. For this reason, most CSS methodologies recommend avoiding ID selectors for styling and reserving IDs for JavaScript targeting (document.getElementById), fragment navigation (href=\"#section\"), and form label association (for=\"inputId\"). Use classes for all styling purposes.\n\nNaming conventions make your CSS readable and maintainable. The most popular convention is BEM (Block, Element, Modifier): .block__element--modifier. A 'block' is a standalone component (.card), an 'element' is a part of the block (.card__title), and a 'modifier' is a variation (.card--featured). Other approaches include using simple descriptive names (.sidebar-nav), utility-first naming (.text-center, .mt-4), or camelCase (.mainHeader). Whatever convention you choose, be consistent throughout your project.\n\nWhen deciding between class and ID, almost always choose class. Classes are more flexible (reusable, lower specificity, multiple per element) while IDs are rigid (unique, high specificity, one per element). The only situations where ID selectors make sense in CSS are when you genuinely need the higher specificity to override other styles, or when targeting a truly unique page element like a skip-navigation link. In modern CSS, even these cases are better handled with multiple chained classes.",
+      "codeExamples": [
+        {
+          "title": "Class Selectors and Multi-class Targeting",
+          "code": "/* Single class selector */\n.card {\n  background: white;\n  border-radius: 8px;\n  padding: 24px;\n  border: 1px solid #e5e7eb;\n}\n\n/* Element can have multiple classes */\n/* <div class=\"card featured\"> */\n.featured {\n  border-color: #3b82f6;\n  border-width: 2px;\n}\n\n/* Chained class: BOTH classes must be present */\n.card.featured {\n  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.15);\n}\n\n/* Combined with element selector */\np.error {\n  color: #dc2626;\n  font-weight: 600;\n}\nspan.error {\n  color: #dc2626;\n  font-size: 12px;\n}\n\n/* Multiple elements share a class */\n/* <h2 class=\"section-title\">...</h2>\n   <h3 class=\"section-title\">...</h3> */\n.section-title {\n  color: #1f2937;\n  margin-bottom: 16px;\n  font-weight: 700;\n}",
+          "explanation": "Classes are reusable across elements. Chain selectors (.card.featured) to target elements with multiple classes. Combine with element selectors (p.error) for type-specific styling."
+        },
+        {
+          "title": "ID Selectors and Why to Avoid Them for Styling",
+          "code": "/* ID selector: very high specificity */\n#main-nav {\n  background: #1e293b;\n  padding: 12px 24px;\n  display: flex;\n}\n\n/* Problem: ID is hard to override */\n#main-nav { color: white; }          /* 0,1,0,0 */\n.nav-light { color: #333; }          /* 0,0,1,0 - loses! */\n.nav-light.themed { color: #333; }   /* 0,0,2,0 - still loses! */\n\n/* You'd need another ID or !important to override */\n#main-nav.nav-light { color: #333; } /* 0,1,1,0 - finally wins */\n\n/* BETTER: Use classes instead */\n.main-nav {\n  background: #1e293b;\n  padding: 12px 24px;\n  display: flex;\n  color: white;\n}\n.main-nav.light {\n  background: white;\n  color: #333;  /* Easy to override with classes */\n}",
+          "explanation": "ID selectors have specificity of (0,1,0,0) which beats any number of classes (0,0,x,0). This makes them hard to override and inflexible. Use classes for styling and reserve IDs for JavaScript and accessibility."
+        },
+        {
+          "title": "BEM Naming Convention",
+          "code": "/* Block: standalone component */\n.search-form {\n  display: flex;\n  gap: 8px;\n  padding: 16px;\n  background: #f9fafb;\n  border-radius: 8px;\n}\n\n/* Element: part of the block (double underscore) */\n.search-form__input {\n  flex: 1;\n  padding: 8px 12px;\n  border: 1px solid #d1d5db;\n  border-radius: 4px;\n  font-size: 14px;\n}\n\n.search-form__button {\n  padding: 8px 20px;\n  background: #2563eb;\n  color: white;\n  border: none;\n  border-radius: 4px;\n  cursor: pointer;\n}\n\n/* Modifier: variation of block or element (double hyphen) */\n.search-form--large {\n  padding: 24px;\n}\n\n.search-form__button--disabled {\n  background: #9ca3af;\n  cursor: not-allowed;\n}\n\n.search-form__button--secondary {\n  background: #6b7280;\n}",
+          "explanation": "BEM (Block__Element--Modifier) is a naming convention that creates clear, predictable class names. Blocks are components, elements are parts of blocks (joined with __), and modifiers are variations (joined with --)."
+        }
+      ],
+      "notes": [
+        "Use classes for styling, IDs for JavaScript and accessibility. This keeps specificity manageable and styles overridable.",
+        "An element can have multiple classes: class=\"btn btn-primary btn-large\". Each class applies its styles independently.",
+        "Chaining classes (.card.featured) has higher specificity than a single class (.card) — it is (0,0,2,0) vs (0,0,1,0).",
+        "Class names should be descriptive and use a consistent naming convention. BEM is the most widely adopted convention."
+      ],
+      "commonPitfalls": [
+        "Using IDs for styling patterns that might need to be reused. Since IDs must be unique, you cannot apply the same styles to multiple elements without duplicating the CSS.",
+        "Forgetting that chained class selectors (.a.b) have no space between them (meaning both on the same element), while descendant selectors (.a .b) have a space (meaning .b inside .a).",
+        "Using generic class names like .title or .content that are likely to conflict with other components. BEM naming or a prefixing strategy prevents these collisions."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "class-and-id-selectors-ex1",
+        "title": "Style with Classes",
+        "description": "Write CSS for a button system. Create a base .btn class with padding 10px 20px, border none, border-radius 6px, font-size 14px, and cursor pointer. Then create modifier classes: .btn-primary with background-color #2563eb and color white, and .btn-outline with background-color transparent, border 2px solid #2563eb, and color #2563eb.",
+        "starterCode": "/* Create the button class system */\n",
+        "solution": ".btn {\n  padding: 10px 20px;\n  border: none;\n  border-radius: 6px;\n  font-size: 14px;\n  cursor: pointer;\n}\n\n.btn-primary {\n  background-color: #2563eb;\n  color: white;\n}\n\n.btn-outline {\n  background-color: transparent;\n  border: 2px solid #2563eb;\n  color: #2563eb;\n}",
+        "hints": [
+          "The base .btn class contains shared styles, modifier classes add variations",
+          "An element uses both classes: class=\"btn btn-primary\""
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "class-and-id-selectors-ex2",
+        "title": "BEM Naming Practice",
+        "description": "Write CSS using BEM naming for a user-card component. Create .user-card with background white, padding 20px, and border-radius 8px. Create .user-card__name with font-size 18px and font-weight bold. Create .user-card__role with font-size 14px and color #6b7280. Create .user-card--premium with border 2px solid #f59e0b.",
+        "starterCode": "/* Write BEM-named CSS for the user card */\n",
+        "solution": ".user-card {\n  background: white;\n  padding: 20px;\n  border-radius: 8px;\n}\n\n.user-card__name {\n  font-size: 18px;\n  font-weight: bold;\n}\n\n.user-card__role {\n  font-size: 14px;\n  color: #6b7280;\n}\n\n.user-card--premium {\n  border: 2px solid #f59e0b;\n}",
+        "hints": [
+          "BEM uses double underscores (__) for elements and double hyphens (--) for modifiers",
+          "The modifier class is applied alongside the block class: class=\"user-card user-card--premium\""
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "combinators",
+    "sectionId": "selectors-and-specificity",
+    "orderIndex": 1,
+    "title": "Combinators",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Descendant Combinator", "Child Combinator", "Adjacent Sibling", "General Sibling", "Nesting Selectors"],
+    "content": {
+      "explanation": "CSS combinators define relationships between selectors, allowing you to target elements based on their position in the HTML document tree. While basic selectors target elements by their name, class, or ID, combinators let you target elements based on their relationship to other elements — children, descendants, siblings, and adjacent elements. Mastering combinators lets you write precise selectors without adding extra classes to your HTML.\n\nThe descendant combinator (space) is the most commonly used combinator. It selects elements that are descendants of another element at any depth. Writing .sidebar a selects all <a> elements that are anywhere inside an element with class 'sidebar,' whether they are direct children, grandchildren, or deeper. This is powerful but can be too broad — it matches every link at every nesting level, which can cause unintended styling.\n\nThe child combinator (>) selects only direct children, not deeper descendants. Writing .nav > li targets only the <li> elements that are immediate children of .nav, not <li> elements nested in sub-menus. This is more precise than the descendant combinator and is useful when you need to style only the first level of a nested structure, like top-level navigation items in a multi-level menu.\n\nThe adjacent sibling combinator (+) selects an element that is the very next sibling of another element — both must share the same parent and the second must immediately follow the first. Writing h2 + p selects the first <p> that immediately follows an <h2>. This is useful for styling the introductory paragraph after a heading differently, or adding spacing after specific elements.\n\nThe general sibling combinator (~) selects all sibling elements that come after the first selector, not just the immediately adjacent one. Writing h2 ~ p selects all <p> elements that are siblings of an <h2> and come after it in the source order. Note that it only selects following siblings, not preceding ones. This combinator is useful for styling all content that follows a specific element, like showing elements after a checkbox is checked (using the :checked pseudo-class with ~).",
+      "codeExamples": [
+        {
+          "title": "Descendant vs Child Combinator",
+          "code": "/* Descendant combinator (space): any depth */\n.nav a {\n  color: white;\n  text-decoration: none;\n}\n/* Matches: <nav class=\"nav\"><a>, <nav class=\"nav\"><div><a>, etc. */\n\n/* Child combinator (>): direct children only */\n.nav > li {\n  display: inline-block;\n  padding: 8px 16px;\n}\n/* Only matches <ul class=\"nav\"><li>, NOT nested <li> inside sub-menus */\n\n/* Practical example: multi-level menu */\n.menu > li {\n  /* Top-level items: horizontal */\n  display: inline-block;\n  position: relative;\n}\n\n.menu > li > a {\n  /* Top-level links only */\n  font-weight: 700;\n  padding: 12px 16px;\n}\n\n.menu li li a {\n  /* Nested (dropdown) links: different style */\n  font-weight: 400;\n  padding: 8px 12px;\n  font-size: 14px;\n}",
+          "explanation": "The descendant combinator (space) matches at any nesting level. The child combinator (>) matches only direct children. Use > when you need precision, especially in nested structures like menus."
+        },
+        {
+          "title": "Adjacent and General Sibling Combinators",
+          "code": "/* Adjacent sibling (+): immediately next sibling */\nh2 + p {\n  font-size: 1.125rem;\n  color: #4b5563;\n  margin-top: 4px;\n}\n/* Styles only the FIRST paragraph right after each h2 */\n\n/* General sibling (~): all following siblings */\nh2 ~ p {\n  margin-left: 16px;\n}\n/* Styles ALL paragraphs that come after h2 (at same level) */\n\n/* Practical: spacing between stacked elements */\n.stack > * + * {\n  margin-top: 16px;\n}\n/* Every direct child except the first gets a top margin */\n/* This creates even spacing without margin on the first element */\n\n/* Practical: style after a divider */\nhr + p {\n  font-style: italic;\n  color: #6b7280;\n}",
+          "explanation": "The + combinator selects the single element immediately after. The ~ combinator selects all following siblings. The 'lobotomized owl' pattern (.stack > * + *) is a popular spacing technique."
+        },
+        {
+          "title": "Combining Combinators",
+          "code": "/* Multiple combinators in one selector */\n\n/* Direct child <a> inside any <li> inside .nav */\n.nav li > a {\n  padding: 8px 12px;\n  display: block;\n}\n\n/* First paragraph after h2 inside .article */\n.article h2 + p {\n  font-weight: 500;\n  font-size: 1.1rem;\n}\n\n/* Links inside list items that are direct children of .sidebar */\n.sidebar > ul > li > a {\n  color: #1e40af;\n  border-bottom: 1px solid #e5e7eb;\n  padding: 8px 0;\n  display: block;\n}\n\n/* Table rows: alternate styling after header */\nthead + tbody tr:nth-child(odd) {\n  background-color: #f9fafb;\n}",
+          "explanation": "Combinators can be chained to create very specific selectors. .sidebar > ul > li > a traces a precise path through the DOM. Use these when you need surgical precision without adding extra classes."
+        }
+      ],
+      "notes": [
+        "Combinators do not add to specificity on their own. The specificity comes from the selectors they connect.",
+        "The descendant combinator (space) is the most commonly overused combinator. Be careful with selectors like .content a which style EVERY link inside .content.",
+        "The child combinator (>) is essential for multi-level menus where you need different styles at different nesting levels.",
+        "The 'lobotomized owl' selector (* + *) adds margin-top to every element that is preceded by another element, creating consistent vertical spacing."
+      ],
+      "commonPitfalls": [
+        "Confusing descendant (space) and child (>) combinators. '.nav a' matches links at ANY depth inside .nav, while '.nav > a' only matches links that are DIRECT children of .nav.",
+        "Forgetting that sibling combinators (+, ~) only select elements that come AFTER the first selector in the source order, never before it.",
+        "Over-qualifying selectors with too many combinators. 'body > main > section > div > ul > li > a' is extremely fragile — any HTML restructuring breaks it. Prefer classes."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "combinators-ex1",
+        "title": "Style Navigation Levels",
+        "description": "Write CSS for a nested navigation. Use .nav > li to style top-level items with display inline-block and padding 12px 16px. Use .nav > li > a for top-level links with color #1e293b and font-weight 700. Use .nav li li a for nested dropdown links with color #4b5563, font-weight 400, and padding 8px 12px.",
+        "starterCode": "/* Style different navigation levels with combinators */\n",
+        "solution": ".nav > li {\n  display: inline-block;\n  padding: 12px 16px;\n}\n\n.nav > li > a {\n  color: #1e293b;\n  font-weight: 700;\n}\n\n.nav li li a {\n  color: #4b5563;\n  font-weight: 400;\n  padding: 8px 12px;\n}",
+        "hints": [
+          "Use the child combinator (>) to target only direct children",
+          "Use the descendant combinator (space) for nested items at any depth"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "combinators-ex2",
+        "title": "Sibling Styling",
+        "description": "Write CSS rules: use h2 + p to style the first paragraph after h2 with font-size 1.125rem and color #4b5563. Use .stack > * + * to add margin-top 16px to every direct child of .stack except the first one.",
+        "starterCode": "/* Use sibling combinators for spacing */\n",
+        "solution": "h2 + p {\n  font-size: 1.125rem;\n  color: #4b5563;\n}\n\n.stack > * + * {\n  margin-top: 16px;\n}",
+        "hints": [
+          "The + combinator selects the element immediately following the first selector",
+          "* + * means 'any element that has a preceding sibling' — effectively every element except the first"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "pseudo-classes",
+    "sectionId": "selectors-and-specificity",
+    "orderIndex": 2,
+    "title": "Pseudo-classes",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": [":hover", ":focus", ":active", ":nth-child", ":first-child", ":last-child", ":not", ":focus-visible", "State-based Selectors"],
+    "content": {
+      "explanation": "Pseudo-classes are special selectors that target elements in a specific state or position, without needing extra classes in the HTML. They are written with a single colon prefix (:hover, :focus, :nth-child). Pseudo-classes let you style elements based on user interaction (hovering, clicking, focusing), position within their parent (first child, nth child), form state (checked, disabled, valid), and more. They are fundamental for creating interactive and dynamic interfaces with pure CSS.\n\nInteraction pseudo-classes respond to user actions. :hover activates when the user's mouse cursor is over an element. :focus activates when an element receives focus (via click or Tab key). :active activates while an element is being clicked (mouse button down). :focus-visible is the modern alternative to :focus that only shows focus styles when the user is navigating via keyboard (not on mouse click), which is better for user experience. For links, there is also :visited (already visited links) and :link (unvisited links). The recommended order for link styles is LVHA: :link, :visited, :hover, :active.\n\nStructural pseudo-classes target elements based on their position within their parent. :first-child and :last-child select the first and last child element. :nth-child(n) is the most powerful — it accepts formulas like :nth-child(odd), :nth-child(even), :nth-child(3n) (every 3rd), or :nth-child(3n+1) (1st, 4th, 7th...). The related :nth-of-type(n) is similar but only counts elements of the same type, which avoids a common confusion when different element types are mixed.\n\nThe :not() pseudo-class is a negation selector that matches elements that do NOT match the given selector. For example, :not(.hidden) matches every element that does not have the 'hidden' class. In modern CSS (Selectors Level 4), :not() can accept complex selectors like :not(.card .title). The :not() pseudo-class is incredibly useful for 'everything except' patterns, like styling all links except the active one: a:not(.active) { opacity: 0.6; }.\n\nForm-related pseudo-classes are essential for styling forms. :checked targets checked checkboxes and radio buttons. :disabled and :enabled target disabled/enabled form elements. :valid and :invalid respond to HTML5 form validation — an input with type=\"email\" will match :invalid if the value is not a valid email. :placeholder-shown targets inputs that are currently showing placeholder text (meaning they are empty). These pseudo-classes enable sophisticated form styling without JavaScript.",
+      "codeExamples": [
+        {
+          "title": "Interaction Pseudo-classes",
+          "code": "/* Hover: mouse is over the element */\n.btn {\n  background-color: #2563eb;\n  color: white;\n  padding: 10px 20px;\n  border: none;\n  border-radius: 6px;\n  cursor: pointer;\n  transition: background-color 0.2s;\n}\n\n.btn:hover {\n  background-color: #1d4ed8;\n}\n\n.btn:active {\n  background-color: #1e40af;\n  transform: scale(0.98);\n}\n\n/* Focus-visible: keyboard navigation only */\n.btn:focus-visible {\n  outline: 3px solid #93c5fd;\n  outline-offset: 2px;\n}\n\n/* Link pseudo-classes (LVHA order) */\na:link { color: #2563eb; }\na:visited { color: #7c3aed; }\na:hover { color: #1d4ed8; text-decoration: underline; }\na:active { color: #1e40af; }",
+          "explanation": "Interaction pseudo-classes respond to user actions. Use :focus-visible instead of :focus for better UX — it only shows focus rings on keyboard navigation, not on mouse clicks. Follow LVHA order for link styles."
+        },
+        {
+          "title": "Structural Pseudo-classes",
+          "code": "/* First and last child */\nli:first-child {\n  font-weight: bold;\n}\n\nli:last-child {\n  border-bottom: none;\n}\n\n/* nth-child: powerful positional targeting */\ntr:nth-child(odd) {\n  background-color: #f9fafb;  /* Zebra-striped table rows */\n}\n\ntr:nth-child(even) {\n  background-color: white;\n}\n\n/* Every 3rd element */\n.grid-item:nth-child(3n) {\n  margin-right: 0;\n}\n\n/* First 3 elements */\nli:nth-child(-n+3) {\n  color: #059669;\n  font-weight: 600;\n}\n\n/* Only child: element with no siblings */\n.tab:only-child {\n  border-radius: 8px;\n}\n\n/* nth-of-type: counts only matching elements */\np:nth-of-type(1) {\n  font-size: 1.25rem; /* First <p>, ignoring other elements */\n}",
+          "explanation": "Structural pseudo-classes target elements by position. :nth-child(an+b) is the most versatile: odd/even for alternation, 3n for every 3rd, -n+3 for the first three. :nth-of-type counts only same-type siblings."
+        },
+        {
+          "title": "Negation and Form Pseudo-classes",
+          "code": "/* :not() - select everything EXCEPT */\nnav a:not(.active) {\n  opacity: 0.7;\n}\n\nnav a:not(.active):hover {\n  opacity: 1;\n}\n\n/* All children except the last */\n.list li:not(:last-child) {\n  border-bottom: 1px solid #e5e7eb;\n}\n\n/* Form pseudo-classes */\ninput:focus {\n  border-color: #3b82f6;\n  outline: none;\n  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);\n}\n\ninput:disabled {\n  background-color: #f3f4f6;\n  cursor: not-allowed;\n  opacity: 0.6;\n}\n\ninput:valid {\n  border-color: #10b981;\n}\n\ninput:invalid {\n  border-color: #ef4444;\n}\n\ninput:placeholder-shown {\n  border-color: #d1d5db; /* Show neutral border when empty */\n}",
+          "explanation": "The :not() pseudo-class excludes elements matching the inner selector. Form pseudo-classes (:valid, :invalid, :disabled, :placeholder-shown) enable styling based on form state without JavaScript."
+        }
+      ],
+      "notes": [
+        "Pseudo-classes have the same specificity as classes: (0,0,1,0). The :not() pseudo-class itself adds no specificity; only its argument does.",
+        "Always use :focus-visible instead of :focus for interactive elements. It only shows focus indicators during keyboard navigation, avoiding unnecessary outlines on mouse clicks.",
+        "The :nth-child() formula an+b selects elements where their position equals a*n+b for any non-negative integer n.",
+        "The :placeholder-shown pseudo-class checks whether the input's placeholder is visible (input is empty), not whether a placeholder attribute exists."
+      ],
+      "commonPitfalls": [
+        "Confusing :nth-child and :nth-of-type. :nth-child(2) selects the second child regardless of type. :nth-of-type(2) selects the second element of that specific type. When you mix element types, results can be surprising.",
+        "Removing outline on :focus without providing an alternative focus indicator. This makes the site inaccessible to keyboard users who cannot see which element is focused.",
+        "Forgetting that :first-child and :last-child consider ALL children, not just elements of a specific type. Use :first-of-type and :last-of-type for type-specific targeting."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "pseudo-classes-ex1",
+        "title": "Interactive Button States",
+        "description": "Write CSS for a .btn class with background-color #3b82f6, color white, padding 12px 24px, border none, border-radius 6px, and cursor pointer. Add a :hover state that changes background to #2563eb. Add a :active state that changes background to #1d4ed8 and adds transform scale(0.97). Add a :focus-visible state with outline 3px solid #93c5fd and outline-offset 2px.",
+        "starterCode": "/* Create button with interactive states */\n",
+        "solution": ".btn {\n  background-color: #3b82f6;\n  color: white;\n  padding: 12px 24px;\n  border: none;\n  border-radius: 6px;\n  cursor: pointer;\n}\n\n.btn:hover {\n  background-color: #2563eb;\n}\n\n.btn:active {\n  background-color: #1d4ed8;\n  transform: scale(0.97);\n}\n\n.btn:focus-visible {\n  outline: 3px solid #93c5fd;\n  outline-offset: 2px;\n}",
+        "hints": [
+          "Each pseudo-class adds a colon before the state name: .btn:hover",
+          ":focus-visible only shows the outline when navigating with keyboard, not on mouse click"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "pseudo-classes-ex2",
+        "title": "Zebra-Striped Table and List Borders",
+        "description": "Write CSS for zebra-striped table rows using :nth-child: give odd rows background-color #f9fafb and even rows background-color white. Then style .item-list li so that every item except the last one (:not(:last-child)) has a border-bottom of 1px solid #e5e7eb and padding-bottom 12px.",
+        "starterCode": "/* Create zebra stripes and bordered list */\n",
+        "solution": "tr:nth-child(odd) {\n  background-color: #f9fafb;\n}\n\ntr:nth-child(even) {\n  background-color: white;\n}\n\n.item-list li:not(:last-child) {\n  border-bottom: 1px solid #e5e7eb;\n  padding-bottom: 12px;\n}",
+        "hints": [
+          "Use :nth-child(odd) and :nth-child(even) for alternating styles",
+          "Combine :not() with :last-child to exclude the last element"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "pseudo-elements",
+    "sectionId": "selectors-and-specificity",
+    "orderIndex": 3,
+    "title": "Pseudo-elements",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["::before", "::after", "::first-line", "::first-letter", "::placeholder", "::selection", "Content Property", "Decorative Elements"],
+    "content": {
+      "explanation": "Pseudo-elements let you style specific parts of an element or insert decorative content without adding extra HTML elements. They are written with a double colon prefix (::before, ::after) to distinguish them from pseudo-classes (single colon). Pseudo-elements create a 'virtual' element that you can style independently, keeping your HTML clean while enabling rich visual designs.\n\nThe ::before and ::after pseudo-elements insert content before or after an element's actual content. They require the content property to work — even if you want an empty pseudo-element for purely decorative purposes, you must include content: \"\". These pseudo-elements are inline by default but can be changed to block, flex, or any display type. They are children of the element they belong to, meaning position: absolute on ::before will position relative to the parent element (if the parent has position: relative).\n\n::before and ::after are primarily used for decorative purposes: adding icons, creating geometric shapes, building custom underlines, overlay effects, clearfix patterns, and visual indicators like required field markers (label::after { content: \"*\"; color: red; }). They should not be used for meaningful content because screen readers may or may not read the content property, making it unreliable for accessibility. Keep important text in the HTML.\n\nThe ::first-line pseudo-element styles only the first line of a block-level element. The unique aspect is that it responds to the actual rendered first line, which changes with viewport width — as the browser window narrows, the first line gets shorter, and the styling adjusts accordingly. The ::first-letter pseudo-element targets only the first letter, enabling typographic effects like drop caps (large initial letters) commonly seen in newspapers and magazines.\n\nThe ::placeholder pseudo-element styles the placeholder text inside form inputs and textareas. This is useful for adjusting the color, font-size, or opacity of placeholder text to distinguish it from actual user input. The ::selection pseudo-element styles text that the user has highlighted/selected. You can change the background color and text color of selected text to match your site's branding. Note that only a limited set of properties work with ::selection: color, background-color, text-shadow, and cursor.",
+      "codeExamples": [
+        {
+          "title": "::before and ::after Basics",
+          "code": "/* Required field indicator */\nlabel.required::after {\n  content: \" *\";\n  color: #ef4444;\n  font-weight: bold;\n}\n\n/* Quotation marks */\n.quote::before {\n  content: \"\\201C\"; /* Left double quotation mark */\n  font-size: 3rem;\n  color: #d1d5db;\n  line-height: 0;\n  vertical-align: -0.4em;\n  margin-right: 4px;\n}\n\n/* Decorative line after heading */\n.section-title::after {\n  content: \"\";\n  display: block;\n  width: 60px;\n  height: 3px;\n  background-color: #3b82f6;\n  margin-top: 8px;\n  border-radius: 2px;\n}\n\n/* External link indicator */\na[href^=\"https\"]::after {\n  content: \" \\2197\"; /* North-east arrow */\n  font-size: 0.8em;\n}",
+          "explanation": "::before and ::after REQUIRE the content property. Use them for decorative elements (icons, lines, indicators) not for meaningful content. An empty content: '' creates an invisible element you can style as a shape or line."
+        },
+        {
+          "title": "Decorative Shapes with Pseudo-elements",
+          "code": "/* Tooltip arrow using ::after */\n.tooltip {\n  position: relative;\n  background: #1e293b;\n  color: white;\n  padding: 8px 16px;\n  border-radius: 6px;\n  display: inline-block;\n}\n\n.tooltip::after {\n  content: \"\";\n  position: absolute;\n  bottom: -6px;\n  left: 50%;\n  transform: translateX(-50%);\n  width: 0;\n  height: 0;\n  border-left: 6px solid transparent;\n  border-right: 6px solid transparent;\n  border-top: 6px solid #1e293b;\n}\n\n/* Card with colored top border using ::before */\n.feature-card {\n  position: relative;\n  background: white;\n  padding: 24px;\n  border-radius: 8px;\n  overflow: hidden;\n}\n\n.feature-card::before {\n  content: \"\";\n  position: absolute;\n  top: 0;\n  left: 0;\n  right: 0;\n  height: 4px;\n  background-color: #3b82f6;\n}",
+          "explanation": "Pseudo-elements can create shapes like arrows (using borders), lines, and overlays without extra HTML. Position them absolutely relative to the parent element."
+        },
+        {
+          "title": "Text Pseudo-elements",
+          "code": "/* Drop cap: large first letter */\n.article-body::first-letter {\n  font-size: 3.5rem;\n  font-weight: bold;\n  float: left;\n  line-height: 1;\n  margin-right: 8px;\n  margin-top: 4px;\n  color: #1e40af;\n}\n\n/* First line styling */\n.article-body::first-line {\n  font-weight: 600;\n  color: #111827;\n}\n\n/* Custom placeholder styling */\ninput::placeholder {\n  color: #9ca3af;\n  font-style: italic;\n  font-size: 14px;\n}\n\n/* Custom text selection */\n::selection {\n  background-color: #3b82f6;\n  color: white;\n}\n\n/* Selection on specific elements */\n.brand-text::selection {\n  background-color: #f59e0b;\n  color: #1e293b;\n}",
+          "explanation": "::first-letter enables drop cap effects. ::first-line styles adapt to viewport changes. ::placeholder customizes form input hints. ::selection changes the highlight color when users select text."
+        }
+      ],
+      "notes": [
+        "Pseudo-elements use double colons (::before) in CSS3. Single colons (:before) are the CSS2 syntax and still work for backward compatibility, but double colons are the modern standard.",
+        "::before and ::after MUST have the content property to render. Even for purely visual elements, use content: \"\".",
+        "Pseudo-elements do not work on void elements like <img>, <input>, and <br> because these elements cannot have children.",
+        "Content added via ::before and ::after should be decorative. Screen reader support for the content property is inconsistent."
+      ],
+      "commonPitfalls": [
+        "Forgetting the content property on ::before or ::after. Without it, the pseudo-element will not render at all.",
+        "Trying to use ::before or ::after on void elements like <img> or <input>. These elements cannot contain children, so pseudo-elements do not apply.",
+        "Putting meaningful text in the content property. Screen readers handle this inconsistently. Keep important content in the HTML.",
+        "Forgetting that ::first-line and ::first-letter only work on block-level elements, not inline elements."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "pseudo-elements-ex1",
+        "title": "Required Field and Decorative Line",
+        "description": "Write CSS so that label.required::after displays a red asterisk ' *' (content: ' *', color #ef4444). Then style .section-heading::after to display a decorative line: content empty string, display block, width 80px, height 3px, background-color #3b82f6, margin-top 10px.",
+        "starterCode": "/* Add required indicator and decorative underline */\n",
+        "solution": "label.required::after {\n  content: \" *\";\n  color: #ef4444;\n}\n\n.section-heading::after {\n  content: \"\";\n  display: block;\n  width: 80px;\n  height: 3px;\n  background-color: #3b82f6;\n  margin-top: 10px;\n}",
+        "hints": [
+          "The content property is required for pseudo-elements to render",
+          "Use content: '' (empty string) for purely visual pseudo-elements like lines and shapes"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "pseudo-elements-ex2",
+        "title": "Drop Cap and Custom Selection",
+        "description": "Write CSS for a .prose::first-letter pseudo-element with font-size 3rem, font-weight bold, float left, margin-right 8px, and color #1e40af. Then style ::selection globally with background-color #dbeafe and color #1e3a8a. Also style input::placeholder with color #9ca3af and font-style italic.",
+        "starterCode": "/* Create drop cap, custom selection, and placeholder styles */\n",
+        "solution": ".prose::first-letter {\n  font-size: 3rem;\n  font-weight: bold;\n  float: left;\n  margin-right: 8px;\n  color: #1e40af;\n}\n\n::selection {\n  background-color: #dbeafe;\n  color: #1e3a8a;\n}\n\ninput::placeholder {\n  color: #9ca3af;\n  font-style: italic;\n}",
+        "hints": [
+          "::first-letter only works on block-level elements",
+          "::selection without a prefix applies to all text selection on the page"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "specificity-rules",
+    "sectionId": "selectors-and-specificity",
+    "orderIndex": 4,
+    "title": "Specificity Rules",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Specificity Calculation", "Specificity Tiebreaking", "Overriding Styles", "Specificity Score", "!important", "Selector Weight"],
+    "content": {
+      "explanation": "Specificity is the algorithm browsers use to determine which CSS declaration applies when multiple rules target the same element with conflicting property values. It is one of the most frequently asked CSS interview topics because understanding it is essential for debugging styling issues and writing maintainable CSS. Many frustrating 'why won't my style apply?' moments are caused by specificity conflicts.\n\nSpecificity is calculated as a four-part score, often represented as (a, b, c, d): 'a' is 1 if the style is inline (style attribute), 'b' counts the number of ID selectors, 'c' counts the number of class selectors, attribute selectors, and pseudo-classes, and 'd' counts the number of element (type) selectors and pseudo-elements. The universal selector (*), combinators (+, >, ~, space), and the :not() pseudo-class itself contribute zero specificity (though the selectors inside :not() do count).\n\nSpecificity comparisons work left-to-right, with each position being more significant than all positions to its right. One ID selector (0,1,0,0) beats any number of class selectors — even 100 classes (0,0,100,0) cannot override a single ID. Similarly, one class (0,0,1,0) beats any number of element selectors. This is why treating specificity as a decimal number (like 0100 vs 0010) is technically misleading — the positions are independent, not digits in a base-10 number.\n\nWhen two selectors have exactly the same specificity, the cascade falls back to source order — the rule that appears later in the CSS wins. This is why the order of your CSS file matters and why CSS reset/normalize styles are placed at the top. For linked stylesheets, the order of <link> tags in the HTML determines the order. Styles from a later stylesheet override styles from an earlier one at equal specificity.\n\nTo override high-specificity styles without resorting to !important, you have several strategies. You can increase your selector's specificity by adding more classes or repeating a class (.card.card has specificity 0,0,2,0). You can restructure your CSS to avoid the conflicting rule entirely. You can use CSS Layers (@layer) which is a modern CSS feature that lets you control the priority of entire groups of styles regardless of specificity. As a last resort, !important overrides all normal declarations, but creates maintenance problems and should be reserved for utility classes and third-party overrides.\n\nA practical rule of thumb for writing maintainable CSS: keep specificity as low as possible. Use single class selectors (.card-title) instead of nested selectors (.card .title). Avoid ID selectors for styling. Never use inline styles except for truly dynamic values set by JavaScript. And structure your CSS so that more specific overrides come after general styles — progressive enhancement of specificity.",
+      "codeExamples": [
+        {
+          "title": "Specificity Calculation Examples",
+          "code": "/* Specificity: (inline, IDs, classes, elements) */\n\n*                          { }  /* 0,0,0,0 */\np                          { }  /* 0,0,0,1 */\np.intro                    { }  /* 0,0,1,1 */\np.intro.featured           { }  /* 0,0,2,1 */\n#sidebar                   { }  /* 0,1,0,0 */\n#sidebar .widget           { }  /* 0,1,1,0 */\n#sidebar .widget h3        { }  /* 0,1,1,1 */\n#sidebar #search           { }  /* 0,2,0,0 */\n\n/* Pseudo-classes count as classes */\na:hover                    { }  /* 0,0,1,1 */\nli:nth-child(2)            { }  /* 0,0,1,1 */\ninput:not(.large)          { }  /* 0,0,1,1 (input + .large) */\n\n/* Pseudo-elements count as elements */\np::first-line              { }  /* 0,0,0,2 */\n.card::before              { }  /* 0,0,1,1 */\n\n/* Inline styles */\n/* <div style=\"color: red;\"> */ /* 1,0,0,0 */",
+          "explanation": "Each selector component adds to a specific position. IDs add to position b, classes/pseudo-classes/attributes add to position c, elements/pseudo-elements add to position d. Higher positions always outweigh lower ones."
+        },
+        {
+          "title": "Specificity Battles",
+          "code": "/* Which color wins for <p id=\"intro\" class=\"lead text\"> ? */\n\np { color: black; }                     /* 0,0,0,1 */\n.lead { color: gray; }                  /* 0,0,1,0 - beats p */\np.lead { color: blue; }                 /* 0,0,1,1 - beats .lead */\n.lead.text { color: green; }            /* 0,0,2,0 - beats p.lead */\n#intro { color: red; }                  /* 0,1,0,0 - WINS (ID beats all classes) */\n\n/* Even 20 classes can't beat 1 ID: */\n.a.b.c.d.e.f.g.h.i.j.k.l.m.n.o.p.q.r.s.t { color: purple; }\n/* 0,0,20,0 - still loses to #intro (0,1,0,0) */\n\n/* Source order tiebreaker (same specificity): */\n.card { background: white; }             /* 0,0,1,0 */\n.card { background: #f9fafb; }           /* 0,0,1,0 - wins (later in source) */\n\n/* !important overrides everything: */\n.subtle { color: gray !important; }      /* Beats even inline styles */",
+          "explanation": "Specificity is NOT a single number — it is a tuple compared left-to-right. One ID always beats any number of classes. When specificity is tied, the last rule in source order wins. !important trumps all normal declarations."
+        },
+        {
+          "title": "Strategies to Override Without !important",
+          "code": "/* Problem: library uses a high-specificity selector */\n#sidebar .widget .title {\n  color: black;  /* 0,1,2,0 */\n}\n\n/* Strategy 1: Match or exceed specificity */\n#sidebar .widget .title.custom-title {\n  color: blue;   /* 0,1,3,0 - wins */\n}\n\n/* Strategy 2: Repeat a class for specificity boost */\n.title.title {\n  /* Repeating a class is valid and doubles its weight */\n  /* 0,0,2,0 — but still loses to ID-based selectors */\n}\n\n/* Strategy 3: Use CSS Layers (modern CSS) */\n@layer library {\n  #sidebar .widget .title {\n    color: black;\n  }\n}\n\n@layer custom {\n  .title {\n    color: blue;  /* Wins because 'custom' layer has higher priority */\n  }\n}\n\n/* Strategy 4: Restructure — avoid deep nesting */\n/* Instead of #sidebar .widget .title, use a flat class: */\n.widget-title {\n  color: blue;   /* 0,0,1,0 — low specificity, easy to override */\n}\n\n/* Last resort: !important (use sparingly) */\n.override {\n  color: red !important;\n}",
+          "explanation": "Prefer restructuring CSS and using classes over escalating specificity. CSS @layer is the modern solution for controlling priority across stylesheets. Reserve !important for utility classes and overriding third-party styles."
+        },
+        {
+          "title": "Specificity Debugging",
+          "code": "/* Common debugging scenario: */\n\n/* Your styles: */\n.card .title {\n  font-size: 18px;  /* 0,0,2,0 */\n}\n\n/* A framework's styles (loaded after yours): */\n.card .title {\n  font-size: 16px;  /* 0,0,2,0 — same specificity, but LATER = wins */\n}\n\n/* Fix 1: Increase specificity */\n.card .title.my-title {\n  font-size: 18px;  /* 0,0,3,0 — higher specificity, wins */\n}\n\n/* Fix 2: Load your stylesheet after the framework */\n/* <link href=\"framework.css\">\n   <link href=\"my-styles.css\">  -- yours comes last -- */\n\n/* Debugging tip: use browser DevTools */\n/* Right-click element > Inspect > Styles panel shows:\n   - All matching rules in specificity order\n   - Crossed-out rules that were overridden\n   - The computed specificity of each selector */\n\n/* Quick specificity reference: */\n/* Inline style      > ID > Class > Element */\n/* 1,0,0,0           0,1,0,0   0,0,1,0   0,0,0,1 */",
+          "explanation": "Use browser DevTools to debug specificity issues. The Styles panel shows which rules are being overridden and why. The Computed tab shows the final applied value for each property."
+        }
+      ],
+      "notes": [
+        "Specificity is calculated per-selector, not per-rule. Each property conflict is resolved independently.",
+        "The :not(), :is(), and :where() pseudo-classes have special specificity rules. :not() and :is() take the specificity of their most specific argument. :where() always has zero specificity.",
+        "CSS Layers (@layer) provide a clean way to control cascade priority without specificity wars. Later-declared layers have higher priority.",
+        "Browser DevTools are your best friend for debugging specificity. The Styles panel shows exactly which rule won and why."
+      ],
+      "commonPitfalls": [
+        "Treating specificity as a base-10 number. It is a tuple comparison — (0,1,0,0) beats (0,0,99,99) because the ID position is checked before the class position.",
+        "Fighting specificity with !important instead of restructuring selectors. This leads to an escalating !important war that makes CSS unmaintainable.",
+        "Nesting selectors too deeply (.page .main .content .card .body .text) which inflates specificity unnecessarily. Prefer flat, single-class selectors.",
+        "Forgetting that stylesheets loaded later override earlier ones at equal specificity. The order of <link> tags matters."
+      ],
+      "interviewTips": [
+        "Be ready to calculate specificity for any given selector. Practice with examples like #nav .list li a.active — the answer is (0,1,2,2).",
+        "Explain specificity as a four-position tuple (inline, ID, class, element), not a single number.",
+        "Know that * (universal), combinators (+, >, ~), and :where() add zero specificity.",
+        "Understand that :not() does not add specificity itself but its argument does: p:not(.active) has specificity (0,0,1,1).",
+        "Be prepared to discuss strategies for managing specificity: flat class selectors, CSS layers, avoiding IDs for styling, BEM methodology.",
+        "Know the full cascade order: !important author > !important user > normal author > normal user > user-agent (browser defaults)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "specificity-rules-ex1",
+        "title": "Calculate Specificity",
+        "description": "For each selector below, write a CSS comment with its specificity as (inline, IDs, classes, elements). Then determine which selector wins for styling the same element and explain why.\n\nSelectors:\n1. .nav .item a\n2. #navigation a\n3. nav ul li a.active\n4. .nav .item a.active:hover",
+        "starterCode": "/* Calculate specificity for each selector:\n\n1. .nav .item a            = ?\n2. #navigation a            = ?\n3. nav ul li a.active        = ?\n4. .nav .item a.active:hover = ?\n\nWhich wins? Why?\n*/\n",
+        "solution": "/* Calculate specificity for each selector:\n\n1. .nav .item a            = (0, 0, 2, 1)\n2. #navigation a            = (0, 1, 0, 1)\n3. nav ul li a.active        = (0, 0, 1, 4)\n4. .nav .item a.active:hover = (0, 0, 4, 1)\n\nWinner: #navigation a (0, 1, 0, 1)\nWhy: It has 1 ID selector. IDs (position b) always beat\nany number of classes (position c). Even selector 4 with\n4 class-level selectors cannot override 1 ID.\n*/",
+        "hints": [
+          "IDs count in position b, classes and pseudo-classes in position c, elements in position d",
+          "Compare positions left-to-right: a higher value in an earlier position always wins"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "specificity-rules-ex2",
+        "title": "Override Without !important",
+        "description": "A third-party library has this CSS rule: #content .article h2 { color: black; } (specificity 0,1,2,1). Write a CSS rule that makes h2 elements with class 'custom-heading' inside #content .article display in color #2563eb, WITHOUT using !important. Your selector must have higher specificity.",
+        "starterCode": "/* Third-party rule: */\n#content .article h2 {\n  color: black;  /* Specificity: 0,1,2,1 */\n}\n\n/* Write your override rule below (no !important): */\n",
+        "solution": "/* Third-party rule: */\n#content .article h2 {\n  color: black;  /* Specificity: 0,1,2,1 */\n}\n\n/* Override with higher specificity: */\n#content .article h2.custom-heading {\n  color: #2563eb;  /* Specificity: 0,1,3,1 — wins! */\n}",
+        "hints": [
+          "You need specificity higher than (0,1,2,1). Adding a class to the selector increases position c.",
+          "Adding .custom-heading to the existing selector creates (0,1,3,1) which beats (0,1,2,1)"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

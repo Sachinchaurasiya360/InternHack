@@ -1146,3 +1146,70 @@ model usageLog {
 
   @@index([userId, action, createdAt])
 }
+
+// ============================================================
+// HACKATHON
+// ============================================================
+
+model hackathon {
+  id           Int      @id @default(autoincrement())
+  name         String
+  organizer    String
+  logo         String?
+  description  String
+  prizePool    String
+  startDate    String
+  endDate      String
+  location     String
+  locationType String
+  website      String?
+  tags         String[] @default([])
+  tracks       String[] @default([])
+  eligibility  String?
+  status       String   @default("upcoming")
+  ecosystem    String
+  highlights   String[] @default([])
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([status])
+  @@index([ecosystem])
+}
+
+// ============================================================
+// IIT PROFESSOR MODEL
+// ============================================================
+
+model iitProfessor {
+  id             Int      @id @default(autoincrement())
+  collegeName    String
+  collegeType    String
+  department     String
+  name           String
+  areaOfInterest String?
+  email          String?
+  createdAt      DateTime @default(now())
+
+  @@index([collegeName])
+  @@index([department])
+  @@index([name])
+}
+
+// ============================================================
+// GOVERNMENT INTERNSHIP MODEL
+// ============================================================
+
+model govInternship {
+  id          Int      @id @default(autoincrement())
+  name        String
+  category    String
+  timeline    String
+  organizer   String
+  domain      String
+  stipend     String
+  eligibility String
+  reality     String
+  createdAt   DateTime @default(now())
+
+  @@index([category])
+}

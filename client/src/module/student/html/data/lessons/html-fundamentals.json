@@ -1,0 +1,344 @@
+[
+  {
+    "id": "what-is-html",
+    "sectionId": "html-fundamentals",
+    "orderIndex": 0,
+    "title": "What is HTML?",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["HTML", "Markup Language", "Web Browsers", "World Wide Web", "Rendering"],
+    "content": {
+      "explanation": "HTML stands for HyperText Markup Language. It is the standard language used to create and structure content on the World Wide Web. Every website you visit is built on HTML at its core. HTML is not a programming language — it does not have logic, loops, or variables. Instead, it is a markup language that uses a system of tags to annotate text, images, and other content so that a web browser knows how to display them.\n\nThe World Wide Web was invented by Tim Berners-Lee in 1989 at CERN. He created HTML as part of his proposal for an information management system. The first version of HTML had only 18 elements. Today, HTML5 (the current standard maintained by WHATWG and W3C) has over 100 elements covering everything from basic text formatting to embedded video and interactive forms.\n\nWhen you type a URL into your browser and press Enter, a series of steps happen behind the scenes. Your browser sends an HTTP request to a web server, which responds with an HTML document. The browser then parses this HTML document from top to bottom, building an internal representation called the Document Object Model (DOM). The DOM is a tree structure where every HTML element becomes a node. The browser then uses this DOM tree along with CSS styles to calculate the layout and paint pixels on your screen. This entire process is called the critical rendering path.\n\nHTML files are plain text files with a .html or .htm extension. You can create them with any text editor — from simple Notepad to sophisticated editors like VS Code. Because HTML is plain text, it is human-readable and can be version-controlled with tools like Git. Browsers are very forgiving with HTML — even if you make mistakes like forgetting to close a tag, modern browsers will try their best to render something reasonable rather than showing an error.\n\nUnderstanding HTML is the essential first step in web development. CSS controls how HTML elements look (colors, fonts, layout), and JavaScript controls how they behave (interactivity, data fetching, animations). But without HTML providing the structure and content, CSS and JavaScript have nothing to work with. Think of HTML as the skeleton of a webpage, CSS as the skin and clothing, and JavaScript as the muscles and nervous system.",
+      "codeExamples": [
+        {
+          "title": "A Minimal HTML Page",
+          "code": "<!DOCTYPE html>\n<html>\n<head>\n  <title>My First Page</title>\n</head>\n<body>\n  <h1>Hello, World!</h1>\n  <p>This is my first HTML page.</p>\n</body>\n</html>",
+          "output": "A page with a large heading 'Hello, World!' followed by a paragraph of text.",
+          "explanation": "Every HTML page needs at minimum a DOCTYPE declaration, an <html> root element, a <head> for metadata, and a <body> for visible content. The browser renders only what is inside the <body>."
+        },
+        {
+          "title": "HTML Tags Annotate Content",
+          "code": "<h1>Breaking News</h1>\n<p>Scientists discover a new species of deep-sea fish\n   in the Mariana Trench.</p>\n<a href=\"https://example.com\">Read more</a>",
+          "output": "A heading, a paragraph of text, and a clickable link.",
+          "explanation": "HTML tags like <h1>, <p>, and <a> tell the browser what role each piece of content plays. The browser applies default styling — headings are large and bold, paragraphs have spacing, and links are blue and underlined."
+        },
+        {
+          "title": "Viewing Page Source",
+          "code": "<!-- You can view any website's HTML by: -->\n<!-- 1. Right-click on a page and select \"View Page Source\" -->\n<!-- 2. Or press Ctrl+U (Windows) / Cmd+Option+U (Mac) -->\n\n<!-- Try it on any website to see real-world HTML! -->\n\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <title>View Source Demo</title>\n</head>\n<body>\n  <p>Right-click this page and choose \"View Page Source\"</p>\n</body>\n</html>",
+          "explanation": "Every webpage's HTML is publicly visible. Viewing page source is one of the best ways to learn how real websites are built. Browser developer tools (F12) also let you inspect and modify HTML in real time."
+        }
+      ],
+      "notes": [
+        "HTML is a markup language, not a programming language. It structures content but does not perform calculations or logic.",
+        "The current standard is HTML5, sometimes called the 'Living Standard' because it is continuously updated by the WHATWG.",
+        "Browsers are very forgiving with HTML errors. They will attempt to render malformed HTML rather than displaying error messages, which can sometimes hide bugs."
+      ],
+      "commonPitfalls": [
+        "Thinking HTML is a programming language. HTML cannot perform calculations, make decisions, or repeat actions. For that, you need JavaScript.",
+        "Assuming all browsers render HTML identically. While modern browsers are very consistent, there can be subtle differences in default styles and behavior across Chrome, Firefox, Safari, and Edge."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "what-is-html-ex1",
+        "title": "Create Your First HTML Page",
+        "description": "Create a complete HTML page with a DOCTYPE declaration, html, head (with a title of 'My Page'), and body containing an h1 heading that says 'Welcome to HTML' and a paragraph that says 'HTML is the language of the web.'",
+        "starterCode": "<!-- Write your complete HTML page here -->\n",
+        "solution": "<!DOCTYPE html>\n<html>\n<head>\n  <title>My Page</title>\n</head>\n<body>\n  <h1>Welcome to HTML</h1>\n  <p>HTML is the language of the web.</p>\n</body>\n</html>",
+        "hints": [
+          "Start with <!DOCTYPE html> to declare the document type",
+          "The <head> contains metadata like the <title>, while <body> contains visible content"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "what-is-html-ex2",
+        "title": "Add Multiple Content Elements",
+        "description": "Create an HTML page with a title of 'About Me'. In the body, add an h1 heading with your name (use 'Jane Doe'), a paragraph introducing yourself, and a link (<a> tag) to 'https://example.com' with the text 'My Website'.",
+        "starterCode": "<!DOCTYPE html>\n<html>\n<head>\n  <!-- Add your title here -->\n</head>\n<body>\n  <!-- Add heading, paragraph, and link here -->\n</body>\n</html>\n",
+        "solution": "<!DOCTYPE html>\n<html>\n<head>\n  <title>About Me</title>\n</head>\n<body>\n  <h1>Jane Doe</h1>\n  <p>I am learning HTML and building my first web pages.</p>\n  <a href=\"https://example.com\">My Website</a>\n</body>\n</html>",
+        "hints": [
+          "Use <title> inside <head> for the page title",
+          "Links use the <a> tag with an href attribute for the URL"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "document-structure",
+    "sectionId": "html-fundamentals",
+    "orderIndex": 1,
+    "title": "Document Structure",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["DOCTYPE", "html Element", "head Element", "body Element", "meta charset", "Metadata"],
+    "content": {
+      "explanation": "Every HTML document follows a specific structure that tells the browser how to interpret and render the page. This structure has been refined over decades of web standards development, and understanding each part is fundamental to writing correct HTML.\n\nThe very first line of any HTML5 document must be the DOCTYPE declaration: <!DOCTYPE html>. This is not an HTML tag — it is an instruction to the browser about which version of HTML the document uses. In older versions of HTML (like HTML 4.01 or XHTML 1.0), the DOCTYPE was long and complex, referencing specific DTD (Document Type Definition) files. HTML5 simplified this to just <!DOCTYPE html>. If you omit the DOCTYPE, browsers fall into 'quirks mode,' where they emulate old, buggy rendering behavior for backward compatibility. Always include the DOCTYPE to ensure 'standards mode' rendering.\n\nThe <html> element is the root element that wraps everything in the document. It should include a lang attribute (e.g., lang=\"en\" for English) which helps screen readers pronounce text correctly and assists search engines in determining the page language. Inside the <html> element, there are exactly two child elements: <head> and <body>.\n\nThe <head> element contains metadata — information about the document that is not displayed on the page itself. The most essential meta tag is <meta charset=\"UTF-8\">, which tells the browser to use UTF-8 character encoding, supporting virtually every character from every language. Other common head elements include <title> (the text shown in the browser tab), <meta name=\"viewport\"> (critical for mobile responsiveness), <link> (for linking CSS stylesheets), and <meta name=\"description\"> (for SEO). The head is also where you include external resources like fonts, icons, and scripts.\n\nThe <body> element contains all the visible content of the page — text, images, links, forms, and everything the user sees and interacts with. There can only be one <body> element per document. Everything you want to display to users goes inside the body.\n\nThe <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\"> tag is crucial for responsive web design. Without it, mobile browsers will render your page at a desktop width (typically 980px) and then scale it down, making text tiny and unusable. This viewport meta tag tells the browser to set the page width to the device width and start at 1x zoom, enabling your CSS media queries and responsive styles to work correctly.",
+      "codeExamples": [
+        {
+          "title": "Complete HTML5 Document Structure",
+          "code": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <meta name=\"description\" content=\"A brief description of the page\">\n  <title>Page Title - Shown in Browser Tab</title>\n  <link rel=\"stylesheet\" href=\"styles.css\">\n</head>\n<body>\n  <h1>Visible Content Goes Here</h1>\n  <p>Everything inside the body is rendered on screen.</p>\n  <script src=\"app.js\" defer></script>\n</body>\n</html>",
+          "output": "A heading and paragraph displayed in the browser, with the title shown in the browser tab.",
+          "explanation": "This is the standard HTML5 boilerplate. The DOCTYPE triggers standards mode, the charset ensures proper character rendering, the viewport meta enables responsive design, and the title appears in the browser tab."
+        },
+        {
+          "title": "DOCTYPE Comparison: HTML5 vs Older Versions",
+          "code": "<!-- HTML5 (current standard) -->\n<!DOCTYPE html>\n\n<!-- HTML 4.01 Strict (old) -->\n<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.01//EN\"\n  \"http://www.w3.org/TR/html4/strict.dtd\">\n\n<!-- XHTML 1.0 Strict (old) -->\n<!DOCTYPE html PUBLIC \"-//W3C//DTD XHTML 1.0 Strict//EN\"\n  \"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd\">",
+          "explanation": "HTML5 dramatically simplified the DOCTYPE declaration. The older versions required referencing specific DTD files. Always use the HTML5 DOCTYPE — it is shorter, simpler, and works in all browsers."
+        },
+        {
+          "title": "Common Head Elements",
+          "code": "<head>\n  <!-- Character encoding (always first) -->\n  <meta charset=\"UTF-8\">\n\n  <!-- Responsive viewport -->\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n\n  <!-- SEO meta tags -->\n  <meta name=\"description\" content=\"Learn HTML from scratch\">\n  <meta name=\"keywords\" content=\"HTML, tutorial, web development\">\n  <meta name=\"author\" content=\"Jane Developer\">\n\n  <!-- Page title -->\n  <title>Learn HTML - Tutorial</title>\n\n  <!-- Favicon -->\n  <link rel=\"icon\" href=\"/favicon.ico\" type=\"image/x-icon\">\n\n  <!-- External CSS -->\n  <link rel=\"stylesheet\" href=\"styles.css\">\n\n  <!-- Google Fonts -->\n  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\">\n  <link href=\"https://fonts.googleapis.com/css2?family=Inter&display=swap\" rel=\"stylesheet\">\n</head>",
+          "explanation": "The <head> holds all metadata. Place <meta charset> first so the browser knows the encoding before parsing anything else. The viewport meta tag is essential for mobile devices. External stylesheets and fonts are linked here."
+        }
+      ],
+      "notes": [
+        "Always include <!DOCTYPE html> as the very first line. Without it, browsers enter quirks mode, which can cause inconsistent rendering.",
+        "The <meta charset=\"UTF-8\"> tag should be the first element inside <head> so the browser knows the encoding before processing any other content.",
+        "The lang attribute on the <html> tag is important for accessibility (screen readers) and SEO (search engines)."
+      ],
+      "commonPitfalls": [
+        "Forgetting the DOCTYPE declaration, causing the browser to render in quirks mode with legacy CSS behavior.",
+        "Omitting the viewport meta tag, which makes pages look tiny and zoomed-out on mobile devices.",
+        "Placing visible content like headings or paragraphs inside the <head> element. Only metadata belongs in <head>; visible content goes in <body>."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "document-structure-ex1",
+        "title": "Build a Proper HTML5 Document",
+        "description": "Create a complete HTML5 document with: DOCTYPE declaration, html element with lang='en', head containing charset UTF-8, viewport meta tag, and title 'My Portfolio'. The body should contain an h1 with 'Welcome' and a paragraph with 'This is my portfolio site.'",
+        "starterCode": "<!-- Build the complete HTML5 document structure -->\n",
+        "solution": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>My Portfolio</title>\n</head>\n<body>\n  <h1>Welcome</h1>\n  <p>This is my portfolio site.</p>\n</body>\n</html>",
+        "hints": [
+          "The DOCTYPE must be the very first line, before <html>",
+          "The viewport meta tag uses content=\"width=device-width, initial-scale=1.0\""
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "document-structure-ex2",
+        "title": "Add Metadata to the Head",
+        "description": "Given the starter code, add the following inside the <head>: a meta description with content 'A blog about web development', a meta author with content 'John Smith', and a link to an external stylesheet 'styles.css'.",
+        "starterCode": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>My Blog</title>\n  <!-- Add meta description, meta author, and stylesheet link here -->\n</head>\n<body>\n  <h1>My Web Dev Blog</h1>\n</body>\n</html>\n",
+        "solution": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\">\n  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n  <title>My Blog</title>\n  <meta name=\"description\" content=\"A blog about web development\">\n  <meta name=\"author\" content=\"John Smith\">\n  <link rel=\"stylesheet\" href=\"styles.css\">\n</head>\n<body>\n  <h1>My Web Dev Blog</h1>\n</body>\n</html>",
+        "hints": [
+          "Meta tags use name and content attributes: <meta name=\"...\" content=\"...\">",
+          "External stylesheets use <link rel=\"stylesheet\" href=\"filename.css\">"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "elements-and-tags",
+    "sectionId": "html-fundamentals",
+    "orderIndex": 2,
+    "title": "Elements & Tags",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Opening Tags", "Closing Tags", "Void Elements", "Nesting", "Element Content", "Self-Closing Tags"],
+    "content": {
+      "explanation": "HTML elements are the building blocks of web pages. An element typically consists of an opening tag, content, and a closing tag. For example, <p>Hello</p> is a paragraph element where <p> is the opening tag, 'Hello' is the content, and </p> is the closing tag. The opening tag tells the browser where the element begins, and the closing tag (marked by the forward slash /) tells it where the element ends.\n\nNot all elements have closing tags. Some elements are 'void elements' (also called 'empty elements' or 'self-closing elements') that cannot contain any content. Common void elements include <br> (line break), <hr> (horizontal rule), <img> (image), <input> (form input), <meta>, and <link>. In HTML5, void elements do not require a trailing slash — <br> is correct (though <br /> is also accepted for XHTML compatibility). Void elements must never have a closing tag; writing </br> or </img> is incorrect.\n\nNesting is how you build complex page structures. Elements can contain other elements as children, forming a tree structure. For example, a <ul> (unordered list) contains <li> (list item) elements, and each <li> can contain text, links, or even other lists. The key rule of nesting is that elements must be closed in the reverse order they were opened — like stacking and unstacking boxes. If you open <div> then <p>, you must close </p> before </div>. Incorrect nesting like <div><p></div></p> will cause rendering issues.\n\nThe difference between block-level and inline elements is fundamental. Block-level elements (like <div>, <p>, <h1>, <ul>) start on a new line and take up the full available width. Inline elements (like <span>, <a>, <strong>, <em>) flow within the text and only take up as much width as their content requires. You can nest inline elements inside block elements, but you should generally not nest block elements inside inline elements (though HTML5 allows <a> to wrap block elements).\n\nHTML5 introduced many new semantic elements like <header>, <nav>, <main>, <section>, <article>, <aside>, and <footer>. These work just like <div> in terms of rendering, but they carry meaning about the content they contain. Using semantic elements improves accessibility (screen readers can navigate by landmarks), SEO (search engines understand your content structure), and code readability (developers can quickly understand the page layout).",
+      "codeExamples": [
+        {
+          "title": "Anatomy of an HTML Element",
+          "code": "<!-- Element = Opening Tag + Content + Closing Tag -->\n<p>This is a paragraph element.</p>\n\n<!-- Opening tag can include attributes -->\n<a href=\"https://example.com\" target=\"_blank\">Visit Example</a>\n\n<!-- Elements can contain other elements -->\n<div>\n  <h2>Section Title</h2>\n  <p>Section content goes here.</p>\n</div>",
+          "output": "A paragraph, a link, and a section with a heading and paragraph.",
+          "explanation": "Each element has an opening tag (with optional attributes), content (text or other elements), and a closing tag. The closing tag uses a forward slash before the tag name."
+        },
+        {
+          "title": "Void (Self-Closing) Elements",
+          "code": "<!-- Void elements have no content and no closing tag -->\n\n<!-- Line break -->\n<p>Line one<br>Line two</p>\n\n<!-- Horizontal rule (divider) -->\n<hr>\n\n<!-- Image (requires src and alt attributes) -->\n<img src=\"photo.jpg\" alt=\"A sunset over the ocean\">\n\n<!-- Form input -->\n<input type=\"text\" placeholder=\"Enter your name\">\n\n<!-- These are also valid (XHTML style) but not required in HTML5 -->\n<br />\n<img src=\"photo.jpg\" alt=\"Sunset\" />",
+          "output": "Two lines of text, a horizontal divider, an image, and a text input.",
+          "explanation": "Void elements cannot have children or text content. In HTML5, the trailing slash is optional. Common void elements: br, hr, img, input, meta, link, source, area, embed, col, wbr."
+        },
+        {
+          "title": "Proper Nesting",
+          "code": "<!-- CORRECT nesting: close in reverse order -->\n<div>\n  <p>A paragraph with <strong>bold text</strong> inside.</p>\n  <ul>\n    <li>First item</li>\n    <li>Second item with <a href=\"#\">a link</a></li>\n  </ul>\n</div>\n\n<!-- WRONG nesting: tags overlap -->\n<!-- <p><strong>This is wrong</p></strong> -->\n\n<!-- CORRECT version -->\n<p><strong>This is correct</strong></p>",
+          "output": "A paragraph with bold text and an unordered list with two items.",
+          "explanation": "Elements must be closed in the reverse order they were opened. Think of nesting like Russian dolls — each doll must be fully inside its parent."
+        },
+        {
+          "title": "Block vs Inline Elements",
+          "code": "<!-- Block elements: start new line, take full width -->\n<div>This div takes the full width.</div>\n<p>This paragraph also takes the full width.</p>\n\n<!-- Inline elements: flow with text -->\n<p>\n  This text has a <strong>bold word</strong>,\n  an <em>italic word</em>,\n  and a <a href=\"#\">link</a> — all inline.\n</p>\n\n<!-- You CAN wrap block elements with <a> in HTML5 -->\n<a href=\"/article\">\n  <article>\n    <h2>Click This Entire Card</h2>\n    <p>The whole article is a link.</p>\n  </article>\n</a>",
+          "output": "Block elements stacked vertically, inline elements flowing within text, and a clickable card.",
+          "explanation": "Block elements stack vertically and take the full width. Inline elements flow within text. HTML5 allows <a> to wrap block elements, making entire sections clickable."
+        }
+      ],
+      "notes": [
+        "Void elements like <br>, <hr>, <img>, and <input> have no closing tag. Adding a closing tag like </br> is incorrect HTML.",
+        "Always close non-void elements. While browsers may auto-close some tags, relying on this behavior leads to hard-to-debug layout issues.",
+        "HTML5 allows the <a> element to wrap block-level elements, which is useful for making entire cards or sections clickable."
+      ],
+      "commonPitfalls": [
+        "Incorrectly nesting tags like <b><i>text</b></i> instead of <b><i>text</i></b>. Tags must be closed in reverse order of opening.",
+        "Adding closing tags to void elements like </br> or </img>. Void elements are self-closing and should never have a closing tag.",
+        "Nesting block elements like <div> inside inline elements like <span>. While browsers may render it, it violates HTML semantics (except for the <a> element in HTML5)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "elements-and-tags-ex1",
+        "title": "Identify and Fix Nesting Errors",
+        "description": "The starter code has nesting errors. Fix all the incorrectly nested tags so the HTML is properly structured.",
+        "starterCode": "<div>\n  <p>This paragraph has <strong>bold and <em>italic text</strong></em>.</p>\n  <ul>\n    <li>Item one\n    <li>Item two</li>\n  </ul>\n</div>\n",
+        "solution": "<div>\n  <p>This paragraph has <strong>bold and <em>italic text</em></strong>.</p>\n  <ul>\n    <li>Item one</li>\n    <li>Item two</li>\n  </ul>\n</div>",
+        "hints": [
+          "Close tags in the reverse order they were opened: if <strong> opens first and <em> opens second, close </em> first then </strong>",
+          "Every <li> needs a closing </li> tag"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "elements-and-tags-ex2",
+        "title": "Build a Structured Content Section",
+        "description": "Create an HTML snippet with a <div> containing: an <h2> with the text 'Features', a <p> describing features, an <hr> divider, and a <ul> with three <li> items: 'Fast', 'Secure', and 'Easy to use'. Use proper nesting and include a <br> inside the paragraph.",
+        "starterCode": "<!-- Create the structured content section -->\n",
+        "solution": "<div>\n  <h2>Features</h2>\n  <p>Our product has many great features.<br>Here are the top three:</p>\n  <hr>\n  <ul>\n    <li>Fast</li>\n    <li>Secure</li>\n    <li>Easy to use</li>\n  </ul>\n</div>",
+        "hints": [
+          "Use <hr> for a horizontal divider between content sections",
+          "Use <br> inside the paragraph for a line break within the text"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "attributes",
+    "sectionId": "html-fundamentals",
+    "orderIndex": 3,
+    "title": "HTML Attributes",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Global Attributes", "id", "class", "style", "title", "Boolean Attributes", "data Attributes", "Custom Attributes"],
+    "content": {
+      "explanation": "HTML attributes provide additional information about elements. They are always specified in the opening tag and usually come in name-value pairs like name=\"value\". Attributes modify the behavior, appearance, or meaning of an element without changing its visible content. For example, an <a> tag without an href attribute is just styled text, but with href it becomes a clickable link.\n\nGlobal attributes are attributes that can be used on any HTML element. The most commonly used global attributes are: id (a unique identifier for the element — must be unique within the entire page), class (one or more class names for CSS styling and JavaScript selection — multiple elements can share the same class), style (inline CSS styles applied directly to the element), title (tooltip text shown when the user hovers over the element), lang (specifies the language of the element's content), dir (text direction: ltr or rtl), and tabindex (controls keyboard tab navigation order).\n\nBoolean attributes are special attributes that do not need a value. Their mere presence on an element is enough to activate the behavior. Common boolean attributes include disabled (disables form inputs), checked (pre-checks checkboxes and radio buttons), required (makes form fields mandatory), readonly (prevents editing), hidden (hides an element), and autoplay (auto-plays audio/video). In HTML5, you can write them as just the attribute name: <input disabled> is equivalent to <input disabled=\"disabled\">.\n\nData attributes (data-*) allow you to store custom data on any HTML element. They are prefixed with data- followed by your chosen name, like data-user-id=\"42\" or data-category=\"electronics\". In JavaScript, you can access these values through the element's dataset property: element.dataset.userId returns '42'. Data attributes are useful for passing information from HTML to JavaScript without using non-standard attributes or hidden input fields.\n\nThe id and class attributes deserve special attention because they are used constantly in CSS and JavaScript. An id must be unique on the page — no two elements should share the same id. It is used for fragment navigation (href=\"#section1\"), JavaScript targeting (document.getElementById), and CSS styling (#myId). Classes, on the other hand, can be shared across multiple elements and an element can have multiple classes separated by spaces: class=\"card featured large\". Classes are the primary mechanism for applying CSS styles and are selected with a dot prefix in CSS (.card).",
+      "codeExamples": [
+        {
+          "title": "Common Global Attributes",
+          "code": "<!-- id: unique identifier -->\n<div id=\"main-content\">\n  <h1>Welcome</h1>\n</div>\n\n<!-- class: for CSS styling (can have multiple) -->\n<p class=\"text-large text-blue\">Styled paragraph</p>\n\n<!-- style: inline CSS (use sparingly) -->\n<p style=\"color: red; font-size: 18px;\">Red text</p>\n\n<!-- title: tooltip on hover -->\n<abbr title=\"HyperText Markup Language\">HTML</abbr>\n\n<!-- lang: language of content -->\n<p lang=\"fr\">Bonjour le monde</p>\n\n<!-- tabindex: keyboard navigation order -->\n<button tabindex=\"1\">First in tab order</button>\n<button tabindex=\"2\">Second in tab order</button>",
+          "output": "Various elements with different global attributes applied.",
+          "explanation": "Global attributes work on any HTML element. id must be unique per page. class can be shared and an element can have multiple space-separated classes. title provides a hover tooltip."
+        },
+        {
+          "title": "Boolean Attributes",
+          "code": "<!-- Boolean attributes are true by their presence alone -->\n\n<!-- Disabled input: user cannot type in it -->\n<input type=\"text\" disabled placeholder=\"Cannot edit this\">\n\n<!-- Pre-checked checkbox -->\n<input type=\"checkbox\" checked> I agree to the terms\n\n<!-- Required field: form won't submit without it -->\n<input type=\"email\" required placeholder=\"Email is required\">\n\n<!-- Hidden element: not displayed -->\n<p hidden>This text is hidden from view</p>\n\n<!-- All of these are equivalent for boolean attributes: -->\n<input disabled>\n<input disabled=\"\">\n<input disabled=\"disabled\">",
+          "explanation": "Boolean attributes do not need a value. Simply including the attribute name activates the behavior. Writing disabled, disabled=\"\", or disabled=\"disabled\" all have the same effect."
+        },
+        {
+          "title": "Data Attributes",
+          "code": "<!-- Store custom data on elements -->\n<div id=\"user-card\"\n     data-user-id=\"42\"\n     data-role=\"admin\"\n     data-last-login=\"2026-03-10\">\n  <h3>Jane Doe</h3>\n  <p>Administrator</p>\n</div>\n\n<ul>\n  <li data-price=\"29.99\" data-category=\"books\">HTML Guide</li>\n  <li data-price=\"49.99\" data-category=\"courses\">CSS Course</li>\n</ul>\n\n<!-- Accessed in JavaScript via dataset:\n  const card = document.getElementById('user-card');\n  console.log(card.dataset.userId);    // \"42\"\n  console.log(card.dataset.role);      // \"admin\"\n  console.log(card.dataset.lastLogin); // \"2026-03-10\"\n-->",
+          "explanation": "Data attributes use the data- prefix and can store any custom information. In JavaScript, access them via element.dataset — note that hyphenated names become camelCase (data-user-id becomes dataset.userId)."
+        }
+      ],
+      "notes": [
+        "The id attribute must be unique within the entire HTML document. Duplicate IDs can cause JavaScript bugs and accessibility issues.",
+        "Use class for styling and grouping elements. Use id for unique identification and JavaScript targeting.",
+        "Inline styles (style attribute) should be avoided in favor of CSS classes. They are hard to maintain and override.",
+        "Data attributes provide a standard way to embed custom data. They are always strings — convert to numbers with parseInt() or parseFloat() in JavaScript."
+      ],
+      "commonPitfalls": [
+        "Using the same id on multiple elements. IDs must be unique — use class instead if you need to style or select multiple elements.",
+        "Adding values to boolean attributes unnecessarily, like disabled=\"true\". In HTML, disabled=\"false\" still disables the element because the attribute is present. Remove the attribute entirely to un-disable it.",
+        "Using non-standard attributes instead of data-* attributes. Custom attributes like <div user-id=\"42\"> are invalid HTML. Always use the data- prefix: <div data-user-id=\"42\">."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "attributes-ex1",
+        "title": "Apply Global Attributes",
+        "description": "Create a <div> with id 'profile-card' and class 'card highlighted'. Inside it, add an <h2> with class 'card-title' containing 'User Profile', a <p> with a title attribute of 'Member since 2024' containing 'Active Member', and an <abbr> element with title 'Application Programming Interface' containing 'API'.",
+        "starterCode": "<!-- Create the div with attributes -->\n",
+        "solution": "<div id=\"profile-card\" class=\"card highlighted\">\n  <h2 class=\"card-title\">User Profile</h2>\n  <p title=\"Member since 2024\">Active Member</p>\n  <abbr title=\"Application Programming Interface\">API</abbr>\n</div>",
+        "hints": [
+          "Multiple classes are separated by spaces within the class attribute value",
+          "The title attribute creates a tooltip on hover"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "attributes-ex2",
+        "title": "Boolean and Data Attributes",
+        "description": "Create a form with three inputs: a text input with placeholder 'Username' that is required, an email input with placeholder 'Email' that is both required and has a data-validate attribute set to 'email', and a submit button with text 'Sign Up' that has data-action set to 'register'.",
+        "starterCode": "<form>\n  <!-- Add three inputs with the specified attributes -->\n</form>\n",
+        "solution": "<form>\n  <input type=\"text\" placeholder=\"Username\" required>\n  <input type=\"email\" placeholder=\"Email\" required data-validate=\"email\">\n  <button type=\"submit\" data-action=\"register\">Sign Up</button>\n</form>",
+        "hints": [
+          "Boolean attributes like 'required' do not need a value",
+          "Data attributes follow the pattern data-name=\"value\""
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "comments-and-whitespace",
+    "sectionId": "html-fundamentals",
+    "orderIndex": 4,
+    "title": "Comments & Whitespace",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["HTML Comments", "Whitespace Collapsing", "Indentation", "Code Readability", "Conditional Comments"],
+    "content": {
+      "explanation": "HTML comments allow you to add notes to your code that are invisible to users but visible in the source code. Comments are written between <!-- and --> markers. They can span single or multiple lines. Browsers completely ignore commented-out content — it is not rendered, not read by screen readers, and does not affect page layout. However, comments are still sent to the browser and can be viewed in the page source, so never put sensitive information like passwords or API keys in HTML comments.\n\nComments serve several important purposes in web development. They help explain complex code sections to other developers (or your future self), temporarily disable HTML code during debugging without deleting it, mark sections of a page for easier navigation in large files (like <!-- HEADER SECTION --> or <!-- FOOTER -->), and document TODOs or known issues. Good commenting practices make code more maintainable, especially in team environments.\n\nWhitespace handling in HTML is an important concept that often confuses beginners. HTML collapses multiple consecutive whitespace characters (spaces, tabs, newlines) into a single space when rendering text content. This means that whether you put 1 space or 100 spaces between two words, the browser will display only 1 space. Similarly, line breaks in your HTML source code do not produce visible line breaks on the page — you must use <br> for that. This whitespace collapsing behavior is intentional and allows developers to format their source code with indentation for readability without affecting the visual output.\n\nThere are exceptions to whitespace collapsing. The <pre> (preformatted text) element preserves all whitespace and line breaks exactly as written in the source. The CSS white-space property can also control whitespace behavior — white-space: pre preserves all whitespace, while white-space: nowrap prevents line wrapping. The &nbsp; entity (non-breaking space) is another way to force a visible space that will not be collapsed.\n\nProper indentation is crucial for readable HTML, even though it does not affect rendering. The standard convention is to indent child elements by 2 or 4 spaces (or 1 tab) relative to their parent. This visual hierarchy makes it easy to see which elements are nested inside which. Most code editors can auto-format HTML to maintain consistent indentation. Tools like Prettier can enforce a consistent style across a team.",
+      "codeExamples": [
+        {
+          "title": "HTML Comments",
+          "code": "<!-- This is a single-line comment -->\n\n<!--\n  This is a multi-line comment.\n  It can span as many lines as needed.\n  Useful for documenting sections of code.\n-->\n\n<!-- Navigation Section -->\n<nav>\n  <a href=\"/\">Home</a>\n  <a href=\"/about\">About</a>\n  <!-- <a href=\"/contact\">Contact</a> (temporarily disabled) -->\n</nav>\n\n<!-- TODO: Add footer with social links -->\n<footer>\n  <p>Copyright 2026</p>\n</footer>",
+          "output": "A navigation bar with Home and About links (Contact is commented out) and a footer.",
+          "explanation": "Comments are invisible in the rendered page. They are used for documentation, temporarily disabling code, marking sections, and noting TODOs. The Contact link is commented out and won't be rendered."
+        },
+        {
+          "title": "Whitespace Collapsing",
+          "code": "<!-- All of these render the same way: -->\n<p>Hello World</p>\n\n<p>Hello      World</p>\n\n<p>Hello\n   World</p>\n\n<p>\n  Hello\n  World\n</p>\n\n<!-- All four paragraphs display as: \"Hello World\" (single space) -->\n\n<!-- To force specific spacing: -->\n<p>Hello&nbsp;&nbsp;&nbsp;World</p>  <!-- Three non-breaking spaces -->\n\n<!-- To preserve line breaks: -->\n<p>Line one<br>Line two<br>Line three</p>",
+          "output": "Four identical paragraphs showing 'Hello World', then 'Hello   World' with three spaces, then three lines of text.",
+          "explanation": "HTML collapses all consecutive whitespace into a single space. Use &nbsp; for extra spaces and <br> for line breaks within text."
+        },
+        {
+          "title": "Preserving Whitespace with <pre>",
+          "code": "<!-- Normal paragraph: whitespace is collapsed -->\n<p>function hello() {\n    console.log(\"Hi\");\n}</p>\n\n<!-- Pre element: whitespace is preserved exactly -->\n<pre>\nfunction hello() {\n    console.log(\"Hi\");\n}\n</pre>\n\n<!-- Pre with code for displaying source code -->\n<pre><code>\n&lt;div class=\"container\"&gt;\n  &lt;h1&gt;Title&lt;/h1&gt;\n  &lt;p&gt;Content&lt;/p&gt;\n&lt;/div&gt;\n</code></pre>",
+          "output": "First paragraph shows code on a single line. The <pre> blocks show code with proper indentation preserved.",
+          "explanation": "The <pre> element preserves all whitespace and line breaks. It is commonly used with <code> to display source code. Note that HTML entities like &lt; and &gt; are used to display angle brackets literally."
+        }
+      ],
+      "notes": [
+        "HTML comments are visible in the page source code. Never put passwords, API keys, or sensitive data in comments.",
+        "Whitespace collapsing applies to text content inside elements. Multiple spaces, tabs, and newlines are all collapsed into a single space.",
+        "Use consistent indentation (2 spaces, 4 spaces, or tabs) for readability. The indentation does not affect how the page looks.",
+        "The &nbsp; entity creates a non-breaking space that prevents the browser from wrapping a line at that point and is not collapsed."
+      ],
+      "commonPitfalls": [
+        "Nesting comments inside other comments. HTML does not support nested comments. <!-- outer <!-- inner --> --> will break because the first --> closes the comment early.",
+        "Relying on whitespace in HTML source for visual spacing. Use CSS (margin, padding) for layout spacing instead of multiple &nbsp; entities.",
+        "Putting sensitive information in HTML comments thinking they are private. Anyone can view page source and read your comments."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "comments-and-whitespace-ex1",
+        "title": "Add Comments and Structure",
+        "description": "Add section comments to organize the HTML. Add a comment before the nav saying 'Navigation', a comment before the main content div saying 'Main Content', and comment out the paragraph that says 'Draft content not ready yet'. Keep all other content visible.",
+        "starterCode": "<nav>\n  <a href=\"/\">Home</a>\n  <a href=\"/blog\">Blog</a>\n</nav>\n<div>\n  <h1>Welcome to My Site</h1>\n  <p>This is the main content area.</p>\n  <p>Draft content not ready yet</p>\n</div>\n",
+        "solution": "<!-- Navigation -->\n<nav>\n  <a href=\"/\">Home</a>\n  <a href=\"/blog\">Blog</a>\n</nav>\n<!-- Main Content -->\n<div>\n  <h1>Welcome to My Site</h1>\n  <p>This is the main content area.</p>\n  <!-- <p>Draft content not ready yet</p> -->\n</div>",
+        "hints": [
+          "Comments use the syntax <!-- content -->",
+          "Wrap the draft paragraph entirely inside comment markers to hide it"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "comments-and-whitespace-ex2",
+        "title": "Display Formatted Code",
+        "description": "Create an HTML snippet that displays a JavaScript code block with proper formatting preserved. Use a <pre> and <code> element to show the following code exactly as formatted:\nfunction greet(name) {\n    return \"Hello, \" + name;\n}\nRemember to use HTML entities for any special characters.",
+        "starterCode": "<!-- Display the formatted code block -->\n",
+        "solution": "<pre><code>function greet(name) {\n    return \"Hello, \" + name;\n}</code></pre>",
+        "hints": [
+          "Use <pre><code> to wrap preformatted code blocks",
+          "Content inside <pre> preserves whitespace and line breaks exactly as written"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

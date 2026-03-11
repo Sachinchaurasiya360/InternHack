@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { useParams, Link } from "react-router";
+import { useParams, Link, Navigate } from "react-router";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -145,13 +145,18 @@ export default function DsaTopicDetailPage() {
     });
   };
 
+  // Redirect if topic is locked (orderIndex >= 5 and not authenticated)
+  if (!user && topic && topic.orderIndex >= 5) {
+    return <Navigate to="/learn/dsa" replace />;
+  }
+
   if (isLoading) return <LoadingScreen />;
 
   if (!topic) {
     return (
       <div className="text-center py-20">
         <p className="text-gray-500 dark:text-gray-400">Topic not found</p>
-        <Link to="/student/dsa" className="text-indigo-600 hover:underline mt-2 inline-block">Back to DSA</Link>
+        <Link to="/learn/dsa" className="text-indigo-600 hover:underline mt-2 inline-block">Back to DSA</Link>
       </div>
     );
   }
@@ -202,7 +207,7 @@ export default function DsaTopicDetailPage() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="text-center mb-10 mt-6"
       >
-        <Link to="/student/dsa" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4 no-underline">
+        <Link to="/learn/dsa" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4 no-underline">
           <ArrowLeft className="w-4 h-4" />
           Back to DSA
         </Link>

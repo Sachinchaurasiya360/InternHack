@@ -28,6 +28,9 @@ import { aptitudeRouter } from "./module/aptitude/aptitude.routes.js";
 import { sqlRouter } from "./module/sql/sql.routes.js";
 import { latexRouter } from "./module/latex/latex.routes.js";
 import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
+import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
+import { professorRouter } from "./module/professor/professor.routes.js";
+import { internshipRouter } from "./module/internship/internship.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 
@@ -105,6 +108,12 @@ app.use("/api/aptitude", aptitudeRouter);
 app.use("/api/sql", sqlRouter);
 app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
+app.use("/api/hackathons", hackathonRouter);
+app.use("/api/professors", professorRouter);
+app.use("/api/internships", internshipRouter);
+
+// ── Static files (public folder) ──
+app.use(express.static(path.join(__dirname, "../public"), { dotfiles: "deny", index: false }));
 
 // ── Public platform stats with in-memory cache (30 min TTL) ──
 let statsCache: { data: unknown; expiresAt: number } | null = null;

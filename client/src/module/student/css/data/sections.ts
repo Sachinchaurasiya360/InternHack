@@ -1,0 +1,88 @@
+import type { CssSection } from "./types";
+
+export const cssSections: CssSection[] = [
+  {
+    id: "css-fundamentals",
+    title: "CSS Fundamentals",
+    description: "Introduction to CSS, selectors, properties, values, units, and the cascade.",
+    orderIndex: 0,
+    level: "Beginner",
+  },
+  {
+    id: "selectors-and-specificity",
+    title: "Selectors & Specificity",
+    description: "Class, ID, combinators, pseudo-classes, pseudo-elements, and specificity rules.",
+    orderIndex: 1,
+    level: "Beginner",
+  },
+  {
+    id: "box-model-and-spacing",
+    title: "Box Model & Spacing",
+    description: "Content, padding, borders, margins, box-sizing, and collapsing margins.",
+    orderIndex: 2,
+    level: "Beginner",
+  },
+  {
+    id: "typography-and-colors",
+    title: "Typography & Colors",
+    description: "Font properties, text styling, web fonts, colors, opacity, and gradients.",
+    orderIndex: 3,
+    level: "Beginner",
+  },
+  {
+    id: "flexbox",
+    title: "Flexbox",
+    description: "Flex container, direction, wrapping, alignment, grow/shrink, and common patterns.",
+    orderIndex: 4,
+    level: "Intermediate",
+  },
+  {
+    id: "css-grid",
+    title: "CSS Grid",
+    description: "Grid container, templates, placement, areas, auto-flow, and responsive grids.",
+    orderIndex: 5,
+    level: "Intermediate",
+  },
+  {
+    id: "positioning-and-stacking",
+    title: "Positioning & Stacking",
+    description: "Static, relative, absolute, fixed, sticky positioning, and z-index.",
+    orderIndex: 6,
+    level: "Intermediate",
+  },
+  {
+    id: "responsive-design",
+    title: "Responsive Design",
+    description: "Media queries, mobile-first, viewport units, responsive images, and container queries.",
+    orderIndex: 7,
+    level: "Intermediate",
+  },
+  {
+    id: "transitions-and-animations",
+    title: "Transitions & Animations",
+    description: "Transitions, transforms, keyframe animations, timing functions, and performance.",
+    orderIndex: 8,
+    level: "Intermediate",
+  },
+  {
+    id: "advanced-techniques",
+    title: "Advanced Techniques",
+    description: "Custom properties, calc, clamp, filters, blend modes, clip-path, and scroll snap.",
+    orderIndex: 9,
+    level: "Advanced",
+  },
+  {
+    id: "css-architecture",
+    title: "CSS Architecture",
+    description: "BEM methodology, CSS Modules, CSS-in-JS concepts, and design tokens.",
+    orderIndex: 10,
+    level: "Advanced",
+  },
+  {
+    id: "css-interview-essentials",
+    title: "Interview Essentials",
+    description: "Common CSS interview questions, centering, layout challenges, and browser compatibility.",
+    orderIndex: 11,
+    level: "Advanced",
+  },
+];

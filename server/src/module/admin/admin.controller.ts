@@ -38,6 +38,9 @@ import {
   adminSkillTestQuerySchema,
   createSkillTestAdminSchema,
   updateSkillTestAdminSchema,
+  hackathonQuerySchema,
+  createHackathonSchema,
+  updateHackathonSchema,
 } from "./admin.validation.js";
 
 export class AdminController {
@@ -966,6 +969,63 @@ export class AdminController {
       res.json({ message: `Skill test ${isActive ? "activated" : "deactivated"}`, test });
     } catch (err) {
       if (err instanceof Error && err.message === "Skill test not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  // ==================== HACKATHON MANAGEMENT ====================
+
+  async listHackathons(req: Request, res: Response, next: NextFunction) {
+    try {
+      const query = hackathonQuerySchema.parse(req.query);
+      const data = await this.adminService.listHackathons(query);
+      res.json(data);
+    } catch (err) { next(err); }
+  }
+
+  async getHackathon(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid hackathon ID" }); return; }
+      const hackathon = await this.adminService.getHackathon(id);
+      res.json({ hackathon });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Hackathon not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async createHackathon(req: Request, res: Response, next: NextFunction) {
+    try {
+      const result = createHackathonSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const hackathon = await this.adminService.createHackathon(result.data);
+      res.status(201).json({ message: "Hackathon created", hackathon });
+    } catch (err) { next(err); }
+  }
+
+  async updateHackathon(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid hackathon ID" }); return; }
+      const result = updateHackathonSchema.safeParse(req.body);
+      if (!result.success) { res.status(400).json({ message: "Validation failed", errors: result.error.flatten() }); return; }
+      const hackathon = await this.adminService.updateHackathon(id, result.data);
+      res.json({ message: "Hackathon updated", hackathon });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Hackathon not found") { res.status(404).json({ message: err.message }); return; }
+      next(err);
+    }
+  }
+
+  async deleteHackathon(req: Request, res: Response, next: NextFunction) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) { res.status(400).json({ message: "Invalid hackathon ID" }); return; }
+      await this.adminService.deleteHackathon(id);
+      res.json({ message: "Hackathon deleted" });
+    } catch (err) {
+      if (err instanceof Error && err.message === "Hackathon not found") { res.status(404).json({ message: err.message }); return; }
       next(err);
     }
   }

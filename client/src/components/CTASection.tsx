@@ -48,7 +48,7 @@ export function CTASection() {
                   <ArrowRight className="w-4 h-4" />
                 </motion.button>
               </Link>
-              <Link to="/careers" className="no-underline">
+              <Link to="/learn/careers" className="no-underline">
                 <motion.button
                   whileHover={{ scale: 1.03, y: -2 }}
                   whileTap={{ scale: 0.98 }}

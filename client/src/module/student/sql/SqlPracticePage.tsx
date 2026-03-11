@@ -1,13 +1,16 @@
-import { useMemo } from "react";
-import { Link, useLocation } from "react-router";
+import { useMemo, useState } from "react";
+import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { useQuery } from "@tanstack/react-query";
-import { CheckCircle2, ArrowRight, Terminal, BookOpen, TrendingUp } from "lucide-react";
+import { CheckCircle2, ArrowRight, Terminal, BookOpen, TrendingUp, Lock } from "lucide-react";
 import { sections, exercises } from "./data/exercises";
 import { SEO } from "../../../components/SEO";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
+import { LoginGate } from "../../../components/LoginGate";
+
+const FREE_LIMIT = 5;
 
 type SqlProgress = Record<string, { solved: boolean }>;
 
@@ -53,9 +56,8 @@ function CircularProgress({ progress }: { progress: number }) {
 }
 
 export default function SqlPracticePage() {
-  const location = useLocation();
-  const isStudentRoute = location.pathname.startsWith("/student");
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  const [showGate, setShowGate] = useState(false);
 
   const { data: serverProgress } = useQuery<SqlProgress>({
     queryKey: queryKeys.sql.progress(),
@@ -146,7 +148,7 @@ export default function SqlPracticePage() {
         className="mb-8"
       >
         <Link
-          to={`${isStudentRoute ? "/student/sql" : "/sql"}/playground`}
+          to="/learn/sql/playground"
           className="group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-emerald-200 dark:hover:border-emerald-800 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
         >
           <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-900/30 flex items-center justify-center shrink-0">
@@ -168,8 +170,9 @@ export default function SqlPracticePage() {
       <div className="space-y-3">
         {sectionStats.map((section, idx) => {
           const pct = section.total > 0 ? Math.round((section.solved / section.total) * 100) : 0;
-          const basePath = isStudentRoute ? "/student/sql" : "/sql";
+          const basePath = "/learn/sql";
           const isComplete = pct === 100 && section.total > 0;
+          const isLocked = idx >= FREE_LIMIT && !isAuthenticated;
 
           return (
             <motion.div
@@ -178,60 +181,82 @@ export default function SqlPracticePage() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.2 + idx * 0.04 }}
             >
-              <Link
-                to={`${basePath}/${section.id}`}
-                className="group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
-              >
-                <CircularProgress progress={pct} />
+              {isLocked ? (
+                <button
+                  onClick={() => setShowGate(true)}
+                  className="w-full group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 opacity-60 hover:opacity-80 transition-all duration-300 text-left cursor-pointer"
+                >
+                  <div className="w-16 h-16 shrink-0 rounded-2xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                    <Lock className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-base font-semibold text-gray-950 dark:text-white truncate mb-1">{section.title}</h3>
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mb-2.5 truncate">{section.description}</p>
+                    <div className="flex items-center gap-3 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
+                      <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">{section.total} exercises</span>
+                      {section.difficulties.map((d) => (
+                        <span key={d} className={`px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded ${DIFFICULTY_COLOR[d]}`}>{d}</span>
+                      ))}
+                    </div>
+                  </div>
+                  <Lock className="w-5 h-5 text-gray-300 dark:text-gray-600 shrink-0" />
+                </button>
+              ) : (
+                <Link
+                  to={`${basePath}/${section.id}`}
+                  className="group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-5 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
+                >
+                  <CircularProgress progress={pct} />
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap mb-1">
-                    <h3 className="text-base font-semibold text-gray-950 dark:text-white truncate">
-                      {section.title}
-                    </h3>
-                    {isComplete && (
-                      <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 shrink-0">
-                        Complete
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <h3 className="text-base font-semibold text-gray-950 dark:text-white truncate">
+                        {section.title}
+                      </h3>
+                      {isComplete && (
+                        <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-green-50 text-green-600 dark:bg-green-900/30 dark:text-green-400 shrink-0">
+                          Complete
+                        </span>
+                      )}
+                    </div>
+
+                    <p className="text-xs text-gray-500 dark:text-gray-500 mb-2.5 truncate">
+                      {section.description}
+                    </p>
+
+                    {/* Progress bar */}
+                    <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
+                      <motion.div
+                        initial={{ width: 0 }}
+                        animate={{ width: `${pct}%` }}
+                        transition={{ duration: 0.6, delay: 0.2 + idx * 0.04 }}
+                        className={`h-full rounded-full ${
+                          isComplete ? "bg-green-500" : pct > 0 ? "bg-gray-950 dark:bg-white" : "bg-gray-200 dark:bg-gray-700"
+                        }`}
+                      />
+                    </div>
+
+                    <div className="flex items-center gap-3 mt-2.5 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
+                      <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">
+                        {section.solved}/{section.total} exercises
                       </span>
-                    )}
+                      {section.difficulties.map((d) => (
+                        <span key={d} className={`px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded ${DIFFICULTY_COLOR[d]}`}>
+                          {d}
+                        </span>
+                      ))}
+                    </div>
                   </div>
 
-                  <p className="text-xs text-gray-500 dark:text-gray-500 mb-2.5 truncate">
-                    {section.description}
-                  </p>
-
-                  {/* Progress bar */}
-                  <div className="w-full h-1.5 bg-gray-100 dark:bg-gray-800 rounded-full overflow-hidden">
-                    <motion.div
-                      initial={{ width: 0 }}
-                      animate={{ width: `${pct}%` }}
-                      transition={{ duration: 0.6, delay: 0.2 + idx * 0.04 }}
-                      className={`h-full rounded-full ${
-                        isComplete ? "bg-green-500" : pct > 0 ? "bg-gray-950 dark:bg-white" : "bg-gray-200 dark:bg-gray-700"
-                      }`}
-                    />
-                  </div>
-
-                  <div className="flex items-center gap-3 mt-2.5 text-[11px] text-gray-400 dark:text-gray-500 font-medium">
-                    <span className="px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded text-gray-500 dark:text-gray-400">
-                      {section.solved}/{section.total} exercises
-                    </span>
-                    {section.difficulties.map((d) => (
-                      <span key={d} className={`px-2 py-0.5 bg-gray-100 dark:bg-gray-800 rounded ${DIFFICULTY_COLOR[d]}`}>
-                        {d}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-
-                <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
-              </Link>
+                  <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 transition-all shrink-0" />
+                </Link>
+              )}
             </motion.div>
           );
         })}
       </div>
 
-     
+      <LoginGate open={showGate} onClose={() => setShowGate(false)} />
     </div>
   );
 }

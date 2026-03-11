@@ -1,0 +1,362 @@
+[
+  {
+    "id": "debounce-throttle",
+    "sectionId": "interview-essentials",
+    "orderIndex": 0,
+    "title": "Debouncing & Throttling",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Debounce", "Throttle", "setTimeout", "clearTimeout", "Rate Limiting", "requestAnimationFrame"],
+    "content": {
+      "explanation": "Debouncing and throttling are rate-limiting techniques that control how frequently a function executes in response to rapid, repeated events like scrolling, resizing, typing, or button clicks. They are essential for performance optimization and are among the most commonly asked JavaScript interview questions. Understanding both concepts and being able to implement them from scratch is a core expectation.\n\nDebouncing delays the execution of a function until a specified time has passed since the last invocation. If the function is called again before the delay expires, the timer resets. This means the function only executes once the rapid calls have stopped. The classic example is a search input: instead of making an API call on every keystroke, you debounce the search function so it only fires after the user stops typing for, say, 300 milliseconds. The implementation uses setTimeout to schedule execution and clearTimeout to cancel the previous timer whenever a new call arrives.\n\nThrottling limits the execution of a function to at most once per specified time interval. Unlike debouncing, throttling guarantees regular execution during sustained activity. For example, throttling a scroll handler to 100ms ensures it fires at most 10 times per second, regardless of how fast the user scrolls. The implementation tracks the last execution time and only allows the function to run if enough time has elapsed since the last call.\n\nBoth techniques come in leading-edge and trailing-edge variants. Trailing edge (default) executes after the delay period ends. Leading edge executes immediately on the first call and then waits. Some implementations support both, giving immediate feedback followed by delayed execution. Libraries like Lodash provide configurable debounce and throttle with leading, trailing, and cancel options.\n\nrequestAnimationFrame (rAF) can serve as an alternative to throttle for visual updates. rAF schedules a callback to run before the next browser repaint, which happens roughly 60 times per second (every ~16ms). This is ideal for animations and scroll-driven visual effects because it naturally synchronizes with the browser's rendering cycle. Unlike a fixed-interval throttle, rAF adapts to the device's refresh rate and pauses when the tab is not visible.\n\nReal-world applications are everywhere: debounce for search-as-you-type, auto-save after editing stops, and form validation after the user finishes typing. Throttle for scroll position tracking, infinite scroll loading, window resize handlers, and mousemove-based interactions. rAF for parallax scrolling, progress bars, and canvas animations. Choosing between debounce and throttle depends on whether you want to wait until activity stops (debounce) or ensure regular updates during activity (throttle).",
+      "codeExamples": [
+        {
+          "title": "Debounce implementation from scratch",
+          "code": "function debounce(fn, delay) {\n  let timeoutId;\n\n  return function (...args) {\n    // Clear previous timer (resets the delay)\n    clearTimeout(timeoutId);\n\n    // Set new timer\n    timeoutId = setTimeout(() => {\n      fn.apply(this, args);\n    }, delay);\n  };\n}\n\n// Usage: search input\nfunction searchAPI(query) {\n  console.log(`API call for: \"${query}\"`);\n}\n\nconst debouncedSearch = debounce(searchAPI, 300);\n\n// Simulating rapid typing: h, he, hel, hell, hello\ndebouncedSearch('h');      // timer set\ndebouncedSearch('he');     // timer reset\ndebouncedSearch('hel');    // timer reset\ndebouncedSearch('hell');   // timer reset\ndebouncedSearch('hello');  // timer reset — only this one fires after 300ms\n\n// After 300ms: API call for: \"hello\"",
+          "output": "API call for: \"hello\"",
+          "explanation": "Each call clears the previous timeout and sets a new one. Only the last call's timer completes because all earlier timers are cancelled by subsequent calls. The function executes once the rapid calls stop."
+        },
+        {
+          "title": "Debounce with leading edge and cancel",
+          "code": "function debounce(fn, delay, { leading = false } = {}) {\n  let timeoutId;\n  let isLeadingInvoked = false;\n\n  function debounced(...args) {\n    // Leading edge: execute immediately on first call\n    if (leading && !isLeadingInvoked) {\n      fn.apply(this, args);\n      isLeadingInvoked = true;\n    }\n\n    clearTimeout(timeoutId);\n\n    timeoutId = setTimeout(() => {\n      // Trailing edge: execute after delay\n      if (!leading) {\n        fn.apply(this, args);\n      }\n      isLeadingInvoked = false;\n    }, delay);\n  }\n\n  debounced.cancel = () => {\n    clearTimeout(timeoutId);\n    isLeadingInvoked = false;\n  };\n\n  return debounced;\n}\n\n// Leading: fires immediately, then ignores until delay passes\nconst saveNow = debounce(\n  (data) => console.log('Saved:', data),\n  1000,\n  { leading: true }\n);\n\nsaveNow('draft 1'); // fires immediately\nsaveNow('draft 2'); // ignored (within 1000ms)\nsaveNow('draft 3'); // ignored (within 1000ms)\n// After 1000ms of silence, the next call will fire immediately again\n\n// Cancel: abort pending execution\nconst debouncedFn = debounce((x) => console.log(x), 500);\ndebouncedFn('pending...');\ndebouncedFn.cancel(); // nothing will fire\nconsole.log('Cancelled');",
+          "output": "Saved: draft 1\nCancelled",
+          "explanation": "Leading-edge debounce fires immediately on the first call, providing instant feedback. The cancel method clears any pending timeout. This is useful for submit buttons where you want immediate response but no double-submissions."
+        },
+        {
+          "title": "Throttle implementation from scratch",
+          "code": "function throttle(fn, interval) {\n  let lastTime = 0;\n  let timeoutId = null;\n\n  return function (...args) {\n    const now = Date.now();\n    const elapsed = now - lastTime;\n\n    if (elapsed >= interval) {\n      // Enough time passed — execute immediately\n      lastTime = now;\n      fn.apply(this, args);\n    } else if (!timeoutId) {\n      // Schedule trailing call for remaining time\n      timeoutId = setTimeout(() => {\n        lastTime = Date.now();\n        timeoutId = null;\n        fn.apply(this, args);\n      }, interval - elapsed);\n    }\n  };\n}\n\n// Usage: scroll handler\nlet scrollCount = 0;\nconst throttledScroll = throttle(() => {\n  scrollCount++;\n  console.log(`Scroll handler fired (#${scrollCount})`);\n}, 200);\n\n// Simulate rapid scroll events (every 50ms)\nconst events = [0, 50, 100, 150, 200, 250, 300, 350, 400];\n\nevents.forEach((ms, i) => {\n  setTimeout(() => throttledScroll(), ms);\n});\n\n// Fires at: 0ms, 200ms, 400ms — not all 9 times",
+          "output": "Scroll handler fired (#1)\nScroll handler fired (#2)\nScroll handler fired (#3)",
+          "explanation": "Throttle executes the function immediately if enough time has passed, otherwise schedules a trailing execution. This guarantees the function fires at regular intervals during sustained activity, unlike debounce which waits for silence."
+        },
+        {
+          "title": "Comparison: debounce vs throttle vs rAF",
+          "code": "// Side-by-side comparison with event counts\nlet debounceCount = 0;\nlet throttleCount = 0;\nlet rafCount = 0;\nlet totalEvents = 0;\n\nconst debouncedHandler = debounce(() => {\n  debounceCount++;\n}, 200);\n\nconst throttledHandler = throttle(() => {\n  throttleCount++;\n}, 200);\n\n// rAF-based throttle\nlet rafScheduled = false;\nfunction rafHandler() {\n  if (!rafScheduled) {\n    rafScheduled = true;\n    requestAnimationFrame(() => {\n      rafCount++;\n      rafScheduled = false;\n    });\n  }\n}\n\n// Simulate 100 events over 1 second\nfor (let i = 0; i < 100; i++) {\n  setTimeout(() => {\n    totalEvents++;\n    debouncedHandler();\n    throttledHandler();\n    rafHandler();\n  }, i * 10);\n}\n\n// After ~1100ms, check counts\nsetTimeout(() => {\n  console.log(`Total events: ${totalEvents}`);\n  console.log(`Debounce calls: ${debounceCount}`);  // ~1 (only after all stop)\n  console.log(`Throttle calls: ${throttleCount}`);  // ~5 (every 200ms)\n  console.log(`rAF calls: ${rafCount}`);             // ~60 (every frame)\n}, 1500);\n\n// Summary:\n// Debounce: \"Wait until they stop, then do it once\"\n// Throttle: \"Do it at most every N ms during activity\"\n// rAF: \"Do it once per animation frame (~16ms)\"",
+          "output": "Total events: 100\nDebounce calls: 1\nThrottle calls: 5\nrAF calls: 60",
+          "explanation": "100 events fire over 1 second. Debounce only fires once (after the events stop). Throttle fires ~5 times (every 200ms). requestAnimationFrame fires ~60 times (every frame). Choose based on whether you need post-activity execution, regular updates, or visual synchronization."
+        },
+        {
+          "title": "Real-world React patterns",
+          "code": "// React hook: useDebounce\nfunction useDebounce(value, delay) {\n  const [debouncedValue, setDebouncedValue] = useState(value);\n\n  useEffect(() => {\n    const timer = setTimeout(() => setDebouncedValue(value), delay);\n    return () => clearTimeout(timer);\n  }, [value, delay]);\n\n  return debouncedValue;\n}\n\n// Usage in a search component\nfunction SearchComponent() {\n  const [query, setQuery] = useState('');\n  const debouncedQuery = useDebounce(query, 300);\n\n  useEffect(() => {\n    if (debouncedQuery) {\n      // This only fires 300ms after user stops typing\n      fetch(`/api/search?q=${debouncedQuery}`)\n        .then(res => res.json())\n        .then(data => console.log('Results:', data.length));\n    }\n  }, [debouncedQuery]);\n\n  return (\n    <input\n      value={query}\n      onChange={(e) => setQuery(e.target.value)}\n      placeholder=\"Search...\"\n    />\n  );\n}\n\n// Throttled scroll with cleanup\nfunction useThrottle(callback, delay) {\n  const lastRun = useRef(Date.now());\n\n  return useCallback((...args) => {\n    if (Date.now() - lastRun.current >= delay) {\n      callback(...args);\n      lastRun.current = Date.now();\n    }\n  }, [callback, delay]);\n}",
+          "output": "(React component patterns — not directly runnable)",
+          "explanation": "In React, useDebounce hook debounces a value that triggers useEffect. The cleanup function in useEffect clears the timer on re-render, providing automatic cancellation. This is the standard pattern for search-as-you-type in React applications."
+        }
+      ],
+      "notes": [
+        "Lodash provides battle-tested implementations: _.debounce(fn, wait, options) and _.throttle(fn, wait, options) with leading/trailing/cancel support.",
+        "requestAnimationFrame automatically pauses when the tab is hidden, saving CPU. Fixed-interval throttles do not.",
+        "In React, cleanup in useEffect handles debounce cancellation automatically — no need for a separate cancel method.",
+        "Debounce is O(1) space (one timer) and throttle is O(1) space (one timestamp) — both are extremely lightweight."
+      ],
+      "commonPitfalls": [
+        "Creating a new debounced function on every render in React — this resets the timer each time. Use useMemo or define outside the component.",
+        "Not preserving 'this' context in debounce/throttle — use fn.apply(this, args) or arrow functions to maintain the correct context.",
+        "Using debounce when throttle is needed — debounce waits for silence, so in a continuous scroll it might never fire until scrolling stops entirely.",
+        "Setting too short a delay — 50ms debounce is almost the same as no debounce. Use 200-500ms for typing, 100-200ms for scroll/resize."
+      ],
+      "interviewTips": [
+        "Be ready to write both debounce and throttle from scratch with setTimeout/clearTimeout — this is the most common version asked.",
+        "Clearly explain the difference: debounce waits for silence then fires once, throttle fires at regular intervals during activity.",
+        "Mention real-world examples: debounce for search input, throttle for scroll handlers, rAF for animations.",
+        "Know how to implement leading-edge vs trailing-edge variants and a cancel method."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "debounce-throttle-ex1",
+        "title": "Implement Debounce",
+        "description": "Write a debounce(fn, delay) function from scratch. It should return a new function that delays invoking fn until delay milliseconds have passed since the last call. If called again before the delay expires, the timer resets. Test it by creating a debounced logger with a 100ms delay. Call it 3 times synchronously with 'a', 'b', 'c'. Use setTimeout to wait 200ms and then verify only the last call ('c') was executed.",
+        "starterCode": "function debounce(fn, delay) {\n  // your implementation\n}\n\nfunction logger(msg) {\n  console.log('Logged:', msg);\n}\n\nconst debouncedLog = debounce(logger, 100);\n\n// Call 3 times rapidly — only last should fire\ndebouncedLog('a');\ndebouncedLog('b');\ndebouncedLog('c');\n\nsetTimeout(() => {\n  console.log('Done waiting');\n}, 200);",
+        "solution": "function debounce(fn, delay) {\n  let timeoutId;\n  return function(...args) {\n    clearTimeout(timeoutId);\n    timeoutId = setTimeout(() => {\n      fn.apply(this, args);\n    }, delay);\n  };\n}\n\nfunction logger(msg) {\n  console.log('Logged:', msg);\n}\n\nconst debouncedLog = debounce(logger, 100);\n\ndebouncedLog('a');\ndebouncedLog('b');\ndebouncedLog('c');\n\nsetTimeout(() => {\n  console.log('Done waiting');\n}, 200);",
+        "expectedOutput": "Logged: c\nDone waiting",
+        "hints": [
+          "Use a closure variable to store the timeout ID. Call clearTimeout before each new setTimeout.",
+          "Use fn.apply(this, args) inside the setTimeout callback to preserve context and arguments."
+        ],
+        "difficulty": "Hard"
+      },
+      {
+        "id": "debounce-throttle-ex2",
+        "title": "Implement Throttle",
+        "description": "Write a throttle(fn, interval) function from scratch. It should execute fn immediately on the first call, then ignore subsequent calls until interval milliseconds have passed. Test it by calling a throttled counter function 5 times synchronously. Only the first call should execute immediately. Then wait for the interval to pass and call it again to confirm it fires.",
+        "starterCode": "function throttle(fn, interval) {\n  // your implementation\n}\n\nlet count = 0;\nfunction counter() {\n  count++;\n  console.log('Count:', count);\n}\n\nconst throttledCounter = throttle(counter, 100);\n\n// Call 5 times rapidly — only first should fire immediately\nthrottledCounter();\nthrottledCounter();\nthrottledCounter();\nthrottledCounter();\nthrottledCounter();\n\n// Wait for interval to pass, then call again\nsetTimeout(() => {\n  throttledCounter();\n}, 150);",
+        "solution": "function throttle(fn, interval) {\n  let lastTime = 0;\n  return function(...args) {\n    const now = Date.now();\n    if (now - lastTime >= interval) {\n      lastTime = now;\n      fn.apply(this, args);\n    }\n  };\n}\n\nlet count = 0;\nfunction counter() {\n  count++;\n  console.log('Count:', count);\n}\n\nconst throttledCounter = throttle(counter, 100);\n\nthrottledCounter();\nthrottledCounter();\nthrottledCounter();\nthrottledCounter();\nthrottledCounter();\n\nsetTimeout(() => {\n  throttledCounter();\n}, 150);",
+        "expectedOutput": "Count: 1\nCount: 2",
+        "hints": [
+          "Track the last execution time with a closure variable initialized to 0.",
+          "Compare Date.now() - lastTime >= interval to decide whether enough time has passed."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "polyfills",
+    "sectionId": "interview-essentials",
+    "orderIndex": 1,
+    "title": "Polyfills",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Polyfill", "Array.prototype.map", "Array.prototype.filter", "Array.prototype.reduce", "Function.prototype.bind", "Promise", "Object.create", "Array.prototype.flat"],
+    "content": {
+      "explanation": "A polyfill is a piece of code that provides functionality that a browser does not natively support. Writing polyfills for built-in JavaScript methods is one of the most popular interview exercises because it tests your understanding of how these methods actually work under the hood. It requires knowledge of prototypes, the 'this' keyword, callback patterns, and edge case handling.\n\nThe most commonly asked polyfills are for array methods: map, filter, and reduce. Array.prototype.map creates a new array by applying a callback function to every element of the original array. The callback receives three arguments: the current element, the index, and the full array. Your polyfill must create a new array, iterate over the original, call the callback for each element, push the result, and return the new array. The filter polyfill is similar but only includes elements for which the callback returns a truthy value. The reduce polyfill is more complex — it must handle both the with-initial-value and without-initial-value cases.\n\nFunction.prototype.bind is another interview favorite. bind creates a new function that, when called, has its 'this' keyword set to a specific value, with optional preset arguments (partial application). The key challenge in implementing bind is handling both regular function calls and constructor calls (when the bound function is used with 'new'). A complete polyfill checks whether the function is being called as a constructor and adjusts the 'this' binding accordingly.\n\nPromise is the most complex polyfill to write but demonstrates deep understanding of asynchronous JavaScript. A simplified Promise implementation requires: a constructor that takes an executor function, internal state management (pending/fulfilled/rejected), a then method that registers callbacks and returns a new Promise for chaining, and a catch method. The key insight is that then callbacks must be called asynchronously (via setTimeout or queueMicrotask) even if the promise is already resolved, and that then must return a new Promise to enable chaining.\n\nObject.create creates a new object with the specified prototype. Before ES5, this was the primary way to set up inheritance. The polyfill creates a temporary constructor function, sets its prototype to the desired object, and returns a new instance. Array.prototype.flat recursively flattens nested arrays to a specified depth. The polyfill must handle the depth parameter (defaulting to 1) and use recursion or a stack-based approach to flatten nested arrays.\n\nWhen writing polyfills in an interview, always start by defining the method on the prototype (e.g., Array.prototype.myMap), handle edge cases (empty arrays, missing callbacks, sparse arrays), and explain the time and space complexity. Show that you understand not just the happy path but the complete contract of each method.",
+      "codeExamples": [
+        {
+          "title": "Polyfill for Array.prototype.map",
+          "code": "Array.prototype.myMap = function(callback, thisArg) {\n  if (typeof callback !== 'function') {\n    throw new TypeError(callback + ' is not a function');\n  }\n\n  const result = [];\n  for (let i = 0; i < this.length; i++) {\n    // Skip holes in sparse arrays (like native map)\n    if (i in this) {\n      result[i] = callback.call(thisArg, this[i], i, this);\n    }\n  }\n  return result;\n};\n\n// Test\nconst nums = [1, 2, 3, 4, 5];\nconst doubled = nums.myMap(x => x * 2);\nconsole.log(doubled);\n\n// With index and array arguments\nconst indexed = nums.myMap((val, idx) => `${idx}:${val}`);\nconsole.log(indexed);\n\n// With thisArg\nconst multiplier = { factor: 10 };\nconst scaled = nums.myMap(function(x) {\n  return x * this.factor;\n}, multiplier);\nconsole.log(scaled);\n\n// Sparse array handling\nconst sparse = [1, , 3]; // hole at index 1\nconsole.log(sparse.myMap(x => x * 2));",
+          "output": "[ 2, 4, 6, 8, 10 ]\n[ '0:1', '1:2', '2:3', '3:4', '4:5' ]\n[ 10, 20, 30, 40, 50 ]\n[ 2, <1 empty item>, 6 ]",
+          "explanation": "The polyfill iterates over the array, calls the callback with (element, index, array), and collects results. Using 'i in this' skips holes in sparse arrays, matching native behavior. callback.call(thisArg, ...) ensures the correct 'this' context."
+        },
+        {
+          "title": "Polyfill for Array.prototype.filter and reduce",
+          "code": "// Filter polyfill\nArray.prototype.myFilter = function(callback, thisArg) {\n  if (typeof callback !== 'function') {\n    throw new TypeError(callback + ' is not a function');\n  }\n\n  const result = [];\n  for (let i = 0; i < this.length; i++) {\n    if (i in this && callback.call(thisArg, this[i], i, this)) {\n      result.push(this[i]);\n    }\n  }\n  return result;\n};\n\nconsole.log([1, 2, 3, 4, 5].myFilter(x => x > 3));\nconsole.log(['hello', '', 'world', ''].myFilter(Boolean));\n\n// Reduce polyfill\nArray.prototype.myReduce = function(callback, initialValue) {\n  if (typeof callback !== 'function') {\n    throw new TypeError(callback + ' is not a function');\n  }\n\n  let accumulator;\n  let startIndex;\n\n  if (arguments.length >= 2) {\n    // Initial value provided\n    accumulator = initialValue;\n    startIndex = 0;\n  } else {\n    // No initial value — use first element\n    if (this.length === 0) {\n      throw new TypeError('Reduce of empty array with no initial value');\n    }\n    accumulator = this[0];\n    startIndex = 1;\n  }\n\n  for (let i = startIndex; i < this.length; i++) {\n    if (i in this) {\n      accumulator = callback(accumulator, this[i], i, this);\n    }\n  }\n\n  return accumulator;\n};\n\nconsole.log([1, 2, 3, 4].myReduce((sum, x) => sum + x, 0));\nconsole.log([1, 2, 3, 4].myReduce((sum, x) => sum + x));\nconsole.log([[1, 2], [3, 4], [5]].myReduce((flat, arr) => flat.concat(arr), []));",
+          "output": "[ 4, 5 ]\n[ 'hello', 'world' ]\n10\n10\n[ 1, 2, 3, 4, 5 ]",
+          "explanation": "Filter only pushes elements where the callback returns truthy. Reduce handles two cases: with initialValue (start from index 0) and without (use first element as initial, start from index 1). Empty array with no initialValue throws TypeError, matching native behavior."
+        },
+        {
+          "title": "Polyfill for Function.prototype.bind",
+          "code": "Function.prototype.myBind = function(thisArg, ...boundArgs) {\n  if (typeof this !== 'function') {\n    throw new TypeError('Bind must be called on a function');\n  }\n\n  const originalFn = this;\n\n  const boundFn = function(...callArgs) {\n    // Check if called with 'new' — if so, 'this' should be the new instance\n    const isNew = this instanceof boundFn;\n    return originalFn.apply(\n      isNew ? this : thisArg,\n      [...boundArgs, ...callArgs]\n    );\n  };\n\n  // Maintain prototype chain for 'new' usage\n  if (originalFn.prototype) {\n    boundFn.prototype = Object.create(originalFn.prototype);\n  }\n\n  return boundFn;\n};\n\n// Test 1: Basic binding\nconst user = { name: 'Alice' };\nfunction greet(greeting, punctuation) {\n  return `${greeting}, ${this.name}${punctuation}`;\n}\n\nconst boundGreet = greet.myBind(user, 'Hello');\nconsole.log(boundGreet('!'));\nconsole.log(boundGreet('?'));\n\n// Test 2: Partial application\nfunction multiply(a, b) {\n  return a * b;\n}\nconst double = multiply.myBind(null, 2);\nconsole.log(double(5));\nconsole.log(double(10));\n\n// Test 3: Works with 'new'\nfunction Person(name, age) {\n  this.name = name;\n  this.age = age;\n}\nconst BoundPerson = Person.myBind(null, 'Alice');\nconst p = new BoundPerson(25);\nconsole.log(p.name, p.age);\nconsole.log(p instanceof Person);",
+          "output": "Hello, Alice!\nHello, Alice?\n10\n20\nAlice 25\ntrue",
+          "explanation": "myBind returns a new function with 'this' permanently set to thisArg and optional preset arguments. The 'instanceof' check handles constructor calls where 'this' should refer to the new instance, not the bound thisArg. The prototype chain is maintained for proper instanceof behavior."
+        },
+        {
+          "title": "Polyfill for Promise (simplified)",
+          "code": "class MyPromise {\n  #state = 'pending';\n  #value = undefined;\n  #handlers = [];\n\n  constructor(executor) {\n    const resolve = (value) => {\n      if (this.#state !== 'pending') return;\n      this.#state = 'fulfilled';\n      this.#value = value;\n      this.#handlers.forEach(h => h.onFulfilled(value));\n    };\n\n    const reject = (reason) => {\n      if (this.#state !== 'pending') return;\n      this.#state = 'rejected';\n      this.#value = reason;\n      this.#handlers.forEach(h => h.onRejected(reason));\n    };\n\n    try {\n      executor(resolve, reject);\n    } catch (err) {\n      reject(err);\n    }\n  }\n\n  then(onFulfilled, onRejected) {\n    return new MyPromise((resolve, reject) => {\n      const handle = () => {\n        try {\n          if (this.#state === 'fulfilled') {\n            const result = onFulfilled ? onFulfilled(this.#value) : this.#value;\n            resolve(result);\n          } else if (this.#state === 'rejected') {\n            if (onRejected) {\n              const result = onRejected(this.#value);\n              resolve(result);\n            } else {\n              reject(this.#value);\n            }\n          }\n        } catch (err) {\n          reject(err);\n        }\n      };\n\n      if (this.#state === 'pending') {\n        this.#handlers.push({\n          onFulfilled: () => queueMicrotask(handle),\n          onRejected: () => queueMicrotask(handle)\n        });\n      } else {\n        queueMicrotask(handle);\n      }\n    });\n  }\n\n  catch(onRejected) {\n    return this.then(null, onRejected);\n  }\n\n  static resolve(value) {\n    return new MyPromise(resolve => resolve(value));\n  }\n\n  static reject(reason) {\n    return new MyPromise((_, reject) => reject(reason));\n  }\n}\n\n// Test\nconst p = new MyPromise((resolve) => {\n  setTimeout(() => resolve(42), 100);\n});\n\np.then(val => {\n  console.log('Resolved:', val);\n  return val * 2;\n}).then(val => {\n  console.log('Chained:', val);\n});",
+          "output": "Resolved: 42\nChained: 84",
+          "explanation": "This simplified Promise polyfill demonstrates the core concepts: state management (pending/fulfilled/rejected), handler registration, asynchronous resolution via queueMicrotask, and chaining through then() returning a new Promise."
+        },
+        {
+          "title": "Polyfill for Object.create and Array.prototype.flat",
+          "code": "// Object.create polyfill\nObject.myCreate = function(proto, propertiesObject) {\n  if (typeof proto !== 'object' && typeof proto !== 'function') {\n    throw new TypeError('Object prototype may only be an Object or null');\n  }\n\n  function F() {}\n  F.prototype = proto;\n  const obj = new F();\n\n  if (propertiesObject !== undefined) {\n    Object.defineProperties(obj, propertiesObject);\n  }\n\n  return obj;\n};\n\nconst animal = { speak() { return `${this.name} says ${this.sound}`; } };\nconst dog = Object.myCreate(animal);\ndog.name = 'Rex';\ndog.sound = 'Woof';\nconsole.log(dog.speak());\nconsole.log(Object.getPrototypeOf(dog) === animal);\n\n// Array.prototype.flat polyfill\nArray.prototype.myFlat = function(depth = 1) {\n  const result = [];\n\n  function flatten(arr, currentDepth) {\n    for (let i = 0; i < arr.length; i++) {\n      if (i in arr) {\n        if (Array.isArray(arr[i]) && currentDepth < depth) {\n          flatten(arr[i], currentDepth + 1);\n        } else {\n          result.push(arr[i]);\n        }\n      }\n    }\n  }\n\n  flatten(this, 0);\n  return result;\n};\n\n// Test flat\nconsole.log([1, [2, 3], [4, [5]]].myFlat());     // depth 1\nconsole.log([1, [2, [3, [4]]]].myFlat(2));        // depth 2\nconsole.log([1, [2, [3, [4, [5]]]]].myFlat(Infinity)); // fully flat\nconsole.log([[1, 2], , [3, 4]].myFlat());         // handles sparse",
+          "output": "Rex says Woof\ntrue\n[ 1, 2, 3, 4, [ 5 ] ]\n[ 1, 2, 3, [ 4 ] ]\n[ 1, 2, 3, 4, 5 ]\n[ 1, 2, 3, 4 ]",
+          "explanation": "Object.create creates a new object with the specified prototype by using a temporary constructor function. Array.flat recursively flattens nested arrays up to the specified depth. Using Infinity as depth flattens completely."
+        }
+      ],
+      "notes": [
+        "In interviews, always add type checking at the start (throw TypeError for invalid callbacks).",
+        "Use callback.call(thisArg, ...) to respect the optional thisArg parameter that native methods support.",
+        "The 'i in this' check handles sparse arrays — native methods skip holes but maintain array length.",
+        "A production-quality Promise polyfill (like es6-promise) is ~500 lines — the interview version focuses on core concepts."
+      ],
+      "commonPitfalls": [
+        "Forgetting to handle the case where reduce has no initialValue — must use the first element and start iteration from index 1.",
+        "Not using callback.call(thisArg, ...) in map/filter — this breaks when a thisArg is passed.",
+        "Implementing bind without handling 'new' — the bound function must work correctly as a constructor.",
+        "Making the Promise polyfill synchronous — then() callbacks must always execute asynchronously (use queueMicrotask or setTimeout)."
+      ],
+      "interviewTips": [
+        "The most commonly asked polyfills are map, filter, reduce, bind, and Promise — know all five cold.",
+        "Start each polyfill by writing the function signature and explaining the expected behavior before coding.",
+        "Handle edge cases: empty arrays, missing initialValue for reduce, sparse arrays, and type validation.",
+        "For bind, mention that it also needs to handle constructor calls (when used with 'new')."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "polyfills-ex1",
+        "title": "Polyfill Array.prototype.myFilter",
+        "description": "Write a polyfill for Array.prototype.filter called myFilter. It should accept a callback and an optional thisArg. The callback receives (element, index, array) and should return true to keep the element. Test it by filtering [1, 2, 3, 4, 5, 6, 7, 8] to keep only even numbers, then filter ['hello', '', 'world', '', 'test'] to keep only truthy values using Boolean as the callback.",
+        "starterCode": "Array.prototype.myFilter = function(callback, thisArg) {\n  // your implementation\n};\n\nconsole.log([1, 2, 3, 4, 5, 6, 7, 8].myFilter(x => x % 2 === 0));\nconsole.log(['hello', '', 'world', '', 'test'].myFilter(Boolean));",
+        "solution": "Array.prototype.myFilter = function(callback, thisArg) {\n  if (typeof callback !== 'function') {\n    throw new TypeError(callback + ' is not a function');\n  }\n  const result = [];\n  for (let i = 0; i < this.length; i++) {\n    if (i in this && callback.call(thisArg, this[i], i, this)) {\n      result.push(this[i]);\n    }\n  }\n  return result;\n};\n\nconsole.log([1, 2, 3, 4, 5, 6, 7, 8].myFilter(x => x % 2 === 0));\nconsole.log(['hello', '', 'world', '', 'test'].myFilter(Boolean));",
+        "expectedOutput": "[ 2, 4, 6, 8 ]\n[ 'hello', 'world', 'test' ]",
+        "hints": [
+          "Iterate with a for loop, call callback.call(thisArg, this[i], i, this) for each element.",
+          "Only push elements into the result array if the callback returns a truthy value."
+        ],
+        "difficulty": "Hard"
+      },
+      {
+        "id": "polyfills-ex2",
+        "title": "Polyfill Array.prototype.myReduce",
+        "description": "Write a polyfill for Array.prototype.reduce called myReduce. It must handle two cases: with an initial value (start from index 0) and without (use first element, start from index 1). Throw a TypeError for empty arrays with no initial value. Test with: [1,2,3,4].myReduce((sum, x) => sum + x, 0), [1,2,3,4].myReduce((sum, x) => sum + x) (no initial value), and ['a','b','c'].myReduce((acc, x) => acc + '-' + x).",
+        "starterCode": "Array.prototype.myReduce = function(callback, initialValue) {\n  // your implementation\n};\n\nconsole.log([1, 2, 3, 4].myReduce((sum, x) => sum + x, 0));\nconsole.log([1, 2, 3, 4].myReduce((sum, x) => sum + x));\nconsole.log(['a', 'b', 'c'].myReduce((acc, x) => acc + '-' + x));",
+        "solution": "Array.prototype.myReduce = function(callback, initialValue) {\n  if (typeof callback !== 'function') {\n    throw new TypeError(callback + ' is not a function');\n  }\n  let accumulator;\n  let startIndex;\n  if (arguments.length >= 2) {\n    accumulator = initialValue;\n    startIndex = 0;\n  } else {\n    if (this.length === 0) {\n      throw new TypeError('Reduce of empty array with no initial value');\n    }\n    accumulator = this[0];\n    startIndex = 1;\n  }\n  for (let i = startIndex; i < this.length; i++) {\n    if (i in this) {\n      accumulator = callback(accumulator, this[i], i, this);\n    }\n  }\n  return accumulator;\n};\n\nconsole.log([1, 2, 3, 4].myReduce((sum, x) => sum + x, 0));\nconsole.log([1, 2, 3, 4].myReduce((sum, x) => sum + x));\nconsole.log(['a', 'b', 'c'].myReduce((acc, x) => acc + '-' + x));",
+        "expectedOutput": "10\n10\na-b-c",
+        "hints": [
+          "Use arguments.length >= 2 to check if an initial value was provided (not initialValue === undefined, since undefined could be passed intentionally).",
+          "Without initial value, set accumulator to this[0] and startIndex to 1."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "output-questions",
+    "sectionId": "interview-essentials",
+    "orderIndex": 2,
+    "title": "Output-Based Questions",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Event Loop", "Hoisting", "Closures", "Type Coercion", "this Keyword", "Scope", "Promise Ordering", "setTimeout"],
+    "content": {
+      "explanation": "Output-based questions are a staple of JavaScript interviews. The interviewer shows you a code snippet and asks you to predict exactly what will be logged to the console and in what order. These questions test your deep understanding of JavaScript's execution model, including the event loop, hoisting, closures, type coercion, 'this' binding, and scope rules. Success requires methodical mental execution of code rather than guessing.\n\nThe most important concept for output questions is the event loop and task ordering. JavaScript is single-threaded and uses an event loop with a call stack, a microtask queue (for Promises, queueMicrotask, MutationObserver), and a macrotask queue (for setTimeout, setInterval, I/O). The execution order is: (1) run all synchronous code on the call stack, (2) drain all microtasks, (3) run one macrotask, (4) drain all microtasks again, (5) repeat. This means Promise.then() callbacks always execute before setTimeout callbacks, even if the setTimeout has a 0ms delay.\n\nvar vs let in loops with setTimeout is a classic question. When you use var in a for loop with setTimeout, the variable is function-scoped — all iterations share the same variable. By the time the setTimeout callbacks run, the loop has completed and the variable holds its final value. With let, each iteration creates a new block-scoped variable, so each callback captures its own copy. This is perhaps the single most asked output question in interviews.\n\nType coercion produces some of JavaScript's most surprising behaviors. The + operator triggers string concatenation if either operand is a string, but numeric addition otherwise. Empty arrays coerce to empty strings, objects coerce to '[object Object]', null coerces to 0 in numeric context, and undefined coerces to NaN. The == operator performs type coercion while === does not. Understanding the abstract equality comparison algorithm is key to predicting == results.\n\nHoisting affects output in subtle ways. var declarations are hoisted to the top of their function scope but their assignments are not — so accessing a var before its assignment returns undefined (not a ReferenceError). Function declarations are fully hoisted (both name and body), while function expressions (including arrow functions assigned to variables) are only hoisted as variable declarations. let and const are hoisted but placed in the Temporal Dead Zone — accessing them before their declaration throws a ReferenceError.\n\n'this' keyword behavior depends entirely on how a function is called, not where it is defined. In a regular function call, 'this' is the global object (or undefined in strict mode). In a method call, 'this' is the object before the dot. In a constructor, 'this' is the new instance. Arrow functions inherit 'this' from their enclosing scope. bind, call, and apply explicitly set 'this'. Knowing these rules is essential for predicting output in any code that uses 'this'.",
+      "codeExamples": [
+        {
+          "title": "Event loop ordering: sync, Promise, setTimeout",
+          "code": "console.log('1: Start');\n\nsetTimeout(() => {\n  console.log('2: setTimeout 1');\n}, 0);\n\nPromise.resolve().then(() => {\n  console.log('3: Promise 1');\n}).then(() => {\n  console.log('4: Promise 2');\n});\n\nsetTimeout(() => {\n  console.log('5: setTimeout 2');\n}, 0);\n\nPromise.resolve().then(() => {\n  console.log('6: Promise 3');\n});\n\nconsole.log('7: End');",
+          "output": "1: Start\n7: End\n3: Promise 1\n6: Promise 3\n4: Promise 2\n5: setTimeout 2\n2: setTimeout 1",
+          "explanation": "Order: (1) All synchronous code runs first: 'Start' and 'End'. (2) Microtasks (Promises) drain completely: Promise 1, Promise 3, then Promise 2 (chained from Promise 1). (3) Macrotasks (setTimeouts) run one by one. Note: setTimeout order may vary between engines but Promises always precede setTimeouts."
+        },
+        {
+          "title": "var vs let in loops with setTimeout",
+          "code": "// With var — shares one variable across all iterations\nconsole.log('=== var ===');\nfor (var i = 0; i < 3; i++) {\n  setTimeout(() => console.log('var:', i), 0);\n}\n\n// With let — each iteration gets its own variable\nconsole.log('=== let ===');\nfor (let j = 0; j < 3; j++) {\n  setTimeout(() => console.log('let:', j), 0);\n}\n\n// Fix with var: IIFE creates a new scope\nconsole.log('=== var + IIFE ===');\nfor (var k = 0; k < 3; k++) {\n  (function(k) {\n    setTimeout(() => console.log('iife:', k), 0);\n  })(k);\n}\n\n// What value does i have after the loop?\nconsole.log('i after loop:', i); // var is function-scoped",
+          "output": "=== var ===\n=== let ===\n=== var + IIFE ===\ni after loop: 3\nvar: 3\nvar: 3\nvar: 3\nlet: 0\nlet: 1\nlet: 2\niife: 0\niife: 1\niife: 2",
+          "explanation": "With var, all three callbacks share the same 'i' which is 3 after the loop finishes. With let, each iteration creates a new 'j' in its own block scope, so each callback captures the correct value. The IIFE fix creates a new function scope for each iteration, capturing the current value of k."
+        },
+        {
+          "title": "Type coercion surprises",
+          "code": "// String concatenation vs addition\nconsole.log(1 + '2');         // string concatenation\nconsole.log('3' - 1);         // numeric subtraction\nconsole.log('3' + 1);         // string concatenation\nconsole.log(+'3');             // unary + converts to number\n\n// Array coercion\nconsole.log([] + []);          // '' + '' = ''\nconsole.log([] + {});          // '' + '[object Object]'\nconsole.log({} + []);          // '[object Object]' + ''\nconsole.log([] == false);      // [] -> '' -> 0, false -> 0\nconsole.log(!![]);             // [] is truthy!\n\n// null and undefined\nconsole.log(null == undefined);  // true (special rule)\nconsole.log(null === undefined); // false (different types)\nconsole.log(null + 1);          // null -> 0\nconsole.log(undefined + 1);     // undefined -> NaN\n\n// typeof oddities\nconsole.log(typeof null);       // 'object' (historical bug)\nconsole.log(typeof undefined);  // 'undefined'\nconsole.log(typeof NaN);        // 'number'\nconsole.log(NaN === NaN);       // false!",
+          "output": "12\n2\n31\n3\n\n[object Object]\n[object Object]\ntrue\ntrue\ntrue\nfalse\n1\nNaN\nobject\nundefined\nnumber\nfalse",
+          "explanation": "The + operator prefers string concatenation if either operand is a string. Arrays coerce to strings via .toString() (empty array becomes ''). null coerces to 0 in numeric context but undefined coerces to NaN. typeof null is 'object' due to a historical bug. NaN is not equal to itself — use Number.isNaN() instead."
+        },
+        {
+          "title": "Hoisting and Temporal Dead Zone",
+          "code": "// var hoisting\nconsole.log(a); // hoisted declaration, not assignment\nvar a = 5;\nconsole.log(a);\n\n// Function declaration vs expression\nconsole.log(foo()); // works — fully hoisted\n// console.log(bar()); // TypeError: bar is not a function\n\nfunction foo() { return 'foo declaration'; }\nvar bar = function() { return 'bar expression'; };\n\n// let/const TDZ\ntry {\n  console.log(x);\n  let x = 10;\n} catch (e) {\n  console.log(e.constructor.name);\n}\n\n// Tricky: function in block\nvar c = 1;\nfunction outer() {\n  console.log(c); // undefined — var c below is hoisted\n  var c = 2;\n  console.log(c);\n}\nouter();\n\n// Variable shadowing\nvar d = 'global';\nfunction inner() {\n  console.log(d); // undefined — local var d hoisted\n  var d = 'local';\n  console.log(d);\n}\ninner();",
+          "output": "undefined\n5\nfoo declaration\nReferenceError\nundefined\n2\nundefined\nlocal",
+          "explanation": "var declarations are hoisted but assigned undefined until the assignment line executes. Function declarations are fully hoisted. let/const throw ReferenceError in the Temporal Dead Zone (between hoisting and declaration). Local var declarations shadow outer variables — the hoisted local var makes the outer variable inaccessible."
+        },
+        {
+          "title": "Closure and 'this' output patterns",
+          "code": "// Closure captures variables by reference\nfunction createFunctions() {\n  const fns = [];\n  for (let i = 0; i < 3; i++) {\n    fns.push(() => i * i);\n  }\n  return fns;\n}\n\nconst fns = createFunctions();\nconsole.log(fns[0](), fns[1](), fns[2]());\n\n// 'this' in different contexts\nconst obj = {\n  name: 'Alice',\n  regular: function() {\n    return this.name;\n  },\n  arrow: () => {\n    return this.name; // 'this' is from outer scope (global/undefined)\n  },\n  nested: function() {\n    const inner = () => this.name; // arrow inherits 'this' from nested\n    return inner();\n  }\n};\n\nconsole.log(obj.regular());\nconsole.log(obj.arrow());\nconsole.log(obj.nested());\n\n// Method extraction loses 'this'\nconst { regular } = obj;\ntry {\n  console.log(regular());\n} catch (e) {\n  console.log('Lost this: undefined in strict mode');\n}\n\n// Tricky setTimeout with 'this'\nconst timer = {\n  name: 'Timer',\n  start: function() {\n    setTimeout(function() {\n      console.log('setTimeout regular:', this.name); // undefined\n    }, 0);\n    setTimeout(() => {\n      console.log('setTimeout arrow:', this.name); // 'Timer'\n    }, 0);\n  }\n};\ntimer.start();",
+          "output": "0 1 4\nAlice\nundefined\nAlice\nLost this: undefined in strict mode\nsetTimeout regular: undefined\nsetTimeout arrow: Timer",
+          "explanation": "With let, each closure captures its own 'i'. Arrow functions inherit 'this' from their enclosing scope — obj.arrow's enclosing scope is the module/global, not the object. obj.nested's arrow inherits 'this' from the nested function. In setTimeout, regular functions lose 'this' but arrow functions preserve it from the enclosing method."
+        }
+      ],
+      "notes": [
+        "Microtasks (Promises) always drain completely before any macrotask (setTimeout) runs — this is the most tested event loop concept.",
+        "typeof null === 'object' is a 25-year-old bug in JavaScript that can never be fixed because it would break existing code.",
+        "NaN is the only value in JavaScript that is not equal to itself — use Number.isNaN(x) instead of x === NaN.",
+        "In strict mode, 'this' in a regular function call is undefined, not the global object."
+      ],
+      "commonPitfalls": [
+        "Assuming setTimeout(fn, 0) runs immediately — it runs after all synchronous code AND all microtasks complete.",
+        "Confusing function declarations (hoisted) with function expressions assigned to var (only var is hoisted, as undefined).",
+        "Thinking arrow functions have their own 'this' — they always inherit from the enclosing lexical scope.",
+        "Forgetting that == performs type coercion while === does not — [] == false is true but [] === false is false."
+      ],
+      "interviewTips": [
+        "Trace through code step by step: first identify all synchronous code, then microtasks, then macrotasks.",
+        "For 'this' questions: identify how the function is CALLED (not where it is defined) — method call, function call, new, or arrow.",
+        "For hoisting: mentally move all var declarations (not assignments) and function declarations to the top of their scope.",
+        "Practice at least 10 output prediction exercises — speed and accuracy come from repetition."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "output-questions-ex1",
+        "title": "Predict Event Loop Output",
+        "description": "Predict the output of the following code that mixes synchronous code, Promises, and setTimeout. Write the console.log statements in the correct order that they would execute. The code is: console.log('A'), setTimeout(() => console.log('B'), 0), Promise.resolve().then(() => console.log('C')), console.log('D'). Log each letter in the correct order.",
+        "starterCode": "// Predict the output order of this code:\n// console.log('A');\n// setTimeout(() => console.log('B'), 0);\n// Promise.resolve().then(() => console.log('C'));\n// console.log('D');\n\n// Log the letters in the correct execution order:\nconsole.log( /* first */ );\nconsole.log( /* second */ );\nconsole.log( /* third */ );\nconsole.log( /* fourth */ );",
+        "solution": "console.log('A');\nconsole.log('D');\nconsole.log('C');\nconsole.log('B');",
+        "expectedOutput": "A\nD\nC\nB",
+        "hints": [
+          "Synchronous code runs first (A, D), then microtasks (Promise.then = C), then macrotasks (setTimeout = B).",
+          "Even with a 0ms delay, setTimeout is always deferred to the macrotask queue, which runs after all microtasks."
+        ],
+        "difficulty": "Hard"
+      },
+      {
+        "id": "output-questions-ex2",
+        "title": "Predict var vs let in Loop",
+        "description": "Predict what this code outputs. A for loop uses var and schedules 3 setTimeout callbacks. After the loop, we immediately log the value of i. Then the timeouts fire. Write the exact output. Code: for (var i = 0; i < 3; i++) { setTimeout(() => console.log('timeout:', i), 0); } console.log('after loop:', i);",
+        "starterCode": "// Predict the output of:\n// for (var i = 0; i < 3; i++) {\n//   setTimeout(() => console.log('timeout:', i), 0);\n// }\n// console.log('after loop:', i);\n\n// Write the exact output in order:\nconsole.log('after loop:', /* ? */);\nconsole.log('timeout:', /* ? */);\nconsole.log('timeout:', /* ? */);\nconsole.log('timeout:', /* ? */);",
+        "solution": "console.log('after loop:', 3);\nconsole.log('timeout:', 3);\nconsole.log('timeout:', 3);\nconsole.log('timeout:', 3);",
+        "expectedOutput": "after loop: 3\ntimeout: 3\ntimeout: 3\ntimeout: 3",
+        "hints": [
+          "var is function-scoped, so all 3 setTimeout callbacks share the same i variable.",
+          "The loop finishes (i becomes 3) before any setTimeout callback runs. All callbacks see i = 3."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "js-gotchas",
+    "sectionId": "interview-essentials",
+    "orderIndex": 3,
+    "title": "Common JavaScript Gotchas",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["typeof null", "NaN", "Floating Point", "Type Coercion", "ASI", "arguments", "Array Comparison", "delete Operator"],
+    "content": {
+      "explanation": "JavaScript has many behaviors that surprise even experienced developers. These 'gotchas' stem from design decisions made in the language's early days, the IEEE 754 floating-point standard, type coercion rules, and the dynamic nature of the language. Knowing these gotchas is not just trivia — they appear frequently in interviews and understanding them demonstrates deep knowledge of the language internals.\n\ntypeof null returning 'object' is perhaps the most famous JavaScript bug. In the original implementation, values were stored with a type tag, and the tag for objects was 0. null was represented as the NULL pointer (0x00), so its type tag was also 0, causing typeof to classify it as an object. This bug was identified early but a proposed fix was rejected because it would break too much existing code. To check for null, use value === null instead of typeof.\n\nNaN (Not-a-Number) has two peculiar properties: it is the only value not equal to itself (NaN !== NaN is true), and its type is 'number' (typeof NaN === 'number'). NaN results from invalid numeric operations like 0/0, parseInt('hello'), or undefined + 1. To check for NaN, use Number.isNaN(value) rather than the global isNaN() which coerces its argument first. For example, isNaN('hello') returns true because it converts the string to NaN first, while Number.isNaN('hello') correctly returns false.\n\nFloating-point arithmetic follows the IEEE 754 standard, which cannot represent all decimal fractions exactly. The classic example is 0.1 + 0.2 === 0.30000000000000004, not 0.3. This affects all languages using IEEE 754 doubles, not just JavaScript. The practical workaround is to compare with a tolerance: Math.abs(a - b) < Number.EPSILON for simple cases, or to work with integers (cents instead of dollars, for example) for financial calculations.\n\nArray and object comparison is another common trap. Arrays and objects are compared by reference, not by value. So [] === [] is false because they are two different objects in memory. Even more confusingly, [] == false evaluates to true because of type coercion: [] converts to '' which converts to 0, and false converts to 0. Yet Boolean([]) is true because all objects (including empty arrays) are truthy. This leads to the paradox: an empty array is truthy, but it equals false.\n\nAutomatic Semicolon Insertion (ASI) can silently change the meaning of your code. JavaScript automatically inserts semicolons at certain line breaks. The most dangerous case is a return statement followed by a newline: return on its own is a valid statement, so the engine inserts a semicolon after it, causing the function to return undefined regardless of what follows on the next line. Other gotchas include the arguments object (array-like but not an array), the delete operator (removes properties but does not free memory or affect local variables), and for...in iterating over prototype properties unless hasOwnProperty is checked.",
+      "codeExamples": [
+        {
+          "title": "typeof null, NaN, and undefined",
+          "code": "// typeof null is 'object' (historical bug)\nconsole.log(typeof null);        // 'object'\nconsole.log(typeof undefined);    // 'undefined'\nconsole.log(null === undefined);  // false\nconsole.log(null == undefined);   // true (special coercion rule)\n\n// NaN is not equal to itself\nconsole.log(NaN === NaN);         // false\nconsole.log(NaN == NaN);          // false\nconsole.log(typeof NaN);          // 'number'\n\n// Checking for NaN correctly\nconsole.log(Number.isNaN(NaN));           // true\nconsole.log(Number.isNaN('hello'));       // false (no coercion)\nconsole.log(isNaN('hello'));              // true (coerces to NaN first!)\n\n// Safe null check\nfunction isNull(value) {\n  return value === null;\n}\nconsole.log(isNull(null));      // true\nconsole.log(isNull(undefined)); // false\nconsole.log(isNull(0));         // false\nconsole.log(isNull(''));        // false",
+          "output": "object\nundefined\nfalse\ntrue\nfalse\nfalse\nnumber\ntrue\nfalse\ntrue\ntrue\nfalse\nfalse\nfalse",
+          "explanation": "typeof null is 'object' due to a legacy bug. NaN !== NaN because IEEE 754 defines NaN as not equal to any value, including itself. Number.isNaN is the correct way to check for NaN — the global isNaN coerces its argument first, leading to false positives."
+        },
+        {
+          "title": "Floating point and array comparison",
+          "code": "// Floating point precision\nconsole.log(0.1 + 0.2);               // 0.30000000000000004\nconsole.log(0.1 + 0.2 === 0.3);       // false!\n\n// Fix: compare with tolerance\nfunction almostEqual(a, b) {\n  return Math.abs(a - b) < Number.EPSILON;\n}\nconsole.log(almostEqual(0.1 + 0.2, 0.3)); // true\n\n// Fix: work with integers\nconst priceInCents = 10 + 20; // 30 cents\nconsole.log(priceInCents === 30); // true\n\n// Array comparison — by reference, not value\nconsole.log([] === []);         // false (different objects)\nconsole.log([1, 2] === [1, 2]); // false\nconst a = [1, 2];\nconst b = a;\nconsole.log(a === b);           // true (same reference)\n\n// The empty array paradox\nconsole.log([] == false);        // true (coercion: [] -> '' -> 0 == 0)\nconsole.log(!![]);               // true ([] is truthy!)\nconsole.log(Boolean([]));        // true\n\n// Compare arrays by value\nfunction arraysEqual(a, b) {\n  return a.length === b.length && a.every((v, i) => v === b[i]);\n}\nconsole.log(arraysEqual([1, 2], [1, 2])); // true\nconsole.log(arraysEqual([1, 2], [1, 3])); // false",
+          "output": "0.30000000000000004\nfalse\ntrue\ntrue\nfalse\nfalse\ntrue\ntrue\ntrue\ntrue\ntrue\nfalse",
+          "explanation": "IEEE 754 cannot represent 0.1 exactly in binary, causing precision errors. Arrays compare by reference — use JSON.stringify or element-by-element comparison for value equality. The empty array is truthy (all objects are) but coerces to 0 via '' when compared with ==."
+        },
+        {
+          "title": "ASI, parseInt, and arguments",
+          "code": "// Automatic Semicolon Insertion — silent return undefined\nfunction getObject() {\n  return\n  {\n    name: 'Alice'\n  };\n}\nconsole.log(getObject()); // undefined! ASI inserts ; after return\n\n// Fix: open brace on same line as return\nfunction getObjectFixed() {\n  return {\n    name: 'Alice'\n  };\n}\nconsole.log(getObjectFixed()); // { name: 'Alice' }\n\n// parseInt gotchas\nconsole.log(parseInt('08'));          // 8 (modern engines)\nconsole.log(parseInt('0x10'));        // 16 (hex)\nconsole.log(parseInt('123abc'));      // 123 (stops at non-digit)\nconsole.log(parseInt('abc'));         // NaN\nconsole.log(parseInt(0.0000005));     // 5! (toString -> '5e-7')\n\n// arguments is not a real array\nfunction showArgs() {\n  console.log(typeof arguments);         // 'object'\n  console.log(Array.isArray(arguments)); // false\n  // arguments.map(x => x); // TypeError: not a function\n\n  // Convert to real array\n  const args = Array.from(arguments);\n  console.log(args.map(x => x * 2));\n}\nshowArgs(1, 2, 3);\n\n// arguments does not exist in arrow functions\nconst arrowFn = () => {\n  try {\n    console.log(arguments);\n  } catch (e) {\n    console.log('No arguments in arrow:', e.constructor.name);\n  }\n};\narrowFn(1, 2);",
+          "output": "undefined\n{ name: 'Alice' }\n8\n16\n123\nNaN\n5\nobject\nfalse\n[ 2, 4, 6 ]\nNo arguments in arrow: ReferenceError",
+          "explanation": "ASI inserts a semicolon after 'return' on its own line, making the function return undefined. parseInt(0.0000005) returns 5 because the number is first converted to string '5e-7' and parseInt stops at 'e'. arguments is array-like but lacks array methods."
+        },
+        {
+          "title": "delete operator, for...in, and equality edge cases",
+          "code": "// delete removes properties but doesn't free memory\nconst obj = { a: 1, b: 2, c: 3 };\nconsole.log(delete obj.b);\nconsole.log(obj);\n\n// delete does NOT work on local variables\nvar x = 10;\nconsole.log(delete x);  // false in strict mode\nconsole.log(x);         // still 10\n\n// for...in iterates over prototype properties\nfunction Animal(name) {\n  this.name = name;\n}\nAnimal.prototype.speak = function() { return 'hello'; };\n\nconst cat = new Animal('Whiskers');\nfor (const key in cat) {\n  console.log(`${key}: own=${cat.hasOwnProperty(key)}`);\n}\n// Fix: always use hasOwnProperty or Object.keys()\nconsole.log(Object.keys(cat));\n\n// == equality edge cases\nconsole.log('' == false);       // true (both coerce to 0)\nconsole.log('0' == false);      // true ('0' -> 0, false -> 0)\nconsole.log('' == '0');          // false (both strings, different values)\nconsole.log(false == undefined); // false\nconsole.log(false == null);      // false\nconsole.log(null == undefined);  // true (special rule)\n\n// Use === to avoid all coercion surprises\nconsole.log('' === false);      // false\nconsole.log('0' === false);     // false\nconsole.log(null === undefined); // false",
+          "output": "true\n{ a: 1, c: 3 }\nfalse\n10\nname: own=true\nspeak: own=false\n[ 'name' ]\ntrue\ntrue\nfalse\nfalse\nfalse\ntrue\nfalse\nfalse\nfalse",
+          "explanation": "delete removes object properties but cannot delete variables. for...in iterates over all enumerable properties including inherited ones — use Object.keys() for own properties only. The == operator's coercion rules create a non-transitive equality: '' == false and '0' == false are true, but '' == '0' is false."
+        },
+        {
+          "title": "More gotchas: labels, commas, and void",
+          "code": "// String to number conversions\nconsole.log(+'');         // 0\nconsole.log(+' ');        // 0\nconsole.log(+true);       // 1\nconsole.log(+false);      // 0\nconsole.log(+null);       // 0\nconsole.log(+undefined);  // NaN\nconsole.log(+[]);         // 0 ([] -> '' -> 0)\nconsole.log(+[1]);        // 1 ([1] -> '1' -> 1)\nconsole.log(+[1, 2]);     // NaN ([1,2] -> '1,2' -> NaN)\n\n// Comma operator returns last value\nconst val = (1, 2, 3);\nconsole.log(val);\n\n// void always returns undefined\nconsole.log(void 0);\nconsole.log(void 'hello');\n\n// Labelled statements (rarely used but valid)\nouter: for (let i = 0; i < 3; i++) {\n  for (let j = 0; j < 3; j++) {\n    if (i === 1 && j === 1) {\n      console.log(`Breaking at i=${i}, j=${j}`);\n      break outer;\n    }\n  }\n}\n\n// typeof undeclared variable doesn't throw\nconsole.log(typeof neverDeclared); // 'undefined' (no error!)\n\n// Modifying array length\nconst arr = [1, 2, 3, 4, 5];\narr.length = 3;\nconsole.log(arr);\narr.length = 5;\nconsole.log(arr);",
+          "output": "0\n0\n1\n0\n0\nNaN\n0\n1\nNaN\n3\nundefined\nundefined\nBreaking at i=1, j=1\nundefined\n[ 1, 2, 3 ]\n[ 1, 2, 3, <2 empty items> ]",
+          "explanation": "Unary + converts values to numbers with surprising results for arrays and booleans. The comma operator evaluates all expressions but returns only the last. void always returns undefined. Setting array.length truncates the array; increasing it creates sparse slots."
+        }
+      ],
+      "notes": [
+        "Always use === instead of == unless you specifically need type coercion (the only valid use case is value == null to check for both null and undefined).",
+        "Number.isNaN() is strict (no coercion), while global isNaN() coerces first — always prefer Number.isNaN().",
+        "For financial calculations, use integers (cents) or a library like decimal.js to avoid floating-point errors.",
+        "Use Object.keys() or Object.entries() instead of for...in to avoid iterating over prototype properties."
+      ],
+      "commonPitfalls": [
+        "Using typeof to check for null — typeof null === 'object' is a false positive. Use value === null instead.",
+        "Comparing arrays or objects with === — this checks reference equality, not structural equality. Use JSON.stringify or deep comparison.",
+        "Placing opening braces on a new line after return — ASI inserts a semicolon and the function returns undefined.",
+        "Using parseInt without a radix — parseInt('010') might be interpreted as octal in older engines. Always use parseInt(str, 10)."
+      ],
+      "interviewTips": [
+        "Know the top 10 gotchas cold: typeof null, NaN !== NaN, 0.1 + 0.2, [] == false, ASI, parseInt quirks, arguments, delete, for...in, and == coercion.",
+        "For each gotcha, explain WHY it happens (historical bug, IEEE 754 spec, coercion algorithm) — not just that it happens.",
+        "Mention the fix for each gotcha: === instead of ==, Number.isNaN instead of isNaN, Number.EPSILON for floats, Object.keys instead of for...in.",
+        "If asked 'what is surprising about JavaScript', pick 3-4 gotchas and explain them with code examples."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "js-gotchas-ex1",
+        "title": "Type Coercion Predictions",
+        "description": "Predict the result of each type coercion expression. For each expression, log the actual result. Test these: typeof null, typeof NaN, NaN === NaN, 0.1 + 0.2 === 0.3, '' == false, [] == false, null == undefined, null === undefined. Log each result on its own line.",
+        "starterCode": "// Predict and log the result of each expression:\n\nconsole.log(typeof null);\nconsole.log(typeof NaN);\nconsole.log(NaN === NaN);\nconsole.log(0.1 + 0.2 === 0.3);\nconsole.log('' == false);\nconsole.log([] == false);\nconsole.log(null == undefined);\nconsole.log(null === undefined);",
+        "solution": "console.log(typeof null);\nconsole.log(typeof NaN);\nconsole.log(NaN === NaN);\nconsole.log(0.1 + 0.2 === 0.3);\nconsole.log('' == false);\nconsole.log([] == false);\nconsole.log(null == undefined);\nconsole.log(null === undefined);",
+        "expectedOutput": "object\nnumber\nfalse\nfalse\ntrue\ntrue\ntrue\nfalse",
+        "hints": [
+          "typeof null is 'object' due to a historical bug. typeof NaN is 'number' because NaN is a numeric value representing 'not a number'.",
+          "NaN is not equal to anything, including itself. 0.1 + 0.2 is not exactly 0.3 due to floating point precision."
+        ],
+        "difficulty": "Hard"
+      },
+      {
+        "id": "js-gotchas-ex2",
+        "title": "Coercion with + Operator",
+        "description": "The + operator behaves differently depending on its operands. Predict the output of each expression involving the + operator, string concatenation, and type coercion. Log the result and its type for each: 1 + '2', '5' - 3, true + true, [] + [], [] + {}, null + 1, undefined + 1.",
+        "starterCode": "// Log both the value and typeof for each expression:\n\nconst results = [\n  1 + '2',\n  '5' - 3,\n  true + true,\n  [] + [],\n  [] + {},\n  null + 1,\n  undefined + 1\n];\n\nresults.forEach(r => console.log(r, typeof r));",
+        "solution": "const results = [\n  1 + '2',\n  '5' - 3,\n  true + true,\n  [] + [],\n  [] + {},\n  null + 1,\n  undefined + 1\n];\n\nresults.forEach(r => console.log(r, typeof r));",
+        "expectedOutput": "12 string\n2 number\n2 number\n string\n[object Object] string\n1 number\nNaN number",
+        "hints": [
+          "The + operator converts to string if either operand is a string. The - operator always converts to number.",
+          "Arrays coerce to strings via .toString(): [] becomes '', [1,2] becomes '1,2'. Objects become '[object Object]'."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

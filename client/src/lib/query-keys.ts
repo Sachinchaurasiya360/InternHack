@@ -132,6 +132,20 @@ export const queryKeys = {
     progress: () => ["sql", "progress"] as const,
   },
 
+  // Internships
+  internships: {
+    list: (params?: Record<string, string | number>) =>
+      ["internships", "list", params] as const,
+    stats: () => ["internships", "stats"] as const,
+  },
+
+  // Professors
+  professors: {
+    list: (params?: Record<string, string | number>) =>
+      ["professors", "list", params] as const,
+    stats: () => ["professors", "stats"] as const,
+  },
+
   // DSA Practice
   dsa: {
     topics: (filter?: string) => ["dsa", "topics", filter] as const,

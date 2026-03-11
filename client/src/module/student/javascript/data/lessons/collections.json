@@ -1,0 +1,251 @@
+[
+  {
+    "id": "map-set",
+    "sectionId": "collections",
+    "orderIndex": 0,
+    "title": "Map & Set",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Map", "Set", "Map vs Object", "Set deduplication", "iteration", "conversion"],
+    "content": {
+      "explanation": "Map and Set are keyed collection data structures introduced in ES6 that address specific limitations of plain objects and arrays. While objects and arrays remain the workhorses of JavaScript, Map and Set provide cleaner APIs and better performance characteristics for certain use cases. Understanding when to reach for these collections over their traditional counterparts is an important skill.\n\nA Map is an ordered collection of key-value pairs where keys can be of any type - objects, functions, numbers, even NaN. This is a fundamental advantage over plain objects, which coerce all keys to strings. Map maintains insertion order, provides a size property for O(1) length checking, and offers methods like set(), get(), has(), delete(), and clear(). The forEach() method and entries(), keys(), values() iterators make Map fully iterable.\n\nChoosing between Map and Object depends on your use case. Use Map when your keys are not strings (e.g., DOM elements, objects), when you need to frequently add and remove entries, when you need to know the size, or when iteration order matters. Use Object when your keys are strings and you need JSON serialization, when you want to leverage destructuring and spread syntax, or when you need prototype-based patterns. In performance-critical code, Map is generally faster than Object for frequent insertions and deletions.\n\nA Set is a collection of unique values - any duplicate values are automatically ignored. Like Map, Set accepts values of any type and maintains insertion order. The add() method returns the Set itself (enabling chaining), has() checks for membership in O(1) time, and delete() removes a value. Set is the go-to solution for removing duplicates from arrays with [...new Set(array)].\n\nSet methods like add, has, and delete provide clear, intention-revealing names compared to array alternatives. Checking if an array contains a value requires indexOf() or includes(), both O(n) operations. Set.has() performs the same check in O(1) time. For large collections where you need frequent membership checks, Set dramatically outperforms arrays.\n\nConverting between Map/Set and arrays is straightforward using spread syntax or Array.from(). An array of [key, value] pairs can be passed to the Map constructor, and spreading a Map produces that same array format. Similarly, any iterable can be passed to the Set constructor, and spreading a Set produces an array of unique values. These conversions enable you to use array methods (map, filter, reduce) on Map and Set data, combining the strengths of both collection types.",
+      "codeExamples": [
+        {
+          "title": "Map basics and methods",
+          "code": "// Creating and populating a Map\nconst userRoles = new Map();\nuserRoles.set('alice', 'admin');\nuserRoles.set('bob', 'editor');\nuserRoles.set('charlie', 'viewer');\n\nconsole.log('Size:', userRoles.size);\nconsole.log('Alice:', userRoles.get('alice'));\nconsole.log('Has bob:', userRoles.has('bob'));\n\n// Any type as key\nconst objKey = { id: 1 };\nconst funcKey = () => {};\nconst metadata = new Map();\nmetadata.set(objKey, 'object metadata');\nmetadata.set(funcKey, 'function metadata');\nmetadata.set(42, 'number key');\nmetadata.set(NaN, 'even NaN works');\n\nconsole.log('\\nObject key:', metadata.get(objKey));\nconsole.log('NaN key:', metadata.get(NaN));\n\n// Initialize from array of pairs\nconst config = new Map([\n  ['host', 'localhost'],\n  ['port', 3000],\n  ['debug', true]\n]);\n\n// Iteration\nconsole.log('\\nEntries:');\nfor (const [key, value] of config) {\n  console.log(`  ${key}: ${value}`);\n}\n\nconsole.log('Keys:', [...config.keys()]);\nconsole.log('Values:', [...config.values()]);",
+          "output": "Size: 3\nAlice: admin\nHas bob: true\n\nObject key: object metadata\nNaN key: even NaN works\n\nEntries:\n  host: localhost\n  port: 3000\n  debug: true\nKeys: [ 'host', 'port', 'debug' ]\nValues: [ 'localhost', 3000, true ]",
+          "explanation": "Map accepts any value as a key, including objects, functions, and NaN. The constructor accepts an array of [key, value] pairs. Iteration follows insertion order, and destructuring works naturally in for...of loops."
+        },
+        {
+          "title": "Map vs Object comparison",
+          "code": "// Performance comparison: frequent add/delete\nconst map = new Map();\nconst obj = {};\n\n// Map has built-in size\nmap.set('a', 1).set('b', 2).set('c', 3);\nconsole.log('Map size:', map.size);\nconsole.log('Object size:', Object.keys(obj).length); // O(n)\n\n// Map keys preserve type\nconst typedMap = new Map();\ntypedMap.set(1, 'number one');\ntypedMap.set('1', 'string one');\nconsole.log('\\nnumber 1:', typedMap.get(1));\nconsole.log('string \"1\":', typedMap.get('1'));\n\n// Object coerces keys to strings\nconst typedObj = {};\ntypedObj[1] = 'number one';\ntypedObj['1'] = 'string one'; // overwrites!\nconsole.log('Object[1]:', typedObj[1]);\n\n// Map as a counter\nfunction wordCount(text) {\n  const counts = new Map();\n  const words = text.toLowerCase().split(/\\s+/);\n  \n  for (const word of words) {\n    counts.set(word, (counts.get(word) || 0) + 1);\n  }\n  return counts;\n}\n\nconst counts = wordCount('the cat sat on the mat the cat');\nconsole.log('\\nWord counts:');\nfor (const [word, count] of counts) {\n  console.log(`  ${word}: ${count}`);\n}",
+          "output": "Map size: 3\nObject size: 0\n\nnumber 1: number one\nstring \"1\": string one\nObject[1]: string one\n\nWord counts:\n  the: 3\n  cat: 2\n  sat: 1\n  on: 1\n  mat: 1",
+          "explanation": "Map.size is O(1) while Object.keys().length is O(n). Map preserves key types - 1 and '1' are different keys. Objects coerce all keys to strings, so numeric and string keys collide. The word counter shows Map's natural fit for counting/grouping."
+        },
+        {
+          "title": "Set basics and deduplication",
+          "code": "// Creating a Set\nconst colors = new Set(['red', 'green', 'blue']);\ncolors.add('yellow');\ncolors.add('red'); // duplicate ignored\n\nconsole.log('Size:', colors.size);\nconsole.log('Has red:', colors.has('red'));\nconsole.log('Has purple:', colors.has('purple'));\n\n// Array deduplication\nconst numbers = [1, 3, 5, 3, 1, 7, 5, 9, 7];\nconst unique = [...new Set(numbers)];\nconsole.log('\\nOriginal:', numbers);\nconsole.log('Unique:', unique);\n\n// Object deduplication by property\nconst users = [\n  { id: 1, name: 'Alice' },\n  { id: 2, name: 'Bob' },\n  { id: 1, name: 'Alice' },\n  { id: 3, name: 'Charlie' },\n  { id: 2, name: 'Bob' }\n];\n\nconst seenIds = new Set();\nconst uniqueUsers = users.filter(user => {\n  if (seenIds.has(user.id)) return false;\n  seenIds.add(user.id);\n  return true;\n});\nconsole.log('\\nUnique users:', uniqueUsers.map(u => u.name));\n\n// Set operations (union, intersection, difference)\nconst setA = new Set([1, 2, 3, 4, 5]);\nconst setB = new Set([4, 5, 6, 7, 8]);\n\nconst union = new Set([...setA, ...setB]);\nconst intersection = new Set([...setA].filter(x => setB.has(x)));\nconst difference = new Set([...setA].filter(x => !setB.has(x)));\n\nconsole.log('\\nA:', [...setA]);\nconsole.log('B:', [...setB]);\nconsole.log('Union:', [...union]);\nconsole.log('Intersection:', [...intersection]);\nconsole.log('Difference (A-B):', [...difference]);",
+          "output": "Size: 4\nHas red: true\nHas purple: false\n\nOriginal: [ 1, 3, 5, 3, 1, 7, 5, 9, 7 ]\nUnique: [ 1, 3, 5, 7, 9 ]\n\nUnique users: [ 'Alice', 'Bob', 'Charlie' ]\n\nA: [ 1, 2, 3, 4, 5 ]\nB: [ 4, 5, 6, 7, 8 ]\nUnion: [ 1, 2, 3, 4, 5, 6, 7, 8 ]\nIntersection: [ 4, 5 ]\nDifference (A-B): [ 1, 2, 3 ]",
+          "explanation": "Set automatically eliminates duplicates. The [...new Set(array)] pattern is the most concise way to deduplicate arrays. Set operations (union, intersection, difference) can be implemented using spread and filter with the has() method."
+        },
+        {
+          "title": "Converting between Map, Set, and arrays",
+          "code": "// Map <-> Array\nconst pairs = [['name', 'Alice'], ['age', 28], ['city', 'Portland']];\nconst map = new Map(pairs);\nconsole.log('Map from array:', map);\n\nconst backToArray = [...map];\nconsole.log('Map to array:', backToArray);\n\n// Map <-> Object\nconst obj = { x: 1, y: 2, z: 3 };\nconst fromObj = new Map(Object.entries(obj));\nconsole.log('\\nMap from object:', fromObj);\n\nconst backToObj = Object.fromEntries(fromObj);\nconsole.log('Map to object:', backToObj);\n\n// Transform Map values\nconst prices = new Map([['apple', 1.5], ['banana', 0.75], ['cherry', 3.0]]);\nconst discounted = new Map(\n  [...prices].map(([fruit, price]) => [fruit, price * 0.9])\n);\nconsole.log('\\nDiscounted:');\nfor (const [fruit, price] of discounted) {\n  console.log(`  ${fruit}: $${price.toFixed(2)}`);\n}\n\n// Set <-> Array\nconst set = new Set([10, 20, 30, 40, 50]);\nconst doubled = [...set].map(n => n * 2);\nconsole.log('\\nDoubled set:', doubled);\n\nconst filtered = new Set([...set].filter(n => n > 25));\nconsole.log('Filtered set:', [...filtered]);\n\n// Chaining Set with Array methods\nconst tags = ['js', 'react', 'js', 'node', 'react', 'ts'];\nconst sortedUnique = [...new Set(tags)].sort();\nconsole.log('Sorted unique tags:', sortedUnique);",
+          "output": "Map from array: Map(3) { 'name' => 'Alice', 'age' => 28, 'city' => 'Portland' }\nMap to array: [ [ 'name', 'Alice' ], [ 'age', 28 ], [ 'city', 'Portland' ] ]\n\nMap from object: Map(3) { 'x' => 1, 'y' => 2, 'z' => 3 }\nMap to object: { x: 1, y: 2, z: 3 }\n\nDiscounted:\n  apple: $1.35\n  banana: $0.68\n  cherry: $2.70\n\nDoubled set: [ 20, 40, 60, 80, 100 ]\nFiltered set: [ 30, 40, 50 ]\nSorted unique tags: [ 'js', 'node', 'react', 'ts' ]",
+          "explanation": "Object.entries() and Object.fromEntries() bridge Map and Object. Spread converts Map/Set to arrays for using array methods like map, filter, sort. You can pass the result back to Map/Set constructors. This pattern lets you leverage the best of both worlds."
+        }
+      ],
+      "notes": [
+        "Map uses the SameValueZero algorithm for key comparison - similar to ===, but NaN equals NaN (unlike ===).",
+        "Set.add() returns the Set itself, enabling method chaining: set.add(1).add(2).add(3).",
+        "Both Map and Set are iterable and work with for...of, spread, and destructuring.",
+        "As of ES2025, Set has built-in methods for union(), intersection(), difference(), and more - check browser support before using."
+      ],
+      "commonPitfalls": [
+        "Using objects as Map keys and expecting lookup by value equality - Map uses reference equality for object keys, so {a: 1} !== {a: 1}.",
+        "Expecting Set to deduplicate objects by value - Set uses reference equality, so two objects with identical properties are treated as different values.",
+        "Forgetting that Map.set() returns the Map (not the value) while Map.get() returns the value - confusing these leads to bugs.",
+        "Using delete on a Map/Set inside a for...of loop - this is actually safe (unlike arrays), but can lead to surprising iteration behavior with other collection types."
+      ],
+      "interviewTips": [
+        "Know the O(1) lookup time for Set.has() and Map.get() compared to O(n) for Array.includes() and Array.find().",
+        "Be able to implement set operations (union, intersection, difference) using Set and spread syntax.",
+        "Understand when Map is preferred over Object - non-string keys, frequent add/delete, needing size, and preserving insertion order."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "map-set-ex1",
+        "title": "Word Frequency Counter with Map",
+        "description": "Use a Map to count the frequency of each word in a sentence. Iterate over the Map entries and log each word with its count. Finally, log the total number of unique words using the Map's size property.",
+        "starterCode": "const sentence = 'the quick brown fox jumps over the lazy fox';\n\n// TODO: Split the sentence into words\n// TODO: Create a Map to store word counts\n// TODO: Loop through words, using map.get() and map.set() to count\n// TODO: Log each entry as \"word: count\"\n// TODO: Log \"Unique words: \" + map.size\n",
+        "solution": "const sentence = 'the quick brown fox jumps over the lazy fox';\n\nconst words = sentence.split(' ');\nconst counts = new Map();\n\nfor (const word of words) {\n  counts.set(word, (counts.get(word) || 0) + 1);\n}\n\nfor (const [word, count] of counts) {\n  console.log(`${word}: ${count}`);\n}\nconsole.log('Unique words:', counts.size);",
+        "expectedOutput": "the: 2\nquick: 1\nbrown: 1\nfox: 2\njumps: 1\nover: 1\nlazy: 1\nUnique words: 7",
+        "hints": [
+          "Use map.get(word) || 0 to default to 0 if the word has not been seen yet.",
+          "Map preserves insertion order, so iterating prints words in the order they first appeared."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "map-set-ex2",
+        "title": "Set Operations: Union, Intersection, Difference",
+        "description": "Given two Sets of numbers, compute their union, intersection, and difference (A - B). Log each result as a sorted array.",
+        "starterCode": "const setA = new Set([1, 2, 3, 4, 5]);\nconst setB = new Set([3, 4, 5, 6, 7]);\n\n// TODO: Compute the union of setA and setB (all elements from both)\n// TODO: Compute the intersection (elements in both)\n// TODO: Compute the difference A - B (elements in A but not in B)\n\n// Log each as a sorted array:\n// \"Union: [1,2,3,4,5,6,7]\"\n// \"Intersection: [3,4,5]\"\n// \"Difference: [1,2]\"\n",
+        "solution": "const setA = new Set([1, 2, 3, 4, 5]);\nconst setB = new Set([3, 4, 5, 6, 7]);\n\nconst union = new Set([...setA, ...setB]);\nconst intersection = new Set([...setA].filter(x => setB.has(x)));\nconst difference = new Set([...setA].filter(x => !setB.has(x)));\n\nconsole.log('Union:', [...union].sort((a, b) => a - b));\nconsole.log('Intersection:', [...intersection].sort((a, b) => a - b));\nconsole.log('Difference:', [...difference].sort((a, b) => a - b));",
+        "expectedOutput": "Union: [\n  1, 2, 3, 4,\n  5, 6, 7\n]\nIntersection: [ 3, 4, 5 ]\nDifference: [ 1, 2 ]",
+        "hints": [
+          "Spread both sets into a new Set for union: new Set([...setA, ...setB]).",
+          "Use .filter() with setB.has() to compute intersection and difference."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "weakmap-weakset",
+    "sectionId": "collections",
+    "orderIndex": 1,
+    "title": "WeakMap & WeakSet",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["WeakMap", "WeakSet", "weak references", "garbage collection", "private data", "caching", "DOM metadata"],
+    "content": {
+      "explanation": "WeakMap and WeakSet are specialized collection types that hold 'weak' references to their keys (WeakMap) or values (WeakSet). A weak reference does not prevent the garbage collector from reclaiming the referenced object when no other strong references to it exist. This fundamental property makes WeakMap and WeakSet essential tools for memory-conscious programming patterns where you need to associate data with objects without creating memory leaks.\n\nWeakMap is a collection of key-value pairs where keys must be objects (or non-registered symbols). Unlike Map, WeakMap does not prevent its keys from being garbage collected. If the only remaining reference to an object is as a WeakMap key, the garbage collector can reclaim both the object and its associated value. This makes WeakMap ideal for storing metadata about objects that should be cleaned up automatically when the object is no longer needed.\n\nThe most common use case for WeakMap is storing private data associated with objects. Since class fields marked with # are relatively new, WeakMap has traditionally been used to implement true privacy in JavaScript. You create a module-scoped WeakMap and use instances as keys to store their private data. External code cannot access the WeakMap, and when an instance is garbage collected, its private data is automatically cleaned up.\n\nWeakMap is also excellent for caching computed results. If you cache the result of an expensive computation using a regular Map, the cached entries persist forever, even after the input objects are no longer used elsewhere. With WeakMap, cached entries are automatically released when the input objects are garbage collected, preventing the cache from growing unboundedly. Similarly, WeakMap is perfect for attaching metadata to DOM elements - when an element is removed from the DOM and garbage collected, its associated metadata is automatically freed.\n\nWeakSet holds a collection of objects (only objects, no primitives) with weak references. Like WeakMap, if the only reference to an object is in a WeakSet, it can be garbage collected. WeakSet is useful for 'tagging' or 'marking' objects - tracking whether you've seen an object before, preventing circular reference issues in recursive algorithms, or checking if an object belongs to a certain category.\n\nBoth WeakMap and WeakSet have significant restrictions compared to their strong counterparts. They are not iterable - you cannot use for...of, spread, or get a list of keys/values. They have no size property and no clear() method. These limitations exist because the contents can change unpredictably as the garbage collector runs, making enumeration unreliable. You can only use get, set, has, and delete operations, which is sufficient for their intended use cases.",
+      "codeExamples": [
+        {
+          "title": "WeakMap for private data",
+          "code": "// Private data pattern using WeakMap\nconst _privateData = new WeakMap();\n\nclass User {\n  constructor(name, email) {\n    // Store private data keyed by this instance\n    _privateData.set(this, {\n      email: email,\n      loginCount: 0,\n      lastLogin: null\n    });\n    this.name = name; // public property\n  }\n  \n  login() {\n    const data = _privateData.get(this);\n    data.loginCount++;\n    data.lastLogin = new Date().toISOString();\n    console.log(`${this.name} logged in (count: ${data.loginCount})`);\n  }\n  \n  getEmail() {\n    return _privateData.get(this).email;\n  }\n  \n  getStats() {\n    const data = _privateData.get(this);\n    return `Logins: ${data.loginCount}, Last: ${data.lastLogin}`;\n  }\n}\n\nconst alice = new User('Alice', 'alice@example.com');\nalice.login();\nalice.login();\nconsole.log('Email:', alice.getEmail());\nconsole.log('Stats:', alice.getStats());\n\n// Private data is not accessible from outside\nconsole.log('\\nPublic properties:', Object.keys(alice));\nconsole.log('Cannot access _privateData directly from alice');",
+          "output": "Alice logged in (count: 1)\nAlice logged in (count: 2)\nEmail: alice@example.com\nStats: Logins: 2, Last: 2026-03-10T12:00:00.000Z\n\nPublic properties: [ 'name' ]\nCannot access _privateData directly from alice",
+          "explanation": "The WeakMap stores private data keyed by each instance. External code can see alice.name but cannot access the email, loginCount, or lastLogin. When the User instance is garbage collected, the WeakMap entry is automatically freed."
+        },
+        {
+          "title": "WeakMap for caching and DOM metadata",
+          "code": "// Caching expensive computations\nconst cache = new WeakMap();\n\nfunction expensiveProcess(obj) {\n  if (cache.has(obj)) {\n    console.log('Cache hit!');\n    return cache.get(obj);\n  }\n  \n  console.log('Computing...');\n  const result = {\n    processed: true,\n    hash: JSON.stringify(obj).length * 17,\n    timestamp: Date.now()\n  };\n  \n  cache.set(obj, result);\n  return result;\n}\n\nconst data = { items: [1, 2, 3], total: 6 };\nconsole.log(expensiveProcess(data)); // computes\nconsole.log(expensiveProcess(data)); // cache hit\n\n// When data is dereferenced, cache entry is freed automatically\n// data = null; // cache entry becomes eligible for GC\n\n// DOM metadata pattern (conceptual)\nconsole.log('\\n--- DOM metadata pattern ---');\nconst elementData = new WeakMap();\n\n// Simulating DOM elements as objects\nconst button = { tagName: 'BUTTON', id: 'submit-btn' };\nconst input = { tagName: 'INPUT', id: 'email-input' };\n\nelementData.set(button, {\n  clickCount: 0,\n  handlers: ['onClick', 'onHover'],\n  created: Date.now()\n});\n\nelementData.set(input, {\n  validations: ['required', 'email'],\n  dirty: false\n});\n\nconsole.log('Button data:', elementData.get(button));\nconsole.log('Input data:', elementData.get(input));\nconsole.log('Has button:', elementData.has(button));",
+          "output": "Computing...\n{ processed: true, hash: 527, timestamp: 1710072000000 }\nCache hit!\n{ processed: true, hash: 527, timestamp: 1710072000000 }\n\n--- DOM metadata pattern ---\nButton data: { clickCount: 0, handlers: [ 'onClick', 'onHover' ], created: 1710072000000 }\nInput data: { validations: [ 'required', 'email' ], dirty: false }\nHas button: true",
+          "explanation": "The cache automatically cleans up when input objects are garbage collected, preventing memory leaks. The DOM metadata pattern attaches data to elements without modifying them - when elements are removed from the DOM and GC'd, the metadata is freed too."
+        },
+        {
+          "title": "WeakSet for object tracking",
+          "code": "// Track visited objects to prevent infinite recursion\nfunction deepClone(obj, visited = new WeakSet()) {\n  if (obj === null || typeof obj !== 'object') {\n    return obj;\n  }\n  \n  // Detect circular references\n  if (visited.has(obj)) {\n    console.log('Circular reference detected, returning null');\n    return null;\n  }\n  \n  visited.add(obj);\n  \n  const clone = Array.isArray(obj) ? [] : {};\n  for (const key of Object.keys(obj)) {\n    clone[key] = deepClone(obj[key], visited);\n  }\n  \n  return clone;\n}\n\n// Test with circular reference\nconst original = { name: 'Alice', nested: { value: 42 } };\noriginal.self = original; // circular!\n\nconst cloned = deepClone(original);\nconsole.log('Cloned name:', cloned.name);\nconsole.log('Cloned nested:', cloned.nested);\nconsole.log('Cloned self:', cloned.self);\n\n// Mark objects as \"processed\"\nconst processed = new WeakSet();\n\nfunction processOnce(item) {\n  if (processed.has(item)) {\n    console.log(`Already processed: ${item.id}`);\n    return;\n  }\n  \n  processed.add(item);\n  console.log(`Processing: ${item.id}`);\n}\n\nconst task1 = { id: 'task-1' };\nconst task2 = { id: 'task-2' };\n\nprocessOnce(task1);\nprocessOnce(task2);\nprocessOnce(task1); // already done\nprocessOnce(task1); // already done",
+          "output": "Circular reference detected, returning null\nCloned name: Alice\nCloned nested: { value: 42 }\nCloned self: null\nProcessing: task-1\nProcessing: task-2\nAlready processed: task-1\nAlready processed: task-1",
+          "explanation": "WeakSet tracks visited objects during deep clone, detecting circular references without creating memory leaks. The processOnce pattern ensures each object is processed only once - when the object is GC'd, the WeakSet entry is automatically removed."
+        },
+        {
+          "title": "Differences from Map and Set",
+          "code": "// WeakMap restrictions\nconst wm = new WeakMap();\n\n// Keys must be objects\ntry {\n  wm.set('string-key', 'value');\n} catch (e) {\n  console.log('WeakMap key error:', e.message);\n}\n\n// Valid keys\nconst obj = {};\nconst arr = [];\nconst func = () => {};\n\nwm.set(obj, 'object value');\nwm.set(arr, 'array value');\nwm.set(func, 'function value');\n\nconsole.log('Object value:', wm.get(obj));\nconsole.log('Array value:', wm.get(arr));\n\n// WeakSet restrictions\nconst ws = new WeakSet();\n\ntry {\n  ws.add(42);\n} catch (e) {\n  console.log('\\nWeakSet value error:', e.message);\n}\n\nws.add(obj);\nconsole.log('Has obj:', ws.has(obj));\n\n// What WeakMap/WeakSet DON'T have\nconsole.log('\\n--- Missing features ---');\nconsole.log('No .size property');\nconsole.log('No .keys() / .values() / .entries()');\nconsole.log('No .forEach()');\nconsole.log('No iteration (for...of)');\nconsole.log('No .clear()');\nconsole.log('\\nAvailable: get, set, has, delete (WeakMap)');\nconsole.log('Available: add, has, delete (WeakSet)');\n\n// Comparison summary\nconst features = [\n  ['Feature', 'Map/Set', 'WeakMap/WeakSet'],\n  ['Key types', 'any', 'objects only'],\n  ['Iterable', 'yes', 'no'],\n  ['size', 'yes', 'no'],\n  ['GC cleanup', 'no', 'yes'],\n  ['Use case', 'general', 'metadata/caching']\n];\nconsole.log('\\n--- Comparison ---');\nfeatures.forEach(row => {\n  console.log(`${row[0].padEnd(15)} ${row[1].padEnd(15)} ${row[2]}`);\n});",
+          "output": "WeakMap key error: Invalid value used as weak map key\nObject value: object value\nArray value: array value\n\nWeakSet value error: Invalid value used as weak set key\nHas obj: true\n\n--- Missing features ---\nNo .size property\nNo .keys() / .values() / .entries()\nNo .forEach()\nNo iteration (for...of)\nNo .clear()\n\nAvailable: get, set, has, delete (WeakMap)\nAvailable: add, has, delete (WeakSet)\n\n--- Comparison ---\nFeature         Map/Set         WeakMap/WeakSet\nKey types       any             objects only\nIterable        yes             no\nsize            yes             no\nGC cleanup      no              yes\nUse case        general         metadata/caching",
+          "explanation": "WeakMap and WeakSet only accept objects as keys/values and are not iterable. These restrictions exist because garbage collection is non-deterministic - the contents could change at any time, making enumeration unreliable. The tradeoff is automatic memory management."
+        }
+      ],
+      "notes": [
+        "WeakRef and FinalizationRegistry (ES2021) provide lower-level weak reference primitives, but WeakMap/WeakSet remain the preferred high-level tools.",
+        "WeakMap keys and WeakSet values can be non-registered symbols as of ES2023, in addition to objects.",
+        "You cannot know the size of a WeakMap or WeakSet because entries may be garbage collected at any time.",
+        "WeakMap is commonly used in frameworks and libraries internally - React uses WeakMap-like patterns for fiber tree management."
+      ],
+      "commonPitfalls": [
+        "Trying to use primitive values (strings, numbers) as WeakMap keys or WeakSet values - only objects and non-registered symbols are accepted.",
+        "Expecting to iterate over WeakMap/WeakSet entries - they are intentionally non-iterable because GC can remove entries at any time.",
+        "Using WeakMap when you actually need to enumerate all entries - if you need iteration, use a regular Map instead.",
+        "Assuming WeakMap entries are immediately removed when the key is dereferenced - garbage collection timing is non-deterministic and implementation-dependent."
+      ],
+      "interviewTips": [
+        "Clearly explain what 'weak reference' means - the collection doesn't prevent garbage collection of its keys/values.",
+        "Know the primary use cases: private data storage, caching, DOM metadata, and circular reference detection.",
+        "Be able to explain why WeakMap is not iterable - GC is non-deterministic, so the contents could change between any two operations."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "weakmap-weakset-ex1",
+        "title": "Private Data Store with WeakMap",
+        "description": "Use a WeakMap to store private data (a 'score' value) for objects. Create a function 'setScore' that associates a score with an object, and 'getScore' that retrieves it. Demonstrate that the score is not visible on the object itself.",
+        "starterCode": "// TODO: Create a WeakMap called 'privateStore'\n\n// TODO: Write setScore(obj, score) that stores score in the WeakMap keyed by obj\n// TODO: Write getScore(obj) that retrieves the score from the WeakMap\n\n// Test:\nconst player1 = { name: 'Alice' };\nconst player2 = { name: 'Bob' };\n\n// TODO: Set player1 score to 95, player2 score to 82\n// TODO: Log \"Alice: \" + getScore(player1)\n// TODO: Log \"Bob: \" + getScore(player2)\n// TODO: Log Object.keys(player1) to show score is not on the object\n// TODO: Log \"Has player1:\" + privateStore.has(player1)\n",
+        "solution": "const privateStore = new WeakMap();\n\nfunction setScore(obj, score) {\n  privateStore.set(obj, score);\n}\n\nfunction getScore(obj) {\n  return privateStore.get(obj);\n}\n\nconst player1 = { name: 'Alice' };\nconst player2 = { name: 'Bob' };\n\nsetScore(player1, 95);\nsetScore(player2, 82);\n\nconsole.log('Alice:', getScore(player1));\nconsole.log('Bob:', getScore(player2));\nconsole.log('Keys on player1:', Object.keys(player1));\nconsole.log('Has player1:', privateStore.has(player1));",
+        "expectedOutput": "Alice: 95\nBob: 82\nKeys on player1: [ 'name' ]\nHas player1: true",
+        "hints": [
+          "WeakMap.set(key, value) stores data, WeakMap.get(key) retrieves it.",
+          "Since the score is stored in the WeakMap (not on the object), Object.keys() won't show it."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "weakmap-weakset-ex2",
+        "title": "WeakMap Cache with Hit/Miss Tracking",
+        "description": "Build a caching function using WeakMap that stores computed results keyed by input objects. Track cache hits and misses. The compute function should return the sum of an object's numeric values.",
+        "starterCode": "// TODO: Create a WeakMap called 'cache'\n// TODO: Create a counter object { hits: 0, misses: 0 }\n\n// TODO: Write compute(obj) that:\n//   1. Checks if result is in cache -> if yes, increment hits, return cached\n//   2. If not, increment misses, calculate sum of all numeric values in obj\n//   3. Store result in cache, return it\n\n// Test:\nconst data1 = { a: 10, b: 20, c: 30 };\nconst data2 = { x: 5, y: 15 };\n\n// Call compute(data1) twice, compute(data2) once\n// Log each result and the final counter\n",
+        "solution": "const cache = new WeakMap();\nconst counter = { hits: 0, misses: 0 };\n\nfunction compute(obj) {\n  if (cache.has(obj)) {\n    counter.hits++;\n    console.log('Cache hit');\n    return cache.get(obj);\n  }\n  counter.misses++;\n  console.log('Cache miss');\n  const sum = Object.values(obj).reduce((acc, val) => acc + val, 0);\n  cache.set(obj, sum);\n  return sum;\n}\n\nconst data1 = { a: 10, b: 20, c: 30 };\nconst data2 = { x: 5, y: 15 };\n\nconsole.log('Result:', compute(data1));\nconsole.log('Result:', compute(data1));\nconsole.log('Result:', compute(data2));\nconsole.log('Stats:', counter);",
+        "expectedOutput": "Cache miss\nResult: 60\nCache hit\nResult: 60\nCache miss\nResult: 20\nStats: { hits: 1, misses: 2 }",
+        "hints": [
+          "Use cache.has(obj) to check for a cached result before computing.",
+          "Object.values(obj).reduce((acc, val) => acc + val, 0) sums all values in an object."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "typed-arrays",
+    "sectionId": "collections",
+    "orderIndex": 2,
+    "title": "Typed Arrays & ArrayBuffer",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["ArrayBuffer", "DataView", "typed arrays", "Int8Array", "Uint8Array", "Float32Array", "binary data", "SharedArrayBuffer"],
+    "content": {
+      "explanation": "Typed arrays and ArrayBuffer provide JavaScript with the ability to work with raw binary data efficiently. While regular JavaScript arrays are dynamic, heterogeneous collections that store values as boxed objects, typed arrays are fixed-length views over contiguous binary memory. This design makes them dramatically faster for numerical computations and essential for working with binary protocols, WebGL, audio processing, and file I/O.\n\nArrayBuffer is the foundation - it represents a fixed-length block of raw binary memory. You cannot directly read or write to an ArrayBuffer; instead, you create a 'view' over it using either a typed array or a DataView. Think of ArrayBuffer as a chunk of raw bytes and views as the lenses through which you interpret those bytes as meaningful numbers. A single ArrayBuffer can have multiple views of different types, all sharing the same underlying memory.\n\nTyped arrays come in several varieties, each interpreting the underlying bytes differently. Int8Array and Uint8Array treat each byte as a signed or unsigned 8-bit integer. Int16Array and Uint16Array use pairs of bytes for 16-bit integers. Int32Array, Uint32Array, and Float32Array use four bytes each. Float64Array uses eight bytes for double-precision floating point. BigInt64Array and BigUint64Array (ES2020) handle 64-bit integers. The choice of typed array depends on the precision and range you need for your data.\n\nDataView provides a more flexible way to read and write binary data. Unlike typed arrays which enforce a single element type, DataView lets you read or write different types at different byte offsets within the same buffer. It also lets you control byte order (endianness) - whether multi-byte values are stored with the most significant byte first (big-endian) or last (little-endian). This flexibility is crucial when working with binary protocols that specify a particular byte order.\n\nThe primary use cases for typed arrays are performance-critical applications that handle large amounts of numerical data. WebGL uses Float32Array for vertex positions, colors, and transformation matrices. The Web Audio API uses Float32Array for audio sample data. Image processing works with Uint8ClampedArray (which clamps values to 0-255) for pixel data. Network protocols and file formats often define binary structures that map naturally to typed arrays.\n\nSharedArrayBuffer is a variant of ArrayBuffer that can be shared between the main thread and Web Workers, enabling true shared-memory parallelism in JavaScript. Combined with Atomics (which provides atomic operations like compareExchange and wait/notify), SharedArrayBuffer allows lock-free data structures and inter-thread communication. Due to Spectre-class vulnerabilities, SharedArrayBuffer requires specific security headers (COOP and COEP) to be enabled.",
+      "codeExamples": [
+        {
+          "title": "ArrayBuffer and typed array basics",
+          "code": "// Create an ArrayBuffer of 16 bytes\nconst buffer = new ArrayBuffer(16);\nconsole.log('Buffer size:', buffer.byteLength, 'bytes');\n\n// Create different views over the same buffer\nconst int8View = new Int8Array(buffer);\nconst int16View = new Int16Array(buffer);\nconst int32View = new Int32Array(buffer);\nconst float32View = new Float32Array(buffer);\n\nconsole.log('Int8 elements:', int8View.length);     // 16 bytes / 1\nconsole.log('Int16 elements:', int16View.length);   // 16 bytes / 2\nconsole.log('Int32 elements:', int32View.length);   // 16 bytes / 4\nconsole.log('Float32 elements:', float32View.length); // 16 bytes / 4\n\n// Writing through one view affects others (shared memory)\nint32View[0] = 1;\nint32View[1] = 256;\nconsole.log('\\nInt32:', [...int32View]);\nconsole.log('Int8:', [...int8View]);\n\n// Create typed arrays directly\nconst scores = new Float32Array([98.5, 87.3, 92.1, 75.8]);\nconsole.log('\\nScores:', [...scores]);\nconsole.log('Sum:', scores.reduce((a, b) => a + b).toFixed(1));\n\n// Typed array from length\nconst pixels = new Uint8Array(4); // RGBA\npixels[0] = 255; // R\npixels[1] = 128; // G\npixels[2] = 0;   // B\npixels[3] = 255; // A\nconsole.log('Pixel RGBA:', [...pixels]);",
+          "output": "Buffer size: 16 bytes\nInt8 elements: 16\nInt16 elements: 8\nInt32 elements: 4\nFloat32 elements: 4\n\nInt32: [ 1, 256, 0, 0 ]\nInt8: [ 1, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 ]\n\nScores: [ 98.5, 87.30000305175781, 92.0999984741211, 75.80000305175781 ]\nSum: 353.7\n\nPixel RGBA: [ 255, 128, 0, 255 ]",
+          "explanation": "Different typed array views interpret the same underlying bytes differently. Int32View[1] = 256 appears as [0, 1, 0, 0] in Int8View because 256 in little-endian is 0x00000100. Float32 shows precision artifacts because 32-bit floats can't represent all decimal values exactly."
+        },
+        {
+          "title": "DataView for flexible binary access",
+          "code": "// DataView allows reading different types at different offsets\nconst buffer = new ArrayBuffer(12);\nconst view = new DataView(buffer);\n\n// Write a mix of types into the buffer\nview.setUint8(0, 72);           // byte 0: 'H' char code\nview.setUint8(1, 105);          // byte 1: 'i' char code\nview.setInt16(2, 1000, true);   // bytes 2-3: signed 16-bit (little-endian)\nview.setFloat32(4, 3.14, true); // bytes 4-7: 32-bit float (little-endian)\nview.setUint32(8, 42, true);    // bytes 8-11: unsigned 32-bit (little-endian)\n\n// Read back\nconsole.log('Char 1:', String.fromCharCode(view.getUint8(0)));\nconsole.log('Char 2:', String.fromCharCode(view.getUint8(1)));\nconsole.log('Int16:', view.getInt16(2, true));\nconsole.log('Float32:', view.getFloat32(4, true).toFixed(2));\nconsole.log('Uint32:', view.getUint32(8, true));\n\n// Simulating a binary protocol header\nconst headerBuf = new ArrayBuffer(8);\nconst header = new DataView(headerBuf);\n\n// Protocol: [version:u8] [type:u8] [length:u16] [checksum:u32]\nheader.setUint8(0, 2);               // version 2\nheader.setUint8(1, 0x0A);            // message type\nheader.setUint16(2, 1024, false);    // big-endian length\nheader.setUint32(4, 0xDEADBEEF, false); // big-endian checksum\n\nconsole.log('\\n--- Protocol Header ---');\nconsole.log('Version:', header.getUint8(0));\nconsole.log('Type:', '0x' + header.getUint8(1).toString(16));\nconsole.log('Length:', header.getUint16(2, false));\nconsole.log('Checksum:', '0x' + header.getUint32(4, false).toString(16));",
+          "output": "Char 1: H\nChar 2: i\nInt16: 1000\nFloat32: 3.14\nUint32: 42\n\n--- Protocol Header ---\nVersion: 2\nType: 0x0a\nLength: 1024\nChecksum: 0xdeadbeef",
+          "explanation": "DataView reads/writes different types at specific byte offsets. The second argument to multi-byte methods controls endianness (true = little-endian, false = big-endian). This flexibility is essential for implementing binary protocols with mixed field types."
+        },
+        {
+          "title": "Typed array methods and operations",
+          "code": "// Typed arrays have most Array methods\nconst data = new Float64Array([5.2, 3.1, 8.7, 1.4, 6.9]);\n\n// Sorting\nconst sorted = new Float64Array(data);\nsorted.sort();\nconsole.log('Original:', [...data]);\nconsole.log('Sorted:', [...sorted]);\n\n// map, filter via Array.from\nconst doubled = Float64Array.from(data, x => x * 2);\nconsole.log('Doubled:', [...doubled]);\n\n// subarray (shares memory - no copy!)\nconst sub = data.subarray(1, 4);\nconsole.log('Subarray:', [...sub]);\nsub[0] = 999;\nconsole.log('Original after sub[0]=999:', [...data]);\n\n// slice (creates a copy)\nconst copy = data.slice(1, 4);\ncopy[0] = 0;\nconsole.log('Original after copy[0]=0:', [...data]);\n\n// set: copy values from another array\nconst target = new Uint8Array(8);\ntarget.set([10, 20, 30], 0);       // at offset 0\ntarget.set([40, 50], 5);            // at offset 5\nconsole.log('\\nTarget:', [...target]);\n\n// Typed array type info\nconsole.log('\\nBYTES_PER_ELEMENT:');\nconsole.log('  Uint8Array:', Uint8Array.BYTES_PER_ELEMENT);\nconsole.log('  Int16Array:', Int16Array.BYTES_PER_ELEMENT);\nconsole.log('  Float32Array:', Float32Array.BYTES_PER_ELEMENT);\nconsole.log('  Float64Array:', Float64Array.BYTES_PER_ELEMENT);\nconsole.log('  BigInt64Array:', BigInt64Array.BYTES_PER_ELEMENT);",
+          "output": "Original: [ 5.2, 3.1, 8.7, 1.4, 6.9 ]\nSorted: [ 1.4, 3.1, 5.2, 6.9, 8.7 ]\nDoubled: [ 10.4, 6.2, 17.4, 2.8, 13.8 ]\nSubarray: [ 3.1, 8.7, 1.4 ]\nOriginal after sub[0]=999: [ 5.2, 999, 8.7, 1.4, 6.9 ]\nOriginal after copy[0]=0: [ 5.2, 999, 8.7, 1.4, 6.9 ]\n\nTarget: [ 10, 20, 30, 0, 0, 40, 50, 0 ]\n\nBYTES_PER_ELEMENT:\n  Uint8Array: 1\n  Int16Array: 2\n  Float32Array: 4\n  Float64Array: 8\n  BigInt64Array: 8",
+          "explanation": "subarray() creates a view sharing the same buffer - modifying the subarray modifies the original. slice() copies the data. The set() method efficiently copies values at a specified offset. BYTES_PER_ELEMENT reveals how many bytes each element occupies."
+        },
+        {
+          "title": "Practical: binary file parsing and SharedArrayBuffer intro",
+          "code": "// Simulating reading a BMP-like file header\nfunction parseBitmapHeader(bytes) {\n  const view = new DataView(bytes.buffer);\n  \n  return {\n    signature: String.fromCharCode(view.getUint8(0), view.getUint8(1)),\n    fileSize: view.getUint32(2, true),     // little-endian\n    width: view.getInt32(6, true),\n    height: view.getInt32(10, true),\n    bitsPerPixel: view.getUint16(14, true)\n  };\n}\n\n// Create a fake bitmap header\nconst headerBytes = new Uint8Array(16);\nconst headerView = new DataView(headerBytes.buffer);\nheaderView.setUint8(0, 66);            // 'B'\nheaderView.setUint8(1, 77);            // 'M'\nheaderView.setUint32(2, 921654, true); // file size\nheaderView.setInt32(6, 1920, true);    // width\nheaderView.setInt32(10, 1080, true);   // height\nheaderView.setUint16(14, 24, true);    // 24-bit color\n\nconst header = parseBitmapHeader(headerBytes);\nconsole.log('Bitmap Header:');\nconsole.log('  Signature:', header.signature);\nconsole.log('  File size:', header.fileSize, 'bytes');\nconsole.log('  Dimensions:', header.width, 'x', header.height);\nconsole.log('  Color depth:', header.bitsPerPixel, 'bit');\n\n// Performance comparison: typed vs regular array\nconst SIZE = 100000;\nconsole.log('\\n--- Performance (', SIZE, 'elements) ---');\n\nconsole.time('Regular Array');\nconst regArr = new Array(SIZE);\nfor (let i = 0; i < SIZE; i++) regArr[i] = Math.random();\nlet regSum = 0;\nfor (let i = 0; i < SIZE; i++) regSum += regArr[i];\nconsole.timeEnd('Regular Array');\n\nconsole.time('Float64Array');\nconst typedArr = new Float64Array(SIZE);\nfor (let i = 0; i < SIZE; i++) typedArr[i] = Math.random();\nlet typedSum = 0;\nfor (let i = 0; i < SIZE; i++) typedSum += typedArr[i];\nconsole.timeEnd('Float64Array');\n\n// SharedArrayBuffer concept\nconsole.log('\\n--- SharedArrayBuffer ---');\nconsole.log('SharedArrayBuffer enables shared memory between threads');\nconsole.log('Requires COOP/COEP security headers in browsers');\nconsole.log('Use Atomics for safe concurrent access');",
+          "output": "Bitmap Header:\n  Signature: BM\n  File size: 921654 bytes\n  Dimensions: 1920 x 1080\n  Color depth: 24 bit\n\n--- Performance ( 100000 elements) ---\nRegular Array: 5.432ms\nFloat64Array: 3.218ms\n\n--- SharedArrayBuffer ---\nSharedArrayBuffer enables shared memory between threads\nRequires COOP/COEP security headers in browsers\nUse Atomics for safe concurrent access",
+          "explanation": "Binary file parsing maps naturally to DataView - each field is read at its byte offset with the correct type and endianness. Typed arrays are faster than regular arrays for numerical operations due to contiguous memory layout and no type boxing. SharedArrayBuffer extends this to multi-threaded scenarios."
+        }
+      ],
+      "notes": [
+        "Uint8ClampedArray is special - it clamps values to 0-255 instead of wrapping around, making it ideal for pixel data (used by Canvas getImageData).",
+        "Typed arrays are not true Arrays - they don't have push, pop, splice, or concat. Use set(), subarray(), and slice() instead.",
+        "The buffer property of any typed array gives you access to the underlying ArrayBuffer.",
+        "Memory alignment matters for performance - accessing a Float32Array at a 4-byte-aligned offset is faster than at an unaligned offset."
+      ],
+      "commonPitfalls": [
+        "Forgetting that typed arrays have fixed length - you cannot push or pop elements. Create a new typed array if you need a different size.",
+        "Not specifying endianness with DataView - the default is big-endian, which may not match the binary format you're working with.",
+        "Creating typed array views with incorrect byte alignment - a Float32Array view requires the byte offset to be a multiple of 4, or it throws a RangeError.",
+        "Assuming subarray creates a copy - it shares the underlying buffer, so modifications affect the original data."
+      ],
+      "interviewTips": [
+        "Know the common typed array types and their byte sizes - this comes up in questions about binary data processing.",
+        "Understand the relationship between ArrayBuffer (raw memory), typed arrays (uniform type views), and DataView (flexible access).",
+        "Be able to explain endianness (big-endian vs little-endian) and why it matters when parsing binary data from network or files."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "typed-arrays-ex1",
+        "title": "RGBA Pixel Buffer with Uint8Array",
+        "description": "Create a Uint8Array representing 3 RGBA pixels. Set specific color values for each pixel (red, green, blue), then read them back by iterating in groups of 4 bytes.",
+        "starterCode": "// Each pixel is 4 bytes: R, G, B, A\n// TODO: Create a Uint8Array of size 12 (3 pixels x 4 bytes)\n\n// TODO: Set pixel 0 to red (255, 0, 0, 255)\n// TODO: Set pixel 1 to green (0, 255, 0, 255)\n// TODO: Set pixel 2 to blue (0, 0, 255, 255)\n// Hint: use .set([R, G, B, A], offset)\n\n// TODO: Loop through the buffer in steps of 4\n// Log each pixel as: \"Pixel N: R=... G=... B=... A=...\"\n",
+        "solution": "const pixels = new Uint8Array(12);\n\npixels.set([255, 0, 0, 255], 0);\npixels.set([0, 255, 0, 255], 4);\npixels.set([0, 0, 255, 255], 8);\n\nfor (let i = 0; i < pixels.length; i += 4) {\n  const idx = i / 4;\n  console.log(`Pixel ${idx}: R=${pixels[i]} G=${pixels[i + 1]} B=${pixels[i + 2]} A=${pixels[i + 3]}`);\n}",
+        "expectedOutput": "Pixel 0: R=255 G=0 B=0 A=255\nPixel 1: R=0 G=255 B=0 A=255\nPixel 2: R=0 G=0 B=255 A=255",
+        "hints": [
+          "Use typedArray.set(array, offset) to write multiple values at a byte offset.",
+          "Each pixel occupies 4 consecutive bytes, so pixel N starts at index N * 4."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "typed-arrays-ex2",
+        "title": "Read and Write Mixed Types with DataView",
+        "description": "Create an ArrayBuffer and use DataView to write a packet header containing a version (Uint8), a message type (Uint8), a payload length (Uint16, big-endian), and a timestamp (Uint32, big-endian). Then read them back and log each field.",
+        "starterCode": "// Packet format (8 bytes total):\n//   Byte 0:   version    (Uint8)   = 3\n//   Byte 1:   type       (Uint8)   = 15\n//   Bytes 2-3: length    (Uint16, big-endian) = 2048\n//   Bytes 4-7: timestamp (Uint32, big-endian) = 1710000000\n\n// TODO: Create an ArrayBuffer of 8 bytes\n// TODO: Create a DataView over it\n// TODO: Write all four fields\n// TODO: Read them back and log:\n//   \"Version: 3\"\n//   \"Type: 15\"\n//   \"Length: 2048\"\n//   \"Timestamp: 1710000000\"\n",
+        "solution": "const buffer = new ArrayBuffer(8);\nconst view = new DataView(buffer);\n\nview.setUint8(0, 3);\nview.setUint8(1, 15);\nview.setUint16(2, 2048, false);\nview.setUint32(4, 1710000000, false);\n\nconsole.log('Version:', view.getUint8(0));\nconsole.log('Type:', view.getUint8(1));\nconsole.log('Length:', view.getUint16(2, false));\nconsole.log('Timestamp:', view.getUint32(4, false));",
+        "expectedOutput": "Version: 3\nType: 15\nLength: 2048\nTimestamp: 1710000000",
+        "hints": [
+          "DataView methods like setUint16 and setUint32 take a byte offset as the first argument and a boolean for endianness as the last (false = big-endian).",
+          "Make sure to use the same endianness (false for big-endian) when reading and writing."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

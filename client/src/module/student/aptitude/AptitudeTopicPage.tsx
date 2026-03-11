@@ -78,7 +78,7 @@ export default function AptitudeTopicPage() {
     submitMutation.mutate({ questionId, answer });
   };
 
-  const basePath = user ? "/student/aptitude" : "/aptitude";
+  const basePath = "/learn/aptitude";
 
   if (isLoading) return <LoadingScreen />;
 

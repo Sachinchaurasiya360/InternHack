@@ -1,0 +1,88 @@
+import type { JsSection } from "./types";
+
+export const jsSections: JsSection[] = [
+  {
+    id: "basics",
+    title: "JavaScript Basics",
+    description: "Core fundamentals — variables, operators, control flow, loops, and functions.",
+    orderIndex: 0,
+    level: "Beginner",
+  },
+  {
+    id: "functions-deep-dive",
+    title: "Functions Deep Dive",
+    description: "Higher-order functions, closures, this keyword, and call/bind/apply.",
+    orderIndex: 1,
+    level: "Intermediate",
+  },
+  {
+    id: "arrays-and-objects",
+    title: "Arrays & Objects Mastery",
+    description: "Array methods, object methods, destructuring, and spread/rest operators.",
+    orderIndex: 2,
+    level: "Intermediate",
+  },
+  {
+    id: "scope-and-execution",
+    title: "Scope & Execution",
+    description: "Scope chains, hoisting, execution context, currying, and memoization.",
+    orderIndex: 3,
+    level: "Intermediate",
+  },
+  {
+    id: "oop",
+    title: "OOP in JavaScript",
+    description: "Prototypes, classes, inheritance, polymorphism, and encapsulation.",
+    orderIndex: 4,
+    level: "Intermediate",
+  },
+  {
+    id: "async-javascript",
+    title: "Asynchronous JavaScript",
+    description: "Callbacks, promises, async/await, event loop, and promise combinators.",
+    orderIndex: 5,
+    level: "Intermediate",
+  },
+  {
+    id: "error-handling",
+    title: "Error Handling",
+    description: "try/catch/finally, custom errors, error types, and debugging techniques.",
+    orderIndex: 6,
+    level: "Intermediate",
+  },
+  {
+    id: "es6-plus",
+    title: "ES6+ Modern Features",
+    description: "Template literals, modules, symbols, iterators, generators, and ES2020+.",
+    orderIndex: 7,
+    level: "Intermediate",
+  },
+  {
+    id: "collections",
+    title: "Collections",
+    description: "Map, Set, WeakMap, WeakSet, typed arrays, and ArrayBuffer.",
+    orderIndex: 8,
+    level: "Advanced",
+  },
+  {
+    id: "advanced-concepts",
+    title: "Advanced Concepts",
+    description: "Proxy, Reflect, regex, memory management, FP patterns, and design patterns.",
+    orderIndex: 9,
+    level: "Advanced",
+  },
+  {
+    id: "dom-and-browser",
+    title: "DOM & Browser APIs",
+    description: "DOM manipulation, events, event delegation, web storage, and fetch API.",
+    orderIndex: 10,
+    level: "Intermediate",
+  },
+  {
+    id: "interview-essentials",
+    title: "Interview Essentials",
+    description: "Debouncing, throttling, polyfills, output questions, and common gotchas.",
+    orderIndex: 11,
+    level: "Advanced",
+  },
+];

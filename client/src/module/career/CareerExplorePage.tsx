@@ -4,7 +4,6 @@ import { Search, Compass, Cpu, Palette, BarChart2, Box, Shield, ShoppingBag, Lay
 import api from "../../lib/axios";
 import type { Career, CareerCategory } from "../../lib/types";
 import CareerCard from "./components/CareerCard";
-import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
 
 const CATEGORIES: { label: string; value: CareerCategory | "ALL"; icon: React.ReactNode }[] = [
@@ -47,13 +46,12 @@ export default function CareerExplorePage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
+    <div>
       <SEO
         title="Career Roadmaps"
         description="Explore guided career roadmaps across Engineering, Data, Design, DevOps, Security, Product, and Marketing. Follow step-by-step learning paths from beginner to expert."
         keywords="career roadmap, learning path, career guide, engineering career, data science career, design career, career progression, skill development"
       />
-      <Navbar />
 
       {/* Hero */}
       <section className="relative overflow-hidden bg-[#fafafa] dark:bg-gray-950 pt-28 pb-20 px-6">

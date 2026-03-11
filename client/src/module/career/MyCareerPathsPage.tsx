@@ -168,7 +168,7 @@ export default function MyCareerPathsPage() {
         className="flex justify-end mb-6"
       >
         <Link
-          to="/careers"
+          to="/learn/careers"
           className="flex items-center gap-2 px-5 py-2.5 bg-gray-950 text-white text-sm font-semibold rounded-xl hover:bg-gray-800 transition-colors no-underline dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
         >
           <Compass className="w-4 h-4" /> Explore More
@@ -189,7 +189,7 @@ export default function MyCareerPathsPage() {
             Start a career path to track your skill progress and learning journey.
           </p>
           <Link
-            to="/careers"
+            to="/learn/careers"
             className="inline-flex items-center gap-2 px-6 py-3 bg-gray-950 text-white text-sm font-semibold rounded-2xl hover:bg-gray-800 transition-all no-underline dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
           >
             Explore Career Paths <ArrowRight className="w-4 h-4" />

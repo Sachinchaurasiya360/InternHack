@@ -1,0 +1,299 @@
+[
+  {
+    "id": "static-and-relative",
+    "sectionId": "positioning-and-stacking",
+    "orderIndex": 0,
+    "title": "Static & Relative",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["position: static", "position: relative", "top", "right", "bottom", "left", "Document Flow"],
+    "content": {
+      "explanation": "The CSS position property controls how an element is placed within the document layout. It is one of the most fundamental CSS properties, and understanding its values is essential for building any non-trivial layout. The two simplest values are static (the default) and relative, which form the foundation for all other positioning modes.\n\nposition: static is the default value for every element. A statically positioned element follows the normal document flow — block elements stack vertically, inline elements flow horizontally. The offset properties (top, right, bottom, left) and z-index have absolutely no effect on a statically positioned element. You rarely need to write position: static explicitly, but it can be useful to reset an element's positioning when overriding inherited styles or media query breakpoints.\n\nposition: relative shifts an element from its normal position without removing it from the document flow. When you set position: relative and apply top: 20px, the element renders 20px lower than where it would normally appear, but the space it originally occupied is preserved. Other elements do not move to fill the gap. Think of it as the element leaving a \"ghost\" in its original position while visually shifting elsewhere.\n\nThe offset properties work directionally with relative positioning: top pushes the element down from its normal position, left pushes it right, bottom pushes it up, and right pushes it left. If you set both top and bottom, top takes precedence. If you set both left and right, left takes precedence (in LTR languages). Offsets can be negative values, which push the element in the opposite direction.\n\nThe most important use of position: relative is not for shifting elements, but for establishing a containing block for absolutely positioned children. When an element has position: relative (even without any offsets), it becomes the reference point for any descendant element with position: absolute. This parent-child relationship is the foundation of most complex positioning patterns in CSS.",
+      "codeExamples": [
+        {
+          "title": "Static vs Relative Positioning",
+          "code": "<style>\n  .box {\n    width: 150px;\n    height: 80px;\n    margin: 10px;\n    border: 2px solid #e2e8f0;\n  }\n  .static-box {\n    position: static;\n    background: #dbeafe;\n    /* top, left have NO effect on static elements */\n    top: 50px;\n    left: 50px;\n  }\n  .relative-box {\n    position: relative;\n    background: #dcfce7;\n    top: 30px;\n    left: 40px;\n  }\n</style>\n\n<div class=\"box static-box\">Static (top/left ignored)</div>\n<div class=\"box relative-box\">Relative (shifted 30px down, 40px right)</div>\n<div class=\"box static-box\">Static (notice the gap above)</div>",
+          "explanation": "The static box ignores top and left. The relative box shifts visually but its original space is preserved — the third box does not move up to fill the gap. The relative box appears to overlap content below its original position."
+        },
+        {
+          "title": "Offset Directions Explained",
+          "code": "<style>\n  .container {\n    padding: 40px;\n    background: #f8fafc;\n    position: relative;\n  }\n  .item {\n    width: 120px;\n    height: 60px;\n    background: #3b82f6;\n    color: white;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    font-size: 14px;\n  }\n  .move-down  { position: relative; top: 30px; }\n  .move-right { position: relative; left: 50px; }\n  .move-up    { position: relative; bottom: 20px; }\n  .move-left  { position: relative; right: 40px; }\n  .negative   { position: relative; top: -15px; left: -10px; }\n</style>\n\n<div class=\"container\">\n  <div class=\"item\">Normal</div>\n  <div class=\"item move-down\">top: 30px</div>\n  <div class=\"item move-right\">left: 50px</div>\n  <div class=\"item move-up\">bottom: 20px</div>\n  <div class=\"item move-left\">right: 40px</div>\n  <div class=\"item negative\">top: -15px</div>\n</div>",
+          "explanation": "top pushes down, left pushes right, bottom pushes up, right pushes left. Negative values reverse the direction. Each element's original space is preserved in the flow, so subsequent elements do not reposition."
+        },
+        {
+          "title": "Relative as Containing Block",
+          "code": "<style>\n  .card {\n    position: relative; /* Creates containing block */\n    width: 300px;\n    padding: 20px;\n    background: white;\n    border: 1px solid #e2e8f0;\n    margin: 20px;\n  }\n  .badge {\n    position: absolute;\n    top: -10px;\n    right: -10px;\n    background: #ef4444;\n    color: white;\n    width: 24px;\n    height: 24px;\n    border-radius: 50%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    font-size: 12px;\n  }\n</style>\n\n<div class=\"card\">\n  <span class=\"badge\">3</span>\n  <h3>Notifications</h3>\n  <p>You have 3 unread messages.</p>\n</div>",
+          "explanation": "The card has position: relative with no offsets — it stays in its normal position. But it now serves as the containing block for the absolutely positioned badge. The badge positions itself relative to the card's edges, not the viewport."
+        },
+        {
+          "title": "Resetting Position in Media Queries",
+          "code": "<style>\n  .sidebar {\n    position: relative;\n    top: 20px;\n    left: 10px;\n    width: 250px;\n    background: #f1f5f9;\n    padding: 16px;\n  }\n\n  @media (max-width: 768px) {\n    .sidebar {\n      position: static; /* Reset to normal flow on mobile */\n      width: 100%;\n      /* top and left are now ignored */\n    }\n  }\n</style>\n\n<aside class=\"sidebar\">\n  <h3>Sidebar</h3>\n  <p>Relatively positioned on desktop, static on mobile.</p>\n</aside>",
+          "explanation": "Explicitly setting position: static resets the element to normal document flow. This is useful in responsive designs where an element needs positioning on desktop but should flow normally on mobile."
+        }
+      ],
+      "notes": [
+        "position: static is the default. The offset properties (top, right, bottom, left) and z-index have no effect on static elements.",
+        "position: relative shifts the element visually but preserves its original space in the document flow. Other elements are not affected by the shift.",
+        "The most common use of position: relative is to create a containing block for absolutely positioned children, not to shift elements.",
+        "When both top and bottom are set on a relative element, top wins. When both left and right are set, left wins (in LTR layouts)."
+      ],
+      "commonPitfalls": [
+        "Assuming position: static is redundant and never needs to be written. It is necessary when resetting positioning in media queries or overriding styles from a parent selector.",
+        "Expecting other elements to fill the gap when using position: relative. The element's original space is always preserved in the flow, which can cause unexpected overlaps.",
+        "Forgetting that position: relative on a parent is needed for absolute children to position correctly. Without it, the absolute child positions relative to the nearest positioned ancestor or the viewport."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "static-and-relative-ex1",
+        "title": "Shift Elements with Relative Positioning",
+        "description": "Given three boxes in a row, use position: relative to shift the second box 20px down and 30px right, and the third box 15px up and 10px left. Verify that the original spaces are preserved.",
+        "starterCode": "<style>\n  .row { display: flex; gap: 16px; padding: 40px; }\n  .box {\n    width: 100px;\n    height: 100px;\n    background: #3b82f6;\n    color: white;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n  }\n  /* Add relative positioning to box-2 and box-3 */\n</style>\n\n<div class=\"row\">\n  <div class=\"box\" id=\"box-1\">Box 1</div>\n  <div class=\"box\" id=\"box-2\">Box 2</div>\n  <div class=\"box\" id=\"box-3\">Box 3</div>\n</div>\n",
+        "solution": "<style>\n  .row { display: flex; gap: 16px; padding: 40px; }\n  .box {\n    width: 100px;\n    height: 100px;\n    background: #3b82f6;\n    color: white;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n  }\n  #box-2 {\n    position: relative;\n    top: 20px;\n    left: 30px;\n  }\n  #box-3 {\n    position: relative;\n    bottom: 15px;\n    right: 10px;\n  }\n</style>\n\n<div class=\"row\">\n  <div class=\"box\" id=\"box-1\">Box 1</div>\n  <div class=\"box\" id=\"box-2\">Box 2</div>\n  <div class=\"box\" id=\"box-3\">Box 3</div>\n</div>",
+        "hints": [
+          "Use position: relative on box-2 with top: 20px and left: 30px to shift it down and right",
+          "Use bottom: 15px and right: 10px on box-3 to shift it up and left. The gaps between boxes remain unchanged."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "static-and-relative-ex2",
+        "title": "Notification Badge on Card",
+        "description": "Create a card component with a notification badge in the top-right corner. The card should use position: relative and the badge should use position: absolute to sit partially outside the card. The badge should be a red circle with a number inside.",
+        "starterCode": "<style>\n  /* Style the card and badge */\n</style>\n\n<div class=\"card\">\n  <!-- Add the badge -->\n  <h3>Messages</h3>\n  <p>You have new messages waiting.</p>\n</div>\n",
+        "solution": "<style>\n  .card {\n    position: relative;\n    width: 280px;\n    padding: 20px;\n    background: white;\n    border: 1px solid #e2e8f0;\n    border-radius: 8px;\n    margin: 20px;\n  }\n  .badge {\n    position: absolute;\n    top: -8px;\n    right: -8px;\n    background: #ef4444;\n    color: white;\n    width: 28px;\n    height: 28px;\n    border-radius: 50%;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    font-size: 13px;\n    font-weight: bold;\n  }\n</style>\n\n<div class=\"card\">\n  <span class=\"badge\">5</span>\n  <h3>Messages</h3>\n  <p>You have new messages waiting.</p>\n</div>",
+        "hints": [
+          "The card needs position: relative to be the containing block for the badge",
+          "Use negative top and right values on the badge to position it partially outside the card's boundaries"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "absolute-and-fixed",
+    "sectionId": "positioning-and-stacking",
+    "orderIndex": 1,
+    "title": "Absolute & Fixed",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["position: absolute", "position: fixed", "Containing Block", "Viewport Positioning", "Removed from Flow"],
+    "content": {
+      "explanation": "position: absolute and position: fixed both remove an element from the normal document flow, meaning surrounding elements behave as if the positioned element does not exist. The key difference lies in their reference point: absolute positions relative to the nearest positioned ancestor, while fixed positions relative to the viewport (the browser window). This distinction has profound implications for layout behavior.\n\nAn absolutely positioned element searches up the DOM tree for the nearest ancestor with a position value other than static (i.e., relative, absolute, fixed, or sticky). That ancestor becomes its containing block, and the top, right, bottom, left offsets are measured from that ancestor's padding box. If no positioned ancestor exists, the element positions relative to the initial containing block (the <html> element, which is essentially the full document). This ancestor-search behavior is why position: relative is so commonly used on parent elements.\n\nposition: fixed removes the element from the flow and positions it relative to the viewport. No matter how the page scrolls, a fixed element stays in the same position on the screen. This makes it ideal for sticky headers, floating action buttons, cookie consent banners, and modal overlays. Fixed elements ignore all ancestor positioning — they always reference the viewport, with one exception: if an ancestor has a transform, filter, or perspective property, that ancestor becomes the containing block instead of the viewport.\n\nBoth absolute and fixed elements can be sized using offsets. Setting top: 0; right: 0; bottom: 0; left: 0 on an absolute element stretches it to fill its containing block entirely. This technique is commonly used for overlay effects, full-coverage backgrounds, and centering with margin: auto. For centering, combine all four offsets at 0, set explicit width and height, and add margin: auto — the browser calculates equal margins on all sides.\n\nThe key practical difference in scrolling: absolutely positioned elements scroll with the document (they are part of the document, just positioned within it). Fixed elements do not scroll — they are anchored to the viewport. If you need an element that scrolls with the page but is positioned within a container, use absolute. If you need an element that stays visible regardless of scrolling, use fixed.",
+      "codeExamples": [
+        {
+          "title": "Absolute Positioning Basics",
+          "code": "<style>\n  .parent {\n    position: relative;\n    width: 400px;\n    height: 250px;\n    background: #f8fafc;\n    border: 2px solid #e2e8f0;\n    margin: 20px;\n  }\n  .child-tl {\n    position: absolute;\n    top: 10px;\n    left: 10px;\n    background: #3b82f6;\n    color: white;\n    padding: 8px 16px;\n  }\n  .child-br {\n    position: absolute;\n    bottom: 10px;\n    right: 10px;\n    background: #ef4444;\n    color: white;\n    padding: 8px 16px;\n  }\n  .child-center {\n    position: absolute;\n    top: 0;\n    right: 0;\n    bottom: 0;\n    left: 0;\n    margin: auto;\n    width: 120px;\n    height: 40px;\n    background: #10b981;\n    color: white;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n  }\n</style>\n\n<div class=\"parent\">\n  <div class=\"child-tl\">Top Left</div>\n  <div class=\"child-center\">Centered</div>\n  <div class=\"child-br\">Bottom Right</div>\n</div>",
+          "explanation": "All three children are absolutely positioned within the relative parent. Top-left and bottom-right use corner offsets. The centered element uses the top:0;right:0;bottom:0;left:0;margin:auto technique for perfect centering."
+        },
+        {
+          "title": "Fixed Position Elements",
+          "code": "<style>\n  .fixed-header {\n    position: fixed;\n    top: 0;\n    left: 0;\n    right: 0;\n    height: 60px;\n    background: white;\n    border-bottom: 1px solid #e2e8f0;\n    display: flex;\n    align-items: center;\n    padding: 0 20px;\n    z-index: 100;\n  }\n  .fab {\n    position: fixed;\n    bottom: 24px;\n    right: 24px;\n    width: 56px;\n    height: 56px;\n    border-radius: 50%;\n    background: #3b82f6;\n    color: white;\n    border: none;\n    font-size: 24px;\n    cursor: pointer;\n    z-index: 100;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);\n  }\n  .content {\n    margin-top: 80px; /* Offset for fixed header */\n    padding: 20px;\n  }\n</style>\n\n<div class=\"fixed-header\">\n  <strong>Fixed Header</strong>\n</div>\n<div class=\"content\">\n  <p>Scroll down to see fixed elements stay in place...</p>\n  <!-- Long content -->\n</div>\n<button class=\"fab\">+</button>",
+          "explanation": "The header is fixed to the top of the viewport. The FAB button is fixed to the bottom-right. Both stay visible during scrolling. Content needs margin-top to prevent the fixed header from overlapping it."
+        },
+        {
+          "title": "Containing Block Lookup",
+          "code": "<style>\n  .outer {\n    position: relative;\n    width: 400px;\n    height: 300px;\n    background: #dbeafe;\n    padding: 20px;\n    margin: 20px;\n  }\n  .middle {\n    /* No position set (static by default) */\n    width: 300px;\n    height: 200px;\n    background: #fef3c7;\n    padding: 20px;\n    margin: 20px;\n  }\n  .inner {\n    position: absolute;\n    bottom: 10px;\n    right: 10px;\n    background: #ef4444;\n    color: white;\n    padding: 8px 16px;\n  }\n</style>\n\n<div class=\"outer\">\n  OUTER (position: relative)\n  <div class=\"middle\">\n    MIDDLE (position: static)\n    <div class=\"inner\">\n      INNER (absolute)\n    </div>\n  </div>\n</div>\n\n<!-- INNER skips MIDDLE (static) and positions\n     relative to OUTER (the nearest positioned ancestor) -->",
+          "explanation": "The inner element is absolute. It skips the middle div (which is static) and positions relative to the outer div (which has position: relative). If the outer div also lacked positioning, the inner would position relative to the html element."
+        },
+        {
+          "title": "Full-Screen Overlay with Absolute",
+          "code": "<style>\n  .modal-container {\n    position: relative;\n  }\n  .overlay {\n    position: fixed;\n    top: 0;\n    left: 0;\n    right: 0;\n    bottom: 0;\n    background: rgba(0, 0, 0, 0.5);\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    z-index: 1000;\n  }\n  .modal {\n    background: white;\n    padding: 32px;\n    border-radius: 12px;\n    width: 90%;\n    max-width: 500px;\n    position: relative;\n  }\n  .close-btn {\n    position: absolute;\n    top: 12px;\n    right: 12px;\n    background: none;\n    border: none;\n    font-size: 20px;\n    cursor: pointer;\n  }\n</style>\n\n<div class=\"overlay\">\n  <div class=\"modal\">\n    <button class=\"close-btn\">&times;</button>\n    <h2>Modal Title</h2>\n    <p>This overlay uses position: fixed to cover the viewport.\n       The close button uses position: absolute within the modal.</p>\n  </div>\n</div>",
+          "explanation": "The overlay uses position: fixed with all four offsets set to 0, covering the entire viewport. The modal inside is centered using flexbox on the overlay. The close button uses position: absolute within the modal (which has position: relative)."
+        }
+      ],
+      "notes": [
+        "Absolute elements are removed from the document flow. Surrounding elements collapse as if the absolute element does not exist.",
+        "An absolutely positioned element positions relative to its nearest positioned ancestor. If none exists, it positions relative to the initial containing block (<html>).",
+        "Fixed elements position relative to the viewport and do not scroll. Exception: an ancestor with transform, filter, or perspective becomes the containing block instead.",
+        "The top:0;right:0;bottom:0;left:0;margin:auto technique centers an element with explicit dimensions within its containing block."
+      ],
+      "commonPitfalls": [
+        "Forgetting to set position: relative on the parent of an absolutely positioned element. Without it, the absolute child positions relative to a distant ancestor or the viewport, causing unexpected layout.",
+        "Not adding top margin or padding to content below a fixed header. Fixed elements are removed from the flow, so content renders underneath them.",
+        "Using position: fixed inside an element with a CSS transform. The transform creates a new containing block, breaking the fixed behavior relative to the viewport."
+      ],
+      "interviewTips": [
+        "Explain the containing block concept clearly: absolute looks for the nearest positioned ancestor; fixed always uses the viewport (unless an ancestor has transform/filter/perspective).",
+        "Know the centering technique: position: absolute; top: 0; right: 0; bottom: 0; left: 0; margin: auto with explicit width/height.",
+        "Be ready to explain why fixed headers need z-index and why content needs margin-top to avoid being hidden underneath.",
+        "Mention the transform caveat for fixed positioning — it is a common source of bugs and a sign of deep CSS knowledge."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "absolute-and-fixed-ex1",
+        "title": "Position Elements in a Container",
+        "description": "Create a 400x300px container with position: relative. Place four labels at each corner (top-left, top-right, bottom-left, bottom-right) using position: absolute. Add a centered element using the top:0;right:0;bottom:0;left:0;margin:auto technique.",
+        "starterCode": "<style>\n  .container {\n    width: 400px;\n    height: 300px;\n    background: #f8fafc;\n    border: 2px solid #e2e8f0;\n    margin: 20px;\n    /* Add positioning */\n  }\n  .label {\n    padding: 6px 12px;\n    background: #3b82f6;\n    color: white;\n    font-size: 13px;\n    /* Add positioning */\n  }\n  .center {\n    /* Add centering styles */\n  }\n</style>\n\n<div class=\"container\">\n  <span class=\"label top-left\">TL</span>\n  <span class=\"label top-right\">TR</span>\n  <span class=\"label bottom-left\">BL</span>\n  <span class=\"label bottom-right\">BR</span>\n  <div class=\"center\">Center</div>\n</div>\n",
+        "solution": "<style>\n  .container {\n    width: 400px;\n    height: 300px;\n    background: #f8fafc;\n    border: 2px solid #e2e8f0;\n    margin: 20px;\n    position: relative;\n  }\n  .label {\n    padding: 6px 12px;\n    background: #3b82f6;\n    color: white;\n    font-size: 13px;\n    position: absolute;\n  }\n  .top-left { top: 8px; left: 8px; }\n  .top-right { top: 8px; right: 8px; }\n  .bottom-left { bottom: 8px; left: 8px; }\n  .bottom-right { bottom: 8px; right: 8px; }\n  .center {\n    position: absolute;\n    top: 0;\n    right: 0;\n    bottom: 0;\n    left: 0;\n    margin: auto;\n    width: 100px;\n    height: 40px;\n    background: #10b981;\n    color: white;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n  }\n</style>\n\n<div class=\"container\">\n  <span class=\"label top-left\">TL</span>\n  <span class=\"label top-right\">TR</span>\n  <span class=\"label bottom-left\">BL</span>\n  <span class=\"label bottom-right\">BR</span>\n  <div class=\"center\">Center</div>\n</div>",
+        "hints": [
+          "The container needs position: relative to be the containing block. Each label needs position: absolute with appropriate corner offsets.",
+          "For centering, set all four offsets to 0, give explicit width and height, and add margin: auto."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "absolute-and-fixed-ex2",
+        "title": "Fixed Navbar and FAB Button",
+        "description": "Build a page with a fixed navigation bar at the top (full-width, 64px tall) and a fixed floating action button (56px circle) at the bottom-right corner. Add enough paragraph content to scroll. Ensure the content does not hide behind the fixed header by adding appropriate margin.",
+        "starterCode": "<style>\n  /* Style the fixed navbar */\n  /* Style the FAB button */\n  /* Style the content area */\n</style>\n\n<!-- Fixed navbar -->\n\n<!-- Scrollable content -->\n\n<!-- FAB button -->\n",
+        "solution": "<style>\n  .navbar {\n    position: fixed;\n    top: 0;\n    left: 0;\n    right: 0;\n    height: 64px;\n    background: #1e293b;\n    color: white;\n    display: flex;\n    align-items: center;\n    padding: 0 24px;\n    z-index: 100;\n  }\n  .content {\n    margin-top: 80px;\n    padding: 24px;\n  }\n  .fab {\n    position: fixed;\n    bottom: 24px;\n    right: 24px;\n    width: 56px;\n    height: 56px;\n    border-radius: 50%;\n    background: #3b82f6;\n    color: white;\n    border: none;\n    font-size: 28px;\n    cursor: pointer;\n    z-index: 100;\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);\n  }\n</style>\n\n<nav class=\"navbar\">\n  <strong>My App</strong>\n</nav>\n\n<div class=\"content\">\n  <h1>Page Content</h1>\n  <p>This content scrolls behind the fixed navbar. The navbar and FAB button stay in place.</p>\n  <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent vehicula urna vel enim blandit, in tincidunt purus lacinia.</p>\n  <p>Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae; Donec efficitur libero eget erat tincidunt.</p>\n  <p>Nulla facilisi. Morbi convallis sapien non justo molestie, id interdum ligula volutpat. Pellentesque habitant morbi tristique senectus.</p>\n  <p>Fusce fringilla lectus sit amet nisi fermentum, vel accumsan dui malesuada. Integer vehicula dui nec purus feugiat congue.</p>\n</div>\n\n<button class=\"fab\">+</button>",
+        "hints": [
+          "Use position: fixed; top: 0; left: 0; right: 0 for the navbar to span the full width at the top.",
+          "Add margin-top to the content area that is at least the navbar height, so content starts below the fixed navbar."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "sticky-positioning",
+    "sectionId": "positioning-and-stacking",
+    "orderIndex": 2,
+    "title": "Sticky Positioning",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["position: sticky", "Scroll Threshold", "Sticky Headers", "Sticky Sidebar", "Overflow Constraint"],
+    "content": {
+      "explanation": "position: sticky is a hybrid of relative and fixed positioning. A sticky element behaves like position: relative within its parent's flow until it reaches a specified scroll threshold, at which point it behaves like position: fixed and stays in place. Once the user scrolls past the parent's boundary, the sticky element scrolls away with its parent. This creates the widely used \"sticky header\" pattern without any JavaScript.\n\nThe scroll threshold is defined by the offset properties. Setting position: sticky; top: 0 means the element will stick to the top of the viewport (or the nearest scrollable ancestor) when the user scrolls past it. The element remains in the normal document flow before and after the sticky region. Unlike position: fixed, it does not create gaps in the layout because it still occupies space in the document.\n\nA critical constraint that catches many developers: a sticky element can only stick within its parent's boundaries. Once the parent element scrolls out of view, the sticky child scrolls away with it. This means the sticky behavior is bounded by the parent — the element will never stick beyond its parent's bottom edge. If your sticky element is not working, check whether the parent has enough height for the element to actually stick.\n\nThe overflow property on ancestor elements can break sticky positioning. If any ancestor between the sticky element and the scrolling container has overflow: hidden, overflow: auto, or overflow: scroll, the sticky behavior may fail. This is because sticky positioning requires the element to be within a scrollable context, and an overflow container creates a new scroll context that may not match the one you expect.\n\nCommon use cases for position: sticky include table headers that stay visible while scrolling through long tables, section headers in alphabetical lists (like a phone contacts app), sidebar navigation that sticks until the footer approaches, and scroll-spy-style navigation. It requires no JavaScript, performs well because the browser handles it natively, and degrades gracefully in older browsers (the element simply scrolls normally).",
+      "codeExamples": [
+        {
+          "title": "Basic Sticky Header",
+          "code": "<style>\n  .sticky-header {\n    position: sticky;\n    top: 0;\n    background: #1e293b;\n    color: white;\n    padding: 16px 24px;\n    z-index: 10;\n  }\n  .content-section {\n    padding: 20px;\n    min-height: 400px;\n  }\n</style>\n\n<div class=\"sticky-header\">\n  <strong>Sticky Navigation</strong>\n</div>\n\n<div class=\"content-section\">\n  <h2>Section 1</h2>\n  <p>Scroll down to see the header stick to the top...</p>\n  <p>The header stays in view as you scroll through content.</p>\n</div>\n<div class=\"content-section\" style=\"background: #f8fafc;\">\n  <h2>Section 2</h2>\n  <p>The header is still sticky here because its parent is the body.</p>\n</div>",
+          "explanation": "The header sticks to the top of the viewport when scrolled past (top: 0). Unlike position: fixed, it does not need extra margin on the content below because it remains in the document flow until the threshold is reached."
+        },
+        {
+          "title": "Sticky Section Headers (Contact List Style)",
+          "code": "<style>\n  .contact-list {\n    max-height: 400px;\n    overflow-y: auto;\n    border: 1px solid #e2e8f0;\n    width: 300px;\n  }\n  .letter-header {\n    position: sticky;\n    top: 0;\n    background: #3b82f6;\n    color: white;\n    padding: 8px 16px;\n    font-weight: bold;\n    z-index: 1;\n  }\n  .contact {\n    padding: 12px 16px;\n    border-bottom: 1px solid #f1f5f9;\n  }\n</style>\n\n<div class=\"contact-list\">\n  <div class=\"letter-header\">A</div>\n  <div class=\"contact\">Alice Anderson</div>\n  <div class=\"contact\">Alex Baker</div>\n  <div class=\"contact\">Anna Chen</div>\n\n  <div class=\"letter-header\">B</div>\n  <div class=\"contact\">Bob Davis</div>\n  <div class=\"contact\">Beth Evans</div>\n  <div class=\"contact\">Brian Foster</div>\n\n  <div class=\"letter-header\">C</div>\n  <div class=\"contact\">Carol Green</div>\n  <div class=\"contact\">Chris Hall</div>\n  <div class=\"contact\">Claire Irwin</div>\n</div>",
+          "explanation": "Each letter header sticks to the top of the scrollable container. When the next letter header reaches the top, it pushes the previous one away. This pattern is commonly seen in phone contacts and alphabetical lists."
+        },
+        {
+          "title": "Sticky Sidebar with Bounded Parent",
+          "code": "<style>\n  .layout {\n    display: flex;\n    gap: 24px;\n    padding: 24px;\n  }\n  .main-content {\n    flex: 1;\n    min-height: 1500px;\n    background: #f8fafc;\n    padding: 24px;\n  }\n  .sidebar {\n    width: 250px;\n  }\n  .sidebar-inner {\n    position: sticky;\n    top: 20px;\n    background: white;\n    border: 1px solid #e2e8f0;\n    padding: 20px;\n    border-radius: 8px;\n  }\n</style>\n\n<div class=\"layout\">\n  <div class=\"main-content\">\n    <h1>Main Content</h1>\n    <p>Scroll down. The sidebar sticks until the layout ends.</p>\n  </div>\n  <div class=\"sidebar\">\n    <div class=\"sidebar-inner\">\n      <h3>Sidebar</h3>\n      <nav>\n        <a href=\"#section1\">Section 1</a><br>\n        <a href=\"#section2\">Section 2</a><br>\n        <a href=\"#section3\">Section 3</a>\n      </nav>\n    </div>\n  </div>\n</div>",
+          "explanation": "The sidebar-inner element sticks 20px from the top while scrolling. It stops sticking when the layout container ends, ensuring it never overlaps the footer. The sidebar div wraps the sticky element so it has room to stick within."
+        },
+        {
+          "title": "Sticky Table Headers",
+          "code": "<style>\n  .table-wrapper {\n    max-height: 300px;\n    overflow-y: auto;\n    border: 1px solid #e2e8f0;\n  }\n  table {\n    width: 100%;\n    border-collapse: collapse;\n  }\n  thead th {\n    position: sticky;\n    top: 0;\n    background: #1e293b;\n    color: white;\n    padding: 12px 16px;\n    text-align: left;\n    z-index: 1;\n  }\n  tbody td {\n    padding: 10px 16px;\n    border-bottom: 1px solid #f1f5f9;\n  }\n  tbody tr:hover {\n    background: #f8fafc;\n  }\n</style>\n\n<div class=\"table-wrapper\">\n  <table>\n    <thead>\n      <tr>\n        <th>Name</th>\n        <th>Email</th>\n        <th>Role</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr><td>Alice</td><td>alice@example.com</td><td>Engineer</td></tr>\n      <tr><td>Bob</td><td>bob@example.com</td><td>Designer</td></tr>\n      <tr><td>Carol</td><td>carol@example.com</td><td>Manager</td></tr>\n      <tr><td>David</td><td>david@example.com</td><td>Engineer</td></tr>\n      <tr><td>Eve</td><td>eve@example.com</td><td>Designer</td></tr>\n      <tr><td>Frank</td><td>frank@example.com</td><td>Analyst</td></tr>\n      <tr><td>Grace</td><td>grace@example.com</td><td>Engineer</td></tr>\n      <tr><td>Hank</td><td>hank@example.com</td><td>Manager</td></tr>\n    </tbody>\n  </table>\n</div>",
+          "explanation": "The th elements in thead have position: sticky; top: 0, keeping the column headers visible while scrolling through table rows. The table wrapper has overflow-y: auto to create the scrollable context."
+        }
+      ],
+      "notes": [
+        "A sticky element requires a threshold offset (top, bottom, left, or right) to work. Without it, the browser does not know when to start sticking.",
+        "Sticky elements are bounded by their parent. They stop sticking when the parent scrolls out of view.",
+        "The overflow property on ancestor elements can break sticky positioning. Avoid overflow: hidden or overflow: auto on ancestors between the sticky element and the scroll container.",
+        "Sticky positioning has excellent browser support in all modern browsers. No JavaScript fallback is needed."
+      ],
+      "commonPitfalls": [
+        "Forgetting to set a threshold offset (e.g., top: 0). Without it, position: sticky has no effect — the browser does not know when the element should stick.",
+        "The parent element not having enough height. If the parent is exactly the same height as the sticky element, there is no room for the element to stick, and it scrolls away immediately.",
+        "An ancestor element having overflow: hidden or overflow: auto. This creates a new scroll context that can prevent sticky from working as expected."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "sticky-positioning-ex1",
+        "title": "Sticky Section Headers",
+        "description": "Create a scrollable container (400px tall) with three groups of items. Each group has a sticky header (A, B, C) and three list items. The headers should stick to the top of the container as the user scrolls.",
+        "starterCode": "<style>\n  .scroll-container {\n    max-height: 400px;\n    overflow-y: auto;\n    border: 1px solid #e2e8f0;\n    width: 300px;\n  }\n  .group-header {\n    /* Add sticky styles */\n    padding: 10px 16px;\n    background: #3b82f6;\n    color: white;\n    font-weight: bold;\n  }\n  .item {\n    padding: 16px;\n    border-bottom: 1px solid #f1f5f9;\n  }\n</style>\n\n<div class=\"scroll-container\">\n  <!-- Group A -->\n  <!-- Group B -->\n  <!-- Group C -->\n</div>\n",
+        "solution": "<style>\n  .scroll-container {\n    max-height: 400px;\n    overflow-y: auto;\n    border: 1px solid #e2e8f0;\n    width: 300px;\n  }\n  .group-header {\n    position: sticky;\n    top: 0;\n    padding: 10px 16px;\n    background: #3b82f6;\n    color: white;\n    font-weight: bold;\n    z-index: 1;\n  }\n  .item {\n    padding: 16px;\n    border-bottom: 1px solid #f1f5f9;\n  }\n</style>\n\n<div class=\"scroll-container\">\n  <div class=\"group-header\">A</div>\n  <div class=\"item\">Apple</div>\n  <div class=\"item\">Avocado</div>\n  <div class=\"item\">Apricot</div>\n\n  <div class=\"group-header\">B</div>\n  <div class=\"item\">Banana</div>\n  <div class=\"item\">Blueberry</div>\n  <div class=\"item\">Blackberry</div>\n\n  <div class=\"group-header\">C</div>\n  <div class=\"item\">Cherry</div>\n  <div class=\"item\">Coconut</div>\n  <div class=\"item\">Cranberry</div>\n</div>",
+        "hints": [
+          "Add position: sticky and top: 0 to the group header class",
+          "The scroll container needs overflow-y: auto and a max-height to create the scrollable context"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "sticky-positioning-ex2",
+        "title": "Sticky Table Header",
+        "description": "Create a scrollable table (max-height 250px) with sticky column headers. The table should have columns for Name, Department, and Salary, with at least 10 rows of data. The header row should remain visible when scrolling through the data.",
+        "starterCode": "<style>\n  .table-container {\n    max-height: 250px;\n    overflow-y: auto;\n    border: 1px solid #e2e8f0;\n  }\n  /* Style the table, headers, and cells */\n</style>\n\n<div class=\"table-container\">\n  <table>\n    <!-- Build the table with sticky headers -->\n  </table>\n</div>\n",
+        "solution": "<style>\n  .table-container {\n    max-height: 250px;\n    overflow-y: auto;\n    border: 1px solid #e2e8f0;\n  }\n  table {\n    width: 100%;\n    border-collapse: collapse;\n  }\n  thead th {\n    position: sticky;\n    top: 0;\n    background: #1e293b;\n    color: white;\n    padding: 12px 16px;\n    text-align: left;\n  }\n  tbody td {\n    padding: 10px 16px;\n    border-bottom: 1px solid #f1f5f9;\n  }\n</style>\n\n<div class=\"table-container\">\n  <table>\n    <thead>\n      <tr>\n        <th>Name</th>\n        <th>Department</th>\n        <th>Salary</th>\n      </tr>\n    </thead>\n    <tbody>\n      <tr><td>Alice</td><td>Engineering</td><td>$95,000</td></tr>\n      <tr><td>Bob</td><td>Design</td><td>$88,000</td></tr>\n      <tr><td>Carol</td><td>Marketing</td><td>$82,000</td></tr>\n      <tr><td>David</td><td>Engineering</td><td>$97,000</td></tr>\n      <tr><td>Eve</td><td>Sales</td><td>$78,000</td></tr>\n      <tr><td>Frank</td><td>Engineering</td><td>$102,000</td></tr>\n      <tr><td>Grace</td><td>Design</td><td>$91,000</td></tr>\n      <tr><td>Hank</td><td>Marketing</td><td>$85,000</td></tr>\n      <tr><td>Iris</td><td>Engineering</td><td>$99,000</td></tr>\n      <tr><td>Jack</td><td>Sales</td><td>$76,000</td></tr>\n    </tbody>\n  </table>\n</div>",
+        "hints": [
+          "Apply position: sticky; top: 0 to the th elements inside thead",
+          "Make sure the table uses border-collapse: collapse and the wrapper has overflow-y: auto with a max-height"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "z-index-and-stacking",
+    "sectionId": "positioning-and-stacking",
+    "orderIndex": 3,
+    "title": "Z-Index & Stacking Context",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["z-index", "Stacking Context", "Stacking Order", "isolation", "Painted Order"],
+    "content": {
+      "explanation": "z-index controls the stacking order of elements along the z-axis (the axis that points toward the viewer). It only works on positioned elements (anything other than position: static) and elements within a flex or grid container. A higher z-index value means the element appears in front of elements with lower values. Understanding z-index requires understanding stacking contexts, which is one of the most misunderstood concepts in CSS.\n\nThe default stacking order without z-index follows specific rules. Non-positioned elements paint in document order (later elements paint on top). Positioned elements paint on top of non-positioned elements. Among positioned elements without z-index, later elements in the source order paint on top. This means you can often control overlap through source order alone, without touching z-index.\n\nA stacking context is a three-dimensional conceptualization of HTML elements along the z-axis. Every stacking context has a single root element, and the z-index of child elements is only meaningful within that context. The root HTML element creates the initial stacking context. New stacking contexts are created by: elements with position and a z-index value other than auto, elements with opacity less than 1, elements with transform, filter, perspective, clip-path, or mask properties, flex/grid children with z-index other than auto, and elements with isolation: isolate.\n\nThe critical concept is that stacking contexts are hierarchical and isolated. An element inside one stacking context can never appear between elements in a sibling stacking context, regardless of z-index values. If element A creates a stacking context with z-index: 1, and element B is a sibling with z-index: 2, then every child of A — even one with z-index: 9999 — will appear behind B. This is the root cause of most z-index frustrations.\n\nThe isolation property provides a clean way to create a new stacking context without side effects. Setting isolation: isolate on a container creates a stacking context that contains all z-index values within its children, preventing them from interfering with z-index values outside the container. This is the recommended approach for component-based architectures where you want to ensure a component's internal z-index values do not leak out and conflict with the rest of the page.",
+      "codeExamples": [
+        {
+          "title": "Basic Z-Index Stacking",
+          "code": "<style>\n  .stack-demo {\n    position: relative;\n    height: 200px;\n    margin: 20px;\n  }\n  .layer {\n    position: absolute;\n    width: 180px;\n    height: 120px;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    color: white;\n    font-weight: bold;\n  }\n  .red {\n    background: #ef4444;\n    top: 0;\n    left: 0;\n    z-index: 1;\n  }\n  .green {\n    background: #22c55e;\n    top: 30px;\n    left: 60px;\n    z-index: 3;\n  }\n  .blue {\n    background: #3b82f6;\n    top: 60px;\n    left: 120px;\n    z-index: 2;\n  }\n</style>\n\n<div class=\"stack-demo\">\n  <div class=\"layer red\">z-index: 1</div>\n  <div class=\"layer green\">z-index: 3 (top)</div>\n  <div class=\"layer blue\">z-index: 2</div>\n</div>",
+          "explanation": "Green (z-index: 3) appears in front of blue (2), which appears in front of red (1). All three are in the same stacking context (the stack-demo parent), so their z-index values are directly comparable."
+        },
+        {
+          "title": "Stacking Context Isolation Problem",
+          "code": "<style>\n  .parent-a {\n    position: relative;\n    z-index: 1; /* Creates stacking context */\n    background: #fef3c7;\n    padding: 20px;\n    margin: 10px;\n  }\n  .parent-b {\n    position: relative;\n    z-index: 2; /* Higher than parent-a */\n    background: #dbeafe;\n    padding: 20px;\n    margin: 10px;\n    margin-top: -30px; /* Overlap with parent-a */\n  }\n  .child-high {\n    position: relative;\n    z-index: 9999; /* Very high, but trapped in parent-a's context */\n    background: #ef4444;\n    color: white;\n    padding: 10px;\n  }\n  .child-low {\n    position: relative;\n    z-index: 1;\n    background: #3b82f6;\n    color: white;\n    padding: 10px;\n  }\n</style>\n\n<div class=\"parent-a\">\n  Parent A (z-index: 1)\n  <div class=\"child-high\">Child z-index: 9999 (still behind Parent B!)</div>\n</div>\n<div class=\"parent-b\">\n  Parent B (z-index: 2)\n  <div class=\"child-low\">Child z-index: 1</div>\n</div>",
+          "explanation": "Even though the child in Parent A has z-index: 9999, it cannot escape Parent A's stacking context (z-index: 1). Parent B (z-index: 2) and all its children will always paint in front of Parent A and all its children."
+        },
+        {
+          "title": "Using isolation: isolate",
+          "code": "<style>\n  .component {\n    isolation: isolate; /* Contains z-index within */\n    position: relative;\n    padding: 20px;\n    margin: 20px;\n    border: 1px solid #e2e8f0;\n  }\n  .tooltip {\n    position: absolute;\n    top: -10px;\n    left: 50%;\n    transform: translateX(-50%);\n    background: #1e293b;\n    color: white;\n    padding: 6px 12px;\n    border-radius: 4px;\n    z-index: 10; /* Only relevant within this component */\n    white-space: nowrap;\n    font-size: 14px;\n  }\n  .dropdown {\n    position: absolute;\n    top: 100%;\n    left: 0;\n    background: white;\n    border: 1px solid #e2e8f0;\n    padding: 8px 0;\n    z-index: 10; /* Same value, no conflict */\n    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);\n    min-width: 150px;\n  }\n</style>\n\n<div class=\"component\">\n  <div class=\"tooltip\">Tooltip (z-index: 10)</div>\n  Component A\n</div>\n\n<div class=\"component\">\n  Component B\n  <div class=\"dropdown\">\n    <div>Option 1</div>\n    <div>Option 2</div>\n  </div>\n</div>",
+          "explanation": "Each component uses isolation: isolate to create its own stacking context. This ensures that z-index values inside one component do not interfere with another component's z-index values. Both use z-index: 10 without conflict."
+        },
+        {
+          "title": "Properties That Create Stacking Contexts",
+          "code": "<style>\n  .demo { position: relative; margin: 10px; padding: 16px; }\n\n  /* These all create new stacking contexts: */\n  .ctx-zindex {\n    position: relative;\n    z-index: 0; /* position + z-index (not auto) */\n    background: #dbeafe;\n  }\n  .ctx-opacity {\n    opacity: 0.99; /* opacity < 1 */\n    background: #dcfce7;\n  }\n  .ctx-transform {\n    transform: translateZ(0); /* Any transform value */\n    background: #fef3c7;\n  }\n  .ctx-filter {\n    filter: blur(0px); /* Any filter value */\n    background: #fce7f3;\n  }\n  .ctx-isolation {\n    isolation: isolate; /* Explicit stacking context */\n    background: #f3e8ff;\n  }\n  .ctx-flex-child {\n    /* Flex/grid child with z-index */\n    z-index: 0;\n    background: #ecfdf5;\n  }\n\n  .inner {\n    position: absolute;\n    z-index: 999;\n    background: #ef4444;\n    color: white;\n    padding: 4px 8px;\n    top: -8px;\n    right: -8px;\n  }\n</style>\n\n<!-- Each of these containers creates a stacking context,\n     trapping the .inner element's z-index within -->\n<div class=\"demo ctx-zindex\">\n  z-index: 0 <span class=\"inner\">Trapped</span>\n</div>\n<div class=\"demo ctx-opacity\">\n  opacity: 0.99 <span class=\"inner\">Trapped</span>\n</div>\n<div class=\"demo ctx-transform\">\n  transform <span class=\"inner\">Trapped</span>\n</div>",
+          "explanation": "Many CSS properties create stacking contexts as a side effect: z-index on positioned elements, opacity < 1, transform, filter, perspective, clip-path, mask, and isolation: isolate. This means a child's z-index: 999 is trapped within any of these parent contexts."
+        }
+      ],
+      "notes": [
+        "z-index only works on positioned elements (relative, absolute, fixed, sticky) or flex/grid children. It has no effect on static elements.",
+        "Stacking contexts are hierarchical. A child's z-index is only meaningful within its parent's stacking context, not globally.",
+        "Many properties create stacking contexts as side effects: opacity < 1, transform, filter, perspective, clip-path, mask, and will-change. Be aware of unintentional stacking context creation.",
+        "Use isolation: isolate on component wrappers to prevent z-index values from leaking between components."
+      ],
+      "commonPitfalls": [
+        "Setting z-index to increasingly high values (999, 9999, 99999) trying to get an element to appear on top. If the element is trapped in a lower stacking context, no z-index value will help.",
+        "Not realizing that opacity, transform, and filter create stacking contexts. Adding opacity: 0.99 to a parent can trap all child z-index values inside it.",
+        "Applying z-index to static elements. z-index only works on positioned elements (or flex/grid children). Setting z-index on a static element has no effect.",
+        "Using arbitrary z-index values without a system. Establish a z-index scale (e.g., dropdown: 100, sticky: 200, modal: 300, tooltip: 400) to maintain order."
+      ],
+      "interviewTips": [
+        "Define stacking context clearly: a hierarchical scope that contains z-index values. List the main properties that create one (position+z-index, opacity<1, transform, filter, isolation: isolate).",
+        "Explain why z-index: 9999 does not always work — the element may be trapped in a parent's stacking context with a lower z-index than a sibling.",
+        "Recommend isolation: isolate for component-based architectures to prevent z-index conflicts between components.",
+        "Know the default stacking order without z-index: background/borders, negative z-index, block elements, float elements, inline elements, positioned elements (source order), positive z-index."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "z-index-and-stacking-ex1",
+        "title": "Layered Card Stack",
+        "description": "Create three overlapping card elements (200x150px each) positioned within a relative container. The first card should be red (z-index: 1), the second green (z-index: 3, offset 40px right and 30px down), and the third blue (z-index: 2, offset 80px right and 60px down). The green card should appear on top.",
+        "starterCode": "<style>\n  .stack {\n    position: relative;\n    height: 250px;\n    margin: 30px;\n  }\n  .card {\n    width: 200px;\n    height: 150px;\n    position: absolute;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    color: white;\n    font-size: 18px;\n    font-weight: bold;\n    border-radius: 8px;\n  }\n  /* Style each card with colors, offsets, and z-index */\n</style>\n\n<div class=\"stack\">\n  <div class=\"card red\">Red (1)</div>\n  <div class=\"card green\">Green (3)</div>\n  <div class=\"card blue\">Blue (2)</div>\n</div>\n",
+        "solution": "<style>\n  .stack {\n    position: relative;\n    height: 250px;\n    margin: 30px;\n  }\n  .card {\n    width: 200px;\n    height: 150px;\n    position: absolute;\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    color: white;\n    font-size: 18px;\n    font-weight: bold;\n    border-radius: 8px;\n  }\n  .red {\n    background: #ef4444;\n    top: 0;\n    left: 0;\n    z-index: 1;\n  }\n  .green {\n    background: #22c55e;\n    top: 30px;\n    left: 40px;\n    z-index: 3;\n  }\n  .blue {\n    background: #3b82f6;\n    top: 60px;\n    left: 80px;\n    z-index: 2;\n  }\n</style>\n\n<div class=\"stack\">\n  <div class=\"card red\">Red (1)</div>\n  <div class=\"card green\">Green (3)</div>\n  <div class=\"card blue\">Blue (2)</div>\n</div>",
+        "hints": [
+          "All cards need position: absolute. Set each card's top and left for the offset, and z-index for the stacking order.",
+          "Green has z-index: 3 so it appears on top, blue has 2 (middle), red has 1 (bottom)."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "z-index-and-stacking-ex2",
+        "title": "Stacking Context Debugging",
+        "description": "Given two sibling divs — Parent A (z-index: 1) with a child element, and Parent B (z-index: 2) with a child element — demonstrate that Parent A's child cannot appear above Parent B regardless of z-index. Then fix the issue by removing the stacking context from Parent A (set z-index: auto).",
+        "starterCode": "<style>\n  .parent-a, .parent-b {\n    position: relative;\n    padding: 30px;\n    margin: 10px;\n  }\n  .parent-a {\n    background: #fef3c7;\n    z-index: 1; /* Creates stacking context */\n  }\n  .parent-b {\n    background: #dbeafe;\n    z-index: 2;\n    margin-top: -20px;\n  }\n  .child {\n    position: relative;\n    padding: 10px;\n    color: white;\n  }\n  .child-a {\n    background: #ef4444;\n    z-index: 9999; /* Will this appear on top? */\n  }\n  .child-b {\n    background: #3b82f6;\n    z-index: 1;\n  }\n</style>\n\n<div class=\"parent-a\">\n  Parent A (z-index: 1)\n  <div class=\"child child-a\">Child A (z-index: 9999)</div>\n</div>\n<div class=\"parent-b\">\n  Parent B (z-index: 2)\n  <div class=\"child child-b\">Child B (z-index: 1)</div>\n</div>\n\n<!-- Fix: Change parent-a's z-index to auto to remove the stacking context -->\n",
+        "solution": "<style>\n  .parent-a, .parent-b {\n    position: relative;\n    padding: 30px;\n    margin: 10px;\n  }\n  .parent-a {\n    background: #fef3c7;\n    z-index: auto; /* No stacking context — child can escape */\n  }\n  .parent-b {\n    background: #dbeafe;\n    z-index: 2;\n    margin-top: -20px;\n  }\n  .child {\n    position: relative;\n    padding: 10px;\n    color: white;\n  }\n  .child-a {\n    background: #ef4444;\n    z-index: 9999; /* Now participates in parent's stacking context */\n  }\n  .child-b {\n    background: #3b82f6;\n    z-index: 1;\n  }\n</style>\n\n<div class=\"parent-a\">\n  Parent A (z-index: auto)\n  <div class=\"child child-a\">Child A (z-index: 9999) - Now on top!</div>\n</div>\n<div class=\"parent-b\">\n  Parent B (z-index: 2)\n  <div class=\"child child-b\">Child B (z-index: 1)</div>\n</div>",
+        "hints": [
+          "With z-index: 1 on parent-a, child-a is trapped inside parent-a's stacking context and cannot appear above parent-b.",
+          "Change parent-a's z-index to 'auto' to remove the stacking context. Then child-a's z-index: 9999 participates in the root stacking context."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

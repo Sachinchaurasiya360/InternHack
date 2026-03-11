@@ -1,0 +1,373 @@
+[
+  {
+    "id": "grid-container",
+    "sectionId": "css-grid",
+    "orderIndex": 0,
+    "title": "Grid Container",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["display:grid", "grid-template-columns", "grid-template-rows", "Two-Dimensional Layout"],
+    "content": {
+      "explanation": "CSS Grid Layout is a two-dimensional layout system that allows you to control both columns and rows simultaneously. Unlike Flexbox, which works along a single axis at a time, Grid lets you define a complete grid structure and place items into specific cells, rows, or columns. It is the most powerful layout system in CSS and is ideal for full page layouts, complex component designs, and any scenario where you need precise control over both dimensions.\n\nTo create a grid container, set display: grid on an element. All direct children of the grid container automatically become grid items. The container itself behaves as a block-level element. You can also use display: inline-grid for an inline-level grid container. By default, a grid container with no template definitions stacks items in a single column, similar to normal block flow.\n\nThe grid-template-columns property defines the number and size of columns in the grid. Each value in the property creates one column. You can use fixed sizes (200px), percentages (25%), flexible units (1fr), or sizing functions like minmax() and auto. For example, grid-template-columns: 200px 1fr 200px creates a three-column layout with fixed sidebars and a flexible center. The fr unit (fraction) distributes available space proportionally -- 1fr 2fr 1fr creates three columns where the middle column is twice as wide as the side columns.\n\nThe grid-template-rows property works exactly like grid-template-columns but for rows. It defines the height of each row. If you define fewer row templates than there are rows of items, additional rows are created automatically as implicit rows. You can control the size of implicit rows with grid-auto-rows. For example, grid-auto-rows: minmax(100px, auto) ensures that automatically created rows are at least 100px tall but can grow to fit their content.\n\nThe gap property (or its longhand forms row-gap and column-gap) adds spacing between grid cells, just as it does in Flexbox. The gap shorthand takes one value for uniform spacing or two values for row-gap and column-gap respectively. Unlike margins, gap only adds space between cells, not at the outer edges of the grid.",
+      "codeExamples": [
+        {
+          "title": "Basic Grid with Fixed Columns",
+          "code": ".grid {\n  display: grid;\n  grid-template-columns: 200px 200px 200px;\n  grid-template-rows: 100px 100px;\n  gap: 16px;\n}\n\n.grid-item {\n  background-color: #3b82f6;\n  color: white;\n  padding: 16px;\n  border-radius: 8px;\n}",
+          "explanation": "This creates a 3-column, 2-row grid with fixed sizes. Each cell is 200px wide and 100px tall with 16px gaps between them. If there are more than 6 items, additional rows are created automatically."
+        },
+        {
+          "title": "Flexible Columns with fr Units",
+          "code": "/* Equal columns */\n.equal-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  gap: 24px;\n}\n\n/* Weighted columns */\n.weighted-grid {\n  display: grid;\n  grid-template-columns: 1fr 2fr 1fr;\n  gap: 24px;\n}\n\n/* Sidebar + main layout */\n.layout-grid {\n  display: grid;\n  grid-template-columns: 250px 1fr;\n  gap: 24px;\n  min-height: 100vh;\n}",
+          "explanation": "The fr unit distributes available space. 1fr 1fr 1fr creates three equal columns. 1fr 2fr 1fr makes the middle column twice as wide. Mixing px and fr lets you create fixed sidebars with flexible main areas."
+        },
+        {
+          "title": "Explicit Rows and Auto Rows",
+          "code": "/* Explicit rows: define exact row heights */\n.explicit-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr;\n  grid-template-rows: 80px 200px 80px;\n  gap: 16px;\n}\n\n/* Auto rows: set height for dynamically created rows */\n.auto-grid {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  grid-auto-rows: minmax(150px, auto);\n  gap: 16px;\n}",
+          "explanation": "grid-template-rows defines the height of each explicit row. grid-auto-rows sets the height for rows created automatically when items overflow the explicit grid. minmax(150px, auto) means at least 150px tall but grows to fit content."
+        },
+        {
+          "title": "Grid with Different Gap Sizes",
+          "code": ".dashboard {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  grid-template-rows: auto 1fr;\n  row-gap: 32px;\n  column-gap: 16px;\n  padding: 24px;\n}\n\n/* Shorthand: gap: <row-gap> <column-gap> */\n.dashboard-short {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  gap: 32px 16px;\n}",
+          "explanation": "row-gap and column-gap can be set independently for different vertical and horizontal spacing. The gap shorthand takes the row value first and the column value second. A single value sets both to the same amount."
+        }
+      ],
+      "notes": [
+        "CSS Grid and Flexbox are complementary, not competing technologies. Use Grid for the overall page layout (two-dimensional) and Flexbox for component-level layouts (one-dimensional).",
+        "The fr unit distributes available space after fixed-size tracks and gaps are accounted for. It is similar to flex-grow but for defining the grid template itself.",
+        "grid-auto-rows and grid-auto-columns control the size of implicit tracks (rows/columns created automatically when items overflow the explicit grid template)."
+      ],
+      "commonPitfalls": [
+        "Forgetting that CSS Grid only affects direct children of the grid container, just like Flexbox. Nested elements are not grid items unless their parent is also a grid container.",
+        "Not setting grid-auto-rows when the number of items is dynamic. Without it, implicit rows default to auto height, which may not match your design intent.",
+        "Using only px values for columns, making the grid inflexible. Combine fr units with fixed sizes for responsive layouts."
+      ],
+      "interviewTips": [
+        "Know the difference between explicit and implicit grid tracks. Explicit tracks are defined by grid-template-columns/rows. Implicit tracks are created automatically for overflow items and sized by grid-auto-columns/rows.",
+        "Be able to explain when to use CSS Grid vs Flexbox: Grid for two-dimensional layouts (page structure, dashboards), Flexbox for one-dimensional layouts (navigation bars, card rows)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "grid-container-ex1",
+        "title": "Three-Column Dashboard",
+        "description": "Create a .dashboard grid with three equal-width columns and 24px gaps. Set grid-auto-rows to a minimum of 120px that can grow to fit content.",
+        "starterCode": "/* Create a 3-column dashboard grid */\n",
+        "solution": ".dashboard {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr;\n  grid-auto-rows: minmax(120px, auto);\n  gap: 24px;\n  padding: 24px;\n}",
+        "hints": [
+          "Use 1fr 1fr 1fr for three equal columns",
+          "minmax(120px, auto) sets a minimum height of 120px while allowing rows to grow"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "grid-container-ex2",
+        "title": "Sidebar + Main Layout",
+        "description": "Create a .page-layout grid with a fixed 280px sidebar column and a flexible main content column. The layout should take full viewport height. Use a 32px column gap and no row gap.",
+        "starterCode": "/* Create a sidebar + main grid layout */\n",
+        "solution": ".page-layout {\n  display: grid;\n  grid-template-columns: 280px 1fr;\n  column-gap: 32px;\n  min-height: 100vh;\n}",
+        "hints": [
+          "Mix fixed (280px) and flexible (1fr) units for the sidebar-main pattern",
+          "Use min-height: 100vh to ensure the layout fills the viewport"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "grid-template",
+    "sectionId": "css-grid",
+    "orderIndex": 1,
+    "title": "Grid Template",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["fr Unit", "repeat()", "minmax()", "auto-fill", "auto-fit"],
+    "content": {
+      "explanation": "CSS Grid provides powerful functions for defining grid templates: repeat() for creating repeating track patterns, minmax() for setting flexible size ranges, and the auto-fill and auto-fit keywords for creating responsive grids that automatically adjust the number of columns based on available space. Together, these enable responsive layouts that adapt to any screen size without media queries.\n\nThe repeat() function eliminates repetition when defining grid tracks. Instead of writing grid-template-columns: 1fr 1fr 1fr 1fr, you write grid-template-columns: repeat(4, 1fr). The first argument is the repetition count, and the second is the track size pattern. You can repeat complex patterns too: repeat(3, 1fr 2fr) creates six columns alternating between 1fr and 2fr widths. The repeat function can be mixed with other values: 200px repeat(3, 1fr) 200px creates fixed sidebars with three flexible columns in between.\n\nThe minmax() function defines a track size range with a minimum and maximum value. For example, minmax(200px, 1fr) creates a track that is at least 200px wide but can grow to fill available space. This is commonly used with grid-auto-rows: minmax(100px, auto) to ensure rows are at least 100px tall but can expand to fit their content. The min value cannot be fr (since fr is relative and cannot serve as a minimum), but the max value can be.\n\nThe auto-fill keyword, used inside repeat(), creates as many tracks as can fit in the container width. The declaration grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)) creates a responsive grid that automatically adjusts the number of columns: on a wide screen, four or more columns appear; as the screen narrows, columns are dropped and items wrap to new rows -- all without media queries. When there are fewer items than available columns, auto-fill creates empty tracks to maintain the grid structure.\n\nauto-fit works like auto-fill but with one key difference: when there are fewer items than available columns, auto-fit collapses the empty tracks to zero width, allowing existing items to stretch and fill the available space. In practice, auto-fit is more commonly used because it prevents empty gaps when there are few items. The difference only matters when there are fewer items than the grid can fit -- with enough items to fill the grid, auto-fill and auto-fit behave identically.",
+      "codeExamples": [
+        {
+          "title": "repeat() for Concise Templates",
+          "code": "/* Without repeat */\n.grid-verbose {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr 1fr;\n}\n\n/* With repeat */\n.grid-concise {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n}\n\n/* Repeating a pattern */\n.grid-pattern {\n  display: grid;\n  grid-template-columns: repeat(3, 100px 1fr);\n  /* Creates: 100px 1fr 100px 1fr 100px 1fr */\n}\n\n/* Mixed: fixed + repeated + fixed */\n.grid-mixed {\n  display: grid;\n  grid-template-columns: 200px repeat(3, 1fr) 200px;\n}",
+          "explanation": "repeat() takes a count and a track pattern. It can repeat simple values (1fr), complex patterns (100px 1fr), and be mixed with standalone values. This is essential for grids with many columns."
+        },
+        {
+          "title": "minmax() for Flexible Sizing",
+          "code": "/* Columns at least 200px, grow to fill space */\n.flex-grid {\n  display: grid;\n  grid-template-columns: minmax(200px, 1fr) minmax(200px, 1fr) minmax(200px, 1fr);\n  gap: 16px;\n}\n\n/* Rows at least 100px, grow to fit content */\n.auto-height-grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-auto-rows: minmax(100px, auto);\n  gap: 16px;\n}\n\n/* Sidebar: min 200px, max 300px */\n.sidebar-layout {\n  display: grid;\n  grid-template-columns: minmax(200px, 300px) 1fr;\n  gap: 24px;\n}",
+          "explanation": "minmax() sets a size range. Common patterns: minmax(200px, 1fr) for flexible columns with a minimum width, minmax(100px, auto) for rows that grow to fit content, and minmax(min, max) for constrained sidebars."
+        },
+        {
+          "title": "auto-fill: Automatic Responsive Columns",
+          "code": "/* Responsive grid: columns are at least 280px */\n.responsive-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));\n  gap: 24px;\n}\n\n/* auto-fill creates empty tracks when items are few */\n/* With 2 items in a 1200px container: */\n/* |  item  |  item  |  empty  |  empty  | */",
+          "explanation": "auto-fill calculates how many columns of at least 280px fit in the container and creates that many tracks. As the container resizes, columns are added or removed automatically. Empty tracks remain when there are fewer items than columns."
+        },
+        {
+          "title": "auto-fit vs auto-fill",
+          "code": "/* auto-fill: keeps empty tracks */\n.auto-fill-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));\n  gap: 16px;\n}\n/* With 2 items in 1000px container: */\n/* | item | item | empty | empty | */\n\n/* auto-fit: collapses empty tracks */\n.auto-fit-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));\n  gap: 16px;\n}\n/* With 2 items in 1000px container: */\n/* |    item    |    item    | */\n/* Items stretch to fill all available space */",
+          "explanation": "The difference appears when there are fewer items than available columns. auto-fill keeps empty tracks (items stay at minmax size). auto-fit collapses empty tracks (items stretch to fill the container). auto-fit is usually preferred for card grids."
+        }
+      ],
+      "notes": [
+        "auto-fit is generally preferred over auto-fill for card grids and responsive layouts because it prevents empty gaps when there are fewer items than available columns.",
+        "The minmax() function cannot use fr as the minimum value because fr is a relative unit that has no intrinsic minimum. Use px, em, rem, or percentage for the minimum.",
+        "The pattern repeat(auto-fit, minmax(250px, 1fr)) is the single most useful CSS Grid declaration for responsive layouts. Memorize it."
+      ],
+      "commonPitfalls": [
+        "Using auto-fill when you want items to stretch to fill available space. auto-fill creates empty tracks; use auto-fit to collapse them and let items expand.",
+        "Trying to use fr as the minimum in minmax(). The fr unit cannot be a minimum value because it has no fixed size. Use a fixed unit like px or rem for the minimum.",
+        "Setting a minmax minimum that is too large for mobile screens. If your minimum is 300px and the viewport is 320px, items will overflow. Use a smaller minimum or combine with max-width."
+      ],
+      "interviewTips": [
+        "Be ready to write the responsive grid pattern from memory: repeat(auto-fit, minmax(250px, 1fr)). Explain how it works: auto-fit creates as many columns as fit at 250px minimum, and 1fr lets them grow to fill space.",
+        "Know the exact difference between auto-fill and auto-fit. The key question is: what happens when there are fewer items than columns? auto-fill keeps empty tracks, auto-fit collapses them."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "grid-template-ex1",
+        "title": "Responsive Card Grid",
+        "description": "Create a .card-grid that automatically adjusts the number of columns based on container width. Each column should be at least 300px wide and grow to fill available space. Items should stretch to fill all columns (no empty tracks). Use 20px gaps.",
+        "starterCode": "/* Create a responsive auto-fit grid */\n",
+        "solution": ".card-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));\n  gap: 20px;\n}",
+        "hints": [
+          "Use auto-fit (not auto-fill) so items stretch to fill the space when there are few items",
+          "minmax(300px, 1fr) ensures columns are at least 300px but can grow"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "grid-template-ex2",
+        "title": "Complex Mixed Template",
+        "description": "Create a .page grid with: a fixed 240px sidebar column, three flexible equal-width middle columns, and a fixed 200px aside column. Use repeat() for the three middle columns. Set row heights to auto for the first row and 1fr for the second. Use 16px gap.",
+        "starterCode": "/* Create a 5-column grid: fixed + 3 flexible + fixed */\n",
+        "solution": ".page {\n  display: grid;\n  grid-template-columns: 240px repeat(3, 1fr) 200px;\n  grid-template-rows: auto 1fr;\n  gap: 16px;\n  min-height: 100vh;\n}",
+        "hints": [
+          "Mix fixed units with repeat() for flexible middle columns: 240px repeat(3, 1fr) 200px",
+          "grid-template-rows: auto 1fr makes the first row fit content and the second row fill remaining space"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "grid-placement",
+    "sectionId": "css-grid",
+    "orderIndex": 2,
+    "title": "Grid Placement",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["grid-column", "grid-row", "Spanning", "Line-Based Placement"],
+    "content": {
+      "explanation": "By default, grid items are placed automatically into the next available cell, flowing left to right and top to bottom. However, CSS Grid's real power comes from the ability to explicitly place items at specific positions using grid line numbers. Grid lines are the dividers between tracks -- a 3-column grid has 4 vertical lines (numbered 1 through 4) and the lines can be referenced to position items precisely.\n\nThe grid-column property is a shorthand for grid-column-start and grid-column-end. It specifies which vertical grid lines an item spans between. For example, grid-column: 1 / 3 places an item from line 1 to line 3, spanning two columns. The line numbers start at 1 (not 0) and the end line is exclusive -- the item occupies the space between the start and end lines. You can also use negative numbers to count from the end: grid-column: 1 / -1 spans from the first line to the last, covering all columns.\n\nThe grid-row property works identically but for horizontal lines. grid-row: 2 / 4 places an item from row line 2 to row line 4, spanning two rows. Combining grid-column and grid-row gives you complete control over an item's position in the grid, similar to placing a piece on a chessboard.\n\nThe span keyword provides an alternative syntax for specifying how many tracks an item should cover. Instead of calculating the end line number, you specify the number of tracks to span: grid-column: span 2 spans two columns from the item's auto-placed start position. You can also combine a start line with a span: grid-column: 2 / span 3 starts at line 2 and spans 3 columns (ending at line 5). The span syntax is often more readable than explicit end line numbers.\n\nGrid placement allows items to overlap by assigning them to the same cells. When items overlap, the one that appears later in the DOM renders on top (unless you change the stacking order with z-index). This overlap capability is unique to Grid -- you cannot achieve it with Flexbox. It enables creative designs like overlaid text on images, stacked card effects, and complex dashboard widgets that span multiple areas.",
+      "codeExamples": [
+        {
+          "title": "Line-Based Placement",
+          "code": ".grid {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-template-rows: repeat(3, 150px);\n  gap: 16px;\n}\n\n/* Place items at specific positions */\n.header {\n  grid-column: 1 / 5;   /* Span all 4 columns */\n  grid-row: 1 / 2;      /* First row */\n}\n\n.sidebar {\n  grid-column: 1 / 2;   /* First column */\n  grid-row: 2 / 4;      /* Rows 2-3 */\n}\n\n.main {\n  grid-column: 2 / 5;   /* Columns 2-4 */\n  grid-row: 2 / 3;      /* Row 2 */\n}\n\n.footer {\n  grid-column: 2 / 5;\n  grid-row: 3 / 4;\n}",
+          "explanation": "Grid lines are numbered starting from 1. The header spans from line 1 to line 5 (all 4 columns). The sidebar spans from row line 2 to row line 4 (2 rows). Items are explicitly placed by specifying their start and end lines."
+        },
+        {
+          "title": "Using the span Keyword",
+          "code": ".grid {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-auto-rows: minmax(100px, auto);\n  gap: 16px;\n}\n\n/* Span 2 columns from auto position */\n.wide-card {\n  grid-column: span 2;\n}\n\n/* Span 2 rows from auto position */\n.tall-card {\n  grid-row: span 2;\n}\n\n/* Start at column 2, span 3 columns */\n.feature {\n  grid-column: 2 / span 3;\n}\n\n/* Full-width item */\n.banner {\n  grid-column: 1 / -1; /* -1 = last line */\n}",
+          "explanation": "The span keyword specifies how many tracks an item covers. grid-column: span 2 lets the item auto-place but take up two columns. Negative line numbers count from the end: -1 is the last line, so 1 / -1 spans the full width."
+        },
+        {
+          "title": "Overlapping Grid Items",
+          "code": ".image-card {\n  display: grid;\n  grid-template-columns: 1fr;\n  grid-template-rows: 300px;\n}\n\n.card-image {\n  grid-column: 1;\n  grid-row: 1;\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}\n\n.card-overlay {\n  grid-column: 1;\n  grid-row: 1;\n  align-self: end;\n  background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));\n  color: white;\n  padding: 24px;\n  z-index: 1;\n}",
+          "explanation": "Both the image and overlay are placed in the same cell (column 1, row 1). The overlay stacks on top of the image. align-self: end positions the overlay at the bottom. This technique creates image cards with text overlays without using position: absolute."
+        },
+        {
+          "title": "Dashboard Widget Layout",
+          "code": ".dashboard {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-auto-rows: minmax(180px, auto);\n  gap: 20px;\n}\n\n.widget-stats {\n  grid-column: 1 / 3;  /* Columns 1-2 */\n  grid-row: 1;\n}\n\n.widget-chart {\n  grid-column: 3 / 5;  /* Columns 3-4 */\n  grid-row: 1 / 3;     /* Rows 1-2 (tall) */\n}\n\n.widget-table {\n  grid-column: 1 / 3;\n  grid-row: 2;\n}\n\n.widget-feed {\n  grid-column: 1 / -1;  /* Full width */\n  grid-row: 3;\n}",
+          "explanation": "A real-world dashboard layout. The chart widget spans two rows (grid-row: 1 / 3) while being two columns wide. The feed widget spans the full width (1 / -1). Each widget is precisely positioned by its grid lines."
+        }
+      ],
+      "notes": [
+        "Grid line numbers start at 1, not 0. A 3-column grid has column lines 1, 2, 3, and 4.",
+        "Negative line numbers count from the end. -1 is the last line. grid-column: 1 / -1 always spans the full width regardless of how many columns the grid has.",
+        "Grid items can overlap by being placed in the same cells. Use z-index to control stacking order. This is a powerful feature that Flexbox cannot replicate."
+      ],
+      "commonPitfalls": [
+        "Confusing grid lines with grid tracks. Lines are the boundaries between tracks. A 3-column grid has 3 tracks but 4 lines. grid-column: 1 / 3 spans 2 columns (from line 1 to line 3), not 3.",
+        "Forgetting that grid-column end values are exclusive. grid-column: 1 / 3 means the item occupies columns between lines 1 and 3, which is two columns, not three.",
+        "Not defining enough explicit rows for placed items. If you place an item at grid-row: 5 but only define 2 rows, implicit rows are created, which may not have the sizes you expect."
+      ],
+      "interviewTips": [
+        "Be able to calculate grid line numbers from a visual layout. Given a mockup, you should be able to determine the grid-column and grid-row values for each element.",
+        "Know the -1 shortcut for spanning full width (grid-column: 1 / -1) and be able to explain what negative line numbers mean."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "grid-placement-ex1",
+        "title": "Magazine Layout",
+        "description": "Create a .magazine grid with 3 columns and auto rows (min 200px). Place a .featured article spanning 2 columns and 2 rows in the top-left. Place a .sidebar spanning 1 column and 2 rows on the right. Let the remaining .article items auto-place.",
+        "starterCode": "/* Create a magazine-style grid layout */\n",
+        "solution": ".magazine {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-auto-rows: minmax(200px, auto);\n  gap: 20px;\n}\n\n.featured {\n  grid-column: 1 / 3;\n  grid-row: 1 / 3;\n}\n\n.sidebar {\n  grid-column: 3;\n  grid-row: 1 / 3;\n}",
+        "hints": [
+          "The featured article spans columns 1-2 (grid-column: 1 / 3) and rows 1-2 (grid-row: 1 / 3)",
+          "The sidebar is in column 3 and also spans 2 rows"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "grid-placement-ex2",
+        "title": "Full-Width Banner Between Rows",
+        "description": "Create a .products grid with 4 equal columns and auto rows. Add a .banner class that spans the full width of the grid (all 4 columns) and place it in the third row. Use the -1 shortcut for the end column line.",
+        "starterCode": "/* Create a product grid with a full-width banner */\n",
+        "solution": ".products {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-auto-rows: minmax(150px, auto);\n  gap: 16px;\n}\n\n.banner {\n  grid-column: 1 / -1;\n  grid-row: 3;\n  padding: 32px;\n  background-color: #1f2937;\n  color: white;\n  border-radius: 12px;\n}",
+        "hints": [
+          "grid-column: 1 / -1 spans from the first line to the last line, covering all columns",
+          "grid-row: 3 places the banner in the third row"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "grid-areas",
+    "sectionId": "css-grid",
+    "orderIndex": 3,
+    "title": "Grid Areas",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["grid-template-areas", "Named Areas", "grid-area", "Complex Layouts"],
+    "content": {
+      "explanation": "Grid template areas provide a visual, ASCII-art-like way to define your grid layout. Instead of placing items using line numbers, you define named regions in the grid and assign items to those regions. This approach is arguably the most readable way to define page layouts in CSS because the grid-template-areas property visually represents the layout structure.\n\nThe grid-template-areas property uses a string for each row, where each word in the string represents a named area. All strings must have the same number of words (matching the column count). An area name can span multiple cells by repeating it across adjacent cells in the same row or adjacent rows. A period (.) represents an empty cell. For example, a three-column, three-row layout might look like: 'header header header' 'sidebar main main' 'footer footer footer'.\n\nThe grid-area property on a grid item assigns it to a named area. The value must exactly match one of the area names defined in grid-template-areas. When you assign an item to an area, it fills the entire region defined by that name in the template, regardless of how many cells the area spans. This is more intuitive than calculating grid-column and grid-row values.\n\nNamed areas must form rectangles. You cannot create an L-shaped or T-shaped area. Each area name must form a contiguous rectangular block in the template. If an area name appears in non-contiguous cells or in a non-rectangular pattern, the CSS is invalid and the layout breaks. This is the most common mistake when working with grid-template-areas.\n\nGrid template areas pair beautifully with media queries for responsive layouts. You can define entirely different area arrangements at different breakpoints by rewriting the grid-template-areas value. The HTML structure stays the same, but the visual layout transforms completely. For example, a three-column desktop layout can become a single-column mobile layout by stacking all areas vertically in the mobile template.",
+      "codeExamples": [
+        {
+          "title": "Basic Named Areas Layout",
+          "code": ".page {\n  display: grid;\n  grid-template-columns: 250px 1fr;\n  grid-template-rows: 60px 1fr 50px;\n  grid-template-areas:\n    \"header  header\"\n    \"sidebar content\"\n    \"footer  footer\";\n  min-height: 100vh;\n  gap: 0;\n}\n\n.header  { grid-area: header; }\n.sidebar { grid-area: sidebar; }\n.content { grid-area: content; }\n.footer  { grid-area: footer; }",
+          "explanation": "The grid-template-areas property visually maps out the layout. Each quoted string is a row. 'header header' means the header spans both columns. Items are assigned to areas using grid-area with the matching name."
+        },
+        {
+          "title": "Complex Dashboard with Named Areas",
+          "code": ".dashboard {\n  display: grid;\n  grid-template-columns: 1fr 1fr 1fr 1fr;\n  grid-template-rows: auto 300px 200px;\n  grid-template-areas:\n    \"stats  stats  chart  chart\"\n    \"table  table  chart  chart\"\n    \"feed   feed   feed   feed\";\n  gap: 20px;\n  padding: 20px;\n}\n\n.stats-widget { grid-area: stats; }\n.chart-widget { grid-area: chart; }\n.table-widget { grid-area: table; }\n.feed-widget  { grid-area: feed; }",
+          "explanation": "The dashboard layout uses a 4-column grid with named areas. The chart spans 2 columns and 2 rows (a 2x2 block). The feed spans the full width. The ASCII-art template makes the layout immediately understandable."
+        },
+        {
+          "title": "Responsive Layout with Areas",
+          "code": ".app {\n  display: grid;\n  gap: 16px;\n  min-height: 100vh;\n}\n\n.app-header  { grid-area: header; }\n.app-nav     { grid-area: nav; }\n.app-main    { grid-area: main; }\n.app-aside   { grid-area: aside; }\n.app-footer  { grid-area: footer; }\n\n/* Desktop: 3-column holy grail */\n@media (min-width: 1024px) {\n  .app {\n    grid-template-columns: 200px 1fr 200px;\n    grid-template-rows: auto 1fr auto;\n    grid-template-areas:\n      \"header header header\"\n      \"nav    main   aside\"\n      \"footer footer footer\";\n  }\n}\n\n/* Tablet: 2-column */\n@media (min-width: 768px) and (max-width: 1023px) {\n  .app {\n    grid-template-columns: 200px 1fr;\n    grid-template-rows: auto 1fr auto auto;\n    grid-template-areas:\n      \"header header\"\n      \"nav    main\"\n      \"aside  aside\"\n      \"footer footer\";\n  }\n}\n\n/* Mobile: single column */\n@media (max-width: 767px) {\n  .app {\n    grid-template-columns: 1fr;\n    grid-template-areas:\n      \"header\"\n      \"nav\"\n      \"main\"\n      \"aside\"\n      \"footer\";\n  }\n}",
+          "explanation": "The same HTML structure adapts to three different layouts using only CSS changes. On desktop, it is a 3-column holy grail layout. On tablet, the aside moves below the main content. On mobile, everything stacks in a single column. The grid-area assignments on the items never change."
+        },
+        {
+          "title": "Areas with Empty Cells",
+          "code": ".gallery {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-template-rows: 200px 200px 200px;\n  grid-template-areas:\n    \"hero  hero  sidebar\"\n    \"hero  hero  .\"\n    \"thumb1 thumb2 thumb3\";\n  gap: 16px;\n}\n\n.hero    { grid-area: hero; }\n.sidebar { grid-area: sidebar; }\n.thumb1  { grid-area: thumb1; }\n.thumb2  { grid-area: thumb2; }\n.thumb3  { grid-area: thumb3; }",
+          "explanation": "A period (.) represents an empty cell. In this gallery layout, the hero image spans a 2x2 area, the sidebar occupies one cell, and the cell below the sidebar is intentionally left empty. The bottom row has three thumbnails."
+        }
+      ],
+      "notes": [
+        "Named areas must form perfect rectangles. An L-shaped or irregular area name placement is invalid CSS and will break the layout.",
+        "Use a period (.) for empty cells in the grid template. Multiple periods (...) can also be used but represent a single empty cell.",
+        "grid-template-areas implicitly creates named grid lines. An area called 'header' automatically creates lines named 'header-start' and 'header-end' that you can reference in grid-column/grid-row."
+      ],
+      "commonPitfalls": [
+        "Creating non-rectangular named areas. Every instance of an area name must form a contiguous rectangle in the template. 'sidebar . sidebar' on a single row is invalid.",
+        "Having different numbers of area names in each row string. Every row must have exactly the same number of names, matching the number of columns.",
+        "Misspelling the area name in grid-area vs grid-template-areas. The names must match exactly (they are case-sensitive)."
+      ],
+      "interviewTips": [
+        "Grid template areas are an excellent tool for whiteboard interviews because you can visually represent the layout in ASCII art. Practice drawing common layouts using the string-based syntax.",
+        "Know that named areas create implicit named lines (-start and -end). This shows deep CSS Grid knowledge that impresses interviewers."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "grid-areas-ex1",
+        "title": "Blog Layout with Named Areas",
+        "description": "Create a .blog-layout grid with a header spanning the full width, a main content area taking 2/3 of the width, a sidebar taking 1/3, and a footer spanning the full width. Use grid-template-areas to define the layout. The main content row should use 1fr for height.",
+        "starterCode": "/* Create a blog layout using grid-template-areas */\n",
+        "solution": ".blog-layout {\n  display: grid;\n  grid-template-columns: 2fr 1fr;\n  grid-template-rows: auto 1fr auto;\n  grid-template-areas:\n    \"header  header\"\n    \"main    sidebar\"\n    \"footer  footer\";\n  min-height: 100vh;\n  gap: 24px;\n}\n\n.blog-header  { grid-area: header; }\n.blog-main    { grid-area: main; }\n.blog-sidebar { grid-area: sidebar; }\n.blog-footer  { grid-area: footer; }",
+        "hints": [
+          "Use 2fr 1fr for the column template to make the main area twice as wide as the sidebar",
+          "Areas that span multiple columns repeat the name: 'header header'"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "grid-areas-ex2",
+        "title": "Responsive Layout with Area Rearrangement",
+        "description": "Create a .app-shell grid. On desktop (min-width: 768px), use a 2-column layout: 'nav main' in the content row with a full-width header and footer. On mobile (below 768px), stack everything in a single column: header, nav, main, footer. Define the grid-area assignments and both media query templates.",
+        "starterCode": "/* Define grid-area for each section */\n/* Desktop: 2-column with nav and main side by side */\n/* Mobile: single column stacked */\n",
+        "solution": ".app-shell {\n  display: grid;\n  min-height: 100vh;\n  gap: 0;\n}\n\n.shell-header { grid-area: header; }\n.shell-nav    { grid-area: nav; }\n.shell-main   { grid-area: main; }\n.shell-footer { grid-area: footer; }\n\n/* Mobile: single column */\n.app-shell {\n  grid-template-columns: 1fr;\n  grid-template-rows: auto auto 1fr auto;\n  grid-template-areas:\n    \"header\"\n    \"nav\"\n    \"main\"\n    \"footer\";\n}\n\n/* Desktop: 2-column */\n@media (min-width: 768px) {\n  .app-shell {\n    grid-template-columns: 240px 1fr;\n    grid-template-rows: auto 1fr auto;\n    grid-template-areas:\n      \"header header\"\n      \"nav    main\"\n      \"footer footer\";\n  }\n}",
+        "hints": [
+          "Define the mobile layout first (mobile-first approach), then override with a media query for desktop",
+          "The grid-area assignments on the items do not change between breakpoints -- only the template changes"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "grid-auto-flow",
+    "sectionId": "css-grid",
+    "orderIndex": 4,
+    "title": "Grid Auto Flow",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["auto-flow dense", "Implicit Tracks", "grid-auto-flow", "Grid vs Flexbox"],
+    "content": {
+      "explanation": "The grid-auto-flow property controls how grid items that are not explicitly placed are automatically positioned in the grid. By default, items flow in row order (left to right, then to the next row), but you can change this to column order or enable dense packing. Understanding auto-flow is essential for grids with dynamic content where you cannot predict the exact number of items.\n\nThe default value of grid-auto-flow is row, which places items left to right, filling each row before moving to the next. Setting grid-auto-flow: column changes the flow direction so items fill each column from top to bottom before moving to the next column. Column flow is useful for layouts like newspaper columns or vertical masonry-style grids where you want items to stack vertically first.\n\nThe dense keyword enables a backfilling algorithm. When auto-placing items, the grid normally leaves gaps when a larger item cannot fit in the current position. With grid-auto-flow: row dense (or just dense), the grid goes back and fills those gaps with smaller items that fit, even if it means placing them out of DOM order. This creates a more compact layout but can reorder items visually, which has accessibility implications similar to the order property in Flexbox.\n\nImplicit tracks are rows or columns that the grid creates automatically when items are placed outside the explicit grid template. If you define grid-template-columns: repeat(3, 1fr) and have 10 items, the grid creates implicit rows for items 4-10. The size of implicit rows is controlled by grid-auto-rows, and implicit columns by grid-auto-columns. Without these properties, implicit tracks default to auto sizing (fitting their content). Always set grid-auto-rows when your grid has dynamic content.\n\nThe choice between CSS Grid and Flexbox depends on the layout requirements. Grid excels at two-dimensional layouts where you need to control both rows and columns simultaneously (page layouts, dashboards, image galleries). Flexbox excels at one-dimensional layouts where items flow in a single direction (navigation bars, button groups, card rows). In practice, most applications use both: Grid for the page-level structure and Flexbox for component-level layouts within grid cells. They can also be nested -- a grid item can be a flex container and vice versa.",
+      "codeExamples": [
+        {
+          "title": "grid-auto-flow: row vs column",
+          "code": "/* Default: items fill rows left-to-right */\n.row-flow {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-auto-rows: 100px;\n  grid-auto-flow: row;\n  gap: 12px;\n}\n/* Items: 1 2 3\n         4 5 6\n         7 8 9 */\n\n/* Column flow: items fill columns top-to-bottom */\n.column-flow {\n  display: grid;\n  grid-template-rows: repeat(3, 100px);\n  grid-auto-columns: 1fr;\n  grid-auto-flow: column;\n  gap: 12px;\n}\n/* Items: 1 4 7\n         2 5 8\n         3 6 9 */",
+          "explanation": "With row flow (default), items fill each row before moving to the next. With column flow, items fill each column first. Column flow requires defining grid-template-rows (or grid-auto-rows) instead of columns, and uses grid-auto-columns for implicit column sizes."
+        },
+        {
+          "title": "Dense Packing to Fill Gaps",
+          "code": ".gallery {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-auto-rows: 150px;\n  grid-auto-flow: dense;\n  gap: 12px;\n}\n\n/* Some items span 2 columns */\n.gallery-item-wide {\n  grid-column: span 2;\n}\n\n/* Some items span 2 rows */\n.gallery-item-tall {\n  grid-row: span 2;\n}\n\n/* Without dense: gaps appear when wide items don't fit\n   [1] [wide-2 ] [  ] [3]\n   [4] [5]       [6]  [7]\n\n   With dense: small items backfill the gaps\n   [1] [wide-2 ] [3] [4]\n   [5] [6]       [7]  [8] */",
+          "explanation": "Without dense, the grid leaves gaps when a wide item cannot fit at the end of a row. With dense, smaller items are pulled forward to fill those gaps, creating a tightly packed layout. The visual order may differ from the DOM order."
+        },
+        {
+          "title": "Controlling Implicit Track Sizes",
+          "code": ".dynamic-grid {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  /* Explicit rows */\n  grid-template-rows: 200px 200px;\n  /* Implicit rows (items beyond row 2) */\n  grid-auto-rows: minmax(150px, auto);\n  gap: 16px;\n}\n\n/* Column flow with implicit columns */\n.timeline {\n  display: grid;\n  grid-template-rows: repeat(4, auto);\n  grid-auto-flow: column;\n  grid-auto-columns: 300px;\n  gap: 20px;\n  overflow-x: auto;\n}",
+          "explanation": "grid-auto-rows sizes implicit rows created when items overflow the explicit grid. grid-auto-columns does the same for implicit columns. The timeline example creates a horizontally scrolling grid where each group of 4 items forms a column."
+        },
+        {
+          "title": "Grid vs Flexbox: Choosing the Right Tool",
+          "code": "/* PAGE LAYOUT: Use Grid (two-dimensional) */\n.page {\n  display: grid;\n  grid-template-columns: 250px 1fr;\n  grid-template-rows: auto 1fr auto;\n  grid-template-areas:\n    \"header header\"\n    \"nav    main\"\n    \"footer footer\";\n  min-height: 100vh;\n}\n\n/* NAVBAR: Use Flexbox (one-dimensional) */\n.navbar {\n  display: flex;\n  align-items: center;\n  justify-content: space-between;\n  padding: 0 24px;\n  height: 60px;\n}\n\n/* CARD GRID: Grid for the grid, Flex inside each card */\n.card-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));\n  gap: 24px;\n}\n\n.card {\n  display: flex;\n  flex-direction: column;\n}\n\n.card-body {\n  flex: 1;\n}\n\n.card-footer {\n  margin-top: auto;\n}",
+          "explanation": "Use Grid for two-dimensional layouts (the page shell, the card grid). Use Flexbox for one-dimensional layouts within those grid cells (the navbar, the card internals). This combination leverages the strengths of both systems."
+        }
+      ],
+      "notes": [
+        "grid-auto-flow: dense can reorder items visually, which creates the same accessibility concerns as Flexbox's order property. Screen readers and keyboard navigation follow DOM order, not visual order.",
+        "Implicit tracks are created automatically but have no template definition. Always set grid-auto-rows or grid-auto-columns when you have dynamic content to ensure consistent sizing.",
+        "Grid and Flexbox are complementary. The general rule is: Grid for page layouts and two-dimensional component grids, Flexbox for one-dimensional component layouts and alignment within grid cells."
+      ],
+      "commonPitfalls": [
+        "Using grid-auto-flow: dense without considering accessibility. Dense packing reorders items visually, which can confuse keyboard users and screen readers that follow DOM order.",
+        "Not setting grid-auto-rows when the number of items is unknown. Without it, implicit rows default to auto height, which may not match the explicit row heights and create an inconsistent layout.",
+        "Using CSS Grid for simple one-dimensional layouts where Flexbox would be simpler. A navigation bar does not need Grid's two-dimensional capabilities -- Flexbox handles it with less code."
+      ],
+      "interviewTips": [
+        "The 'Grid vs Flexbox' question is extremely common. The answer is: Grid is two-dimensional (rows AND columns), Flexbox is one-dimensional (row OR column). They complement each other -- use Grid for page layout and Flexbox for component layout.",
+        "Be ready to explain what implicit vs explicit tracks are. Explicit tracks are defined by grid-template-*. Implicit tracks are created automatically for overflow items and sized by grid-auto-*.",
+        "Know what dense packing does and its trade-offs: it fills gaps for a compact layout but can reorder items visually, which is an accessibility concern."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "grid-auto-flow-ex1",
+        "title": "Dense Image Gallery",
+        "description": "Create a .gallery grid with 4 equal columns, auto-rows of 200px, dense packing, and 8px gaps. Add a .gallery-wide class that spans 2 columns and a .gallery-tall class that spans 2 rows. The dense packing should fill gaps left by the larger items.",
+        "starterCode": "/* Create a dense-packed image gallery grid */\n",
+        "solution": ".gallery {\n  display: grid;\n  grid-template-columns: repeat(4, 1fr);\n  grid-auto-rows: 200px;\n  grid-auto-flow: dense;\n  gap: 8px;\n}\n\n.gallery-wide {\n  grid-column: span 2;\n}\n\n.gallery-tall {\n  grid-row: span 2;\n}",
+        "hints": [
+          "grid-auto-flow: dense enables backfilling of gaps created by larger items",
+          "Use grid-column: span 2 and grid-row: span 2 for larger gallery items"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "grid-auto-flow-ex2",
+        "title": "Grid + Flexbox Composition",
+        "description": "Create a page layout using CSS Grid for the overall structure (.page: header, sidebar, main, footer using named areas). Inside the .main area, create a .content-grid using CSS Grid (repeat(auto-fit, minmax(250px, 1fr))). Inside each .card in the content grid, use Flexbox to stack content vertically with the button at the bottom.",
+        "starterCode": "/* Page layout with Grid */\n\n/* Content grid inside main */\n\n/* Card layout with Flexbox */\n",
+        "solution": "/* Page layout with Grid */\n.page {\n  display: grid;\n  grid-template-columns: 240px 1fr;\n  grid-template-rows: 60px 1fr 50px;\n  grid-template-areas:\n    \"header header\"\n    \"sidebar main\"\n    \"footer footer\";\n  min-height: 100vh;\n}\n\n.page-header  { grid-area: header; }\n.page-sidebar { grid-area: sidebar; }\n.page-main    { grid-area: main; }\n.page-footer  { grid-area: footer; }\n\n/* Content grid inside main */\n.content-grid {\n  display: grid;\n  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));\n  gap: 20px;\n  padding: 20px;\n}\n\n/* Card layout with Flexbox */\n.card {\n  display: flex;\n  flex-direction: column;\n  background-color: white;\n  border-radius: 12px;\n  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);\n  overflow: hidden;\n}\n\n.card-body {\n  flex: 1;\n  padding: 20px;\n}\n\n.card-action {\n  padding: 16px 20px;\n  margin-top: auto;\n  border-top: 1px solid #e5e7eb;\n}",
+        "hints": [
+          "Use CSS Grid with named areas for the page layout and a nested grid for the card grid",
+          "Each card uses Flexbox (flex-direction: column) with flex: 1 on the body and margin-top: auto on the action to push buttons to the bottom"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useParams, Link, useLocation, useNavigate } from "react-router";
+import { useParams, Link, useNavigate, Navigate } from "react-router";
 import { motion } from "framer-motion";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
@@ -88,10 +88,8 @@ const DIFF_BADGE: Record<string, string> = {
 
 export default function SqlExercisePage() {
   const { sectionSlug, exerciseId } = useParams();
-  const location = useLocation();
   const navigate = useNavigate();
-  const isStudentRoute = location.pathname.startsWith("/student");
-  const basePath = isStudentRoute ? "/student/sql" : "/sql";
+  const basePath = "/learn/sql";
 
   const { progress, save } = useSqlProgress();
 
@@ -192,6 +190,13 @@ export default function SqlExercisePage() {
     setShowHints(0);
     setShowExpected(false);
   }, [exercise]);
+
+  // Redirect if section is locked (index >= 5 and not authenticated)
+  const sectionIndex = sections.findIndex((s) => s.id === sectionSlug);
+  const isSqlAuthenticated = useAuthStore((s) => s.isAuthenticated);
+  if (sectionIndex >= 5 && !isSqlAuthenticated) {
+    return <Navigate to={basePath} replace />;
+  }
 
   // Section exercise list view
   if (!exerciseId && section) {

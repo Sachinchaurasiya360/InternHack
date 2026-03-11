@@ -1,0 +1,380 @@
+[
+  {
+    "id": "content-box",
+    "sectionId": "box-model-and-spacing",
+    "orderIndex": 0,
+    "title": "The Content Box",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["width", "height", "Inline vs Block", "Display Property", "Content Area"],
+    "content": {
+      "explanation": "Every element in CSS is rendered as a rectangular box. The CSS box model describes how these boxes are structured and how their size is calculated. At the very center of the box model is the content area -- the region where text, images, or child elements are displayed. The width and height properties control the size of this content area by default.\n\nBlock-level elements (like <div>, <p>, <h1>-<h6>, <section>) take up the full width available from their parent container and start on a new line. Their width defaults to 100% of the parent, and their height is determined by their content. You can explicitly set both width and height on block elements. Inline elements (like <span>, <a>, <strong>, <em>) only take up as much width as their content needs and do not start on a new line. Crucially, width and height properties have no effect on inline elements -- the element's size is entirely determined by its content.\n\nThe display property controls how an element participates in the layout flow. The most common values are block (full width, starts new line), inline (content width, stays in line), inline-block (content width like inline, but respects width/height like block), none (removes from layout entirely), and flex/grid (creates flexible or grid layout contexts). Understanding display is fundamental because it determines which box model properties are actually effective.\n\nWhen you set width: 300px on a block element, you are setting the width of the content area only (in the default content-box model). Padding, border, and margin are added on top of this width, making the total space the element occupies larger than 300px. This is the default behavior and is often counterintuitive, which is why many developers switch to border-box sizing (covered in a later lesson).\n\nPercentage-based widths are relative to the parent element's content area width. Setting width: 50% on a child makes its content area half the width of its parent's content area. Heights work differently -- percentage heights only work if the parent has an explicit height set. A height of 100% on a child whose parent has no defined height will have no effect, which is a common source of confusion.",
+      "codeExamples": [
+        {
+          "title": "Block vs Inline Elements",
+          "code": "/* Block element: takes full width */\ndiv {\n  width: 300px;\n  height: 100px;\n  background-color: lightblue;\n}\n\n/* Inline element: width and height are IGNORED */\nspan {\n  width: 300px;  /* has no effect */\n  height: 100px; /* has no effect */\n  background-color: lightyellow;\n}\n\n/* Inline-block: respects width/height like block,\n   but stays in the inline flow */\n.badge {\n  display: inline-block;\n  width: 80px;\n  height: 30px;\n  background-color: lightgreen;\n}",
+          "explanation": "Block elements accept width and height. Inline elements ignore them entirely. Inline-block is a hybrid: it respects dimensions like a block element but does not force a new line like inline elements."
+        },
+        {
+          "title": "Setting Width and Height",
+          "code": ".card {\n  width: 350px;\n  height: 200px;\n  background-color: #f5f5f5;\n}\n\n/* Min and max constraints */\n.flexible-card {\n  width: 50%;\n  min-width: 200px;\n  max-width: 600px;\n  min-height: 100px;\n  background-color: #e0e0e0;\n}\n\n/* Full viewport height */\n.hero {\n  width: 100%;\n  height: 100vh;\n  background-color: #333;\n}",
+          "explanation": "Fixed widths use pixel values. Percentage widths are relative to the parent. Use min-width/max-width to set bounds on flexible elements. The vh unit (viewport height) is useful for full-screen sections. min-height is often more practical than height since content may overflow a fixed height."
+        },
+        {
+          "title": "Content Overflow",
+          "code": "/* When content exceeds the box size */\n.small-box {\n  width: 200px;\n  height: 100px;\n  background-color: #ffeeba;\n  \n  /* Default: content overflows visibly */\n  overflow: visible;\n}\n\n.scroll-box {\n  width: 200px;\n  height: 100px;\n  background-color: #d4edda;\n  \n  /* Add scrollbar when content overflows */\n  overflow: auto;\n}\n\n.hidden-box {\n  width: 200px;\n  height: 100px;\n  background-color: #f8d7da;\n  \n  /* Clip overflowing content */\n  overflow: hidden;\n}",
+          "explanation": "When content is larger than the box, the overflow property controls what happens. 'visible' (default) lets content spill out. 'auto' adds scrollbars only when needed. 'hidden' clips the overflow. 'scroll' always shows scrollbars. You can also control each axis independently with overflow-x and overflow-y."
+        },
+        {
+          "title": "Display Property Values",
+          "code": "/* Force inline elements to be block */\nspan.block {\n  display: block;\n  width: 200px;\n  height: 50px;\n  background-color: coral;\n}\n\n/* Force block elements to be inline */\ndiv.inline {\n  display: inline;\n  /* width and height will be ignored now */\n}\n\n/* Inline-block: best of both worlds */\n.nav-item {\n  display: inline-block;\n  width: 120px;\n  height: 40px;\n  text-align: center;\n  line-height: 40px;\n  background-color: #007bff;\n  color: white;\n}\n\n/* Remove from layout entirely */\n.hidden {\n  display: none;\n}",
+          "explanation": "The display property changes how an element participates in layout. You can make a <span> behave like a block element or a <div> behave inline. display: none removes the element from the layout completely (it takes up no space), unlike visibility: hidden which hides the element but reserves its space."
+        }
+      ],
+      "notes": [
+        "Width and height only affect block-level and inline-block elements. They have no effect on inline elements.",
+        "Percentage heights only work when the parent has an explicit height defined. Without it, the percentage has no reference and is ignored.",
+        "Use min-height instead of height when the content might exceed the fixed size. This prevents overflow issues while still providing a minimum visual size."
+      ],
+      "commonPitfalls": [
+        "Setting width and height on inline elements like <span> and <a> and expecting them to work. Use display: inline-block or display: block first.",
+        "Setting height: 100% without ensuring every ancestor up to the root has an explicit height. The percentage has no reference and collapses to auto.",
+        "Confusing display: none with visibility: hidden. display: none removes the element from layout entirely; visibility: hidden hides it visually but reserves its space."
+      ],
+      "interviewTips": [
+        "Explain the difference between block, inline, and inline-block display types and how they affect width/height properties.",
+        "Know that the content area is the innermost part of the box model, and by default, width/height only control this area."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "content-box-ex1",
+        "title": "Block and Inline Behavior",
+        "description": "Create CSS rules for three elements: a .block-box that is 400px wide and 150px tall with a light blue background, a .inline-text that tries to set width to 400px (demonstrating it will be ignored on an inline element), and a .inline-block-box that is 200px wide and 60px tall using inline-block display with a light green background.",
+        "starterCode": ".block-box {\n  /* Block element styles */\n}\n\n.inline-text {\n  /* Inline element styles */\n}\n\n.inline-block-box {\n  /* Inline-block element styles */\n}\n",
+        "solution": ".block-box {\n  width: 400px;\n  height: 150px;\n  background-color: lightblue;\n}\n\n.inline-text {\n  width: 400px;\n  background-color: lightyellow;\n}\n\n.inline-block-box {\n  display: inline-block;\n  width: 200px;\n  height: 60px;\n  background-color: lightgreen;\n}",
+        "hints": [
+          "Block elements accept width and height by default",
+          "Use display: inline-block to make an element respect width/height while staying in the inline flow"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "content-box-ex2",
+        "title": "Responsive Box with Constraints",
+        "description": "Create a .responsive-card class that takes up 80% of its parent's width but never goes below 250px or above 700px. Give it a minimum height of 200px, a light gray background (#f0f0f0), and auto overflow for when content exceeds the size.",
+        "starterCode": ".responsive-card {\n  /* Add your styles */\n}\n",
+        "solution": ".responsive-card {\n  width: 80%;\n  min-width: 250px;\n  max-width: 700px;\n  min-height: 200px;\n  background-color: #f0f0f0;\n  overflow: auto;\n}",
+        "hints": [
+          "Use min-width and max-width to constrain the element's flexible width",
+          "min-height ensures the box has a minimum size even with little content"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "padding",
+    "sectionId": "box-model-and-spacing",
+    "orderIndex": 1,
+    "title": "Padding",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Padding Properties", "Padding Shorthand", "Percentage Values", "Box Model Layer", "Padding vs Margin"],
+    "content": {
+      "explanation": "Padding is the space between an element's content and its border. It creates internal spacing within the element, pushing the content inward. Unlike margin, which creates space outside the element, padding is inside the element's border and is affected by the element's background color. If you set a blue background on an element, the padding area will also be blue.\n\nThere are four individual padding properties: padding-top, padding-right, padding-bottom, and padding-left. Each accepts length values (px, em, rem, etc.) or percentage values. You can set each side independently to create asymmetric spacing. For example, a card component might need more padding on the sides than on the top and bottom.\n\nThe padding shorthand property allows you to set all four sides in a single declaration. It follows a clockwise pattern starting from the top: padding: top right bottom left. There are several shorthand forms: padding: 20px (all four sides); padding: 10px 20px (top/bottom, left/right); padding: 10px 20px 15px (top, left/right, bottom); and padding: 10px 20px 15px 25px (top, right, bottom, left). The two-value and three-value shorthand forms are the most commonly used.\n\nPercentage padding values are calculated relative to the width of the containing element -- not the height, even for padding-top and padding-bottom. This is a frequently misunderstood aspect of CSS. Because of this behavior, percentage padding can be used for the classic aspect-ratio hack: setting padding-bottom: 56.25% on an element with height: 0 creates a 16:9 aspect ratio container, since 9/16 = 0.5625.\n\nPadding interacts with the box model in an important way. In the default content-box model, padding is added to the width and height of the element. So a box with width: 200px and padding: 20px will actually occupy 240px of horizontal space (200 + 20 left + 20 right). This additive behavior is one of the most common sources of layout bugs, which is why border-box sizing is widely adopted as a reset.",
+      "codeExamples": [
+        {
+          "title": "Individual Padding Properties",
+          "code": ".card {\n  padding-top: 16px;\n  padding-right: 24px;\n  padding-bottom: 16px;\n  padding-left: 24px;\n  background-color: #f5f5f5;\n  border: 1px solid #ddd;\n}\n\n/* Asymmetric padding for different visual needs */\n.sidebar-item {\n  padding-top: 8px;\n  padding-right: 12px;\n  padding-bottom: 8px;\n  padding-left: 32px; /* Extra left padding for indentation */\n  border-left: 3px solid #007bff;\n}",
+          "explanation": "Individual padding properties let you control each side independently. The card uses more horizontal padding than vertical. The sidebar item uses extra-large left padding to create an indented look alongside a left border accent."
+        },
+        {
+          "title": "Padding Shorthand Patterns",
+          "code": "/* All four sides equal: 20px */\n.box-a {\n  padding: 20px;\n}\n\n/* Vertical | Horizontal: 10px top/bottom, 24px left/right */\n.box-b {\n  padding: 10px 24px;\n}\n\n/* Top | Horizontal | Bottom: 8px top, 16px sides, 24px bottom */\n.box-c {\n  padding: 8px 16px 24px;\n}\n\n/* Top | Right | Bottom | Left (clockwise) */\n.box-d {\n  padding: 10px 20px 15px 25px;\n}",
+          "explanation": "The padding shorthand follows a clockwise pattern: top, right, bottom, left. The 2-value syntax (vertical, horizontal) is the most common in practice. Remember: when values are omitted, they mirror the opposite side -- 3 values means left copies right."
+        },
+        {
+          "title": "Padding with Different Units",
+          "code": "/* Fixed pixel padding */\n.card {\n  padding: 16px 24px;\n}\n\n/* Relative em padding (scales with font-size) */\n.text-block {\n  padding: 1em 1.5em;\n  font-size: 16px; /* padding becomes 16px 24px */\n}\n\n/* rem padding (relative to root font-size) */\n.section {\n  padding: 2rem 1.5rem;\n}\n\n/* Percentage padding (relative to parent WIDTH) */\n.responsive-box {\n  padding: 5%; /* All sides: 5% of parent's width */\n}\n\n/* Aspect ratio trick with percentage padding */\n.ratio-16-9 {\n  width: 100%;\n  height: 0;\n  padding-bottom: 56.25%; /* 9/16 = 0.5625 */\n  position: relative;\n}",
+          "explanation": "Pixel values are fixed. Em values scale with the element's font-size, making padding proportional to text. Rem values scale with the root font-size for consistency. Percentage padding is always relative to the parent's width, even for top and bottom, which enables the aspect-ratio hack."
+        },
+        {
+          "title": "Padding and Background Interaction",
+          "code": "/* Padding is INSIDE the element -- background covers it */\n.highlighted {\n  padding: 20px;\n  background-color: #fffde7;\n  border: 2px solid #fbc02d;\n}\n\n/* Padding affects total size in content-box model */\n.content-box-demo {\n  box-sizing: content-box; /* default */\n  width: 200px;\n  padding: 20px;\n  border: 2px solid #333;\n  /* Total width: 200 + 20 + 20 + 2 + 2 = 244px */\n}\n\n/* Padding does NOT affect total size in border-box */\n.border-box-demo {\n  box-sizing: border-box;\n  width: 200px;\n  padding: 20px;\n  border: 2px solid #333;\n  /* Total width: 200px (content shrinks to 156px) */\n}",
+          "explanation": "The background color fills the padding area. In the default content-box model, padding adds to the total element size. In border-box model, padding is subtracted from the width, keeping the total size at 200px. This is why border-box is preferred."
+        }
+      ],
+      "notes": [
+        "Padding is inside the border and is covered by the element's background. Margin is outside the border and is always transparent.",
+        "Percentage padding values are always relative to the parent's width, even for padding-top and padding-bottom. This is a common interview question.",
+        "In the default content-box model, padding is added to width/height. Switch to border-box to include padding within the declared dimensions."
+      ],
+      "commonPitfalls": [
+        "Assuming percentage padding-top and padding-bottom are relative to the parent's height. They are always relative to the parent's width.",
+        "Forgetting that padding adds to the total element size in the default content-box model. A width: 200px box with padding: 20px is actually 240px wide.",
+        "Using padding to create space between siblings when margin is the correct tool. Padding creates space inside an element; margin creates space between elements."
+      ],
+      "interviewTips": [
+        "Be ready to explain that percentage padding is always relative to the parent's width, and how this enables the aspect-ratio hack.",
+        "Know the difference between padding and margin and when to use each.",
+        "Understand how padding interacts with box-sizing: content-box vs border-box."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "padding-ex1",
+        "title": "Card Component Padding",
+        "description": "Style a .card class with 24px of horizontal padding, 16px of vertical padding, a 1px solid #ddd border, and a white background. Use the padding shorthand.",
+        "starterCode": ".card {\n  /* Add your styles */\n}\n",
+        "solution": ".card {\n  padding: 16px 24px;\n  border: 1px solid #ddd;\n  background-color: white;\n}",
+        "hints": [
+          "The 2-value padding shorthand is: padding: vertical horizontal",
+          "16px for top/bottom and 24px for left/right"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "padding-ex2",
+        "title": "Aspect Ratio Box with Padding",
+        "description": "Create a .video-wrapper class that uses the percentage-padding technique to maintain a 16:9 aspect ratio. Set width to 100%, height to 0, and use padding-bottom to create the ratio. Add position: relative so child elements can be absolutely positioned inside it.",
+        "starterCode": ".video-wrapper {\n  /* Create a 16:9 aspect ratio container */\n}\n",
+        "solution": ".video-wrapper {\n  width: 100%;\n  height: 0;\n  padding-bottom: 56.25%;\n  position: relative;\n  background-color: #000;\n}",
+        "hints": [
+          "9 divided by 16 equals 0.5625, which is 56.25%",
+          "Percentage padding-bottom is relative to the parent's width, creating a proportional height"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "borders",
+    "sectionId": "box-model-and-spacing",
+    "orderIndex": 2,
+    "title": "Borders",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Border Properties", "Border Shorthand", "border-radius", "Outline vs Border", "Border Styles"],
+    "content": {
+      "explanation": "The border is the layer between padding and margin in the CSS box model. It surrounds the padding area and can be styled with a width, style, and color. Borders are visible by default (unlike margins, which are transparent) and are one of the most visually impactful box model properties. They define element boundaries, create visual separation, and add decorative detail to components.\n\nEach border side has three sub-properties: width, style, and color. For example, border-top-width, border-top-style, and border-top-color control the top border. The border-style property is the most important -- without a style, the border is invisible even if width and color are set. Common border styles include solid (continuous line), dashed (series of dashes), dotted (series of dots), double (two parallel lines), and none (no border). There are also groove, ridge, inset, and outset styles that create 3D-looking effects.\n\nThe border shorthand property combines width, style, and color in one declaration: border: 1px solid #333. You can also set individual sides: border-top: 2px dashed red. The shorthand is the most common way to declare borders in practice. You can mix and match by using the shorthand for most sides and then overriding a specific side: border: 1px solid gray; border-bottom: 3px solid blue creates a thin gray border with a thicker blue bottom.\n\nThe border-radius property rounds the corners of an element's border box. It can take one value (all corners equal), two values (top-left/bottom-right and top-right/bottom-left), or four values (each corner individually in clockwise order). Setting border-radius to 50% on a square element creates a perfect circle. You can also specify horizontal and vertical radii separately using the slash syntax: border-radius: 10px / 20px creates elliptical corners.\n\nThe outline property is visually similar to border but is fundamentally different. Outlines do not take up space in the layout -- they are drawn on top of the element without affecting its size or position. Outlines cannot have rounded corners (though outline now supports border-radius in modern browsers) and always surround the entire element (you cannot set outline-top independently). The most important use of outline is for focus indicators on interactive elements. Never remove outlines without providing an alternative focus indicator, as this breaks keyboard accessibility.",
+      "codeExamples": [
+        {
+          "title": "Border Shorthand and Individual Sides",
+          "code": "/* Border shorthand: width style color */\n.card {\n  border: 1px solid #e0e0e0;\n}\n\n/* Individual side borders */\n.accent-left {\n  border-left: 4px solid #007bff;\n  padding-left: 16px;\n}\n\n/* Mix: uniform border with accent bottom */\n.tab-active {\n  border: 1px solid #ddd;\n  border-bottom: 3px solid #007bff;\n}\n\n/* Remove a specific side */\n.no-top-border {\n  border: 1px solid #ccc;\n  border-top: none;\n}",
+          "explanation": "The shorthand sets all four sides at once. Individual side properties override specific sides. This is useful for accent borders, tab indicators, and creating partial borders. Use border-top: none to remove a specific side."
+        },
+        {
+          "title": "Border Styles Gallery",
+          "code": ".solid    { border: 3px solid #333; }\n.dashed   { border: 3px dashed #333; }\n.dotted   { border: 3px dotted #333; }\n.double   { border: 4px double #333; } /* needs 3px+ to show */\n.groove   { border: 4px groove #888; } /* 3D inset effect */\n.ridge    { border: 4px ridge #888; }  /* 3D raised effect */\n.inset    { border: 4px inset #888; }  /* box appears sunken */\n.outset   { border: 4px outset #888; } /* box appears raised */\n.hidden   { border: 3px hidden #333; } /* takes space but invisible */\n.none     { border: none; }            /* no border, no space */",
+          "explanation": "Solid, dashed, and dotted are by far the most commonly used. Double requires at least 3px width to show both lines. The 3D styles (groove, ridge, inset, outset) use the color to compute light and shadow shades. Hidden takes space but is invisible; none takes no space."
+        },
+        {
+          "title": "Border Radius",
+          "code": "/* Uniform rounding */\n.rounded {\n  border: 2px solid #333;\n  border-radius: 8px;\n}\n\n/* Pill shape (half the height) */\n.pill {\n  border: 2px solid #333;\n  border-radius: 9999px;\n  padding: 4px 16px;\n}\n\n/* Perfect circle (must be a square element) */\n.circle {\n  width: 100px;\n  height: 100px;\n  border: 2px solid #333;\n  border-radius: 50%;\n}\n\n/* Individual corners */\n.custom-corners {\n  border: 2px solid #333;\n  border-top-left-radius: 20px;\n  border-top-right-radius: 0;\n  border-bottom-right-radius: 20px;\n  border-bottom-left-radius: 0;\n}\n\n/* Elliptical corners: horizontal / vertical */\n.elliptical {\n  border: 2px solid #333;\n  border-radius: 50px / 25px;\n}",
+          "explanation": "border-radius rounds the element's corners. Use a large value like 9999px for pill shapes. Use 50% on a square for a perfect circle. Individual corner properties allow asymmetric rounding. The slash syntax creates elliptical (non-circular) corners."
+        },
+        {
+          "title": "Outline vs Border",
+          "code": "/* Border: takes up space in the layout */\n.with-border {\n  border: 3px solid blue;\n  /* Total width increases by 6px (3px each side) */\n}\n\n/* Outline: does NOT take up space */\n.with-outline {\n  outline: 3px solid red;\n  /* Total width is unchanged */\n}\n\n/* Outline offset: gap between element and outline */\n.offset-outline {\n  outline: 2px solid #007bff;\n  outline-offset: 4px;\n}\n\n/* NEVER remove focus outlines without replacement */\n/* Bad: */\nbutton:focus {\n  outline: none; /* Breaks accessibility! */\n}\n\n/* Good: custom focus style */\nbutton:focus-visible {\n  outline: 2px solid #007bff;\n  outline-offset: 2px;\n}",
+          "explanation": "Borders affect layout; outlines do not. Outline-offset creates space between the outline and the element edge. Always provide a visible focus indicator -- use :focus-visible to show outlines only for keyboard navigation, not mouse clicks."
+        }
+      ],
+      "notes": [
+        "A border needs a style to be visible. border: 2px #333 without a style shows nothing because the default border-style is none.",
+        "border-radius works even without a visible border. It clips the background and content to the rounded shape.",
+        "Never remove :focus outlines without providing an alternative. This breaks keyboard accessibility and is a WCAG violation."
+      ],
+      "commonPitfalls": [
+        "Forgetting the border-style. Setting border-width and border-color without border-style results in no visible border because the default style is 'none'.",
+        "Removing outline: none on :focus states without adding an alternative focus indicator. This makes the element invisible to keyboard users.",
+        "Expecting border-radius: 50% to create a circle on non-square elements. It creates an ellipse. The element must have equal width and height for a perfect circle.",
+        "Forgetting that borders add to the total element size in content-box mode. A 200px-wide element with 2px borders is actually 204px wide."
+      ],
+      "interviewTips": [
+        "Explain the difference between border and outline: borders affect layout, outlines do not. Outlines are commonly used for focus indicators.",
+        "Know that border-radius applies to the element's box, not just the border itself. It rounds the background and content clipping area too.",
+        "Be ready to discuss accessibility implications of removing focus outlines."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "borders-ex1",
+        "title": "Styled Card with Accent Border",
+        "description": "Create a .card class with a 1px solid #e0e0e0 border on all sides and a 4px solid #007bff left border for accent. Add 8px border-radius to round the corners and 16px of padding inside.",
+        "starterCode": ".card {\n  /* Add your styles */\n}\n",
+        "solution": ".card {\n  border: 1px solid #e0e0e0;\n  border-left: 4px solid #007bff;\n  border-radius: 8px;\n  padding: 16px;\n}",
+        "hints": [
+          "Set the border shorthand first for all sides, then override border-left",
+          "border-radius applies to all corners uniformly when given one value"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "borders-ex2",
+        "title": "Circle Avatar and Pill Badge",
+        "description": "Create two classes: .avatar (a 64px by 64px circle with a 2px solid #ccc border) and .badge (an inline-block pill shape with 1px solid #007bff border, 4px vertical and 12px horizontal padding, and #007bff text color).",
+        "starterCode": ".avatar {\n  /* Create a circular avatar */\n}\n\n.badge {\n  /* Create a pill-shaped badge */\n}\n",
+        "solution": ".avatar {\n  width: 64px;\n  height: 64px;\n  border: 2px solid #ccc;\n  border-radius: 50%;\n}\n\n.badge {\n  display: inline-block;\n  padding: 4px 12px;\n  border: 1px solid #007bff;\n  border-radius: 9999px;\n  color: #007bff;\n}",
+        "hints": [
+          "A circle requires equal width and height with border-radius: 50%",
+          "A pill shape uses a very large border-radius like 9999px on any rectangular element"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "margins",
+    "sectionId": "box-model-and-spacing",
+    "orderIndex": 3,
+    "title": "Margins",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["Margin Properties", "Auto Centering", "Margin Collapsing", "Negative Margins", "Margin Shorthand"],
+    "content": {
+      "explanation": "Margin is the outermost layer of the CSS box model. It creates space between the element's border and surrounding elements. Unlike padding, which is inside the border and takes the element's background color, margin is outside the border and is always transparent. Margins push elements away from their neighbors, creating breathing room in layouts.\n\nThe margin shorthand follows the same clockwise pattern as padding: margin: top right bottom left. The same shorthand forms apply: one value (all sides), two values (vertical, horizontal), three values (top, horizontal, bottom), and four values (each side individually). Margin also supports auto, negative values, and percentage values. Percentage margins, like percentage padding, are calculated relative to the parent's width.\n\nThe margin: auto technique is one of the most important centering methods in CSS. When you set margin-left: auto and margin-right: auto (or margin: 0 auto) on a block element with a declared width, the browser distributes the remaining horizontal space equally on both sides, centering the element within its parent. This only works horizontally on block elements -- margin: auto does not center vertically in normal flow (for that, use flexbox or grid).\n\nMargin collapsing is one of CSS's most confusing behaviors and a frequent interview question. When two vertical margins meet (top margin of one element touching the bottom margin of the element above it), they do not add together. Instead, the larger margin wins. For example, if one element has margin-bottom: 30px and the next has margin-top: 20px, the space between them is 30px, not 50px. Margin collapsing only happens vertically (not horizontally), only with block elements in normal flow (not with flex or grid items), and does not occur when there is padding, border, or content between the margins.\n\nNegative margins are a powerful but often misunderstood feature. A negative margin pulls the element in the specified direction: negative margin-top pulls the element up, negative margin-left pulls it left. Negative margins on the right or bottom pull subsequent content toward the element. They can be used for overlapping elements, pulling elements out of their containers, and creative layout techniques. Use them sparingly and intentionally, as they can make layouts harder to understand and maintain.",
+      "codeExamples": [
+        {
+          "title": "Margin Shorthand and Auto Centering",
+          "code": "/* Center a block element horizontally */\n.container {\n  width: 800px;\n  margin: 0 auto; /* 0 top/bottom, auto left/right */\n  background-color: #f5f5f5;\n}\n\n/* Common page centering pattern */\n.page {\n  max-width: 1200px;\n  margin-left: auto;\n  margin-right: auto;\n  padding: 0 16px;\n}\n\n/* Margin shorthand forms */\n.box-a { margin: 20px; }              /* all sides */\n.box-b { margin: 10px 20px; }         /* vertical, horizontal */\n.box-c { margin: 10px 20px 30px; }    /* top, horizontal, bottom */\n.box-d { margin: 10px 20px 30px 40px; } /* top, right, bottom, left */",
+          "explanation": "margin: 0 auto is the classic block centering technique. It requires the element to have a declared width (or max-width). The browser calculates the remaining space and splits it equally between left and right margins. max-width with margin auto is the standard page container pattern."
+        },
+        {
+          "title": "Margin Collapsing Explained",
+          "code": "/* Margin collapsing between siblings */\n.box-1 {\n  margin-bottom: 30px;\n  background-color: lightblue;\n  padding: 20px;\n}\n.box-2 {\n  margin-top: 20px;\n  background-color: lightgreen;\n  padding: 20px;\n}\n/* Gap between .box-1 and .box-2 is 30px, NOT 50px */\n/* The larger margin wins */\n\n/* Preventing margin collapse */\n.no-collapse-parent {\n  /* Any of these prevent parent-child margin collapse: */\n  overflow: hidden;    /* or */\n  padding-top: 1px;    /* or */\n  border-top: 1px solid transparent; /* or */\n  display: flow-root;  /* cleanest solution */\n}",
+          "explanation": "Vertical margins collapse: the larger margin wins rather than adding together. This happens between siblings and between parent-child elements. It does NOT happen with flexbox items, grid items, floated elements, or when padding/border separates the margins. display: flow-root on the parent is the cleanest way to prevent parent-child margin collapse."
+        },
+        {
+          "title": "Negative Margins",
+          "code": "/* Pull element up to overlap */\n.overlap-card {\n  margin-top: -40px;\n  background-color: white;\n  padding: 20px;\n  position: relative; /* for z-index to work */\n  z-index: 1;\n}\n\n/* Pull element out of container */\n.full-bleed {\n  margin-left: -20px;\n  margin-right: -20px;\n  padding-left: 20px;\n  padding-right: 20px;\n}\n\n/* Negative margin to close gaps */\n.grid-hack {\n  margin-right: -16px; /* compensate for child margins */\n}",
+          "explanation": "Negative top/left margins pull the element in that direction. Negative bottom/right margins pull subsequent content toward the element. The full-bleed pattern uses negative margins to extend an element beyond its padded parent. Use negative margins sparingly."
+        },
+        {
+          "title": "Margin Collapsing Rules Summary",
+          "code": "/* COLLAPSES: Adjacent sibling vertical margins */\n.sibling-a { margin-bottom: 20px; }\n.sibling-b { margin-top: 30px; }\n/* Result: 30px gap (larger wins) */\n\n/* COLLAPSES: Parent-child when no border/padding */\n.parent { margin-top: 20px; }\n.child  { margin-top: 30px; }\n/* Result: parent gets 30px top margin, child has 0 */\n\n/* DOES NOT COLLAPSE: Horizontal margins */\n.left  { margin-right: 20px; display: inline-block; }\n.right { margin-left: 30px; display: inline-block; }\n/* Result: 50px gap (both apply) */\n\n/* DOES NOT COLLAPSE: Flex/grid items */\n.flex-parent { display: flex; flex-direction: column; }\n.flex-child-a { margin-bottom: 20px; }\n.flex-child-b { margin-top: 30px; }\n/* Result: 50px gap (both apply, no collapse) */",
+          "explanation": "Margin collapsing rules: (1) Only vertical margins collapse, never horizontal. (2) Only block-level elements in normal flow -- flex items, grid items, and floats do not collapse. (3) Parent-child margins collapse when there is no border, padding, or content between them. (4) Empty elements collapse their own top and bottom margins."
+        }
+      ],
+      "notes": [
+        "margin: 0 auto only centers block elements horizontally. For vertical centering, use flexbox (align-items: center) or grid (place-items: center).",
+        "Margin collapsing is one of the most commonly tested CSS concepts in interviews. Know the three scenarios: sibling margins, parent-child margins, and empty element margins.",
+        "Flexbox and grid items do NOT experience margin collapsing. If you need predictable spacing, using gap in flex/grid is often simpler than margins."
+      ],
+      "commonPitfalls": [
+        "Expecting margin: auto to center vertically. It only works horizontally on block elements. For vertical centering, use flexbox or grid.",
+        "Being surprised by margin collapsing. Two adjacent elements with 20px margins do not have 40px between them -- they have 20px because the margins collapse.",
+        "Forgetting that margin: auto requires a declared width. Without a width, a block element takes 100% of the parent, leaving no space for auto margins to distribute.",
+        "Using margins for spacing within flex or grid layouts when the gap property would be cleaner and more predictable."
+      ],
+      "interviewTips": [
+        "Margin collapsing is a top CSS interview question. Be ready to explain the three cases (siblings, parent-child, empty elements) and what prevents it (padding, border, overflow, display: flow-root, flex/grid contexts).",
+        "Explain margin: auto centering -- why it works, its limitations (needs declared width, horizontal only in normal flow), and alternatives (flexbox, grid).",
+        "Know the difference between margin and padding: margin is outside the border and transparent; padding is inside and takes the background."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "margins-ex1",
+        "title": "Center a Container",
+        "description": "Create a .container class that is a maximum of 960px wide, horizontally centered on the page, with 16px of horizontal padding (so content does not touch the edges on small screens). Use the margin auto technique.",
+        "starterCode": ".container {\n  /* Center the container */\n}\n",
+        "solution": ".container {\n  max-width: 960px;\n  margin-left: auto;\n  margin-right: auto;\n  padding-left: 16px;\n  padding-right: 16px;\n}",
+        "hints": [
+          "Use max-width instead of width so the container shrinks on small screens",
+          "margin-left: auto and margin-right: auto distribute remaining space equally"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "margins-ex2",
+        "title": "Predict Margin Collapsing",
+        "description": "Given the following CSS, what is the actual vertical space between .box-a and .box-b? Write the corrected CSS that prevents margin collapsing so the space is truly 60px. Use display: flex with flex-direction: column on the parent, or add a border to the parent.",
+        "starterCode": "/* Original: What is the gap between these boxes? */\n.box-a {\n  margin-bottom: 40px;\n  padding: 20px;\n  background-color: lightblue;\n}\n.box-b {\n  margin-top: 20px;\n  padding: 20px;\n  background-color: lightgreen;\n}\n\n/* Fix the parent to prevent collapsing */\n.parent {\n  /* Add styles to prevent margin collapsing */\n}\n",
+        "solution": ".box-a {\n  margin-bottom: 40px;\n  padding: 20px;\n  background-color: lightblue;\n}\n.box-b {\n  margin-top: 20px;\n  padding: 20px;\n  background-color: lightgreen;\n}\n\n/* The original gap is 40px (larger wins due to collapsing) */\n/* Fix: Use flexbox which prevents margin collapsing */\n.parent {\n  display: flex;\n  flex-direction: column;\n}",
+        "hints": [
+          "In the original code, the 40px and 20px margins collapse -- the gap is 40px, not 60px",
+          "Flex containers prevent margin collapsing between their children"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "box-sizing",
+    "sectionId": "box-model-and-spacing",
+    "orderIndex": 4,
+    "title": "Box Sizing",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["content-box", "border-box", "Universal Reset", "Box Model Calculation", "Sizing Behavior"],
+    "content": {
+      "explanation": "The box-sizing property controls how the total width and height of an element are calculated. This single property fundamentally changes how you think about sizing elements and is one of the most impactful CSS properties to understand. There are two values: content-box (the default) and border-box (the practical choice used by virtually all modern projects).\n\nWith box-sizing: content-box (the default), the width and height properties set only the content area. Padding and border are added on top of the declared dimensions. So a box with width: 300px, padding: 20px, and border: 5px solid takes up 300 + 20 + 20 + 5 + 5 = 350px of horizontal space. This additive behavior is counterintuitive because the element is wider than the declared width, which leads to layout bugs, especially when combining percentage widths with fixed padding.\n\nWith box-sizing: border-box, the width and height properties include the content, padding, and border. The same box with width: 300px, padding: 20px, and border: 5px solid takes up exactly 300px of horizontal space. The content area shrinks to 250px to accommodate the padding and border. This is far more intuitive because the declared width is the actual space the element occupies.\n\nThe universal box-sizing reset is one of the most widely adopted CSS patterns. It applies border-box to every element on the page. The recommended pattern uses the inheriting approach: set box-sizing: border-box on the html element, then use box-sizing: inherit on *, *::before, and *::after. This makes border-box the default while still allowing individual components to opt out if needed. Every major CSS framework (Bootstrap, Tailwind, etc.) includes this reset.\n\nUnderstanding box-sizing is critical for responsive design. When you set width: 50% on two side-by-side elements, content-box makes them overflow their parent if they have any padding or border, because the padding is added to the 50%. With border-box, the padding is included within the 50%, so the elements fit perfectly. This is why border-box is essential for grid layouts, responsive components, and any design where elements need to fit within precise proportions.",
+      "codeExamples": [
+        {
+          "title": "content-box vs border-box Comparison",
+          "code": "/* content-box (default): padding and border ADD to width */\n.content-box {\n  box-sizing: content-box;\n  width: 300px;\n  padding: 20px;\n  border: 5px solid #333;\n  background-color: lightblue;\n  /* Content width: 300px */\n  /* Total width: 300 + 20 + 20 + 5 + 5 = 350px */\n}\n\n/* border-box: padding and border INCLUDED in width */\n.border-box {\n  box-sizing: border-box;\n  width: 300px;\n  padding: 20px;\n  border: 5px solid #333;\n  background-color: lightgreen;\n  /* Content width: 300 - 20 - 20 - 5 - 5 = 250px */\n  /* Total width: 300px */\n}",
+          "explanation": "Both elements are declared as width: 300px, but they render differently. The content-box element takes 350px of space. The border-box element takes exactly 300px. The border-box model is easier to reason about because the declared width is the actual rendered width."
+        },
+        {
+          "title": "The Universal Box-Sizing Reset",
+          "code": "/* Recommended universal reset */\nhtml {\n  box-sizing: border-box;\n}\n\n*,\n*::before,\n*::after {\n  box-sizing: inherit;\n}\n\n/* Alternative simple reset (also works) */\n*,\n*::before,\n*::after {\n  box-sizing: border-box;\n}",
+          "explanation": "The inherit approach sets border-box on html and uses inherit for everything else. This allows a component to opt out by setting box-sizing: content-box, and its children will inherit that change. The simple approach directly sets border-box on all elements. Both are widely used; the inherit approach is slightly more flexible."
+        },
+        {
+          "title": "Why border-box Matters for Layouts",
+          "code": "/* WITHOUT border-box: these overflow the parent */\n.col-broken {\n  box-sizing: content-box;\n  width: 50%;\n  padding: 20px;\n  float: left;\n  /* Actual width: 50% + 40px -- overflows parent! */\n}\n\n/* WITH border-box: these fit perfectly */\n.col-fixed {\n  box-sizing: border-box;\n  width: 50%;\n  padding: 20px;\n  float: left;\n  /* Actual width: exactly 50% of parent */\n}\n\n/* Modern approach with flexbox */\n.row {\n  display: flex;\n}\n.col {\n  box-sizing: border-box;\n  flex: 0 0 50%;\n  padding: 20px;\n  /* Padding is included in the 50% */\n}",
+          "explanation": "This is the main reason border-box exists. When using percentage widths, content-box adds padding on top, causing overflow. border-box includes padding within the percentage, so 50% + 50% actually equals 100%, not more."
+        },
+        {
+          "title": "Visualizing the Box Model in DevTools",
+          "code": "/* Use this element to practice in browser DevTools */\n.devtools-demo {\n  box-sizing: border-box;\n  width: 400px;\n  height: 200px;\n  padding: 24px;\n  border: 4px solid #333;\n  margin: 20px;\n  background-color: #e3f2fd;\n}\n\n/*\n  In Chrome/Edge DevTools:\n  1. Right-click the element > Inspect\n  2. Look at the Computed tab\n  3. You will see the box model diagram:\n     - Margin (orange): 20px each side\n     - Border (yellow): 4px each side\n     - Padding (green): 24px each side\n     - Content (blue): 344px x 144px\n     Total: 400px x 200px (plus margins)\n*/",
+          "explanation": "Browser DevTools visualize the box model as a nested diagram. With border-box, the outer colored box matches the declared width/height. The content area shrinks to accommodate padding and border. This visualization is invaluable for debugging layout issues."
+        }
+      ],
+      "notes": [
+        "The universal border-box reset is included in virtually every modern CSS project, framework, and reset stylesheet. Apply it at the start of every project.",
+        "Margin is never included in box-sizing calculations. Whether you use content-box or border-box, margins are always additional space outside the element.",
+        "box-sizing only affects how width and height are calculated. It does not change the visual appearance of padding or borders."
+      ],
+      "commonPitfalls": [
+        "Forgetting to apply the universal box-sizing reset and then wondering why elements with padding overflow their containers.",
+        "Thinking border-box includes margins. It does not. Margin is always outside the box-sizing calculation.",
+        "Setting width: 100% with padding on a content-box element. The element will overflow its parent because padding is added to the 100%. Switch to border-box.",
+        "Not understanding that box-sizing changes how the content area is calculated. With border-box, a 300px-wide element with 20px padding only has 260px for content."
+      ],
+      "interviewTips": [
+        "This is one of the most commonly asked CSS interview questions. Be ready to calculate the total rendered width of an element given its box-sizing, width, padding, and border.",
+        "Explain why border-box is preferred: it makes sizing predictable, prevents percentage-width overflow, and is used by all major frameworks.",
+        "Know the universal reset pattern and be able to explain the difference between the inherit approach and the direct approach.",
+        "Remember: margin is NEVER included in box-sizing. The total space an element occupies is box-sizing dimensions + margin."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "box-sizing-ex1",
+        "title": "Calculate Element Widths",
+        "description": "Write CSS for two boxes. .box-content should use content-box with width: 200px, padding: 15px, and border: 5px solid #333. .box-border should use border-box with the same width, padding, and border. Add a comment above each with the total rendered width.",
+        "starterCode": "/* Total rendered width: ??? */\n.box-content {\n  /* content-box sizing */\n}\n\n/* Total rendered width: ??? */\n.box-border {\n  /* border-box sizing */\n}\n",
+        "solution": "/* Total rendered width: 200 + 15 + 15 + 5 + 5 = 240px */\n.box-content {\n  box-sizing: content-box;\n  width: 200px;\n  padding: 15px;\n  border: 5px solid #333;\n}\n\n/* Total rendered width: 200px */\n.box-border {\n  box-sizing: border-box;\n  width: 200px;\n  padding: 15px;\n  border: 5px solid #333;\n}",
+        "hints": [
+          "content-box: total width = width + padding-left + padding-right + border-left + border-right",
+          "border-box: total width = the declared width (padding and border are included)"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "box-sizing-ex2",
+        "title": "Apply the Universal Reset",
+        "description": "Write the universal box-sizing reset using the inherit pattern. Then create a .two-column class that uses display: flex with two .column children each taking 50% width with 24px padding. Verify that they fit side by side without overflow.",
+        "starterCode": "/* Universal box-sizing reset */\n\n\n/* Two-column layout */\n.two-column {\n  /* flex container */\n}\n\n.column {\n  /* each column */\n}\n",
+        "solution": "/* Universal box-sizing reset */\nhtml {\n  box-sizing: border-box;\n}\n\n*,\n*::before,\n*::after {\n  box-sizing: inherit;\n}\n\n/* Two-column layout */\n.two-column {\n  display: flex;\n}\n\n.column {\n  flex: 0 0 50%;\n  padding: 24px;\n}",
+        "hints": [
+          "Set box-sizing: border-box on html, then box-sizing: inherit on * and pseudo-elements",
+          "With border-box, the 24px padding is included within each column's 50% width"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

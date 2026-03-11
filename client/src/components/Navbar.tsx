@@ -41,7 +41,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
             <div className="hidden lg:flex items-center gap-0.5">
               <NavItem href="/">Home</NavItem>
               <NavItem href="/jobs">Jobs</NavItem>
-              <NavItem href="/careers">Careers</NavItem>
+              <NavItem href="/learn">Learn</NavItem>
               <NavItem href="/companies">Companies</NavItem>
               <NavItem href="/blog">Blog</NavItem>
               {!isAuthenticated && <NavItem href="/for-recruiters">For Recruiters</NavItem>}
@@ -117,7 +117,7 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                 <div className="pt-4 pb-2 space-y-1 border-t border-gray-100 dark:border-gray-700 mt-3">
                   <MobileNavLink href="/" onClick={() => setIsOpen(false)}>Home</MobileNavLink>
                   <MobileNavLink href="/jobs" onClick={() => setIsOpen(false)}>Jobs</MobileNavLink>
-                  <MobileNavLink href="/careers" onClick={() => setIsOpen(false)}>Careers</MobileNavLink>
+                  <MobileNavLink href="/learn" onClick={() => setIsOpen(false)}>Learn</MobileNavLink>
                   <MobileNavLink href="/companies" onClick={() => setIsOpen(false)}>Companies</MobileNavLink>
                   <MobileNavLink href="/blog" onClick={() => setIsOpen(false)}>Blog</MobileNavLink>
                   <div className="pt-3 space-y-2">

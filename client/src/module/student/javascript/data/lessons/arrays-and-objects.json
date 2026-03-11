@@ -1,0 +1,359 @@
+[
+  {
+    "id": "array-methods",
+    "sectionId": "arrays-and-objects",
+    "orderIndex": 0,
+    "title": "Array Methods",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": [
+      "map",
+      "filter",
+      "reduce",
+      "find",
+      "findIndex",
+      "some",
+      "every",
+      "flat",
+      "flatMap",
+      "method chaining"
+    ],
+    "content": {
+      "explanation": "JavaScript arrays come with a powerful set of built-in higher-order methods that let you transform, search, and aggregate data without writing manual loops. These methods accept callback functions and return new values (or new arrays), enabling a declarative, functional style of programming that is both concise and expressive. Mastering them is non-negotiable for any JavaScript developer — they appear in virtually every modern codebase and are a staple of technical interviews.\n\nThe transformation methods — map, filter, and flatMap — each produce a new array. `map` applies a function to every element and returns an array of the results, preserving the original length. `filter` returns a new array containing only the elements for which the callback returns a truthy value. `flatMap` is essentially a map followed by a flat of depth 1, which is useful when your mapping function returns arrays and you want a single flat result. The `flat` method itself flattens nested arrays to a specified depth.\n\nThe search methods — `find`, `findIndex`, `some`, and `every` — are designed for querying. `find` returns the first element that satisfies the predicate, while `findIndex` returns its index (or -1 if not found). `some` checks whether at least one element passes the test, and `every` checks whether all elements pass. These short-circuit as soon as the answer is determined, making them efficient for large arrays.\n\nThe crown jewel is `reduce`. It iterates through the array, maintaining an accumulator that is passed from one iteration to the next. The callback receives the accumulator and the current element, and whatever it returns becomes the new accumulator for the next iteration. This makes reduce extraordinarily versatile — you can use it to sum numbers, build objects, flatten arrays, count occurrences, group items, and much more. Understanding the accumulator pattern is critical.\n\nMethod chaining is what ties everything together. Because map, filter, flat, and flatMap all return new arrays, you can chain them in sequence to build complex data pipelines in a single readable expression. The key is to order your chain efficiently — filter early to reduce the dataset before mapping, and avoid unnecessary intermediate arrays when performance matters.",
+      "codeExamples": [
+        {
+          "title": "map, filter, and find in action",
+          "code": "const products = [\n  { name: 'Laptop', price: 999, inStock: true },\n  { name: 'Phone', price: 699, inStock: false },\n  { name: 'Tablet', price: 449, inStock: true },\n  { name: 'Watch', price: 299, inStock: true }\n];\n\n// map: extract transformed data\nconst names = products.map(p => p.name.toUpperCase());\nconsole.log(names);\n\n// filter: keep only matching items\nconst available = products.filter(p => p.inStock);\nconsole.log(available.length);\n\n// find: first match\nconst cheap = products.find(p => p.price < 400);\nconsole.log(cheap.name);\n\n// findIndex: index of first match\nconst phoneIdx = products.findIndex(p => p.name === 'Phone');\nconsole.log(phoneIdx);",
+          "output": "[\"LAPTOP\", \"PHONE\", \"TABLET\", \"WATCH\"]\n3\n\"Watch\"\n1",
+          "explanation": "map transforms each product name to uppercase, returning a new array. filter returns only in-stock products (3 items). find returns the first product under $400 — the Watch. findIndex returns index 1, where the Phone lives."
+        },
+        {
+          "title": "reduce — accumulator pattern step by step",
+          "code": "const orders = [250, 120, 89, 440, 35];\n\n// Sum all orders\nconst total = orders.reduce((acc, curr) => {\n  console.log(`acc: ${acc}, curr: ${curr}, next: ${acc + curr}`);\n  return acc + curr;\n}, 0);\n\nconsole.log('Total:', total);\n\n// Count occurrences with reduce\nconst fruits = ['apple', 'banana', 'apple', 'orange', 'banana', 'apple'];\nconst count = fruits.reduce((acc, fruit) => {\n  acc[fruit] = (acc[fruit] || 0) + 1;\n  return acc;\n}, {});\n\nconsole.log(count);",
+          "output": "acc: 0, curr: 250, next: 250\nacc: 250, curr: 120, next: 370\nacc: 370, curr: 89, next: 459\nacc: 459, curr: 440, next: 899\nacc: 899, curr: 35, next: 934\nTotal: 934\n{ apple: 3, banana: 2, orange: 1 }",
+          "explanation": "The first reduce starts with accumulator 0 and adds each order value. The log shows every step so you can trace how the accumulator evolves. The second reduce builds a frequency map — the accumulator is an object, and each iteration increments the count for that fruit."
+        },
+        {
+          "title": "some, every, flat, and flatMap",
+          "code": "const scores = [72, 85, 91, 68, 77];\n\nconsole.log(scores.some(s => s > 90));   // at least one above 90?\nconsole.log(scores.every(s => s > 60));  // all above 60?\n\n// flat: flatten nested arrays\nconst nested = [[1, 2], [3, [4, 5]], [6]];\nconsole.log(nested.flat());      // depth 1\nconsole.log(nested.flat(Infinity)); // fully flat\n\n// flatMap: map + flat(1)\nconst sentences = ['hello world', 'foo bar baz'];\nconst words = sentences.flatMap(s => s.split(' '));\nconsole.log(words);",
+          "output": "true\ntrue\n[1, 2, 3, [4, 5], 6]\n[1, 2, 3, 4, 5, 6]\n[\"hello\", \"world\", \"foo\", \"bar\", \"baz\"]",
+          "explanation": "some returns true because 91 > 90. every returns true because all scores exceed 60. flat(1) removes one level of nesting but leaves [4,5] intact; flat(Infinity) flattens everything. flatMap splits each sentence into words and flattens the resulting arrays into one."
+        },
+        {
+          "title": "Method chaining — building a data pipeline",
+          "code": "const employees = [\n  { name: 'Alice', dept: 'Engineering', salary: 95000 },\n  { name: 'Bob', dept: 'Marketing', salary: 72000 },\n  { name: 'Carol', dept: 'Engineering', salary: 110000 },\n  { name: 'Dave', dept: 'Engineering', salary: 88000 },\n  { name: 'Eve', dept: 'Marketing', salary: 67000 }\n];\n\n// Get sorted names of engineers earning > 90k\nconst topEngineers = employees\n  .filter(e => e.dept === 'Engineering')\n  .filter(e => e.salary > 90000)\n  .map(e => e.name)\n  .sort();\n\nconsole.log(topEngineers);\n\n// Average salary of engineering department using reduce\nconst engineers = employees.filter(e => e.dept === 'Engineering');\nconst avgSalary = engineers.reduce((sum, e) => sum + e.salary, 0) / engineers.length;\nconsole.log('Avg engineering salary:', avgSalary);",
+          "output": "[\"Alice\", \"Carol\"]\nAvg engineering salary: 97666.66666666667",
+          "explanation": "The chain first filters to Engineering, then filters to salaries above 90k, maps to names, and sorts alphabetically. Each method returns a new array so the chain flows naturally. The average salary calculation combines filter and reduce — filter narrows the dataset, then reduce sums the salaries."
+        }
+      ],
+      "notes": [
+        "map, filter, flat, and flatMap always return NEW arrays — they never mutate the original.",
+        "reduce is the most versatile array method — if you can describe the transformation in terms of an accumulator, reduce can do it.",
+        "find and findIndex return undefined and -1 respectively when no match is found — always handle these cases.",
+        "some and every short-circuit: some stops at the first truthy result, every stops at the first falsy result."
+      ],
+      "commonPitfalls": [
+        "Forgetting to return a value inside the reduce callback — this causes the accumulator to become undefined on the next iteration.",
+        "Omitting the initial value in reduce — without it, the first array element is used as the initial accumulator, which can cause type errors when building objects or unexpected results on empty arrays.",
+        "Using map when you should use forEach — map creates a new array, so using it purely for side effects wastes memory and signals wrong intent.",
+        "Mutating objects inside map or filter callbacks — even though the array is new, the objects inside are still references to the originals."
+      ],
+      "interviewTips": [
+        "Interviewers love asking you to reimplement reduce from scratch — practice writing a polyfill that handles the initial value and empty array edge cases.",
+        "Be ready to solve problems using reduce that seem to need multiple passes: grouping, flattening, deduplication, and building lookup objects can all be done in a single reduce.",
+        "When asked about performance, know that chaining .filter().map() iterates the array twice — for large datasets, a single reduce can do both in one pass.",
+        "A common interview pattern is chaining methods to transform API response data — practice extracting, filtering, and reshaping nested JSON structures."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "array-methods-ex1",
+        "title": "Filter-Map-Reduce Pipeline",
+        "description": "Given an array of products, use method chaining to: filter only products that are in stock, map them to their prices, and reduce the prices to get the total cost. Log the total.",
+        "starterCode": "const products = [\n  { name: 'Laptop', price: 999, inStock: true },\n  { name: 'Phone', price: 699, inStock: false },\n  { name: 'Tablet', price: 449, inStock: true },\n  { name: 'Watch', price: 299, inStock: true },\n  { name: 'Headphones', price: 199, inStock: false }\n];\n\n// Chain filter, map, and reduce to get the total price\n// of all in-stock products\n// Log the result\n",
+        "solution": "const products = [\n  { name: 'Laptop', price: 999, inStock: true },\n  { name: 'Phone', price: 699, inStock: false },\n  { name: 'Tablet', price: 449, inStock: true },\n  { name: 'Watch', price: 299, inStock: true },\n  { name: 'Headphones', price: 199, inStock: false }\n];\n\nconst total = products\n  .filter(p => p.inStock)\n  .map(p => p.price)\n  .reduce((sum, price) => sum + price, 0);\n\nconsole.log(total);\n",
+        "expectedOutput": "1747",
+        "hints": [
+          "Use .filter(p => p.inStock) to keep only in-stock items, then .map(p => p.price) to extract prices.",
+          "Use .reduce((sum, price) => sum + price, 0) with an initial value of 0 to sum all the prices."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "array-methods-ex2",
+        "title": "Group by Category with reduce",
+        "description": "Use `reduce` to group an array of items by their `category` property. The result should be an object where each key is a category name and each value is an array of item names in that category. Log the result.",
+        "starterCode": "const items = [\n  { name: 'Apple', category: 'fruit' },\n  { name: 'Carrot', category: 'vegetable' },\n  { name: 'Banana', category: 'fruit' },\n  { name: 'Broccoli', category: 'vegetable' },\n  { name: 'Cherry', category: 'fruit' },\n  { name: 'Spinach', category: 'vegetable' }\n];\n\n// Use reduce to group item names by category\n// Result: { fruit: ['Apple', 'Banana', 'Cherry'], vegetable: ['Carrot', 'Broccoli', 'Spinach'] }\n",
+        "solution": "const items = [\n  { name: 'Apple', category: 'fruit' },\n  { name: 'Carrot', category: 'vegetable' },\n  { name: 'Banana', category: 'fruit' },\n  { name: 'Broccoli', category: 'vegetable' },\n  { name: 'Cherry', category: 'fruit' },\n  { name: 'Spinach', category: 'vegetable' }\n];\n\nconst grouped = items.reduce((acc, item) => {\n  if (!acc[item.category]) {\n    acc[item.category] = [];\n  }\n  acc[item.category].push(item.name);\n  return acc;\n}, {});\n\nconsole.log(grouped);\n",
+        "expectedOutput": "{ fruit: [\"Apple\", \"Banana\", \"Cherry\"], vegetable: [\"Carrot\", \"Broccoli\", \"Spinach\"] }",
+        "hints": [
+          "Start reduce with an empty object {} as the initial accumulator.",
+          "For each item, check if acc[item.category] exists. If not, create it as an empty array. Then push item.name into it."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "object-methods",
+    "sectionId": "arrays-and-objects",
+    "orderIndex": 1,
+    "title": "Object Methods",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": [
+      "Object.keys",
+      "Object.values",
+      "Object.entries",
+      "Object.assign",
+      "Object.freeze",
+      "Object.seal",
+      "Object.create",
+      "Object.defineProperty",
+      "property descriptors"
+    ],
+    "content": {
+      "explanation": "JavaScript objects are the fundamental building blocks of the language, and the static methods on the `Object` constructor give you powerful tools for inspecting, copying, locking down, and creating objects. Understanding these methods is essential for writing clean, predictable JavaScript — they come up in everything from state management to API data processing to framework internals.\n\nThe inspection trio — `Object.keys`, `Object.values`, and `Object.entries` — let you convert an object's own enumerable properties into arrays. `Object.keys` returns an array of property name strings, `Object.values` returns an array of the corresponding values, and `Object.entries` returns an array of [key, value] pairs. These are indispensable when you need to iterate over object properties, transform object shapes, or convert between objects and other data structures like Maps.\n\n`Object.assign` performs a shallow copy of all enumerable own properties from one or more source objects to a target object. It is commonly used to merge objects, create copies with overrides, or set default values. However, it only copies property values — if a value is a reference to another object, both the original and the copy will point to the same nested object. This is a critical detail that trips up many developers.\n\n`Object.freeze` and `Object.seal` provide different levels of immutability. `Object.freeze` makes an object completely immutable — you cannot add, remove, or modify any properties. `Object.seal` is less strict: you cannot add or remove properties, but you can still modify the values of existing properties. Both operate shallowly, meaning nested objects are not frozen or sealed unless you explicitly do so recursively.\n\n`Object.create` creates a new object with a specified prototype, giving you fine-grained control over the prototype chain without using constructor functions or classes. `Object.defineProperty` lets you add or modify a single property with full control over its property descriptor — you can set whether it is writable, enumerable, and configurable. Together, these methods expose the low-level machinery of JavaScript's object system, which is exactly what framework authors and library developers use under the hood.",
+      "codeExamples": [
+        {
+          "title": "Object.keys, Object.values, and Object.entries",
+          "code": "const user = { name: 'Alice', age: 28, role: 'developer' };\n\nconsole.log(Object.keys(user));\nconsole.log(Object.values(user));\nconsole.log(Object.entries(user));\n\n// Practical: transform object to query string\nconst params = { page: 1, limit: 20, sort: 'name' };\nconst queryString = Object.entries(params)\n  .map(([key, val]) => `${key}=${val}`)\n  .join('&');\n\nconsole.log(queryString);",
+          "output": "[\"name\", \"age\", \"role\"]\n[\"Alice\", 28, \"developer\"]\n[[\"name\", \"Alice\"], [\"age\", 28], [\"role\", \"developer\"]]\n\"page=1&limit=20&sort=name\"",
+          "explanation": "Object.keys returns the property names, Object.values returns the values, and Object.entries returns [key, value] tuples. The query string example shows a real-world use case — converting a params object into a URL query string by mapping entries to key=value pairs and joining with &."
+        },
+        {
+          "title": "Object.assign — merging and shallow copying",
+          "code": "// Merge objects (later sources override earlier ones)\nconst defaults = { theme: 'light', lang: 'en', fontSize: 14 };\nconst userPrefs = { theme: 'dark', fontSize: 18 };\n\nconst config = Object.assign({}, defaults, userPrefs);\nconsole.log(config);\n\n// Shallow copy gotcha\nconst original = { name: 'Alice', address: { city: 'NYC' } };\nconst copy = Object.assign({}, original);\ncopy.address.city = 'LA';\n\nconsole.log(original.address.city); // also changed!",
+          "output": "{ theme: \"dark\", lang: \"en\", fontSize: 18 }\n\"LA\"",
+          "explanation": "Object.assign copies properties from source objects to the target. Properties from userPrefs override those from defaults. The shallow copy example demonstrates a common trap — the address object is shared by reference, so modifying copy.address.city also changes the original."
+        },
+        {
+          "title": "Object.freeze vs Object.seal",
+          "code": "// freeze: fully immutable (shallow)\nconst frozen = Object.freeze({ x: 1, y: 2, nested: { z: 3 } });\nfrozen.x = 99;          // silently fails (throws in strict mode)\nfrozen.newProp = 'hi';  // silently fails\nconsole.log(frozen.x);  // still 1\n\n// but nested objects are NOT frozen\nfrozen.nested.z = 999;\nconsole.log(frozen.nested.z); // changed!\n\n// seal: can modify existing, cannot add/remove\nconst sealed = Object.seal({ a: 1, b: 2 });\nsealed.a = 100;        // allowed\nsealed.c = 3;          // silently fails\ndelete sealed.b;       // silently fails\nconsole.log(sealed);",
+          "output": "1\n999\n{ a: 100, b: 2 }",
+          "explanation": "Object.freeze prevents all modifications to direct properties, but nested objects remain mutable — freeze is shallow. Object.seal allows value changes to existing properties but blocks additions and deletions. In strict mode, violations throw TypeErrors instead of silently failing."
+        },
+        {
+          "title": "Object.create and Object.defineProperty",
+          "code": "// Object.create: set up prototype chain\nconst animal = {\n  speak() { return `${this.name} makes a sound`; }\n};\n\nconst dog = Object.create(animal);\ndog.name = 'Rex';\nconsole.log(dog.speak());\nconsole.log(Object.getPrototypeOf(dog) === animal);\n\n// Object.defineProperty: fine-grained control\nconst person = {};\nObject.defineProperty(person, 'ssn', {\n  value: '123-45-6789',\n  writable: false,\n  enumerable: false,\n  configurable: false\n});\n\nconsole.log(person.ssn);\nconsole.log(Object.keys(person)); // ssn is not enumerable\nperson.ssn = 'xxx';               // fails silently\nconsole.log(person.ssn);           // unchanged",
+          "output": "\"Rex makes a sound\"\ntrue\n\"123-45-6789\"\n[]\n\"123-45-6789\"",
+          "explanation": "Object.create creates dog with animal as its prototype, so dog inherits the speak method. Object.defineProperty creates a non-writable, non-enumerable, non-configurable property — it won't show up in Object.keys, can't be changed, and can't be reconfigured or deleted."
+        }
+      ],
+      "notes": [
+        "Object.keys, Object.values, and Object.entries only return own enumerable properties — inherited properties and non-enumerable properties are excluded.",
+        "Object.assign performs a shallow copy — nested objects are copied by reference, not cloned. Use structuredClone() or a deep-clone library for deep copies.",
+        "Property descriptors have three boolean flags: writable (can the value change?), enumerable (does it show in for...in and Object.keys?), and configurable (can the descriptor itself be changed or the property deleted?).",
+        "Object.freeze and Object.seal are shallow — they do not recurse into nested objects. You must implement deep freeze yourself if needed."
+      ],
+      "commonPitfalls": [
+        "Assuming Object.assign does a deep copy — it does not. Nested objects are shared references, leading to unintended mutations.",
+        "Expecting Object.freeze to protect nested objects — it only freezes the top level. Nested arrays and objects remain fully mutable.",
+        "Using for...in to iterate object properties without hasOwnProperty — for...in includes inherited enumerable properties from the prototype chain. Prefer Object.keys or Object.entries.",
+        "Forgetting that properties added with Object.defineProperty default to non-writable, non-enumerable, and non-configurable — the opposite of properties added with assignment."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "object-methods-ex1",
+        "title": "Object.entries to Query String",
+        "description": "Write a function `toQueryString` that takes an object and returns a URL query string. Use `Object.entries` to iterate the object, map each [key, value] pair to `\"key=value\"`, and join them with `\"&\"`. Test it with two different parameter objects.",
+        "starterCode": "// Write a function that converts an object to a query string\nfunction toQueryString(params) {\n  // Use Object.entries, map, and join\n  // your code here\n}\n\n// Test with these objects\nconsole.log(toQueryString({ search: 'javascript', page: 1, limit: 10 }));\nconsole.log(toQueryString({ name: 'Alice', role: 'admin' }));\n",
+        "solution": "function toQueryString(params) {\n  return Object.entries(params)\n    .map(([key, value]) => `${key}=${value}`)\n    .join('&');\n}\n\nconsole.log(toQueryString({ search: 'javascript', page: 1, limit: 10 }));\nconsole.log(toQueryString({ name: 'Alice', role: 'admin' }));\n",
+        "expectedOutput": "search=javascript&page=1&limit=10\nname=Alice&role=admin",
+        "hints": [
+          "Object.entries returns an array of [key, value] pairs that you can map over.",
+          "Use destructuring in the map callback: .map(([key, value]) => `${key}=${value}`) and join with '&'."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "object-methods-ex2",
+        "title": "Merge Defaults with Object.assign",
+        "description": "Write a function `applyDefaults` that takes a `defaults` object and a `userConfig` object, and returns a new merged object where user values override defaults. Use `Object.assign` with an empty target to avoid mutating either source. Test by merging default settings with two different user configs.",
+        "starterCode": "// Write a function that merges defaults with user config\n// User config should override defaults\n// Neither source object should be mutated\nfunction applyDefaults(defaults, userConfig) {\n  // your code here\n}\n\nconst defaults = { theme: 'light', lang: 'en', fontSize: 14, notifications: true };\n\nconsole.log(applyDefaults(defaults, { theme: 'dark', fontSize: 18 }));\nconsole.log(applyDefaults(defaults, { lang: 'fr' }));\nconsole.log(defaults); // should be unchanged\n",
+        "solution": "function applyDefaults(defaults, userConfig) {\n  return Object.assign({}, defaults, userConfig);\n}\n\nconst defaults = { theme: 'light', lang: 'en', fontSize: 14, notifications: true };\n\nconsole.log(applyDefaults(defaults, { theme: 'dark', fontSize: 18 }));\nconsole.log(applyDefaults(defaults, { lang: 'fr' }));\nconsole.log(defaults);\n",
+        "expectedOutput": "{ theme: \"dark\", lang: \"en\", fontSize: 18, notifications: true }\n{ theme: \"light\", lang: \"fr\", fontSize: 14, notifications: true }\n{ theme: \"light\", lang: \"en\", fontSize: 14, notifications: true }",
+        "hints": [
+          "Use Object.assign({}, defaults, userConfig) -- the empty object {} is the target, so neither source is mutated.",
+          "Properties from later arguments override earlier ones, so userConfig values take priority over defaults."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "destructuring",
+    "sectionId": "arrays-and-objects",
+    "orderIndex": 2,
+    "title": "Destructuring",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": [
+      "array destructuring",
+      "object destructuring",
+      "default values",
+      "renaming",
+      "nested destructuring",
+      "function parameter destructuring",
+      "variable swapping",
+      "rest in destructuring"
+    ],
+    "content": {
+      "explanation": "Destructuring is a concise syntax introduced in ES6 that lets you unpack values from arrays or properties from objects into distinct variables. Instead of accessing each value with bracket or dot notation across multiple lines, destructuring lets you extract exactly what you need in a single declaration. It dramatically improves readability, reduces boilerplate, and is used everywhere in modern JavaScript and React codebases.\n\nArray destructuring uses square bracket syntax on the left side of an assignment. The variables are matched by position — the first variable gets the first element, the second gets the second, and so on. You can skip elements by leaving gaps with commas, provide default values that kick in when the extracted value is undefined, and use the rest syntax (...) to capture all remaining elements into a new array. A particularly elegant use case is swapping two variables without a temporary variable: [a, b] = [b, a].\n\nObject destructuring uses curly brace syntax and matches by property name rather than position. This means the order of variables does not matter — what matters is that the variable names match the property keys. You can rename variables using the colon syntax ({ name: fullName }), provide defaults for missing properties, and destructure nested objects by mirroring the nesting structure on the left side. The rest syntax works here too, collecting all remaining properties into a new object.\n\nFunction parameter destructuring is where this feature truly shines. Instead of receiving an options object and accessing its properties inside the function body, you can destructure the parameter right in the function signature. This makes the function's expected inputs immediately visible and lets you provide sensible defaults at the definition site. React component props are universally destructured this way, and it is considered idiomatic in modern JavaScript.\n\nCombining destructuring with other features like computed property names, template literals, and array methods creates a powerful and expressive vocabulary for data manipulation. Once you internalize destructuring, you will find yourself using it reflexively — it becomes the natural way to work with structured data in JavaScript.",
+      "codeExamples": [
+        {
+          "title": "Array destructuring — basics, skipping, and defaults",
+          "code": "const rgb = [255, 128, 0];\n\n// Basic\nconst [red, green, blue] = rgb;\nconsole.log(red, green, blue);\n\n// Skip elements\nconst [, , justBlue] = rgb;\nconsole.log(justBlue);\n\n// Default values\nconst [a, b, c, d = 255] = rgb;\nconsole.log(d);\n\n// Swap variables\nlet x = 'hello';\nlet y = 'world';\n[x, y] = [y, x];\nconsole.log(x, y);",
+          "output": "255 128 0\n0\n255\n\"world\" \"hello\"",
+          "explanation": "Destructuring assigns array elements by position. The comma gaps skip elements. Default values are used when the position is undefined (d defaults to 255 since rgb has no fourth element). The swap trick works because the right side creates a temporary array [y, x] before the left side destructures it."
+        },
+        {
+          "title": "Object destructuring — renaming, nesting, and rest",
+          "code": "const response = {\n  status: 200,\n  data: {\n    user: { name: 'Alice', email: 'alice@dev.io' },\n    token: 'abc123'\n  },\n  headers: { 'content-type': 'application/json' }\n};\n\n// Rename with colon syntax\nconst { status: httpStatus } = response;\nconsole.log(httpStatus);\n\n// Nested destructuring\nconst { data: { user: { name, email }, token } } = response;\nconsole.log(name, email, token);\n\n// Rest: collect remaining properties\nconst { status, ...rest } = response;\nconsole.log(Object.keys(rest));",
+          "output": "200\n\"Alice\" \"alice@dev.io\" \"abc123\"\n[\"data\", \"headers\"]",
+          "explanation": "The colon renames status to httpStatus. Nested destructuring mirrors the object structure to reach deeply nested values in one statement. The rest operator (...rest) collects everything except status into a new object containing data and headers."
+        },
+        {
+          "title": "Function parameter destructuring with defaults",
+          "code": "// Without destructuring — hard to read\nfunction createUser(options) {\n  const name = options.name;\n  const role = options.role || 'viewer';\n  const active = options.active !== undefined ? options.active : true;\n  return { name, role, active };\n}\n\n// With destructuring — clean and declarative\nfunction createUserV2({ name, role = 'viewer', active = true }) {\n  return { name, role, active };\n}\n\nconsole.log(createUserV2({ name: 'Bob' }));\nconsole.log(createUserV2({ name: 'Carol', role: 'admin', active: false }));",
+          "output": "{ name: \"Bob\", role: \"viewer\", active: true }\n{ name: \"Carol\", role: \"admin\", active: false }",
+          "explanation": "Parameter destructuring with defaults makes the function signature self-documenting. You can see exactly what properties are expected and what their default values are. The V2 version is functionally equivalent to the verbose V1 but far more readable."
+        },
+        {
+          "title": "Rest in destructuring — arrays and objects",
+          "code": "// Array rest\nconst [first, second, ...remaining] = [10, 20, 30, 40, 50];\nconsole.log(first);     \nconsole.log(remaining); \n\n// Object rest — useful for separating known from unknown props\nconst props = { id: 1, className: 'card', onClick: '...', 'data-testid': 'card-1' };\nconst { id, className, ...htmlProps } = props;\nconsole.log(id, className);\nconsole.log(htmlProps);",
+          "output": "10\n[30, 40, 50]\n1 \"card\"\n{ onClick: \"...\", \"data-testid\": \"card-1\" }",
+          "explanation": "The rest element must always be last. In the array case, it collects the remaining elements into a new array. In the object case, it collects the remaining properties into a new object — this pattern is very common in React for forwarding unknown props to underlying HTML elements."
+        }
+      ],
+      "notes": [
+        "Destructuring defaults only apply when the value is undefined — not null, not 0, not empty string. Only undefined triggers the default.",
+        "Nested destructuring can go as deep as you need, but deeply nested destructuring can hurt readability — consider intermediate variables for very deep structures.",
+        "You can combine array and object destructuring: const [{ name }] = arrayOfObjects; extracts the name from the first object.",
+        "Destructuring works in for...of loops too: for (const { name, age } of users) { ... }"
+      ],
+      "commonPitfalls": [
+        "Confusing renaming syntax with default values — { name: newName } renames, while { name = 'default' } sets a default. They can be combined: { name: newName = 'default' }.",
+        "Destructuring null or undefined throws a TypeError — always ensure the source value exists or provide a fallback: const { x } = obj || {};",
+        "Forgetting that the rest element must be the last element in the pattern — [first, ...middle, last] is a syntax error.",
+        "Over-destructuring in function signatures — extracting too many nested properties in the signature makes it hard to understand what object shape the function expects."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "destructuring-ex1",
+        "title": "Nested Object Destructuring",
+        "description": "Given an API response object, use nested destructuring in a single statement to extract the user's `name`, `email`, and the `token` from inside `data`. Also extract `status` and rename it to `statusCode`. Log all four values.",
+        "starterCode": "const response = {\n  status: 200,\n  data: {\n    user: {\n      name: 'Alice',\n      email: 'alice@example.com',\n      age: 28\n    },\n    token: 'jwt-xyz-789'\n  }\n};\n\n// Use a single destructuring statement to extract:\n// - status (rename to statusCode)\n// - name (from data.user)\n// - email (from data.user)\n// - token (from data)\n\n// Log all four values\n",
+        "solution": "const response = {\n  status: 200,\n  data: {\n    user: {\n      name: 'Alice',\n      email: 'alice@example.com',\n      age: 28\n    },\n    token: 'jwt-xyz-789'\n  }\n};\n\nconst { status: statusCode, data: { user: { name, email }, token } } = response;\n\nconsole.log(statusCode);\nconsole.log(name);\nconsole.log(email);\nconsole.log(token);\n",
+        "expectedOutput": "200\nAlice\nalice@example.com\njwt-xyz-789",
+        "hints": [
+          "Use the colon syntax for renaming: { status: statusCode } renames status to statusCode.",
+          "Mirror the object structure on the left side: { data: { user: { name, email }, token } } reaches into the nested properties."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "destructuring-ex2",
+        "title": "Function Parameter Destructuring with Defaults",
+        "description": "Write a function `createProfile` that accepts a single object parameter. Destructure `name`, `role` (default: 'member'), and `active` (default: true) directly in the parameter list. The function should return a formatted string. Test with a full config and a minimal config.",
+        "starterCode": "// Write createProfile with parameter destructuring and defaults\n// It should return: \"<name> | Role: <role> | Active: <active>\"\nfunction createProfile(/* destructure here */) {\n  // your code here\n}\n\nconsole.log(createProfile({ name: 'Alice', role: 'admin', active: false }));\nconsole.log(createProfile({ name: 'Bob' }));\n",
+        "solution": "function createProfile({ name, role = 'member', active = true }) {\n  return `${name} | Role: ${role} | Active: ${active}`;\n}\n\nconsole.log(createProfile({ name: 'Alice', role: 'admin', active: false }));\nconsole.log(createProfile({ name: 'Bob' }));\n",
+        "expectedOutput": "Alice | Role: admin | Active: false\nBob | Role: member | Active: true",
+        "hints": [
+          "Destructure the parameter directly in the function signature: ({ name, role = 'member', active = true }).",
+          "Default values only apply when the property is undefined -- when Bob's object omits role and active, they get the defaults."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "spread-rest",
+    "sectionId": "arrays-and-objects",
+    "orderIndex": 3,
+    "title": "Spread & Rest Operators",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": [
+      "spread operator",
+      "rest parameters",
+      "array spread",
+      "object spread",
+      "shallow copy",
+      "merge",
+      "rest in destructuring",
+      "spread vs rest"
+    ],
+    "content": {
+      "explanation": "The three dots (...) in JavaScript serve two distinct purposes depending on context: the spread operator and the rest parameter. Despite sharing the same syntax, they do opposite things. Spread expands an iterable (array, string, object) into individual elements, while rest collects multiple individual elements into a single array or object. Understanding when JavaScript interprets ... as spread versus rest is a fundamental skill.\n\nThe spread operator in arrays lets you copy arrays, merge multiple arrays, and convert iterables (like strings or Sets) into arrays. When you write [...arr], you get a shallow copy of arr. When you write [...arr1, ...arr2], you merge both arrays into a new one. You can also insert elements at any position: [...arr1, newItem, ...arr2]. This is the idiomatic way to work with arrays immutably in JavaScript — instead of push, splice, or direct mutation, you create new arrays with spread.\n\nObject spread works the same way but with properties. { ...obj } creates a shallow copy, and { ...obj1, ...obj2 } merges objects with later properties overriding earlier ones. This is the standard pattern for immutable state updates in React and Redux. You can override specific properties by placing them after the spread: { ...user, name: 'New Name' } copies all of user's properties but replaces the name. Just like Object.assign, spread only does a shallow copy — nested objects are still shared references.\n\nRest parameters in function definitions collect all remaining arguments into a true array. Unlike the old arguments object (which is array-like but not an actual array), rest parameters give you a proper Array with full access to map, filter, reduce, and all other array methods. Rest parameters must be the last parameter in the function signature. They are also used in destructuring assignments to gather the remaining elements or properties.\n\nThe key mental model is: spread appears on the right side of an assignment or in function call arguments (it breaks things apart), while rest appears on the left side of an assignment or in function parameter definitions (it gathers things together). Once you internalize this distinction, the three dots become one of the most natural parts of modern JavaScript syntax.",
+      "codeExamples": [
+        {
+          "title": "Spread in arrays — copy, merge, and convert",
+          "code": "const frontend = ['React', 'Vue', 'Angular'];\nconst backend = ['Node', 'Django', 'Rails'];\n\n// Shallow copy\nconst frontendCopy = [...frontend];\nfrontendCopy.push('Svelte');\nconsole.log(frontend.length);   // original unchanged\nconsole.log(frontendCopy.length);\n\n// Merge arrays\nconst fullStack = [...frontend, ...backend];\nconsole.log(fullStack);\n\n// Convert string to array of characters\nconst chars = [...'hello'];\nconsole.log(chars);\n\n// Convert Set to array (deduplicate)\nconst nums = [1, 2, 2, 3, 3, 3];\nconst unique = [...new Set(nums)];\nconsole.log(unique);",
+          "output": "3\n4\n[\"React\", \"Vue\", \"Angular\", \"Node\", \"Django\", \"Rails\"]\n[\"h\", \"e\", \"l\", \"l\", \"o\"]\n[1, 2, 3]",
+          "explanation": "Spread creates a new array, so pushing to frontendCopy does not affect frontend. Merging with spread is cleaner than concat. Spreading a string splits it into characters. The Set + spread pattern is the cleanest way to deduplicate an array."
+        },
+        {
+          "title": "Spread in objects — immutable updates",
+          "code": "const user = { name: 'Alice', age: 28, role: 'dev' };\n\n// Shallow copy\nconst copy = { ...user };\nconsole.log(copy);\n\n// Override specific properties\nconst updated = { ...user, age: 29, role: 'senior dev' };\nconsole.log(updated);\nconsole.log(user); // original unchanged\n\n// Merge multiple objects (last wins)\nconst defaults = { theme: 'light', lang: 'en', notify: true };\nconst prefs = { theme: 'dark' };\nconst config = { ...defaults, ...prefs };\nconsole.log(config);",
+          "output": "{ name: \"Alice\", age: 28, role: \"dev\" }\n{ name: \"Alice\", age: 29, role: \"senior dev\" }\n{ name: \"Alice\", age: 28, role: \"dev\" }\n{ theme: \"dark\", lang: \"en\", notify: true }",
+          "explanation": "Object spread copies all own enumerable properties. Properties listed after the spread override matching keys from the spread source. This is the standard pattern for immutable state updates — copy everything, then override what changed."
+        },
+        {
+          "title": "Rest parameters in functions",
+          "code": "// Rest collects remaining arguments into a real array\nfunction sum(label, ...numbers) {\n  const total = numbers.reduce((acc, n) => acc + n, 0);\n  return `${label}: ${total}`;\n}\n\nconsole.log(sum('Total', 10, 20, 30, 40));\nconsole.log(sum('Score', 95));\n\n// Compare with arguments object (old way)\nfunction oldSum() {\n  // arguments is array-like, not a real array\n  console.log(Array.isArray(arguments)); \n  return Array.from(arguments).reduce((a, b) => a + b, 0);\n}\n\nfunction newSum(...args) {\n  console.log(Array.isArray(args)); // true — it's a real array\n  return args.reduce((a, b) => a + b, 0);\n}\n\nconsole.log(oldSum(1, 2, 3));\nconsole.log(newSum(1, 2, 3));",
+          "output": "\"Total: 100\"\n\"Score: 95\"\nfalse\ntrue\n6\n6",
+          "explanation": "Rest parameters collect all arguments after 'label' into a proper array called 'numbers'. Unlike the legacy arguments object (which is array-like but not a real Array), rest parameters give you a genuine Array with all its methods available directly."
+        },
+        {
+          "title": "Spread vs rest — side by side",
+          "code": "// SPREAD: expands elements (right side / arguments)\nconst parts = [3, 4, 5];\nconst all = [1, 2, ...parts, 6]; // spread expands parts\nconsole.log(all);\n\nMath.max(...parts); // spread in function call\nconsole.log(Math.max(...parts));\n\n// REST: collects elements (left side / parameters)\nconst [first, ...others] = all;  // rest collects remaining\nconsole.log(first);\nconsole.log(others);\n\n// Object: spread to remove a property (rest to exclude)\nconst { password, ...safeUser } = {\n  name: 'Alice',\n  email: 'alice@dev.io',\n  password: 'secret123'\n};\nconsole.log(safeUser);",
+          "output": "[1, 2, 3, 4, 5, 6]\n5\n1\n[2, 3, 4, 5, 6]\n{ name: \"Alice\", email: \"alice@dev.io\" }",
+          "explanation": "Spread expands parts into individual values inside the array literal and the Math.max call. Rest collects the remaining array elements after first into the 'others' array. The last example is a powerful pattern — destructure out the property you want to remove, and rest collects everything else into a clean object without the password."
+        }
+      ],
+      "notes": [
+        "Spread creates shallow copies — nested objects and arrays are still shared references. Use structuredClone() for deep copies.",
+        "The rest parameter must be the last parameter in a function definition. You cannot have parameters after it.",
+        "Spread works with any iterable (arrays, strings, Sets, Maps, generators), not just arrays.",
+        "Object spread only copies own enumerable properties — inherited properties from the prototype chain are not included."
+      ],
+      "commonPitfalls": [
+        "Assuming spread creates a deep copy — [...arr] and {...obj} are shallow. If the array contains objects, both arrays share the same object references.",
+        "Using rest parameters with arrow functions that have no other params — (...args) => {} is fine, but forgetting the parens causes a syntax error.",
+        "Spreading non-iterables — trying to spread a number or plain object into an array (...42 or ...[object]) throws a TypeError. Objects can only be spread into other objects.",
+        "Order matters in object spread — {...a, ...b} and {...b, ...a} produce different results when a and b share keys. The last spread wins for overlapping properties."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "spread-rest-ex1",
+        "title": "Immutable Array and Object Updates",
+        "description": "Given a `user` object and a `hobbies` array, perform three immutable operations using spread: (1) create a copy of user with `age` updated to 30, (2) create a new array with 'cooking' added to the end of hobbies, (3) merge user with a new `hobbies` property containing the updated hobbies array. Log all three results and verify the originals are unchanged.",
+        "starterCode": "const user = { name: 'Alice', age: 28, role: 'dev' };\nconst hobbies = ['reading', 'hiking'];\n\n// 1. Create updatedUser with age changed to 30 (spread user)\n\n// 2. Create updatedHobbies with 'cooking' added (spread hobbies)\n\n// 3. Create fullProfile merging updatedUser and { hobbies: updatedHobbies }\n\n// Log all results\n// Log originals to prove they are unchanged\n",
+        "solution": "const user = { name: 'Alice', age: 28, role: 'dev' };\nconst hobbies = ['reading', 'hiking'];\n\nconst updatedUser = { ...user, age: 30 };\nconst updatedHobbies = [...hobbies, 'cooking'];\nconst fullProfile = { ...updatedUser, hobbies: updatedHobbies };\n\nconsole.log(updatedUser);\nconsole.log(updatedHobbies);\nconsole.log(fullProfile);\nconsole.log(user.age);\nconsole.log(hobbies.length);\n",
+        "expectedOutput": "{ name: \"Alice\", age: 30, role: \"dev\" }\n[\"reading\", \"hiking\", \"cooking\"]\n{ name: \"Alice\", age: 30, role: \"dev\", hobbies: [\"reading\", \"hiking\", \"cooking\"] }\n28\n2",
+        "hints": [
+          "Use { ...user, age: 30 } to copy all properties and override just age.",
+          "Use [...hobbies, 'cooking'] to create a new array with the additional item at the end."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "spread-rest-ex2",
+        "title": "Rest Parameters: Flexible sum Function",
+        "description": "Write a function `sumAll` that uses rest parameters to accept any number of arguments. It should return the sum of all arguments. Then write a function `sumWithMin` that takes a `minimum` as the first argument and uses rest parameters for the remaining numbers -- it returns the sum of only those numbers that are greater than or equal to `minimum`.",
+        "starterCode": "// Write sumAll using rest parameters\nfunction sumAll(/* rest params */) {\n  // your code here\n}\n\n// Write sumWithMin: first param is minimum, rest are numbers\n// Only sum numbers >= minimum\nfunction sumWithMin(/* minimum, ...rest */) {\n  // your code here\n}\n\nconsole.log(sumAll(1, 2, 3, 4, 5));\nconsole.log(sumAll(10, 20));\nconsole.log(sumWithMin(5, 1, 3, 5, 7, 10, 2));\nconsole.log(sumWithMin(10, 5, 10, 15, 3, 20));\n",
+        "solution": "function sumAll(...numbers) {\n  return numbers.reduce((acc, n) => acc + n, 0);\n}\n\nfunction sumWithMin(minimum, ...numbers) {\n  return numbers\n    .filter(n => n >= minimum)\n    .reduce((acc, n) => acc + n, 0);\n}\n\nconsole.log(sumAll(1, 2, 3, 4, 5));\nconsole.log(sumAll(10, 20));\nconsole.log(sumWithMin(5, 1, 3, 5, 7, 10, 2));\nconsole.log(sumWithMin(10, 5, 10, 15, 3, 20));\n",
+        "expectedOutput": "15\n30\n22\n45",
+        "hints": [
+          "Use ...numbers in the parameter list to collect all arguments into an array, then reduce to sum them.",
+          "In sumWithMin, the first parameter is minimum and ...numbers collects the rest. Filter the numbers array to keep only values >= minimum before summing."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

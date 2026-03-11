@@ -1,0 +1,88 @@
+import type { HtmlSection } from "./types";
+
+export const htmlSections: HtmlSection[] = [
+  {
+    id: "html-fundamentals",
+    title: "HTML Fundamentals",
+    description: "Document structure, elements, tags, attributes, and basic page anatomy.",
+    orderIndex: 0,
+    level: "Beginner",
+  },
+  {
+    id: "text-content",
+    title: "Text Content",
+    description: "Headings, paragraphs, text formatting, lists, and blockquotes.",
+    orderIndex: 1,
+    level: "Beginner",
+  },
+  {
+    id: "links-and-navigation",
+    title: "Links & Navigation",
+    description: "Anchor tags, internal and external links, navigation menus, and bookmarks.",
+    orderIndex: 2,
+    level: "Beginner",
+  },
+  {
+    id: "images-and-media",
+    title: "Images & Media",
+    description: "Images, figures, audio, video, and embedding external content.",
+    orderIndex: 3,
+    level: "Beginner",
+  },
+  {
+    id: "tables",
+    title: "Tables",
+    description: "Table structure, spanning rows and columns, captions, and accessibility.",
+    orderIndex: 4,
+    level: "Intermediate",
+  },
+  {
+    id: "forms-and-inputs",
+    title: "Forms & Inputs",
+    description: "Form elements, input types, validation, select, textarea, and accessibility.",
+    orderIndex: 5,
+    level: "Intermediate",
+  },
+  {
+    id: "semantic-html",
+    title: "Semantic HTML",
+    description: "Semantic elements, landmarks, ARIA roles, and document outline.",
+    orderIndex: 6,
+    level: "Intermediate",
+  },
+  {
+    id: "html5-apis",
+    title: "HTML5 APIs",
+    description: "Canvas, geolocation, web storage, drag and drop, and web workers.",
+    orderIndex: 7,
+    level: "Advanced",
+  },
+  {
+    id: "accessibility",
+    title: "Accessibility",
+    description: "WCAG guidelines, ARIA, keyboard navigation, focus management, and screen readers.",
+    orderIndex: 8,
+    level: "Intermediate",
+  },
+  {
+    id: "seo-and-meta",
+    title: "SEO & Meta",
+    description: "Meta tags, Open Graph, structured data, sitemaps, and robots.",
+    orderIndex: 9,
+    level: "Intermediate",
+  },
+  {
+    id: "performance-best-practices",
+    title: "Performance & Best Practices",
+    description: "Lazy loading, preloading, critical rendering path, and HTML validation.",
+    orderIndex: 10,
+    level: "Advanced",
+  },
+  {
+    id: "html-interview-essentials",
+    title: "Interview Essentials",
+    description: "Common interview questions, DOCTYPE, rendering modes, and HTML5 features.",
+    orderIndex: 11,
+    level: "Advanced",
+  },
+];

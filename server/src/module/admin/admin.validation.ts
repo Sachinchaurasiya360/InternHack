@@ -323,3 +323,36 @@ export const createSkillTestAdminSchema = z.object({
 });
 
 export const updateSkillTestAdminSchema = createSkillTestAdminSchema.partial();
+
+// ==================== HACKATHON MANAGEMENT ====================
+
+export const hackathonQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  search: z.string().optional(),
+  status: z.enum(["upcoming", "ongoing", "past"]).optional(),
+  locationType: z.enum(["virtual", "in-person", "hybrid"]).optional(),
+  sortBy: z.enum(["createdAt", "name", "startDate", "endDate"]).default("createdAt"),
+  sortOrder: z.enum(["asc", "desc"]).default("desc"),
+});
+
+export const createHackathonSchema = z.object({
+  name: z.string().min(1).max(300),
+  organizer: z.string().min(1).max(200),
+  logo: z.string().optional().or(z.literal("")),
+  description: z.string().min(10).max(5000),
+  prizePool: z.string().max(100),
+  startDate: z.string().min(1),
+  endDate: z.string().min(1),
+  location: z.string().max(300),
+  locationType: z.enum(["virtual", "in-person", "hybrid"]),
+  website: z.string().url().optional().or(z.literal("")),
+  tags: z.array(z.string()).default([]),
+  tracks: z.array(z.string()).default([]),
+  eligibility: z.string().max(2000).optional().or(z.literal("")),
+  status: z.enum(["upcoming", "ongoing", "past"]).default("upcoming"),
+  ecosystem: z.string().max(200),
+  highlights: z.array(z.string()).default([]),
+});
+
+export const updateHackathonSchema = createHackathonSchema.partial();
