@@ -78,10 +78,7 @@ export default function LoginPage() {
       >
         <div className="text-center mb-8">
           <Link to="/" className="inline-flex items-center gap-2 no-underline">
-            <div className="w-10 h-10 bg-gradient-to-br from-black to-gray-700 flex items-center justify-center rounded-xl">
-              <Zap className="w-6 h-6 text-white fill-white" />
-            </div>
-            <span className="text-2xl font-bold text-black dark:text-white">InternHack</span>
+           
           </Link>
           <h1 className="text-2xl font-bold mt-6 text-gray-900 dark:text-white">Welcome back</h1>
           <p className="text-gray-500 dark:text-gray-500 mt-1">Sign in to your account</p>

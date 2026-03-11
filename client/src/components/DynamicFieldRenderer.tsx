@@ -4,10 +4,11 @@ interface DynamicFieldRendererProps {
   fields: CustomFieldDefinition[];
   values: Record<string, unknown>;
   onChange: (fieldId: string, value: unknown) => void;
+  onFileSelect?: (fieldId: string, file: File) => void;
   disabled?: boolean;
 }
 
-export function DynamicFieldRenderer({ fields, values, onChange, disabled }: DynamicFieldRendererProps) {
+export function DynamicFieldRenderer({ fields, values, onChange, onFileSelect, disabled }: DynamicFieldRendererProps) {
   return (
     <div className="space-y-4">
       {fields.map((field) => (
@@ -16,7 +17,7 @@ export function DynamicFieldRenderer({ fields, values, onChange, disabled }: Dyn
             {field.label}
             {field.required && <span className="text-red-500 ml-1">*</span>}
           </label>
-          {renderField(field, values[field.id], (val) => onChange(field.id, val), disabled)}
+          {renderField(field, values[field.id], (val) => onChange(field.id, val), disabled, onFileSelect ? (file) => onFileSelect(field.id, file) : undefined)}
         </div>
       ))}
     </div>
@@ -28,6 +29,7 @@ function renderField(
   value: unknown,
   onChange: (val: unknown) => void,
   disabled?: boolean,
+  onFileSelect?: (file: File) => void,
 ) {
   const baseInputClass =
     "w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black dark:focus:border-white transition-colors disabled:bg-gray-100 dark:disabled:bg-gray-800 disabled:cursor-not-allowed dark:bg-gray-800 dark:text-white";
@@ -152,13 +154,16 @@ function renderField(
             type="file"
             onChange={(e) => {
               const file = e.target.files?.[0];
-              if (file) onChange(file.name);
+              if (file) {
+                onChange(file.name);
+                onFileSelect?.(file);
+              }
             }}
             disabled={disabled}
-            className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-black file:text-white dark:file:bg-white dark:file:text-gray-950 hover:file:bg-gray-800 dark:hover:file:bg-gray-200 file:cursor-pointer"
+            className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-gray-900 file:text-white dark:file:bg-white dark:file:text-gray-950 hover:file:bg-gray-700 dark:hover:file:bg-gray-200 file:cursor-pointer"
             accept={field.validation?.allowedTypes?.join(",")}
           />
-          {typeof value === "string" && value && <p className="mt-1 text-sm text-gray-500">Current: {value}</p>}
+          {typeof value === "string" && value && <p className="mt-1 text-sm text-gray-500">Selected: {value}</p>}
         </div>
       );
 

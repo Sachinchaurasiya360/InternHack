@@ -47,7 +47,6 @@ const ResumeBuilderPage = lazy(() => import("./module/student/ats/ResumeBuilderP
 const CoverLetterPage = lazy(() => import("./module/student/ats/CoverLetterPage"));
 const LatexResumeEditor = lazy(() => import("./module/student/ats/LatexResumeEditor"));
 const ResumeGeneratorPage = lazy(() => import("./module/student/ats/ResumeGeneratorPage"));
-const MyCareerPathsPage = lazy(() => import("./module/career/MyCareerPathsPage"));
 const CareerProgressPage = lazy(() => import("./module/career/CareerProgressPage"));
 const AddCompanyPage = lazy(() => import("./module/student/companies/AddCompanyPage"));
 const StudentProfilePage = lazy(() => import("./module/student/profile/StudentProfilePage"));
@@ -192,6 +191,7 @@ function App() {
             <Route index element={<Navigate to="applications" replace />} />
             <Route path="jobs" element={<JobBrowsePage />} />
             <Route path="jobs/:id" element={<JobDetailPage />} />
+            <Route path="jobs/:id/apply" element={<ApplyPage />} />
             <Route path="internships" element={<GovInternshipsPage />} />
             <Route path="companies" element={<CompanyListPage />} />
             <Route path="companies/:slug" element={<CompanyDetailPage />} />
@@ -206,7 +206,7 @@ function App() {
             <Route path="ats/templates" element={<ResumeBuilderPage />} />
             <Route path="ats/cover-letter" element={<CoverLetterPage />} />
             <Route path="ats/latex-editor" element={<LatexResumeEditor />} />
-            <Route path="careers" element={<MyCareerPathsPage />} />
+            <Route path="careers" element={<Navigate to="/learn" replace />} />
             <Route path="careers/:slug" element={<CareerProgressPage />} />
             <Route path="skill-verification" element={<SkillVerificationPage />} />
             <Route path="mock-interview" element={<MockInterviewPage />} />

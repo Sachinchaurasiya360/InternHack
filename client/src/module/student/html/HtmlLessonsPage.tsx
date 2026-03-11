@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { CheckCircle2, ArrowRight, BookOpen, TrendingUp, Star, Lock } from "lucide-react";
+import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Star, Lock } from "lucide-react";
 import { sections, lessons } from "./data";
 import type { HtmlProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
@@ -87,11 +87,15 @@ export default function HtmlLessonsPage() {
         />
       </div>
 
+      <Link to="/learn" className="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white transition-colors no-underline mb-4">
+        <ArrowLeft className="w-4 h-4" /> Back to Learning Hub
+      </Link>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-10 mt-6"
+        className="text-center mb-10 mt-2"
       >
         <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
           HTML <span className="text-gradient-accent">Lessons</span>
