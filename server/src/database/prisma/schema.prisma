@@ -118,6 +118,20 @@ enum CampusRegistrationStatus {
   REJECTED
 }
 
+enum AIProviderType {
+  GEMINI
+  GROQ
+  OPENROUTER
+  CODESTRAL
+}
+
+enum AIServiceType {
+  ATS_SCORE
+  COVER_LETTER
+  RESUME_GEN
+  LATEX_CHAT
+}
+
 // ============================================================
 // USER MODEL
 // ============================================================
@@ -129,6 +143,7 @@ model user {
   password    String
   role        UserRole @default(STUDENT)
   isActive    Boolean  @default(true)
+  isProfilePublic   Boolean  @default(false)
   isVerified        Boolean  @default(false)
   verificationOtp   String?
   otpExpiresAt      DateTime?
@@ -165,9 +180,6 @@ model user {
   postedJobs        job[]                  @relation("RecruiterJobs")
   applications      application[]          @relation("StudentApplications")
   atsScores         atsScore[]             @relation("StudentAtsScores")
-  careerEnrollments studentCareer[]        @relation("StudentCareers")
-  skillProgress     studentSkillProgress[] @relation("StudentSkillProgress")
-
   companyReviews        companyReview[]       @relation("UserReviews")
   addedContacts         companyContact[]      @relation("UserAddedContacts")
   contributions         companyContribution[] @relation("UserContributions")
@@ -178,8 +190,7 @@ model user {
   adminActivityLogs adminActivityLog[] @relation("AdminActivityLogs")
   payments          payment[]          @relation("UserPayments")
 
-  // ── Quiz & Blog relations ──
-  quizAttempts  quizAttempt[] @relation("StudentQuizAttempts")
+  // ── Blog relations ──
   blogPosts     blogPost[]    @relation("BlogAuthor")
 
   dsaProgress       studentDsaProgress[] @relation("StudentDsaProgress")
@@ -296,6 +307,8 @@ model round {
   timeLimitSecs      Int?
   autoGrade          Boolean @default(false)
 
+  activateAt         DateTime?
+
   roundSubmissions roundSubmission[]
 
   createdAt DateTime @default(now())
@@ -330,6 +343,7 @@ model application {
   @@index([studentId])
   @@index([status])
   @@index([createdAt])
+  @@index([jobId, status])
   @@unique([jobId, studentId])
 }
 
@@ -354,53 +368,12 @@ model roundSubmission {
   updatedAt        DateTime    @updatedAt
 
   @@unique([applicationId, roundId])
+  @@index([roundId])
 }
 
 // ============================================================
 // SCRAPED JOB ENUMS
 // ============================================================
-
-// ============================================================
-// CAREER ROADMAP ENUMS
-// ============================================================
-
-enum CareerDifficulty {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-}
-
-enum ResourceType {
-  ARTICLE
-  VIDEO
-  COURSE
-  BOOK
-  DOCUMENTATION
-  TUTORIAL
-}
-
-enum SkillLevel {
-  BEGINNER
-  INTERMEDIATE
-  ADVANCED
-}
-
-enum CareerCategory {
-  ENGINEERING
-  DESIGN
-  DATA
-  PRODUCT
-  MARKETING
-  DEVOPS
-  SECURITY
-  OTHER
-}
-
-enum EnrollmentStatus {
-  ACTIVE
-  PAUSED
-  COMPLETED
-}
 
 // ============================================================
 // SCRAPED JOB ENUMS
@@ -479,99 +452,6 @@ model scrapeLog {
   error       String?
   duration    Int
   createdAt   DateTime @default(now())
-}
-
-// ============================================================
-// CAREER ROADMAP MODELS
-// ============================================================
-
-model career {
-  id          Int              @id @default(autoincrement())
-  title       String           @unique
-  slug        String           @unique
-  description String
-  category    CareerCategory
-  difficulty  CareerDifficulty
-  iconUrl     String?
-  avgSalary   String?
-  demandLevel String?
-  phases      careerPhase[]
-  enrollments studentCareer[]
-  createdAt   DateTime         @default(now())
-  updatedAt   DateTime         @updatedAt
-}
-
-model careerPhase {
-  id            Int              @id @default(autoincrement())
-  careerId      Int
-  career        career           @relation(fields: [careerId], references: [id], onDelete: Cascade)
-  title         String
-  description   String?
-  orderIndex    Int
-  durationWeeks Int?
-  skills        careerSkill[]
-  resources     careerResource[]
-  tools         careerTool[]
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-
-  @@unique([careerId, orderIndex])
-}
-
-model careerSkill {
-  id       Int                    @id @default(autoincrement())
-  phaseId  Int
-  phase    careerPhase            @relation(fields: [phaseId], references: [id], onDelete: Cascade)
-  name     String
-  level    SkillLevel
-  progress studentSkillProgress[]
-  quiz     quiz?
-}
-
-model careerResource {
-  id      Int          @id @default(autoincrement())
-  phaseId Int
-  phase   careerPhase  @relation(fields: [phaseId], references: [id], onDelete: Cascade)
-  title   String
-  url     String
-  type    ResourceType
-  free    Boolean      @default(true)
-}
-
-model careerTool {
-  id       Int         @id @default(autoincrement())
-  phaseId  Int
-  phase    careerPhase @relation(fields: [phaseId], references: [id], onDelete: Cascade)
-  name     String
-  url      String?
-  category String?
-}
-
-model studentCareer {
-  id        Int              @id @default(autoincrement())
-  studentId Int
-  student   user             @relation("StudentCareers", fields: [studentId], references: [id], onDelete: Cascade)
-  careerId  Int
-  career    career           @relation(fields: [careerId], references: [id], onDelete: Cascade)
-  status    EnrollmentStatus @default(ACTIVE)
-  createdAt DateTime         @default(now())
-  updatedAt DateTime         @updatedAt
-
-  @@unique([studentId, careerId])
-}
-
-model studentSkillProgress {
-  id        Int         @id @default(autoincrement())
-  studentId Int
-  student   user        @relation("StudentSkillProgress", fields: [studentId], references: [id], onDelete: Cascade)
-  skillId   Int
-  skill     careerSkill @relation(fields: [skillId], references: [id], onDelete: Cascade)
-  completed  Boolean   @default(false)
-  verifiedAt DateTime?
-  createdAt  DateTime  @default(now())
-  updatedAt  DateTime  @updatedAt
-
-  @@unique([studentId, skillId])
 }
 
 // ============================================================
@@ -813,55 +693,6 @@ model blogPost {
   @@index([status])
   @@index([category])
   @@index([publishedAt])
-}
-
-// ============================================================
-// QUIZ MODELS
-// ============================================================
-
-model quiz {
-  id            Int            @id @default(autoincrement())
-  skillId       Int            @unique
-  skill         careerSkill    @relation(fields: [skillId], references: [id])
-  title         String
-  description   String?
-  passThreshold Int            @default(70)
-  timeLimitSecs Int?
-  questions     quizQuestion[]
-  attempts      quizAttempt[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
-}
-
-model quizQuestion {
-  id           Int      @id @default(autoincrement())
-  quizId       Int
-  quiz         quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  question     String
-  options      Json
-  correctIndex Int
-  explanation  String?
-  orderIndex   Int      @default(0)
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
-
-  @@index([quizId])
-}
-
-model quizAttempt {
-  id          Int      @id @default(autoincrement())
-  quizId      Int
-  quiz        quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  studentId   Int
-  student     user     @relation("StudentQuizAttempts", fields: [studentId], references: [id], onDelete: Cascade)
-  score       Int
-  passed      Boolean
-  answers     Json
-  completedAt DateTime @default(now())
-  createdAt   DateTime @default(now())
-
-  @@index([studentId])
-  @@index([quizId])
 }
 
 // ============================================================
@@ -1364,4 +1195,59 @@ model campusDriveRegistration {
   @@unique([driveId, studentId])
   @@index([driveId])
   @@index([studentId])
+}
+
+// ============================================================
+// AI SERVICE CONFIG & REQUEST LOG
+// ============================================================
+
+model aiServiceConfig {
+  id        Int            @id @default(autoincrement())
+  service   AIServiceType  @unique
+  provider  AIProviderType @default(GEMINI)
+  modelName String         @default("gemini-2.5-flash-lite")
+  updatedAt DateTime       @updatedAt
+
+  requestLogs aiRequestLog[]
+}
+
+model aiRequestLog {
+  id              Int              @id @default(autoincrement())
+  serviceConfigId Int
+  serviceConfig   aiServiceConfig  @relation(fields: [serviceConfigId], references: [id], onDelete: Cascade)
+  service         AIServiceType
+  providerName    AIProviderType
+  modelName       String
+  latencyMs       Int
+  inputTokens     Int?
+  outputTokens    Int?
+  success         Boolean          @default(true)
+  errorMessage    String?
+  userId          Int?
+  createdAt       DateTime         @default(now())
+
+  @@index([providerName, createdAt])
+  @@index([service, createdAt])
+  @@index([createdAt])
+}
+
+// ============================================================
+// ADMIN EXTERNAL JOB POSTINGS
+// ============================================================
+
+model adminJob {
+  id          Int       @id @default(autoincrement())
+  company     String?
+  role        String?
+  description String?
+  salary      String?
+  location    String?
+  applyLink   String?
+  tags        String[]  @default([])
+  expiresAt   DateTime
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([isActive, expiresAt])
 }

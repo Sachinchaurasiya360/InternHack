@@ -1,21 +1,16 @@
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import type { GenerateResumeInput, UserProfile } from "./resume-gen.validation.js";
+import { getProviderForService } from "../../lib/ai-provider-registry.js";
+import { logAIRequest } from "../../lib/ai-request-logger.js";
 
 export class ResumeGenService {
-  private genAI: GoogleGenerativeAI;
-
-  constructor() {
-    const apiKey = process.env["GEMINI_API_KEY"] ?? "";
-    this.genAI = new GoogleGenerativeAI(apiKey);
-  }
-
-  async generate(input: GenerateResumeInput, profile?: UserProfile): Promise<string> {
-    const model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
+  async generate(input: GenerateResumeInput, profile?: UserProfile, userId?: number): Promise<string> {
+    const provider = getProviderForService("RESUME_GEN");
     const prompt = this.buildPrompt(input, profile);
-    const result = await model.generateContent(prompt);
-    let text = result.response.text().trim();
+    const response = await provider.generateText(prompt);
+    logAIRequest("RESUME_GEN", response, true, undefined, userId);
+    let text = response.text.trim();
 
-    // Strip markdown code fences if Gemini wraps output
+    // Strip markdown code fences if AI wraps output
     if (text.startsWith("```")) {
       text = text.replace(/^```(?:latex|tex)?\n?/, "").replace(/\n?```$/, "");
     }
@@ -35,7 +30,7 @@ export class ResumeGenService {
     }
     if (profile.company) {
       let work = `Current Company: ${profile.company}`;
-      if (profile.designation) work += ` — ${profile.designation}`;
+      if (profile.designation) work += ` - ${profile.designation}`;
       parts.push(work);
     }
     if (profile.location) parts.push(`Location: ${profile.location}`);
@@ -78,7 +73,7 @@ LATEX REQUIREMENTS:
 - Use ONLY these packages: geometry (0.75in margins), enumitem, hyperref, titlesec
 - Use \\pagestyle{empty} (no page numbers)
 - Use \\titleformat and \\titlerule for section headers
-- The document MUST compile with standard pdflatex — no exotic packages
+- The document MUST compile with standard pdflatex - no exotic packages
 
 RESUME STRUCTURE:
 1. Header: centered name (\\LARGE \\textbf), contact info (email, phone, location, LinkedIn, GitHub) on one line with $\\cdot$ separators

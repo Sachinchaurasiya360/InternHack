@@ -8,7 +8,7 @@
     "isInterviewQuestion": false,
     "concepts": ["useEffect", "fetch API", "loading state", "error state", "cleanup", "race conditions"],
     "content": {
-      "explanation": "The most fundamental data fetching pattern in React uses the useEffect hook to trigger a fetch call when a component mounts or when dependencies change. Inside useEffect, you call fetch (or any async operation), parse the response, and store the result in state. Alongside the data, you maintain loading and error states to give users feedback while the request is in flight.\n\nThe pattern follows a clear structure: (1) declare state for data, loading, and error; (2) inside useEffect, set loading to true, perform the fetch, update data on success or error on failure, and set loading to false in both cases; (3) render conditionally based on these states. This gives you a complete lifecycle for any async operation.\n\nA critical detail is the cleanup function. When the component unmounts before the fetch completes, or when the dependency changes mid-flight, you need to ignore the stale response. The classic approach is to use a boolean flag (let ignore = false) and set it to true in the cleanup. Before updating state, check if ignore is true. The AbortController API is even better — it actually cancels the HTTP request, saving bandwidth.\n\nRace conditions are a common bug in this pattern. If a user rapidly switches between pages or filters, multiple fetches launch in parallel and responses can arrive out of order. The last-dispatched fetch might resolve before an earlier one, causing stale data to overwrite fresh data. Using an AbortController or the ignore-flag pattern prevents this.\n\nWhile this pattern works and is important to understand, modern React apps prefer React Query or SWR for production data fetching. These libraries handle caching, deduplication, retries, and race conditions automatically. However, understanding the manual useEffect pattern is essential for interviews and for understanding what those libraries abstract away.",
+      "explanation": "The most fundamental data fetching pattern in React uses the useEffect hook to trigger a fetch call when a component mounts or when dependencies change. Inside useEffect, you call fetch (or any async operation), parse the response, and store the result in state. Alongside the data, you maintain loading and error states to give users feedback while the request is in flight.\n\nThe pattern follows a clear structure: (1) declare state for data, loading, and error; (2) inside useEffect, set loading to true, perform the fetch, update data on success or error on failure, and set loading to false in both cases; (3) render conditionally based on these states. This gives you a complete lifecycle for any async operation.\n\nA critical detail is the cleanup function. When the component unmounts before the fetch completes, or when the dependency changes mid-flight, you need to ignore the stale response. The classic approach is to use a boolean flag (let ignore = false) and set it to true in the cleanup. Before updating state, check if ignore is true. The AbortController API is even better - it actually cancels the HTTP request, saving bandwidth.\n\nRace conditions are a common bug in this pattern. If a user rapidly switches between pages or filters, multiple fetches launch in parallel and responses can arrive out of order. The last-dispatched fetch might resolve before an earlier one, causing stale data to overwrite fresh data. Using an AbortController or the ignore-flag pattern prevents this.\n\nWhile this pattern works and is important to understand, modern React apps prefer React Query or SWR for production data fetching. These libraries handle caching, deduplication, retries, and race conditions automatically. However, understanding the manual useEffect pattern is essential for interviews and for understanding what those libraries abstract away.",
       "codeExamples": [
         {
           "title": "Basic fetch with loading and error states",
@@ -30,7 +30,7 @@
         }
       ],
       "notes": [
-        "Always handle the loading, success, and error states — never leave the user staring at a blank screen.",
+        "Always handle the loading, success, and error states - never leave the user staring at a blank screen.",
         "Use AbortController for cleanup to actually cancel the network request, not just ignore the response.",
         "This manual pattern is great for learning but in production, use React Query or SWR which handle caching, retries, and deduplication automatically."
       ],
@@ -77,7 +77,7 @@
     "isInterviewQuestion": false,
     "concepts": ["axios instance", "interceptors", "request config", "error handling", "base URL", "headers"],
     "content": {
-      "explanation": "Axios is an HTTP client library that improves on the native fetch API with features like automatic JSON parsing, request/response interceptors, timeout support, and better error handling. While fetch is built into browsers, Axios provides a more ergonomic API and is especially useful in production applications that need consistent error handling and authentication headers.\n\nThe recommended pattern is to create an Axios instance with a base URL and default configuration, then export it for use throughout the app. This centralises your API configuration in one place. If your API base URL or default headers change, you update one file instead of every fetch call.\n\nInterceptors are the most powerful feature of Axios. A request interceptor runs before every request — the most common use is attaching the Authorization header with a JWT token. A response interceptor runs after every response — you can use it to handle 401 errors globally (redirect to login), transform response data, or log errors. This eliminates repetitive error handling in every component.\n\nError handling in Axios is more structured than fetch. Fetch only rejects on network errors, not on HTTP error codes (404, 500 still resolve). Axios rejects on any non-2xx status code, making it easier to catch errors in .catch() or try/catch. The error object includes response (server responded with error), request (no response received), and message (setup error).\n\nA typical production setup creates an Axios instance, adds a request interceptor for auth tokens, adds a response interceptor for global error handling (401 redirect, toast notifications), and exports the instance. Components and React Query queryFn functions import this instance and use it for all API calls.",
+      "explanation": "Axios is an HTTP client library that improves on the native fetch API with features like automatic JSON parsing, request/response interceptors, timeout support, and better error handling. While fetch is built into browsers, Axios provides a more ergonomic API and is especially useful in production applications that need consistent error handling and authentication headers.\n\nThe recommended pattern is to create an Axios instance with a base URL and default configuration, then export it for use throughout the app. This centralises your API configuration in one place. If your API base URL or default headers change, you update one file instead of every fetch call.\n\nInterceptors are the most powerful feature of Axios. A request interceptor runs before every request - the most common use is attaching the Authorization header with a JWT token. A response interceptor runs after every response - you can use it to handle 401 errors globally (redirect to login), transform response data, or log errors. This eliminates repetitive error handling in every component.\n\nError handling in Axios is more structured than fetch. Fetch only rejects on network errors, not on HTTP error codes (404, 500 still resolve). Axios rejects on any non-2xx status code, making it easier to catch errors in .catch() or try/catch. The error object includes response (server responded with error), request (no response received), and message (setup error).\n\nA typical production setup creates an Axios instance, adds a request interceptor for auth tokens, adds a response interceptor for global error handling (401 redirect, toast notifications), and exports the instance. Components and React Query queryFn functions import this instance and use it for all API calls.",
       "codeExamples": [
         {
           "title": "Creating a configured Axios instance",
@@ -87,7 +87,7 @@
         },
         {
           "title": "Request and response interceptors",
-          "code": "import api from './api';\n\n// Request interceptor: attach auth token\napi.interceptors.request.use(\n  (config) => {\n    const token = localStorage.getItem('token');\n    if (token) {\n      config.headers.Authorization = `Bearer ${token}`;\n    }\n    return config;\n  },\n  (error) => Promise.reject(error)\n);\n\n// Response interceptor: handle global errors\napi.interceptors.response.use(\n  (response) => response,\n  (error) => {\n    if (error.response?.status === 401) {\n      localStorage.removeItem('token');\n      window.location.href = '/login';\n    }\n    if (error.response?.status === 500) {\n      console.error('Server error — please try again later');\n    }\n    return Promise.reject(error);\n  }\n);",
+          "code": "import api from './api';\n\n// Request interceptor: attach auth token\napi.interceptors.request.use(\n  (config) => {\n    const token = localStorage.getItem('token');\n    if (token) {\n      config.headers.Authorization = `Bearer ${token}`;\n    }\n    return config;\n  },\n  (error) => Promise.reject(error)\n);\n\n// Response interceptor: handle global errors\napi.interceptors.response.use(\n  (response) => response,\n  (error) => {\n    if (error.response?.status === 401) {\n      localStorage.removeItem('token');\n      window.location.href = '/login';\n    }\n    if (error.response?.status === 500) {\n      console.error('Server error - please try again later');\n    }\n    return Promise.reject(error);\n  }\n);",
           "explanation": "The request interceptor reads the token from storage and injects it into every request. The response interceptor handles 401 (redirect to login) and 500 (log error) globally, so individual components don't need to."
         },
         {
@@ -97,12 +97,12 @@
         }
       ],
       "notes": [
-        "Always create a shared Axios instance instead of using axios directly — it centralises configuration and makes interceptors work consistently.",
+        "Always create a shared Axios instance instead of using axios directly - it centralises configuration and makes interceptors work consistently.",
         "Axios automatically parses JSON responses; you don't need to call .json() like with fetch.",
         "Use interceptors for cross-cutting concerns (auth, logging, error handling) instead of duplicating logic in every API call."
       ],
       "commonPitfalls": [
-        "Forgetting that Axios throws on non-2xx responses (unlike fetch which resolves) — make sure your catch blocks handle these.",
+        "Forgetting that Axios throws on non-2xx responses (unlike fetch which resolves) - make sure your catch blocks handle these.",
         "Creating multiple Axios instances when only one is needed, causing interceptors to be applied inconsistently across the app."
       ]
     },
@@ -129,7 +129,7 @@
         "expectedOutput": "--- Server Error ---\nType: Response Error\nStatus: 404\nMessage: Not Found\n--- Network Error ---\nType: Request Error\nMessage: No response received\n--- Setup Error ---\nType: Setup Error\nMessage: Invalid URL",
         "hints": [
           "Check for error.response first (server responded), then error.request (no response), then fall through to setup error.",
-          "This mirrors the exact error structure Axios uses — the order of checks matters."
+          "This mirrors the exact error structure Axios uses - the order of checks matters."
         ],
         "difficulty": "Easy"
       }
@@ -166,12 +166,12 @@
       ],
       "notes": [
         "Always invalidate related queries after mutations to keep the UI in sync with the server.",
-        "Optimistic updates improve perceived performance but add complexity — use them for frequent user actions like toggling, liking, or reordering.",
+        "Optimistic updates improve perceived performance but add complexity - use them for frequent user actions like toggling, liking, or reordering.",
         "Use useInfiniteQuery for any list that loads incrementally (infinite scroll, 'Load More' button, cursor-based pagination)."
       ],
       "commonPitfalls": [
         "Forgetting to call invalidateQueries after a mutation, leaving the UI showing stale data until the user manually refreshes.",
-        "Not handling the rollback in onError for optimistic updates — if the server fails, the UI will show incorrect data permanently."
+        "Not handling the rollback in onError for optimistic updates - if the server fails, the UI will show incorrect data permanently."
       ]
     },
     "exercises": [
@@ -212,7 +212,7 @@
     "isInterviewQuestion": true,
     "concepts": ["error boundary", "componentDidCatch", "getDerivedStateFromError", "fallback UI", "error recovery"],
     "content": {
-      "explanation": "Error boundaries are React components that catch JavaScript errors anywhere in their child component tree, log those errors, and display a fallback UI instead of crashing the entire application. Without error boundaries, a single thrown error in any component will unmount the whole React tree, leaving users with a blank white screen.\n\nError boundaries must be class components — there is no hook equivalent for componentDidCatch and getDerivedStateFromError as of React 18. getDerivedStateFromError is a static method that runs during rendering and returns new state (typically { hasError: true }). componentDidCatch is an instance method that runs after the error has been committed — use it for logging to an error reporting service.\n\nYou should place error boundaries strategically. A top-level boundary around your entire app prevents the white screen of death. More granular boundaries around individual routes, widgets, or feature sections let the rest of the app continue working when one section fails. For example, if the chat widget throws, the main content should still be usable.\n\nError boundaries catch errors during rendering, in lifecycle methods, and in constructors of the whole tree below them. They do NOT catch errors in event handlers (use try/catch), asynchronous code (promises, setTimeout), server-side rendering, or errors thrown in the error boundary itself. For event handler errors, you need explicit try/catch blocks.\n\nRecovery is an important UX concern. A good fallback UI includes a message explaining something went wrong and a 'Try Again' button that resets the error boundary state. You can do this by changing the key prop on the boundary (forcing a remount) or by providing a reset method via a render prop or callback.",
+      "explanation": "Error boundaries are React components that catch JavaScript errors anywhere in their child component tree, log those errors, and display a fallback UI instead of crashing the entire application. Without error boundaries, a single thrown error in any component will unmount the whole React tree, leaving users with a blank white screen.\n\nError boundaries must be class components - there is no hook equivalent for componentDidCatch and getDerivedStateFromError as of React 18. getDerivedStateFromError is a static method that runs during rendering and returns new state (typically { hasError: true }). componentDidCatch is an instance method that runs after the error has been committed - use it for logging to an error reporting service.\n\nYou should place error boundaries strategically. A top-level boundary around your entire app prevents the white screen of death. More granular boundaries around individual routes, widgets, or feature sections let the rest of the app continue working when one section fails. For example, if the chat widget throws, the main content should still be usable.\n\nError boundaries catch errors during rendering, in lifecycle methods, and in constructors of the whole tree below them. They do NOT catch errors in event handlers (use try/catch), asynchronous code (promises, setTimeout), server-side rendering, or errors thrown in the error boundary itself. For event handler errors, you need explicit try/catch blocks.\n\nRecovery is an important UX concern. A good fallback UI includes a message explaining something went wrong and a 'Try Again' button that resets the error boundary state. You can do this by changing the key prop on the boundary (forcing a remount) or by providing a reset method via a render prop or callback.",
       "codeExamples": [
         {
           "title": "Basic error boundary class component",
@@ -233,19 +233,19 @@
         }
       ],
       "notes": [
-        "Error boundaries must be class components — there is no hooks API for catching render errors (as of React 18).",
+        "Error boundaries must be class components - there is no hooks API for catching render errors (as of React 18).",
         "Place error boundaries at both the app level (prevent white screen) and at feature/route level (isolate failures).",
-        "Error boundaries do NOT catch errors in event handlers, async code, or SSR — use try/catch for those."
+        "Error boundaries do NOT catch errors in event handlers, async code, or SSR - use try/catch for those."
       ],
       "commonPitfalls": [
-        "Assuming error boundaries catch event handler errors — they don't. A click handler that throws will not be caught; you need explicit try/catch inside the handler.",
+        "Assuming error boundaries catch event handler errors - they don't. A click handler that throws will not be caught; you need explicit try/catch inside the handler.",
         "Placing only one error boundary at the root, which means any error still takes down the whole visible UI inside that boundary. Use granular boundaries."
       ],
       "interviewTips": [
-        "Explain that error boundaries are the React equivalent of try/catch for the component tree — they prevent a single failing component from crashing the entire app.",
+        "Explain that error boundaries are the React equivalent of try/catch for the component tree - they prevent a single failing component from crashing the entire app.",
         "Mention that they must be class components and explain what getDerivedStateFromError (sync, during render) and componentDidCatch (async, after commit) each do.",
         "Discuss granular placement: root boundary for catastrophic errors, route-level boundaries for page isolation, widget-level boundaries for non-critical features.",
-        "Know the limitations: event handlers, async code, and SSR errors are NOT caught — this is a common follow-up question."
+        "Know the limitations: event handlers, async code, and SSR errors are NOT caught - this is a common follow-up question."
       ]
     },
     "exercises": [
@@ -253,7 +253,7 @@
         "id": "error-boundaries-ex1",
         "title": "Simulated Error Boundary",
         "description": "Simulate an error boundary pattern without React. Create a function that wraps another function call, catches any thrown errors, and returns a fallback value. Log whether the call succeeded or was caught.",
-        "starterCode": "// Simulate an error boundary\n// withErrorBoundary(fn, fallback) — calls fn, returns result or fallback on error\n\nfunction withErrorBoundary(fn, fallback) {\n  // TODO\n}\n\n// Test with a function that succeeds\n// Test with a function that throws",
+        "starterCode": "// Simulate an error boundary\n// withErrorBoundary(fn, fallback) - calls fn, returns result or fallback on error\n\nfunction withErrorBoundary(fn, fallback) {\n  // TODO\n}\n\n// Test with a function that succeeds\n// Test with a function that throws",
         "solution": "function withErrorBoundary(fn, fallback) {\n  try {\n    const result = fn();\n    console.log('Render success: ' + result);\n    return result;\n  } catch (error) {\n    console.log('Error caught: ' + error.message);\n    console.log('Showing fallback: ' + fallback);\n    return fallback;\n  }\n}\n\nconsole.log('--- Success Case ---');\nwithErrorBoundary(() => 'Dashboard Content', 'Something went wrong');\n\nconsole.log('--- Error Case ---');\nwithErrorBoundary(() => { throw new Error('Component crashed'); }, 'Something went wrong');\n\nconsole.log('--- Another Error ---');\nwithErrorBoundary(() => { throw new Error('Data is undefined'); }, 'Failed to load widget');",
         "expectedOutput": "--- Success Case ---\nRender success: Dashboard Content\n--- Error Case ---\nError caught: Component crashed\nShowing fallback: Something went wrong\n--- Another Error ---\nError caught: Data is undefined\nShowing fallback: Failed to load widget",
         "hints": [
@@ -265,9 +265,9 @@
       {
         "id": "error-boundaries-ex2",
         "title": "Nested Error Boundaries with Isolation",
-        "description": "Simulate nested error boundaries. An outer boundary wraps the whole app. Inner boundaries wrap individual sections. If one section throws, the outer boundary should NOT catch it — only the inner boundary should. Show that other sections keep working.",
+        "description": "Simulate nested error boundaries. An outer boundary wraps the whole app. Inner boundaries wrap individual sections. If one section throws, the outer boundary should NOT catch it - only the inner boundary should. Show that other sections keep working.",
         "starterCode": "// Simulate nested error boundaries\n// Outer boundary wraps everything\n// Inner boundaries wrap individual sections\n// Show that a failure in one section doesn't affect others\n\nfunction simulateNestedBoundaries() {\n  // TODO\n}",
-        "solution": "function errorBoundary(name, fn, fallback) {\n  try {\n    return fn();\n  } catch (error) {\n    console.log('[' + name + '] caught: ' + error.message);\n    return fallback;\n  }\n}\n\nfunction simulateNestedBoundaries() {\n  const appResult = errorBoundary('App', () => {\n    // Header always works\n    console.log('Header: rendered OK');\n\n    // Dashboard section — will throw\n    const dashboard = errorBoundary('Dashboard', () => {\n      throw new Error('Dashboard crashed');\n    }, 'Dashboard fallback UI');\n    console.log('Dashboard: ' + dashboard);\n\n    // Settings section — works fine\n    const settings = errorBoundary('Settings', () => {\n      return 'Settings Content';\n    }, 'Settings fallback UI');\n    console.log('Settings: ' + settings);\n\n    return 'App rendered';\n  }, 'Full app fallback');\n\n  console.log('Result: ' + appResult);\n}\n\nsimulateNestedBoundaries();",
+        "solution": "function errorBoundary(name, fn, fallback) {\n  try {\n    return fn();\n  } catch (error) {\n    console.log('[' + name + '] caught: ' + error.message);\n    return fallback;\n  }\n}\n\nfunction simulateNestedBoundaries() {\n  const appResult = errorBoundary('App', () => {\n    // Header always works\n    console.log('Header: rendered OK');\n\n    // Dashboard section - will throw\n    const dashboard = errorBoundary('Dashboard', () => {\n      throw new Error('Dashboard crashed');\n    }, 'Dashboard fallback UI');\n    console.log('Dashboard: ' + dashboard);\n\n    // Settings section - works fine\n    const settings = errorBoundary('Settings', () => {\n      return 'Settings Content';\n    }, 'Settings fallback UI');\n    console.log('Settings: ' + settings);\n\n    return 'App rendered';\n  }, 'Full app fallback');\n\n  console.log('Result: ' + appResult);\n}\n\nsimulateNestedBoundaries();",
         "expectedOutput": "Header: rendered OK\n[Dashboard] caught: Dashboard crashed\nDashboard: Dashboard fallback UI\nSettings: Settings Content\nResult: App rendered",
         "hints": [
           "Each errorBoundary function wraps a section. The inner boundary catches Dashboard's error, so the outer boundary never sees it.",
@@ -286,7 +286,7 @@
     "isInterviewQuestion": false,
     "concepts": ["React.Suspense", "React.lazy", "lazy loading", "code splitting", "fallback UI", "concurrent features"],
     "content": {
-      "explanation": "React Suspense is a mechanism that lets components 'wait' for something before rendering — whether that is lazily loaded code, data, or other asynchronous resources. When a component inside a Suspense boundary is not ready, React shows the fallback UI (typically a loading spinner) until the component resolves.\n\nThe most established use of Suspense is with React.lazy for code splitting. React.lazy takes a function that returns a dynamic import and creates a component that loads the module on demand. Wrapping it with Suspense provides the loading state. This is the foundation of route-based code splitting — instead of loading your entire app's JavaScript upfront, each route's code loads only when the user navigates to it.\n\nRoute-based code splitting is the most impactful optimization because routes represent natural boundaries where users expect a brief loading moment. You lazy-load each page component and wrap your routes in a Suspense boundary. The initial bundle becomes much smaller, and subsequent routes load on demand. This dramatically improves Time to Interactive for large applications.\n\nSuspense for data fetching is a newer pattern. Libraries like React Query (with its suspense option) and the experimental React.use hook let components suspend while data is loading. Instead of managing isLoading state manually, the component simply reads the data and Suspense handles the loading state. This leads to cleaner component code — no loading/error conditionals.\n\nSuspense boundaries can be nested. A page-level boundary shows a full-page loader while the route loads. Inside that page, section-level boundaries can show inline spinners while individual data sources load. This gives you fine-grained control over the loading experience without cluttering components with loading logic.",
+      "explanation": "React Suspense is a mechanism that lets components 'wait' for something before rendering - whether that is lazily loaded code, data, or other asynchronous resources. When a component inside a Suspense boundary is not ready, React shows the fallback UI (typically a loading spinner) until the component resolves.\n\nThe most established use of Suspense is with React.lazy for code splitting. React.lazy takes a function that returns a dynamic import and creates a component that loads the module on demand. Wrapping it with Suspense provides the loading state. This is the foundation of route-based code splitting - instead of loading your entire app's JavaScript upfront, each route's code loads only when the user navigates to it.\n\nRoute-based code splitting is the most impactful optimization because routes represent natural boundaries where users expect a brief loading moment. You lazy-load each page component and wrap your routes in a Suspense boundary. The initial bundle becomes much smaller, and subsequent routes load on demand. This dramatically improves Time to Interactive for large applications.\n\nSuspense for data fetching is a newer pattern. Libraries like React Query (with its suspense option) and the experimental React.use hook let components suspend while data is loading. Instead of managing isLoading state manually, the component simply reads the data and Suspense handles the loading state. This leads to cleaner component code - no loading/error conditionals.\n\nSuspense boundaries can be nested. A page-level boundary shows a full-page loader while the route loads. Inside that page, section-level boundaries can show inline spinners while individual data sources load. This gives you fine-grained control over the loading experience without cluttering components with loading logic.",
       "codeExamples": [
         {
           "title": "React.lazy with Suspense for code splitting",
@@ -302,9 +302,9 @@
         },
         {
           "title": "Suspense with React Query",
-          "code": "import { useSuspenseQuery } from '@tanstack/react-query';\n\nfunction UserProfile({ userId }) {\n  // No loading state needed — Suspense handles it\n  const { data } = useSuspenseQuery({\n    queryKey: ['user', userId],\n    queryFn: () => fetchUser(userId),\n  });\n\n  // data is guaranteed to exist here\n  return (\n    <div>\n      <h1>{data.name}</h1>\n      <p>{data.email}</p>\n    </div>\n  );\n}\n\n// Wrap with Suspense\n<Suspense fallback={<ProfileSkeleton />}>\n  <UserProfile userId={1} />\n</Suspense>",
+          "code": "import { useSuspenseQuery } from '@tanstack/react-query';\n\nfunction UserProfile({ userId }) {\n  // No loading state needed - Suspense handles it\n  const { data } = useSuspenseQuery({\n    queryKey: ['user', userId],\n    queryFn: () => fetchUser(userId),\n  });\n\n  // data is guaranteed to exist here\n  return (\n    <div>\n      <h1>{data.name}</h1>\n      <p>{data.email}</p>\n    </div>\n  );\n}\n\n// Wrap with Suspense\n<Suspense fallback={<ProfileSkeleton />}>\n  <UserProfile userId={1} />\n</Suspense>",
           "output": "Shows ProfileSkeleton while loading, then renders user data",
-          "explanation": "useSuspenseQuery suspends the component while data loads. The component code is cleaner — no isLoading check, data is always defined. The Suspense boundary handles the loading state."
+          "explanation": "useSuspenseQuery suspends the component while data loads. The component code is cleaner - no isLoading check, data is always defined. The Suspense boundary handles the loading state."
         }
       ],
       "notes": [
@@ -313,7 +313,7 @@
         "Suspense for data fetching requires library support (React Query's useSuspenseQuery, or experimental React.use). You cannot just throw a promise manually in production code."
       ],
       "commonPitfalls": [
-        "Wrapping every single component in Suspense — this creates too many loading spinners and a janky UX. Use Suspense at meaningful boundaries (routes, page sections).",
+        "Wrapping every single component in Suspense - this creates too many loading spinners and a janky UX. Use Suspense at meaningful boundaries (routes, page sections).",
         "Using React.lazy inside a component body instead of at the module level. Defining it inside a component causes a new lazy component on every render, which resets state and re-triggers loading."
       ]
     },

@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router";
-import { LayoutDashboard, Users, Briefcase, ScrollText, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, Compass, BookOpen, Code2, Brain, BadgeCheck, Trophy, Award } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, ScrollText, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, BookOpen, Code2, Brain, BadgeCheck, Trophy, Award, Cpu, ExternalLink } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useNavigate } from "react-router";
 import { SEO } from "../../components/SEO";
@@ -64,11 +64,7 @@ export default function AdminLayout() {
             <Mail className="w-4 h-4" />
             Subscribers
           </NavLink>
-          <NavLink to="/admin/careers" className={linkClass}>
-            <Compass className="w-4 h-4" />
-            Careers
-          </NavLink>
-          <NavLink to="/admin/dsa" className={linkClass}>
+<NavLink to="/admin/dsa" className={linkClass}>
             <Code2 className="w-4 h-4" />
             DSA Topics
           </NavLink>
@@ -87,6 +83,14 @@ export default function AdminLayout() {
           <NavLink to="/admin/badges" className={linkClass}>
             <Award className="w-4 h-4" />
             Badges
+          </NavLink>
+          <NavLink to="/admin/ai-providers" className={linkClass}>
+            <Cpu className="w-4 h-4" />
+            AI Providers
+          </NavLink>
+          <NavLink to="/admin/external-jobs" className={linkClass}>
+            <ExternalLink className="w-4 h-4" />
+            External Jobs
           </NavLink>
           <NavLink to="/admin/blog" className={linkClass}>
             <BookOpen className="w-4 h-4" />

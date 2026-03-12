@@ -10,34 +10,34 @@ export function setAuthQueryClient(qc: QueryClient) {
 
 interface AuthState {
   user: User | null;
-  token: string | null;
   isAuthenticated: boolean;
-  login: (user: User, token: string) => void;
+  login: (user: User) => void;
   logout: () => void;
   setUser: (user: User) => void;
 }
 
 export const useAuthStore = create<AuthState>((set) => {
-  const storedToken = localStorage.getItem("token");
   const storedUser = localStorage.getItem("user");
 
   return {
     user: storedUser ? JSON.parse(storedUser) : null,
-    token: storedToken,
-    isAuthenticated: !!storedToken,
+    isAuthenticated: !!storedUser,
 
-    login: (user, token) => {
-      localStorage.setItem("token", token);
+    login: (user) => {
       localStorage.setItem("user", JSON.stringify(user));
-      set({ user, token, isAuthenticated: true });
+      set({ user, isAuthenticated: true });
       _queryClient?.clear();
     },
 
     logout: () => {
-      localStorage.removeItem("token");
       localStorage.removeItem("user");
-      set({ user: null, token: null, isAuthenticated: false });
+      set({ user: null, isAuthenticated: false });
       _queryClient?.clear();
+      // Clear httpOnly cookie server-side (fire-and-forget)
+      fetch(
+        `${(import.meta.env.VITE_API_URL as string | undefined) ?? "http://localhost:3000/api"}/auth/logout`,
+        { method: "POST", credentials: "include" },
+      ).catch(() => {});
     },
 
     setUser: (user) => {

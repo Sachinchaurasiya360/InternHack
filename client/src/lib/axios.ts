@@ -6,20 +6,12 @@ export const SERVER_URL = API_BASE.replace(/\/api\/?$/, "");
 
 const api = axios.create({
   baseURL: API_BASE,
-  withCredentials: true,
-});
-
-api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("token");
-  if (token) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
+  withCredentials: true, // sends httpOnly cookie automatically
 });
 
 api.interceptors.response.use(
   (response) => response,
-  (error) => {
+  async (error) => {
     if (error.response?.status === 401) {
       useAuthStore.getState().logout();
       if (window.location.pathname !== "/login") {

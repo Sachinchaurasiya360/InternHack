@@ -104,7 +104,7 @@ export class SkillTestService {
     });
     if (!test) throw new Error("Test not found");
 
-    // Grade answers — total is the served subset, not the full pool
+    // Grade answers - total is the served subset, not the full pool
     const questionMap = new Map(test.questions.map((q) => [q.id, q]));
     let correctCount = 0;
     const totalQuestions = Math.min(QUESTIONS_PER_SESSION, test.questions.length);

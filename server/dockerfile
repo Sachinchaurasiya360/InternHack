@@ -1,0 +1,41 @@
+# ── Stage 1: Build ─────────────────────────────────────────────
+FROM node:20-alpine AS builder
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+
+RUN npx prisma generate --schema src/database/prisma/schema.prisma
+RUN npm run build
+
+# ── Stage 2: Production ───────────────────────────────────────
+FROM node:20-alpine AS production
+
+WORKDIR /app
+
+COPY package.json package-lock.json ./
+RUN npm ci --omit=dev && npm cache clean --force
+
+# Prisma generated client (runtime engine + generated types)
+COPY --from=builder /app/node_modules/.prisma ./node_modules/.prisma
+COPY --from=builder /app/node_modules/@prisma/client ./node_modules/@prisma/client
+
+# Compiled JS output
+COPY --from=builder /app/dist ./dist
+
+# Prisma schema (needed at runtime for query engine)
+COPY --from=builder /app/src/database/prisma/schema.prisma ./src/database/prisma/schema.prisma
+
+# Static files served by Express
+COPY --from=builder /app/public ./public
+
+ENV NODE_ENV=production
+EXPOSE 3000
+
+# Run as non-root for security
+USER node
+
+CMD ["node", "dist/index.js"]

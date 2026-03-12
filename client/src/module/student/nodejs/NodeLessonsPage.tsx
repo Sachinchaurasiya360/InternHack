@@ -103,7 +103,7 @@ export default function NodeLessonsPage() {
           Node.js & Express <span className="text-gradient-accent">Lessons</span>
         </h1>
         <p className="text-lg text-gray-500 dark:text-gray-500 max-w-lg mx-auto">
-          Server-side JavaScript — from core Node.js to building REST APIs with Express
+          Server-side JavaScript - from core Node.js to building REST APIs with Express
         </p>
       </motion.div>
 

@@ -52,14 +52,28 @@ export default function GitHubImportModal({
   const [importBio, setImportBio] = useState(false);
   const [importLocation, setImportLocation] = useState(false);
 
+  const looksLikeUrl = (v: string) => /^https?:\/\/|github\.com\//i.test(v.trim());
+
   const handleFetch = async () => {
     if (!username.trim()) return;
+    if (looksLikeUrl(username)) {
+      setError("Please enter your GitHub username only, not the full URL (e.g. \"octocat\")");
+      return;
+    }
     setLoading(true);
     setError(null);
     setResult(null);
     try {
       const res = await api.post("/auth/import-github", { username: username.trim() });
-      const data = res.data as GitHubImportData;
+      const raw = res.data as Record<string, unknown>;
+      const data: GitHubImportData = {
+        name: raw.name as string,
+        bio: (raw.bio as string) ?? null,
+        location: (raw.location as string) ?? null,
+        avatar: raw.avatar as string,
+        languages: (raw.languages as string[]) ?? [],
+        repos: (raw.repos ?? raw.projects ?? []) as GitHubImportData["repos"],
+      };
       setResult(data);
       // Pre-select new skills (not already in profile)
       const existingLower = new Set(currentSkills.map((s) => s.toLowerCase()));

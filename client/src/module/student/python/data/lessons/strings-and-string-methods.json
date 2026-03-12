@@ -70,7 +70,7 @@
       {
         "id": "string-basics-ex3",
         "title": "Raw String File Path",
-        "description": "Create a variable `path` using a raw string that stores the Windows path: C:\\Users\\Admin\\Documents\\report.txt — then print it.",
+        "description": "Create a variable `path` using a raw string that stores the Windows path: C:\\Users\\Admin\\Documents\\report.txt - then print it.",
         "starterCode": "# Create a raw string file path\npath = \n\nprint(path)",
         "solution": "# Create a raw string file path\npath = r\"C:\\Users\\Admin\\Documents\\report.txt\"\n\nprint(path)",
         "expectedOutput": "C:\\Users\\Admin\\Documents\\report.txt",
@@ -113,7 +113,7 @@
         }
       ],
       "notes": [
-        "Accessing an index beyond the string's length raises an IndexError, but slicing beyond the bounds does not — it simply returns what is available.",
+        "Accessing an index beyond the string's length raises an IndexError, but slicing beyond the bounds does not - it simply returns what is available.",
         "Slicing always creates a new string; it never modifies the original because strings are immutable.",
         "The slice object can also be stored: s = slice(0, 5) and then used as text[s].",
         "Negative step reverses traversal direction; when using a negative step, start should be greater than stop."
@@ -180,7 +180,7 @@
     "isInterviewQuestion": false,
     "concepts": ["upper", "lower", "strip", "split", "join", "replace", "find", "count"],
     "content": {
-      "explanation": "Python strings come with a rich set of built-in methods. These methods do not modify the original string (since strings are immutable) but return a new string with the requested transformation applied.\n\nCase-changing methods include upper() which converts all characters to uppercase, lower() which converts to lowercase, title() which capitalizes the first letter of each word, and capitalize() which capitalizes only the first character of the string. These are essential for normalizing user input — for example, comparing emails in a case-insensitive way.\n\nWhitespace handling is done with strip(), lstrip(), and rstrip(). The strip() method removes leading and trailing whitespace (or specified characters) from a string. This is particularly important when processing user input or reading from files where extra spaces or newlines may appear.\n\nSearching and modifying methods include find() which returns the index of the first occurrence of a substring (or -1 if not found), count() which returns the number of non-overlapping occurrences, replace() which substitutes all occurrences of one substring with another, split() which breaks a string into a list of substrings based on a delimiter, and join() which combines a list of strings into one string with a specified separator.",
+      "explanation": "Python strings come with a rich set of built-in methods. These methods do not modify the original string (since strings are immutable) but return a new string with the requested transformation applied.\n\nCase-changing methods include upper() which converts all characters to uppercase, lower() which converts to lowercase, title() which capitalizes the first letter of each word, and capitalize() which capitalizes only the first character of the string. These are essential for normalizing user input - for example, comparing emails in a case-insensitive way.\n\nWhitespace handling is done with strip(), lstrip(), and rstrip(). The strip() method removes leading and trailing whitespace (or specified characters) from a string. This is particularly important when processing user input or reading from files where extra spaces or newlines may appear.\n\nSearching and modifying methods include find() which returns the index of the first occurrence of a substring (or -1 if not found), count() which returns the number of non-overlapping occurrences, replace() which substitutes all occurrences of one substring with another, split() which breaks a string into a list of substrings based on a delimiter, and join() which combines a list of strings into one string with a specified separator.",
       "codeExamples": [
         {
           "title": "Case Conversion Methods",

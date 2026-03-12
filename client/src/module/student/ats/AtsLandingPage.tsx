@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
 import { useAuthStore } from "../../../lib/auth.store";
 import {
-  Sparkles,
+  Wand2,
   Target,
   Search,
   BarChart2,
@@ -270,7 +270,7 @@ export default function AtsLandingPage() {
               onClick={handleTryNow}
               className="inline-flex items-center gap-2 px-8 py-4 bg-gray-950 text-white font-semibold rounded-2xl hover:bg-gray-800 transition-colors shadow-lg shadow-black/10 text-base dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200"
             >
-              <Sparkles className="w-5 h-5" />
+              <Wand2 className="w-5 h-5" />
               {isAuthenticated ? "Analyze My Resume" : "Try Now - It's Free"}
             </button>
             <Link

@@ -93,48 +93,6 @@ export const addContactAdminSchema = z.object({
 
 export const updateContactSchema = addContactAdminSchema.partial();
 
-// ==================== CAREER MANAGEMENT ====================
-
-const careerSkillSchema = z.object({
-  name: z.string().min(1).max(200),
-  level: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]).default("BEGINNER"),
-});
-
-const careerResourceSchema = z.object({
-  title: z.string().min(1).max(300),
-  url: z.string().url(),
-  type: z.enum(["ARTICLE", "VIDEO", "COURSE", "BOOK", "DOCUMENTATION", "TUTORIAL"]).default("ARTICLE"),
-  free: z.boolean().default(true),
-});
-
-const careerToolSchema = z.object({
-  name: z.string().min(1).max(200),
-  url: z.string().url().optional().or(z.literal("")),
-  category: z.string().max(100).optional(),
-});
-
-const careerPhaseSchema = z.object({
-  title: z.string().min(1).max(300),
-  description: z.string().max(2000).optional(),
-  orderIndex: z.number().int().min(0),
-  durationWeeks: z.number().int().min(1).max(52).optional(),
-  skills: z.array(careerSkillSchema).default([]),
-  resources: z.array(careerResourceSchema).default([]),
-  tools: z.array(careerToolSchema).default([]),
-});
-
-export const createCareerSchema = z.object({
-  title: z.string().min(1).max(300),
-  description: z.string().min(10).max(5000),
-  category: z.enum(["ENGINEERING", "DESIGN", "DATA", "PRODUCT", "MARKETING", "DEVOPS", "SECURITY", "OTHER"]),
-  difficulty: z.enum(["BEGINNER", "INTERMEDIATE", "ADVANCED"]),
-  avgSalary: z.string().max(100).optional(),
-  demandLevel: z.string().max(100).optional(),
-  phases: z.array(careerPhaseSchema).default([]),
-});
-
-export const updateCareerSchema = createCareerSchema.partial();
-
 // ==================== OPEN SOURCE REPO MANAGEMENT ====================
 
 export const createRepoSchema = z.object({
@@ -336,3 +294,33 @@ export const createHackathonSchema = z.object({
 });
 
 export const updateHackathonSchema = createHackathonSchema.partial();
+
+// ==================== ADMIN EXTERNAL JOBS ====================
+
+export const createAdminJobSchema = z.object({
+  company: z.string().max(200).optional(),
+  role: z.string().max(200).optional(),
+  description: z.string().max(5000).optional(),
+  salary: z.string().max(100).optional(),
+  location: z.string().max(200).optional(),
+  applyLink: z.string().url().optional().or(z.literal("")),
+  tags: z.array(z.string()).default([]),
+});
+
+export const updateAdminJobSchema = createAdminJobSchema.partial().extend({
+  isActive: z.boolean().optional(),
+});
+
+export const adminExternalJobQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  search: z.string().optional(),
+});
+
+// ==================== AI PROVIDER MANAGEMENT ====================
+
+export const switchAIProviderSchema = z.object({
+  service: z.enum(["ATS_SCORE", "COVER_LETTER", "RESUME_GEN", "LATEX_CHAT"]),
+  provider: z.enum(["GEMINI", "GROQ", "OPENROUTER", "CODESTRAL"]),
+  modelName: z.string().min(1, "Model name is required"),
+});

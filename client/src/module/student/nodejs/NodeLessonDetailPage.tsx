@@ -90,7 +90,7 @@ function CodeBlock({ example }: { example: CodeExample }) {
   );
 }
 
-/* ── Practice Exercise Section (read-only — show/hide solution) ── */
+/* ── Practice Exercise Section (read-only - show/hide solution) ── */
 
 function ExerciseSection({
   exercises,

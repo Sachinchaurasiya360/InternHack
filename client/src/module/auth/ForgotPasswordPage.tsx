@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect, useCallback } from "react";
 import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { Zap, Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff } from "lucide-react";
 import toast from "react-hot-toast";
 import api from "../../lib/axios";
 import { Navbar } from "../../components/Navbar";
@@ -123,12 +123,6 @@ export default function ForgotPasswordPage() {
           className="w-full max-w-md"
         >
           <div className="text-center mb-8">
-            <Link to="/" className="inline-flex items-center gap-2 no-underline">
-              <div className="w-10 h-10 bg-gradient-to-br from-black to-gray-700 flex items-center justify-center rounded-xl">
-                <Zap className="w-6 h-6 text-white fill-white" />
-              </div>
-              <span className="text-2xl font-bold text-black dark:text-white">InternHack</span>
-            </Link>
             <h1 className="text-2xl font-bold mt-6 text-gray-900 dark:text-white">
               {step === 1 ? "Forgot Password" : "Reset Password"}
             </h1>

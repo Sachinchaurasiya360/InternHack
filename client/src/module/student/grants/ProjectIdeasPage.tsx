@@ -1225,13 +1225,7 @@ export default function ProjectIdeasPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Smart Contract Project Ideas - Grants" noIndex />
-
-      {/* Atmospheric background */}
-      <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-pink-100 dark:bg-pink-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-violet-100 dark:bg-violet-900/20 rounded-full blur-3xl opacity-40" />
-      </div>
+      <SEO title="Blockchain Projects - Learning Hub" noIndex />
 
       {/* Header */}
       <motion.div
@@ -1240,13 +1234,13 @@ export default function ProjectIdeasPage() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="text-center mb-10 mt-6"
       >
-        <Link to="/student/grants" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4 no-underline">
+        <Link to="/learn" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors mb-4 no-underline">
           <ArrowLeft className="w-4 h-4" />
-          Grants
+          Learning Hub
         </Link>
 
         <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
-          Project <span className="text-gradient-accent">Ideas</span>
+          Blockchain <span className="text-gradient-accent">Projects</span>
         </h1>
         <p className="text-lg text-gray-500 dark:text-gray-500 max-w-lg mx-auto">
           {PROJECTS.length} smart contract projects from beginner to advanced - pick one and start building

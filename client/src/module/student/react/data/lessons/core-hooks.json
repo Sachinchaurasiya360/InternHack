@@ -8,7 +8,7 @@
     "isInterviewQuestion": true,
     "concepts": ["useEffect", "side effects", "cleanup functions", "dependency array", "component lifecycle"],
     "content": {
-      "explanation": "The useEffect hook is React's primary mechanism for performing side effects in function components. Side effects are operations that reach outside the component's rendering logic — things like fetching data, subscribing to events, manually changing the DOM, or setting up timers. Before hooks, these operations were split across componentDidMount, componentDidUpdate, and componentWillUnmount in class components. useEffect unifies all three into a single API.\n\nuseEffect accepts two arguments: a setup function and an optional dependency array. The setup function runs after React commits changes to the DOM. If you return a function from the setup function, React treats it as a cleanup function and calls it before the effect runs again and when the component unmounts. This cleanup mechanism prevents memory leaks from subscriptions, timers, and other persistent resources.\n\nThe dependency array controls when the effect re-runs. If you pass an empty array [], the effect runs only once after the initial render — similar to componentDidMount. If you pass specific values [a, b], the effect re-runs only when those values change between renders. If you omit the array entirely, the effect runs after every render. Getting the dependency array right is one of the most important skills in React development.\n\nReact compares dependency values using Object.is (similar to ===). This means objects and arrays create new references on every render, which can cause effects to run more often than expected. Understanding reference equality is critical when working with useEffect dependencies.\n\nIn React 18's Strict Mode during development, effects are intentionally run twice (mount, unmount, mount) to help you find bugs related to missing cleanup functions. This does not happen in production builds.",
+      "explanation": "The useEffect hook is React's primary mechanism for performing side effects in function components. Side effects are operations that reach outside the component's rendering logic - things like fetching data, subscribing to events, manually changing the DOM, or setting up timers. Before hooks, these operations were split across componentDidMount, componentDidUpdate, and componentWillUnmount in class components. useEffect unifies all three into a single API.\n\nuseEffect accepts two arguments: a setup function and an optional dependency array. The setup function runs after React commits changes to the DOM. If you return a function from the setup function, React treats it as a cleanup function and calls it before the effect runs again and when the component unmounts. This cleanup mechanism prevents memory leaks from subscriptions, timers, and other persistent resources.\n\nThe dependency array controls when the effect re-runs. If you pass an empty array [], the effect runs only once after the initial render - similar to componentDidMount. If you pass specific values [a, b], the effect re-runs only when those values change between renders. If you omit the array entirely, the effect runs after every render. Getting the dependency array right is one of the most important skills in React development.\n\nReact compares dependency values using Object.is (similar to ===). This means objects and arrays create new references on every render, which can cause effects to run more often than expected. Understanding reference equality is critical when working with useEffect dependencies.\n\nIn React 18's Strict Mode during development, effects are intentionally run twice (mount, unmount, mount) to help you find bugs related to missing cleanup functions. This does not happen in production builds.",
       "codeExamples": [
         {
           "title": "Basic useEffect with dependency array",
@@ -35,12 +35,12 @@
         "Always include all values from the component scope that change over time and are used inside the effect in the dependency array."
       ],
       "commonPitfalls": [
-        "Forgetting to include dependencies in the array causes stale closures — the effect captures old values and never updates. The eslint-plugin-react-hooks 'exhaustive-deps' rule catches this.",
+        "Forgetting to include dependencies in the array causes stale closures - the effect captures old values and never updates. The eslint-plugin-react-hooks 'exhaustive-deps' rule catches this.",
         "Omitting the dependency array entirely causes the effect to run after every single render, which can lead to performance issues or infinite loops when the effect updates state."
       ],
       "interviewTips": [
         "Explain that useEffect replaces three class lifecycle methods: componentDidMount (empty deps), componentDidUpdate (with deps), and componentWillUnmount (cleanup return).",
-        "Mention that effects are asynchronous — they run after paint. This is different from useLayoutEffect which runs synchronously before paint.",
+        "Mention that effects are asynchronous - they run after paint. This is different from useLayoutEffect which runs synchronously before paint.",
         "Be ready to explain stale closures: when a dependency is missing, the effect closes over the initial value and never sees updates."
       ]
     },
@@ -67,7 +67,7 @@
         "expectedOutput": "Subscriber rendered\nSubscribed to updates",
         "hints": [
           "Pass an empty dependency array [] to make the effect run only once on mount.",
-          "Return a function from the effect — React will call it when the component unmounts."
+          "Return a function from the effect - React will call it when the component unmounts."
         ],
         "difficulty": "Easy"
       }
@@ -82,7 +82,7 @@
     "isInterviewQuestion": false,
     "concepts": ["data fetching", "subscriptions", "timers", "abort controller", "race conditions"],
     "content": {
-      "explanation": "useEffect becomes truly powerful when applied to real-world patterns like data fetching, event subscriptions, and timers. Each pattern has its own set of best practices and pitfalls. Understanding these patterns is essential for building robust React applications that handle asynchronous operations correctly.\n\nData fetching is the most common useEffect pattern. When fetching data based on props or state, you need to handle race conditions — situations where an older request completes after a newer one. The standard approach uses a boolean flag (often called 'ignore' or 'cancelled') that the cleanup function sets to true. When the fetch completes, it checks this flag before updating state. Modern applications can also use AbortController to actually cancel the HTTP request.\n\nEvent subscriptions follow a consistent pattern: subscribe in the effect body and unsubscribe in the cleanup function. This applies to DOM events (window resize, scroll), WebSocket connections, browser APIs (IntersectionObserver, ResizeObserver), and custom event emitters. The key rule is that every subscription must have a matching unsubscription in the cleanup.\n\nTimers (setTimeout, setInterval) are another frequent pattern. setTimeout is straightforward — set it in the effect, clear it in cleanup. setInterval requires more care because the callback closes over state values. Using the functional updater form of setState (e.g., setCount(c => c + 1)) avoids stale closure issues with intervals.\n\nA common advanced pattern is debouncing or throttling effects. For example, when implementing search-as-you-type, you want to delay the API call until the user stops typing. This combines setTimeout with cleanup: each keystroke clears the previous timeout and sets a new one.",
+      "explanation": "useEffect becomes truly powerful when applied to real-world patterns like data fetching, event subscriptions, and timers. Each pattern has its own set of best practices and pitfalls. Understanding these patterns is essential for building robust React applications that handle asynchronous operations correctly.\n\nData fetching is the most common useEffect pattern. When fetching data based on props or state, you need to handle race conditions - situations where an older request completes after a newer one. The standard approach uses a boolean flag (often called 'ignore' or 'cancelled') that the cleanup function sets to true. When the fetch completes, it checks this flag before updating state. Modern applications can also use AbortController to actually cancel the HTTP request.\n\nEvent subscriptions follow a consistent pattern: subscribe in the effect body and unsubscribe in the cleanup function. This applies to DOM events (window resize, scroll), WebSocket connections, browser APIs (IntersectionObserver, ResizeObserver), and custom event emitters. The key rule is that every subscription must have a matching unsubscription in the cleanup.\n\nTimers (setTimeout, setInterval) are another frequent pattern. setTimeout is straightforward - set it in the effect, clear it in cleanup. setInterval requires more care because the callback closes over state values. Using the functional updater form of setState (e.g., setCount(c => c + 1)) avoids stale closure issues with intervals.\n\nA common advanced pattern is debouncing or throttling effects. For example, when implementing search-as-you-type, you want to delay the API call until the user stops typing. This combines setTimeout with cleanup: each keystroke clears the previous timeout and sets a new one.",
       "codeExamples": [
         {
           "title": "Data fetching with race condition handling",
@@ -109,7 +109,7 @@
         "The functional updater form of setState (e.g., setCount(c => c + 1)) avoids the need to include the current state value in the dependency array."
       ],
       "commonPitfalls": [
-        "Not handling race conditions in data fetching — if a user quickly switches between items, an older fetch might resolve after a newer one, showing stale data.",
+        "Not handling race conditions in data fetching - if a user quickly switches between items, an older fetch might resolve after a newer one, showing stale data.",
         "Using setInterval without the functional updater for setState causes stale closures. The callback captures the initial state value and never sees updates."
       ]
     },
@@ -151,7 +151,7 @@
     "isInterviewQuestion": false,
     "concepts": ["useRef", "DOM refs", "mutable refs", "ref vs state", "ref callback"],
     "content": {
-      "explanation": "useRef returns a mutable ref object whose .current property is initialized to the passed argument. The returned object persists for the full lifetime of the component. Unlike state, mutating a ref does not cause a re-render. This makes useRef ideal for two distinct purposes: accessing DOM elements and storing mutable values that don't affect the visual output.\n\nThe most common use of useRef is to access DOM elements. By passing a ref object as the ref attribute on a JSX element, React sets ref.current to the corresponding DOM node after the component mounts. This lets you imperatively focus inputs, measure element dimensions, scroll to positions, or integrate with third-party DOM libraries. The ref is set to null when the element unmounts.\n\nThe second important use is storing mutable instance variables — values that persist across renders but whose changes don't need to trigger re-renders. Common examples include timer IDs, previous prop/state values, flags for tracking mount status, and counters for tracking renders. Think of useRef as a box that can hold any mutable value, similar to instance variables on a class.\n\nA key distinction between useRef and useState is that updating ref.current does not cause a re-render. This is both a feature and a source of bugs. If you need the UI to reflect a value, use state. If you need to track a value without causing re-renders (like a timer ID or a cancelled flag), use a ref. Mixing these up is a common mistake.\n\nRefs are also useful for capturing the previous value of a prop or state variable. By updating the ref in a useEffect, you can compare the current value with the previous one. This pattern is common enough that many codebases extract it into a usePrevious custom hook.",
+      "explanation": "useRef returns a mutable ref object whose .current property is initialized to the passed argument. The returned object persists for the full lifetime of the component. Unlike state, mutating a ref does not cause a re-render. This makes useRef ideal for two distinct purposes: accessing DOM elements and storing mutable values that don't affect the visual output.\n\nThe most common use of useRef is to access DOM elements. By passing a ref object as the ref attribute on a JSX element, React sets ref.current to the corresponding DOM node after the component mounts. This lets you imperatively focus inputs, measure element dimensions, scroll to positions, or integrate with third-party DOM libraries. The ref is set to null when the element unmounts.\n\nThe second important use is storing mutable instance variables - values that persist across renders but whose changes don't need to trigger re-renders. Common examples include timer IDs, previous prop/state values, flags for tracking mount status, and counters for tracking renders. Think of useRef as a box that can hold any mutable value, similar to instance variables on a class.\n\nA key distinction between useRef and useState is that updating ref.current does not cause a re-render. This is both a feature and a source of bugs. If you need the UI to reflect a value, use state. If you need to track a value without causing re-renders (like a timer ID or a cancelled flag), use a ref. Mixing these up is a common mistake.\n\nRefs are also useful for capturing the previous value of a prop or state variable. By updating the ref in a useEffect, you can compare the current value with the previous one. This pattern is common enough that many codebases extract it into a usePrevious custom hook.",
       "codeExamples": [
         {
           "title": "DOM ref for input focus",
@@ -173,12 +173,12 @@
         }
       ],
       "notes": [
-        "useRef returns the same object on every render. It is a plain JavaScript object with a .current property — there is nothing special about it beyond React preserving it between renders.",
+        "useRef returns the same object on every render. It is a plain JavaScript object with a .current property - there is nothing special about it beyond React preserving it between renders.",
         "Do not read or write ref.current during rendering (except for initialization). Reading refs during render makes your component's behavior unpredictable.",
         "For callback refs (functions passed as the ref attribute), React calls the function with the DOM node on mount and null on unmount. This is useful when you need to know exactly when a ref is attached."
       ],
       "commonPitfalls": [
-        "Using useRef when useState is needed — if the value change should be reflected in the UI, use state. Ref mutations won't trigger a re-render to show the new value.",
+        "Using useRef when useState is needed - if the value change should be reflected in the UI, use state. Ref mutations won't trigger a re-render to show the new value.",
         "Accessing ref.current in the render body for DOM refs before the ref is attached. DOM refs are null during the first render and only populated after React updates the DOM."
       ]
     },
@@ -192,7 +192,7 @@
         "expectedOutput": "Render #1\nRef is persistent: true\nRender #2\nRef is persistent: true",
         "hints": [
           "Use React.useRef(0) to create a ref initialized to 0.",
-          "Increment ref.current directly — this does not cause a re-render."
+          "Increment ref.current directly - this does not cause a re-render."
         ],
         "difficulty": "Easy"
       },
@@ -220,7 +220,7 @@
     "isInterviewQuestion": false,
     "concepts": ["useContext", "createContext", "Provider", "context consumers", "prop drilling"],
     "content": {
-      "explanation": "The useContext hook provides a way to pass data through the component tree without manually threading props through every level. It solves the problem known as 'prop drilling' — where intermediate components receive and forward props they don't actually use, just so deeply nested components can access them. Context is ideal for global or semi-global data like themes, authentication state, locale preferences, and UI settings.\n\nTo use context, you first create one with React.createContext(defaultValue). This returns an object with two components: Provider and Consumer (though the Consumer is rarely used now that useContext exists). The Provider wraps a portion of the component tree and accepts a value prop. Any component inside that Provider subtree can read the context value using useContext(MyContext).\n\nThe defaultValue passed to createContext is only used when a component calls useContext but there is no matching Provider above it in the tree. This is useful for testing or for standalone component usage. In most applications, the Provider always exists, so the default value acts as a fallback or type hint.\n\nWhen the Provider's value changes, all components consuming that context re-render. This is an important performance consideration. If the value is an object created inline in the Provider's render (e.g., value={{ user, theme }}), a new object is created every render, causing all consumers to re-render even if the data hasn't changed. The solution is to memoize the value with useMemo.\n\nContext is not a replacement for all state management. It works best for data that changes infrequently (theme, auth, locale). For frequently changing data or complex state logic, dedicated state management libraries or useReducer combined with context may be more appropriate. Context + useReducer is often called 'poor man's Redux' and is sufficient for many applications.",
+      "explanation": "The useContext hook provides a way to pass data through the component tree without manually threading props through every level. It solves the problem known as 'prop drilling' - where intermediate components receive and forward props they don't actually use, just so deeply nested components can access them. Context is ideal for global or semi-global data like themes, authentication state, locale preferences, and UI settings.\n\nTo use context, you first create one with React.createContext(defaultValue). This returns an object with two components: Provider and Consumer (though the Consumer is rarely used now that useContext exists). The Provider wraps a portion of the component tree and accepts a value prop. Any component inside that Provider subtree can read the context value using useContext(MyContext).\n\nThe defaultValue passed to createContext is only used when a component calls useContext but there is no matching Provider above it in the tree. This is useful for testing or for standalone component usage. In most applications, the Provider always exists, so the default value acts as a fallback or type hint.\n\nWhen the Provider's value changes, all components consuming that context re-render. This is an important performance consideration. If the value is an object created inline in the Provider's render (e.g., value={{ user, theme }}), a new object is created every render, causing all consumers to re-render even if the data hasn't changed. The solution is to memoize the value with useMemo.\n\nContext is not a replacement for all state management. It works best for data that changes infrequently (theme, auth, locale). For frequently changing data or complex state logic, dedicated state management libraries or useReducer combined with context may be more appropriate. Context + useReducer is often called 'poor man's Redux' and is sufficient for many applications.",
       "codeExamples": [
         {
           "title": "Creating and consuming context",
@@ -238,7 +238,7 @@
           "title": "Multiple contexts",
           "code": "const ThemeContext = React.createContext('light');\nconst LanguageContext = React.createContext('en');\n\nfunction StatusBar() {\n  const theme = React.useContext(ThemeContext);\n  const language = React.useContext(LanguageContext);\n  console.log('Theme:', theme);\n  console.log('Language:', language);\n  console.log('Contexts are independent: true');\n  return null;\n}\n\nStatusBar();",
           "output": "Theme: light\nLanguage: en\nContexts are independent: true",
-          "explanation": "Components can consume multiple contexts. Each useContext call subscribes to one specific context. Contexts are independent — updating one does not affect consumers of another."
+          "explanation": "Components can consume multiple contexts. Each useContext call subscribes to one specific context. Contexts are independent - updating one does not affect consumers of another."
         }
       ],
       "notes": [
@@ -289,7 +289,7 @@
     "isInterviewQuestion": true,
     "concepts": ["rules of hooks", "hook call order", "eslint-plugin-react-hooks", "conditional hooks", "hook internals"],
     "content": {
-      "explanation": "React hooks follow two fundamental rules that must never be broken: (1) Only call hooks at the top level — never inside loops, conditions, or nested functions; and (2) Only call hooks from React function components or custom hooks — never from regular JavaScript functions. These rules exist because of how React internally tracks hook state using a linked list tied to call order.\n\nThe first rule — calling hooks at the top level — is the most critical. React does not identify hooks by name. Instead, it relies on the order in which hooks are called during each render. On the first render, React creates a linked list of hook states. On subsequent renders, React walks through this list in the same order, matching each hook call to its stored state. If you put a hook inside a conditional, the order of hook calls might change between renders, causing React to match the wrong state to the wrong hook.\n\nConsider what happens when a useState hook is inside an if statement. On the first render, the condition might be true, so React records: [useState, useEffect]. On the next render, the condition might be false, skipping the useState. React now sees: [useEffect], but it tries to match the first call to the first stored state (which was useState's state). This mismatch corrupts the entire hook state for that component, leading to unpredictable bugs.\n\nThe second rule — only calling hooks from React functions — ensures that hooks have access to the component's fiber node (React's internal representation). Regular functions don't have a fiber context, so hooks can't store or retrieve their state. Custom hooks work because they are ultimately called from within a component's render, which has the fiber context.\n\nThe eslint-plugin-react-hooks package provides two rules: 'rules-of-hooks' (enforces the two rules above) and 'exhaustive-deps' (warns about missing dependencies in useEffect, useMemo, and useCallback). These rules are essential for catching hook-related bugs at development time. The rules-of-hooks ESLint rule is considered so important that it should always be set to 'error', not 'warn'.",
+      "explanation": "React hooks follow two fundamental rules that must never be broken: (1) Only call hooks at the top level - never inside loops, conditions, or nested functions; and (2) Only call hooks from React function components or custom hooks - never from regular JavaScript functions. These rules exist because of how React internally tracks hook state using a linked list tied to call order.\n\nThe first rule - calling hooks at the top level - is the most critical. React does not identify hooks by name. Instead, it relies on the order in which hooks are called during each render. On the first render, React creates a linked list of hook states. On subsequent renders, React walks through this list in the same order, matching each hook call to its stored state. If you put a hook inside a conditional, the order of hook calls might change between renders, causing React to match the wrong state to the wrong hook.\n\nConsider what happens when a useState hook is inside an if statement. On the first render, the condition might be true, so React records: [useState, useEffect]. On the next render, the condition might be false, skipping the useState. React now sees: [useEffect], but it tries to match the first call to the first stored state (which was useState's state). This mismatch corrupts the entire hook state for that component, leading to unpredictable bugs.\n\nThe second rule - only calling hooks from React functions - ensures that hooks have access to the component's fiber node (React's internal representation). Regular functions don't have a fiber context, so hooks can't store or retrieve their state. Custom hooks work because they are ultimately called from within a component's render, which has the fiber context.\n\nThe eslint-plugin-react-hooks package provides two rules: 'rules-of-hooks' (enforces the two rules above) and 'exhaustive-deps' (warns about missing dependencies in useEffect, useMemo, and useCallback). These rules are essential for catching hook-related bugs at development time. The rules-of-hooks ESLint rule is considered so important that it should always be set to 'error', not 'warn'.",
       "codeExamples": [
         {
           "title": "Correct vs incorrect hook usage",
@@ -321,8 +321,8 @@
       ],
       "interviewTips": [
         "Explain that React uses a linked list indexed by call order, not by hook name. This is why call order must be stable across renders.",
-        "Mention the two rules explicitly: (1) only at the top level, (2) only from React functions or custom hooks. Then explain the WHY — React's internal linked list implementation.",
-        "Be ready to give an example of what goes wrong when hooks are called conditionally — state values get mismatched with the wrong hooks, leading to corrupted component state."
+        "Mention the two rules explicitly: (1) only at the top level, (2) only from React functions or custom hooks. Then explain the WHY - React's internal linked list implementation.",
+        "Be ready to give an example of what goes wrong when hooks are called conditionally - state values get mismatched with the wrong hooks, leading to corrupted component state."
       ]
     },
     "exercises": [
@@ -335,7 +335,7 @@
         "expectedOutput": "Welcome, Alice",
         "hints": [
           "Move the useState call to the top of the function, before any conditions.",
-          "Use the isLoggedIn condition after the hook to decide what to log — the hook must always be called."
+          "Use the isLoggedIn condition after the hook to decide what to log - the hook must always be called."
         ],
         "difficulty": "Easy"
       },
@@ -348,7 +348,7 @@
         "expectedOutput": "Slot 0 (state): React\nSlot 1 (state): 18\nSlot 2 (ref): stable\nHook order is consistent: true",
         "hints": [
           "Call useState twice and useRef once, all at the top level before any logic.",
-          "The slot numbers correspond to the order in which hooks are called — first hook is slot 0, second is slot 1, etc."
+          "The slot numbers correspond to the order in which hooks are called - first hook is slot 0, second is slot 1, etc."
         ],
         "difficulty": "Easy"
       }

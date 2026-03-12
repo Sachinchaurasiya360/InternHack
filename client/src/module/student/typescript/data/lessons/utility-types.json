@@ -8,7 +8,7 @@
     "isInterviewQuestion": false,
     "concepts": ["Partial<T>", "Required<T>", "Readonly<T>", "mapped type modifiers", "immutability"],
     "content": {
-      "explanation": "TypeScript provides several built-in utility types that transform existing types into new ones. `Partial<T>`, `Required<T>`, and `Readonly<T>` are the most fundamental of these. They modify the property modifiers of a type — making properties optional, required, or read-only respectively. Understanding these utilities is essential because they appear everywhere in real-world TypeScript code.\n\n`Partial<T>` makes every property of `T` optional by adding the `?` modifier. This is commonly used for update functions where you only want to change some properties of an object. Instead of requiring the caller to pass the entire object, `Partial<T>` lets them pass only the fields they want to change. Under the hood, it is defined as `{ [K in keyof T]?: T[K] }`.\n\n`Required<T>` is the opposite of `Partial` — it removes the `?` modifier from all properties, making them mandatory. This is useful when you have a type with optional properties but need a complete version for certain operations like database insertion or serialization. Its definition uses the `-?` modifier: `{ [K in keyof T]-?: T[K] }`.\n\n`Readonly<T>` adds the `readonly` modifier to every property, preventing reassignment after construction. This is valuable for enforcing immutability patterns, especially when passing objects to functions that should not modify them. Note that `Readonly<T>` is shallow — it only makes the top-level properties readonly. Nested objects can still be mutated unless they are also wrapped in `Readonly`.",
+      "explanation": "TypeScript provides several built-in utility types that transform existing types into new ones. `Partial<T>`, `Required<T>`, and `Readonly<T>` are the most fundamental of these. They modify the property modifiers of a type - making properties optional, required, or read-only respectively. Understanding these utilities is essential because they appear everywhere in real-world TypeScript code.\n\n`Partial<T>` makes every property of `T` optional by adding the `?` modifier. This is commonly used for update functions where you only want to change some properties of an object. Instead of requiring the caller to pass the entire object, `Partial<T>` lets them pass only the fields they want to change. Under the hood, it is defined as `{ [K in keyof T]?: T[K] }`.\n\n`Required<T>` is the opposite of `Partial` - it removes the `?` modifier from all properties, making them mandatory. This is useful when you have a type with optional properties but need a complete version for certain operations like database insertion or serialization. Its definition uses the `-?` modifier: `{ [K in keyof T]-?: T[K] }`.\n\n`Readonly<T>` adds the `readonly` modifier to every property, preventing reassignment after construction. This is valuable for enforcing immutability patterns, especially when passing objects to functions that should not modify them. Note that `Readonly<T>` is shallow - it only makes the top-level properties readonly. Nested objects can still be mutated unless they are also wrapped in `Readonly`.",
       "codeExamples": [
         {
           "title": "Partial for Update Functions",
@@ -30,12 +30,12 @@
         }
       ],
       "notes": [
-        "`Partial`, `Required`, and `Readonly` are shallow — they only affect the top-level properties. Nested objects retain their original modifiers.",
+        "`Partial`, `Required`, and `Readonly` are shallow - they only affect the top-level properties. Nested objects retain their original modifiers.",
         "You can combine these utilities: `Readonly<Partial<T>>` makes all properties optional and readonly.",
         "These utilities are implemented as mapped types. Understanding mapped types helps you create your own custom versions."
       ],
       "commonPitfalls": [
-        "Assuming `Readonly<T>` provides deep immutability. It only prevents reassignment of top-level properties — nested objects and arrays can still be mutated.",
+        "Assuming `Readonly<T>` provides deep immutability. It only prevents reassignment of top-level properties - nested objects and arrays can still be mutated.",
         "Using `Partial<T>` when you only want some properties to be optional. Use `Pick` and intersection types instead: `Partial<Pick<T, 'optional'>> & Omit<T, 'optional'>`."
       ]
     },
@@ -77,7 +77,7 @@
     "isInterviewQuestion": false,
     "concepts": ["Pick<T,K>", "Omit<T,K>", "Record<K,V>", "type projection", "index signatures"],
     "content": {
-      "explanation": "`Pick<T, K>` creates a new type by selecting a subset of properties from `T`. The second type parameter `K` must be a union of keys that exist in `T`. This is useful when you need a view of an object that only includes certain fields — for example, creating a summary type from a detailed entity, or extracting just the fields needed for a specific API call.\n\n`Omit<T, K>` is the complement of `Pick` — it creates a new type by removing specified properties from `T`. If you have a `User` type with 10 properties and you want everything except `password` and `ssn`, `Omit<User, 'password' | 'ssn'>` is much more concise than picking the other 8 fields. Under the hood, `Omit` is defined as `Pick<T, Exclude<keyof T, K>>`.\n\n`Record<K, V>` creates a type with keys of type `K` and values of type `V`. It is the utility type for defining dictionaries and lookup maps. `K` is typically a union of string literals or `string` itself, and `V` is the value type. `Record<string, number>` is equivalent to `{ [key: string]: number }`, but more explicit and composable.\n\nThese three utilities are frequently combined in practice. For example, you might use `Pick` to extract relevant fields from a large type, then `Record` to create a mapping from enum values to those picked types. Or use `Omit` to remove sensitive fields before sending data to the client. Mastering these utilities lets you derive precise types from existing ones without duplication.",
+      "explanation": "`Pick<T, K>` creates a new type by selecting a subset of properties from `T`. The second type parameter `K` must be a union of keys that exist in `T`. This is useful when you need a view of an object that only includes certain fields - for example, creating a summary type from a detailed entity, or extracting just the fields needed for a specific API call.\n\n`Omit<T, K>` is the complement of `Pick` - it creates a new type by removing specified properties from `T`. If you have a `User` type with 10 properties and you want everything except `password` and `ssn`, `Omit<User, 'password' | 'ssn'>` is much more concise than picking the other 8 fields. Under the hood, `Omit` is defined as `Pick<T, Exclude<keyof T, K>>`.\n\n`Record<K, V>` creates a type with keys of type `K` and values of type `V`. It is the utility type for defining dictionaries and lookup maps. `K` is typically a union of string literals or `string` itself, and `V` is the value type. `Record<string, number>` is equivalent to `{ [key: string]: number }`, but more explicit and composable.\n\nThese three utilities are frequently combined in practice. For example, you might use `Pick` to extract relevant fields from a large type, then `Record` to create a mapping from enum values to those picked types. Or use `Omit` to remove sensitive fields before sending data to the client. Mastering these utilities lets you derive precise types from existing ones without duplication.",
       "codeExamples": [
         {
           "title": "Pick for Creating Subsets",
@@ -99,9 +99,9 @@
         }
       ],
       "notes": [
-        "`Pick` and `Omit` create new types — they do not affect the runtime object. You still need to handle the actual data extraction in your code.",
-        "`Record<K, V>` when K is a union type acts as an exhaustive map — every member of the union must have a corresponding entry.",
-        "`Omit` does not restrict K to keys of T — you can omit keys that do not exist, which may hide typos. Use carefully."
+        "`Pick` and `Omit` create new types - they do not affect the runtime object. You still need to handle the actual data extraction in your code.",
+        "`Record<K, V>` when K is a union type acts as an exhaustive map - every member of the union must have a corresponding entry.",
+        "`Omit` does not restrict K to keys of T - you can omit keys that do not exist, which may hide typos. Use carefully."
       ],
       "commonPitfalls": [
         "Assuming `Omit` validates that the keys exist in T. Unlike `Pick`, `Omit` accepts any string keys, so typos go unnoticed.",
@@ -146,7 +146,7 @@
     "isInterviewQuestion": false,
     "concepts": ["Exclude<T,U>", "Extract<T,U>", "NonNullable<T>", "conditional type filtering", "union manipulation"],
     "content": {
-      "explanation": "`Exclude<T, U>` removes from union type `T` all members that are assignable to `U`. It is defined as the distributive conditional type `T extends U ? never : T`. This is useful when you need to create a narrower union by removing specific members. For example, `Exclude<'a' | 'b' | 'c', 'a'>` produces `'b' | 'c'`.\n\n`Extract<T, U>` is the opposite of `Exclude` — it keeps only the members of `T` that are assignable to `U`. Its definition is `T extends U ? T : never`. This is useful for filtering a union to only the members that match a certain pattern. For example, `Extract<string | number | boolean, string | number>` produces `string | number`.\n\n`NonNullable<T>` removes `null` and `undefined` from a type. It is equivalent to `Exclude<T, null | undefined>`. This utility is extremely common in practice because TypeScript's strict null checks mean many values are typed as `T | null` or `T | undefined`. NonNullable strips away the nullable parts when you have already validated that a value exists.\n\nThese three utilities work on union types by filtering their members. They are the type-level equivalents of array filtering — just as `array.filter()` removes elements that don't match a predicate, these utilities remove type members that don't match a type condition. They are building blocks for more complex type transformations and appear frequently in library type definitions.",
+      "explanation": "`Exclude<T, U>` removes from union type `T` all members that are assignable to `U`. It is defined as the distributive conditional type `T extends U ? never : T`. This is useful when you need to create a narrower union by removing specific members. For example, `Exclude<'a' | 'b' | 'c', 'a'>` produces `'b' | 'c'`.\n\n`Extract<T, U>` is the opposite of `Exclude` - it keeps only the members of `T` that are assignable to `U`. Its definition is `T extends U ? T : never`. This is useful for filtering a union to only the members that match a certain pattern. For example, `Extract<string | number | boolean, string | number>` produces `string | number`.\n\n`NonNullable<T>` removes `null` and `undefined` from a type. It is equivalent to `Exclude<T, null | undefined>`. This utility is extremely common in practice because TypeScript's strict null checks mean many values are typed as `T | null` or `T | undefined`. NonNullable strips away the nullable parts when you have already validated that a value exists.\n\nThese three utilities work on union types by filtering their members. They are the type-level equivalents of array filtering - just as `array.filter()` removes elements that don't match a predicate, these utilities remove type members that don't match a type condition. They are building blocks for more complex type transformations and appear frequently in library type definitions.",
       "codeExamples": [
         {
           "title": "Exclude for Removing Union Members",
@@ -168,7 +168,7 @@
         }
       ],
       "notes": [
-        "All three utilities are distributive conditional types — they process each member of a union independently.",
+        "All three utilities are distributive conditional types - they process each member of a union independently.",
         "`Exclude` and `Extract` work on any union types, not just string literals. You can use them with object types, interfaces, and more.",
         "`NonNullable<T>` is simply `Exclude<T, null | undefined>` and is the most commonly used of the three."
       ],
@@ -215,7 +215,7 @@
     "isInterviewQuestion": true,
     "concepts": ["ReturnType<T>", "Parameters<T>", "ConstructorParameters<T>", "InstanceType<T>", "function type inference"],
     "content": {
-      "explanation": "`ReturnType<T>` extracts the return type from a function type `T`. It uses the conditional type `T extends (...args: any) => infer R ? R : any` to infer `R`, the return type. This is invaluable when you need to type a variable based on what a function returns, especially when working with third-party libraries where you do not control the function's type definition.\n\n`Parameters<T>` extracts the parameter types from a function type as a tuple. Its definition is `T extends (...args: infer P) => any ? P : never`. The result is a tuple type where each element corresponds to a parameter. You can access individual parameters using indexed access: `Parameters<typeof fn>[0]` gives you the type of the first parameter.\n\n`ConstructorParameters<T>` is similar to `Parameters` but works on class constructor types. It extracts the tuple of parameter types from a constructor function. `InstanceType<T>` complements it by extracting the instance type that a constructor produces. These are useful for factory functions, dependency injection, and other patterns that work with class constructors generically.\n\nThese utility types are particularly powerful when combined with `typeof`. Since `typeof myFunction` gives you the function's type, you can write `ReturnType<typeof myFunction>` without needing to explicitly define or export the function's return type. This creates a coupling between the function and the variable — if the function's return type changes, the variable type updates automatically.",
+      "explanation": "`ReturnType<T>` extracts the return type from a function type `T`. It uses the conditional type `T extends (...args: any) => infer R ? R : any` to infer `R`, the return type. This is invaluable when you need to type a variable based on what a function returns, especially when working with third-party libraries where you do not control the function's type definition.\n\n`Parameters<T>` extracts the parameter types from a function type as a tuple. Its definition is `T extends (...args: infer P) => any ? P : never`. The result is a tuple type where each element corresponds to a parameter. You can access individual parameters using indexed access: `Parameters<typeof fn>[0]` gives you the type of the first parameter.\n\n`ConstructorParameters<T>` is similar to `Parameters` but works on class constructor types. It extracts the tuple of parameter types from a constructor function. `InstanceType<T>` complements it by extracting the instance type that a constructor produces. These are useful for factory functions, dependency injection, and other patterns that work with class constructors generically.\n\nThese utility types are particularly powerful when combined with `typeof`. Since `typeof myFunction` gives you the function's type, you can write `ReturnType<typeof myFunction>` without needing to explicitly define or export the function's return type. This creates a coupling between the function and the variable - if the function's return type changes, the variable type updates automatically.",
       "codeExamples": [
         {
           "title": "ReturnType in Practice",
@@ -239,10 +239,10 @@
       "notes": [
         "`ReturnType` with async functions gives `Promise<T>`. Use `Awaited<ReturnType<typeof fn>>` to get the unwrapped type `T`.",
         "`Parameters` returns a tuple type. Use indexed access (`Parameters<typeof fn>[0]`) to get individual parameter types.",
-        "These utilities all use `infer` in conditional types internally — understanding how `infer` works helps you create custom versions."
+        "These utilities all use `infer` in conditional types internally - understanding how `infer` works helps you create custom versions."
       ],
       "commonPitfalls": [
-        "Using `ReturnType<myFunction>` instead of `ReturnType<typeof myFunction>`. ReturnType expects a type, not a value — use `typeof` to get the function's type.",
+        "Using `ReturnType<myFunction>` instead of `ReturnType<typeof myFunction>`. ReturnType expects a type, not a value - use `typeof` to get the function's type.",
         "Forgetting that `ReturnType` of an async function returns `Promise<T>`, not `T`. Wrap with `Awaited` if you need the resolved value type."
       ],
       "interviewTips": [
@@ -328,7 +328,7 @@
         "solution": "type Nullable<T> = { [K in keyof T]: T[K] | null };\n\ninterface User {\n  name: string;\n  age: number;\n  email: string;\n}\n\ntype NullableUser = Nullable<User>;\n\nconst user: NullableUser = { name: \"Alice\", age: null, email: \"alice@test.com\" };\nconsole.log(user.name);\nconsole.log(user.age);\nconsole.log(user.email);",
         "expectedOutput": "Alice\nnull\nalice@test.com",
         "hints": [
-          "Nullable<T> is a mapped type: `{ [K in keyof T]: T[K] | null }` — it adds `| null` to each property's type.",
+          "Nullable<T> is a mapped type: `{ [K in keyof T]: T[K] | null }` - it adds `| null` to each property's type.",
           "This is similar to how Partial adds `?` to each property, but instead you are adding `| null` to the value type."
         ],
         "difficulty": "Easy"

@@ -8,7 +8,7 @@
     "isInterviewQuestion": false,
     "concepts": ["lifting state", "single source of truth", "sibling communication", "prop drilling", "inverse data flow"],
     "content": {
-      "explanation": "In React, data flows in one direction — from parent to child via props. When two sibling components need to share or synchronise state, neither sibling can own that state alone. The solution is to 'lift' the state up to their closest common parent and pass it down along with an updater function. This pattern is called Lifting State Up.\n\nThe parent becomes the single source of truth for the shared value. Each child receives the current value as a prop and calls the parent-provided callback whenever the value should change. Because React re-renders the parent when its state changes, both children automatically receive the latest value on the next render cycle.\n\nLifting state is the simplest form of state sharing in React and should be your first choice before reaching for Context or external stores. It keeps data flow explicit and easy to trace. However, when the distance between the state owner and the consumer grows (prop drilling through many layers), you may want to explore other patterns such as Context or Zustand.\n\nA practical example is a temperature converter where Celsius and Fahrenheit inputs must stay in sync. The parent holds one canonical temperature value and each input converts from that value. When either input changes, the parent updates and both inputs reflect the new temperature.\n\nRemember: every piece of state should have exactly one owner. If two components need the same state, find the nearest common ancestor and let it own the data.",
+      "explanation": "In React, data flows in one direction - from parent to child via props. When two sibling components need to share or synchronise state, neither sibling can own that state alone. The solution is to 'lift' the state up to their closest common parent and pass it down along with an updater function. This pattern is called Lifting State Up.\n\nThe parent becomes the single source of truth for the shared value. Each child receives the current value as a prop and calls the parent-provided callback whenever the value should change. Because React re-renders the parent when its state changes, both children automatically receive the latest value on the next render cycle.\n\nLifting state is the simplest form of state sharing in React and should be your first choice before reaching for Context or external stores. It keeps data flow explicit and easy to trace. However, when the distance between the state owner and the consumer grows (prop drilling through many layers), you may want to explore other patterns such as Context or Zustand.\n\nA practical example is a temperature converter where Celsius and Fahrenheit inputs must stay in sync. The parent holds one canonical temperature value and each input converts from that value. When either input changes, the parent updates and both inputs reflect the new temperature.\n\nRemember: every piece of state should have exactly one owner. If two components need the same state, find the nearest common ancestor and let it own the data.",
       "codeExamples": [
         {
           "title": "Sibling components sharing state via parent",
@@ -17,20 +17,20 @@
           "explanation": "Parent owns the count state. Display reads it, Controls writes it through the callback. Both stay in sync because the parent re-renders on every state change."
         },
         {
-          "title": "Temperature converter — syncing two inputs",
+          "title": "Temperature converter - syncing two inputs",
           "code": "function TemperatureCalculator() {\n  const [temp, setTemp] = React.useState({ value: '', scale: 'c' });\n\n  const celsius = temp.scale === 'f'\n    ? ((parseFloat(temp.value) - 32) * 5 / 9).toFixed(2)\n    : temp.value;\n  const fahrenheit = temp.scale === 'c'\n    ? ((parseFloat(temp.value) * 9 / 5) + 32).toFixed(2)\n    : temp.value;\n\n  return (\n    <div>\n      <TemperatureInput scale=\"c\" value={celsius}\n        onChange={v => setTemp({ value: v, scale: 'c' })} />\n      <TemperatureInput scale=\"f\" value={fahrenheit}\n        onChange={v => setTemp({ value: v, scale: 'f' })} />\n    </div>\n  );\n}\n\nfunction TemperatureInput({ scale, value, onChange }) {\n  const label = scale === 'c' ? 'Celsius' : 'Fahrenheit';\n  return (\n    <label>\n      {label}: <input value={value}\n        onChange={e => onChange(e.target.value)} />\n    </label>\n  );\n}",
-          "output": "Two inputs that stay in sync — entering 100°C shows 212°F",
+          "output": "Two inputs that stay in sync - entering 100°C shows 212°F",
           "explanation": "The parent stores one canonical temperature plus which scale was last edited. Both inputs derive their display value from that single source of truth."
         },
         {
           "title": "When lifting state causes prop drilling",
-          "code": "// Deeply nested tree — state lifted to App but consumed far below\nfunction App() {\n  const [user, setUser] = React.useState(null);\n  return <Layout user={user} setUser={setUser} />;\n}\n\nfunction Layout({ user, setUser }) {\n  return <Sidebar user={user} setUser={setUser} />;\n}\n\nfunction Sidebar({ user, setUser }) {\n  return <UserMenu user={user} setUser={setUser} />;\n}\n\nfunction UserMenu({ user, setUser }) {\n  return user\n    ? <span>{user.name}</span>\n    : <button onClick={() => setUser({ name: 'Alice' })}>Log in</button>;\n}",
+          "code": "// Deeply nested tree - state lifted to App but consumed far below\nfunction App() {\n  const [user, setUser] = React.useState(null);\n  return <Layout user={user} setUser={setUser} />;\n}\n\nfunction Layout({ user, setUser }) {\n  return <Sidebar user={user} setUser={setUser} />;\n}\n\nfunction Sidebar({ user, setUser }) {\n  return <UserMenu user={user} setUser={setUser} />;\n}\n\nfunction UserMenu({ user, setUser }) {\n  return user\n    ? <span>{user.name}</span>\n    : <button onClick={() => setUser({ name: 'Alice' })}>Log in</button>;\n}",
           "output": "Shows 'Log in' button; clicking sets user to Alice",
           "explanation": "Every intermediate component (Layout, Sidebar) must forward props it does not use. This is prop drilling and is a signal you may want Context instead."
         }
       ],
       "notes": [
-        "Always lift state to the nearest common ancestor — no higher than necessary.",
+        "Always lift state to the nearest common ancestor - no higher than necessary.",
         "If only one component uses the state, keep it local; don't lift prematurely.",
         "Prop drilling through 2-3 levels is fine; beyond that, consider Context or a state library."
       ],
@@ -62,7 +62,7 @@
         "expectedOutput": "Upper: HELLO\nLower: hello\nUpper: WORLD\nLower: world",
         "hints": [
           "Parent owns the text and passes it down to both display functions.",
-          "Each display function transforms the single source text — one calls toUpperCase(), the other toLowerCase()."
+          "Each display function transforms the single source text - one calls toUpperCase(), the other toLowerCase()."
         ],
         "difficulty": "Easy"
       }
@@ -77,7 +77,7 @@
     "isInterviewQuestion": true,
     "concepts": ["React.createContext", "Provider pattern", "useContext", "context composition", "when not to use context"],
     "content": {
-      "explanation": "React Context provides a way to pass data through the component tree without manually passing props at every level. It solves the prop-drilling problem by letting any descendant component subscribe to a shared value. You create a context with React.createContext, wrap a subtree with a Provider, and consume the value with the useContext hook.\n\nThe Provider pattern pairs a Context with a dedicated wrapper component that encapsulates both the state and the logic for updating it. Instead of exposing raw setState, you expose semantic actions (login, logout, toggleTheme) through the context value. Consumers only know about the high-level API, not the implementation details.\n\nA common best practice is to split context into two — one for the state and one for the dispatch/actions. This prevents components that only call actions from re-rendering when the state changes. Similarly, memoizing the context value object with useMemo avoids unnecessary renders caused by a new object reference on every parent render.\n\nContext is ideal for low-frequency, globally relevant data: theme, locale, authenticated user, feature flags. It is NOT a replacement for a state management library when you have rapidly changing data (e.g., form input on every keystroke) or complex derived state. In those cases, every consumer re-renders whenever the context value changes, which can tank performance.\n\nKnow when not to reach for Context. If only a small subtree needs the data, lifting state or component composition (passing components as props) is simpler. If the data changes frequently or many independent slices exist, a library like Zustand with selectors will give you finer-grained control over re-renders.",
+      "explanation": "React Context provides a way to pass data through the component tree without manually passing props at every level. It solves the prop-drilling problem by letting any descendant component subscribe to a shared value. You create a context with React.createContext, wrap a subtree with a Provider, and consume the value with the useContext hook.\n\nThe Provider pattern pairs a Context with a dedicated wrapper component that encapsulates both the state and the logic for updating it. Instead of exposing raw setState, you expose semantic actions (login, logout, toggleTheme) through the context value. Consumers only know about the high-level API, not the implementation details.\n\nA common best practice is to split context into two - one for the state and one for the dispatch/actions. This prevents components that only call actions from re-rendering when the state changes. Similarly, memoizing the context value object with useMemo avoids unnecessary renders caused by a new object reference on every parent render.\n\nContext is ideal for low-frequency, globally relevant data: theme, locale, authenticated user, feature flags. It is NOT a replacement for a state management library when you have rapidly changing data (e.g., form input on every keystroke) or complex derived state. In those cases, every consumer re-renders whenever the context value changes, which can tank performance.\n\nKnow when not to reach for Context. If only a small subtree needs the data, lifting state or component composition (passing components as props) is simpler. If the data changes frequently or many independent slices exist, a library like Zustand with selectors will give you finer-grained control over re-renders.",
       "codeExamples": [
         {
           "title": "Basic Context with Provider pattern",
@@ -87,27 +87,27 @@
         },
         {
           "title": "Split context to reduce re-renders",
-          "code": "const StateCtx = React.createContext();\nconst DispatchCtx = React.createContext();\n\nfunction AuthProvider({ children }) {\n  const [user, setUser] = React.useState(null);\n\n  const actions = React.useMemo(() => ({\n    login: (u) => setUser(u),\n    logout: () => setUser(null),\n  }), []);\n\n  return (\n    <StateCtx.Provider value={user}>\n      <DispatchCtx.Provider value={actions}>\n        {children}\n      </DispatchCtx.Provider>\n    </StateCtx.Provider>\n  );\n}\n\nfunction useAuthState() { return React.useContext(StateCtx); }\nfunction useAuthActions() { return React.useContext(DispatchCtx); }\n\n// LogoutButton only uses actions — never re-renders when user changes\nfunction LogoutButton() {\n  const { logout } = useAuthActions();\n  return <button onClick={logout}>Log out</button>;\n}",
+          "code": "const StateCtx = React.createContext();\nconst DispatchCtx = React.createContext();\n\nfunction AuthProvider({ children }) {\n  const [user, setUser] = React.useState(null);\n\n  const actions = React.useMemo(() => ({\n    login: (u) => setUser(u),\n    logout: () => setUser(null),\n  }), []);\n\n  return (\n    <StateCtx.Provider value={user}>\n      <DispatchCtx.Provider value={actions}>\n        {children}\n      </DispatchCtx.Provider>\n    </StateCtx.Provider>\n  );\n}\n\nfunction useAuthState() { return React.useContext(StateCtx); }\nfunction useAuthActions() { return React.useContext(DispatchCtx); }\n\n// LogoutButton only uses actions - never re-renders when user changes\nfunction LogoutButton() {\n  const { logout } = useAuthActions();\n  return <button onClick={logout}>Log out</button>;\n}",
           "output": "LogoutButton renders once and does not re-render when user state changes",
           "explanation": "Splitting state and dispatch into separate contexts lets action-only consumers skip re-renders. useMemo on the actions object ensures a stable reference."
         },
         {
-          "title": "When NOT to use context — high-frequency updates",
+          "title": "When NOT to use context - high-frequency updates",
           "code": "// BAD: every keystroke re-renders all consumers\nconst FormContext = React.createContext();\n\nfunction FormProvider({ children }) {\n  const [values, setValues] = React.useState({ name: '', email: '' });\n  return (\n    <FormContext.Provider value={{ values, setValues }}>\n      {children}\n    </FormContext.Provider>\n  );\n}\n\n// 20 field components all consuming FormContext\n// Each keystroke in any field re-renders ALL 20 fields\n\n// BETTER: use Zustand with selectors or keep local state per field\n// and only sync on blur/submit.",
-          "explanation": "Context lacks selectors — when the value changes, every useContext subscriber re-renders. For forms with many fields, this causes noticeable lag."
+          "explanation": "Context lacks selectors - when the value changes, every useContext subscriber re-renders. For forms with many fields, this causes noticeable lag."
         }
       ],
       "notes": [
         "Always provide a meaningful default value to createContext so consumers outside a Provider get useful behaviour or a clear error.",
         "Wrap context values in useMemo when the value is an object to prevent needless re-renders.",
-        "Create custom hooks (useTheme, useAuth) that call useContext internally — it improves readability and makes provider-missing errors easier to handle."
+        "Create custom hooks (useTheme, useAuth) that call useContext internally - it improves readability and makes provider-missing errors easier to handle."
       ],
       "commonPitfalls": [
-        "Putting rapidly changing state in context (mouse position, form keystrokes) — this re-renders every consumer on every change.",
+        "Putting rapidly changing state in context (mouse position, form keystrokes) - this re-renders every consumer on every change.",
         "Forgetting to memoize the value object passed to Provider, creating a new reference on every render and triggering all consumers to update."
       ],
       "interviewTips": [
-        "Explain that Context is NOT a state manager — it is a dependency injection mechanism. The state management comes from useState/useReducer inside the Provider.",
+        "Explain that Context is NOT a state manager - it is a dependency injection mechanism. The state management comes from useState/useReducer inside the Provider.",
         "Mention the split-context pattern (state vs dispatch) to show you understand render optimisation.",
         "Know when to use Context vs Zustand vs Redux: Context for low-frequency global data, Zustand for medium-complexity apps with selectors, Redux for large apps with complex middleware needs.",
         "Be ready to discuss that useContextSelector is not built-in and why libraries like use-context-selector or Zustand exist to fill that gap."
@@ -135,7 +135,7 @@
         "solution": "function createAuthSystem() {\n  let user = null;\n\n  const stateProvider = {\n    getUser: () => user\n  };\n\n  const dispatchProvider = {\n    login: (name) => { user = { name }; },\n    logout: () => { user = null; }\n  };\n\n  return { stateProvider, dispatchProvider };\n}\n\nconst { stateProvider, dispatchProvider } = createAuthSystem();\n\nconsole.log('User: ' + stateProvider.getUser());\ndispatchProvider.login('Alice');\nconsole.log('User: ' + stateProvider.getUser().name);\ndispatchProvider.logout();\nconsole.log('User: ' + stateProvider.getUser());",
         "expectedOutput": "User: null\nUser: Alice\nUser: null",
         "hints": [
-          "Both providers close over the same 'user' variable — state reads it, dispatch writes it.",
+          "Both providers close over the same 'user' variable - state reads it, dispatch writes it.",
           "login sets user to an object with a name property; logout sets user back to null."
         ],
         "difficulty": "Medium"
@@ -151,7 +151,7 @@
     "isInterviewQuestion": false,
     "concepts": ["zustand store", "selectors", "actions", "devtools middleware", "subscribe"],
     "content": {
-      "explanation": "Zustand is a small, fast, and scalable state management library for React. Unlike Context, it lives outside the React tree and uses a pub-sub model, so only components that select specific slices of state re-render when those slices change. There is no Provider wrapper needed — you import the hook and use it directly.\n\nYou create a store by calling the 'create' function with a callback that receives 'set' and 'get'. 'set' merges partial state into the store (like Object.assign), and 'get' reads current state synchronously. Actions are plain functions defined inside the store that call 'set' — no action types, reducers, or boilerplate.\n\nSelectors are the key to performance. When you call useStore(state => state.count), the component only re-renders when 'count' changes, not when other parts of the store change. Without a selector (useStore()), the component subscribes to the entire store and re-renders on every change — avoid this.\n\nZustand provides middleware out of the box: 'devtools' connects your store to the Redux DevTools browser extension for time-travel debugging; 'persist' saves and restores state from localStorage or sessionStorage; 'immer' lets you write mutable-looking updates that produce immutable state under the hood.\n\nCompared to Redux, Zustand has far less boilerplate. Compared to Context, it has built-in selector support so you avoid the all-consumers-re-render problem. It is an excellent default choice for most React applications that need shared state beyond simple prop passing.",
+      "explanation": "Zustand is a small, fast, and scalable state management library for React. Unlike Context, it lives outside the React tree and uses a pub-sub model, so only components that select specific slices of state re-render when those slices change. There is no Provider wrapper needed - you import the hook and use it directly.\n\nYou create a store by calling the 'create' function with a callback that receives 'set' and 'get'. 'set' merges partial state into the store (like Object.assign), and 'get' reads current state synchronously. Actions are plain functions defined inside the store that call 'set' - no action types, reducers, or boilerplate.\n\nSelectors are the key to performance. When you call useStore(state => state.count), the component only re-renders when 'count' changes, not when other parts of the store change. Without a selector (useStore()), the component subscribes to the entire store and re-renders on every change - avoid this.\n\nZustand provides middleware out of the box: 'devtools' connects your store to the Redux DevTools browser extension for time-travel debugging; 'persist' saves and restores state from localStorage or sessionStorage; 'immer' lets you write mutable-looking updates that produce immutable state under the hood.\n\nCompared to Redux, Zustand has far less boilerplate. Compared to Context, it has built-in selector support so you avoid the all-consumers-re-render problem. It is an excellent default choice for most React applications that need shared state beyond simple prop passing.",
       "codeExamples": [
         {
           "title": "Creating a basic Zustand store",
@@ -173,12 +173,12 @@
       ],
       "notes": [
         "Always use selectors to avoid full-store subscriptions. useStore(s => s.field) is the correct pattern.",
-        "Zustand stores are singletons — they live outside the React tree and survive component unmounts.",
+        "Zustand stores are singletons - they live outside the React tree and survive component unmounts.",
         "You can use getState() and setState() outside React (e.g., in axios interceptors or utility functions)."
       ],
       "commonPitfalls": [
         "Calling useStore() without a selector subscribes to the entire store and defeats the performance benefit.",
-        "Returning a new object from a selector (e.g., s => ({ a: s.a, b: s.b })) creates a new reference every time — use shallow equality from zustand/shallow or select each field separately."
+        "Returning a new object from a selector (e.g., s => ({ a: s.a, b: s.b })) creates a new reference every time - use shallow equality from zustand/shallow or select each field separately."
       ]
     },
     "exercises": [
@@ -199,7 +199,7 @@
         "id": "zustand-basics-ex2",
         "title": "Store with Selectors and Subscribe",
         "description": "Extend the store pattern to support selectors and a subscribe function. A selector is a function that extracts a value from state. Subscribe should call a listener whenever setState is called.",
-        "starterCode": "// Create a store that supports:\n// - getState()\n// - setState(partial)\n// - select(selectorFn) — returns selectorFn(state)\n// - subscribe(listener) — calls listener(state) on every setState\n\nfunction createStore(initialState) {\n  // TODO\n}\n\n// Create store { count: 0, name: 'Zustand' }\n// Subscribe to log count on every change\n// setState({ count: 1 })\n// setState({ count: 2 })\n// Select name and log it",
+        "starterCode": "// Create a store that supports:\n// - getState()\n// - setState(partial)\n// - select(selectorFn) - returns selectorFn(state)\n// - subscribe(listener) - calls listener(state) on every setState\n\nfunction createStore(initialState) {\n  // TODO\n}\n\n// Create store { count: 0, name: 'Zustand' }\n// Subscribe to log count on every change\n// setState({ count: 1 })\n// setState({ count: 2 })\n// Select name and log it",
         "solution": "function createStore(initialState) {\n  let state = { ...initialState };\n  let listeners = [];\n\n  return {\n    getState: () => state,\n    setState: (partial) => {\n      state = { ...state, ...partial };\n      listeners.forEach(fn => fn(state));\n    },\n    select: (selectorFn) => selectorFn(state),\n    subscribe: (listener) => {\n      listeners.push(listener);\n      return () => { listeners = listeners.filter(fn => fn !== listener); };\n    }\n  };\n}\n\nconst store = createStore({ count: 0, name: 'Zustand' });\nstore.subscribe((s) => console.log('Count changed: ' + s.count));\nstore.setState({ count: 1 });\nstore.setState({ count: 2 });\nconsole.log('Name: ' + store.select(s => s.name));",
         "expectedOutput": "Count changed: 1\nCount changed: 2\nName: Zustand",
         "hints": [
@@ -219,7 +219,7 @@
     "isInterviewQuestion": false,
     "concepts": ["useQuery", "queryKey", "staleTime", "caching", "QueryClient", "refetching"],
     "content": {
-      "explanation": "React Query (TanStack Query) is a library for managing server state in React applications. Server state is fundamentally different from client state: it is owned by a remote source, can become stale, and is shared across the network. React Query gives you caching, automatic refetching, deduplication, and background updates out of the box.\n\nThe core hook is useQuery. You provide a queryKey (a unique array that identifies the data) and a queryFn (an async function that fetches the data). React Query caches the result under that key and returns an object with data, isLoading, isError, and error fields. If another component requests the same key, React Query returns the cached result instantly and optionally refetches in the background.\n\nThe queryKey is crucial. It must include every variable that the fetch depends on. For example, ['users', userId] ensures that switching userId triggers a new fetch. React Query serialises the key and uses it as a cache lookup. If you forget to include a dependency, you will get stale data.\n\nstaleTime controls how long cached data is considered fresh. While data is fresh, React Query will not refetch — it serves from cache. The default staleTime is 0 (immediately stale), which means every mount triggers a background refetch. Setting staleTime: 60_000 means data is fresh for one minute. gcTime (previously cacheTime) controls how long unused data stays in cache before garbage collection.\n\nReact Query eliminates a huge amount of boilerplate: no more managing loading/error booleans in state, no useEffect for fetching, no manual cache invalidation. It is the recommended way to handle data fetching in modern React applications.",
+      "explanation": "React Query (TanStack Query) is a library for managing server state in React applications. Server state is fundamentally different from client state: it is owned by a remote source, can become stale, and is shared across the network. React Query gives you caching, automatic refetching, deduplication, and background updates out of the box.\n\nThe core hook is useQuery. You provide a queryKey (a unique array that identifies the data) and a queryFn (an async function that fetches the data). React Query caches the result under that key and returns an object with data, isLoading, isError, and error fields. If another component requests the same key, React Query returns the cached result instantly and optionally refetches in the background.\n\nThe queryKey is crucial. It must include every variable that the fetch depends on. For example, ['users', userId] ensures that switching userId triggers a new fetch. React Query serialises the key and uses it as a cache lookup. If you forget to include a dependency, you will get stale data.\n\nstaleTime controls how long cached data is considered fresh. While data is fresh, React Query will not refetch - it serves from cache. The default staleTime is 0 (immediately stale), which means every mount triggers a background refetch. Setting staleTime: 60_000 means data is fresh for one minute. gcTime (previously cacheTime) controls how long unused data stays in cache before garbage collection.\n\nReact Query eliminates a huge amount of boilerplate: no more managing loading/error booleans in state, no useEffect for fetching, no manual cache invalidation. It is the recommended way to handle data fetching in modern React applications.",
       "codeExamples": [
         {
           "title": "Basic useQuery usage",
@@ -240,9 +240,9 @@
         }
       ],
       "notes": [
-        "Always include all fetch dependencies in the queryKey array — it acts like a useEffect dependency array.",
+        "Always include all fetch dependencies in the queryKey array - it acts like a useEffect dependency array.",
         "Use staleTime to control how often data is refetched. A staleTime of 0 (default) means every mount triggers a background refetch.",
-        "React Query automatically deduplicates identical in-flight requests — if two components mount with the same queryKey, only one fetch happens."
+        "React Query automatically deduplicates identical in-flight requests - if two components mount with the same queryKey, only one fetch happens."
       ],
       "commonPitfalls": [
         "Using a string instead of an array for queryKey (e.g., 'users' instead of ['users']). While it works, arrays are the correct convention and allow parameterised keys.",
@@ -287,12 +287,12 @@
     "isInterviewQuestion": true,
     "concepts": ["local state", "global state", "server state", "state colocation", "decision framework"],
     "content": {
-      "explanation": "One of the most important architectural decisions in a React app is choosing where and how to manage each piece of state. There are three main categories: local (component) state, global (client) state, and server (remote) state. Each has different characteristics and optimal tools.\n\nLocal state is owned by a single component and managed with useState or useReducer. It is the simplest and most performant option because updates only affect that component and its children. Examples include form input values, toggle states, and modal open/close. The rule of thumb: keep state as close to where it is used as possible (state colocation).\n\nGlobal client state is data that many components across different parts of the tree need to access — theme, locale, auth status, sidebar open/close. For low-frequency updates with few consumers, React Context works well. For apps that need finer-grained subscriptions, Zustand is an excellent choice: no Provider boilerplate, selector-based subscriptions, and easy access outside React. Redux Toolkit is appropriate for very large teams where strict patterns (actions, reducers, middleware) aid maintainability.\n\nServer state is data owned by a backend: user profiles, product lists, notifications. It can become stale, requires loading/error handling, and benefits from caching and background sync. React Query (TanStack Query) is the standard tool here — it handles caching, deduplication, stale-while-revalidate, and pagination out of the box. Using React Query eliminates the need to store server data in Redux or Zustand.\n\nThe decision framework: (1) Is the state used by only one component? Use useState. (2) Is it shared between a parent and a few children? Lift state up. (3) Is it needed globally but changes infrequently? Use Context. (4) Is it needed globally and changes frequently or needs selectors? Use Zustand. (5) Does it come from a server? Use React Query. Mixing these tools is normal and expected — a typical app uses useState for forms, Zustand for auth/theme, and React Query for all API data.",
+      "explanation": "One of the most important architectural decisions in a React app is choosing where and how to manage each piece of state. There are three main categories: local (component) state, global (client) state, and server (remote) state. Each has different characteristics and optimal tools.\n\nLocal state is owned by a single component and managed with useState or useReducer. It is the simplest and most performant option because updates only affect that component and its children. Examples include form input values, toggle states, and modal open/close. The rule of thumb: keep state as close to where it is used as possible (state colocation).\n\nGlobal client state is data that many components across different parts of the tree need to access - theme, locale, auth status, sidebar open/close. For low-frequency updates with few consumers, React Context works well. For apps that need finer-grained subscriptions, Zustand is an excellent choice: no Provider boilerplate, selector-based subscriptions, and easy access outside React. Redux Toolkit is appropriate for very large teams where strict patterns (actions, reducers, middleware) aid maintainability.\n\nServer state is data owned by a backend: user profiles, product lists, notifications. It can become stale, requires loading/error handling, and benefits from caching and background sync. React Query (TanStack Query) is the standard tool here - it handles caching, deduplication, stale-while-revalidate, and pagination out of the box. Using React Query eliminates the need to store server data in Redux or Zustand.\n\nThe decision framework: (1) Is the state used by only one component? Use useState. (2) Is it shared between a parent and a few children? Lift state up. (3) Is it needed globally but changes infrequently? Use Context. (4) Is it needed globally and changes frequently or needs selectors? Use Zustand. (5) Does it come from a server? Use React Query. Mixing these tools is normal and expected - a typical app uses useState for forms, Zustand for auth/theme, and React Query for all API data.",
       "codeExamples": [
         {
           "title": "Decision framework in practice",
           "code": "// 1. LOCAL: Toggle is only used here\nfunction Accordion({ title, children }) {\n  const [isOpen, setIsOpen] = React.useState(false);\n  return (\n    <div>\n      <button onClick={() => setIsOpen(!isOpen)}>{title}</button>\n      {isOpen && children}\n    </div>\n  );\n}\n\n// 2. GLOBAL (Zustand): Auth needed everywhere\nconst useAuth = create((set) => ({\n  user: null,\n  login: (user) => set({ user }),\n  logout: () => set({ user: null }),\n}));\n\n// 3. SERVER (React Query): Products from API\nfunction ProductList() {\n  const { data } = useQuery({\n    queryKey: ['products'],\n    queryFn: () => fetch('/api/products').then(r => r.json()),\n  });\n  return data?.map(p => <ProductCard key={p.id} product={p} />);\n}",
-          "explanation": "Three different state categories, three different tools — each chosen for its strengths. This is the standard modern React pattern."
+          "explanation": "Three different state categories, three different tools - each chosen for its strengths. This is the standard modern React pattern."
         },
         {
           "title": "Anti-pattern: putting everything in global state",
@@ -307,16 +307,16 @@
       ],
       "notes": [
         "State colocation principle: keep state as close to where it is read and written as possible.",
-        "Server state and client state are fundamentally different — never store API responses in useState or Zustand when React Query is available.",
+        "Server state and client state are fundamentally different - never store API responses in useState or Zustand when React Query is available.",
         "It is perfectly normal to use 3-4 state tools in one app: useState, Context, Zustand, and React Query each handle different concerns."
       ],
       "commonPitfalls": [
-        "Putting everything in a global store (Redux/Zustand) including form values and local UI toggles — this causes unnecessary complexity and re-renders.",
+        "Putting everything in a global store (Redux/Zustand) including form values and local UI toggles - this causes unnecessary complexity and re-renders.",
         "Storing fetched API data in Zustand or useState instead of using React Query, losing caching, deduplication, and automatic refetching."
       ],
       "interviewTips": [
         "Frame your answer around the three categories (local, global client, server) and name the best tool for each.",
-        "Mention state colocation as a guiding principle — interviewers love hearing that you keep state close to where it is used.",
+        "Mention state colocation as a guiding principle - interviewers love hearing that you keep state close to where it is used.",
         "Explain why React Query changed the game: it removed the need to store server data in Redux, which was a major source of complexity in older React apps.",
         "Be ready to compare Redux vs Zustand vs Context: Redux for large teams needing strict patterns, Zustand for most apps needing selectors without boilerplate, Context for simple infrequent global data."
       ]

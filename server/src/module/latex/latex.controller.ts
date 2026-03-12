@@ -21,7 +21,10 @@ export class LatexController {
         return;
       }
 
-      const pdfBuffer = await this.latexService.compile(validation.data.source);
+      const pdfBuffer = await this.latexService.compile(
+        validation.data.source,
+        validation.data.supportingFiles,
+      );
 
       res.set({
         "Content-Type": "application/pdf",

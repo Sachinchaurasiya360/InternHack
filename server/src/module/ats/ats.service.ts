@@ -1,10 +1,11 @@
 import { readFile } from "fs/promises";
 import path from "path";
 import { fileURLToPath } from "url";
-import { GoogleGenerativeAI } from "@google/generative-ai";
 import { PDFParse } from "pdf-parse";
 import { prisma } from "../../database/db.js";
 import { getBufferFromS3, getS3KeyFromUrl } from "../../utils/s3.utils.js";
+import { getProviderForService } from "../../lib/ai-provider-registry.js";
+import { logAIRequest } from "../../lib/ai-request-logger.js";
 import type { AtsScoreResult, ScoreResumeInput, AtsCategoryScores, AtsKeywordAnalysis } from "./ats.types.js";
 import type { Prisma } from "@prisma/client";
 
@@ -12,21 +13,29 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 export class AtsService {
-  private genAI: GoogleGenerativeAI;
-
-  constructor() {
-    const apiKey = process.env["GEMINI_API_KEY"] ?? "";
-    this.genAI = new GoogleGenerativeAI(apiKey);
-  }
 
   async scoreResume(studentId: number, input: ScoreResumeInput) {
+    // IDOR check: verify the resume belongs to this student
+    const user = await prisma.user.findUnique({
+      where: { id: studentId },
+      select: { resumes: true },
+    });
+    if (!user) throw new Error("User not found");
+
+    const isOwned =
+      user.resumes.includes(input.resumeUrl) ||
+      getS3KeyFromUrl(input.resumeUrl) !== null; // allow any S3 URL they uploaded via the upload endpoint
+    if (!isOwned) {
+      throw new Error("Resume does not belong to this user");
+    }
+
     const resumeText = await this.extractPdfText(input.resumeUrl);
 
     if (!resumeText || resumeText.trim().length < 50) {
       throw new Error("Could not extract sufficient text from the resume PDF. Make sure it is not a scanned image.");
     }
 
-    const result = await this.callGemini(resumeText, input.jobTitle, input.jobDescription);
+    const result = await this.callAI(resumeText, studentId, input.jobTitle, input.jobDescription);
 
     const atsScore = await prisma.atsScore.create({
       data: {
@@ -67,14 +76,15 @@ export class AtsService {
     if (s3Key) {
       buffer = await getBufferFromS3(s3Key);
     } else if (resumeUrl.startsWith("/uploads/")) {
-      // Local uploads (new nested structure or old flat structure)
-      const localPath = path.join(__dirname, "../../..", resumeUrl);
-      buffer = await readFile(localPath);
+      // Local uploads - sanitize to prevent path traversal
+      const uploadsDir = path.resolve(__dirname, "../../../uploads");
+      const resolved = path.resolve(uploadsDir, resumeUrl.replace(/^\/uploads\//, ""));
+      if (!resolved.startsWith(uploadsDir)) {
+        throw new Error("Invalid resume path");
+      }
+      buffer = await readFile(resolved);
     } else {
-      // Legacy fallback: bare filename
-      const uploadsDir = path.join(__dirname, "../../../uploads");
-      const filename = path.basename(resumeUrl);
-      buffer = await readFile(path.join(uploadsDir, filename));
+      throw new Error("Invalid resume URL format");
     }
 
     const parser = new PDFParse({ data: buffer });
@@ -83,25 +93,17 @@ export class AtsService {
     return result.text;
   }
 
-  private async callGemini(
+  private async callAI(
     resumeText: string,
+    userId: number,
     jobTitle?: string | undefined,
     jobDescription?: string | undefined,
   ): Promise<AtsScoreResult> {
-    const apiKey = process.env["GEMINI_API_KEY"];
-    if (!apiKey) {
-      throw new Error("GEMINI_API_KEY is not configured. Add it to your server .env file.");
-    }
-
-    const model = this.genAI.getGenerativeModel({ model: "gemini-2.5-flash-lite" });
-
+    const provider = getProviderForService("ATS_SCORE");
     const prompt = this.buildPrompt(resumeText, jobTitle, jobDescription);
-
-    const result = await model.generateContent(prompt);
-    const response = result.response;
-    const text = response.text();
-
-    return this.parseGeminiResponse(text);
+    const response = await provider.generateText(prompt);
+    logAIRequest("ATS_SCORE", response, true, undefined, userId);
+    return this.parseAIResponse(response.text);
   }
 
   private buildPrompt(
@@ -196,14 +198,14 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explana
 }`;
   }
 
-  private parseGeminiResponse(responseText: string): AtsScoreResult {
+  private parseAIResponse(responseText: string): AtsScoreResult {
     let jsonStr = responseText;
     const jsonMatch = responseText.match(/```(?:json)?\s*([\s\S]*?)```/);
     if (jsonMatch?.[1]) {
       jsonStr = jsonMatch[1].trim();
     }
 
-    // Strip trailing commas before ] or } (common Gemini quirk)
+    // Strip trailing commas before ] or } (common AI quirk)
     jsonStr = jsonStr.replace(/,\s*([\]}])/g, "$1");
 
     let parsed: unknown;
@@ -216,12 +218,12 @@ Respond with ONLY valid JSON (no markdown formatting, no code blocks, no explana
         const cleaned = objMatch[0].replace(/,\s*([\]}])/g, "$1");
         parsed = JSON.parse(cleaned);
       } else {
-        throw new Error("Could not parse Gemini response as JSON");
+        throw new Error("Could not parse AI response as JSON");
       }
     }
 
     if (!parsed || typeof parsed !== "object") {
-      throw new Error("Invalid response format from Gemini");
+      throw new Error("Invalid response format from AI");
     }
 
     const obj = parsed as Record<string, unknown>;

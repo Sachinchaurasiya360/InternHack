@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
-import { LayoutDashboard, Briefcase, PlusCircle, Search, LogOut, ChevronsLeft, ChevronsRight, Home, Users, School } from "lucide-react";
+import { LayoutDashboard, Briefcase, PlusCircle, Search, LogOut, ChevronsLeft, ChevronsRight, Home, Users, School, User } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
@@ -12,6 +12,7 @@ const NAV_ITEMS = [
   { to: "/recruiters/talent-pools", icon: Users, label: "Talent Pools" },
   { to: "/recruiters/campus-drives", icon: School, label: "Campus Drives" },
   { to: "/recruiters/jobs/create", icon: PlusCircle, label: "Create Job" },
+  { to: "/recruiters/profile", icon: User, label: "Profile" },
   { to: "/", icon: Home, label: "Home" },
 ];
 

@@ -13,6 +13,8 @@ export const queryKeys = {
     mine: () => ["applications", "mine"] as const,
     progress: (id: string | number) =>
       ["applications", "progress", id] as const,
+    statusByJob: (jobId: string | number) =>
+      ["applications", "status-by-job", jobId] as const,
   },
 
   // ATS
@@ -34,21 +36,14 @@ export const queryKeys = {
       ["companies", "reviews", id] as const,
   },
 
-  // Careers
-  careers: {
-    all: ["careers"] as const,
-    list: () => ["careers", "list"] as const,
-    detail: (slug: string) => ["careers", "detail", slug] as const,
-    myPaths: () => ["careers", "my-paths"] as const,
-    progress: (slug: string) => ["careers", "progress", slug] as const,
-  },
-
   // Admin
   admin: {
     dashboard: () => ["admin", "dashboard"] as const,
     users: (params?: Record<string, string | number>) =>
       ["admin", "users", params] as const,
     subscribers: () => ["admin", "subscribers"] as const,
+    aiConfig: () => ["admin", "ai-config"] as const,
+    aiStats: (range: string) => ["admin", "ai-stats", range] as const,
   },
 
   // Profile
@@ -65,12 +60,6 @@ export const queryKeys = {
   recruiter: {
     talentSearch: (params?: Record<string, string | number>) =>
       ["recruiter", "talent-search", params] as const,
-  },
-
-  // Quiz
-  quiz: {
-    forSkill: (skillId: string | number) => ["quiz", "skill", skillId] as const,
-    myAttempts: () => ["quiz", "my-attempts"] as const,
   },
 
   // GSoC
@@ -144,16 +133,6 @@ export const queryKeys = {
     list: (params?: Record<string, string | number>) =>
       ["professors", "list", params] as const,
     stats: () => ["professors", "stats"] as const,
-  },
-
-  // Trends
-  trends: {
-    overview: () => ["trends", "overview"] as const,
-    skills: () => ["trends", "skills"] as const,
-    locations: () => ["trends", "locations"] as const,
-    salaries: () => ["trends", "salaries"] as const,
-    timeline: () => ["trends", "timeline"] as const,
-    supply: () => ["trends", "supply"] as const,
   },
 
   // Badges

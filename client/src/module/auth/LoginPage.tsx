@@ -23,11 +23,7 @@ export default function LoginPage() {
       const { data } = await api.post("/auth/google", {
         credential: credentialResponse.credential,
       });
-      login(data.user, data.token);
-      if (!data.user.isVerified) {
-        navigate(`/verify-email?email=${encodeURIComponent(data.user.email)}`);
-        return;
-      }
+      login(data.user);
       if (data.user.role === "ADMIN") {
         navigate("/admin");
       } else if (data.user.role === "RECRUITER") {
@@ -50,11 +46,7 @@ export default function LoginPage() {
 
     try {
       const { data } = await api.post("/auth/login", form);
-      login(data.user, data.token);
-      if (!data.user.isVerified) {
-        navigate(`/verify-email?email=${encodeURIComponent(form.email)}`);
-        return;
-      }
+      login(data.user);
       if (data.user.role === "ADMIN") {
         navigate("/admin");
       } else if (data.user.role === "RECRUITER") {
@@ -63,7 +55,11 @@ export default function LoginPage() {
         navigate("/student/applications");
       }
     } catch (err: unknown) {
-      const error = err as { response?: { data?: { message?: string } } };
+      const error = err as { response?: { data?: { message?: string; requiresVerification?: boolean; email?: string } } };
+      if (error.response?.data?.requiresVerification && error.response?.data?.email) {
+        navigate(`/verify-email?email=${encodeURIComponent(error.response.data.email)}`);
+        return;
+      }
       setError(error.response?.data?.message || "Login failed");
     } finally {
       setLoading(false);

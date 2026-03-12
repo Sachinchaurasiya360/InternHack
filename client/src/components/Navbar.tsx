@@ -94,6 +94,11 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                 </>
               ) : (
                 <>
+                  <Link to="/for-recruiters" className="no-underline">
+                    <button className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white transition-colors font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800">
+                      For Recruiters
+                    </button>
+                  </Link>
                   <Link to="/login" className="no-underline">
                     <button className="px-4 py-2 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white transition-colors font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800">
                       Sign In
@@ -155,6 +160,10 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
                       </>
                     ) : (
                       <>
+                        <Link to="/for-recruiters" onClick={() => setIsOpen(false)}
+                          className="block px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 no-underline">
+                          For Recruiters
+                        </Link>
                         <Link to="/login" onClick={() => setIsOpen(false)}
                           className="block px-4 py-2.5 text-sm text-gray-600 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white font-medium rounded-xl hover:bg-gray-50 dark:hover:bg-gray-800 no-underline">
                           Sign In

@@ -101,7 +101,7 @@ export default function DjangoLessonsPage() {
           Django <span className="text-gradient-accent">Lessons</span>
         </h1>
         <p className="text-lg text-gray-500 dark:text-gray-500 max-w-lg mx-auto">
-          Master Django web framework from basics to deployment — curated for interviews
+          Master Django web framework from basics to deployment - curated for interviews
         </p>
       </motion.div>
 

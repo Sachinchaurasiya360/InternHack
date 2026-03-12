@@ -15,6 +15,10 @@ export function ProtectedRoute({ children, role, redirectTo = "/login" }: Protec
     return <Navigate to={redirectTo} replace />;
   }
 
+  if (user && !user.isVerified) {
+    return <Navigate to={`/verify-email?email=${encodeURIComponent(user.email)}`} replace />;
+  }
+
   if (role && user?.role !== role) {
     return <Navigate to="/" replace />;
   }

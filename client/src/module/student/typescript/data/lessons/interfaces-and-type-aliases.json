@@ -8,7 +8,7 @@
     "isInterviewQuestion": false,
     "concepts": ["Inline object types", "Optional properties", "Readonly properties", "Nested objects"],
     "content": {
-      "explanation": "Object types are one of the most frequently used type constructs in TypeScript. They describe the shape of an object — what properties it has and what types those properties hold. The simplest form is an inline object type written directly in a type annotation: `{ name: string; age: number }`. Every property is declared with its name, a colon, and its type, separated by semicolons or commas.\n\nOptional properties are marked with a `?` after the property name: `{ name: string; age?: number }`. An optional property can be omitted entirely when creating the object, and its type becomes a union with `undefined`. This is essential for modeling real-world data where not all fields are always present — API responses, form data, configuration objects, and user preferences commonly have optional fields.\n\nThe `readonly` modifier prevents a property from being reassigned after the object is created: `{ readonly id: number; name: string }`. This is a compile-time check only — it doesn't affect runtime behavior. Readonly properties are useful for identifiers, timestamps, and any data that should be set once and never modified. Note that `readonly` is shallow: if a readonly property holds an object, the nested object's properties can still be modified unless they are also marked readonly.\n\nTypeScript uses structural typing for objects, meaning two objects are compatible if they have the same shape, regardless of how they were declared. If a function expects `{ name: string }`, you can pass any object that has a `name` property of type `string`, even if it has additional properties. This is fundamentally different from nominal typing (used in Java/C#) where objects must be explicitly declared as implementing an interface.",
+      "explanation": "Object types are one of the most frequently used type constructs in TypeScript. They describe the shape of an object - what properties it has and what types those properties hold. The simplest form is an inline object type written directly in a type annotation: `{ name: string; age: number }`. Every property is declared with its name, a colon, and its type, separated by semicolons or commas.\n\nOptional properties are marked with a `?` after the property name: `{ name: string; age?: number }`. An optional property can be omitted entirely when creating the object, and its type becomes a union with `undefined`. This is essential for modeling real-world data where not all fields are always present - API responses, form data, configuration objects, and user preferences commonly have optional fields.\n\nThe `readonly` modifier prevents a property from being reassigned after the object is created: `{ readonly id: number; name: string }`. This is a compile-time check only - it doesn't affect runtime behavior. Readonly properties are useful for identifiers, timestamps, and any data that should be set once and never modified. Note that `readonly` is shallow: if a readonly property holds an object, the nested object's properties can still be modified unless they are also marked readonly.\n\nTypeScript uses structural typing for objects, meaning two objects are compatible if they have the same shape, regardless of how they were declared. If a function expects `{ name: string }`, you can pass any object that has a `name` property of type `string`, even if it has additional properties. This is fundamentally different from nominal typing (used in Java/C#) where objects must be explicitly declared as implementing an interface.",
       "codeExamples": [
         {
           "title": "Inline object types and optional properties",
@@ -26,17 +26,17 @@
           "title": "Nested object types",
           "code": "function formatAddress(location: {\n  street: string;\n  city: string;\n  state: string;\n  zip: string;\n  coordinates?: { lat: number; lng: number };\n}): string {\n  let result = `${location.street}, ${location.city}, ${location.state} ${location.zip}`;\n  if (location.coordinates) {\n    result += ` (${location.coordinates.lat}, ${location.coordinates.lng})`;\n  }\n  return result;\n}\n\nconsole.log(formatAddress({\n  street: \"123 Main St\",\n  city: \"Springfield\",\n  state: \"IL\",\n  zip: \"62701\"\n}));\nconsole.log(formatAddress({\n  street: \"456 Oak Ave\",\n  city: \"Portland\",\n  state: \"OR\",\n  zip: \"97201\",\n  coordinates: { lat: 45.52, lng: -122.68 }\n}));",
           "output": "123 Main St, Springfield, IL 62701\n456 Oak Ave, Portland, OR 97201 (45.52, -122.68)",
-          "explanation": "Object types can be nested — an optional `coordinates` property contains its own object type with lat and lng. Check the outer optional before accessing nested properties."
+          "explanation": "Object types can be nested - an optional `coordinates` property contains its own object type with lat and lng. Check the outer optional before accessing nested properties."
         }
       ],
       "notes": [
-        "TypeScript uses structural typing — objects are compatible based on shape, not by name or declaration.",
-        "Use `?` for optional properties and `readonly` for immutable properties — these are the two most common property modifiers.",
+        "TypeScript uses structural typing - objects are compatible based on shape, not by name or declaration.",
+        "Use `?` for optional properties and `readonly` for immutable properties - these are the two most common property modifiers.",
         "For inline object types used in more than one place, extract them into an interface or type alias to avoid duplication."
       ],
       "commonPitfalls": [
-        "Forgetting to check optional properties for undefined — accessing `obj.optional.nested` without checking `obj.optional` first causes a runtime error.",
-        "Assuming `readonly` is deep — `readonly` only prevents reassignment of the property itself. Nested objects can still be mutated unless their properties are also readonly."
+        "Forgetting to check optional properties for undefined - accessing `obj.optional.nested` without checking `obj.optional` first causes a runtime error.",
+        "Assuming `readonly` is deep - `readonly` only prevents reassignment of the property itself. Nested objects can still be mutated unless their properties are also readonly."
       ]
     },
     "exercises": [
@@ -77,7 +77,7 @@
     "isInterviewQuestion": false,
     "concepts": ["Interface declaration", "Readonly properties", "Index signatures", "Method signatures"],
     "content": {
-      "explanation": "Interfaces are named object type definitions in TypeScript. They describe the shape of an object by listing its properties and their types. The syntax uses the `interface` keyword: `interface User { name: string; age: number; }`. Unlike inline object types, interfaces are reusable, can be extended, and support declaration merging — making them the primary tool for defining object shapes in TypeScript.\n\nInterfaces support all the property modifiers available for object types: optional properties (`?`), readonly properties (`readonly`), and method signatures. A method can be declared in shorthand: `greet(name: string): string` or as a property with a function type: `greet: (name: string) => string`. Both are equivalent in practice, though the shorthand form is more conventional in interfaces.\n\nIndex signatures allow an interface to describe objects with dynamic keys. The syntax is `[key: string]: ValueType`, which means the object can have any string key mapping to the specified value type. This is useful for dictionaries, caches, and configuration objects where the exact keys aren't known in advance. You can combine index signatures with known properties, but the known properties must be compatible with the index signature's value type.\n\nInterfaces are open, meaning they can be declared multiple times with the same name and TypeScript automatically merges them. This is called declaration merging. It's particularly useful for extending third-party types — you can add properties to an existing interface from a library without modifying the library's source code. This feature is unique to interfaces and is one of the key differences from type aliases.",
+      "explanation": "Interfaces are named object type definitions in TypeScript. They describe the shape of an object by listing its properties and their types. The syntax uses the `interface` keyword: `interface User { name: string; age: number; }`. Unlike inline object types, interfaces are reusable, can be extended, and support declaration merging - making them the primary tool for defining object shapes in TypeScript.\n\nInterfaces support all the property modifiers available for object types: optional properties (`?`), readonly properties (`readonly`), and method signatures. A method can be declared in shorthand: `greet(name: string): string` or as a property with a function type: `greet: (name: string) => string`. Both are equivalent in practice, though the shorthand form is more conventional in interfaces.\n\nIndex signatures allow an interface to describe objects with dynamic keys. The syntax is `[key: string]: ValueType`, which means the object can have any string key mapping to the specified value type. This is useful for dictionaries, caches, and configuration objects where the exact keys aren't known in advance. You can combine index signatures with known properties, but the known properties must be compatible with the index signature's value type.\n\nInterfaces are open, meaning they can be declared multiple times with the same name and TypeScript automatically merges them. This is called declaration merging. It's particularly useful for extending third-party types - you can add properties to an existing interface from a library without modifying the library's source code. This feature is unique to interfaces and is one of the key differences from type aliases.",
       "codeExamples": [
         {
           "title": "Basic interface with methods",
@@ -93,19 +93,19 @@
         },
         {
           "title": "Declaration merging",
-          "code": "// First declaration\ninterface Config {\n  appName: string;\n  version: string;\n}\n\n// Second declaration — merges with the first\ninterface Config {\n  debug: boolean;\n  logLevel: string;\n}\n\n// The merged interface has all four properties\nconst config: Config = {\n  appName: \"MyApp\",\n  version: \"1.0.0\",\n  debug: true,\n  logLevel: \"info\"\n};\n\nconsole.log(`${config.appName} v${config.version}`);\nconsole.log(`Debug: ${config.debug}, Log: ${config.logLevel}`);",
+          "code": "// First declaration\ninterface Config {\n  appName: string;\n  version: string;\n}\n\n// Second declaration - merges with the first\ninterface Config {\n  debug: boolean;\n  logLevel: string;\n}\n\n// The merged interface has all four properties\nconst config: Config = {\n  appName: \"MyApp\",\n  version: \"1.0.0\",\n  debug: true,\n  logLevel: \"info\"\n};\n\nconsole.log(`${config.appName} v${config.version}`);\nconsole.log(`Debug: ${config.debug}, Log: ${config.logLevel}`);",
           "output": "MyApp v1.0.0\nDebug: true, Log: info",
-          "explanation": "Declaration merging automatically combines multiple interface declarations with the same name. This is unique to interfaces — type aliases cannot merge. It's useful for extending library types."
+          "explanation": "Declaration merging automatically combines multiple interface declarations with the same name. This is unique to interfaces - type aliases cannot merge. It's useful for extending library types."
         }
       ],
       "notes": [
-        "Interfaces are the standard way to define object shapes in TypeScript — use them for any object type that's referenced in multiple places.",
+        "Interfaces are the standard way to define object shapes in TypeScript - use them for any object type that's referenced in multiple places.",
         "Index signatures (`[key: string]: Type`) describe objects with dynamic keys. All known properties must be compatible with the index signature type.",
-        "Declaration merging is unique to interfaces — it lets you extend third-party types without modifying their source code."
+        "Declaration merging is unique to interfaces - it lets you extend third-party types without modifying their source code."
       ],
       "commonPitfalls": [
-        "Adding a known property that conflicts with the index signature type — if you have `[key: string]: number`, all properties must be numbers, including known ones.",
-        "Expecting type aliases to support declaration merging — only interfaces merge. If you need merging, use an interface."
+        "Adding a known property that conflicts with the index signature type - if you have `[key: string]: number`, all properties must be numbers, including known ones.",
+        "Expecting type aliases to support declaration merging - only interfaces merge. If you need merging, use an interface."
       ]
     },
     "exercises": [
@@ -146,7 +146,7 @@
     "isInterviewQuestion": false,
     "concepts": ["type keyword", "Union types", "Intersection types", "Discriminated unions"],
     "content": {
-      "explanation": "Type aliases create a name for any type using the `type` keyword. While interfaces can only describe object shapes, type aliases can name any type: primitives, unions, intersections, tuples, functions, and more. The syntax is `type MyType = ...`. Type aliases are one of TypeScript's most versatile features and are essential for expressing complex type relationships.\n\nUnion types, written with the `|` operator, represent a value that could be one of several types: `type Result = string | number`. A variable of a union type can hold any of the constituent types. To use type-specific operations, you must narrow the type first using type guards like `typeof`, `instanceof`, or property checks. Unions are everywhere in TypeScript — optional properties are unions with `undefined`, nullable values are unions with `null`, and API responses often use union types to represent different outcomes.\n\nIntersection types, written with the `&` operator, combine multiple types into one. `type Admin = User & { permissions: string[] }` creates a type that has all properties of `User` plus a `permissions` array. Intersections are the type-level equivalent of \"and\" — the resulting type must satisfy all constituent types. They're commonly used to add properties to existing types, combine mixins, and build complex types from simpler ones.\n\nDiscriminated unions are a powerful pattern that combines union types with a shared literal property (the discriminant). Each member of the union has a common property with a different literal value: `type Shape = { kind: \"circle\"; radius: number } | { kind: \"square\"; side: number }`. By checking the discriminant (`shape.kind`), TypeScript narrows the type to the specific member, enabling safe access to member-specific properties. This pattern is the TypeScript way to implement tagged unions or algebraic data types.",
+      "explanation": "Type aliases create a name for any type using the `type` keyword. While interfaces can only describe object shapes, type aliases can name any type: primitives, unions, intersections, tuples, functions, and more. The syntax is `type MyType = ...`. Type aliases are one of TypeScript's most versatile features and are essential for expressing complex type relationships.\n\nUnion types, written with the `|` operator, represent a value that could be one of several types: `type Result = string | number`. A variable of a union type can hold any of the constituent types. To use type-specific operations, you must narrow the type first using type guards like `typeof`, `instanceof`, or property checks. Unions are everywhere in TypeScript - optional properties are unions with `undefined`, nullable values are unions with `null`, and API responses often use union types to represent different outcomes.\n\nIntersection types, written with the `&` operator, combine multiple types into one. `type Admin = User & { permissions: string[] }` creates a type that has all properties of `User` plus a `permissions` array. Intersections are the type-level equivalent of \"and\" - the resulting type must satisfy all constituent types. They're commonly used to add properties to existing types, combine mixins, and build complex types from simpler ones.\n\nDiscriminated unions are a powerful pattern that combines union types with a shared literal property (the discriminant). Each member of the union has a common property with a different literal value: `type Shape = { kind: \"circle\"; radius: number } | { kind: \"square\"; side: number }`. By checking the discriminant (`shape.kind`), TypeScript narrows the type to the specific member, enabling safe access to member-specific properties. This pattern is the TypeScript way to implement tagged unions or algebraic data types.",
       "codeExamples": [
         {
           "title": "Union types and type narrowing",
@@ -169,12 +169,12 @@
       ],
       "notes": [
         "Type aliases can name any type (unions, intersections, tuples, functions), while interfaces are limited to object shapes.",
-        "Union types (`|`) mean \"either this or that\" — use type guards to narrow before accessing type-specific properties.",
+        "Union types (`|`) mean \"either this or that\" - use type guards to narrow before accessing type-specific properties.",
         "Discriminated unions use a shared literal property as a tag to enable safe type narrowing in switch statements."
       ],
       "commonPitfalls": [
-        "Accessing union-specific properties without narrowing first — `(value: string | number).toUpperCase()` is an error because `number` doesn't have that method.",
-        "Creating intersection types with conflicting properties — `{ x: string } & { x: number }` produces `{ x: never }` since no value can be both string and number."
+        "Accessing union-specific properties without narrowing first - `(value: string | number).toUpperCase()` is an error because `number` doesn't have that method.",
+        "Creating intersection types with conflicting properties - `{ x: string } & { x: number }` produces `{ x: never }` since no value can be both string and number."
       ]
     },
     "exercises": [
@@ -187,7 +187,7 @@
         "expectedOutput": "Success: User data loaded\nFailed: Not found",
         "hints": [
           "Use a discriminated union with `status` as the discriminant: one variant has `\"ok\"`, the other has `\"error\"`.",
-          "Use a switch on `response.status` — TypeScript narrows the type in each case branch."
+          "Use a switch on `response.status` - TypeScript narrows the type in each case branch."
         ],
         "difficulty": "Easy"
       },
@@ -237,13 +237,13 @@
         }
       ],
       "notes": [
-        "Use `extends` for clear inheritance relationships — it's more readable than intersection types for object hierarchies.",
-        "Multiple inheritance is supported: `interface C extends A, B { }` — all parent properties must be compatible.",
+        "Use `extends` for clear inheritance relationships - it's more readable than intersection types for object hierarchies.",
+        "Multiple inheritance is supported: `interface C extends A, B { }` - all parent properties must be compatible.",
         "Child interfaces can add new properties but cannot remove inherited ones. They can narrow property types but not widen them."
       ],
       "commonPitfalls": [
-        "Extending interfaces with conflicting property types — if Parent has `name: string` and you try to redeclare `name: number` in the child, TypeScript shows an error.",
-        "Creating overly deep inheritance chains — more than 3-4 levels becomes hard to follow. Prefer composition (using properties of interface types) over deep inheritance."
+        "Extending interfaces with conflicting property types - if Parent has `name: string` and you try to redeclare `name: number` in the child, TypeScript shows an error.",
+        "Creating overly deep inheritance chains - more than 3-4 levels becomes hard to follow. Prefer composition (using properties of interface types) over deep inheritance."
       ]
     },
     "exercises": [
@@ -284,19 +284,19 @@
     "isInterviewQuestion": true,
     "concepts": ["type vs interface", "Declaration merging", "Union and intersection types", "When to use each"],
     "content": {
-      "explanation": "One of the most common TypeScript questions — in interviews and in practice — is when to use `type` versus `interface`. Both can describe object shapes, and for simple cases they're interchangeable. However, they have distinct capabilities that make each more appropriate in specific situations. Understanding these differences helps you make the right choice and write idiomatic TypeScript.\n\nInterfaces have two unique capabilities: declaration merging and `extends` syntax. Declaration merging means you can declare the same interface name multiple times and TypeScript combines them automatically. This is essential for augmenting third-party library types. The `extends` syntax provides clear, explicit inheritance and catches property conflicts at the point of declaration. Interfaces also have slightly better error messages when complex object types don't match.\n\nType aliases have broader capabilities: they can represent unions (`A | B`), intersections (`A & B`), tuples (`[string, number]`), mapped types, conditional types, and primitive type aliases (`type ID = string`). Interfaces cannot express any of these. If you need a union type, a tuple type, a function type alias, or any computed/mapped type, you must use `type`. This makes type aliases more versatile overall.\n\nThe practical guideline used by most teams: use `interface` for defining the shapes of objects and classes (especially public APIs that others might need to extend), and use `type` for everything else — unions, intersections, utility types, function types, and any type that isn't purely an object shape. Some teams prefer a simpler rule: always use `type` unless you specifically need declaration merging. Either convention works as long as the team is consistent.",
+      "explanation": "One of the most common TypeScript questions - in interviews and in practice - is when to use `type` versus `interface`. Both can describe object shapes, and for simple cases they're interchangeable. However, they have distinct capabilities that make each more appropriate in specific situations. Understanding these differences helps you make the right choice and write idiomatic TypeScript.\n\nInterfaces have two unique capabilities: declaration merging and `extends` syntax. Declaration merging means you can declare the same interface name multiple times and TypeScript combines them automatically. This is essential for augmenting third-party library types. The `extends` syntax provides clear, explicit inheritance and catches property conflicts at the point of declaration. Interfaces also have slightly better error messages when complex object types don't match.\n\nType aliases have broader capabilities: they can represent unions (`A | B`), intersections (`A & B`), tuples (`[string, number]`), mapped types, conditional types, and primitive type aliases (`type ID = string`). Interfaces cannot express any of these. If you need a union type, a tuple type, a function type alias, or any computed/mapped type, you must use `type`. This makes type aliases more versatile overall.\n\nThe practical guideline used by most teams: use `interface` for defining the shapes of objects and classes (especially public APIs that others might need to extend), and use `type` for everything else - unions, intersections, utility types, function types, and any type that isn't purely an object shape. Some teams prefer a simpler rule: always use `type` unless you specifically need declaration merging. Either convention works as long as the team is consistent.",
       "codeExamples": [
         {
           "title": "Interface-only features",
-          "code": "// Declaration merging — only interfaces can do this\ninterface Window {\n  customProperty: string;\n}\n\ninterface Window {\n  anotherProperty: number;\n}\n\n// Both declarations merge into one interface\n// Useful for extending third-party types\n\n// extends syntax — clearer than intersection for objects\ninterface Animal {\n  name: string;\n}\n\ninterface Dog extends Animal {\n  breed: string;\n}\n\nconst dog: Dog = { name: \"Rex\", breed: \"German Shepherd\" };\nconsole.log(`${dog.name} is a ${dog.breed}`);",
+          "code": "// Declaration merging - only interfaces can do this\ninterface Window {\n  customProperty: string;\n}\n\ninterface Window {\n  anotherProperty: number;\n}\n\n// Both declarations merge into one interface\n// Useful for extending third-party types\n\n// extends syntax - clearer than intersection for objects\ninterface Animal {\n  name: string;\n}\n\ninterface Dog extends Animal {\n  breed: string;\n}\n\nconst dog: Dog = { name: \"Rex\", breed: \"German Shepherd\" };\nconsole.log(`${dog.name} is a ${dog.breed}`);",
           "output": "Rex is a German Shepherd",
-          "explanation": "Declaration merging is unique to interfaces — declaring the same interface name twice merges them. The `extends` keyword provides explicit inheritance with conflict detection."
+          "explanation": "Declaration merging is unique to interfaces - declaring the same interface name twice merges them. The `extends` keyword provides explicit inheritance with conflict detection."
         },
         {
           "title": "Type alias-only features",
-          "code": "// Union types — interfaces can't do this\ntype Status = \"loading\" | \"success\" | \"error\";\ntype ID = string | number;\n\n// Tuple types — interfaces can't do this\ntype Coordinate = [number, number];\ntype NameAge = [string, number];\n\n// Mapped/utility types — interfaces can't do this\ntype Nullable<T> = T | null;\ntype ReadonlyUser = Readonly<{ name: string; age: number }>;\n\n// Function type alias — cleaner than interface for functions\ntype Formatter = (value: unknown) => string;\n\nconst formatId: Formatter = (value) => `ID: ${String(value)}`;\nconst coord: Coordinate = [10, 20];\nconst status: Status = \"success\";\n\nconsole.log(formatId(42));\nconsole.log(`Position: ${coord[0]}, ${coord[1]}`);\nconsole.log(`Status: ${status}`);",
+          "code": "// Union types - interfaces can't do this\ntype Status = \"loading\" | \"success\" | \"error\";\ntype ID = string | number;\n\n// Tuple types - interfaces can't do this\ntype Coordinate = [number, number];\ntype NameAge = [string, number];\n\n// Mapped/utility types - interfaces can't do this\ntype Nullable<T> = T | null;\ntype ReadonlyUser = Readonly<{ name: string; age: number }>;\n\n// Function type alias - cleaner than interface for functions\ntype Formatter = (value: unknown) => string;\n\nconst formatId: Formatter = (value) => `ID: ${String(value)}`;\nconst coord: Coordinate = [10, 20];\nconst status: Status = \"success\";\n\nconsole.log(formatId(42));\nconsole.log(`Position: ${coord[0]}, ${coord[1]}`);\nconsole.log(`Status: ${status}`);",
           "output": "ID: 42\nPosition: 10, 20\nStatus: success",
-          "explanation": "Type aliases can express unions, tuples, mapped types, and function types — none of which are possible with interfaces. These are the cases where `type` is required."
+          "explanation": "Type aliases can express unions, tuples, mapped types, and function types - none of which are possible with interfaces. These are the cases where `type` is required."
         },
         {
           "title": "Practical guidelines: when to use each",
@@ -307,12 +307,12 @@
       ],
       "notes": [
         "Use `interface` for object shapes and public APIs that might be extended. Use `type` for unions, tuples, mapped types, and non-object types.",
-        "Only interfaces support declaration merging — this is essential for extending third-party library types.",
+        "Only interfaces support declaration merging - this is essential for extending third-party library types.",
         "Both `interface extends` and `type &` can combine object types, but `extends` provides better error messages for conflicts."
       ],
       "commonPitfalls": [
-        "Using interfaces for everything, even unions and tuples — interfaces cannot express these. Use type aliases for non-object types.",
-        "Relying on declaration merging accidentally — if you declare two interfaces with the same name in the same scope, they merge silently, which can cause unexpected type additions."
+        "Using interfaces for everything, even unions and tuples - interfaces cannot express these. Use type aliases for non-object types.",
+        "Relying on declaration merging accidentally - if you declare two interfaces with the same name in the same scope, they merge silently, which can cause unexpected type additions."
       ],
       "interviewTips": [
         "Key differences to mention: interfaces support declaration merging and `extends`, while type aliases support unions, intersections, tuples, and mapped types. For object shapes, both work; for everything else, use type.",

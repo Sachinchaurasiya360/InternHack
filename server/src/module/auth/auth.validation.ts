@@ -32,6 +32,7 @@ export const updateProfileSchema = z.object({
   linkedinUrl: z.string().url().or(z.literal("")).optional(),
   githubUrl: z.string().url().or(z.literal("")).optional(),
   portfolioUrl: z.string().url().or(z.literal("")).optional(),
+  leetcodeUrl: z.string().url().or(z.literal("")).optional(),
   jobStatus: z.enum(["NO_OFFER", "LOOKING", "OPEN_TO_OFFER"]).nullable().optional(),
   projects: z.array(z.object({
     id: z.string(),
@@ -47,4 +48,5 @@ export const updateProfileSchema = z.object({
     description: z.string().max(300),
     date: z.string().max(20).optional(),
   })).max(10).optional(),
+  isProfilePublic: z.boolean().optional(),
 });

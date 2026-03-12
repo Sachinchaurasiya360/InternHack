@@ -90,7 +90,7 @@ export default function CssLessonsPage() {
           CSS <span className="text-gradient-accent">Lessons</span>
         </h1>
         <p className="text-lg text-gray-500 dark:text-gray-500 max-w-lg mx-auto">
-          From box model to grid and animations — curated for modern front-end interviews
+          From box model to grid and animations - curated for modern front-end interviews
         </p>
       </motion.div>
 

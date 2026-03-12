@@ -102,7 +102,7 @@
       ],
       "notes": [
         "Flask routes default to GET (plus HEAD and OPTIONS). Pass methods=['GET','POST'] to allow other methods.",
-        "HEAD requests are handled automatically — Flask runs the GET handler but strips the response body.",
+        "HEAD requests are handled automatically - Flask runs the GET handler but strips the response body.",
         "OPTIONS requests return the allowed methods for the URL, useful for CORS preflight requests.",
         "Flask 2.0+ shortcut decorators (@app.get, @app.post, etc.) improve readability."
       ],

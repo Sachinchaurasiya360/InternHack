@@ -1,5 +1,6 @@
 import { lazy, Suspense } from "react";
-import { BrowserRouter, Navigate, Route, Routes } from "react-router";
+import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router";
+import { useAuthStore } from "./lib/auth.store";
 import { Toaster } from "react-hot-toast";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
@@ -15,8 +16,6 @@ const JobBrowsePage = lazy(() => import("./module/student/jobs/JobBrowsePage"));
 const JobDetailPage = lazy(() => import("./module/student/jobs/JobDetailPage"));
 const ScrapedJobsPage = lazy(() => import("./module/scraped-jobs/ScrapedJobsPage"));
 const ScrapedJobDetailPage = lazy(() => import("./module/scraped-jobs/ScrapedJobDetailPage"));
-const CareerExplorePage = lazy(() => import("./module/career/CareerExplorePage"));
-const CareerDetailPage = lazy(() => import("./module/career/CareerDetailPage"));
 const CompanyListPage = lazy(() => import("./module/student/companies/CompanyListPage"));
 const CompanyDetailPage = lazy(() => import("./module/student/companies/CompanyDetailPage"));
 const PublicAtsPage = lazy(() => import("./module/student/ats/PublicAtsPage"));
@@ -49,7 +48,6 @@ const ResumeBuilderPage = lazy(() => import("./module/student/ats/ResumeBuilderP
 const CoverLetterPage = lazy(() => import("./module/student/ats/CoverLetterPage"));
 const LatexResumeEditor = lazy(() => import("./module/student/ats/LatexResumeEditor"));
 const ResumeGeneratorPage = lazy(() => import("./module/student/ats/ResumeGeneratorPage"));
-const CareerProgressPage = lazy(() => import("./module/career/CareerProgressPage"));
 const AddCompanyPage = lazy(() => import("./module/student/companies/AddCompanyPage"));
 const StudentProfilePage = lazy(() => import("./module/student/profile/StudentProfilePage"));
 const PublicProfilePage = lazy(() => import("./module/student/profile/PublicProfilePage"));
@@ -57,14 +55,14 @@ const RepoDiscoveryPage = lazy(() => import("./module/student/opensource/RepoDis
 const GSoCReposPage = lazy(() => import("./module/student/opensource/GSoCReposPage"));
 const ProgramTrackerPage = lazy(() => import("./module/student/opensource/ProgramTrackerPage"));
 const FirstPRRoadmapPage = lazy(() => import("./module/student/opensource/FirstPRRoadmapPage"));
+const FirstPRSectionPage = lazy(() => import("./module/student/opensource/FirstPRSectionPage"));
 const GSoCProposalPage = lazy(() => import("./module/student/opensource/GSoCProposalPage"));
+const GSoCProposalStepPage = lazy(() => import("./module/student/opensource/GSoCProposalStepPage"));
 const OpenSourceAnalyticsPage = lazy(() => import("./module/student/opensource/OpenSourceAnalyticsPage"));
-const Web3RoadmapPage = lazy(() => import("./module/student/grants/Web3RoadmapPage"));
 const GrantTrackerPage = lazy(() => import("./module/student/grants/GrantTrackerPage"));
 const HackathonCalendarPage = lazy(() => import("./module/student/grants/HackathonCalendarPage"));
 const ProjectIdeasPage = lazy(() => import("./module/student/grants/ProjectIdeasPage"));
 const CheckoutPage = lazy(() => import("./module/student/checkout/CheckoutPage"));
-const SkillQuizPage = lazy(() => import("./module/career/quiz/SkillQuizPage"));
 const SqlPracticePage = lazy(() => import("./module/student/sql/SqlPracticePage"));
 const SkillVerificationPage = lazy(() => import("./module/student/skill-verification/SkillVerificationPage"));
 const SkillTestPage = lazy(() => import("./module/student/skill-verification/SkillTestPage"));
@@ -119,9 +117,9 @@ const TalentPoolDetailPage = lazy(() => import("./module/recruiter/talent/Talent
 const DrivesListPage = lazy(() => import("./module/recruiter/drives/DrivesListPage"));
 const CreateDrivePage = lazy(() => import("./module/recruiter/drives/CreateDrivePage"));
 const DriveDetailPage = lazy(() => import("./module/recruiter/drives/DriveDetailPage"));
+const RecruiterProfilePage = lazy(() => import("./module/recruiter/profile/RecruiterProfilePage"));
 
 // Student new feature pages
-const TrendsPage = lazy(() => import("./module/student/trends/TrendsPage"));
 const CampusDrivesPage = lazy(() => import("./module/student/campus/CampusDrivesPage"));
 const CampusDriveDetailPage = lazy(() => import("./module/student/campus/CampusDriveDetailPage"));
 
@@ -137,7 +135,6 @@ const AdminCompaniesPage = lazy(() => import("./module/admin/companies/AdminComp
 const AdminReviewsPage = lazy(() => import("./module/admin/reviews/AdminReviewsPage"));
 const AdminContributionsPage = lazy(() => import("./module/admin/contributions/AdminContributionsPage"));
 const AdminSubscribersPage = lazy(() => import("./module/admin/AdminSubscribersPage"));
-const AdminCareersPage = lazy(() => import("./module/admin/careers/AdminCareersPage"));
 const AdminBlogPage = lazy(() => import("./module/admin/blog/AdminBlogPage"));
 const AdminBlogEditor = lazy(() => import("./module/admin/blog/AdminBlogEditor"));
 const AdminDsaPage = lazy(() => import("./module/admin/dsa/AdminDsaPage"));
@@ -145,6 +142,29 @@ const AdminAptitudePage = lazy(() => import("./module/admin/aptitude/AdminAptitu
 const AdminSkillTestsPage = lazy(() => import("./module/admin/skill-tests/AdminSkillTestsPage"));
 const AdminHackathonsPage = lazy(() => import("./module/admin/hackathons/AdminHackathonsPage"));
 const AdminBadgesPage = lazy(() => import("./module/admin/AdminBadgesPage"));
+const AdminAIProvidersPage = lazy(() => import("./module/admin/ai/AdminAIProvidersPage"));
+const AdminExternalJobsPage = lazy(() => import("./module/admin/external-jobs/AdminExternalJobsPage"));
+
+function JobDetailOrRedirect() {
+  const { isAuthenticated, user } = useAuthStore();
+  const { id } = useParams();
+  if (isAuthenticated && user?.role === "STUDENT") {
+    return <Navigate to={`/student/jobs/${id}`} replace />;
+  }
+  return <JobDetailPage />;
+}
+
+function ApplyRedirect() {
+  const { jobId } = useParams();
+  return <Navigate to={`/student/jobs/${jobId}/apply`} replace />;
+}
+
+function ProfileRedirect() {
+  const { id } = useParams();
+  const { user } = useAuthStore();
+  const base = user?.role === "ADMIN" ? "/admin" : "/recruiters";
+  return <Navigate to={`${base}/profile/${id}`} replace />;
+}
 
 function App() {
   return (
@@ -160,7 +180,7 @@ function App() {
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/jobs" element={<JobBrowsePage />} />
-          <Route path="/jobs/:id" element={<JobDetailPage />} />
+          <Route path="/jobs/:id" element={<JobDetailOrRedirect />} />
           <Route path="/internships" element={<GovInternshipsPage />} />
           <Route path="/external-jobs" element={<ScrapedJobsPage />} />
           <Route path="/external-jobs/:id" element={<ScrapedJobDetailPage />} />
@@ -173,7 +193,7 @@ function App() {
           <Route path="/opensource" element={<PublicOpenSourcePage />} />
           <Route path="/blog" element={<BlogListPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
-          {/* Learning Hub — all learning content under /learn */}
+          {/* Learning Hub - all learning content under /learn */}
           <Route path="/learn" element={<LearnLayout />}>
             <Route index element={<LearnHubPage />} />
             <Route path="javascript" element={<JsLessonsPage />} />
@@ -218,9 +238,7 @@ function App() {
             <Route path="aptitude" element={<AptitudeCategoriesPage />} />
             <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
             <Route path="aptitude/:slug" element={<AptitudeTopicPage />} />
-            <Route path="careers" element={<CareerExplorePage />} />
-            <Route path="careers/:slug" element={<CareerDetailPage />} />
-            <Route path="careers/:slug/quiz/:skillId" element={<ProtectedRoute role="STUDENT"><SkillQuizPage /></ProtectedRoute>} />
+            <Route path="blockchain" element={<ProjectIdeasPage />} />
           </Route>
 
           {/* Legacy redirects */}
@@ -228,7 +246,6 @@ function App() {
           <Route path="/sql/*" element={<Navigate to="/learn/sql" replace />} />
           <Route path="/javascript/*" element={<Navigate to="/learn/javascript" replace />} />
           <Route path="/aptitude/*" element={<Navigate to="/learn/aptitude" replace />} />
-          <Route path="/careers/*" element={<Navigate to="/learn/careers" replace />} />
           <Route path="/student/learn" element={<Navigate to="/learn" replace />} />
           <Route path="/student/javascript/*" element={<Navigate to="/learn/javascript" replace />} />
           <Route path="/html/*" element={<Navigate to="/learn/html" replace />} />
@@ -252,7 +269,7 @@ function App() {
           <Route path="/test/:testId" element={<ProtectedRoute role="STUDENT"><SkillTestPage /></ProtectedRoute>} />
 
           {/* Student protected routes */}
-          <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyPage /></ProtectedRoute>} />
+          <Route path="/jobs/:jobId/apply" element={<ProtectedRoute role="STUDENT"><ApplyRedirect /></ProtectedRoute>} />
           <Route path="/student" element={<ProtectedRoute role="STUDENT"><StudentLayout /></ProtectedRoute>}>
             <Route index element={<Navigate to="applications" replace />} />
             <Route path="jobs" element={<JobBrowsePage />} />
@@ -272,24 +289,21 @@ function App() {
             <Route path="ats/templates" element={<ResumeBuilderPage />} />
             <Route path="ats/cover-letter" element={<CoverLetterPage />} />
             <Route path="ats/latex-editor" element={<LatexResumeEditor />} />
-            <Route path="careers" element={<Navigate to="/learn" replace />} />
-            <Route path="careers/:slug" element={<CareerProgressPage />} />
             <Route path="skill-verification" element={<SkillVerificationPage />} />
             <Route path="mock-interview" element={<MockInterviewPage />} />
             <Route path="companies/add" element={<AddCompanyPage />} />
             <Route path="grants" element={<GrantsPage />} />
-            <Route path="grants/roadmap" element={<Web3RoadmapPage />} />
             <Route path="grants/tracker" element={<GrantTrackerPage />} />
             <Route path="grants/hackathons" element={<HackathonCalendarPage />} />
-            <Route path="grants/projects" element={<ProjectIdeasPage />} />
             <Route path="opensource" element={<RepoDiscoveryPage />} />
             <Route path="opensource/gsoc" element={<GSoCReposPage />} />
             <Route path="opensource/programs" element={<ProgramTrackerPage />} />
             <Route path="opensource/first-pr" element={<FirstPRRoadmapPage />} />
+            <Route path="opensource/first-pr/:sectionSlug" element={<FirstPRSectionPage />} />
             <Route path="opensource/gsoc-proposal" element={<GSoCProposalPage />} />
+            <Route path="opensource/gsoc-proposal/:sectionSlug" element={<GSoCProposalStepPage />} />
             <Route path="opensource/analytics" element={<OpenSourceAnalyticsPage />} />
-            <Route path="trends" element={<TrendsPage />} />
-            <Route path="campus-drives" element={<CampusDrivesPage />} />
+<Route path="campus-drives" element={<CampusDrivesPage />} />
             <Route path="campus-drives/:id" element={<CampusDriveDetailPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="profile" element={<StudentProfilePage />} />
@@ -310,11 +324,12 @@ function App() {
             <Route path="campus-drives" element={<DrivesListPage />} />
             <Route path="campus-drives/new" element={<CreateDrivePage />} />
             <Route path="campus-drives/:id" element={<DriveDetailPage />} />
+            <Route path="profile" element={<RecruiterProfilePage />} />
             <Route path="profile/:id" element={<PublicProfilePage />} />
           </Route>
 
-          {/* Profile view (recruiter/admin - backend enforces role) */}
-          <Route path="/profile/:id" element={<ProtectedRoute><PublicProfilePage /></ProtectedRoute>} />
+          {/* Profile view redirect → recruiter layout */}
+          <Route path="/profile/:id" element={<ProtectedRoute><ProfileRedirect /></ProtectedRoute>} />
 
           {/* Admin login (public) */}
           <Route path="/admin/login" element={<AdminLoginPage />} />
@@ -330,12 +345,13 @@ function App() {
             <Route path="reviews" element={<AdminReviewsPage />} />
             <Route path="contributions" element={<AdminContributionsPage />} />
             <Route path="subscribers" element={<AdminSubscribersPage />} />
-            <Route path="careers" element={<AdminCareersPage />} />
             <Route path="dsa" element={<AdminDsaPage />} />
             <Route path="aptitude" element={<AdminAptitudePage />} />
             <Route path="skill-tests" element={<AdminSkillTestsPage />} />
             <Route path="hackathons" element={<AdminHackathonsPage />} />
             <Route path="badges" element={<AdminBadgesPage />} />
+            <Route path="ai-providers" element={<AdminAIProvidersPage />} />
+            <Route path="external-jobs" element={<AdminExternalJobsPage />} />
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="blog/editor" element={<AdminBlogEditor />} />
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />

@@ -9,36 +9,70 @@ async function seedAdmin() {
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
-    console.log(`Admin already exists: ${email}`);
-    process.exit(0);
+    // Ensure admin is always verified
+    if (!existing.isVerified) {
+      await prisma.user.update({ where: { id: existing.id }, data: { isVerified: true } });
+      console.log(`Admin verified: ${email}`);
+    } else {
+      console.log(`Admin already exists: ${email}`);
+    }
+  } else {
+    const hashedPassword = await hashPassword(password);
+
+    const user = await prisma.user.create({
+      data: {
+        name,
+        email,
+        password: hashedPassword,
+        role: "ADMIN",
+        isVerified: true,
+      },
+    });
+
+    await prisma.adminProfile.create({
+      data: {
+        userId: user.id,
+        tier: "SUPER_ADMIN",
+        isActive: true,
+      },
+    });
+
+    console.log(`Super Admin created successfully!`);
+    console.log(`Email: ${email}`);
+    console.log(`Password: ${password}`);
   }
 
-  const hashedPassword = await hashPassword(password);
+  // ── Seed Recruiter ──
+  const recruiterEmail = "recruiter@internhack.xyz";
+  const recruiterPassword = "Recruiter@123";
 
-  const user = await prisma.user.create({
-    data: {
-      name,
-      email,
-      password: hashedPassword,
-      role: "ADMIN",
-    },
-  });
+  const existingRecruiter = await prisma.user.findUnique({ where: { email: recruiterEmail } });
+  if (existingRecruiter) {
+    console.log(`Recruiter already exists: ${recruiterEmail}`);
+  } else {
+    const hashedPassword = await hashPassword(recruiterPassword);
 
-  await prisma.adminProfile.create({
-    data: {
-      userId: user.id,
-      tier: "SUPER_ADMIN",
-      isActive: true,
-    },
-  });
+    await prisma.user.create({
+      data: {
+        name: "Demo Recruiter",
+        email: recruiterEmail,
+        password: hashedPassword,
+        role: "RECRUITER",
+        isVerified: true,
+        company: "InternHack",
+        designation: "Hiring Manager",
+      },
+    });
 
-  console.log(`Super Admin created successfully!`);
-  console.log(`Email: ${email}`);
-  console.log(`Password: ${password}`);
+    console.log(`Recruiter created successfully!`);
+    console.log(`Email: ${recruiterEmail}`);
+    console.log(`Password: ${recruiterPassword}`);
+  }
+
   process.exit(0);
 }
 
 seedAdmin().catch((err) => {
-  console.error("Failed to seed admin:", err);
+  console.error("Failed to seed:", err);
   process.exit(1);
 });

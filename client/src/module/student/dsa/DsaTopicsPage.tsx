@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { Code2, CheckCircle2, Building2, Puzzle, Bookmark, BookOpen, TrendingUp, ArrowRight, Lock } from "lucide-react";
+import { Code2, CheckCircle2, Building2, Puzzle, Bookmark, BookOpen, TrendingUp, ArrowRight, Lock, ArrowLeft } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { DsaTopic, DsaProgress } from "../../../lib/types";
@@ -55,6 +55,7 @@ function CircularProgress({ progress }: { progress: number }) {
 }
 
 export default function DsaTopicsPage() {
+  const navigate = useNavigate();
   const { user } = useAuthStore();
   const [activeTab, setActiveTab] = useState<DifficultyTab>("all");
   const [showGate, setShowGate] = useState(false);
@@ -93,6 +94,10 @@ export default function DsaTopicsPage() {
   return (
     <div className="relative pb-12">
       <SEO title="DSA Practice" noIndex />
+
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-black dark:hover:text-white mb-4">
+        <ArrowLeft className="w-4 h-4" /> Back
+      </button>
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

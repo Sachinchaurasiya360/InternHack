@@ -101,7 +101,7 @@ export default function FastApiLessonsPage() {
           FastAPI <span className="text-gradient-accent">Lessons</span>
         </h1>
         <p className="text-lg text-gray-500 dark:text-gray-500 max-w-lg mx-auto">
-          Build high-performance APIs with Python — from basics to production deployment
+          Build high-performance APIs with Python - from basics to production deployment
         </p>
       </motion.div>
 

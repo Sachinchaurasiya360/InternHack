@@ -4,6 +4,7 @@ import fs from "fs";
 import { fileURLToPath } from "url";
 import { uploadToS3, deleteFromS3, getS3KeyFromUrl } from "../../utils/s3.utils.js";
 import { prisma } from "../../database/db.js";
+import { validateOrReject } from "../../utils/file-validation.utils.js";
 
 const MAX_RESUMES = 2;
 
@@ -44,32 +45,17 @@ function readAndCleanup(filePath: string): Buffer {
 /** Try S3 first, fall back to local storage */
 async function uploadWithFallback(buffer: Buffer, folder: string, userId: number, originalName: string, mimeType: string): Promise<string> {
   const key = buildS3Key(folder, userId, originalName);
-  console.log("[S3] Attempting upload:", {
-    bucket: process.env["AWS_S3_BUCKET"] || "(empty)",
-    region: process.env["AWS_REGION"] || "(empty)",
-    key,
-    contentType: mimeType,
-    sizeBytes: buffer.length,
-    hasAccessKey: !!process.env["AWS_ACCESS_KEY_ID"],
-    hasSecretKey: !!process.env["AWS_SECRET_ACCESS_KEY"],
-  });
   try {
     const url = await uploadToS3(buffer, key, mimeType);
-    console.log("[S3] Upload succeeded:", url);
     return url;
   } catch (err: unknown) {
-    const error = err as Error & { $metadata?: unknown; Code?: string; name?: string };
-    console.error("[S3] Upload FAILED:", {
-      name: error.name,
-      message: error.message,
-      code: error.Code,
-      metadata: error.$metadata,
-    });
+    const error = err as Error;
+    console.error("[S3] Upload failed, falling back to local:", error.message);
     return saveLocally(buffer, folder, userId, originalName);
   }
 }
 
-/** Delete a file — handles both S3 URLs and local paths */
+/** Delete a file - handles both S3 URLs and local paths */
 function deleteFile(url: string): void {
   const s3Key = getS3KeyFromUrl(url);
   if (s3Key) {
@@ -81,7 +67,7 @@ function deleteFile(url: string): void {
 }
 
 export class UploadController {
-  /** Generic file upload — S3 with local fallback (used by ATS etc.) */
+  /** Generic file upload - S3 with local fallback (used by ATS etc.) */
   async uploadFile(req: Request, res: Response) {
     try {
       if (!req.file) {
@@ -92,6 +78,14 @@ export class UploadController {
       }
 
       const userId = req.user.id;
+
+      // Validate actual file content matches claimed MIME type
+      await validateOrReject(
+        req.file.path,
+        ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "image/jpeg", "image/png", "image/webp", "text/plain"],
+        "File content does not match allowed file types",
+      );
+
       const buffer = readAndCleanup(req.file.path);
       const url = await uploadWithFallback(buffer, "uploads", userId, req.file.originalname, req.file.mimetype);
 
@@ -110,7 +104,7 @@ export class UploadController {
     }
   }
 
-  /** Upload profile picture — S3 with local fallback */
+  /** Upload profile picture - S3 with local fallback */
   async uploadProfilePic(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -118,6 +112,8 @@ export class UploadController {
 
       const userId = req.user.id;
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { profilePic: true } });
+
+      await validateOrReject(req.file.path, ["image/jpeg", "image/png", "image/webp"], "File content is not a valid image");
 
       const buffer = readAndCleanup(req.file.path);
       const url = await uploadWithFallback(buffer, "profile-pics", userId, req.file.originalname, req.file.mimetype);
@@ -139,7 +135,7 @@ export class UploadController {
     }
   }
 
-  /** Upload cover/banner image — S3 with local fallback */
+  /** Upload cover/banner image - S3 with local fallback */
   async uploadCoverImage(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -147,6 +143,8 @@ export class UploadController {
 
       const userId = req.user.id;
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { coverImage: true } });
+
+      await validateOrReject(req.file.path, ["image/jpeg", "image/png", "image/webp"], "File content is not a valid image");
 
       const buffer = readAndCleanup(req.file.path);
       const url = await uploadWithFallback(buffer, "cover-images", userId, req.file.originalname, req.file.mimetype);
@@ -168,7 +166,7 @@ export class UploadController {
     }
   }
 
-  /** Upload resume — S3 with local fallback, max 2 per student */
+  /** Upload resume - S3 with local fallback, max 2 per student */
   async uploadProfileResume(req: Request, res: Response) {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
@@ -177,13 +175,19 @@ export class UploadController {
       const userId = req.user.id;
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { resumes: true } });
 
+      await validateOrReject(
+        req.file.path,
+        ["application/pdf", "application/msword", "application/vnd.openxmlformats-officedocument.wordprocessingml.document"],
+        "File content is not a valid resume document",
+      );
+
       const buffer = readAndCleanup(req.file.path);
       const url = await uploadWithFallback(buffer, "resumes", userId, req.file.originalname, req.file.mimetype);
 
       // If at max, delete the oldest resume to make room
       let updatedResumes = current?.resumes ?? [];
       if (updatedResumes.length >= MAX_RESUMES) {
-        const oldest = updatedResumes[0];
+        const oldest = updatedResumes[0]!;
         deleteFile(oldest);
         updatedResumes = [...updatedResumes.slice(1), url];
       } else {

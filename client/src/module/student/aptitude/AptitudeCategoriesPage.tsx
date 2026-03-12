@@ -1,8 +1,8 @@
 import { useState } from "react";
 import { useQuery } from "@tanstack/react-query";
-import { Link } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { motion } from "framer-motion";
-import { Brain, CheckCircle2, ChevronRight, Building2, BookOpen, TrendingUp, ArrowRight } from "lucide-react";
+import { Brain, CheckCircle2, ChevronRight, Building2, BookOpen, TrendingUp, ArrowRight, ArrowLeft } from "lucide-react";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeCategory, AptitudeProgress } from "../../../lib/types";
@@ -48,6 +48,7 @@ function CircularProgress({ progress, size = 56 }: { progress: number; size?: nu
 }
 
 export default function AptitudeCategoriesPage() {
+  const navigate = useNavigate();
   const { user } = useAuthStore();
   const [expandedCat, setExpandedCat] = useState<string | null>(null);
 
@@ -71,6 +72,10 @@ export default function AptitudeCategoriesPage() {
   return (
     <div className="relative pb-12">
       <SEO title="Aptitude Practice" noIndex />
+
+      <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-black dark:hover:text-white mb-4">
+        <ArrowLeft className="w-4 h-4" /> Back
+      </button>
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

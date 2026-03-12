@@ -31,7 +31,7 @@
       ],
       "notes": [
         "Always use fs/promises with async/await for new code. The callback API is legacy and the sync API blocks the event loop.",
-        "The ENOENT error code means 'Error NO ENTry' — the file or directory does not exist. Always handle this error gracefully.",
+        "The ENOENT error code means 'Error NO ENTry' - the file or directory does not exist. Always handle this error gracefully.",
         "For large files, use streams (createReadStream) instead of readFile, which loads the entire file into memory at once."
       ],
       "commonPitfalls": [

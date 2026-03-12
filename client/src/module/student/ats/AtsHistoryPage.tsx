@@ -7,20 +7,14 @@ import {
   Mail,
   ChevronRight,
   BarChart2,
-  Sparkles,
+  Wand2,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { AtsScore } from "../../../lib/types";
-
-const TOOLS = [
-  { icon: ScanSearch, title: "ATS Score", desc: "Analyze your resume", to: "/student/ats/score" },
-  { icon: Sparkles, title: "AI Resume", desc: "Generate with AI", to: "/student/ats/resume-generator" },
-  { icon: PenTool, title: "Resume Builder", desc: "Build with templates", to: "/student/ats/templates" },
-  { icon: Mail, title: "Cover Letter", desc: "AI-generated letters", to: "/student/ats/cover-letter" },
-];
+import AtsToolsNav from "./AtsToolsNav";
 
 export default function AtsHistoryPage() {
   const { data: scores = [], isLoading: loading } = useQuery({
@@ -70,36 +64,7 @@ export default function AtsHistoryPage() {
         </p>
       </motion.div>
 
-      {/* Tool Cards Row */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-10"
-      >
-        {TOOLS.map((tool, i) => (
-          <motion.div
-            key={tool.to}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 + i * 0.06, duration: 0.4 }}
-          >
-            <Link
-              to={tool.to}
-              className="group flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
-            >
-              <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0">
-                <tool.icon className="w-4.5 h-4.5 text-white dark:text-gray-950" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-950 dark:text-white truncate">{tool.title}</p>
-                <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">{tool.desc}</p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors shrink-0" />
-            </Link>
-          </motion.div>
-        ))}
-      </motion.div>
+      <AtsToolsNav />
 
       {/* Content */}
       <motion.div

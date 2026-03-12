@@ -7,7 +7,7 @@ const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 // ============================================================
-// DSA Practice — Complete Seed Data
+// DSA Practice - Complete Seed Data
 // ============================================================
 
 interface Problem {
@@ -868,7 +868,7 @@ const HINTS_MAP: Record<string, string> = {
   "Triangle": "Bottom-up: dp[i][j] = triangle[i][j] + min(dp[i+1][j], dp[i+1][j+1]).",
   "Minimum Falling Path Sum": "dp[i][j] = matrix[i][j] + min(dp[i-1][j-1], dp[i-1][j], dp[i-1][j+1]).",
   "Cherry Pickup II": "3D DP: dp[row][col1][col2] for two robots moving down simultaneously.",
-  "3D DP — Chocolates Pickup": "Same as Cherry Pickup II: two paths, maximize sum, handle overlap.",
+  "3D DP - Chocolates Pickup": "Same as Cherry Pickup II: two paths, maximize sum, handle overlap.",
   "Subset Sum Problem": "dp[i][sum] = can we achieve sum using first i elements? Include or exclude.",
   "Partition Equal Subset Sum": "Check if total is even, then find subset with sum = total/2.",
   "Coin Change": "Bottom-up DP: dp[amount] = min coins needed. Try each coin denomination.",
@@ -1008,7 +1008,7 @@ const topics: Topic[] = [
   {
     name: "Step 1: Learn the Basics",
     slug: "learn-the-basics",
-    description: "Build a strong foundation — data types, loops, conditionals, basic math, recursion, and hashing.",
+    description: "Build a strong foundation - data types, loops, conditionals, basic math, recursion, and hashing.",
     subTopics: [
       {
         name: "Things to Know",
@@ -1091,7 +1091,7 @@ const topics: Topic[] = [
   {
     name: "Step 2: Sorting Techniques",
     slug: "sorting",
-    description: "Master sorting algorithms from basic to advanced — selection, bubble, insertion, merge, and quick sort.",
+    description: "Master sorting algorithms from basic to advanced - selection, bubble, insertion, merge, and quick sort.",
     subTopics: [
       {
         name: "Sorting-I",
@@ -1119,7 +1119,7 @@ const topics: Topic[] = [
   {
     name: "Step 3: Arrays",
     slug: "arrays",
-    description: "From basic array operations to advanced sub-array problems — the most frequently asked topic in interviews.",
+    description: "From basic array operations to advanced sub-array problems - the most frequently asked topic in interviews.",
     subTopics: [
       {
         name: "Easy",
@@ -1182,7 +1182,7 @@ const topics: Topic[] = [
   {
     name: "Step 4: Binary Search",
     slug: "binary-search",
-    description: "Binary search on arrays and on answer space — essential for optimisation problems in interviews.",
+    description: "Binary search on arrays and on answer space - essential for optimisation problems in interviews.",
     subTopics: [
       {
         name: "BS on 1D Arrays",
@@ -1235,7 +1235,7 @@ const topics: Topic[] = [
   {
     name: "Step 5: Strings",
     slug: "strings",
-    description: "String manipulation from basics to advanced — pattern matching, palindromes, and substring problems.",
+    description: "String manipulation from basics to advanced - pattern matching, palindromes, and substring problems.",
     subTopics: [
       {
         name: "Basic String Problems",
@@ -1271,7 +1271,7 @@ const topics: Topic[] = [
   {
     name: "Step 6: Linked List",
     slug: "linked-list",
-    description: "Singly and doubly linked lists — traversal, reversal, cycle detection, and classic interview problems.",
+    description: "Singly and doubly linked lists - traversal, reversal, cycle detection, and classic interview problems.",
     subTopics: [
       {
         name: "Learn 1D Linked List",
@@ -1332,7 +1332,7 @@ const topics: Topic[] = [
   {
     name: "Step 7: Recursion & Backtracking",
     slug: "recursion-backtracking",
-    description: "Strengthen recursion and learn backtracking — subsequences, permutations, and constraint satisfaction.",
+    description: "Strengthen recursion and learn backtracking - subsequences, permutations, and constraint satisfaction.",
     subTopics: [
       {
         name: "Get Strong Hold",
@@ -1379,7 +1379,7 @@ const topics: Topic[] = [
   {
     name: "Step 8: Bit Manipulation",
     slug: "bit-manipulation",
-    description: "Learn bitwise operations — XOR tricks, bit counting, and classic interview bit manipulation problems.",
+    description: "Learn bitwise operations - XOR tricks, bit counting, and classic interview bit manipulation problems.",
     subTopics: [
       {
         name: "Learn Bit Manipulation",
@@ -1514,7 +1514,7 @@ const topics: Topic[] = [
   {
     name: "Step 11: Heaps",
     slug: "heaps",
-    description: "Heap / priority queue operations and classic problems — Kth element, merge K lists, and medians.",
+    description: "Heap / priority queue operations and classic problems - Kth element, merge K lists, and medians.",
     subTopics: [
       {
         name: "Learning",
@@ -1552,7 +1552,7 @@ const topics: Topic[] = [
   {
     name: "Step 12: Greedy Algorithms",
     slug: "greedy",
-    description: "Greedy strategies for optimization — interval scheduling, activity selection, and jump games.",
+    description: "Greedy strategies for optimization - interval scheduling, activity selection, and jump games.",
     subTopics: [
       {
         name: "Easy Problems",
@@ -1588,7 +1588,7 @@ const topics: Topic[] = [
   {
     name: "Step 13: Binary Trees",
     slug: "binary-trees",
-    description: "Tree traversals, views, properties, and advanced tree problems — a staple of technical interviews.",
+    description: "Tree traversals, views, properties, and advanced tree problems - a staple of technical interviews.",
     subTopics: [
       {
         name: "Traversals",
@@ -1644,7 +1644,7 @@ const topics: Topic[] = [
   {
     name: "Step 14: Binary Search Trees",
     slug: "bst",
-    description: "BST fundamentals — search, insert, delete, validation, and classic BST interview problems.",
+    description: "BST fundamentals - search, insert, delete, validation, and classic BST interview problems.",
     subTopics: [
       {
         name: "Concept & Problems",
@@ -1747,7 +1747,7 @@ const topics: Topic[] = [
   {
     name: "Step 16: Dynamic Programming",
     slug: "dynamic-programming",
-    description: "Complete DP mastery — 1D, 2D, grid, subsequences, strings, stocks, LIS, and partition DP.",
+    description: "Complete DP mastery - 1D, 2D, grid, subsequences, strings, stocks, LIS, and partition DP.",
     subTopics: [
       {
         name: "Introduction",
@@ -1777,7 +1777,7 @@ const topics: Topic[] = [
           { title: "Triangle", difficulty: "Medium", leetcodeUrl: LC("triangle"), gfgUrl: null, articleUrl: null, videoUrl: null },
           { title: "Minimum Falling Path Sum", difficulty: "Medium", leetcodeUrl: LC("minimum-falling-path-sum"), gfgUrl: null, articleUrl: null, videoUrl: null },
           { title: "Cherry Pickup II", difficulty: "Hard", leetcodeUrl: LC("cherry-pickup-ii"), gfgUrl: null, articleUrl: null, videoUrl: null },
-          { title: "3D DP — Chocolates Pickup", difficulty: "Hard", leetcodeUrl: null, gfgUrl: null, articleUrl: null, videoUrl: null },
+          { title: "3D DP - Chocolates Pickup", difficulty: "Hard", leetcodeUrl: null, gfgUrl: null, articleUrl: null, videoUrl: null },
         ],
       },
       {
@@ -1847,7 +1847,7 @@ const topics: Topic[] = [
   {
     name: "Step 17: Tries",
     slug: "tries",
-    description: "Trie data structure — implementation, prefix operations, and XOR-based problems.",
+    description: "Trie data structure - implementation, prefix operations, and XOR-based problems.",
     subTopics: [
       {
         name: "Theory & Problems",

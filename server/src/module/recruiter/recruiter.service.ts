@@ -1,5 +1,6 @@
 import { prisma } from "../../database/db.js";
 import type { Prisma, ApplicationStatus } from "@prisma/client";
+import { signUrl, signUrls } from "../../utils/s3.utils.js";
 
 interface TalentSearchFilter {
   page: number;
@@ -25,6 +26,7 @@ interface CreateRoundData {
   assessmentQuestions?: unknown[] | undefined;
   timeLimitSecs?: number | null | undefined;
   autoGrade?: boolean | undefined;
+  activateAt?: string | null | undefined;
 }
 
 interface ApplicationFilter {
@@ -59,6 +61,7 @@ export class RecruiterService {
         assessmentQuestions: data.assessmentQuestions ? JSON.parse(JSON.stringify(data.assessmentQuestions)) : [],
         timeLimitSecs: data.timeLimitSecs ?? null,
         autoGrade: data.autoGrade ?? false,
+        activateAt: data.activateAt ? new Date(data.activateAt) : null,
       },
     });
   }
@@ -96,6 +99,7 @@ export class RecruiterService {
         ...(data.assessmentQuestions !== undefined && { assessmentQuestions: JSON.parse(JSON.stringify(data.assessmentQuestions)) }),
         ...(data.timeLimitSecs !== undefined && { timeLimitSecs: data.timeLimitSecs }),
         ...(data.autoGrade !== undefined && { autoGrade: data.autoGrade }),
+        ...(data.activateAt !== undefined && { activateAt: data.activateAt ? new Date(data.activateAt) : null }),
       },
     });
   }
@@ -197,8 +201,19 @@ export class RecruiterService {
       prisma.application.count({ where }),
     ]);
 
+    // Sign S3 URLs so the recruiter's browser can access them
+    const signed = await Promise.all(
+      applications.map(async (app) => ({
+        ...app,
+        resumeUrl: app.resumeUrl ? await signUrl(app.resumeUrl) : app.resumeUrl,
+        student: app.student
+          ? { ...app.student, resumes: await signUrls(app.student.resumes) }
+          : app.student,
+      })),
+    );
+
     return {
-      applications,
+      applications: signed,
       pagination: {
         page: filter.page,
         limit: filter.limit,
@@ -224,7 +239,13 @@ export class RecruiterService {
     if (!application) throw new Error("Application not found");
     if (application.job.recruiterId !== recruiterId) throw new Error("Not authorized");
 
-    return application;
+    return {
+      ...application,
+      resumeUrl: application.resumeUrl ? await signUrl(application.resumeUrl) : application.resumeUrl,
+      student: application.student
+        ? { ...application.student, resumes: await signUrls(application.student.resumes) }
+        : application.student,
+    };
   }
 
   async updateApplicationStatus(applicationId: number, recruiterId: number, status: ApplicationStatus) {
@@ -455,6 +476,7 @@ export class RecruiterService {
     const where: Prisma.userWhereInput = {
       role: "STUDENT",
       isActive: true,
+      isProfilePublic: true,
     };
 
     if (filter.search) {
@@ -521,42 +543,38 @@ export class RecruiterService {
             orderBy: { overallScore: "desc" },
             take: 1,
           },
-          skillProgress: {
-            where: { verifiedAt: { not: null } },
-            select: { skill: { select: { name: true } } },
-          },
           verifiedSkills: {
             select: { skillName: true, score: true, verifiedAt: true },
             orderBy: { verifiedAt: "desc" as const },
+            take: 10,
           },
         },
       }),
       prisma.user.count({ where }),
     ]);
 
-    const results = students.map((s) => ({
-      id: s.id,
-      name: s.name,
-      email: s.email,
-      profilePic: s.profilePic,
-      bio: s.bio,
-      college: s.college,
-      graduationYear: s.graduationYear,
-      skills: s.skills,
-      location: s.location,
-      linkedinUrl: s.linkedinUrl,
-      githubUrl: s.githubUrl,
-      portfolioUrl: s.portfolioUrl,
-      resumes: s.resumes,
-      jobStatus: s.jobStatus,
-      bestAtsScore: s.atsScores[0]?.overallScore ?? null,
-      verifiedSkillCount: s.skillProgress.length + s.verifiedSkills.length,
-      verifiedSkills: [
-        ...s.skillProgress.map((sp) => sp.skill.name),
-        ...s.verifiedSkills.map((vs) => vs.skillName),
-      ],
-      standaloneVerifiedSkills: s.verifiedSkills,
-    }));
+    const results = await Promise.all(
+      students.map(async (s) => ({
+        id: s.id,
+        name: s.name,
+        email: s.email,
+        profilePic: s.profilePic,
+        bio: s.bio,
+        college: s.college,
+        graduationYear: s.graduationYear,
+        skills: s.skills,
+        location: s.location,
+        linkedinUrl: s.linkedinUrl,
+        githubUrl: s.githubUrl,
+        portfolioUrl: s.portfolioUrl,
+        resumes: await signUrls(s.resumes),
+        jobStatus: s.jobStatus,
+        bestAtsScore: s.atsScores[0]?.overallScore ?? null,
+        verifiedSkillCount: s.verifiedSkills.length,
+        verifiedSkills: s.verifiedSkills.map((vs) => vs.skillName),
+        standaloneVerifiedSkills: s.verifiedSkills,
+      })),
+    );
 
     return {
       students: results,

@@ -24,7 +24,7 @@
         },
         {
           "title": "Barrel Files and Re-exports",
-          "code": "// models/user.ts\nexport interface User { id: number; name: string; }\n\n// models/product.ts\nexport interface Product { id: number; title: string; price: number; }\n\n// models/index.ts (barrel file)\nexport { User } from './user';\nexport { Product } from './product';\nexport type { User as UserType } from './user';\n\n// app.ts — single clean import\n// import { User, Product } from './models';\n\nconst user: User = { id: 1, name: 'Bob' };\nconst product: Product = { id: 101, title: 'Keyboard', price: 79.99 };\nconsole.log(user.name);\nconsole.log(product.title);",
+          "code": "// models/user.ts\nexport interface User { id: number; name: string; }\n\n// models/product.ts\nexport interface Product { id: number; title: string; price: number; }\n\n// models/index.ts (barrel file)\nexport { User } from './user';\nexport { Product } from './product';\nexport type { User as UserType } from './user';\n\n// app.ts - single clean import\n// import { User, Product } from './models';\n\nconst user: User = { id: 1, name: 'Bob' };\nconst product: Product = { id: 101, title: 'Keyboard', price: 79.99 };\nconsole.log(user.name);\nconsole.log(product.title);",
           "output": "Bob\nKeyboard",
           "explanation": "The barrel file (index.ts) re-exports from individual modules, letting consumers use a single import path. You can also rename exports during re-export."
         }
@@ -35,8 +35,8 @@
         "Barrel files re-export from an index.ts. They simplify imports but can hurt tree-shaking in large projects."
       ],
       "commonPitfalls": [
-        "Forgetting that 'import type' imports are erased at runtime — you cannot use them as values, in instanceof checks, or as constructor arguments.",
-        "Creating circular dependencies through barrel files — if module A re-exports from B which imports from A, you can get undefined values at runtime."
+        "Forgetting that 'import type' imports are erased at runtime - you cannot use them as values, in instanceof checks, or as constructor arguments.",
+        "Creating circular dependencies through barrel files - if module A re-exports from B which imports from A, you can get undefined values at runtime."
       ]
     },
     "exercises": [
@@ -77,7 +77,7 @@
     "isInterviewQuestion": false,
     "concepts": ["module resolution", "Node resolution", "bundler resolution", "paths", "baseUrl", "moduleResolution"],
     "content": {
-      "explanation": "Module resolution is the process TypeScript uses to figure out what a given import statement refers to. When you write `import { something } from './utils'`, TypeScript needs to determine which file contains that export. The resolution strategy varies depending on the `moduleResolution` setting in your tsconfig.json, and understanding these strategies is critical for configuring projects correctly.\n\nThe classic resolution strategy mimics how the original TypeScript compiler resolved modules — it searches for .ts, .tsx, and .d.ts files by walking up the directory tree. This is rarely used in modern projects. The node resolution strategy (moduleResolution: 'node') follows Node.js's CommonJS resolution algorithm: it checks for the file directly, then looks for an index file in a directory, and for node_modules packages it reads the 'main' field in package.json.\n\nModern TypeScript (5.0+) introduced 'node16', 'nodenext', and 'bundler' resolution modes. The 'node16' and 'nodenext' modes support Node.js's native ESM resolution, which requires explicit file extensions in relative imports. The 'bundler' mode is designed for projects using a bundler like Webpack, Vite, or esbuild — it allows extensionless imports while supporting the 'exports' field in package.json, giving you the best of both worlds.\n\nThe `baseUrl` and `paths` options in tsconfig.json let you define custom module path aliases. Setting `baseUrl` to '.' or 'src' allows non-relative imports to resolve from that directory. The `paths` option maps patterns to file locations, enabling shortcuts like '@components/*' mapping to 'src/components/*'. Note that `paths` only affects TypeScript's type checking — your bundler or runtime needs equivalent configuration (like Vite's resolve.alias) to actually resolve these paths.",
+      "explanation": "Module resolution is the process TypeScript uses to figure out what a given import statement refers to. When you write `import { something } from './utils'`, TypeScript needs to determine which file contains that export. The resolution strategy varies depending on the `moduleResolution` setting in your tsconfig.json, and understanding these strategies is critical for configuring projects correctly.\n\nThe classic resolution strategy mimics how the original TypeScript compiler resolved modules - it searches for .ts, .tsx, and .d.ts files by walking up the directory tree. This is rarely used in modern projects. The node resolution strategy (moduleResolution: 'node') follows Node.js's CommonJS resolution algorithm: it checks for the file directly, then looks for an index file in a directory, and for node_modules packages it reads the 'main' field in package.json.\n\nModern TypeScript (5.0+) introduced 'node16', 'nodenext', and 'bundler' resolution modes. The 'node16' and 'nodenext' modes support Node.js's native ESM resolution, which requires explicit file extensions in relative imports. The 'bundler' mode is designed for projects using a bundler like Webpack, Vite, or esbuild - it allows extensionless imports while supporting the 'exports' field in package.json, giving you the best of both worlds.\n\nThe `baseUrl` and `paths` options in tsconfig.json let you define custom module path aliases. Setting `baseUrl` to '.' or 'src' allows non-relative imports to resolve from that directory. The `paths` option maps patterns to file locations, enabling shortcuts like '@components/*' mapping to 'src/components/*'. Note that `paths` only affects TypeScript's type checking - your bundler or runtime needs equivalent configuration (like Vite's resolve.alias) to actually resolve these paths.",
       "codeExamples": [
         {
           "title": "Module Resolution Strategies",
@@ -93,13 +93,13 @@
         }
       ],
       "notes": [
-        "For Vite projects, use 'moduleResolution': 'bundler' — it supports extensionless imports and the package.json 'exports' field.",
+        "For Vite projects, use 'moduleResolution': 'bundler' - it supports extensionless imports and the package.json 'exports' field.",
         "Path aliases in tsconfig.json only affect TypeScript's type checker. You must also configure your bundler (e.g., Vite's resolve.alias) for runtime resolution.",
-        "With 'nodenext' resolution, relative imports must include the .js extension even when the source file is .ts — TypeScript resolves .js to .ts automatically."
+        "With 'nodenext' resolution, relative imports must include the .js extension even when the source file is .ts - TypeScript resolves .js to .ts automatically."
       ],
       "commonPitfalls": [
-        "Setting paths without baseUrl — in TypeScript 4.1+, paths can work without baseUrl, but older versions require it.",
-        "Using 'moduleResolution': 'node' with ESM projects — this does not support the 'exports' field in package.json, leading to resolution failures with modern packages."
+        "Setting paths without baseUrl - in TypeScript 4.1+, paths can work without baseUrl, but older versions require it.",
+        "Using 'moduleResolution': 'node' with ESM projects - this does not support the 'exports' field in package.json, leading to resolution failures with modern packages."
       ]
     },
     "exercises": [
@@ -140,11 +140,11 @@
     "isInterviewQuestion": false,
     "concepts": ["declaration files", ".d.ts", "declare keyword", "ambient modules", "ambient declarations", "global augmentation"],
     "content": {
-      "explanation": "Declaration files (.d.ts) are TypeScript files that contain only type information and no runtime code. They serve as a bridge between TypeScript's type system and JavaScript libraries that were not written in TypeScript. When TypeScript encounters a .d.ts file, it uses the type information for type checking but does not emit any JavaScript from it. Declaration files are the backbone of TypeScript's interoperability with the vast JavaScript ecosystem.\n\nThe `declare` keyword is used to tell TypeScript about the shape of code that exists elsewhere — in a JavaScript library, a global variable injected by a script tag, or a runtime environment API. When you write `declare function jQuery(selector: string): any`, you are not creating a function; you are telling TypeScript that this function exists at runtime and describing its type signature. The `declare` keyword can be applied to variables, functions, classes, enums, namespaces, and modules.\n\nAmbient module declarations allow you to type non-TypeScript modules such as CSS files, JSON files, images, or any other asset that your bundler can import. By writing `declare module '*.css'`, you tell TypeScript that any CSS import will resolve to a specific type. This is commonly used in projects with Webpack or Vite loaders that allow importing non-JavaScript assets.\n\nTo create declaration files for your own code, you can either write them manually or let the TypeScript compiler generate them using the `declaration: true` option in tsconfig.json. When publishing a library, you should include .d.ts files alongside your compiled JavaScript so that TypeScript consumers get full type checking. The `types` or `typings` field in package.json points to your entry declaration file.",
+      "explanation": "Declaration files (.d.ts) are TypeScript files that contain only type information and no runtime code. They serve as a bridge between TypeScript's type system and JavaScript libraries that were not written in TypeScript. When TypeScript encounters a .d.ts file, it uses the type information for type checking but does not emit any JavaScript from it. Declaration files are the backbone of TypeScript's interoperability with the vast JavaScript ecosystem.\n\nThe `declare` keyword is used to tell TypeScript about the shape of code that exists elsewhere - in a JavaScript library, a global variable injected by a script tag, or a runtime environment API. When you write `declare function jQuery(selector: string): any`, you are not creating a function; you are telling TypeScript that this function exists at runtime and describing its type signature. The `declare` keyword can be applied to variables, functions, classes, enums, namespaces, and modules.\n\nAmbient module declarations allow you to type non-TypeScript modules such as CSS files, JSON files, images, or any other asset that your bundler can import. By writing `declare module '*.css'`, you tell TypeScript that any CSS import will resolve to a specific type. This is commonly used in projects with Webpack or Vite loaders that allow importing non-JavaScript assets.\n\nTo create declaration files for your own code, you can either write them manually or let the TypeScript compiler generate them using the `declaration: true` option in tsconfig.json. When publishing a library, you should include .d.ts files alongside your compiled JavaScript so that TypeScript consumers get full type checking. The `types` or `typings` field in package.json points to your entry declaration file.",
       "codeExamples": [
         {
           "title": "Using the declare Keyword",
-          "code": "// globals.d.ts — declaring global variables and functions\n// declare const API_URL: string;\n// declare function fetchData(endpoint: string): Promise<any>;\n// declare class EventBus {\n//   on(event: string, callback: Function): void;\n//   emit(event: string, data?: any): void;\n// }\n\n// Simulating declared globals\nconst API_URL: string = 'https://api.example.com';\n\nfunction fetchData(endpoint: string): Promise<any> {\n  return Promise.resolve({ url: `${API_URL}${endpoint}` });\n}\n\nclass EventBus {\n  on(event: string, callback: Function): void {\n    console.log(`Listener added for: ${event}`);\n  }\n  emit(event: string, data?: any): void {\n    console.log(`Event emitted: ${event}`);\n  }\n}\n\nconsole.log(API_URL);\nconst bus = new EventBus();\nbus.on('click', () => {});\nbus.emit('click');",
+          "code": "// globals.d.ts - declaring global variables and functions\n// declare const API_URL: string;\n// declare function fetchData(endpoint: string): Promise<any>;\n// declare class EventBus {\n//   on(event: string, callback: Function): void;\n//   emit(event: string, data?: any): void;\n// }\n\n// Simulating declared globals\nconst API_URL: string = 'https://api.example.com';\n\nfunction fetchData(endpoint: string): Promise<any> {\n  return Promise.resolve({ url: `${API_URL}${endpoint}` });\n}\n\nclass EventBus {\n  on(event: string, callback: Function): void {\n    console.log(`Listener added for: ${event}`);\n  }\n  emit(event: string, data?: any): void {\n    console.log(`Event emitted: ${event}`);\n  }\n}\n\nconsole.log(API_URL);\nconst bus = new EventBus();\nbus.on('click', () => {});\nbus.emit('click');",
           "output": "https://api.example.com\nListener added for: click\nEvent emitted: click",
           "explanation": "The declare keyword tells TypeScript about values that exist at runtime but are defined elsewhere. In a .d.ts file, all declarations are implicitly ambient."
         },
@@ -162,13 +162,13 @@
         }
       ],
       "notes": [
-        "Declaration files (.d.ts) contain no runtime code — they are purely for type information and are never emitted as JavaScript.",
+        "Declaration files (.d.ts) contain no runtime code - they are purely for type information and are never emitted as JavaScript.",
         "Use 'declare module' to provide types for non-TypeScript imports like CSS modules, SVG files, or untyped npm packages.",
         "Set 'declaration: true' in tsconfig.json to auto-generate .d.ts files when compiling your TypeScript library."
       ],
       "commonPitfalls": [
-        "Putting runtime code in .d.ts files — declaration files must only contain type declarations, not implementations.",
-        "Forgetting to include .d.ts files when publishing a library — without them, TypeScript consumers get implicit 'any' types for all imports."
+        "Putting runtime code in .d.ts files - declaration files must only contain type declarations, not implementations.",
+        "Forgetting to include .d.ts files when publishing a library - without them, TypeScript consumers get implicit 'any' types for all imports."
       ]
     },
     "exercises": [
@@ -209,7 +209,7 @@
     "isInterviewQuestion": false,
     "concepts": ["DefinitelyTyped", "@types packages", "custom declarations", "type acquisition", "typeRoots"],
     "content": {
-      "explanation": "DefinitelyTyped is the largest repository of TypeScript type definitions in the world, hosted on GitHub as a community-driven project. It provides .d.ts declaration files for thousands of JavaScript libraries that were not originally written in TypeScript. These type definitions are published to npm under the @types scope — for example, type definitions for the 'lodash' library are available as '@types/lodash'. When you install an @types package, TypeScript automatically picks up the declarations.\n\nTypeScript resolves @types packages through the `typeRoots` configuration. By default, TypeScript looks in `node_modules/@types` for type definitions. You can customize this by setting `typeRoots` in your tsconfig.json to point to additional directories. The `types` option lets you whitelist which @types packages are included — if specified, only the listed packages are loaded, which can speed up compilation in large projects.\n\nSometimes you need to write custom declarations for libraries that have no @types package, for internal packages, or for augmenting existing types. You can create a .d.ts file in your project (commonly in a `types/` or `@types/` directory) and declare the module shape. For global augmentations — like adding a property to the Window interface — you use `declare global` inside a module file. This is a powerful technique for extending existing type definitions.\n\nWhen deciding between bundled types and @types packages, know that many modern libraries ship their own .d.ts files alongside their JavaScript. TypeScript checks for a `types` or `typings` field in the library's package.json first. If that exists, no @types package is needed. Libraries like Axios, Zod, and date-fns include built-in TypeScript support. You only need @types when the library itself does not include type declarations.",
+      "explanation": "DefinitelyTyped is the largest repository of TypeScript type definitions in the world, hosted on GitHub as a community-driven project. It provides .d.ts declaration files for thousands of JavaScript libraries that were not originally written in TypeScript. These type definitions are published to npm under the @types scope - for example, type definitions for the 'lodash' library are available as '@types/lodash'. When you install an @types package, TypeScript automatically picks up the declarations.\n\nTypeScript resolves @types packages through the `typeRoots` configuration. By default, TypeScript looks in `node_modules/@types` for type definitions. You can customize this by setting `typeRoots` in your tsconfig.json to point to additional directories. The `types` option lets you whitelist which @types packages are included - if specified, only the listed packages are loaded, which can speed up compilation in large projects.\n\nSometimes you need to write custom declarations for libraries that have no @types package, for internal packages, or for augmenting existing types. You can create a .d.ts file in your project (commonly in a `types/` or `@types/` directory) and declare the module shape. For global augmentations - like adding a property to the Window interface - you use `declare global` inside a module file. This is a powerful technique for extending existing type definitions.\n\nWhen deciding between bundled types and @types packages, know that many modern libraries ship their own .d.ts files alongside their JavaScript. TypeScript checks for a `types` or `typings` field in the library's package.json first. If that exists, no @types package is needed. Libraries like Axios, Zod, and date-fns include built-in TypeScript support. You only need @types when the library itself does not include type declarations.",
       "codeExamples": [
         {
           "title": "Using @types Packages",
@@ -219,7 +219,7 @@
         },
         {
           "title": "Writing Custom Type Declarations",
-          "code": "// custom-lib.d.ts — declaring types for an untyped library\n// declare module 'my-analytics' {\n//   export function init(apiKey: string): void;\n//   export function track(event: string, data?: object): void;\n//   export interface Config {\n//     debug: boolean;\n//     endpoint: string;\n//   }\n//   export function configure(config: Partial<Config>): void;\n// }\n\n// Simulating the custom declaration\ninterface Config {\n  debug: boolean;\n  endpoint: string;\n}\n\nconst myAnalytics = {\n  init(apiKey: string): void {\n    console.log(`Initialized with key: ${apiKey.slice(0, 4)}...`);\n  },\n  track(event: string, data?: object): void {\n    console.log(`Tracked: ${event}`);\n  },\n  configure(config: Partial<Config>): void {\n    console.log(`Configured: debug=${config.debug}`);\n  }\n};\n\nmyAnalytics.init('sk_live_abc123');\nmyAnalytics.track('page_view');\nmyAnalytics.configure({ debug: true });",
+          "code": "// custom-lib.d.ts - declaring types for an untyped library\n// declare module 'my-analytics' {\n//   export function init(apiKey: string): void;\n//   export function track(event: string, data?: object): void;\n//   export interface Config {\n//     debug: boolean;\n//     endpoint: string;\n//   }\n//   export function configure(config: Partial<Config>): void;\n// }\n\n// Simulating the custom declaration\ninterface Config {\n  debug: boolean;\n  endpoint: string;\n}\n\nconst myAnalytics = {\n  init(apiKey: string): void {\n    console.log(`Initialized with key: ${apiKey.slice(0, 4)}...`);\n  },\n  track(event: string, data?: object): void {\n    console.log(`Tracked: ${event}`);\n  },\n  configure(config: Partial<Config>): void {\n    console.log(`Configured: debug=${config.debug}`);\n  }\n};\n\nmyAnalytics.init('sk_live_abc123');\nmyAnalytics.track('page_view');\nmyAnalytics.configure({ debug: true });",
           "output": "Initialized with key: sk_l...\nTracked: page_view\nConfigured: debug=true",
           "explanation": "When no @types package exists, you write your own .d.ts file using 'declare module' to describe the library's API shape."
         },
@@ -231,13 +231,13 @@
         }
       ],
       "notes": [
-        "Install @types packages as devDependencies — they are only needed at compile time, not at runtime.",
-        "Many modern libraries (Axios, Zod, date-fns) ship their own types — check the library's package.json for a 'types' field before installing an @types package.",
+        "Install @types packages as devDependencies - they are only needed at compile time, not at runtime.",
+        "Many modern libraries (Axios, Zod, date-fns) ship their own types - check the library's package.json for a 'types' field before installing an @types package.",
         "Use the 'types' array in tsconfig.json to explicitly whitelist which @types packages are included, improving compile time in large projects."
       ],
       "commonPitfalls": [
-        "Installing @types packages for libraries that already bundle their own types — this can cause duplicate declaration errors.",
-        "Forgetting to add your custom .d.ts files directory to 'include' in tsconfig.json — TypeScript will not see declarations outside the included paths."
+        "Installing @types packages for libraries that already bundle their own types - this can cause duplicate declaration errors.",
+        "Forgetting to add your custom .d.ts files directory to 'include' in tsconfig.json - TypeScript will not see declarations outside the included paths."
       ]
     },
     "exercises": [
@@ -245,7 +245,7 @@
         "id": "definitelytyped-exercise-1",
         "title": "Simulate @types Package",
         "description": "Write type declarations (as interfaces) for a fictional 'string-utils' library that has capitalize, reverse, and truncate functions. Then implement and test them.",
-        "starterCode": "// Define an interface 'StringUtils' with:\n// capitalize(str: string): string — capitalizes first letter\n// reverse(str: string): string — reverses the string\n// truncate(str: string, maxLen: number): string — truncates with '...' if longer than maxLen\n\n// Implement the object and test it:\n// capitalize('hello world')\n// reverse('TypeScript')\n// truncate('This is a long sentence', 10)\n\n// Your code here",
+        "starterCode": "// Define an interface 'StringUtils' with:\n// capitalize(str: string): string - capitalizes first letter\n// reverse(str: string): string - reverses the string\n// truncate(str: string, maxLen: number): string - truncates with '...' if longer than maxLen\n\n// Implement the object and test it:\n// capitalize('hello world')\n// reverse('TypeScript')\n// truncate('This is a long sentence', 10)\n\n// Your code here",
         "solution": "interface StringUtils {\n  capitalize(str: string): string;\n  reverse(str: string): string;\n  truncate(str: string, maxLen: number): string;\n}\n\nconst stringUtils: StringUtils = {\n  capitalize(str: string): string {\n    return str.charAt(0).toUpperCase() + str.slice(1);\n  },\n  reverse(str: string): string {\n    return str.split('').reverse().join('');\n  },\n  truncate(str: string, maxLen: number): string {\n    if (str.length <= maxLen) return str;\n    return str.slice(0, maxLen) + '...';\n  }\n};\n\nconsole.log(stringUtils.capitalize('hello world'));\nconsole.log(stringUtils.reverse('TypeScript'));\nconsole.log(stringUtils.truncate('This is a long sentence', 10));",
         "expectedOutput": "Hello world\ntpircSepyT\nThis is a ...",
         "hints": [

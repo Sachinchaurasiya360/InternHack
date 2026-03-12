@@ -8,7 +8,7 @@
     "isInterviewQuestion": true,
     "concepts": ["React.memo", "useMemo", "useCallback", "shallow comparison", "referential equality", "memoization tradeoffs"],
     "content": {
-      "explanation": "React.memo is a higher-order component that wraps a functional component and prevents it from re-rendering if its props have not changed. By default, React re-renders a child component whenever its parent re-renders, even if the child's props are identical. React.memo adds a shallow comparison of the previous and next props — if all props are the same by reference, the render is skipped.\n\nShallow comparison means React checks each prop with Object.is (essentially ===). Primitives (strings, numbers, booleans) are compared by value, so they work naturally. But objects, arrays, and functions are compared by reference. If a parent creates a new object or function on every render (which is the default behavior), the shallow comparison will always see 'new' props and React.memo will have no effect. This is the most common mistake.\n\nTo make React.memo effective with non-primitive props, you need useMemo (for objects/arrays) and useCallback (for functions). useMemo returns a memoized value that only recomputes when its dependencies change. useCallback returns a memoized function reference that stays stable across renders. Together with React.memo, they form a complete memoization strategy.\n\nHowever, memoization is not free. It adds memory overhead (storing previous values), CPU overhead (running comparisons), and code complexity. You should only memoize when you have measured a performance problem. The React Profiler or React DevTools Highlight Updates feature can show you which components re-render and how long they take. Memoize the expensive ones, not everything.\n\nA good rule of thumb: use React.memo for components that (1) render often due to parent updates, (2) render the same output for the same props most of the time, and (3) are medium-to-large in complexity. Small components (a paragraph, a simple button) re-render so cheaply that memoization overhead exceeds the benefit.",
+      "explanation": "React.memo is a higher-order component that wraps a functional component and prevents it from re-rendering if its props have not changed. By default, React re-renders a child component whenever its parent re-renders, even if the child's props are identical. React.memo adds a shallow comparison of the previous and next props - if all props are the same by reference, the render is skipped.\n\nShallow comparison means React checks each prop with Object.is (essentially ===). Primitives (strings, numbers, booleans) are compared by value, so they work naturally. But objects, arrays, and functions are compared by reference. If a parent creates a new object or function on every render (which is the default behavior), the shallow comparison will always see 'new' props and React.memo will have no effect. This is the most common mistake.\n\nTo make React.memo effective with non-primitive props, you need useMemo (for objects/arrays) and useCallback (for functions). useMemo returns a memoized value that only recomputes when its dependencies change. useCallback returns a memoized function reference that stays stable across renders. Together with React.memo, they form a complete memoization strategy.\n\nHowever, memoization is not free. It adds memory overhead (storing previous values), CPU overhead (running comparisons), and code complexity. You should only memoize when you have measured a performance problem. The React Profiler or React DevTools Highlight Updates feature can show you which components re-render and how long they take. Memoize the expensive ones, not everything.\n\nA good rule of thumb: use React.memo for components that (1) render often due to parent updates, (2) render the same output for the same props most of the time, and (3) are medium-to-large in complexity. Small components (a paragraph, a simple button) re-render so cheaply that memoization overhead exceeds the benefit.",
       "codeExamples": [
         {
           "title": "React.memo preventing unnecessary re-renders",
@@ -38,7 +38,7 @@
         "Memoizing every component in the app. The comparison cost and memory overhead can actually make performance worse for small, cheap-to-render components."
       ],
       "interviewTips": [
-        "Explain the difference between React.memo (component-level), useMemo (value-level), and useCallback (function-level) — interviewers often ask you to distinguish them.",
+        "Explain the difference between React.memo (component-level), useMemo (value-level), and useCallback (function-level) - interviewers often ask you to distinguish them.",
         "Mention that React.memo does a shallow comparison by default and explain why that matters for objects and functions.",
         "Discuss when NOT to use memoization: small components, components that always receive new props, or when you haven't profiled to confirm a problem.",
         "Be ready to explain that React's default behavior (re-render on parent update) is usually fine. The framework is optimized for this, and unnecessary memoization is a common code smell."
@@ -82,10 +82,10 @@
     "isInterviewQuestion": false,
     "concepts": ["re-render causes", "state colocation", "children as props", "composition pattern", "React DevTools profiler"],
     "content": {
-      "explanation": "Unnecessary re-renders are the most common performance problem in React applications. A re-render happens when a component's state changes, when its parent re-renders, or when a consumed context value changes. While React is fast at re-rendering, doing it thousands of times on every interaction creates noticeable lag, especially on mobile devices.\n\nThe first and most impactful technique is state colocation — moving state down to the component that actually needs it. If only a search input needs to track its value, that state should live in the search input component, not in a parent that also renders a heavy list. When state lives too high in the tree, every state change re-renders the entire subtree, including components that don't care about that state.\n\nThe children-as-props pattern is a powerful technique that is often overlooked. When a parent component has state that causes frequent re-renders, any JSX passed as the children prop is NOT re-created — it was created by the grandparent and passed down as a stable reference. This means wrapping expensive children in a stateful parent does not re-render the children on every state change.\n\nComposition over wrapping is another pattern. Instead of one large component that manages multiple concerns, break it into smaller components where each manages only the state it needs. The expensive rendering work happens in components that don't have rapidly-changing state, so they stay stable.\n\nUse the React DevTools Profiler to identify which components re-render and why. The 'Highlight updates' feature visually flashes components that re-render. The Profiler tab records render timings and shows you the commit with the longest duration. Always measure before optimizing — intuition about performance is often wrong.",
+      "explanation": "Unnecessary re-renders are the most common performance problem in React applications. A re-render happens when a component's state changes, when its parent re-renders, or when a consumed context value changes. While React is fast at re-rendering, doing it thousands of times on every interaction creates noticeable lag, especially on mobile devices.\n\nThe first and most impactful technique is state colocation - moving state down to the component that actually needs it. If only a search input needs to track its value, that state should live in the search input component, not in a parent that also renders a heavy list. When state lives too high in the tree, every state change re-renders the entire subtree, including components that don't care about that state.\n\nThe children-as-props pattern is a powerful technique that is often overlooked. When a parent component has state that causes frequent re-renders, any JSX passed as the children prop is NOT re-created - it was created by the grandparent and passed down as a stable reference. This means wrapping expensive children in a stateful parent does not re-render the children on every state change.\n\nComposition over wrapping is another pattern. Instead of one large component that manages multiple concerns, break it into smaller components where each manages only the state it needs. The expensive rendering work happens in components that don't have rapidly-changing state, so they stay stable.\n\nUse the React DevTools Profiler to identify which components re-render and why. The 'Highlight updates' feature visually flashes components that re-render. The Profiler tab records render timings and shows you the commit with the longest duration. Always measure before optimizing - intuition about performance is often wrong.",
       "codeExamples": [
         {
-          "title": "State colocation — moving state down",
+          "title": "State colocation - moving state down",
           "code": "// BAD: State in parent re-renders the expensive list\nfunction PageBad() {\n  const [search, setSearch] = React.useState('');\n  return (\n    <div>\n      <input value={search} onChange={e => setSearch(e.target.value)} />\n      <ExpensiveList /> {/* Re-renders on every keystroke! */}\n    </div>\n  );\n}\n\n// GOOD: State colocated in its own component\nfunction PageGood() {\n  return (\n    <div>\n      <SearchInput /> {/* Has its own state */}\n      <ExpensiveList /> {/* Never re-renders from search */}\n    </div>\n  );\n}\n\nfunction SearchInput() {\n  const [search, setSearch] = React.useState('');\n  return <input value={search} onChange={e => setSearch(e.target.value)} />;\n}",
           "output": "In PageGood, typing in search does NOT re-render ExpensiveList",
           "explanation": "Moving the search state into SearchInput means only SearchInput re-renders on keystrokes. ExpensiveList is a sibling with no state dependency, so it stays stable."
@@ -94,7 +94,7 @@
           "title": "Children as props pattern",
           "code": "// The children prop is created by the caller and stays stable\nfunction ScrollTracker({ children }) {\n  const [scrollY, setScrollY] = React.useState(0);\n\n  React.useEffect(() => {\n    const handler = () => setScrollY(window.scrollY);\n    window.addEventListener('scroll', handler);\n    return () => window.removeEventListener('scroll', handler);\n  }, []);\n\n  return (\n    <div>\n      <p>Scroll: {scrollY}px</p>\n      {children} {/* This does NOT re-render on scroll */}\n    </div>\n  );\n}\n\n// Usage\nfunction Page() {\n  return (\n    <ScrollTracker>\n      <ExpensiveContent /> {/* Created by Page, not ScrollTracker */}\n    </ScrollTracker>\n  );\n}",
           "output": "ScrollTracker updates on scroll, but ExpensiveContent does not re-render",
-          "explanation": "ExpensiveContent is created by Page (the parent of ScrollTracker) and passed as children. When ScrollTracker re-renders due to scrollY state change, children is the same reference — it was not recreated."
+          "explanation": "ExpensiveContent is created by Page (the parent of ScrollTracker) and passed as children. When ScrollTracker re-renders due to scrollY state change, children is the same reference - it was not recreated."
         },
         {
           "title": "Identifying re-renders with a render counter",
@@ -103,13 +103,13 @@
         }
       ],
       "notes": [
-        "State colocation is the single most effective optimization — it reduces the scope of re-renders without any memoization overhead.",
+        "State colocation is the single most effective optimization - it reduces the scope of re-renders without any memoization overhead.",
         "The children-as-props pattern works because React elements are just objects. If the same object reference is passed as children, React skips re-rendering it.",
         "Use React DevTools Profiler to measure before optimizing. Focus on components that take more than 16ms to render (one frame at 60fps)."
       ],
       "commonPitfalls": [
         "Keeping all state at the top of the component tree 'for convenience', causing the entire app to re-render on every state change.",
-        "Wrapping everything in React.memo instead of restructuring components. Memoization is a bandaid — composition and state colocation solve the root cause."
+        "Wrapping everything in React.memo instead of restructuring components. Memoization is a bandaid - composition and state colocation solve the root cause."
       ]
     },
     "exercises": [
@@ -135,7 +135,7 @@
         "expectedOutput": "Children created once: ExpensiveContent (rendered 1 time(s))\nTimer tick: 1 | Timer renders: 1 | Children: ExpensiveContent (rendered 1 time(s))\nTimer tick: 2 | Timer renders: 2 | Children: ExpensiveContent (rendered 1 time(s))\nTimer tick: 3 | Timer renders: 3 | Children: ExpensiveContent (rendered 1 time(s))\nChildren render count: 1\nTimer render count: 3",
         "hints": [
           "Create the children string ONCE before the timer loop. The children value stays the same across all timer ticks.",
-          "The timer re-renders 3 times but children are only created once — this is the key optimization of the children-as-props pattern."
+          "The timer re-renders 3 times but children are only created once - this is the key optimization of the children-as-props pattern."
         ],
         "difficulty": "Easy"
       }
@@ -150,7 +150,7 @@
     "isInterviewQuestion": false,
     "concepts": ["React.lazy", "dynamic import", "route-based splitting", "bundle analysis", "prefetching"],
     "content": {
-      "explanation": "Code splitting is the practice of breaking your application's JavaScript bundle into smaller chunks that load on demand. Without code splitting, users download the entire app's code upfront — even for pages they never visit. This increases the initial load time and wastes bandwidth. Code splitting ensures users only download the code they need, when they need it.\n\nReact.lazy and dynamic import() are the primary tools for code splitting in React. React.lazy takes a function that calls import() and returns a component that loads on demand. The bundler (Vite, webpack) sees the dynamic import and automatically creates a separate chunk for that module and its dependencies. When the component first renders, the chunk downloads, and Suspense shows a fallback during the download.\n\nRoute-based splitting is the most impactful strategy because routes are natural loading boundaries. Users expect a brief loading moment when navigating between pages. By lazy-loading each route component, the initial bundle contains only the layout, navigation, and current page. Other pages load on demand. This can reduce the initial bundle by 50-80% in large applications.\n\nComponent-based splitting is useful for heavy features that not all users interact with: complex modals, rich text editors, chart libraries, or admin panels. Instead of including chart.js in the main bundle (it's 200KB+), lazy-load the chart component only when the user navigates to the analytics page.\n\nBundle analysis tools like rollup-plugin-visualizer (for Vite) or webpack-bundle-analyzer show you exactly what is in each chunk and how large it is. Run the analysis, identify the largest chunks, and split them. Common culprits are large libraries (moment.js, lodash, chart libraries) that should be dynamically imported or replaced with lighter alternatives.",
+      "explanation": "Code splitting is the practice of breaking your application's JavaScript bundle into smaller chunks that load on demand. Without code splitting, users download the entire app's code upfront - even for pages they never visit. This increases the initial load time and wastes bandwidth. Code splitting ensures users only download the code they need, when they need it.\n\nReact.lazy and dynamic import() are the primary tools for code splitting in React. React.lazy takes a function that calls import() and returns a component that loads on demand. The bundler (Vite, webpack) sees the dynamic import and automatically creates a separate chunk for that module and its dependencies. When the component first renders, the chunk downloads, and Suspense shows a fallback during the download.\n\nRoute-based splitting is the most impactful strategy because routes are natural loading boundaries. Users expect a brief loading moment when navigating between pages. By lazy-loading each route component, the initial bundle contains only the layout, navigation, and current page. Other pages load on demand. This can reduce the initial bundle by 50-80% in large applications.\n\nComponent-based splitting is useful for heavy features that not all users interact with: complex modals, rich text editors, chart libraries, or admin panels. Instead of including chart.js in the main bundle (it's 200KB+), lazy-load the chart component only when the user navigates to the analytics page.\n\nBundle analysis tools like rollup-plugin-visualizer (for Vite) or webpack-bundle-analyzer show you exactly what is in each chunk and how large it is. Run the analysis, identify the largest chunks, and split them. Common culprits are large libraries (moment.js, lodash, chart libraries) that should be dynamically imported or replaced with lighter alternatives.",
       "codeExamples": [
         {
           "title": "Route-based code splitting",
@@ -168,16 +168,16 @@
           "title": "Prefetching on hover for instant navigation",
           "code": "const Dashboard = lazy(() => import('./pages/Dashboard'));\n\nfunction NavLink({ to, children }) {\n  const prefetch = () => {\n    // Trigger the dynamic import on hover\n    if (to === '/dashboard') {\n      import('./pages/Dashboard');\n    }\n  };\n\n  return (\n    <Link\n      to={to}\n      onMouseEnter={prefetch}\n      onFocus={prefetch}\n    >\n      {children}\n    </Link>\n  );\n}\n\n// When user hovers over the link, the chunk starts downloading.\n// By the time they click, it's often already cached.",
           "output": "Hovering triggers download; clicking shows the page instantly",
-          "explanation": "Calling import() on hover starts the download. The browser caches the module. When React.lazy renders the component on navigation, the chunk is already available — no loading spinner."
+          "explanation": "Calling import() on hover starts the download. The browser caches the module. When React.lazy renders the component on navigation, the chunk is already available - no loading spinner."
         }
       ],
       "notes": [
-        "Route-based splitting gives the biggest bang for the buck — start there before splitting individual components.",
+        "Route-based splitting gives the biggest bang for the buck - start there before splitting individual components.",
         "React.lazy must be called at the module level, not inside a component. Defining it inside a component creates a new lazy component on every render.",
         "Use a bundle analyzer to find the largest chunks and identify code-splitting opportunities."
       ],
       "commonPitfalls": [
-        "Splitting too aggressively — every tiny component in its own chunk creates excessive HTTP requests and can actually slow things down due to request overhead.",
+        "Splitting too aggressively - every tiny component in its own chunk creates excessive HTTP requests and can actually slow things down due to request overhead.",
         "Forgetting to wrap lazy components with Suspense, causing React to throw an error about missing Suspense boundaries."
       ]
     },
@@ -191,7 +191,7 @@
         "expectedOutput": "[Dashboard] Loading module...\n[Dashboard] Loaded successfully\nResult: Dashboard Component\n[Dashboard] Already loaded (cached)\nResult: Dashboard Component\n[Settings] Loading module...\n[Settings] Loaded successfully\nResult: Settings Component\nLoaded modules: 2/3",
         "hints": [
           "Use two objects: registry (all available modules) and loaded (only modules that have been accessed). Check loaded first, then registry.",
-          "The factory function simulates the dynamic import — it's only called once, and the result is cached in the loaded object."
+          "The factory function simulates the dynamic import - it's only called once, and the result is cached in the loaded object."
         ],
         "difficulty": "Easy"
       },
@@ -204,7 +204,7 @@
         "expectedOutput": "Initial bundle (eager):\n  Framework: 45KB\n  Router: 12KB\n  Layout: 8KB\n  Home: 15KB\nInitial size: 80KB\n\nLazy-loaded chunks:\n  Dashboard: 35KB\n  Settings: 20KB\n  Admin: 50KB\n  ChartLib: 65KB\nLazy size: 170KB\n\nTotal: 250KB\nSavings: 68% smaller initial load",
         "hints": [
           "Filter modules by loading strategy. Sum sizes with reduce. Calculate percentage savings as (lazySize / totalSize * 100).",
-          "This demonstrates the real-world impact: users initially download 80KB instead of 250KB — a 68% reduction."
+          "This demonstrates the real-world impact: users initially download 80KB instead of 250KB - a 68% reduction."
         ],
         "difficulty": "Easy"
       }
@@ -241,11 +241,11 @@
       ],
       "notes": [
         "Virtualization is most impactful for lists with 500+ items. For smaller lists, plain rendering is usually fast enough.",
-        "The style prop in the row component is required — react-window uses absolute positioning to place each row, and the style contains the position and size.",
+        "The style prop in the row component is required - react-window uses absolute positioning to place each row, and the style contains the position and size.",
         "react-window is lighter than react-virtualized. Use react-window for most cases; react-virtualized only if you need its extra features (multi-grid, table, collection)."
       ],
       "commonPitfalls": [
-        "Forgetting to apply the style prop to the row component — without it, all rows stack at position 0 and the list appears broken.",
+        "Forgetting to apply the style prop to the row component - without it, all rows stack at position 0 and the list appears broken.",
         "Using virtualization for short lists (under 100 items) where the overhead of windowing exceeds the cost of rendering all items."
       ]
     },

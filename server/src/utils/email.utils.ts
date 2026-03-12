@@ -7,8 +7,13 @@ export async function sendEmail(options: {
   subject: string;
   html: string;
 }): Promise<void> {
-  await resend.emails.send({
-    from: process.env.EMAIL_FROM || "InternHack <onboarding@resend.dev>",
-    ...options,
-  });
+  const from = process.env.EMAIL_FROM || "InternHack <onboarding@resend.dev>";
+  console.log(`[Email] Sending "${options.subject}" to ${options.to} from ${from}`);
+  try {
+    const result = await resend.emails.send({ from, ...options });
+    console.log("[Email] Sent successfully:", JSON.stringify(result));
+  } catch (err) {
+    console.error("[Email] Failed to send:", err);
+    throw err;
+  }
 }

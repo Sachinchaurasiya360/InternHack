@@ -13,7 +13,7 @@ import {
   TrendingUp,
   Filter,
   Code2,
-  Sparkles,
+  Wand2,
   Flame,
   ArrowRight,
   BookOpen,
@@ -239,6 +239,28 @@ export default function RepoDiscoveryPage() {
       </section>
 
       <div className="max-w-6xl mx-auto px-6 py-8">
+        {/* Analytics Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1, duration: 0.4 }}
+          className="mb-6"
+        >
+          <Link
+            to="/student/opensource/analytics"
+            className="group flex items-center gap-4 p-4 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-2xl no-underline hover:border-purple-300 dark:hover:border-purple-700 hover:shadow-lg hover:shadow-purple-100/50 dark:hover:shadow-purple-900/20 transition-all duration-300"
+          >
+            <div className="w-10 h-10 rounded-xl bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center shrink-0">
+              <BarChart3 className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-semibold text-gray-950 dark:text-white">Open Source Analytics</p>
+              <p className="text-xs text-gray-500 dark:text-gray-400">Track your contributions, PRs, and open-source activity</p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-gray-400 dark:text-gray-500 group-hover:translate-x-1 transition-transform shrink-0" />
+          </Link>
+        </motion.div>
+
         {/* Guidance Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
           {GUIDANCE_CARDS.map((card, i) => (
@@ -327,14 +349,6 @@ export default function RepoDiscoveryPage() {
             </div>
           </div>
 
-          {/* Analytics link */}
-          <Link
-            to="/student/opensource/analytics"
-            className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-sm font-medium border border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-900 text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-all no-underline ml-auto"
-          >
-            <BarChart3 className="w-3.5 h-3.5" />
-            Analytics
-          </Link>
         </div>
 
         {/* Expanded filters */}
@@ -681,7 +695,7 @@ export default function RepoDiscoveryPage() {
                 {selectedRepo.highlights.length > 0 && (
                   <div>
                     <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-1.5">
-                      <Sparkles className="w-4 h-4 text-purple-500" />
+                      <Wand2 className="w-4 h-4 text-purple-500" />
                       Why Contribute?
                     </h3>
                     <div className="space-y-2">

@@ -15,6 +15,7 @@ studentRouter.use(authMiddleware, requireRole("STUDENT"));
 
 // Applications
 studentRouter.post("/jobs/:jobId/apply", usageLimit("JOB_APPLICATION"), (req, res, next) => studentController.applyToJob(req, res, next));
+studentRouter.get("/jobs/:jobId/application-status", (req, res) => studentController.getApplicationStatusByJob(req, res));
 studentRouter.get("/applications", (req, res) => studentController.getMyApplications(req, res));
 studentRouter.get("/applications/:applicationId", (req, res) => studentController.getApplicationDetail(req, res));
 studentRouter.delete("/applications/:applicationId", (req, res) => studentController.withdrawApplication(req, res));

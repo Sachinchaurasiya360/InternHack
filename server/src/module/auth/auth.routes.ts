@@ -15,6 +15,7 @@ authRouter.post("/verify-email", (req, res) => authController.verifyEmail(req, r
 authRouter.post("/resend-otp", (req, res) => authController.resendOtp(req, res));
 authRouter.post("/forgot-password", (req, res) => authController.forgotPassword(req, res));
 authRouter.post("/reset-password", (req, res) => authController.resetPassword(req, res));
+authRouter.post("/logout", (req, res) => authController.logout(req, res));
 authRouter.get("/me", authMiddleware, (req, res) => authController.getProfile(req, res));
 authRouter.put("/me", authMiddleware, (req, res) => authController.updateProfile(req, res));
 authRouter.post("/import-github", authMiddleware, (req, res) => authController.importGitHub(req, res));

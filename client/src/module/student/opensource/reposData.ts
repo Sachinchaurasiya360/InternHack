@@ -68,7 +68,7 @@ export const reposData: OpenSourceRepo[] = [
     name: "next.js",
     owner: "vercel",
     description:
-      "The React Framework — Build full-stack web applications with server-side rendering, static generation, and more.",
+      "The React Framework - Build full-stack web applications with server-side rendering, static generation, and more.",
     language: "TypeScript",
     techStack: ["React", "Node.js", "Webpack", "Turbopack"],
     difficulty: "INTERMEDIATE",
@@ -92,7 +92,7 @@ export const reposData: OpenSourceRepo[] = [
     name: "langchain",
     owner: "langchain-ai",
     description:
-      "Build context-aware reasoning applications with LangChain — the framework for developing apps powered by language models.",
+      "Build context-aware reasoning applications with LangChain - the framework for developing apps powered by language models.",
     language: "Python",
     techStack: ["OpenAI", "HuggingFace", "Pinecone", "ChromaDB"],
     difficulty: "INTERMEDIATE",
@@ -116,7 +116,7 @@ export const reposData: OpenSourceRepo[] = [
     name: "kubernetes",
     owner: "kubernetes",
     description:
-      "Production-Grade Container Orchestration — automate deploying, scaling, and managing containerized applications.",
+      "Production-Grade Container Orchestration - automate deploying, scaling, and managing containerized applications.",
     language: "Go",
     techStack: ["Docker", "etcd", "gRPC", "Prometheus"],
     difficulty: "ADVANCED",
@@ -164,7 +164,7 @@ export const reposData: OpenSourceRepo[] = [
     name: "vite",
     owner: "vitejs",
     description:
-      "Next-generation frontend tooling — blazing fast dev server with instant HMR and optimized production builds.",
+      "Next-generation frontend tooling - blazing fast dev server with instant HMR and optimized production builds.",
     language: "TypeScript",
     techStack: ["Rollup", "esbuild", "PostCSS"],
     difficulty: "BEGINNER",
@@ -177,7 +177,7 @@ export const reposData: OpenSourceRepo[] = [
     tags: ["bundler", "dev-tools", "frontend", "web"],
     highlights: [
       "Extremely fast build tool",
-      "Easy to contribute — well organized codebase",
+      "Easy to contribute - well organized codebase",
       "Framework-agnostic",
     ],
     trending: false,
@@ -188,7 +188,7 @@ export const reposData: OpenSourceRepo[] = [
     name: "prisma",
     owner: "prisma",
     description:
-      "Next-generation ORM for Node.js and TypeScript — type-safe database access with auto-generated query builder.",
+      "Next-generation ORM for Node.js and TypeScript - type-safe database access with auto-generated query builder.",
     language: "TypeScript",
     techStack: ["Rust", "Node.js", "PostgreSQL", "MySQL", "SQLite"],
     difficulty: "INTERMEDIATE",

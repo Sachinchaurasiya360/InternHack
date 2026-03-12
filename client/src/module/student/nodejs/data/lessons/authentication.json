@@ -8,7 +8,7 @@
     "isInterviewQuestion": false,
     "concepts": ["hashing", "salting", "bcrypt", "bcryptjs", "password security", "compareSync"],
     "content": {
-      "explanation": "Storing passwords in plain text is one of the most dangerous security mistakes a developer can make. If an attacker gains access to your database, every user's credentials are instantly compromised. Password hashing solves this by transforming passwords into irreversible fixed-length strings using a one-way cryptographic function. Even if the hash is stolen, the original password cannot be recovered from it.\n\nbcrypt is the industry-standard algorithm for password hashing in Node.js applications. Unlike simple hashing algorithms like MD5 or SHA-256, bcrypt is specifically designed for passwords. It incorporates a salt (a random string added to the password before hashing) automatically, which means two users with the same password will have different hashes. This prevents rainbow table attacks where precomputed hashes are used to reverse common passwords.\n\nThe 'cost factor' or 'salt rounds' parameter in bcrypt controls how computationally expensive the hashing process is. A salt rounds value of 10 means the hashing function runs 2^10 (1024) iterations. Higher values make brute-force attacks slower but also make your login process slower. A value of 10-12 is considered a good balance for most applications. As hardware gets faster, you can increase this value.\n\nIn the Node.js ecosystem, you have two main choices: the native `bcrypt` package (which uses C++ bindings) and `bcryptjs` (a pure JavaScript implementation). The native bcrypt is faster but requires compilation during installation, which can cause issues on some systems. bcryptjs is slower but works everywhere without any native dependencies, making it ideal for serverless deployments and Docker containers.\n\nThe typical workflow is: when a user registers, hash their password with bcrypt.hash() and store only the hash. When they log in, use bcrypt.compare() to check their provided password against the stored hash. Never try to decrypt the hash — bcrypt.compare() handles the comparison internally by hashing the input with the same salt and comparing the results.",
+      "explanation": "Storing passwords in plain text is one of the most dangerous security mistakes a developer can make. If an attacker gains access to your database, every user's credentials are instantly compromised. Password hashing solves this by transforming passwords into irreversible fixed-length strings using a one-way cryptographic function. Even if the hash is stolen, the original password cannot be recovered from it.\n\nbcrypt is the industry-standard algorithm for password hashing in Node.js applications. Unlike simple hashing algorithms like MD5 or SHA-256, bcrypt is specifically designed for passwords. It incorporates a salt (a random string added to the password before hashing) automatically, which means two users with the same password will have different hashes. This prevents rainbow table attacks where precomputed hashes are used to reverse common passwords.\n\nThe 'cost factor' or 'salt rounds' parameter in bcrypt controls how computationally expensive the hashing process is. A salt rounds value of 10 means the hashing function runs 2^10 (1024) iterations. Higher values make brute-force attacks slower but also make your login process slower. A value of 10-12 is considered a good balance for most applications. As hardware gets faster, you can increase this value.\n\nIn the Node.js ecosystem, you have two main choices: the native `bcrypt` package (which uses C++ bindings) and `bcryptjs` (a pure JavaScript implementation). The native bcrypt is faster but requires compilation during installation, which can cause issues on some systems. bcryptjs is slower but works everywhere without any native dependencies, making it ideal for serverless deployments and Docker containers.\n\nThe typical workflow is: when a user registers, hash their password with bcrypt.hash() and store only the hash. When they log in, use bcrypt.compare() to check their provided password against the stored hash. Never try to decrypt the hash - bcrypt.compare() handles the comparison internally by hashing the input with the same salt and comparing the results.",
       "codeExamples": [
         {
           "title": "Hashing and Comparing Passwords with bcryptjs",
@@ -26,24 +26,24 @@
           "title": "Password Hashing in an Express Registration Route",
           "code": "const express = require('express');\nconst bcrypt = require('bcryptjs');\nconst app = express();\napp.use(express.json());\n\n// Simulated database\nconst users = [];\n\napp.post('/register', async (req, res) => {\n  try {\n    const { email, password } = req.body;\n\n    // Check if user exists\n    if (users.find(u => u.email === email)) {\n      return res.status(400).json({ error: 'Email already registered' });\n    }\n\n    // Hash password with cost factor 10\n    const hashedPassword = await bcrypt.hash(password, 10);\n\n    // Store user with hashed password\n    const user = { id: users.length + 1, email, password: hashedPassword };\n    users.push(user);\n\n    res.status(201).json({ message: 'User registered', userId: user.id });\n  } catch (error) {\n    res.status(500).json({ error: 'Registration failed' });\n  }\n});\n\napp.post('/login', async (req, res) => {\n  try {\n    const { email, password } = req.body;\n    const user = users.find(u => u.email === email);\n\n    if (!user || !(await bcrypt.compare(password, user.password))) {\n      return res.status(401).json({ error: 'Invalid credentials' });\n    }\n\n    res.json({ message: 'Login successful', userId: user.id });\n  } catch (error) {\n    res.status(500).json({ error: 'Login failed' });\n  }\n});\n\nconsole.log('Auth routes configured');",
           "output": "Auth routes configured",
-          "explanation": "This shows a realistic Express registration and login flow. The register route hashes the password before storage. The login route uses bcrypt.compare() to verify credentials. Notice the generic error message for invalid credentials — never reveal whether the email or password was wrong."
+          "explanation": "This shows a realistic Express registration and login flow. The register route hashes the password before storage. The login route uses bcrypt.compare() to verify credentials. Notice the generic error message for invalid credentials - never reveal whether the email or password was wrong."
         }
       ],
       "notes": [
         "bcrypt automatically generates and embeds the salt in the hash string, so you do not need to store the salt separately.",
         "The cost factor (salt rounds) of 10 takes roughly 100ms on modern hardware. Each increment doubles the time.",
-        "bcryptjs is a drop-in replacement for bcrypt with the same API — just change the import.",
+        "bcryptjs is a drop-in replacement for bcrypt with the same API - just change the import.",
         "Never log or expose password hashes in API responses, even though they are one-way."
       ],
       "commonPitfalls": [
-        "Using a cost factor that is too low (less than 10) — this makes brute-force attacks feasible.",
-        "Using synchronous bcrypt methods in request handlers — this blocks the entire event loop.",
-        "Trying to decrypt a bcrypt hash — hashing is one-way by design. Use bcrypt.compare() instead.",
-        "Storing passwords with simple hashing (MD5, SHA-256) without salting — these are vulnerable to rainbow table attacks."
+        "Using a cost factor that is too low (less than 10) - this makes brute-force attacks feasible.",
+        "Using synchronous bcrypt methods in request handlers - this blocks the entire event loop.",
+        "Trying to decrypt a bcrypt hash - hashing is one-way by design. Use bcrypt.compare() instead.",
+        "Storing passwords with simple hashing (MD5, SHA-256) without salting - these are vulnerable to rainbow table attacks."
       ],
       "interviewTips": [
         "Explain why bcrypt is preferred over SHA-256 for passwords: bcrypt is intentionally slow and includes automatic salting.",
-        "Know the difference between hashing (one-way) and encryption (two-way) — passwords should be hashed, not encrypted.",
+        "Know the difference between hashing (one-way) and encryption (two-way) - passwords should be hashed, not encrypted.",
         "Be able to explain what a salt is and why two identical passwords produce different bcrypt hashes."
       ]
     },
@@ -72,7 +72,7 @@
     "isInterviewQuestion": true,
     "concepts": ["jwt.sign", "jwt.verify", "payload", "token expiry", "refresh tokens", "Bearer token"],
     "content": {
-      "explanation": "JSON Web Tokens (JWT) are the most popular method for implementing stateless authentication in modern web APIs. A JWT is a compact, URL-safe string that encodes a JSON payload and is cryptographically signed by the server. When a user logs in, the server creates a JWT containing the user's identity information and sends it back. The client stores this token and includes it in subsequent requests, allowing the server to verify the user's identity without querying a database on every request.\n\nA JWT consists of three parts separated by dots: the header, the payload, and the signature. The header specifies the algorithm used for signing (typically HS256 or RS256). The payload contains claims — key-value pairs with user data like user ID, email, and role, plus standard claims like `iat` (issued at) and `exp` (expiration time). The signature is created by signing the encoded header and payload with a secret key. Anyone can decode the header and payload (they are just Base64-encoded), but only the server with the secret key can create a valid signature.\n\nIn Node.js, the `jsonwebtoken` package provides `jwt.sign()` to create tokens and `jwt.verify()` to validate them. When signing, you pass the payload, a secret key, and options like expiration time. When verifying, the library checks the signature integrity and expiration. If the token has been tampered with or has expired, jwt.verify() throws an error.\n\nToken expiration is critical for security. Access tokens should be short-lived (15 minutes to 1 hour) to minimize damage if stolen. Refresh tokens are long-lived tokens (days to weeks) used solely to obtain new access tokens without requiring the user to log in again. The refresh token is stored securely (often in an httpOnly cookie) and is exchanged for a fresh access token when the current one expires.\n\nThe standard way to send JWTs is in the Authorization header using the Bearer scheme: `Authorization: Bearer <token>`. The server extracts the token from this header in middleware, verifies it, and attaches the decoded user information to the request object for downstream route handlers to use.",
+      "explanation": "JSON Web Tokens (JWT) are the most popular method for implementing stateless authentication in modern web APIs. A JWT is a compact, URL-safe string that encodes a JSON payload and is cryptographically signed by the server. When a user logs in, the server creates a JWT containing the user's identity information and sends it back. The client stores this token and includes it in subsequent requests, allowing the server to verify the user's identity without querying a database on every request.\n\nA JWT consists of three parts separated by dots: the header, the payload, and the signature. The header specifies the algorithm used for signing (typically HS256 or RS256). The payload contains claims - key-value pairs with user data like user ID, email, and role, plus standard claims like `iat` (issued at) and `exp` (expiration time). The signature is created by signing the encoded header and payload with a secret key. Anyone can decode the header and payload (they are just Base64-encoded), but only the server with the secret key can create a valid signature.\n\nIn Node.js, the `jsonwebtoken` package provides `jwt.sign()` to create tokens and `jwt.verify()` to validate them. When signing, you pass the payload, a secret key, and options like expiration time. When verifying, the library checks the signature integrity and expiration. If the token has been tampered with or has expired, jwt.verify() throws an error.\n\nToken expiration is critical for security. Access tokens should be short-lived (15 minutes to 1 hour) to minimize damage if stolen. Refresh tokens are long-lived tokens (days to weeks) used solely to obtain new access tokens without requiring the user to log in again. The refresh token is stored securely (often in an httpOnly cookie) and is exchanged for a fresh access token when the current one expires.\n\nThe standard way to send JWTs is in the Authorization header using the Bearer scheme: `Authorization: Bearer <token>`. The server extracts the token from this header in middleware, verifies it, and attaches the decoded user information to the request object for downstream route handlers to use.",
       "codeExamples": [
         {
           "title": "Creating and Verifying JWTs",
@@ -94,21 +94,21 @@
         }
       ],
       "notes": [
-        "JWTs are not encrypted by default — anyone can decode the payload. Never put sensitive data like passwords in a JWT.",
+        "JWTs are not encrypted by default - anyone can decode the payload. Never put sensitive data like passwords in a JWT.",
         "The secret key should come from an environment variable, never hardcoded in source code.",
         "HS256 uses a shared secret (symmetric). RS256 uses a public/private key pair (asymmetric) and is better for microservices.",
         "Store refresh tokens in httpOnly cookies to prevent XSS attacks from stealing them."
       ],
       "commonPitfalls": [
-        "Storing JWTs in localStorage makes them vulnerable to XSS attacks — prefer httpOnly cookies for sensitive tokens.",
-        "Using a weak or short secret key — use at least 256 bits of entropy for HS256.",
-        "Not handling TokenExpiredError separately — the client needs to know when to use a refresh token.",
-        "Putting too much data in the JWT payload — it increases the size of every request header."
+        "Storing JWTs in localStorage makes them vulnerable to XSS attacks - prefer httpOnly cookies for sensitive tokens.",
+        "Using a weak or short secret key - use at least 256 bits of entropy for HS256.",
+        "Not handling TokenExpiredError separately - the client needs to know when to use a refresh token.",
+        "Putting too much data in the JWT payload - it increases the size of every request header."
       ],
       "interviewTips": [
         "Be able to explain the three parts of a JWT (header, payload, signature) and what each contains.",
         "Know the difference between jwt.decode() (no verification) and jwt.verify() (checks signature and expiry).",
-        "Explain why JWTs are stateless and how that differs from session-based auth — no server-side storage needed.",
+        "Explain why JWTs are stateless and how that differs from session-based auth - no server-side storage needed.",
         "Understand the access token + refresh token pattern and why access tokens should be short-lived."
       ]
     },
@@ -150,7 +150,7 @@
     "isInterviewQuestion": true,
     "concepts": ["express-session", "session stores", "cookies", "session ID", "session vs JWT", "connect-redis"],
     "content": {
-      "explanation": "Session-based authentication is the traditional approach to managing user login state in web applications. When a user logs in, the server creates a session — a server-side data store associated with that user — and sends a session ID to the client as a cookie. On subsequent requests, the browser automatically includes this cookie, allowing the server to look up the session and identify the user.\n\nThe `express-session` middleware handles the complexity of session management in Express applications. It generates a unique session ID, creates a session object on the server, sets a cookie on the client, and deserializes the session on each request. The session object (req.session) acts like a per-user key-value store where you can save any data — user ID, role, preferences, shopping cart contents, and more.\n\nBy default, express-session stores sessions in memory (MemoryStore), which is fine for development but completely unsuitable for production. Memory stores do not scale across multiple server instances, leak memory over time, and lose all sessions when the server restarts. In production, you should use a dedicated session store like connect-redis (Redis), connect-mongo (MongoDB), or connect-pg-simple (PostgreSQL). Redis is the most popular choice due to its speed and built-in expiration support.\n\nThe session cookie contains only the session ID, not the actual session data. This is fundamentally different from JWTs, where the client holds all the data. Because the server holds the session data, the server can invalidate sessions instantly (e.g., on logout or password change) — something that is much harder with JWTs. However, this server-side storage means sessions require database lookups on every request and are harder to scale across multiple servers.\n\nChoosing between sessions and JWTs depends on your architecture. Sessions are better when you need immediate revocation (security-critical apps), when you store large amounts of user state, or when you have a monolithic server. JWTs are better for stateless APIs, microservices architectures, and mobile applications where cookies are less convenient. Many production systems use a hybrid: JWTs for API authentication with short expiry, backed by server-side session tracking for refresh token management.",
+      "explanation": "Session-based authentication is the traditional approach to managing user login state in web applications. When a user logs in, the server creates a session - a server-side data store associated with that user - and sends a session ID to the client as a cookie. On subsequent requests, the browser automatically includes this cookie, allowing the server to look up the session and identify the user.\n\nThe `express-session` middleware handles the complexity of session management in Express applications. It generates a unique session ID, creates a session object on the server, sets a cookie on the client, and deserializes the session on each request. The session object (req.session) acts like a per-user key-value store where you can save any data - user ID, role, preferences, shopping cart contents, and more.\n\nBy default, express-session stores sessions in memory (MemoryStore), which is fine for development but completely unsuitable for production. Memory stores do not scale across multiple server instances, leak memory over time, and lose all sessions when the server restarts. In production, you should use a dedicated session store like connect-redis (Redis), connect-mongo (MongoDB), or connect-pg-simple (PostgreSQL). Redis is the most popular choice due to its speed and built-in expiration support.\n\nThe session cookie contains only the session ID, not the actual session data. This is fundamentally different from JWTs, where the client holds all the data. Because the server holds the session data, the server can invalidate sessions instantly (e.g., on logout or password change) - something that is much harder with JWTs. However, this server-side storage means sessions require database lookups on every request and are harder to scale across multiple servers.\n\nChoosing between sessions and JWTs depends on your architecture. Sessions are better when you need immediate revocation (security-critical apps), when you store large amounts of user state, or when you have a monolithic server. JWTs are better for stateless APIs, microservices architectures, and mobile applications where cookies are less convenient. Many production systems use a hybrid: JWTs for API authentication with short expiry, backed by server-side session tracking for refresh token management.",
       "codeExamples": [
         {
           "title": "Basic Session Authentication with express-session",
@@ -166,15 +166,15 @@
         }
       ],
       "notes": [
-        "The default MemoryStore is only for development — it leaks memory and does not scale across processes.",
+        "The default MemoryStore is only for development - it leaks memory and does not scale across processes.",
         "Set `httpOnly: true` on session cookies to prevent JavaScript access (XSS protection).",
         "Set `secure: true` in production to ensure cookies are only sent over HTTPS.",
         "The `resave: false` option prevents saving the session if it was not modified during the request."
       ],
       "commonPitfalls": [
-        "Using MemoryStore in production — it leaks memory and loses all sessions on restart.",
+        "Using MemoryStore in production - it leaks memory and loses all sessions on restart.",
         "Forgetting to set httpOnly and secure flags on session cookies in production.",
-        "Not calling req.session.destroy() on logout — just deleting req.session.userId is not enough.",
+        "Not calling req.session.destroy() on logout - just deleting req.session.userId is not enough.",
         "Setting saveUninitialized to true without understanding it creates empty sessions for every visitor."
       ],
       "interviewTips": [
@@ -209,7 +209,7 @@
     "isInterviewQuestion": false,
     "concepts": ["auth middleware", "role-based access", "requireRole", "route guards", "middleware chaining"],
     "content": {
-      "explanation": "Once you have authentication in place (whether JWT or sessions), the next step is protecting your routes so that only authorized users can access them. In Express, this is done through middleware functions that run before your route handler. An auth middleware verifies the user's identity, and a role middleware checks if the authenticated user has the right permissions.\n\nThe auth middleware pattern is straightforward: extract credentials (token or session), verify them, attach user info to the request object, and call next(). If verification fails, return a 401 Unauthorized response without calling next(). This pattern keeps your route handlers clean — they can assume req.user exists and focus on business logic.\n\nRole-based access control (RBAC) adds a second layer. After authentication confirms who the user is, authorization determines what they can do. The `requireRole` pattern is a middleware factory — a function that takes allowed roles as arguments and returns a middleware function. This returned middleware checks if req.user.role matches one of the allowed roles and either calls next() or returns 403 Forbidden.\n\nMiddleware chaining is what makes this system elegant. Express lets you pass multiple middleware functions to a route definition: `app.get('/admin', auth, requireRole('ADMIN'), handler)`. Each middleware runs in order, and if any one stops the chain (by sending a response without calling next), the subsequent ones do not execute. This composition pattern allows fine-grained access control without code duplication.\n\nFor real-world applications, you often need more nuanced authorization. A recruiter should only edit their own job postings, not other recruiters' postings. A student should only see their own applications. This resource-level authorization is typically handled in the route handler or service layer, where you check if the authenticated user owns the requested resource. The middleware layer handles identity and role verification; the handler layer handles ownership checks.",
+      "explanation": "Once you have authentication in place (whether JWT or sessions), the next step is protecting your routes so that only authorized users can access them. In Express, this is done through middleware functions that run before your route handler. An auth middleware verifies the user's identity, and a role middleware checks if the authenticated user has the right permissions.\n\nThe auth middleware pattern is straightforward: extract credentials (token or session), verify them, attach user info to the request object, and call next(). If verification fails, return a 401 Unauthorized response without calling next(). This pattern keeps your route handlers clean - they can assume req.user exists and focus on business logic.\n\nRole-based access control (RBAC) adds a second layer. After authentication confirms who the user is, authorization determines what they can do. The `requireRole` pattern is a middleware factory - a function that takes allowed roles as arguments and returns a middleware function. This returned middleware checks if req.user.role matches one of the allowed roles and either calls next() or returns 403 Forbidden.\n\nMiddleware chaining is what makes this system elegant. Express lets you pass multiple middleware functions to a route definition: `app.get('/admin', auth, requireRole('ADMIN'), handler)`. Each middleware runs in order, and if any one stops the chain (by sending a response without calling next), the subsequent ones do not execute. This composition pattern allows fine-grained access control without code duplication.\n\nFor real-world applications, you often need more nuanced authorization. A recruiter should only edit their own job postings, not other recruiters' postings. A student should only see their own applications. This resource-level authorization is typically handled in the route handler or service layer, where you check if the authenticated user owns the requested resource. The middleware layer handles identity and role verification; the handler layer handles ownership checks.",
       "codeExamples": [
         {
           "title": "Auth Middleware and Role-Based Access Control",
@@ -231,21 +231,21 @@
         }
       ],
       "notes": [
-        "Always put authMiddleware before requireRole in the middleware chain — you cannot check roles without knowing who the user is.",
+        "Always put authMiddleware before requireRole in the middleware chain - you cannot check roles without knowing who the user is.",
         "Use router-level middleware (router.use()) when all routes in a group need the same protection.",
         "The 401 status means 'not authenticated' (who are you?), while 403 means 'not authorized' (you do not have permission).",
         "Optional auth middleware is useful for routes that show different content to logged-in vs anonymous users."
       ],
       "commonPitfalls": [
-        "Returning a response without calling return — forgetting 'return' before res.status(401).json() causes the middleware to continue executing.",
-        "Applying role middleware without auth middleware first — req.user will be undefined, causing a crash.",
-        "Hardcoding role checks in route handlers instead of using middleware — leads to duplication and missed checks.",
+        "Returning a response without calling return - forgetting 'return' before res.status(401).json() causes the middleware to continue executing.",
+        "Applying role middleware without auth middleware first - req.user will be undefined, causing a crash.",
+        "Hardcoding role checks in route handlers instead of using middleware - leads to duplication and missed checks.",
         "Not handling the case where req.user might be undefined in requireRole (defensive programming)."
       ],
       "interviewTips": [
         "Explain the middleware chain pattern: authenticate first, authorize second, handle third.",
         "Know the difference between 401 (unauthenticated) and 403 (unauthorized/forbidden).",
-        "Be able to describe a middleware factory pattern — a function that returns a middleware function.",
+        "Be able to describe a middleware factory pattern - a function that returns a middleware function.",
         "Discuss resource-level authorization: why role checks alone are not enough (a recruiter should only edit their own jobs)."
       ]
     },
@@ -274,13 +274,13 @@
     "isInterviewQuestion": true,
     "concepts": ["helmet", "CORS", "rate limiting", "input sanitization", "HTTPS", "express-rate-limit", "XSS", "CSRF"],
     "content": {
-      "explanation": "Building a secure Node.js application goes far beyond just authentication. Security is a multi-layered discipline, and Express applications face numerous attack vectors including cross-site scripting (XSS), cross-site request forgery (CSRF), injection attacks, brute-force attempts, and information leakage through headers. A defense-in-depth approach uses multiple security layers so that if one fails, others still protect the application.\n\nHelmet is an essential security middleware that sets various HTTP headers to protect against common web vulnerabilities. It disables the X-Powered-By header (which tells attackers you use Express), sets Content-Security-Policy to prevent XSS, enables X-Content-Type-Options to stop MIME sniffing, and configures Strict-Transport-Security to enforce HTTPS. A single `app.use(helmet())` call applies sensible defaults that address over a dozen security headers.\n\nCross-Origin Resource Sharing (CORS) controls which domains can make requests to your API. By default, browsers block cross-origin requests for security. The `cors` middleware lets you configure allowed origins, methods, and headers. In development, you might allow all origins, but in production, you should whitelist only your frontend domain. Misconfigured CORS is a common vulnerability — setting `origin: '*'` with `credentials: true` is dangerous because it allows any site to make authenticated requests to your API.\n\nRate limiting protects against brute-force attacks and denial-of-service attempts. The `express-rate-limit` middleware restricts how many requests a client can make within a time window. For authentication endpoints like login and password reset, use aggressive limits (e.g., 5 attempts per 15 minutes). For general API endpoints, use more lenient limits (e.g., 100 requests per minute). This prevents attackers from guessing passwords or overwhelming your server.\n\nInput sanitization prevents injection attacks by cleaning user input before processing it. Never trust data from the client — validate and sanitize everything. Use libraries like `express-validator` or `joi` for request validation, and `xss-clean` or `DOMPurify` (server-side) to strip HTML/script tags from user input. For database queries, always use parameterized queries or ORM methods instead of string concatenation to prevent SQL injection. With Prisma or Mongoose, the ORM handles parameterization automatically, but raw queries need explicit parameter binding.",
+      "explanation": "Building a secure Node.js application goes far beyond just authentication. Security is a multi-layered discipline, and Express applications face numerous attack vectors including cross-site scripting (XSS), cross-site request forgery (CSRF), injection attacks, brute-force attempts, and information leakage through headers. A defense-in-depth approach uses multiple security layers so that if one fails, others still protect the application.\n\nHelmet is an essential security middleware that sets various HTTP headers to protect against common web vulnerabilities. It disables the X-Powered-By header (which tells attackers you use Express), sets Content-Security-Policy to prevent XSS, enables X-Content-Type-Options to stop MIME sniffing, and configures Strict-Transport-Security to enforce HTTPS. A single `app.use(helmet())` call applies sensible defaults that address over a dozen security headers.\n\nCross-Origin Resource Sharing (CORS) controls which domains can make requests to your API. By default, browsers block cross-origin requests for security. The `cors` middleware lets you configure allowed origins, methods, and headers. In development, you might allow all origins, but in production, you should whitelist only your frontend domain. Misconfigured CORS is a common vulnerability - setting `origin: '*'` with `credentials: true` is dangerous because it allows any site to make authenticated requests to your API.\n\nRate limiting protects against brute-force attacks and denial-of-service attempts. The `express-rate-limit` middleware restricts how many requests a client can make within a time window. For authentication endpoints like login and password reset, use aggressive limits (e.g., 5 attempts per 15 minutes). For general API endpoints, use more lenient limits (e.g., 100 requests per minute). This prevents attackers from guessing passwords or overwhelming your server.\n\nInput sanitization prevents injection attacks by cleaning user input before processing it. Never trust data from the client - validate and sanitize everything. Use libraries like `express-validator` or `joi` for request validation, and `xss-clean` or `DOMPurify` (server-side) to strip HTML/script tags from user input. For database queries, always use parameterized queries or ORM methods instead of string concatenation to prevent SQL injection. With Prisma or Mongoose, the ORM handles parameterization automatically, but raw queries need explicit parameter binding.",
       "codeExamples": [
         {
           "title": "Helmet and CORS Configuration",
           "code": "const express = require('express');\nconst helmet = require('helmet');\nconst cors = require('cors');\n\nconst app = express();\n\n// Security headers\napp.use(helmet());\n\n// CORS configuration\nconst corsOptions = {\n  origin: process.env.NODE_ENV === 'production'\n    ? ['https://myapp.com', 'https://www.myapp.com']\n    : ['http://localhost:5173'],\n  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],\n  allowedHeaders: ['Content-Type', 'Authorization'],\n  credentials: true,\n  maxAge: 86400 // Cache preflight for 24 hours\n};\napp.use(cors(corsOptions));\n\nconsole.log('Helmet headers applied');\nconsole.log('CORS origin:', corsOptions.origin);\nconsole.log('Credentials allowed:', corsOptions.credentials);",
           "output": "Helmet headers applied\nCORS origin: [ 'http://localhost:5173' ]\nCredentials allowed: true",
-          "explanation": "Helmet sets security headers with one line. CORS is configured differently for development and production — in dev, the Vite dev server origin is allowed; in production, only the real domain. Credentials: true allows cookies/auth headers to be sent cross-origin."
+          "explanation": "Helmet sets security headers with one line. CORS is configured differently for development and production - in dev, the Vite dev server origin is allowed; in production, only the real domain. Credentials: true allows cookies/auth headers to be sent cross-origin."
         },
         {
           "title": "Rate Limiting for API Protection",
@@ -296,22 +296,22 @@
         }
       ],
       "notes": [
-        "Always use HTTPS in production — use `app.set('trust proxy', 1)` behind a reverse proxy like Nginx or a cloud load balancer.",
-        "Set environment-specific CORS origins — never use `origin: '*'` with `credentials: true` in production.",
-        "Rate limiting by IP can be bypassed with proxies — consider also limiting by user ID for authenticated routes.",
+        "Always use HTTPS in production - use `app.set('trust proxy', 1)` behind a reverse proxy like Nginx or a cloud load balancer.",
+        "Set environment-specific CORS origins - never use `origin: '*'` with `credentials: true` in production.",
+        "Rate limiting by IP can be bypassed with proxies - consider also limiting by user ID for authenticated routes.",
         "The `helmet()` defaults are good for most apps, but you may need to customize Content-Security-Policy for SPAs."
       ],
       "commonPitfalls": [
-        "Using `cors({ origin: '*', credentials: true })` — this is a security vulnerability that browsers actually block.",
+        "Using `cors({ origin: '*', credentials: true })` - this is a security vulnerability that browsers actually block.",
         "Applying rate limiting only to the login route but not to password reset or email verification endpoints.",
-        "Trusting client-side validation alone — always validate on the server because client checks can be bypassed.",
-        "Forgetting to sanitize data used in database queries when using raw SQL — use parameterized queries."
+        "Trusting client-side validation alone - always validate on the server because client checks can be bypassed.",
+        "Forgetting to sanitize data used in database queries when using raw SQL - use parameterized queries."
       ],
       "interviewTips": [
         "List the OWASP Top 10 risks and explain how Node.js/Express addresses each (injection, broken auth, XSS, etc.).",
-        "Explain what helmet does and why it matters — security headers prevent entire classes of attacks.",
+        "Explain what helmet does and why it matters - security headers prevent entire classes of attacks.",
         "Describe the difference between authentication (who are you) and authorization (what can you do).",
-        "Know what CORS is and why misconfiguration is dangerous — it controls cross-origin browser requests."
+        "Know what CORS is and why misconfiguration is dangerous - it controls cross-origin browser requests."
       ]
     },
     "exercises": [

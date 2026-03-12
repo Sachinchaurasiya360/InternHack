@@ -5,7 +5,7 @@ const repos = [
   {
     name: "next.js",
     owner: "vercel",
-    description: "The React Framework — Build full-stack web applications with server-side rendering, static generation, and more.",
+    description: "The React Framework - Build full-stack web applications with server-side rendering, static generation, and more.",
     language: "TypeScript",
     techStack: ["React", "Node.js", "Webpack", "Turbopack"],
     difficulty: "INTERMEDIATE" as const,
@@ -22,7 +22,7 @@ const repos = [
   {
     name: "langchain",
     owner: "langchain-ai",
-    description: "Build context-aware reasoning applications with LangChain — the framework for developing apps powered by language models.",
+    description: "Build context-aware reasoning applications with LangChain - the framework for developing apps powered by language models.",
     language: "Python",
     techStack: ["OpenAI", "HuggingFace", "Pinecone", "ChromaDB"],
     difficulty: "INTERMEDIATE" as const,
@@ -39,7 +39,7 @@ const repos = [
   {
     name: "kubernetes",
     owner: "kubernetes",
-    description: "Production-Grade Container Orchestration — automate deploying, scaling, and managing containerized applications.",
+    description: "Production-Grade Container Orchestration - automate deploying, scaling, and managing containerized applications.",
     language: "Go",
     techStack: ["Docker", "etcd", "gRPC", "Prometheus"],
     difficulty: "ADVANCED" as const,
@@ -73,7 +73,7 @@ const repos = [
   {
     name: "vite",
     owner: "vitejs",
-    description: "Next-generation frontend tooling — blazing fast dev server with instant HMR and optimized production builds.",
+    description: "Next-generation frontend tooling - blazing fast dev server with instant HMR and optimized production builds.",
     language: "TypeScript",
     techStack: ["Rollup", "esbuild", "PostCSS"],
     difficulty: "BEGINNER" as const,
@@ -84,13 +84,13 @@ const repos = [
     openIssues: 520,
     url: "https://github.com/vitejs/vite",
     tags: ["bundler", "dev-tools", "frontend", "web"],
-    highlights: ["Extremely fast build tool", "Easy to contribute — well organized codebase", "Framework-agnostic"],
+    highlights: ["Extremely fast build tool", "Easy to contribute - well organized codebase", "Framework-agnostic"],
     trending: false,
   },
   {
     name: "prisma",
     owner: "prisma",
-    description: "Next-generation ORM for Node.js and TypeScript — type-safe database access with auto-generated query builder.",
+    description: "Next-generation ORM for Node.js and TypeScript - type-safe database access with auto-generated query builder.",
     language: "TypeScript",
     techStack: ["Rust", "Node.js", "PostgreSQL", "MySQL", "SQLite"],
     difficulty: "INTERMEDIATE" as const,

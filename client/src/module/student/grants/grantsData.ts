@@ -441,7 +441,7 @@ export const grants: Grant[] = [
     organization: "Aptos Foundation",
     logo: "https://cryptologos.cc/logos/aptos-apt-logo.svg",
     description:
-      "Aptos supports original ideas that expand its ecosystem — from developer tools to applications and public goods. Includes an Ecosystem Grants track and a Payments track for wallet and payment infrastructure.",
+      "Aptos supports original ideas that expand its ecosystem - from developer tools to applications and public goods. Includes an Ecosystem Grants track and a Payments track for wallet and payment infrastructure.",
     fundingAmount: "$5,000 - $150,000",
     category: "Infrastructure",
     tags: ["Aptos", "Move Language", "Payments", "Public Goods"],
@@ -598,7 +598,7 @@ export const grants: Grant[] = [
     website: "https://ton.foundation",
     eligibility: [
       "Champion teams identified through active ecosystem engagement",
-      "No open applications — teams selected based on real traction",
+      "No open applications - teams selected based on real traction",
       "Experienced leadership required",
       "Early-stage projects can participate via IdeaTON challenges",
     ],
@@ -1307,7 +1307,7 @@ export const grants: Grant[] = [
     highlights: [
       "$300M+ original treasury",
       "Focus on cross-border finance",
-      "Currently paused — check back for updates",
+      "Currently paused - check back for updates",
     ],
   },
 
@@ -1333,7 +1333,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "India",
     highlights: [
-      "Equity-free grant — no dilution",
+      "Equity-free grant - no dilution",
       "18-month funding cycle with milestone reviews",
       "Over 700 startups funded since inception",
     ],
@@ -1408,7 +1408,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "India",
     highlights: [
-      "Grant-based — no equity or repayment required",
+      "Grant-based - no equity or repayment required",
       "Mentorship from industry experts",
       "Focus on deployable solutions for national challenges",
     ],
@@ -1882,7 +1882,7 @@ export const grants: Grant[] = [
     website: "https://gcgh.grandchallenges.org",
     eligibility: [
       "Researchers and innovators from any organization worldwide",
-      "No preliminary data required — just a bold idea",
+      "No preliminary data required - just a bold idea",
       "Must address specific challenge topics posted each round",
       "Successful Phase 1 projects can receive up to $1M in follow-on funding",
     ],
@@ -1966,7 +1966,7 @@ export const grants: Grant[] = [
     highlights: [
       "One of Europe's most prestigious research fellowships",
       "Mobility, family, and special needs allowances included",
-      "Success rate ~15% — highly competitive",
+      "Success rate ~15% - highly competitive",
     ],
   },
   {
@@ -2085,7 +2085,7 @@ export const grants: Grant[] = [
     website: "https://thielfellowship.org",
     eligibility: [
       "Must be 22 years old or younger at time of application",
-      "No degree requirement — in fact, fellows often leave college",
+      "No degree requirement - in fact, fellows often leave college",
       "Must have a bold idea or startup to pursue full-time",
       "Global applicants welcome",
     ],
@@ -2103,7 +2103,7 @@ export const grants: Grant[] = [
     organization: "US State Department",
     logo: "https://placehold.co/100x100/EEE/999?text=Y",
     description:
-      "YALI invests in young African leaders through the Mandela Washington Fellowship — a 6-week academic and leadership institute at a US university. It includes networking, mentorship, and seed funding for community projects.",
+      "YALI invests in young African leaders through the Mandela Washington Fellowship - a 6-week academic and leadership institute at a US university. It includes networking, mentorship, and seed funding for community projects.",
     fundingAmount: "Fully funded",
     category: "Global Youth",
     tags: ["Africa", "Leadership", "Fellowship", "US Government"],
@@ -2218,7 +2218,7 @@ export const grants: Grant[] = [
     ecosystem: "USA",
     highlights: [
       "Complete freedom to design your own year abroad",
-      "No academic requirements — pursue your passion",
+      "No academic requirements - pursue your passion",
       "3,000+ alumni since 1968",
     ],
   },
@@ -2317,7 +2317,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "Global",
     highlights: [
-      "$1M grand prize — largest student competition in the world",
+      "$1M grand prize - largest student competition in the world",
       "300,000+ participants from 150+ countries annually",
       "Called 'Nobel Prize for students' by Clinton Foundation",
     ],
@@ -2570,7 +2570,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "Switzerland",
     highlights: [
-      "Equity-free — no dilution",
+      "Equity-free - no dilution",
       "18-month coaching and mentorship program",
       "ETH spin-offs have raised CHF 5B+ in total funding",
     ],
@@ -2616,7 +2616,7 @@ export const grants: Grant[] = [
     website: "https://500.co",
     eligibility: [
       "Early-stage startups with product-market fit or early traction",
-      "Global applications welcome — 80+ countries represented",
+      "Global applications welcome - 80+ countries represented",
       "4-month accelerator program in San Francisco",
       "Focus on fintech, edtech, healthtech, and marketplaces",
     ],
@@ -2634,14 +2634,14 @@ export const grants: Grant[] = [
     organization: "Antler",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
-      "Antler is a global venture builder and early-stage VC. Its residency program helps exceptional individuals find co-founders, build ventures, and raise pre-seed funding — all within a 3-6 month program.",
+      "Antler is a global venture builder and early-stage VC. Its residency program helps exceptional individuals find co-founders, build ventures, and raise pre-seed funding - all within a 3-6 month program.",
     fundingAmount: "$100,000",
     category: "Accelerator",
     tags: ["Venture Builder", "Pre-seed", "Co-founder Matching", "Global"],
     website: "https://www.antler.co",
     eligibility: [
-      "Exceptional individuals — engineers, operators, domain experts",
-      "No existing startup required — find co-founders during the program",
+      "Exceptional individuals - engineers, operators, domain experts",
+      "No existing startup required - find co-founders during the program",
       "Programs in 27 cities across 6 continents",
       "Monthly stipend provided during residency",
     ],
@@ -2693,12 +2693,12 @@ export const grants: Grant[] = [
       "Early-stage startups from any industry and country",
       "Must have a working prototype or early revenue",
       "4-month accelerator in Boston, Israel, Mexico, or Switzerland",
-      "No equity taken — competition-based prizes",
+      "No equity taken - competition-based prizes",
     ],
     status: "Active",
     ecosystem: "USA",
     highlights: [
-      "Zero equity — keeps 100% of your company",
+      "Zero equity - keeps 100% of your company",
       "3,600+ startups accelerated since 2010",
       "Alumni have raised $8.7B+ in total funding",
     ],
@@ -2784,13 +2784,13 @@ export const grants: Grant[] = [
     organization: "Entrepreneur First",
     logo: "https://placehold.co/100x100/EEE/999?text=E",
     description:
-      "Entrepreneur First invests in individuals before they have an idea or co-founder. Its 6-month program helps talented people find co-founders, develop ideas, and raise funding — all before incorporating a company.",
+      "Entrepreneur First invests in individuals before they have an idea or co-founder. Its 6-month program helps talented people find co-founders, develop ideas, and raise funding - all before incorporating a company.",
     fundingAmount: "$100,000",
     category: "Accelerator",
     tags: ["Pre-idea", "Co-founder Matching", "UK", "Global"],
     website: "https://www.joinef.com",
     eligibility: [
-      "Exceptional individuals — no startup or idea needed to apply",
+      "Exceptional individuals - no startup or idea needed to apply",
       "Engineers, PhDs, industry experts, and technical operators",
       "Programs in London, Bangalore, Singapore, Toronto, Berlin",
       "Must commit full-time to the 6-month program",
@@ -2798,7 +2798,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "UK",
     highlights: [
-      "Invest at the individual level — before a company exists",
+      "Invest at the individual level - before a company exists",
       "800+ companies built since 2011",
       "Combined portfolio valuation of $10B+",
     ],
@@ -3104,7 +3104,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "USA",
     highlights: [
-      "Unrestricted gift funding — use it for anything research-related",
+      "Unrestricted gift funding - use it for anything research-related",
       "150+ scholars funded globally each year",
       "Opportunity for ongoing Google collaboration",
     ],
@@ -3240,7 +3240,7 @@ export const grants: Grant[] = [
     organization: "Allen Institute for AI",
     logo: "https://placehold.co/100x100/EEE/999?text=A",
     description:
-      "AI2 funds impactful AI research through grants, fellowships, and partnerships. Founded by Paul Allen, it focuses on AI for the common good — supporting NLP, computer vision, and AI for science research.",
+      "AI2 funds impactful AI research through grants, fellowships, and partnerships. Founded by Paul Allen, it focuses on AI for the common good - supporting NLP, computer vision, and AI for science research.",
     fundingAmount: "Up to $500,000",
     category: "AI & Deep Tech",
     tags: ["AI2", "NLP", "AI for Good", "Research"],
@@ -3357,7 +3357,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "Global",
     highlights: [
-      "Encourages disciplinary pivoting — unique among fellowships",
+      "Encourages disciplinary pivoting - unique among fellowships",
       "Leadership development alongside research",
       "Partners with Nature Research for professional development",
     ],
@@ -3509,7 +3509,7 @@ export const grants: Grant[] = [
     highlights: [
       "55 Sloan Fellows have gone on to win Nobel Prizes",
       "126 fellows selected annually",
-      "Unrestricted funding — no reporting requirements",
+      "Unrestricted funding - no reporting requirements",
     ],
   },
   {
@@ -3527,14 +3527,14 @@ export const grants: Grant[] = [
       "Faculty within first 3 years of tenure-track appointment",
       "Must be at one of 50 invited universities",
       "Natural sciences and engineering fields",
-      "Nominated by university — 2 nominees per institution",
+      "Nominated by university - 2 nominees per institution",
     ],
     status: "Active",
     ecosystem: "USA",
     highlights: [
-      "$875K over 5 years — among the most generous",
+      "$875K over 5 years - among the most generous",
       "20 fellows selected annually from 100 nominees",
-      "Complete research freedom — no strings attached",
+      "Complete research freedom - no strings attached",
     ],
   },
   {
@@ -3584,7 +3584,7 @@ export const grants: Grant[] = [
     highlights: [
       "Funds projects that are too risky for NIH/NSF",
       "$1.8B+ in grants since 1954",
-      "Built the Keck Observatory — world's largest telescopes",
+      "Built the Keck Observatory - world's largest telescopes",
     ],
   },
 
@@ -3627,7 +3627,7 @@ export const grants: Grant[] = [
     tags: ["AWS", "Cloud Credits", "Startups", "Infrastructure"],
     website: "https://aws.amazon.com/activate",
     eligibility: [
-      "Startups at any stage — self-funded to Series A",
+      "Startups at any stage - self-funded to Series A",
       "Must not have previously exceeded $100K in AWS credits",
       "Portfolio tier available through approved VCs and accelerators",
       "Self-service tier: $1,000 credits for any startup",
@@ -3652,7 +3652,7 @@ export const grants: Grant[] = [
     tags: ["Microsoft", "Azure", "GitHub", "Startups"],
     website: "https://www.microsoft.com/en-us/startups",
     eligibility: [
-      "Any startup at any stage — no VC backing required",
+      "Any startup at any stage - no VC backing required",
       "Must be building a software-based product",
       "Open to startups worldwide",
       "Credits scale up as startup progresses through milestones",
@@ -3660,7 +3660,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "Global",
     highlights: [
-      "No application gatekeeping — open to all startups",
+      "No application gatekeeping - open to all startups",
       "Credits: $1K → $5K → $25K → $150K as you grow",
       "Includes OpenAI API credits for AI startups",
     ],
@@ -3760,7 +3760,7 @@ export const grants: Grant[] = [
     status: "Active",
     ecosystem: "Global",
     highlights: [
-      "Equity-free accelerator — no dilution",
+      "Equity-free accelerator - no dilution",
       "Direct access to SAP's 440,000+ enterprise customers",
       "Foundries in 10+ cities worldwide",
     ],

@@ -101,7 +101,7 @@ export default function HtmlLessonsPage() {
           HTML <span className="text-gradient-accent">Lessons</span>
         </h1>
         <p className="text-lg text-gray-500 dark:text-gray-500 max-w-lg mx-auto">
-          Master semantic markup from basics to advanced — curated for interviews
+          Master semantic markup from basics to advanced - curated for interviews
         </p>
       </motion.div>
 

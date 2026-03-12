@@ -82,7 +82,7 @@ export function FeaturesSection() {
           whileInView="visible"
           viewport={{ once: true, margin: "-60px" }}
         >
-          {/* Hero card — full width */}
+          {/* Hero card - full width */}
           <motion.div variants={cardVariants} className="md:col-span-2">
             <Link to={hero.href} className="no-underline block group">
               <motion.div
@@ -121,7 +121,7 @@ export function FeaturesSection() {
             </Link>
           </motion.div>
 
-          {/* Feature cards — 2×2 */}
+          {/* Feature cards - 2×2 */}
           {rest.map((f) => (
             <motion.div key={f.title} variants={cardVariants}>
               <Link to={f.href} className="no-underline block group h-full">

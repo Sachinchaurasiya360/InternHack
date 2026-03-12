@@ -11,7 +11,7 @@ import {
   Clock,
   GraduationCap,
   Banknote,
-  Sparkles,
+  Wand2,
   ArrowLeft,
 } from "lucide-react";
 import { Navbar } from "../../../components/Navbar";
@@ -90,7 +90,7 @@ function InternshipCard({ internship }: { internship: Internship }) {
       </div>
 
       <div className="mt-2 flex items-start gap-1.5">
-        <Sparkles className="w-3 h-3 shrink-0 text-amber-500 mt-0.5" />
+        <Wand2 className="w-3 h-3 shrink-0 text-amber-500 mt-0.5" />
         <p className="text-xs text-amber-700 dark:text-amber-400 italic">{internship.reality}</p>
       </div>
     </div>
@@ -169,7 +169,7 @@ export default function GovInternshipsPage() {
             Top 100 <span className="text-gradient-accent">Internships</span> in India
           </h1>
           <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-            Government, PSUs, IITs, Tech Giants & Global Organizations — 2026
+            Government, PSUs, IITs, Tech Giants & Global Organizations - 2026
           </p>
         </motion.div>
 

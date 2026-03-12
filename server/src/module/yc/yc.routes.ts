@@ -153,7 +153,7 @@ function needsScrape(company: { scrapedAt: Date | null }): boolean {
 
 // ── Routes ──────────────────────────────────────────────────
 
-// GET /api/yc/stats — aggregate counts for filter dropdowns
+// GET /api/yc/stats - aggregate counts for filter dropdowns
 router.get("/stats", async (_req: Request, res: Response) => {
   try {
     const [total, batchRows, industryRows, statusRows] = await Promise.all([
@@ -193,7 +193,7 @@ router.get("/stats", async (_req: Request, res: Response) => {
   }
 });
 
-// GET /api/yc/companies — paginated list with filters
+// GET /api/yc/companies - paginated list with filters
 router.get("/companies", async (req: Request, res: Response) => {
   try {
     const page = Math.max(1, parseInt(req.query["page"] as string) || 1);
@@ -248,7 +248,7 @@ router.get("/companies", async (req: Request, res: Response) => {
   }
 });
 
-// GET /api/yc/companies/:slug — single company detail (with on-demand scraping)
+// GET /api/yc/companies/:slug - single company detail (with on-demand scraping)
 router.get("/companies/:slug", async (req: Request, res: Response) => {
   try {
     const company = await prisma.ycCompany.findFirst({
@@ -261,7 +261,7 @@ router.get("/companies/:slug", async (req: Request, res: Response) => {
 
     // If not scraped yet or stale, scrape in background and update
     if (needsScrape(company)) {
-      // Don't block the response — fire and forget, but also try to return fresh data
+      // Don't block the response - fire and forget, but also try to return fresh data
       try {
         const scraped = await scrapeYCPage(company.slug);
         if (scraped) {

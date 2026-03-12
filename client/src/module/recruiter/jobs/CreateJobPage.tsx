@@ -12,6 +12,7 @@ interface RoundInput {
   name: string;
   description: string;
   instructions: string;
+  activateAt: string;
   customFields: CustomFieldDefinition[];
   evaluationCriteria: { id: string; criterion: string; maxScore: number }[];
 }
@@ -67,6 +68,7 @@ export default function CreateJobPage() {
           instructions: round.instructions,
           customFields: round.customFields,
           evaluationCriteria: round.evaluationCriteria,
+          activateAt: round.activateAt ? new Date(round.activateAt).toISOString() : null,
         });
       }
 

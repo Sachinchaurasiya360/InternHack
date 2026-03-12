@@ -1,7 +1,8 @@
 import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
-import type { Prisma, UserRole, JobStatus, AdminTier } from "@prisma/client";
+import { switchServiceProvider } from "../../lib/ai-provider-registry.js";
+import type { Prisma, UserRole, JobStatus, AdminTier, AIServiceType, AIProviderType } from "@prisma/client";
 
 function generateSlug(name: string): string {
   return name
@@ -887,280 +888,6 @@ export class AdminService {
     return prisma.companyContact.delete({ where: { id: contactId } });
   }
 
-  // ==================== CAREER MANAGEMENT ====================
-
-  async listAdminCareers() {
-    return prisma.career.findMany({
-      orderBy: { title: "asc" },
-      include: {
-        _count: { select: { phases: true, enrollments: true } },
-      },
-    });
-  }
-
-  async getAdminCareer(careerId: number) {
-    const career = await prisma.career.findUnique({
-      where: { id: careerId },
-      include: {
-        phases: {
-          orderBy: { orderIndex: "asc" },
-          include: {
-            skills: true,
-            resources: true,
-            tools: true,
-          },
-        },
-        _count: { select: { enrollments: true } },
-      },
-    });
-    if (!career) throw new Error("Career not found");
-    return career;
-  }
-
-  async createCareer(input: {
-    title: string;
-    description: string;
-    category: string;
-    difficulty: string;
-    avgSalary?: string | undefined;
-    demandLevel?: string | undefined;
-    phases?: Array<{
-      title: string;
-      description?: string | undefined;
-      orderIndex: number;
-      durationWeeks?: number | undefined;
-      skills?: Array<{ name: string; level?: string | undefined }>;
-      resources?: Array<{
-        title: string;
-        url: string;
-        type?: string | undefined;
-        free?: boolean | undefined;
-      }>;
-      tools?: Array<{
-        name: string;
-        url?: string | undefined;
-        category?: string | undefined;
-      }>;
-    }>;
-  }) {
-    let slug = generateSlug(input.title);
-    const existing = await prisma.career.findUnique({ where: { slug } });
-    if (existing) slug = `${slug}-${Date.now()}`;
-
-    return prisma.career.create({
-      data: {
-        title: input.title,
-        slug,
-        description: input.description,
-        category:
-          input.category as Prisma.EnumCareerCategoryFieldUpdateOperationsInput["set"] &
-            string,
-        difficulty:
-          input.difficulty as Prisma.EnumCareerDifficultyFieldUpdateOperationsInput["set"] &
-            string,
-        avgSalary: input.avgSalary ?? null,
-        demandLevel: input.demandLevel ?? null,
-        phases: {
-          create: (input.phases ?? []).map((phase) => ({
-            title: phase.title,
-            description: phase.description ?? null,
-            orderIndex: phase.orderIndex,
-            durationWeeks: phase.durationWeeks ?? null,
-            skills: {
-              create: (phase.skills ?? []).map((s) => ({
-                name: s.name,
-                level: (s.level ??
-                  "BEGINNER") as Prisma.EnumSkillLevelFieldUpdateOperationsInput["set"] &
-                  string,
-              })),
-            },
-            resources: {
-              create: (phase.resources ?? []).map((r) => ({
-                title: r.title,
-                url: r.url,
-                type: (r.type ??
-                  "ARTICLE") as Prisma.EnumResourceTypeFieldUpdateOperationsInput["set"] &
-                  string,
-                free: r.free ?? true,
-              })),
-            },
-            tools: {
-              create: (phase.tools ?? []).map((t) => ({
-                name: t.name,
-                url: t.url || null,
-                category: t.category ?? null,
-              })),
-            },
-          })),
-        },
-      },
-      include: {
-        phases: {
-          include: { skills: true, resources: true, tools: true },
-        },
-      },
-    });
-  }
-
-  async updateCareer(
-    careerId: number,
-    input: {
-      title?: string | undefined;
-      description?: string | undefined;
-      category?: string | undefined;
-      difficulty?: string | undefined;
-      avgSalary?: string | undefined;
-      demandLevel?: string | undefined;
-      phases?: Array<{
-        title: string;
-        description?: string | undefined;
-        orderIndex: number;
-        durationWeeks?: number | undefined;
-        skills?: Array<{ name: string; level?: string | undefined }>;
-        resources?: Array<{
-          title: string;
-          url: string;
-          type?: string | undefined;
-          free?: boolean | undefined;
-        }>;
-        tools?: Array<{
-          name: string;
-          url?: string | undefined;
-          category?: string | undefined;
-        }>;
-      }>;
-    },
-  ) {
-    const career = await prisma.career.findUnique({ where: { id: careerId } });
-    if (!career) throw new Error("Career not found");
-
-    const data: Prisma.careerUpdateInput = {};
-    if (input.title !== undefined) {
-      data.title = input.title;
-      data.slug = generateSlug(input.title);
-    }
-    if (input.description !== undefined) data.description = input.description;
-    if (input.category !== undefined)
-      data.category =
-        input.category as Prisma.EnumCareerCategoryFieldUpdateOperationsInput["set"] &
-          string;
-    if (input.difficulty !== undefined)
-      data.difficulty =
-        input.difficulty as Prisma.EnumCareerDifficultyFieldUpdateOperationsInput["set"] &
-          string;
-    if (input.avgSalary !== undefined) data.avgSalary = input.avgSalary || null;
-    if (input.demandLevel !== undefined)
-      data.demandLevel = input.demandLevel || null;
-
-    // If phases are provided, replace all phases (transaction)
-    if (input.phases !== undefined) {
-      return prisma.$transaction(async (tx) => {
-        // Get existing skill IDs for this career
-        const existingPhases = await tx.careerPhase.findMany({
-          where: { careerId },
-          include: { skills: { select: { id: true } } },
-        });
-        const existingSkillIds = existingPhases.flatMap((p) =>
-          p.skills.map((s) => s.id),
-        );
-
-        // Delete student progress for these skills
-        if (existingSkillIds.length > 0) {
-          await tx.studentSkillProgress.deleteMany({
-            where: { skillId: { in: existingSkillIds } },
-          });
-        }
-
-        // Delete existing phases (cascade to skills, resources, tools)
-        await tx.careerPhase.deleteMany({ where: { careerId } });
-
-        // Update career metadata + create new phases
-        return tx.career.update({
-          where: { id: careerId },
-          data: {
-            ...data,
-            phases: {
-              create: input.phases!.map((phase) => ({
-                title: phase.title,
-                description: phase.description ?? null,
-                orderIndex: phase.orderIndex,
-                durationWeeks: phase.durationWeeks ?? null,
-                skills: {
-                  create: (phase.skills ?? []).map((s) => ({
-                    name: s.name,
-                    level: (s.level ??
-                      "BEGINNER") as Prisma.EnumSkillLevelFieldUpdateOperationsInput["set"] &
-                      string,
-                  })),
-                },
-                resources: {
-                  create: (phase.resources ?? []).map((r) => ({
-                    title: r.title,
-                    url: r.url,
-                    type: (r.type ??
-                      "ARTICLE") as Prisma.EnumResourceTypeFieldUpdateOperationsInput["set"] &
-                      string,
-                    free: r.free ?? true,
-                  })),
-                },
-                tools: {
-                  create: (phase.tools ?? []).map((t) => ({
-                    name: t.name,
-                    url: t.url || null,
-                    category: t.category ?? null,
-                  })),
-                },
-              })),
-            },
-          },
-          include: {
-            phases: {
-              orderBy: { orderIndex: "asc" },
-              include: { skills: true, resources: true, tools: true },
-            },
-          },
-        });
-      });
-    }
-
-    // No phases change, just update metadata
-    return prisma.career.update({
-      where: { id: careerId },
-      data,
-      include: {
-        phases: {
-          orderBy: { orderIndex: "asc" },
-          include: { skills: true, resources: true, tools: true },
-        },
-      },
-    });
-  }
-
-  async deleteCareer(careerId: number) {
-    const career = await prisma.career.findUnique({
-      where: { id: careerId },
-      include: { phases: { include: { skills: { select: { id: true } } } } },
-    });
-    if (!career) throw new Error("Career not found");
-
-    return prisma.$transaction(async (tx) => {
-      const skillIds = career.phases.flatMap((p) => p.skills.map((s) => s.id));
-
-      // Delete student progress
-      if (skillIds.length > 0) {
-        await tx.studentSkillProgress.deleteMany({
-          where: { skillId: { in: skillIds } },
-        });
-      }
-
-      // Delete enrollments
-      await tx.studentCareer.deleteMany({ where: { careerId } });
-
-      // Delete career (cascades to phases -> skills/resources/tools)
-      await tx.career.delete({ where: { id: careerId } });
-    });
-  }
-
   // ==================== OPEN SOURCE REPO MANAGEMENT ====================
 
   async listRepos(query: {
@@ -1928,5 +1655,167 @@ export class AdminService {
     const hackathon = await prisma.hackathon.findUnique({ where: { id } });
     if (!hackathon) throw new Error("Hackathon not found");
     return prisma.hackathon.delete({ where: { id } });
+  }
+
+  // ==================== AI PROVIDER MANAGEMENT ====================
+
+  async getAIServiceConfigs() {
+    const configs = await prisma.aiServiceConfig.findMany({
+      orderBy: { service: "asc" },
+    });
+
+    const envStatus: Record<string, boolean> = {
+      GEMINI: !!process.env["GEMINI_API_KEY"],
+      GROQ: !!process.env["GROQ_API_KEY"],
+      OPENROUTER: !!process.env["OPENROUTER_API_KEY"],
+      CODESTRAL: !!process.env["CODESTRAL_API_KEY"],
+    };
+
+    return { configs, envStatus };
+  }
+
+  async switchAIServiceProvider(
+    service: AIServiceType,
+    provider: AIProviderType,
+    modelName: string,
+    adminId: number,
+  ) {
+    await switchServiceProvider(service, provider, modelName);
+
+    await this.logActivity(adminId, "AI_PROVIDER_SWITCHED", "ai_config", 0, {
+      service,
+      provider,
+      modelName,
+    });
+
+    return prisma.aiServiceConfig.findUnique({ where: { service } });
+  }
+
+  async getAIRequestStats(range: "day" | "week" | "month") {
+    const since = new Date();
+    if (range === "day") since.setDate(since.getDate() - 1);
+    else if (range === "week") since.setDate(since.getDate() - 7);
+    else since.setMonth(since.getMonth() - 1);
+
+    const [byProvider, byService, totalRequests, avgLatency, errorCount] =
+      await Promise.all([
+        prisma.aiRequestLog.groupBy({
+          by: ["providerName"],
+          where: { createdAt: { gte: since } },
+          _count: { id: true },
+          _avg: { latencyMs: true },
+        }),
+        prisma.aiRequestLog.groupBy({
+          by: ["service"],
+          where: { createdAt: { gte: since } },
+          _count: { id: true },
+        }),
+        prisma.aiRequestLog.count({ where: { createdAt: { gte: since } } }),
+        prisma.aiRequestLog.aggregate({
+          where: { createdAt: { gte: since } },
+          _avg: { latencyMs: true },
+        }),
+        prisma.aiRequestLog.count({
+          where: { createdAt: { gte: since }, success: false },
+        }),
+      ]);
+
+    return {
+      byProvider: byProvider.map((p) => ({
+        provider: p.providerName,
+        count: p._count.id,
+        avgLatencyMs: Math.round(p._avg.latencyMs ?? 0),
+      })),
+      byService: byService.map((s) => ({
+        service: s.service,
+        count: s._count.id,
+      })),
+      totalRequests,
+      avgLatencyMs: Math.round(avgLatency._avg.latencyMs ?? 0),
+      errorCount,
+      errorRate: totalRequests > 0 ? Math.round((errorCount / totalRequests) * 100) : 0,
+    };
+  }
+
+  // ==================== ADMIN EXTERNAL JOBS ====================
+
+  async createExternalJob(data: {
+    company?: string; role?: string; description?: string;
+    salary?: string; location?: string; applyLink?: string; tags?: string[];
+  }) {
+    const expiresAt = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000); // 10 days
+    return prisma.adminJob.create({
+      data: {
+        company: data.company || null,
+        role: data.role || null,
+        description: data.description || null,
+        salary: data.salary || null,
+        location: data.location || null,
+        applyLink: data.applyLink || null,
+        tags: data.tags ?? [],
+        expiresAt,
+      },
+    });
+  }
+
+  async listExternalJobs(query: { page: number; limit: number; search?: string }) {
+    const where: Record<string, unknown> = {};
+    if (query.search) {
+      where.OR = [
+        { company: { contains: query.search, mode: "insensitive" } },
+        { role: { contains: query.search, mode: "insensitive" } },
+      ];
+    }
+    const [jobs, total] = await Promise.all([
+      prisma.adminJob.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (query.page - 1) * query.limit,
+        take: query.limit,
+      }),
+      prisma.adminJob.count({ where }),
+    ]);
+    return { jobs, total, totalPages: Math.ceil(total / query.limit), page: query.page };
+  }
+
+  async updateExternalJob(id: number, data: Record<string, unknown>) {
+    const job = await prisma.adminJob.findUnique({ where: { id } });
+    if (!job) throw new Error("Job not found");
+    return prisma.adminJob.update({ where: { id }, data });
+  }
+
+  async deleteExternalJob(id: number) {
+    const job = await prisma.adminJob.findUnique({ where: { id } });
+    if (!job) throw new Error("Job not found");
+    return prisma.adminJob.delete({ where: { id } });
+  }
+
+  async getPublicExternalJobs(query: { page: number; limit: number; search?: string }) {
+    const now = new Date();
+    const where: Record<string, unknown> = {
+      isActive: true,
+      expiresAt: { gt: now },
+    };
+    if (query.search) {
+      where.OR = [
+        { company: { contains: query.search, mode: "insensitive" } },
+        { role: { contains: query.search, mode: "insensitive" } },
+      ];
+    }
+    const [jobs, total] = await Promise.all([
+      prisma.adminJob.findMany({
+        where,
+        orderBy: { createdAt: "desc" },
+        skip: (query.page - 1) * query.limit,
+        take: query.limit,
+        select: {
+          id: true, company: true, role: true, description: true,
+          salary: true, location: true, applyLink: true, tags: true,
+          expiresAt: true, createdAt: true,
+        },
+      }),
+      prisma.adminJob.count({ where }),
+    ]);
+    return { jobs, total, totalPages: Math.ceil(total / query.limit), page: query.page };
   }
 }

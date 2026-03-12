@@ -30,13 +30,13 @@
         }
       ],
       "notes": [
-        "Annotate function parameters always — TypeScript cannot infer them from the function body.",
+        "Annotate function parameters always - TypeScript cannot infer them from the function body.",
         "Use explicit return type annotations on public functions and exported APIs to prevent accidental type changes.",
         "Inline object types work for one-off uses, but extract to interfaces or type aliases when reused across multiple functions."
       ],
       "commonPitfalls": [
-        "Annotating everything redundantly — `const name: string = \"Alice\"` adds no value since TypeScript infers `string` from the value.",
-        "Forgetting return type annotations on functions that should return void — this allows accidentally returning values that callers might depend on."
+        "Annotating everything redundantly - `const name: string = \"Alice\"` adds no value since TypeScript infers `string` from the value.",
+        "Forgetting return type annotations on functions that should return void - this allows accidentally returning values that callers might depend on."
       ]
     },
     "exercises": [
@@ -77,7 +77,7 @@
     "isInterviewQuestion": false,
     "concepts": ["as keyword", "Angle bracket syntax", "Non-null assertion", "Type narrowing vs assertion"],
     "content": {
-      "explanation": "Type assertions tell the TypeScript compiler to treat a value as a specific type. Unlike type annotations which declare what a value must be, assertions override the compiler's understanding — you're telling TypeScript \"I know more about this value's type than you do.\" The most common syntax uses the `as` keyword: `value as Type`. There's also an older angle bracket syntax `<Type>value`, though this conflicts with JSX and is rarely used in React projects.\n\nType assertions are commonly needed when working with DOM APIs, data from external sources (like JSON parsing), or when TypeScript's type inference is too broad. For example, `document.getElementById(\"myCanvas\")` returns `HTMLElement | null`, but if you know it's a canvas element, you can assert `document.getElementById(\"myCanvas\") as HTMLCanvasElement`. The assertion doesn't change the runtime value — it only affects how TypeScript views the type during compilation.\n\nThe non-null assertion operator (`!`) is a special form of assertion that removes `null` and `undefined` from a type. Writing `value!` is equivalent to `value as NonNullable<typeof value>`. Use it when you're certain a value isn't null but TypeScript can't determine that on its own. However, overusing non-null assertions is dangerous because you're bypassing TypeScript's null safety checks — if the value actually is null at runtime, you'll get an error.\n\nIt's important to understand that type assertions are not type casts. They don't convert values at runtime — they only change the compile-time type. TypeScript also prevents completely nonsensical assertions: you can't assert `\"hello\" as number` directly because a string is never a number. For such cases, you'd need a double assertion through `unknown`: `\"hello\" as unknown as number`, though this is almost always a code smell.",
+      "explanation": "Type assertions tell the TypeScript compiler to treat a value as a specific type. Unlike type annotations which declare what a value must be, assertions override the compiler's understanding - you're telling TypeScript \"I know more about this value's type than you do.\" The most common syntax uses the `as` keyword: `value as Type`. There's also an older angle bracket syntax `<Type>value`, though this conflicts with JSX and is rarely used in React projects.\n\nType assertions are commonly needed when working with DOM APIs, data from external sources (like JSON parsing), or when TypeScript's type inference is too broad. For example, `document.getElementById(\"myCanvas\")` returns `HTMLElement | null`, but if you know it's a canvas element, you can assert `document.getElementById(\"myCanvas\") as HTMLCanvasElement`. The assertion doesn't change the runtime value - it only affects how TypeScript views the type during compilation.\n\nThe non-null assertion operator (`!`) is a special form of assertion that removes `null` and `undefined` from a type. Writing `value!` is equivalent to `value as NonNullable<typeof value>`. Use it when you're certain a value isn't null but TypeScript can't determine that on its own. However, overusing non-null assertions is dangerous because you're bypassing TypeScript's null safety checks - if the value actually is null at runtime, you'll get an error.\n\nIt's important to understand that type assertions are not type casts. They don't convert values at runtime - they only change the compile-time type. TypeScript also prevents completely nonsensical assertions: you can't assert `\"hello\" as number` directly because a string is never a number. For such cases, you'd need a double assertion through `unknown`: `\"hello\" as unknown as number`, though this is almost always a code smell.",
       "codeExamples": [
         {
           "title": "The 'as' keyword",
@@ -89,7 +89,7 @@
           "title": "Non-null assertion operator",
           "code": "const data: Map<string, number> = new Map();\ndata.set(\"score\", 95);\ndata.set(\"level\", 3);\n\n// Map.get() returns T | undefined\n// We know these keys exist, so we use ! to assert non-null\nconst score = data.get(\"score\")!;\nconst level = data.get(\"level\")!;\n\nconsole.log(`Score: ${score}, Level: ${level}`);\nconsole.log(`Total: ${score + level}`);",
           "output": "Score: 95, Level: 3\nTotal: 98",
-          "explanation": "The `!` operator removes undefined from the type. Map.get() returns `number | undefined`, but we know the keys exist, so `!` asserts the value is not undefined. Use sparingly — prefer null checks when unsure."
+          "explanation": "The `!` operator removes undefined from the type. Map.get() returns `number | undefined`, but we know the keys exist, so `!` asserts the value is not undefined. Use sparingly - prefer null checks when unsure."
         },
         {
           "title": "Prefer type narrowing over assertions",
@@ -99,13 +99,13 @@
         }
       ],
       "notes": [
-        "Prefer type narrowing (typeof checks, null checks) over assertions — narrowing is verified at runtime while assertions are not.",
+        "Prefer type narrowing (typeof checks, null checks) over assertions - narrowing is verified at runtime while assertions are not.",
         "The `as` syntax is preferred over angle brackets `<Type>value` because angle brackets conflict with JSX in React files.",
-        "Non-null assertions (`!`) should be used sparingly — each one is a potential runtime error if your assumption is wrong."
+        "Non-null assertions (`!`) should be used sparingly - each one is a potential runtime error if your assumption is wrong."
       ],
       "commonPitfalls": [
-        "Using assertions to silence errors instead of fixing the underlying type issue — this trades compile-time safety for runtime crashes.",
-        "Over-using non-null assertions (`!`) — every `!` is a place where TypeScript's null safety is bypassed. Prefer explicit null checks."
+        "Using assertions to silence errors instead of fixing the underlying type issue - this trades compile-time safety for runtime crashes.",
+        "Over-using non-null assertions (`!`) - every `!` is a place where TypeScript's null safety is bypassed. Prefer explicit null checks."
       ]
     },
     "exercises": [
@@ -146,19 +146,19 @@
     "isInterviewQuestion": false,
     "concepts": ["String literal types", "Number literal types", "Boolean literal types", "Union of literals"],
     "content": {
-      "explanation": "Literal types in TypeScript allow you to specify the exact value a variable can hold, not just its general type. Instead of saying a variable is a `string`, you can say it's specifically `\"hello\"` or `\"world\"` and nothing else. This concept applies to strings, numbers, and booleans. Literal types are the foundation for creating precise, expressive type definitions that restrict values to a known set of options.\n\nThe most common use of literal types is combining them with union types to create a set of allowed values. For example, `type Direction = \"north\" | \"south\" | \"east\" | \"west\"` creates a type that only accepts those four specific strings. This is similar to enums but uses plain string values, making them fully compatible with JavaScript without any runtime overhead. Most TypeScript codebases prefer string literal unions over enums for this reason.\n\nLiteral types arise naturally from `const` declarations. When you write `const direction = \"north\"`, TypeScript infers the type as the literal `\"north\"` rather than `string`, because a const can never be reassigned. With `let direction = \"north\"`, TypeScript widens the type to `string` since the variable could later hold a different string. Understanding this widening behavior is key to working with literal types effectively.\n\nNumber literal types work the same way. You can define `type DiceRoll = 1 | 2 | 3 | 4 | 5 | 6` to restrict a value to valid dice outcomes. Boolean literal types are less common on their own but appear in conditional types and discriminated unions. The power of literal types really shines when combined with type narrowing — TypeScript can track which specific literal value a variable holds through conditional branches, enabling very precise type checking.",
+      "explanation": "Literal types in TypeScript allow you to specify the exact value a variable can hold, not just its general type. Instead of saying a variable is a `string`, you can say it's specifically `\"hello\"` or `\"world\"` and nothing else. This concept applies to strings, numbers, and booleans. Literal types are the foundation for creating precise, expressive type definitions that restrict values to a known set of options.\n\nThe most common use of literal types is combining them with union types to create a set of allowed values. For example, `type Direction = \"north\" | \"south\" | \"east\" | \"west\"` creates a type that only accepts those four specific strings. This is similar to enums but uses plain string values, making them fully compatible with JavaScript without any runtime overhead. Most TypeScript codebases prefer string literal unions over enums for this reason.\n\nLiteral types arise naturally from `const` declarations. When you write `const direction = \"north\"`, TypeScript infers the type as the literal `\"north\"` rather than `string`, because a const can never be reassigned. With `let direction = \"north\"`, TypeScript widens the type to `string` since the variable could later hold a different string. Understanding this widening behavior is key to working with literal types effectively.\n\nNumber literal types work the same way. You can define `type DiceRoll = 1 | 2 | 3 | 4 | 5 | 6` to restrict a value to valid dice outcomes. Boolean literal types are less common on their own but appear in conditional types and discriminated unions. The power of literal types really shines when combined with type narrowing - TypeScript can track which specific literal value a variable holds through conditional branches, enabling very precise type checking.",
       "codeExamples": [
         {
           "title": "String literal types as unions",
           "code": "type Status = \"pending\" | \"active\" | \"archived\";\ntype Theme = \"light\" | \"dark\" | \"system\";\n\nfunction setStatus(status: Status): string {\n  return `Status set to: ${status}`;\n}\n\nfunction getBackground(theme: Theme): string {\n  switch (theme) {\n    case \"light\": return \"#ffffff\";\n    case \"dark\": return \"#1a1a1a\";\n    case \"system\": return \"#f0f0f0\";\n  }\n}\n\nconsole.log(setStatus(\"active\"));\nconsole.log(getBackground(\"dark\"));\n// setStatus(\"deleted\"); // Error: Argument of type '\"deleted\"' is not assignable",
           "output": "Status set to: active\n#1a1a1a",
-          "explanation": "String literal unions restrict a parameter to specific allowed values. TypeScript ensures exhaustive checking in switch statements — if you add a new status, the compiler warns about unhandled cases."
+          "explanation": "String literal unions restrict a parameter to specific allowed values. TypeScript ensures exhaustive checking in switch statements - if you add a new status, the compiler warns about unhandled cases."
         },
         {
           "title": "Number literal types",
           "code": "type HttpSuccessCode = 200 | 201 | 204;\ntype DiceRoll = 1 | 2 | 3 | 4 | 5 | 6;\n\nfunction describeStatus(code: HttpSuccessCode): string {\n  switch (code) {\n    case 200: return \"OK\";\n    case 201: return \"Created\";\n    case 204: return \"No Content\";\n  }\n}\n\nfunction rollDice(): DiceRoll {\n  return (Math.floor(Math.random() * 6) + 1) as DiceRoll;\n}\n\nconsole.log(describeStatus(200));\nconsole.log(describeStatus(201));\nconsole.log(typeof rollDice());",
           "output": "OK\nCreated\nnumber",
-          "explanation": "Number literal types restrict values to specific numbers. The switch statement is exhaustive — TypeScript ensures every literal is handled."
+          "explanation": "Number literal types restrict values to specific numbers. The switch statement is exhaustive - TypeScript ensures every literal is handled."
         },
         {
           "title": "Literal type widening with let vs const",
@@ -168,13 +168,13 @@
         }
       ],
       "notes": [
-        "String literal unions (`\"a\" | \"b\" | \"c\"`) are generally preferred over enums in TypeScript — they're simpler, have no runtime overhead, and work well with JavaScript.",
-        "Literal types from `const` declarations are automatically inferred — you don't need to annotate `const x: \"hello\" = \"hello\"`.",
+        "String literal unions (`\"a\" | \"b\" | \"c\"`) are generally preferred over enums in TypeScript - they're simpler, have no runtime overhead, and work well with JavaScript.",
+        "Literal types from `const` declarations are automatically inferred - you don't need to annotate `const x: \"hello\" = \"hello\"`.",
         "Combine literal types with type narrowing in switch statements for exhaustive pattern matching."
       ],
       "commonPitfalls": [
-        "Passing a `let` variable to a function expecting a literal type — use `as const` on the value or annotate the variable with the literal type.",
-        "Forgetting that string literal types are case-sensitive — `\"Active\"` and `\"active\"` are completely different types."
+        "Passing a `let` variable to a function expecting a literal type - use `as const` on the value or annotate the variable with the literal type.",
+        "Forgetting that string literal types are case-sensitive - `\"Active\"` and `\"active\"` are completely different types."
       ]
     },
     "exercises": [
@@ -215,19 +215,19 @@
     "isInterviewQuestion": false,
     "concepts": ["as const", "Readonly inference", "Deep immutability", "Literal preservation"],
     "content": {
-      "explanation": "Const assertions, written as `as const`, tell TypeScript to infer the most specific (narrowest) type possible for a value and make it deeply readonly. When you write `const colors = [\"red\", \"green\", \"blue\"] as const`, TypeScript infers the type as `readonly [\"red\", \"green\", \"blue\"]` instead of `string[]`. Every string becomes a literal type, the array becomes a readonly tuple, and all nested properties become readonly.\n\nWithout `as const`, TypeScript widens types to be practical for mutation. An object `{ name: \"Alice\", age: 30 }` is inferred as `{ name: string; age: number }`, and an array `[1, 2, 3]` as `number[]`. This is correct for mutable values, but when you have configuration objects, lookup tables, or constant data that should never change, `as const` gives you the precision of literal types throughout the entire structure.\n\nConst assertions are particularly powerful when combined with the `typeof` operator to derive types from values. A common pattern is defining a constant array of allowed values and then deriving a union type from it: `const statuses = [\"draft\", \"published\", \"archived\"] as const; type Status = typeof statuses[number];` This gives you `\"draft\" | \"published\" | \"archived\"` — the type and the runtime values stay in sync automatically.\n\nOne important detail: `as const` creates deeply readonly types. All properties, nested objects, and array elements become readonly. This means you cannot modify any part of the structure after creation. If you need to pass a const-asserted value to a function that expects a mutable type, you may need to use a type assertion or adjust the function's parameter type to accept readonly values.",
+      "explanation": "Const assertions, written as `as const`, tell TypeScript to infer the most specific (narrowest) type possible for a value and make it deeply readonly. When you write `const colors = [\"red\", \"green\", \"blue\"] as const`, TypeScript infers the type as `readonly [\"red\", \"green\", \"blue\"]` instead of `string[]`. Every string becomes a literal type, the array becomes a readonly tuple, and all nested properties become readonly.\n\nWithout `as const`, TypeScript widens types to be practical for mutation. An object `{ name: \"Alice\", age: 30 }` is inferred as `{ name: string; age: number }`, and an array `[1, 2, 3]` as `number[]`. This is correct for mutable values, but when you have configuration objects, lookup tables, or constant data that should never change, `as const` gives you the precision of literal types throughout the entire structure.\n\nConst assertions are particularly powerful when combined with the `typeof` operator to derive types from values. A common pattern is defining a constant array of allowed values and then deriving a union type from it: `const statuses = [\"draft\", \"published\", \"archived\"] as const; type Status = typeof statuses[number];` This gives you `\"draft\" | \"published\" | \"archived\"` - the type and the runtime values stay in sync automatically.\n\nOne important detail: `as const` creates deeply readonly types. All properties, nested objects, and array elements become readonly. This means you cannot modify any part of the structure after creation. If you need to pass a const-asserted value to a function that expects a mutable type, you may need to use a type assertion or adjust the function's parameter type to accept readonly values.",
       "codeExamples": [
         {
           "title": "as const with arrays",
           "code": "// Without as const: string[]\nconst colorsWide = [\"red\", \"green\", \"blue\"];\n\n// With as const: readonly [\"red\", \"green\", \"blue\"]\nconst colorsNarrow = [\"red\", \"green\", \"blue\"] as const;\n\n// Derive a union type from the const array\ntype Color = typeof colorsNarrow[number]; // \"red\" | \"green\" | \"blue\"\n\nfunction isValidColor(value: string): value is Color {\n  return (colorsNarrow as readonly string[]).includes(value);\n}\n\nconsole.log(isValidColor(\"red\"));\nconsole.log(isValidColor(\"purple\"));\nconsole.log(colorsNarrow.length);",
           "output": "true\nfalse\n3",
-          "explanation": "The `as const` assertion makes the array a readonly tuple of literal types. Using `typeof arr[number]` extracts a union of all element literal types — a very common and useful pattern."
+          "explanation": "The `as const` assertion makes the array a readonly tuple of literal types. Using `typeof arr[number]` extracts a union of all element literal types - a very common and useful pattern."
         },
         {
           "title": "as const with objects",
           "code": "// Without as const: { host: string; port: number; secure: boolean }\nconst configWide = { host: \"localhost\", port: 3000, secure: false };\n\n// With as const: deeply readonly with literal types\nconst config = {\n  host: \"localhost\",\n  port: 3000,\n  secure: false\n} as const;\n\n// config.port = 8080; // Error: Cannot assign to 'port' because it is a read-only property\n\ntype Config = typeof config;\n// { readonly host: \"localhost\"; readonly port: 3000; readonly secure: false }\n\nconsole.log(`${config.host}:${config.port}`);\nconsole.log(`Secure: ${config.secure}`);",
           "output": "localhost:3000\nSecure: false",
-          "explanation": "With `as const`, every property becomes readonly and gets its literal type. The object is deeply immutable at the type level — any attempt to modify a property is a compile error."
+          "explanation": "With `as const`, every property becomes readonly and gets its literal type. The object is deeply immutable at the type level - any attempt to modify a property is a compile error."
         },
         {
           "title": "Deriving types from const values",
@@ -238,12 +238,12 @@
       ],
       "notes": [
         "Use `as const` for configuration objects, lookup tables, and any data that should be immutable and precisely typed.",
-        "The pattern `typeof arr[number]` extracts a union type from a const array — this keeps your types and values in sync.",
-        "Const assertions make things deeply readonly — all nested properties and array elements become immutable."
+        "The pattern `typeof arr[number]` extracts a union type from a const array - this keeps your types and values in sync.",
+        "Const assertions make things deeply readonly - all nested properties and array elements become immutable."
       ],
       "commonPitfalls": [
-        "Trying to mutate a const-asserted value — `as const` makes everything readonly, so push, pop, and property assignment will fail at compile time.",
-        "Forgetting that `as const` affects the entire structure deeply — nested objects and arrays also become readonly, which may cause type mismatches with functions expecting mutable types."
+        "Trying to mutate a const-asserted value - `as const` makes everything readonly, so push, pop, and property assignment will fail at compile time.",
+        "Forgetting that `as const` affects the entire structure deeply - nested objects and arrays also become readonly, which may cause type mismatches with functions expecting mutable types."
       ]
     },
     "exercises": [
@@ -269,7 +269,7 @@
         "expectedOutput": "https://db.example.com:5432/myapp",
         "hints": [
           "Create the object with `as const` at the end to make all properties readonly with literal types.",
-          "The function accesses the config object directly — since it's const, TypeScript knows the exact types of all properties."
+          "The function accesses the config object directly - since it's const, TypeScript knows the exact types of all properties."
         ],
         "difficulty": "Easy"
       }
@@ -284,13 +284,13 @@
     "isInterviewQuestion": true,
     "concepts": ["any type", "unknown type", "never type", "void type", "Top and bottom types"],
     "content": {
-      "explanation": "TypeScript has three special types that occupy important positions in the type system: `any`, `unknown`, and `never`. Understanding the differences between them is crucial for writing safe TypeScript and is a common interview topic. Additionally, `void` plays a specific role for functions that don't return a value. Together, these types form the boundary conditions of the type system.\n\nThe `any` type is an escape hatch that completely disables type checking. A value of type `any` can be assigned to any other type, and any type can be assigned to `any`. You can call any method on it, access any property, and perform any operation without TypeScript complaining. While useful during migration from JavaScript, `any` should be avoided in production code because it silently propagates through your codebase — a single `any` can infect related variables and functions, creating blind spots in type safety.\n\nThe `unknown` type is the type-safe counterpart to `any`. Like `any`, it can hold any value — but unlike `any`, you cannot do anything with an `unknown` value until you narrow its type through type guards. You must use `typeof`, `instanceof`, or other checks before accessing properties or calling methods on an `unknown` value. This forces you to validate the type at runtime before using it, making `unknown` the correct choice for values whose type you genuinely don't know, such as parsed JSON, user input, or data from external APIs.\n\nThe `never` type represents values that can never occur. It's the return type of functions that always throw errors or have infinite loops, and it appears in exhaustive type narrowing when all possibilities have been handled. In type theory, `never` is the \"bottom type\" — it's assignable to every other type but no type is assignable to `never`. The `void` type is different: it represents the absence of a return value in functions. A `void` function can return `undefined` implicitly but cannot return any other value.",
+      "explanation": "TypeScript has three special types that occupy important positions in the type system: `any`, `unknown`, and `never`. Understanding the differences between them is crucial for writing safe TypeScript and is a common interview topic. Additionally, `void` plays a specific role for functions that don't return a value. Together, these types form the boundary conditions of the type system.\n\nThe `any` type is an escape hatch that completely disables type checking. A value of type `any` can be assigned to any other type, and any type can be assigned to `any`. You can call any method on it, access any property, and perform any operation without TypeScript complaining. While useful during migration from JavaScript, `any` should be avoided in production code because it silently propagates through your codebase - a single `any` can infect related variables and functions, creating blind spots in type safety.\n\nThe `unknown` type is the type-safe counterpart to `any`. Like `any`, it can hold any value - but unlike `any`, you cannot do anything with an `unknown` value until you narrow its type through type guards. You must use `typeof`, `instanceof`, or other checks before accessing properties or calling methods on an `unknown` value. This forces you to validate the type at runtime before using it, making `unknown` the correct choice for values whose type you genuinely don't know, such as parsed JSON, user input, or data from external APIs.\n\nThe `never` type represents values that can never occur. It's the return type of functions that always throw errors or have infinite loops, and it appears in exhaustive type narrowing when all possibilities have been handled. In type theory, `never` is the \"bottom type\" - it's assignable to every other type but no type is assignable to `never`. The `void` type is different: it represents the absence of a return value in functions. A `void` function can return `undefined` implicitly but cannot return any other value.",
       "codeExamples": [
         {
           "title": "any vs unknown",
-          "code": "// any: no type safety at all\nlet dangerous: any = \"hello\";\ndangerous = 42;\ndangerous = { foo: \"bar\" };\n// No errors — but also no help from TypeScript\n\n// unknown: must narrow before using\nlet safe: unknown = \"hello\";\n// safe.toUpperCase(); // Error: Object is of type 'unknown'\n\n// Narrow with typeof before using\nif (typeof safe === \"string\") {\n  console.log(safe.toUpperCase()); // OK after narrowing\n}\n\nif (typeof safe === \"number\") {\n  console.log(safe.toFixed(2));\n} else {\n  console.log(\"Not a number\");\n}",
+          "code": "// any: no type safety at all\nlet dangerous: any = \"hello\";\ndangerous = 42;\ndangerous = { foo: \"bar\" };\n// No errors - but also no help from TypeScript\n\n// unknown: must narrow before using\nlet safe: unknown = \"hello\";\n// safe.toUpperCase(); // Error: Object is of type 'unknown'\n\n// Narrow with typeof before using\nif (typeof safe === \"string\") {\n  console.log(safe.toUpperCase()); // OK after narrowing\n}\n\nif (typeof safe === \"number\") {\n  console.log(safe.toFixed(2));\n} else {\n  console.log(\"Not a number\");\n}",
           "output": "HELLO\nNot a number",
-          "explanation": "With `any`, TypeScript allows everything — no errors, no safety. With `unknown`, you must prove the type before using the value. Always prefer `unknown` over `any` when the type is genuinely not known."
+          "explanation": "With `any`, TypeScript allows everything - no errors, no safety. With `unknown`, you must prove the type before using the value. Always prefer `unknown` over `any` when the type is genuinely not known."
         },
         {
           "title": "The never type",
@@ -306,17 +306,17 @@
         }
       ],
       "notes": [
-        "Use `unknown` instead of `any` when you don't know the type — it forces you to validate before using the value.",
-        "The `never` type is useful for exhaustive switches — assigning to `never` in the default case catches unhandled variants at compile time.",
-        "The `void` type is exclusively for function return types — it means the function doesn't return a meaningful value."
+        "Use `unknown` instead of `any` when you don't know the type - it forces you to validate before using the value.",
+        "The `never` type is useful for exhaustive switches - assigning to `never` in the default case catches unhandled variants at compile time.",
+        "The `void` type is exclusively for function return types - it means the function doesn't return a meaningful value."
       ],
       "commonPitfalls": [
-        "Using `any` to quickly fix type errors — this silences the compiler but hides real bugs. Use `unknown` and proper type narrowing instead.",
-        "Confusing `void` with `undefined` — a `void` function implicitly returns undefined, but `void` and `undefined` are different types in TypeScript's type system."
+        "Using `any` to quickly fix type errors - this silences the compiler but hides real bugs. Use `unknown` and proper type narrowing instead.",
+        "Confusing `void` with `undefined` - a `void` function implicitly returns undefined, but `void` and `undefined` are different types in TypeScript's type system."
       ],
       "interviewTips": [
         "When asked about `any` vs `unknown`, explain that `any` disables type checking (opt out) while `unknown` requires type narrowing (opt in). `unknown` is the type-safe alternative.",
-        "For `never`, explain it's the bottom type — it represents computations that never complete. Common examples: functions that throw, infinite loops, and exhaustive type narrowing in switch defaults."
+        "For `never`, explain it's the bottom type - it represents computations that never complete. Common examples: functions that throw, infinite loops, and exhaustive type narrowing in switch defaults."
       ]
     },
     "exercises": [
@@ -341,7 +341,7 @@
         "solution": "type LogLevel = \"info\" | \"warn\" | \"error\";\n\nfunction formatLog(level: LogLevel, message: string): string {\n  switch (level) {\n    case \"info\":\n      return `[INFO] ${message}`;\n    case \"warn\":\n      return `[WARN] ${message}`;\n    case \"error\":\n      return `[ERROR] ${message}`;\n    default:\n      const exhaustive: never = level;\n      return exhaustive;\n  }\n}\n\nconsole.log(formatLog(\"info\", \"Server started\"));\nconsole.log(formatLog(\"warn\", \"Disk space low\"));\nconsole.log(formatLog(\"error\", \"Connection failed\"));",
         "expectedOutput": "[INFO] Server started\n[WARN] Disk space low\n[ERROR] Connection failed",
         "hints": [
-          "Define the type as a union of literal strings. In the switch default, assign `level` to a `never` variable — this ensures all cases are handled.",
+          "Define the type as a union of literal strings. In the switch default, assign `level` to a `never` variable - this ensures all cases are handled.",
           "If you later add a new log level to the union without adding a case, TypeScript will error at the `never` assignment."
         ],
         "difficulty": "Medium"

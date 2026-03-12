@@ -1,3 +1,23 @@
+export type AIProviderType = "GEMINI" | "GROQ" | "OPENROUTER" | "CODESTRAL";
+export type AIServiceType = "ATS_SCORE" | "COVER_LETTER" | "RESUME_GEN" | "LATEX_CHAT";
+
+export interface AIServiceConfig {
+  id: number;
+  service: AIServiceType;
+  provider: AIProviderType;
+  modelName: string;
+  updatedAt: string;
+}
+
+export interface AIRequestStats {
+  byProvider: { provider: AIProviderType; count: number; avgLatencyMs: number }[];
+  byService: { service: AIServiceType; count: number }[];
+  totalRequests: number;
+  avgLatencyMs: number;
+  errorCount: number;
+  errorRate: number;
+}
+
 export type UserRole = "STUDENT" | "RECRUITER" | "ADMIN";
 export type JobStatus = "DRAFT" | "PUBLISHED" | "CLOSED" | "ARCHIVED";
 export type ApplicationStatus = "APPLIED" | "IN_PROGRESS" | "SHORTLISTED" | "REJECTED" | "HIRED" | "WITHDRAWN";
@@ -41,7 +61,9 @@ export interface User {
   linkedinUrl?: string;
   githubUrl?: string;
   portfolioUrl?: string;
+  leetcodeUrl?: string;
   jobStatus?: StudentJobStatus | null;
+  isProfilePublic?: boolean;
   projects?: ProjectItem[];
   achievements?: AchievementItem[];
   createdAt?: string;
@@ -227,6 +249,18 @@ export interface UsageStats {
   usage: UsageItem[];
 }
 
+// LaTeX Chat
+export interface LatexChatMessage {
+  role: "user" | "assistant";
+  content: string;
+  updatedLatex?: string;
+}
+
+export interface LatexChatResponse {
+  reply: string;
+  updatedLatex?: string;
+}
+
 // Cover Letter
 export type CoverLetterTone = "professional" | "friendly" | "enthusiastic";
 
@@ -320,74 +354,6 @@ export interface CityCount {
   count: number;
 }
 
-// Career Roadmap
-export type CareerCategory = "ENGINEERING" | "DESIGN" | "DATA" | "PRODUCT" | "MARKETING" | "DEVOPS" | "SECURITY" | "OTHER";
-export type CareerDifficulty = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-export type ResourceType = "ARTICLE" | "VIDEO" | "COURSE" | "BOOK" | "DOCUMENTATION" | "TUTORIAL";
-export type SkillLevel = "BEGINNER" | "INTERMEDIATE" | "ADVANCED";
-export type EnrollmentStatus = "ACTIVE" | "PAUSED" | "COMPLETED";
-
-export interface Career {
-  id: number;
-  title: string;
-  slug: string;
-  description: string;
-  category: CareerCategory;
-  difficulty: CareerDifficulty;
-  iconUrl?: string;
-  avgSalary?: string;
-  demandLevel?: string;
-  _count?: { phases: number; enrollments: number };
-  phases?: CareerPhase[];
-  createdAt: string;
-  updatedAt: string;
-}
-
-export interface CareerPhase {
-  id: number;
-  title: string;
-  description?: string;
-  orderIndex: number;
-  durationWeeks?: number;
-  skills: CareerSkill[];
-  resources: CareerResource[];
-  tools: CareerTool[];
-}
-
-export interface CareerSkill {
-  id: number;
-  name: string;
-  level: SkillLevel;
-  completed?: boolean;
-  hasQuiz?: boolean;
-  verifiedAt?: string | null;
-}
-
-export interface CareerResource {
-  id: number;
-  title: string;
-  url: string;
-  type: ResourceType;
-  free: boolean;
-}
-
-export interface CareerTool {
-  id: number;
-  name: string;
-  url?: string;
-  category?: string;
-}
-
-export interface StudentCareerEnrollment {
-  id: number;
-  careerId: number;
-  status: EnrollmentStatus;
-  career: Career;
-  progress: number;
-  completedSkills: number;
-  totalSkills: number;
-}
-
 // Admin Dashboard
 export type AdminTier = "SUPER_ADMIN" | "ADMIN" | "MODERATOR";
 
@@ -442,6 +408,7 @@ export interface TalentSearchResult {
   linkedinUrl?: string;
   githubUrl?: string;
   portfolioUrl?: string;
+  leetcodeUrl?: string;
   resumes: string[];
   jobStatus?: string | null;
   bestAtsScore: number | null;

@@ -36,7 +36,7 @@
       ],
       "commonPitfalls": [
         "Forgetting to declare a property type in the class body before assigning it in the constructor leads to a compile error.",
-        "Using arrow functions as class methods changes how `this` binding works — arrow methods capture `this` from the enclosing scope, not the instance."
+        "Using arrow functions as class methods changes how `this` binding works - arrow methods capture `this` from the enclosing scope, not the instance."
       ]
     },
     "exercises": [
@@ -77,7 +77,7 @@
     "isInterviewQuestion": false,
     "concepts": ["public", "private", "protected", "readonly", "encapsulation"],
     "content": {
-      "explanation": "Access modifiers in TypeScript control the visibility and mutability of class members. They are a core part of encapsulation, one of the fundamental principles of object-oriented programming. By restricting access to certain properties and methods, you create a clear boundary between a class's internal implementation and its public API.\n\nThe `public` modifier is the default in TypeScript — every member without an explicit modifier is public. Public members can be accessed from anywhere: inside the class, in subclasses, and from external code. The `private` modifier restricts access to the class itself. Private members cannot be accessed from outside the class or from subclasses. TypeScript also supports the JavaScript native `#` private field syntax, which provides true runtime privacy.\n\nThe `protected` modifier sits between public and private. Protected members are accessible within the class and in subclasses, but not from external code. This is useful when you want to share implementation details with child classes while still hiding them from the rest of the application.\n\nThe `readonly` modifier prevents a property from being reassigned after initialization. You can set a readonly property in the constructor or at the declaration site, but any subsequent assignment will cause a compile error. Combining `readonly` with other access modifiers (e.g., `private readonly`) gives you fine-grained control over who can read a value and ensures it never changes after construction.",
+      "explanation": "Access modifiers in TypeScript control the visibility and mutability of class members. They are a core part of encapsulation, one of the fundamental principles of object-oriented programming. By restricting access to certain properties and methods, you create a clear boundary between a class's internal implementation and its public API.\n\nThe `public` modifier is the default in TypeScript - every member without an explicit modifier is public. Public members can be accessed from anywhere: inside the class, in subclasses, and from external code. The `private` modifier restricts access to the class itself. Private members cannot be accessed from outside the class or from subclasses. TypeScript also supports the JavaScript native `#` private field syntax, which provides true runtime privacy.\n\nThe `protected` modifier sits between public and private. Protected members are accessible within the class and in subclasses, but not from external code. This is useful when you want to share implementation details with child classes while still hiding them from the rest of the application.\n\nThe `readonly` modifier prevents a property from being reassigned after initialization. You can set a readonly property in the constructor or at the declaration site, but any subsequent assignment will cause a compile error. Combining `readonly` with other access modifiers (e.g., `private readonly`) gives you fine-grained control over who can read a value and ensures it never changes after construction.",
       "codeExamples": [
         {
           "title": "Public, Private, and Protected",
@@ -99,12 +99,12 @@
         }
       ],
       "notes": [
-        "TypeScript access modifiers are compile-time only — they do not exist at runtime in the emitted JavaScript. Use `#` private fields for true runtime privacy.",
+        "TypeScript access modifiers are compile-time only - they do not exist at runtime in the emitted JavaScript. Use `#` private fields for true runtime privacy.",
         "The `readonly` modifier only prevents reassignment of the property itself. If the property is an object or array, its internal contents can still be mutated.",
         "You can combine access modifiers freely: `private readonly`, `protected readonly`, etc."
       ],
       "commonPitfalls": [
-        "Assuming `private` gives runtime protection — it is only enforced by the TypeScript compiler. At runtime, the property is still accessible.",
+        "Assuming `private` gives runtime protection - it is only enforced by the TypeScript compiler. At runtime, the property is still accessible.",
         "Trying to access a `protected` member from outside the class hierarchy. Protected means accessible in the class and subclasses, not anywhere else."
       ]
     },
@@ -146,7 +146,7 @@
     "isInterviewQuestion": false,
     "concepts": ["abstract class", "abstract method", "inheritance", "polymorphism", "template method pattern"],
     "content": {
-      "explanation": "Abstract classes in TypeScript serve as base classes that cannot be instantiated directly. They provide a way to define a common structure and shared behavior that subclasses must follow. You declare an abstract class using the `abstract` keyword before the class definition, and any class that extends it must implement all of its abstract methods.\n\nAbstract methods are method signatures declared with the `abstract` keyword but without an implementation body. They define a contract: every concrete (non-abstract) subclass must provide its own implementation. This is powerful for defining families of related classes that share common behavior but differ in specific details.\n\nUnlike interfaces, abstract classes can include fully implemented methods alongside abstract ones. This means you can put shared logic in the base class and only require subclasses to fill in the parts that vary. This pattern is known as the Template Method pattern in design patterns terminology and is extremely common in real-world applications.\n\nAbstract classes also support constructors, properties with access modifiers, and everything else a regular class supports. The key difference is simply that you cannot do `new AbstractClass()` directly — you must create a concrete subclass. This makes abstract classes ideal for defining frameworks or base layers where the specific behavior is determined by subclasses.",
+      "explanation": "Abstract classes in TypeScript serve as base classes that cannot be instantiated directly. They provide a way to define a common structure and shared behavior that subclasses must follow. You declare an abstract class using the `abstract` keyword before the class definition, and any class that extends it must implement all of its abstract methods.\n\nAbstract methods are method signatures declared with the `abstract` keyword but without an implementation body. They define a contract: every concrete (non-abstract) subclass must provide its own implementation. This is powerful for defining families of related classes that share common behavior but differ in specific details.\n\nUnlike interfaces, abstract classes can include fully implemented methods alongside abstract ones. This means you can put shared logic in the base class and only require subclasses to fill in the parts that vary. This pattern is known as the Template Method pattern in design patterns terminology and is extremely common in real-world applications.\n\nAbstract classes also support constructors, properties with access modifiers, and everything else a regular class supports. The key difference is simply that you cannot do `new AbstractClass()` directly - you must create a concrete subclass. This makes abstract classes ideal for defining frameworks or base layers where the specific behavior is determined by subclasses.",
       "codeExamples": [
         {
           "title": "Basic Abstract Class",
@@ -162,13 +162,13 @@
         }
       ],
       "notes": [
-        "You cannot create an instance of an abstract class directly — `new Shape()` would be a compile error.",
+        "You cannot create an instance of an abstract class directly - `new Shape()` would be a compile error.",
         "Abstract classes can have a mix of abstract methods (no body) and concrete methods (with body).",
         "A class extending an abstract class must implement all abstract members, or it must also be declared abstract."
       ],
       "commonPitfalls": [
         "Forgetting to call `super()` in the subclass constructor when the abstract class has its own constructor.",
-        "Confusing abstract classes with interfaces — abstract classes can have implementation code and state, interfaces cannot."
+        "Confusing abstract classes with interfaces - abstract classes can have implementation code and state, interfaces cannot."
       ]
     },
     "exercises": [
@@ -209,7 +209,7 @@
     "isInterviewQuestion": false,
     "concepts": ["implements", "interface", "contract", "multiple interfaces", "structural typing"],
     "content": {
-      "explanation": "The `implements` keyword in TypeScript allows a class to declare that it satisfies the contract defined by one or more interfaces. When a class implements an interface, TypeScript checks that the class provides all the properties and methods the interface requires. If anything is missing or has the wrong type, you get a compile-time error.\n\nImplementing interfaces is a form of contract enforcement. An interface says \"any class implementing me must have these members\" without dictating how they should be implemented. This is different from abstract classes, which can provide partial implementations. Interfaces are purely structural — they define shape, not behavior.\n\nA class can implement multiple interfaces by separating them with commas: `class Foo implements Bar, Baz`. This is TypeScript's answer to multiple inheritance. Since interfaces have no implementation, there is no ambiguity about which parent's code to use — the class must provide all implementations itself. This makes multiple interface implementation safe and straightforward.\n\nIt is important to understand that TypeScript uses structural typing. Even without the `implements` keyword, if an object has the right shape, it is compatible with the interface. The `implements` clause does not change the type of the class — it only serves as a compile-time check that the class satisfies the interface contract. This is a common source of confusion for developers coming from nominally-typed languages like Java or C#.",
+      "explanation": "The `implements` keyword in TypeScript allows a class to declare that it satisfies the contract defined by one or more interfaces. When a class implements an interface, TypeScript checks that the class provides all the properties and methods the interface requires. If anything is missing or has the wrong type, you get a compile-time error.\n\nImplementing interfaces is a form of contract enforcement. An interface says \"any class implementing me must have these members\" without dictating how they should be implemented. This is different from abstract classes, which can provide partial implementations. Interfaces are purely structural - they define shape, not behavior.\n\nA class can implement multiple interfaces by separating them with commas: `class Foo implements Bar, Baz`. This is TypeScript's answer to multiple inheritance. Since interfaces have no implementation, there is no ambiguity about which parent's code to use - the class must provide all implementations itself. This makes multiple interface implementation safe and straightforward.\n\nIt is important to understand that TypeScript uses structural typing. Even without the `implements` keyword, if an object has the right shape, it is compatible with the interface. The `implements` clause does not change the type of the class - it only serves as a compile-time check that the class satisfies the interface contract. This is a common source of confusion for developers coming from nominally-typed languages like Java or C#.",
       "codeExamples": [
         {
           "title": "Basic Interface Implementation",
@@ -232,12 +232,12 @@
       ],
       "notes": [
         "A class can implement multiple interfaces, but can only extend one class.",
-        "The `implements` keyword is a compile-time check only — it does not affect the emitted JavaScript.",
+        "The `implements` keyword is a compile-time check only - it does not affect the emitted JavaScript.",
         "Interfaces can extend other interfaces to compose larger contracts from smaller ones."
       ],
       "commonPitfalls": [
         "Thinking that `implements` adds the interface's members to the class automatically. You must manually implement every member.",
-        "Assuming `implements` changes the class type. It only verifies the class satisfies the interface — the class type is still determined by its own members."
+        "Assuming `implements` changes the class type. It only verifies the class satisfies the interface - the class type is still determined by its own members."
       ]
     },
     "exercises": [
@@ -263,7 +263,7 @@
         "expectedOutput": "User(Alice)\n401",
         "hints": [
           "Use `charCodeAt(i)` in a loop to get the character code of each character in the name and sum them.",
-          "The class must implement all methods from both interfaces — `stringify()` from Stringifiable and `hash()` from Hashable."
+          "The class must implement all methods from both interfaces - `stringify()` from Stringifiable and `hash()` from Hashable."
         ],
         "difficulty": "Medium"
       }
@@ -301,12 +301,12 @@
       ],
       "notes": [
         "Static members are accessed via the class name, not `this`. Inside a static method, `this` refers to the class constructor, not an instance.",
-        "Parameter properties require an access modifier or `readonly` in the constructor — a plain parameter without a modifier is NOT a parameter property.",
+        "Parameter properties require an access modifier or `readonly` in the constructor - a plain parameter without a modifier is NOT a parameter property.",
         "Static properties are useful for maintaining state that is shared across all instances, like counters or caches."
       ],
       "commonPitfalls": [
         "Trying to access a static member through an instance (e.g., `instance.staticMethod()`) instead of the class name.",
-        "Forgetting that parameter properties require an explicit access modifier — simply writing `constructor(name: string)` without `public`/`private`/`protected`/`readonly` does not create a property."
+        "Forgetting that parameter properties require an explicit access modifier - simply writing `constructor(name: string)` without `public`/`private`/`protected`/`readonly` does not create a property."
       ],
       "interviewTips": [
         "Be prepared to explain the difference between static and instance members, and when each is appropriate. Static members belong to the class, instance members belong to each object.",

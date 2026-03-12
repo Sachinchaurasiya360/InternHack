@@ -3,7 +3,7 @@ import { Navigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
   Check,
-  Sparkles,
+  Wand2,
   Zap,
   Shield,
   Rocket,
@@ -462,7 +462,7 @@ export default function CheckoutPage() {
             { icon: <ScanSearch className="w-5 h-5" />, label: "Unlimited ATS Scans", color: "text-purple-600 bg-purple-50 dark:text-purple-400 dark:bg-purple-900/30" },
             { icon: <Briefcase className="w-5 h-5" />, label: "Unlimited Apply", color: "text-blue-600 bg-blue-50 dark:text-blue-400 dark:bg-blue-900/30" },
             { icon: <FileText className="w-5 h-5" />, label: "LaTeX Resume Editor", color: "text-emerald-600 bg-emerald-50 dark:text-emerald-400 dark:bg-emerald-900/30" },
-            { icon: <Sparkles className="w-5 h-5" />, label: "AI Cover Letter", color: "text-violet-600 bg-violet-50 dark:text-violet-400 dark:bg-violet-900/30" },
+            { icon: <Wand2 className="w-5 h-5" />, label: "AI Cover Letter", color: "text-violet-600 bg-violet-50 dark:text-violet-400 dark:bg-violet-900/30" },
             { icon: <Code2 className="w-5 h-5" />, label: "Full DSA Practice", color: "text-cyan-600 bg-cyan-50 dark:text-cyan-400 dark:bg-cyan-900/30" },
             { icon: <Database className="w-5 h-5" />, label: "SQL Practice", color: "text-orange-600 bg-orange-50 dark:text-orange-400 dark:bg-orange-900/30" },
             { icon: <Brain className="w-5 h-5" />, label: "Aptitude Practice", color: "text-rose-600 bg-rose-50 dark:text-rose-400 dark:bg-rose-900/30" },

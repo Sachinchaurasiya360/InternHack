@@ -7,14 +7,19 @@ import crypto from "crypto";
 const COMPILE_TIMEOUT = 30_000; // 30 seconds
 const ONLINE_API = "https://latex.ytotech.com/builds/sync";
 
+export interface SupportingFile {
+  filename: string;
+  content: string;
+}
+
 export class LatexService {
   private pdflatexAvailable: boolean | null = null;
 
-  async compile(source: string): Promise<Buffer> {
+  async compile(source: string, supportingFiles: SupportingFile[] = []): Promise<Buffer> {
     // Try local pdflatex first (if not already known to be missing)
     if (this.pdflatexAvailable !== false) {
       try {
-        const result = await this.compileLocal(source);
+        const result = await this.compileLocal(source, supportingFiles);
         this.pdflatexAvailable = true;
         return result;
       } catch (err) {
@@ -22,48 +27,60 @@ export class LatexService {
           this.pdflatexAvailable = false;
           // Fall through to online compilation
         } else {
-          throw err; // Real compilation error — don't fallback
+          throw err; // Real compilation error - don't fallback
         }
       }
     }
 
     // Fallback: online LaTeX compilation API
-    return this.compileOnline(source);
+    return this.compileOnline(source, supportingFiles);
   }
 
-  private async compileLocal(source: string): Promise<Buffer> {
+  private async compileLocal(source: string, supportingFiles: SupportingFile[] = []): Promise<Buffer> {
     const jobId = crypto.randomUUID();
     const tmpDir = os.tmpdir();
     const texFile = path.join(tmpDir, `latex-${jobId}.tex`);
     const pdfFile = path.join(tmpDir, `latex-${jobId}.pdf`);
+    const writtenSupportFiles: string[] = [];
 
     try {
       await writeFile(texFile, source, "utf-8");
+
+      // Write supporting files (.cls, .sty, etc.) to the same directory
+      for (const sf of supportingFiles) {
+        const sfPath = path.join(tmpDir, sf.filename);
+        await writeFile(sfPath, sf.content, "utf-8");
+        writtenSupportFiles.push(sfPath);
+      }
+
       await this.runPdflatex(texFile, tmpDir);
       const pdf = await readFile(pdfFile);
       return pdf;
     } finally {
       const extensions = [".tex", ".pdf", ".aux", ".log", ".out", ".toc", ".nav", ".snm"];
-      await Promise.allSettled(
-        extensions.map((ext) =>
+      await Promise.allSettled([
+        ...extensions.map((ext) =>
           unlink(path.join(tmpDir, `latex-${jobId}${ext}`))
-        )
-      );
+        ),
+        ...writtenSupportFiles.map((f) => unlink(f)),
+      ]);
     }
   }
 
-  private async compileOnline(source: string): Promise<Buffer> {
+  private async compileOnline(source: string, supportingFiles: SupportingFile[] = []): Promise<Buffer> {
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), COMPILE_TIMEOUT);
+
+    const resources: Record<string, unknown>[] = [{ main: true, content: source }];
+    for (const sf of supportingFiles) {
+      resources.push({ path: sf.filename, content: sf.content });
+    }
 
     try {
       const response = await fetch(ONLINE_API, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          compiler: "pdflatex",
-          resources: [{ main: true, content: source }],
-        }),
+        body: JSON.stringify({ compiler: "pdflatex", resources }),
         signal: controller.signal,
       });
 

@@ -8,28 +8,7 @@ const DEFAULT_BADGES = [
     category: "MILESTONE" as const,
     criteria: { type: "first_application" },
   },
-  {
-    name: "Career Explorer",
-    slug: "career-explorer",
-    description: "Completed a career roadmap",
-    category: "CAREER" as const,
-    criteria: { type: "career_complete" },
-  },
-  {
-    name: "Quiz Whiz",
-    slug: "quiz-whiz",
-    description: "Passed your first quiz",
-    category: "QUIZ" as const,
-    criteria: { type: "quiz_pass", params: { count: 1 } },
-  },
-  {
-    name: "Quiz Master",
-    slug: "quiz-master",
-    description: "Passed 5 quizzes",
-    category: "QUIZ" as const,
-    criteria: { type: "quiz_pass", params: { count: 5 } },
-  },
-  {
+{
     name: "Skill Verified",
     slug: "skill-verified",
     description: "Passed your first skill test",

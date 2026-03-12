@@ -56,7 +56,7 @@ export class ResumeGenController {
         }
       }
 
-      const latex = await this.resumeGenService.generate(result.data, profile);
+      const latex = await this.resumeGenService.generate(result.data, profile, req.user.id);
 
       await prisma.usageLog.create({ data: { userId: req.user.id, action: "GENERATE_RESUME" as UsageAction } });
 

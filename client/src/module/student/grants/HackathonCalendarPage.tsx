@@ -11,7 +11,7 @@ import {
   ArrowRight,
   ExternalLink,
   Info,
-  Sparkles,
+  Wand2,
   Users,
   CheckCircle2,
   Tag,
@@ -609,7 +609,7 @@ function HackathonDetailModal({
           {/* Highlights */}
           <div>
             <h3 className="text-sm font-semibold text-gray-900 dark:text-white mb-2 flex items-center gap-1.5">
-              <Sparkles className="w-4 h-4 text-blue-500" />
+              <Wand2 className="w-4 h-4 text-blue-500" />
               Highlights
             </h3>
             <div className="space-y-2">

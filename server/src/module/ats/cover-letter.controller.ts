@@ -56,7 +56,7 @@ export class CoverLetterController {
         }
       }
 
-      const coverLetter = await this.coverLetterService.generate(result.data, profile);
+      const coverLetter = await this.coverLetterService.generate(result.data, profile, req.user.id);
 
       await prisma.usageLog.create({ data: { userId: req.user.id, action: "COVER_LETTER" as UsageAction } });
 

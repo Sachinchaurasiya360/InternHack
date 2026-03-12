@@ -6,7 +6,7 @@ import { requireRole } from "../../middleware/role.middleware.js";
 
 export const newsletterRouter = Router();
 
-// Public — subscribe
+// Public - subscribe
 newsletterRouter.post("/subscribe", async (req: Request, res: Response) => {
   try {
     const { email } = req.body as { email?: string };
@@ -24,7 +24,7 @@ newsletterRouter.post("/subscribe", async (req: Request, res: Response) => {
   }
 });
 
-// Admin — list subscribers
+// Admin - list subscribers
 newsletterRouter.get(
   "/subscribers",
   authMiddleware,
@@ -48,7 +48,7 @@ newsletterRouter.get(
   },
 );
 
-// Admin — delete subscriber
+// Admin - delete subscriber
 newsletterRouter.delete(
   "/subscribers/:id",
   authMiddleware,

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, Trash2, GripVertical } from "lucide-react";
+import { Plus, Trash2, GripVertical, Upload, Calendar, Hash, Mail, Link } from "lucide-react";
 import type { CustomFieldDefinition, FieldType } from "../lib/types";
 
 interface DynamicFieldBuilderProps {
@@ -118,16 +118,19 @@ export function DynamicFieldBuilder({ fields, onChange }: DynamicFieldBuilderPro
                 </div>
               </div>
 
-              <div>
-                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Placeholder</label>
-                <input
-                  type="text"
-                  value={field.placeholder || ""}
-                  onChange={(e) => updateField(field.id, { placeholder: e.target.value })}
-                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
-                  placeholder="Placeholder text"
-                />
-              </div>
+              {/* Placeholder — only for types that accept text input */}
+              {!["FILE_UPLOAD", "BOOLEAN", "DATE"].includes(field.fieldType) && (
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Placeholder</label>
+                  <input
+                    type="text"
+                    value={field.placeholder || ""}
+                    onChange={(e) => updateField(field.id, { placeholder: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
+                    placeholder="Placeholder text"
+                  />
+                </div>
+              )}
 
               <label className="flex items-center gap-2 cursor-pointer">
                 <input
@@ -145,6 +148,12 @@ export function DynamicFieldBuilder({ fields, onChange }: DynamicFieldBuilderPro
                   onChange={(options) => updateField(field.id, { options })}
                 />
               )}
+
+              {/* Preview */}
+              <div>
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-2">Preview</label>
+                <FieldPreview field={field} />
+              </div>
             </div>
           )}
         </div>
@@ -160,6 +169,83 @@ export function DynamicFieldBuilder({ fields, onChange }: DynamicFieldBuilderPro
       </button>
     </div>
   );
+}
+
+const inputClass = "w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 text-gray-400 dark:text-gray-500 cursor-default";
+
+function FieldPreview({ field }: { field: CustomFieldDefinition }) {
+  switch (field.fieldType) {
+    case "BOOLEAN":
+      return (
+        <div className="flex gap-2">
+          <button type="button" className="flex-1 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 hover:text-green-700 dark:hover:text-green-400 transition-colors">
+            Yes
+          </button>
+          <button type="button" className="flex-1 py-2 text-sm font-medium rounded-lg border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-800 text-gray-700 dark:text-gray-300 hover:border-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 hover:text-red-700 dark:hover:text-red-400 transition-colors">
+            No
+          </button>
+        </div>
+      );
+    case "FILE_UPLOAD":
+      return (
+        <div className="flex flex-col items-center gap-2 py-6 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800">
+          <Upload className="w-6 h-6 text-gray-400 dark:text-gray-500" />
+          <span className="text-sm text-gray-500 dark:text-gray-400">Click to upload or drag and drop</span>
+          <span className="text-xs text-gray-400 dark:text-gray-500">PDF, DOC, DOCX, PNG, JPG (max 5MB)</span>
+        </div>
+      );
+    case "TEXTAREA":
+      return <textarea rows={3} disabled placeholder={field.placeholder || "Enter text..."} className={inputClass + " resize-none"} />;
+    case "DATE":
+      return (
+        <div className="relative">
+          <input type="date" disabled className={inputClass} />
+          <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        </div>
+      );
+    case "NUMERIC":
+      return (
+        <div className="relative">
+          <input type="number" disabled placeholder={field.placeholder || "Enter number..."} className={inputClass} />
+          <Hash className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        </div>
+      );
+    case "EMAIL":
+      return (
+        <div className="relative">
+          <input type="email" disabled placeholder={field.placeholder || "email@example.com"} className={inputClass} />
+          <Mail className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        </div>
+      );
+    case "URL":
+      return (
+        <div className="relative">
+          <input type="url" disabled placeholder={field.placeholder || "https://..."} className={inputClass} />
+          <Link className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+        </div>
+      );
+    case "DROPDOWN":
+      return (
+        <select disabled className={inputClass}>
+          <option>Select an option...</option>
+          {(field.options || []).map((opt, i) => <option key={i}>{opt}</option>)}
+        </select>
+      );
+    case "MULTI_SELECT":
+      return (
+        <div className="flex flex-wrap gap-2 p-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-800 min-h-10">
+          {(field.options || []).length > 0 ? (
+            field.options!.map((opt, i) => (
+              <span key={i} className="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded-md">{opt}</span>
+            ))
+          ) : (
+            <span className="text-sm text-gray-400 dark:text-gray-500 p-1">Add options above...</span>
+          )}
+        </div>
+      );
+    default:
+      return <input type="text" disabled placeholder={field.placeholder || "Enter text..."} className={inputClass} />;
+  }
 }
 
 function OptionsEditor({ options, onChange }: { options: string[]; onChange: (options: string[]) => void }) {

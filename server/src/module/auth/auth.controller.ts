@@ -1,6 +1,7 @@
 import type { Request, Response } from "express";
 import { registerSchema, loginSchema, updateProfileSchema, importGitHubSchema } from "./auth.validation.js";
 import { AuthService } from "./auth.service.js";
+import { setTokenCookie, clearTokenCookie } from "../../utils/cookie.utils.js";
 
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
@@ -13,6 +14,7 @@ export class AuthController {
       }
 
       const data = await this.authService.register(result.data);
+      setTokenCookie(res, data.token);
       return res.status(201).json({ message: "Registration successful", ...data });
     } catch (error) {
       if (error instanceof Error && error.message === "Email already registered") {
@@ -31,10 +33,23 @@ export class AuthController {
       }
 
       const data = await this.authService.login(result.data);
+      setTokenCookie(res, data.token);
       return res.status(200).json({ message: "Login successful", ...data });
     } catch (error) {
-      if (error instanceof Error && error.message === "Invalid email or password") {
-        return res.status(401).json({ message: error.message });
+      if (error instanceof Error) {
+        if (error.message === "Invalid email or password") {
+          return res.status(401).json({ message: error.message });
+        }
+        if (error.message === "EMAIL_NOT_VERIFIED") {
+          return res.status(403).json({
+            message: "Please verify your email before signing in. A new verification code has been sent.",
+            requiresVerification: true,
+            email: result.data.email,
+          });
+        }
+        if (error.message === "Account is deactivated") {
+          return res.status(403).json({ message: error.message });
+        }
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
@@ -50,6 +65,7 @@ export class AuthController {
 
       const validRole = role === "RECRUITER" ? "RECRUITER" as const : "STUDENT" as const;
       const data = await this.authService.googleAuth({ credential, role: validRole });
+      setTokenCookie(res, data.token);
       return res.status(200).json({ message: "Google authentication successful", ...data });
     } catch (error) {
       if (error instanceof Error) {
@@ -63,6 +79,11 @@ export class AuthController {
       console.error(error);
       return res.status(500).json({ message: "Google authentication failed" });
     }
+  }
+
+  async logout(_req: Request, res: Response) {
+    clearTokenCookie(res);
+    return res.status(200).json({ message: "Logged out successfully" });
   }
 
   async getProfile(req: Request, res: Response) {
@@ -130,8 +151,9 @@ export class AuthController {
       return res.status(400).json({ message: "Email and OTP are required" });
     }
     try {
-      const user = await this.authService.verifyEmail(email, otp);
-      return res.json({ message: "Email verified successfully", user });
+      const data = await this.authService.verifyEmail(email, otp);
+      setTokenCookie(res, data.token);
+      return res.json({ message: "Email verified successfully", user: data.user, token: data.token });
     } catch (err: unknown) {
       return res.status(400).json({ message: err instanceof Error ? err.message : "Verification failed" });
     }

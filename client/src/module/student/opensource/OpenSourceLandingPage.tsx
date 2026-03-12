@@ -3,7 +3,7 @@ import { Link, useNavigate } from "react-router";
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useAuthStore } from "../../../lib/auth.store";
 import {
-  Sparkles,
+  Wand2,
   ArrowRight,
   CheckCircle,
   GitBranch,
@@ -242,7 +242,7 @@ export default function OpenSourceLandingPage() {
             transition={{ delay: 0.1 }}
             className="inline-flex items-center gap-2 px-4 py-2 bg-white dark:bg-gray-900 border border-black/10 dark:border-gray-700 shadow-sm rounded-full text-xs font-medium mb-8"
           >
-            <Sparkles className="w-3.5 h-3.5 text-purple-500" />
+            <Wand2 className="w-3.5 h-3.5 text-purple-500" />
             <span className="text-gray-600">Open Source Discovery Platform</span>
           </motion.div>
 

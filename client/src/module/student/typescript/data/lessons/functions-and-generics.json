@@ -8,7 +8,7 @@
     "isInterviewQuestion": false,
     "concepts": ["Parameter types", "Return types", "Arrow functions", "void return type", "Function type expressions"],
     "content": {
-      "explanation": "Functions are the fundamental building blocks of any TypeScript application, and typing them properly is essential for type safety. Every function parameter should have an explicit type annotation, as TypeScript cannot infer parameter types from the function definition alone. The return type can usually be inferred, but adding it explicitly is good practice for documentation and catching accidental return type changes during refactoring.\n\nTypeScript supports typing both function declarations and arrow functions. For a declaration: `function add(a: number, b: number): number { return a + b; }`. For an arrow function: `const add = (a: number, b: number): number => a + b;`. Both are equivalent in terms of type safety. The return type annotation comes after the parameter list and before the function body.\n\nThe `void` return type indicates that a function doesn't return a meaningful value. Functions with side effects like `console.log`, DOM manipulation, or sending analytics events typically return void. Note that `void` is different from `undefined` — a void function can implicitly return undefined, but TypeScript treats them differently in type compatibility. When a callback is typed as returning `void`, the caller promises not to use the return value.\n\nFunction types can also be expressed as standalone types for use in variables, parameters, and interfaces. The syntax is `(param: Type) => ReturnType`. For example, `type Formatter = (value: number) => string` describes any function that takes a number and returns a string. This is useful for callback parameters, event handlers, and anywhere you need to describe a function's shape without defining it.",
+      "explanation": "Functions are the fundamental building blocks of any TypeScript application, and typing them properly is essential for type safety. Every function parameter should have an explicit type annotation, as TypeScript cannot infer parameter types from the function definition alone. The return type can usually be inferred, but adding it explicitly is good practice for documentation and catching accidental return type changes during refactoring.\n\nTypeScript supports typing both function declarations and arrow functions. For a declaration: `function add(a: number, b: number): number { return a + b; }`. For an arrow function: `const add = (a: number, b: number): number => a + b;`. Both are equivalent in terms of type safety. The return type annotation comes after the parameter list and before the function body.\n\nThe `void` return type indicates that a function doesn't return a meaningful value. Functions with side effects like `console.log`, DOM manipulation, or sending analytics events typically return void. Note that `void` is different from `undefined` - a void function can implicitly return undefined, but TypeScript treats them differently in type compatibility. When a callback is typed as returning `void`, the caller promises not to use the return value.\n\nFunction types can also be expressed as standalone types for use in variables, parameters, and interfaces. The syntax is `(param: Type) => ReturnType`. For example, `type Formatter = (value: number) => string` describes any function that takes a number and returns a string. This is useful for callback parameters, event handlers, and anywhere you need to describe a function's shape without defining it.",
       "codeExamples": [
         {
           "title": "Function declarations and arrow functions",
@@ -26,17 +26,17 @@
           "title": "Function type expressions",
           "code": "// Define a function type\ntype MathOperation = (a: number, b: number) => number;\n\n// Use it to type variables\nconst subtract: MathOperation = (a, b) => a - b;\nconst divide: MathOperation = (a, b) => a / b;\n\n// Use it in a higher-order function\nfunction applyOperation(x: number, y: number, op: MathOperation): number {\n  return op(x, y);\n}\n\nconsole.log(applyOperation(10, 3, subtract));\nconsole.log(applyOperation(20, 4, divide));\nconsole.log(applyOperation(7, 8, (a, b) => a * b));",
           "output": "7\n5\n56",
-          "explanation": "Function type expressions describe the shape of a function. When you assign a function to a variable typed with a function type, TypeScript infers the parameter types from the type expression — you don't need to annotate them again."
+          "explanation": "Function type expressions describe the shape of a function. When you assign a function to a variable typed with a function type, TypeScript infers the parameter types from the type expression - you don't need to annotate them again."
         }
       ],
       "notes": [
-        "Always annotate function parameters — TypeScript cannot infer them. Return types can be inferred but explicit annotations improve readability.",
-        "Use `void` for functions that don't return a meaningful value — this is different from `undefined` in TypeScript's type system.",
+        "Always annotate function parameters - TypeScript cannot infer them. Return types can be inferred but explicit annotations improve readability.",
+        "Use `void` for functions that don't return a meaningful value - this is different from `undefined` in TypeScript's type system.",
         "Function type expressions (`(a: number) => string`) are useful for typing callbacks, event handlers, and higher-order function parameters."
       ],
       "commonPitfalls": [
-        "Confusing `void` with `undefined` — a function typed as returning `void` signals that the return value should be ignored, while `undefined` is an actual return value.",
-        "Forgetting to annotate all parameters in a function that isn't assigned to a typed variable — without contextual typing, parameters default to implicit `any`."
+        "Confusing `void` with `undefined` - a function typed as returning `void` signals that the return value should be ignored, while `undefined` is an actual return value.",
+        "Forgetting to annotate all parameters in a function that isn't assigned to a typed variable - without contextual typing, parameters default to implicit `any`."
       ]
     },
     "exercises": [
@@ -77,7 +77,7 @@
     "isInterviewQuestion": false,
     "concepts": ["Optional parameters", "Default values", "Rest parameters", "Parameter ordering"],
     "content": {
-      "explanation": "TypeScript functions support optional parameters, default values, and rest parameters, giving you flexibility in how functions are called. Optional parameters are marked with a `?` after the parameter name: `function greet(name: string, greeting?: string)`. When a parameter is optional, its type becomes a union with `undefined` — so `greeting` is effectively `string | undefined`. Optional parameters must come after all required parameters.\n\nDefault parameter values provide a fallback when an argument isn't provided or is explicitly `undefined`. The syntax is `function greet(name: string, greeting: string = \"Hello\")`. When you provide a default value, TypeScript infers the parameter type from that value, so you often don't need an explicit annotation. Default parameters can appear in any position, but placing them at the end is conventional so callers can simply omit them.\n\nRest parameters collect all remaining arguments into an array. They use the spread syntax: `function sum(...numbers: number[])`. A rest parameter must be the last parameter in the function signature. The collected array is typed, so `...numbers: number[]` means every extra argument must be a number. Rest parameters are particularly useful for variadic functions — functions that accept any number of arguments.\n\nAn important distinction: optional parameters with `?` default to `undefined`, while parameters with default values substitute the default when `undefined` is passed. If you write `function f(x: number = 10)` and call `f(undefined)`, `x` will be `10`, not `undefined`. This is a JavaScript runtime behavior that TypeScript's type system correctly models.",
+      "explanation": "TypeScript functions support optional parameters, default values, and rest parameters, giving you flexibility in how functions are called. Optional parameters are marked with a `?` after the parameter name: `function greet(name: string, greeting?: string)`. When a parameter is optional, its type becomes a union with `undefined` - so `greeting` is effectively `string | undefined`. Optional parameters must come after all required parameters.\n\nDefault parameter values provide a fallback when an argument isn't provided or is explicitly `undefined`. The syntax is `function greet(name: string, greeting: string = \"Hello\")`. When you provide a default value, TypeScript infers the parameter type from that value, so you often don't need an explicit annotation. Default parameters can appear in any position, but placing them at the end is conventional so callers can simply omit them.\n\nRest parameters collect all remaining arguments into an array. They use the spread syntax: `function sum(...numbers: number[])`. A rest parameter must be the last parameter in the function signature. The collected array is typed, so `...numbers: number[]` means every extra argument must be a number. Rest parameters are particularly useful for variadic functions - functions that accept any number of arguments.\n\nAn important distinction: optional parameters with `?` default to `undefined`, while parameters with default values substitute the default when `undefined` is passed. If you write `function f(x: number = 10)` and call `f(undefined)`, `x` will be `10`, not `undefined`. This is a JavaScript runtime behavior that TypeScript's type system correctly models.",
       "codeExamples": [
         {
           "title": "Optional parameters",
@@ -100,12 +100,12 @@
       ],
       "notes": [
         "Optional parameters (`?`) must come after all required parameters in the function signature.",
-        "Default values make a parameter effectively optional — callers can omit it or pass `undefined` to get the default.",
+        "Default values make a parameter effectively optional - callers can omit it or pass `undefined` to get the default.",
         "Rest parameters must be the last parameter and collect all remaining arguments into a typed array."
       ],
       "commonPitfalls": [
-        "Placing optional parameters before required ones — TypeScript enforces that required parameters come first.",
-        "Not checking for `undefined` when using optional parameters — access properties on an optional object parameter without a null check and you'll get a runtime error."
+        "Placing optional parameters before required ones - TypeScript enforces that required parameters come first.",
+        "Not checking for `undefined` when using optional parameters - access properties on an optional object parameter without a null check and you'll get a runtime error."
       ]
     },
     "exercises": [
@@ -118,7 +118,7 @@
         "expectedOutput": "Hello, Alice!\nHi, Bob!\nHey, Charlie.",
         "hints": [
           "Use default parameter values: `greeting: string = \"Hello\"` and `punctuation: string = \"!\"`.",
-          "Default parameters don't need `?` — the default value makes them optional automatically."
+          "Default parameters don't need `?` - the default value makes them optional automatically."
         ],
         "difficulty": "Easy"
       },
@@ -146,7 +146,7 @@
     "isInterviewQuestion": false,
     "concepts": ["Overload signatures", "Implementation signature", "Call signature resolution", "When to use overloads"],
     "content": {
-      "explanation": "Function overloads in TypeScript allow a single function to have multiple call signatures — different combinations of parameter types and return types. This is useful when a function's return type depends on the types of its arguments. For example, a `parse` function might return a `number` when given a string that looks numeric, but a `Date` when given a date string. Overloads let you express these relationships precisely.\n\nThe syntax involves writing one or more overload signatures (declarations without a body) followed by the implementation signature (with the body). The overload signatures define what callers see, while the implementation signature defines how the function works internally. The implementation must be compatible with all overload signatures but is not directly visible to callers. Only the overload signatures appear in editor tooltips and documentation.\n\nTypeScript resolves overloads in order from top to bottom. When you call an overloaded function, TypeScript checks each overload signature until it finds one that matches the arguments. This means you should place more specific signatures before more general ones. If a less specific signature appears first, it will match before the specific one gets checked.\n\nWhile overloads are powerful, they should be used judiciously. In many cases, union types or generics provide a simpler solution. Use overloads when the return type genuinely varies based on the input type in a way that unions can't express. If a function returns `string | number` regardless of input, a simple union return type is clearer than overloads. The rule of thumb: use overloads when there's a meaningful correlation between specific input types and specific output types.",
+      "explanation": "Function overloads in TypeScript allow a single function to have multiple call signatures - different combinations of parameter types and return types. This is useful when a function's return type depends on the types of its arguments. For example, a `parse` function might return a `number` when given a string that looks numeric, but a `Date` when given a date string. Overloads let you express these relationships precisely.\n\nThe syntax involves writing one or more overload signatures (declarations without a body) followed by the implementation signature (with the body). The overload signatures define what callers see, while the implementation signature defines how the function works internally. The implementation must be compatible with all overload signatures but is not directly visible to callers. Only the overload signatures appear in editor tooltips and documentation.\n\nTypeScript resolves overloads in order from top to bottom. When you call an overloaded function, TypeScript checks each overload signature until it finds one that matches the arguments. This means you should place more specific signatures before more general ones. If a less specific signature appears first, it will match before the specific one gets checked.\n\nWhile overloads are powerful, they should be used judiciously. In many cases, union types or generics provide a simpler solution. Use overloads when the return type genuinely varies based on the input type in a way that unions can't express. If a function returns `string | number` regardless of input, a simple union return type is clearer than overloads. The rule of thumb: use overloads when there's a meaningful correlation between specific input types and specific output types.",
       "codeExamples": [
         {
           "title": "Basic function overloads",
@@ -162,19 +162,19 @@
         },
         {
           "title": "When to prefer unions over overloads",
-          "code": "// OVERLOADS — not needed here, union is simpler\n// function getLength(value: string): number;\n// function getLength(value: unknown[]): number;\n// function getLength(value: string | unknown[]): number { ... }\n\n// UNION — simpler and clearer for the same result\nfunction getLength(value: string | unknown[]): number {\n  return value.length;\n}\n\n// Both string and arrays have .length, so a union type works perfectly\nconsole.log(getLength(\"hello\"));\nconsole.log(getLength([1, 2, 3, 4]));\nconsole.log(getLength([]));",
+          "code": "// OVERLOADS - not needed here, union is simpler\n// function getLength(value: string): number;\n// function getLength(value: unknown[]): number;\n// function getLength(value: string | unknown[]): number { ... }\n\n// UNION - simpler and clearer for the same result\nfunction getLength(value: string | unknown[]): number {\n  return value.length;\n}\n\n// Both string and arrays have .length, so a union type works perfectly\nconsole.log(getLength(\"hello\"));\nconsole.log(getLength([1, 2, 3, 4]));\nconsole.log(getLength([]));",
           "output": "5\n4\n0",
           "explanation": "When the return type is the same regardless of input type, union parameters are simpler than overloads. Reserve overloads for when the return type correlates with specific input types."
         }
       ],
       "notes": [
         "Overload signatures define what callers see; the implementation signature defines how it works. Only overloads appear in editor hints.",
-        "Place more specific overload signatures before more general ones — TypeScript resolves them top to bottom.",
+        "Place more specific overload signatures before more general ones - TypeScript resolves them top to bottom.",
         "Prefer union types when the return type is the same regardless of input. Use overloads only when return types vary based on input types."
       ],
       "commonPitfalls": [
-        "Forgetting that the implementation signature is not callable directly — it must be compatible with all overloads but callers only see the overload signatures.",
-        "Using overloads when a simple union type would suffice — overloads add complexity and should be reserved for cases where return types depend on input types."
+        "Forgetting that the implementation signature is not callable directly - it must be compatible with all overloads but callers only see the overload signatures.",
+        "Using overloads when a simple union type would suffice - overloads add complexity and should be reserved for cases where return types depend on input types."
       ]
     },
     "exercises": [
@@ -215,7 +215,7 @@
     "isInterviewQuestion": false,
     "concepts": ["Generic functions", "Type parameters", "Generic constraints", "Type argument inference"],
     "content": {
-      "explanation": "Generics are one of TypeScript's most powerful features, allowing you to write functions, classes, and types that work with any type while still maintaining type safety. Instead of using `any` (which discards type information) or writing separate functions for each type, generics let you create a single function that preserves the relationship between input and output types. The syntax uses angle brackets with a type parameter: `function identity<T>(value: T): T`.\n\nWhen you call a generic function, TypeScript infers the type parameter from the arguments you pass. If you call `identity(\"hello\")`, TypeScript infers `T` as `string` and knows the return type is `string`. You can also provide the type parameter explicitly: `identity<number>(42)`. Type inference makes generics feel natural — most of the time, you don't need to specify type parameters manually because TypeScript figures them out from context.\n\nGeneric constraints restrict what types can be used with a type parameter. The `extends` keyword limits the type parameter to types that have certain properties. For example, `function getLength<T extends { length: number }>(item: T): number` ensures that only types with a `length` property can be passed. Without the constraint, TypeScript wouldn't know that `T` has a `length` property and would show an error when you try to access it.\n\nGenerics are pervasive in TypeScript's standard library. Arrays are generic (`Array<T>`), Promises are generic (`Promise<T>`), Maps are generic (`Map<K, V>`), and many utility types are generic (`Partial<T>`, `Required<T>`, `Pick<T, K>`). Understanding generics is essential for effectively using these built-in types and for writing your own reusable, type-safe abstractions.",
+      "explanation": "Generics are one of TypeScript's most powerful features, allowing you to write functions, classes, and types that work with any type while still maintaining type safety. Instead of using `any` (which discards type information) or writing separate functions for each type, generics let you create a single function that preserves the relationship between input and output types. The syntax uses angle brackets with a type parameter: `function identity<T>(value: T): T`.\n\nWhen you call a generic function, TypeScript infers the type parameter from the arguments you pass. If you call `identity(\"hello\")`, TypeScript infers `T` as `string` and knows the return type is `string`. You can also provide the type parameter explicitly: `identity<number>(42)`. Type inference makes generics feel natural - most of the time, you don't need to specify type parameters manually because TypeScript figures them out from context.\n\nGeneric constraints restrict what types can be used with a type parameter. The `extends` keyword limits the type parameter to types that have certain properties. For example, `function getLength<T extends { length: number }>(item: T): number` ensures that only types with a `length` property can be passed. Without the constraint, TypeScript wouldn't know that `T` has a `length` property and would show an error when you try to access it.\n\nGenerics are pervasive in TypeScript's standard library. Arrays are generic (`Array<T>`), Promises are generic (`Promise<T>`), Maps are generic (`Map<K, V>`), and many utility types are generic (`Partial<T>`, `Required<T>`, `Pick<T, K>`). Understanding generics is essential for effectively using these built-in types and for writing your own reusable, type-safe abstractions.",
       "codeExamples": [
         {
           "title": "Basic generic functions",
@@ -227,7 +227,7 @@
           "title": "Generic constraints with extends",
           "code": "// Constraint: T must have a length property\nfunction logLength<T extends { length: number }>(item: T): T {\n  console.log(`Length: ${item.length}`);\n  return item;\n}\n\n// Works with strings, arrays, and any object with .length\nlogLength(\"hello\");\nlogLength([1, 2, 3, 4]);\nlogLength({ length: 10, name: \"test\" });\n\n// logLength(42); // Error: number doesn't have .length",
           "output": "Length: 5\nLength: 4\nLength: 10",
-          "explanation": "The constraint `T extends { length: number }` ensures T has a `length` property. Any type with that property works — strings, arrays, or custom objects. Types without `length` are rejected at compile time."
+          "explanation": "The constraint `T extends { length: number }` ensures T has a `length` property. Any type with that property works - strings, arrays, or custom objects. Types without `length` are rejected at compile time."
         },
         {
           "title": "Generic utility functions",
@@ -237,13 +237,13 @@
         }
       ],
       "notes": [
-        "Generics preserve type information that `any` would discard — use generics for reusable, type-safe code.",
-        "TypeScript usually infers generic type parameters automatically — you rarely need to provide them explicitly.",
+        "Generics preserve type information that `any` would discard - use generics for reusable, type-safe code.",
+        "TypeScript usually infers generic type parameters automatically - you rarely need to provide them explicitly.",
         "Use `extends` constraints when your generic function needs to access specific properties of the type parameter."
       ],
       "commonPitfalls": [
-        "Using `any` instead of generics — `function first(arr: any[]): any` loses type information, while `function first<T>(arr: T[]): T` preserves it.",
-        "Over-constraining generic types — adding unnecessary constraints reduces the function's flexibility. Only constrain when you need to access specific properties."
+        "Using `any` instead of generics - `function first(arr: any[]): any` loses type information, while `function first<T>(arr: T[]): T` preserves it.",
+        "Over-constraining generic types - adding unnecessary constraints reduces the function's flexibility. Only constrain when you need to access specific properties."
       ]
     },
     "exercises": [
@@ -263,7 +263,7 @@
       {
         "id": "generics-intro-ex2",
         "title": "Generic map function",
-        "description": "Write a generic function `mapArray` that takes an array of type T and a mapping function from T to U, and returns an array of type U. Do not use the built-in .map() method — implement it with a loop.",
+        "description": "Write a generic function `mapArray` that takes an array of type T and a mapping function from T to U, and returns an array of type U. Do not use the built-in .map() method - implement it with a loop.",
         "starterCode": "// Write the generic mapArray function\n\n\nconsole.log(mapArray([1, 2, 3], n => n * 2));\nconsole.log(mapArray([\"hello\", \"world\"], s => s.length));\nconsole.log(mapArray([1, 4, 9], n => Math.sqrt(n)));",
         "solution": "function mapArray<T, U>(arr: T[], fn: (item: T) => U): U[] {\n  const result: U[] = [];\n  for (const item of arr) {\n    result.push(fn(item));\n  }\n  return result;\n}\n\nconsole.log(mapArray([1, 2, 3], n => n * 2));\nconsole.log(mapArray([\"hello\", \"world\"], s => s.length));\nconsole.log(mapArray([1, 4, 9], n => Math.sqrt(n)));",
         "expectedOutput": "[ 2, 4, 6 ]\n[ 5, 5 ]\n[ 1, 2, 3 ]",
@@ -308,15 +308,15 @@
       "notes": [
         "Use descriptive type parameter names like `TKey`, `TValue` when single letters would be ambiguous.",
         "Default type parameters (`T = string`) are useful for library APIs where a common type covers most use cases.",
-        "The `keyof T` constraint pattern is fundamental — it ensures type-safe property access and appears throughout TypeScript's built-in utility types."
+        "The `keyof T` constraint pattern is fundamental - it ensures type-safe property access and appears throughout TypeScript's built-in utility types."
       ],
       "commonPitfalls": [
-        "Using too many type parameters — if a function has more than 3-4 type parameters, consider breaking it into smaller functions or using intermediate types.",
-        "Forgetting that default type parameters only apply when the type is not inferable — if TypeScript can infer the type from arguments, the default is ignored."
+        "Using too many type parameters - if a function has more than 3-4 type parameters, consider breaking it into smaller functions or using intermediate types.",
+        "Forgetting that default type parameters only apply when the type is not inferable - if TypeScript can infer the type from arguments, the default is ignored."
       ],
       "interviewTips": [
-        "When asked about generics, explain them as 'type parameters' — they let functions work with different types while preserving type safety. Contrast with `any`, which discards type info.",
-        "Be ready to implement common generic utilities like `pick`, `omit`, or `mapValues`. These demonstrate understanding of `keyof`, `extends`, and mapped types — all core TypeScript concepts."
+        "When asked about generics, explain them as 'type parameters' - they let functions work with different types while preserving type safety. Contrast with `any`, which discards type info.",
+        "Be ready to implement common generic utilities like `pick`, `omit`, or `mapValues`. These demonstrate understanding of `keyof`, `extends`, and mapped types - all core TypeScript concepts."
       ]
     },
     "exercises": [

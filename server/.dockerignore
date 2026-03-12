@@ -1,0 +1,11 @@
+node_modules
+dist
+.env
+*.pem
+.git
+.github
+.claude
+uploads
+docker-compose.yml
+dockerfile
+*.md

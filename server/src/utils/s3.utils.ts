@@ -4,6 +4,7 @@ import {
   DeleteObjectCommand,
   GetObjectCommand,
 } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 const s3Client = new S3Client({
   region: process.env["AWS_REGION"] ?? "ap-south-1",
@@ -31,10 +32,15 @@ export async function uploadToS3(
       Key: key,
       Body: buffer,
       ContentType: contentType,
-      ACL: "public-read",
     }),
   );
   return `${getBucketUrl()}/${key}`;
+}
+
+/** Generate a pre-signed URL for private S3 objects (1 hour expiry) */
+export async function getSignedS3Url(key: string, expiresIn = 3600): Promise<string> {
+  const command = new GetObjectCommand({ Bucket: BUCKET, Key: key });
+  return getSignedUrl(s3Client, command, { expiresIn });
 }
 
 export async function deleteFromS3(key: string): Promise<void> {
@@ -62,4 +68,16 @@ export function getS3KeyFromUrl(url: string): string | null {
     return url.slice(prefix.length);
   }
   return null;
+}
+
+/** Convert a raw S3 URL to a pre-signed URL. Non-S3 URLs are returned as-is. */
+export async function signUrl(url: string, expiresIn = 3600): Promise<string> {
+  const key = getS3KeyFromUrl(url);
+  if (!key) return url;
+  return getSignedS3Url(key, expiresIn);
+}
+
+/** Sign every URL in a string array (e.g. user.resumes). */
+export async function signUrls(urls: string[], expiresIn = 3600): Promise<string[]> {
+  return Promise.all(urls.map((u) => signUrl(u, expiresIn)));
 }

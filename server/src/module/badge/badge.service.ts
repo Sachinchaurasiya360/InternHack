@@ -159,32 +159,6 @@ export class BadgeService {
       let earned = false;
 
       switch (trigger) {
-        case "career_complete": {
-          const careerId = (params["careerId"] as number) || (context?.["careerId"] as number);
-          if (careerId) {
-            const completed = await prisma.studentCareer.findFirst({
-              where: { studentId, careerId, status: "COMPLETED" },
-            });
-            earned = !!completed;
-          } else {
-            // Any career completed
-            const completedCount = await prisma.studentCareer.count({
-              where: { studentId, status: "COMPLETED" },
-            });
-            earned = completedCount >= 1;
-          }
-          break;
-        }
-
-        case "quiz_pass": {
-          const requiredCount = (params["count"] as number) || 1;
-          const passedCount = await prisma.quizAttempt.count({
-            where: { studentId, passed: true },
-          });
-          earned = passedCount >= requiredCount;
-          break;
-        }
-
         case "skill_test_pass": {
           const requiredCount = (params["count"] as number) || 1;
           const verifiedCount = await prisma.verifiedSkill.count({
@@ -252,7 +226,7 @@ export class BadgeService {
             category: badge.category,
           });
         } catch {
-          // Unique constraint violation — already earned (race condition), skip
+          // Unique constraint violation - already earned (race condition), skip
         }
       }
     }

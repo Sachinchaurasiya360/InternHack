@@ -1,10 +1,11 @@
 import { useState } from "react";
-import { useParams, useNavigate } from "react-router";
-import { ArrowLeft, CheckCircle, Clock, Circle, Send } from "lucide-react";
+import { useParams, useNavigate, Link } from "react-router";
+import { ArrowLeft, CheckCircle, Clock, Circle, Send, ExternalLink } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DynamicFieldRenderer } from "../../../components/DynamicFieldRenderer";
 import { AssessmentTestView } from "./AssessmentTestView";
+import toast from "react-hot-toast";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Application, CustomFieldDefinition, AssessmentQuestion } from "../../../lib/types";
@@ -35,7 +36,7 @@ export default function ApplicationProgressPage() {
       setFieldAnswers({});
       queryClient.invalidateQueries({ queryKey: queryKeys.applications.progress(applicationId!) });
     } catch {
-      alert("Failed to submit round");
+      toast.error("Failed to submit round");
     } finally {
       setSubmitting(false);
     }
@@ -54,7 +55,9 @@ export default function ApplicationProgressPage() {
       </button>
 
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 dark:text-white">{application.job?.title}</h1>
+        <Link to={`/student/jobs/${application.jobId}`} className="inline-flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white hover:text-indigo-600 dark:hover:text-indigo-400 transition-colors no-underline">
+          {application.job?.title} <ExternalLink className="w-5 h-5" />
+        </Link>
         <p className="text-gray-500">{application.job?.company}</p>
         <span className={`inline-block mt-2 px-2.5 py-1 rounded-full text-xs font-medium ${getStatusColor(application.status)}`}>
           {application.status}

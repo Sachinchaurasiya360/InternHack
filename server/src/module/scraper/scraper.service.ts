@@ -71,6 +71,8 @@ export class ScraperService {
     this.isRunning = true;
     console.log("[Scraper] Starting scrape run...");
 
+    const SCRAPER_TIMEOUT = 5 * 60 * 1000; // 5 minutes per scraper
+
     const results: Array<{
       source: string;
       jobsFound: number;
@@ -84,7 +86,10 @@ export class ScraperService {
       const startTime = Date.now();
 
       try {
-        const result = await scraper.scrape();
+        const timeoutPromise = new Promise<never>((_resolve, reject) =>
+          setTimeout(() => reject(new Error("Scraper timeout exceeded")), SCRAPER_TIMEOUT),
+        );
+        const result = await Promise.race([scraper.scrape(), timeoutPromise]);
         const { created, updated } = await this.upsertJobs(result.source, result.jobs);
 
         const duration = Date.now() - startTime;
@@ -143,11 +148,15 @@ export class ScraperService {
       }
     }
 
-    // Mark jobs not seen in this run as potentially expired
-    await this.markExpiredJobs();
-
-    this.isRunning = false;
-    console.log("[Scraper] Scrape run completed");
+    try {
+      // Mark jobs not seen in this run as potentially expired
+      await this.markExpiredJobs();
+    } catch (err) {
+      console.error("[Scraper] Failed to mark expired jobs:", err);
+    } finally {
+      this.isRunning = false;
+      console.log("[Scraper] Scrape run completed");
+    }
 
     return { results };
   }

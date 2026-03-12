@@ -16,6 +16,7 @@ import toast from "react-hot-toast";
 import ImageCropModal from "../../../components/ImageCropModal";
 import GitHubImportModal from "./GitHubImportModal";
 import { BadgesSection } from "../badges/BadgesSection";
+import ContributionGraphs from "../../../components/ContributionGraphs";
 
 interface ProfileData {
   name: string;
@@ -34,7 +35,9 @@ interface ProfileData {
   linkedinUrl: string;
   githubUrl: string;
   portfolioUrl: string;
+  leetcodeUrl: string;
   jobStatus: string | null;
+  isProfilePublic: boolean;
   projects: ProjectItem[];
   achievements: AchievementItem[];
 }
@@ -45,6 +48,15 @@ const JOB_STATUS_OPTIONS = [
   { value: "LOOKING", label: "Looking for job" },
   { value: "OPEN_TO_OFFER", label: "Open to offer" },
 ] as const;
+
+/** Skills that have proctored verification tests on /student/skill-verification */
+const VERIFIABLE_SKILLS = [
+  "JavaScript", "Python", "React", "Node.js", "SQL", "Java", "TypeScript",
+  "HTML/CSS", "Git", "Data Structures", "Express.js", "MongoDB", "Docker",
+  "Redis", "WebSocket", "GraphQL", "Next.js", "AWS", "REST API", "Linux",
+  "C++", "Go", "Rust", "Kubernetes", "System Design", "Cybersecurity",
+  "Machine Learning", "DevOps", "Tailwind CSS", "Vue.js",
+];
 
 interface CollegeSuggestion {
   name: string;
@@ -81,8 +93,8 @@ export default function StudentProfilePage() {
     name: "", email: "", contactNo: "", company: "", designation: "",
     resumes: [], profilePic: "", coverImage: "", bio: "", college: "",
     graduationYear: null, skills: [], location: "",
-    linkedinUrl: "", githubUrl: "", portfolioUrl: "",
-    jobStatus: null, projects: [], achievements: [],
+    linkedinUrl: "", githubUrl: "", portfolioUrl: "", leetcodeUrl: "",
+    jobStatus: null, isProfilePublic: false, projects: [], achievements: [],
   });
   const [memberSince, setMemberSince] = useState<string | null>(null);
   const [skillInput, setSkillInput] = useState("");
@@ -113,6 +125,18 @@ export default function StudentProfilePage() {
   const collegeInputRef = useRef<HTMLInputElement>(null);
   const collegeDropdownRef = useRef<HTMLDivElement>(null);
 
+  const [showSkillSuggestions, setShowSkillSuggestions] = useState(false);
+  const skillInputRef = useRef<HTMLInputElement>(null);
+  const skillDropdownRef = useRef<HTMLDivElement>(null);
+
+  const filteredSkillSuggestions = skillInput.trim().length > 0
+    ? VERIFIABLE_SKILLS.filter((s) => {
+        const q = skillInput.trim().toLowerCase();
+        const alreadyAdded = form.skills.some((fs) => fs.toLowerCase() === s.toLowerCase());
+        return !alreadyAdded && s.toLowerCase().includes(q);
+      })
+    : [];
+
   useEffect(() => {
     api.get("/auth/me")
       .then((res) => {
@@ -125,8 +149,9 @@ export default function StudentProfilePage() {
           graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
           location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
           githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
-          jobStatus: u.jobStatus ?? null, projects: u.projects ?? [],
-          achievements: u.achievements ?? [],
+          leetcodeUrl: u.leetcodeUrl ?? "",
+          jobStatus: u.jobStatus ?? null, isProfilePublic: u.isProfilePublic ?? false,
+          projects: u.projects ?? [], achievements: u.achievements ?? [],
         });
         setMemberSince(u.createdAt ?? null);
       })
@@ -136,7 +161,7 @@ export default function StudentProfilePage() {
     // Fetch verified skills
     api.get("/skill-tests/my-verified")
       .then((res) => setVerifiedSkills(res.data.verified ?? []))
-      .catch(() => {});
+      .catch((err) => console.error("Failed to fetch verified skills:", err));
   }, []);
 
   useEffect(() => {
@@ -146,6 +171,12 @@ export default function StudentProfilePage() {
         collegeDropdownRef.current && !collegeDropdownRef.current.contains(e.target as Node)
       ) {
         setShowCollegeSuggestions(false);
+      }
+      if (
+        skillInputRef.current && !skillInputRef.current.contains(e.target as Node) &&
+        skillDropdownRef.current && !skillDropdownRef.current.contains(e.target as Node)
+      ) {
+        setShowSkillSuggestions(false);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
@@ -211,18 +242,21 @@ export default function StudentProfilePage() {
       graduationYear: updated.graduationYear ?? undefined, skills: updated.skills,
       location: updated.location, linkedinUrl: updated.linkedinUrl,
       githubUrl: updated.githubUrl, portfolioUrl: updated.portfolioUrl,
+      leetcodeUrl: updated.leetcodeUrl,
       jobStatus: updated.jobStatus as "NO_OFFER" | "LOOKING" | "OPEN_TO_OFFER" | null,
+      isProfilePublic: updated.isProfilePublic,
       projects: updated.projects, achievements: updated.achievements,
     });
   };
 
-  const handleAddSkill = () => {
-    const skill = skillInput.trim();
+  const handleAddSkill = (skillName?: string) => {
+    const skill = (skillName ?? skillInput).trim();
     if (!skill) return;
     if (form.skills.length >= 20) { toast.error("Maximum 20 skills"); return; }
     if (form.skills.some((s) => s.toLowerCase() === skill.toLowerCase())) { toast.error("Skill already added"); return; }
     setForm((prev) => ({ ...prev, skills: [...prev.skills, skill] }));
     setSkillInput("");
+    setShowSkillSuggestions(false);
   };
 
   const handleRemoveSkill = (index: number) => {
@@ -243,8 +277,9 @@ export default function StudentProfilePage() {
         graduationYear: form.graduationYear || null, skills: form.skills,
         location: form.location.trim(), linkedinUrl: form.linkedinUrl.trim(),
         githubUrl: form.githubUrl.trim(), portfolioUrl: form.portfolioUrl.trim(),
-        jobStatus: form.jobStatus || null, projects: form.projects,
-        achievements: form.achievements,
+        leetcodeUrl: form.leetcodeUrl.trim(),
+        jobStatus: form.jobStatus || null, isProfilePublic: form.isProfilePublic,
+        projects: form.projects, achievements: form.achievements,
       });
       const u = res.data.user;
       const updated: ProfileData = {
@@ -254,8 +289,9 @@ export default function StudentProfilePage() {
         graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
         location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
         githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
-        jobStatus: u.jobStatus ?? null, projects: u.projects ?? [],
-        achievements: u.achievements ?? [],
+        leetcodeUrl: u.leetcodeUrl ?? "",
+        jobStatus: u.jobStatus ?? null, isProfilePublic: u.isProfilePublic ?? false,
+        projects: u.projects ?? [], achievements: u.achievements ?? [],
       };
       setForm(updated);
       syncUser(updated);
@@ -529,6 +565,31 @@ export default function StudentProfilePage() {
                   )}
                 </div>
               )}
+
+              {/* Visibility Toggle */}
+              <div className="flex items-center justify-between mt-4 pt-4 border-t border-gray-100 dark:border-gray-800">
+                <div>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">Visible to Recruiters</p>
+                  <p className="text-xs text-gray-400 dark:text-gray-500">
+                    {form.isProfilePublic
+                      ? "Your profile appears in recruiter talent search"
+                      : "Your profile is hidden from recruiters"}
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setForm((prev) => ({ ...prev, isProfilePublic: !prev.isProfilePublic }))}
+                  className={`relative w-11 h-6 rounded-full transition-colors ${
+                    form.isProfilePublic ? "bg-green-500" : "bg-gray-300 dark:bg-gray-600"
+                  }`}
+                >
+                  <span
+                    className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full shadow transition-transform ${
+                      form.isProfilePublic ? "translate-x-5" : "translate-x-0"
+                    }`}
+                  />
+                </button>
+              </div>
             </div>
           </motion.div>
 
@@ -747,7 +808,7 @@ export default function StudentProfilePage() {
 
           {/* Skills */}
           <motion.div custom={2} variants={fadeInUp} initial="hidden" animate="visible"
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
             <button type="button" onClick={() => toggleSection("skills")}
               className="w-full flex items-center justify-between px-6 py-4 text-left">
               <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
@@ -776,14 +837,34 @@ export default function StudentProfilePage() {
                     })}
                   </div>
                 )}
-                <div className="flex gap-2">
-                  <input type="text" value={skillInput} onChange={(e) => setSkillInput(e.target.value)}
-                    onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddSkill(); } }}
-                    className={`${inputClass} flex-1`} placeholder="Type a skill and press Enter" />
-                  <button type="button" onClick={handleAddSkill}
-                    className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors flex items-center gap-1 shrink-0">
-                    <Plus className="w-4 h-4" /> Add
-                  </button>
+                <div className="relative">
+                  <div className="flex gap-2">
+                    <input ref={skillInputRef} type="text" value={skillInput}
+                      onChange={(e) => { setSkillInput(e.target.value); setShowSkillSuggestions(e.target.value.trim().length > 0); }}
+                      onFocus={() => { if (skillInput.trim().length > 0) setShowSkillSuggestions(true); }}
+                      onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); handleAddSkill(); } }}
+                      className={`${inputClass} flex-1`} placeholder="Type a skill and press Enter" autoComplete="off" />
+                    <button type="button" onClick={() => handleAddSkill()}
+                      className="px-4 py-2.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-xl text-sm font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/40 transition-colors flex items-center gap-1 shrink-0">
+                      <Plus className="w-4 h-4" /> Add
+                    </button>
+                  </div>
+                  {showSkillSuggestions && filteredSkillSuggestions.length > 0 && (
+                    <div ref={skillDropdownRef}
+                      className="absolute z-50 left-0 right-14 top-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl max-h-52 overflow-y-auto">
+                      <p className="px-3 py-1.5 text-[10px] font-semibold uppercase tracking-wider text-gray-400 dark:text-gray-500 border-b border-gray-100 dark:border-gray-800">
+                        Verifiable Skills
+                      </p>
+                      {filteredSkillSuggestions.map((skill) => (
+                        <button key={skill} type="button" onClick={() => handleAddSkill(skill)}
+                          className="w-full text-left px-3 py-2 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors flex items-center gap-2 last:rounded-b-xl">
+                          <ShieldCheck className="w-3.5 h-3.5 text-violet-500 dark:text-violet-400 shrink-0" />
+                          <span className="text-sm font-medium text-gray-900 dark:text-white">{skill}</span>
+                          <span className="text-[10px] text-violet-500 dark:text-violet-400 ml-auto shrink-0">can verify</span>
+                        </button>
+                      ))}
+                    </div>
+                  )}
                 </div>
                 {form.skills.length > 0 && (
                   <Link to="/student/skill-verification" className="inline-flex items-center gap-1.5 text-xs text-violet-600 dark:text-violet-400 hover:text-violet-700 dark:hover:text-violet-300 font-medium no-underline transition-colors">
@@ -851,9 +932,9 @@ export default function StudentProfilePage() {
                   <Globe className="w-4 h-4 text-white dark:text-gray-900" />
                 </div>
                 Social Links
-                {(form.linkedinUrl || form.githubUrl || form.portfolioUrl) && (
+                {(form.linkedinUrl || form.githubUrl || form.portfolioUrl || form.leetcodeUrl) && (
                   <span className="text-xs font-normal text-gray-400 ml-1">
-                    {[form.linkedinUrl, form.githubUrl, form.portfolioUrl].filter(Boolean).length} added
+                    {[form.linkedinUrl, form.githubUrl, form.portfolioUrl, form.leetcodeUrl].filter(Boolean).length} added
                   </span>
                 )}
               </h3>
@@ -875,6 +956,10 @@ export default function StudentProfilePage() {
                   <label className={labelClass}><Globe className="w-4 h-4 text-gray-400" /> Portfolio</label>
                   <input type="url" value={form.portfolioUrl} onChange={(e) => handleChange("portfolioUrl", e.target.value)} className={fieldErrors.portfolioUrl ? inputErrorClass : inputClass} placeholder="https://yourportfolio.com" />
                   <FieldError field="portfolioUrl" />
+                </div>
+                <div>
+                  <label className={labelClass}><ExternalLink className="w-4 h-4 text-gray-400" /> LeetCode</label>
+                  <input type="url" value={form.leetcodeUrl} onChange={(e) => handleChange("leetcodeUrl", e.target.value)} className={inputClass} placeholder="https://leetcode.com/yourname" />
                 </div>
               </div>
             )}
@@ -924,8 +1009,17 @@ export default function StudentProfilePage() {
             )}
           </motion.div>
 
-          {/* Save Button */}
+          {/* Coding Activity */}
           <motion.div custom={7} variants={fadeInUp} initial="hidden" animate="visible">
+            <ContributionGraphs
+              githubUsername={form.githubUrl ? form.githubUrl.split("github.com/").pop()?.replace(/\/$/,"") : undefined}
+              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("leetcode.com/").pop()?.replace(/\/$/,"") : undefined}
+              showPrompts
+            />
+          </motion.div>
+
+          {/* Save Button */}
+          <motion.div custom={8} variants={fadeInUp} initial="hidden" animate="visible">
             <button onClick={handleSave} disabled={saving}
               className="w-full py-4 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-base font-semibold rounded-2xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all disabled:opacity-50 flex items-center justify-center gap-2 shadow-lg shadow-black/10 cursor-pointer">
               {saving ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : <><Save className="w-4 h-4" /> Save Changes</>}

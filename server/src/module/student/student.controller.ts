@@ -28,7 +28,7 @@ export class StudentController {
         if (error.message === "Job not found") return res.status(404).json({ message: error.message });
         if (error.message === "Job is not accepting applications") return res.status(400).json({ message: error.message });
         if (error.message === "Application deadline has passed") return res.status(400).json({ message: error.message });
-        if (error.message === "Already applied to this job") return res.status(409).json({ message: error.message });
+        if (error.message === "You have already applied to this job") return res.status(409).json({ message: error.message });
       }
       next(error);
     }
@@ -102,6 +102,21 @@ export class StudentController {
       return res.json({ message: "Mock interview booked successfully", used: used + 1, limit: 1 });
     } catch (err) {
       next(err);
+    }
+  }
+
+  async getApplicationStatusByJob(req: Request, res: Response) {
+    try {
+      if (!req.user) return res.status(401).json({ message: "Authentication required" });
+
+      const jobId = parseInt(String(req.params["jobId"]), 10);
+      if (isNaN(jobId)) return res.status(400).json({ message: "Invalid job ID" });
+
+      const application = await this.studentService.getApplicationStatusByJob(jobId, req.user.id);
+      return res.status(200).json({ applied: !!application, application });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
     }
   }
 

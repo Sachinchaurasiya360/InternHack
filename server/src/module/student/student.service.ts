@@ -67,6 +67,14 @@ export class StudentService {
     }
   }
 
+  async getApplicationStatusByJob(jobId: number, studentId: number) {
+    const application = await prisma.application.findFirst({
+      where: { jobId, studentId },
+      select: { id: true, status: true },
+    });
+    return application;
+  }
+
   async getMyApplications(studentId: number) {
     return prisma.application.findMany({
       where: { studentId },

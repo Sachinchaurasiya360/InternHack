@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import type { AdminService } from "./admin.service.js";
+import { setTokenCookie } from "../../utils/cookie.utils.js";
 import {
   adminLoginSchema,
   createAdminSchema,
@@ -14,8 +15,6 @@ import {
   updateContributionStatusSchema,
   addContactAdminSchema,
   updateContactSchema,
-  createCareerSchema,
-  updateCareerSchema,
   createRepoSchema,
   updateRepoSchema,
   repoQuerySchema,
@@ -38,6 +37,10 @@ import {
   hackathonQuerySchema,
   createHackathonSchema,
   updateHackathonSchema,
+  switchAIProviderSchema,
+  createAdminJobSchema,
+  updateAdminJobSchema,
+  adminExternalJobQuerySchema,
 } from "./admin.validation.js";
 
 export class AdminController {
@@ -51,6 +54,7 @@ export class AdminController {
       if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
 
       const data = await this.adminService.login(result.data.email, result.data.password);
+      setTokenCookie(res, data.token);
       return res.status(200).json(data);
     } catch (error) {
       if (error instanceof Error) {
@@ -437,83 +441,6 @@ export class AdminController {
       res.json({ message: "Contact deleted" });
     } catch (err) {
       if (err instanceof Error && err.message === "Contact not found") {
-        res.status(404).json({ message: err.message }); return;
-      }
-      next(err);
-    }
-  }
-
-  // ==================== CAREER MANAGEMENT ====================
-
-  async listCareers(_req: Request, res: Response, next: NextFunction) {
-    try {
-      const careers = await this.adminService.listAdminCareers();
-      res.json({ careers });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async getCareer(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = parseInt(String(req.params["id"]), 10);
-      if (isNaN(id)) { res.status(400).json({ message: "Invalid career ID" }); return; }
-
-      const career = await this.adminService.getAdminCareer(id);
-      res.json({ career });
-    } catch (err) {
-      if (err instanceof Error && err.message === "Career not found") {
-        res.status(404).json({ message: err.message }); return;
-      }
-      next(err);
-    }
-  }
-
-  async createCareer(req: Request, res: Response, next: NextFunction) {
-    try {
-      const result = createCareerSchema.safeParse(req.body);
-      if (!result.success) {
-        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-        return;
-      }
-
-      const career = await this.adminService.createCareer(result.data);
-      res.status(201).json({ message: "Career created", career });
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async updateCareer(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = parseInt(String(req.params["id"]), 10);
-      if (isNaN(id)) { res.status(400).json({ message: "Invalid career ID" }); return; }
-
-      const result = updateCareerSchema.safeParse(req.body);
-      if (!result.success) {
-        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-        return;
-      }
-
-      const career = await this.adminService.updateCareer(id, result.data as Parameters<typeof this.adminService.updateCareer>[1]);
-      res.json({ message: "Career updated", career });
-    } catch (err) {
-      if (err instanceof Error && err.message === "Career not found") {
-        res.status(404).json({ message: err.message }); return;
-      }
-      next(err);
-    }
-  }
-
-  async deleteCareer(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = parseInt(String(req.params["id"]), 10);
-      if (isNaN(id)) { res.status(400).json({ message: "Invalid career ID" }); return; }
-
-      await this.adminService.deleteCareer(id);
-      res.json({ message: "Career deleted" });
-    } catch (err) {
-      if (err instanceof Error && err.message === "Career not found") {
         res.status(404).json({ message: err.message }); return;
       }
       next(err);
@@ -951,6 +878,115 @@ export class AdminController {
     } catch (err) {
       if (err instanceof Error && err.message === "Hackathon not found") { res.status(404).json({ message: err.message }); return; }
       next(err);
+    }
+  }
+
+  // ==================== AI PROVIDER MANAGEMENT ====================
+
+  async getAIServiceConfigs(_req: Request, res: Response, next: NextFunction) {
+    try {
+      const data = await this.adminService.getAIServiceConfigs();
+      res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async switchAIProvider(req: Request, res: Response, next: NextFunction) {
+    try {
+      if (!req.user) { res.status(401).json({ message: "Authentication required" }); return; }
+      const result = switchAIProviderSchema.safeParse(req.body);
+      if (!result.success) {
+        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+        return;
+      }
+      const config = await this.adminService.switchAIServiceProvider(
+        result.data.service,
+        result.data.provider,
+        result.data.modelName,
+        req.user.id,
+      );
+      res.json({ message: "AI provider switched", config });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getAIRequestStats(req: Request, res: Response, next: NextFunction) {
+    try {
+      const range = (req.query["range"] as string) || "day";
+      if (!["day", "week", "month"].includes(range)) {
+        res.status(400).json({ message: "range must be day, week, or month" });
+        return;
+      }
+      const data = await this.adminService.getAIRequestStats(range as "day" | "week" | "month");
+      res.json(data);
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  // ==================== ADMIN EXTERNAL JOBS ====================
+
+  async createExternalJob(req: Request, res: Response) {
+    try {
+      const result = createAdminJobSchema.safeParse(req.body);
+      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+      const job = await this.adminService.createExternalJob(result.data);
+      return res.status(201).json({ message: "External job created", job });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async listExternalJobs(req: Request, res: Response) {
+    try {
+      const query = adminExternalJobQuerySchema.parse(req.query);
+      const data = await this.adminService.listExternalJobs(query);
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async updateExternalJob(req: Request, res: Response) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid job ID" });
+      const result = updateAdminJobSchema.safeParse(req.body);
+      if (!result.success) return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+      const job = await this.adminService.updateExternalJob(id, result.data);
+      return res.status(200).json({ message: "External job updated", job });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Job not found") return res.status(404).json({ message: error.message });
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async deleteExternalJob(req: Request, res: Response) {
+    try {
+      const id = parseInt(String(req.params["id"]), 10);
+      if (isNaN(id)) return res.status(400).json({ message: "Invalid job ID" });
+      await this.adminService.deleteExternalJob(id);
+      return res.status(200).json({ message: "External job deleted" });
+    } catch (error) {
+      if (error instanceof Error && error.message === "Job not found") return res.status(404).json({ message: error.message });
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async getPublicExternalJobs(req: Request, res: Response) {
+    try {
+      const query = adminExternalJobQuerySchema.parse(req.query);
+      const data = await this.adminService.getPublicExternalJobs(query);
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
     }
   }
 }

@@ -4,7 +4,6 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft,
   Clock,
-  HelpCircle,
   Loader2,
   AlertTriangle,
   ShieldCheck,
@@ -75,6 +74,10 @@ export default function SkillTestPage() {
   const [submitting, setSubmitting] = useState(false);
   const [result, setResult] = useState<SkillTestSubmitResult | null>(null);
   const [started, setStarted] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
+  const [cameraError, setCameraError] = useState<string | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const streamRef = useRef<MediaStream | null>(null);
   const submittingRef = useRef(false);
 
   /* ---- Prevent closing tab during active test ---------------------- */
@@ -228,6 +231,65 @@ export default function SkillTestPage() {
     );
   }
 
+  /* Camera gate - verify camera access before showing test info ------- */
+  if (!started && !cameraReady) {
+    const requestCamera = async () => {
+      setCameraError(null);
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true });
+        streamRef.current = stream;
+        if (videoRef.current) {
+          videoRef.current.srcObject = stream;
+        }
+        setCameraReady(true);
+        // Stop the preview stream - proctoring camera component will start its own
+        stream.getTracks().forEach((t) => t.stop());
+        streamRef.current = null;
+      } catch {
+        setCameraError("Camera access denied. Please allow camera permissions and try again.");
+      }
+    };
+
+    return (
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 flex items-center justify-center p-6">
+        <motion.div
+          initial={{ opacity: 0, y: 16 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="max-w-md w-full bg-white dark:bg-gray-900 border border-gray-100 dark:border-gray-800 rounded-2xl shadow-sm p-8 space-y-6"
+        >
+          <div className="text-center space-y-2">
+            <div className="w-14 h-14 bg-amber-100 dark:bg-amber-900/30 rounded-2xl flex items-center justify-center mx-auto">
+              <Camera className="w-7 h-7 text-amber-600 dark:text-amber-400" />
+            </div>
+            <h2 className="text-lg font-bold text-gray-900 dark:text-gray-100">Camera Required</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400">
+              This is a proctored test. Please enable your camera to continue.
+            </p>
+          </div>
+
+          <div className="aspect-video bg-gray-100 dark:bg-gray-800 rounded-xl overflow-hidden flex items-center justify-center">
+            <video ref={videoRef} autoPlay muted playsInline className="w-full h-full object-cover hidden" />
+            <Camera className="w-10 h-10 text-gray-300 dark:text-gray-600" />
+          </div>
+
+          {cameraError && (
+            <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-xl p-3 text-center">
+              <p className="text-sm text-red-600 dark:text-red-400">{cameraError}</p>
+            </div>
+          )}
+
+          <button
+            onClick={requestCamera}
+            className="w-full py-3.5 bg-violet-600 hover:bg-violet-700 text-white text-sm font-semibold rounded-xl transition-colors flex items-center justify-center gap-2"
+          >
+            <Camera className="w-4 h-4" />
+            Enable Camera & Continue
+          </button>
+        </motion.div>
+      </div>
+    );
+  }
+
   /* Pre-start screen ------------------------------------------------ */
   if (!started) {
     return (
@@ -257,10 +319,8 @@ export default function SkillTestPage() {
             </p>
           )}
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          <div className="grid grid-cols-2 gap-3">
             {[
-              { label: "Questions", value: `${(test as any).questionsPerSession ?? totalQuestions} random`, icon: HelpCircle },
-              { label: "Question Pool", value: `${(test as any).totalPool ?? totalQuestions}`, icon: HelpCircle },
               { label: "Time Limit", value: `${Math.ceil(test.timeLimitSecs / 60)} min`, icon: Clock },
               { label: "Pass Score", value: `${test.passThreshold}%`, icon: CheckCircle2 },
             ].map((item) => (
@@ -454,7 +514,7 @@ export default function SkillTestPage() {
 
   /* Test in progress ------------------------------------------------ */
   return (
-    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-950 p-4 pt-8">
     <div className="max-w-4xl mx-auto">
       {/* Fullscreen warning overlay */}
       {proctor.state.showFullscreenWarning && (

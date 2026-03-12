@@ -2,7 +2,7 @@ import multer from "multer";
 import os from "os";
 import path from "path";
 
-// Use OS temp directory for disk storage — files are streamed to disk
+// Use OS temp directory for disk storage - files are streamed to disk
 // instead of being held entirely in memory, preventing OOM on concurrent uploads.
 const storage = multer.diskStorage({
   destination: (_req, _file, cb) => {

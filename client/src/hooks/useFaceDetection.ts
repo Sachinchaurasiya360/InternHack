@@ -95,7 +95,7 @@ export function useFaceDetection(config: FaceDetectionConfig) {
         minDetectionConfidence: 0.5,
       });
     } catch {
-      // MediaPipe failed — camera still works as deterrent
+      // MediaPipe failed - camera still works as deterrent
       setIsLoading(false);
       setIsActive(true);
       onReadyRef.current();
@@ -142,12 +142,12 @@ export function useFaceDetection(config: FaceDetectionConfig) {
             consecutiveMultiFaceRef.current = 0;
           }
         } else {
-          // Exactly 1 face — happy path
+          // Exactly 1 face - happy path
           consecutiveNoFaceRef.current = 0;
           consecutiveMultiFaceRef.current = 0;
         }
       } catch {
-        // Detection error — ignore single frames
+        // Detection error - ignore single frames
       }
     }, detectionIntervalMs);
 

@@ -23,6 +23,7 @@ export function errorMiddleware(err: Error, _req: Request, res: Response, _next:
 
   // Prisma validation errors
   if (err instanceof Prisma.PrismaClientValidationError) {
+    console.error("Prisma validation error:", err.message);
     res.status(400).json({ message: "Invalid data provided" });
     return;
   }
@@ -61,7 +62,7 @@ export function errorMiddleware(err: Error, _req: Request, res: Response, _next:
     return;
   }
 
-  // Unknown errors — don't leak details in production
+  // Unknown errors - don't leak details in production
   const isDev = process.env["NODE_ENV"] === "development";
   console.error("Unhandled error:", isDev ? err.stack : err.message);
   res.status(500).json({ message: isDev ? err.message : "Internal Server Error" });

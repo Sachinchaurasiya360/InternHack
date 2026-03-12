@@ -1,5 +1,4 @@
-import { useState, useCallback, useEffect, useRef } from "react";
-import { Link } from "react-router";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { motion } from "framer-motion";
 import {
   Download,
@@ -10,17 +9,25 @@ import {
   Eye,
   Loader2,
   Play,
-  ScanSearch,
-  Mail,
-  History,
-  ChevronRight,
   Code2,
-  Sparkles,
+  MessageSquare,
+  Lock,
+  Plus,
+  X,
+  FileCog,
+  Upload,
+  ChevronDown,
+  Undo2,
+  Redo2,
 } from "lucide-react";
 import CodeMirror from "@uiw/react-codemirror";
+import AtsToolsNav from "./AtsToolsNav";
+import LatexChatPanel from "./LatexChatPanel";
 import { javascript } from "@codemirror/lang-javascript";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
+import { useAuthStore } from "../../../lib/auth.store";
+import { useLatexAutoSave } from "./useLatexAutoSave";
 
 // ── Default LaTeX Template ──
 
@@ -82,19 +89,67 @@ Experienced software engineer with 5+ years building scalable web applications. 
 \\textbf{Open Source CLI Tool} -- A command-line tool for automating code reviews. 500+ GitHub stars. Built with Node.js and TypeScript.
 
 \\end{document}`;
-const TOOLS = [
-  { icon: ScanSearch, title: "ATS Score", desc: "Analyze your resume", to: "/student/ats/score" },
-  { icon: Sparkles, title: "AI Resume", desc: "Generate with AI", to: "/student/ats/resume-generator" },
-  { icon: Mail, title: "Cover Letter", desc: "AI-generated letters", to: "/student/ats/cover-letter" },
-  { icon: History, title: "Score History", desc: "Past analyses", to: "/student/ats/history" },
-];
+// Tool nav handled by shared AtsToolsNav
 
 // ── Component ──
 
 export default function LatexResumeEditor() {
-  const [code, setCode] = useState(DEFAULT_TEMPLATE);
+  const { code, setCode, supportingFiles, setSupportingFiles } = useLatexAutoSave(DEFAULT_TEMPLATE);
   const [copied, setCopied] = useState(false);
   const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
+  const [chatOpen, setChatOpen] = useState(false);
+  const [filesOpen, setFilesOpen] = useState(false);
+  const [newFileName, setNewFileName] = useState("");
+  const [editingFileIdx, setEditingFileIdx] = useState<number | null>(null);
+  const [fileListCollapsed, setFileListCollapsed] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const user = useAuthStore((s) => s.user);
+  const isPremium =
+    (user?.subscriptionPlan === "MONTHLY" || user?.subscriptionPlan === "YEARLY") &&
+    user?.subscriptionStatus === "ACTIVE";
+
+  // Undo/redo history
+  const historyRef = useRef<string[]>([code]);
+  const historyPosRef = useRef(0);
+  const skipHistoryRef = useRef(false);
+
+  const pushHistory = useCallback((val: string) => {
+    if (skipHistoryRef.current) return;
+    const history = historyRef.current;
+    const pos = historyPosRef.current;
+    // Trim any future entries if we're not at the end
+    historyRef.current = history.slice(0, pos + 1);
+    historyRef.current.push(val);
+    // Keep max 50 entries
+    if (historyRef.current.length > 50) historyRef.current.shift();
+    historyPosRef.current = historyRef.current.length - 1;
+  }, []);
+
+  const handleCodeChange = useCallback((val: string) => {
+    setCode(val);
+    pushHistory(val);
+  }, [setCode, pushHistory]);
+
+  const handleUndo = useCallback(() => {
+    if (historyPosRef.current <= 0) return;
+    historyPosRef.current -= 1;
+    skipHistoryRef.current = true;
+    setCode(historyRef.current[historyPosRef.current]);
+    skipHistoryRef.current = false;
+  }, [setCode]);
+
+  const handleRedo = useCallback(() => {
+    if (historyPosRef.current >= historyRef.current.length - 1) return;
+    historyPosRef.current += 1;
+    skipHistoryRef.current = true;
+    setCode(historyRef.current[historyPosRef.current]);
+    skipHistoryRef.current = false;
+  }, [setCode]);
+
+  const handleApplyCode = useCallback((newCode: string) => {
+    setCode(newCode);
+    pushHistory(newCode);
+  }, [setCode, pushHistory]);
 
   // Preview state
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
@@ -102,15 +157,14 @@ export default function LatexResumeEditor() {
   const [previewError, setPreviewError] = useState<string | null>(null);
   const prevBlobUrl = useRef<string | null>(null);
 
+  // Detect missing file from error (e.g. "File `resume.cls' not found")
+  const missingFile = previewError?.match(/File [`']([^'`]+)['`]\s*not found/i)?.[1] ?? null;
+
   // Cleanup blob URL on unmount
   useEffect(() => {
     return () => {
       if (prevBlobUrl.current) URL.revokeObjectURL(prevBlobUrl.current);
     };
-  }, []);
-
-  const handleCodeChange = useCallback((val: string) => {
-    setCode(val);
   }, []);
 
   const handleCopyLatex = async () => {
@@ -126,7 +180,7 @@ export default function LatexResumeEditor() {
     try {
       const res = await api.post(
         "/latex/compile",
-        { source: code },
+        { source: code, supportingFiles },
         { responseType: "blob" },
       );
       if (prevBlobUrl.current) URL.revokeObjectURL(prevBlobUrl.current);
@@ -161,7 +215,7 @@ export default function LatexResumeEditor() {
     try {
       const res = await api.post(
         "/latex/compile",
-        { source: code },
+        { source: code, supportingFiles },
         { responseType: "blob" },
       );
       const url = URL.createObjectURL(res.data as Blob);
@@ -214,40 +268,7 @@ export default function LatexResumeEditor() {
         </p>
       </motion.div>
 
-      {/* Tool Cards Row */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.1 }}
-        className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-8 px-4 sm:px-6"
-      >
-        {TOOLS.map((tool, i) => (
-          <motion.div
-            key={tool.to}
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ delay: 0.1 + i * 0.06, duration: 0.4 }}
-          >
-            <Link
-              to={tool.to}
-              className="group flex items-center gap-3 p-4 bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline"
-            >
-              <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0">
-                <tool.icon className="w-4.5 h-4.5 text-white dark:text-gray-950" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-semibold text-gray-950 dark:text-white truncate">
-                  {tool.title}
-                </p>
-                <p className="text-[11px] text-gray-400 dark:text-gray-500 truncate">
-                  {tool.desc}
-                </p>
-              </div>
-              <ChevronRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 transition-colors shrink-0" />
-            </Link>
-          </motion.div>
-        ))}
-      </motion.div>
+      <AtsToolsNav />
 
       {/* Toolbar */}
       <motion.div
@@ -289,6 +310,24 @@ export default function LatexResumeEditor() {
               </button>
 
               <button
+                onClick={handleUndo}
+                disabled={historyPosRef.current <= 0}
+                title="Undo"
+                className="inline-flex items-center justify-center w-9 h-9 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <Undo2 className="w-3.5 h-3.5" />
+              </button>
+
+              <button
+                onClick={handleRedo}
+                disabled={historyPosRef.current >= historyRef.current.length - 1}
+                title="Redo"
+                className="inline-flex items-center justify-center w-9 h-9 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+              >
+                <Redo2 className="w-3.5 h-3.5" />
+              </button>
+
+              <button
                 onClick={handleCompile}
                 disabled={compiling}
                 className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
@@ -305,9 +344,189 @@ export default function LatexResumeEditor() {
                 <Download className="w-3.5 h-3.5" />
                 Download
               </button>
+
+              <button
+                onClick={() => setFilesOpen(!filesOpen)}
+                className={`ml-auto inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl border transition-colors ${
+                  filesOpen
+                    ? "bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800"
+                    : "text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+              >
+                <FileCog className="w-3.5 h-3.5" />
+                Files
+                {supportingFiles.length > 0 && (
+                  <span className="text-[10px] bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 px-1.5 rounded-md font-semibold">
+                    {supportingFiles.length}
+                  </span>
+                )}
+              </button>
+
+              <button
+                onClick={() => setChatOpen(!chatOpen)}
+                className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl border transition-colors ${
+                  chatOpen
+                    ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800"
+                    : "text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
+                }`}
+              >
+                <MessageSquare className="w-3.5 h-3.5" />
+                AI Assistant
+                {!isPremium && <Lock className="w-3 h-3 text-amber-500" />}
+              </button>
           </div>
         </div>
       </motion.div>
+
+      {/* Supporting Files Panel */}
+      {filesOpen && (
+        <motion.div
+          initial={{ opacity: 0, height: 0 }}
+          animate={{ opacity: 1, height: "auto" }}
+          className="px-4 sm:px-6 mb-4"
+        >
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
+            <div className="flex items-center gap-2 mb-3">
+              <FileCog className="w-4 h-4 text-violet-500" />
+              <h3 className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+                Supporting Files
+              </h3>
+              <span className="text-xs text-gray-400 dark:text-gray-500">
+                .cls, .sty, .bst, .bib, .tex
+              </span>
+            </div>
+
+            {supportingFiles.length > 0 && (
+              <div className="mb-3">
+                {/* Collapsible header */}
+                <button
+                  onClick={() => setFileListCollapsed(!fileListCollapsed)}
+                  className="flex items-center gap-1.5 mb-2 text-xs font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+                >
+                  <ChevronDown
+                    className={`w-3.5 h-3.5 transition-transform ${fileListCollapsed ? "-rotate-90" : ""}`}
+                  />
+                  {supportingFiles.length} file{supportingFiles.length > 1 ? "s" : ""} added
+                </button>
+
+                {!fileListCollapsed && (
+                  <div className="space-y-2">
+                    {supportingFiles.map((sf, idx) => (
+                      <div
+                        key={idx}
+                        className="bg-gray-50 dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700 overflow-hidden"
+                      >
+                        <div className="flex items-center gap-2 px-3 py-2">
+                          <FileCode2 className="w-3.5 h-3.5 text-violet-500 shrink-0" />
+                          <span className="text-xs font-medium text-gray-700 dark:text-gray-300 flex-1 truncate">
+                            {sf.filename}
+                          </span>
+                          <span className="text-[10px] text-gray-400">
+                            {Math.round(sf.content.length / 1024)}KB
+                          </span>
+                          <button
+                            onClick={() => setEditingFileIdx(editingFileIdx === idx ? null : idx)}
+                            className="text-xs text-indigo-500 hover:text-indigo-600 font-medium"
+                          >
+                            {editingFileIdx === idx ? "Close" : "Edit"}
+                          </button>
+                          <button
+                            onClick={() => {
+                              setSupportingFiles(supportingFiles.filter((_, i) => i !== idx));
+                              if (editingFileIdx === idx) setEditingFileIdx(null);
+                            }}
+                            className="w-5 h-5 flex items-center justify-center rounded hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 transition-colors"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                        {editingFileIdx === idx && (
+                          <div className="border-t border-gray-100 dark:border-gray-700">
+                            <textarea
+                              value={sf.content}
+                              onChange={(e) => {
+                                const updated = [...supportingFiles];
+                                updated[idx] = { ...sf, content: e.target.value };
+                                setSupportingFiles(updated);
+                              }}
+                              className="w-full h-48 px-3 py-2 text-xs font-mono bg-transparent text-gray-700 dark:text-gray-300 resize-none focus:outline-none"
+                              spellCheck={false}
+                            />
+                          </div>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+            )}
+
+            {/* Upload or add manually */}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".cls,.sty,.bst,.bib,.tex"
+              multiple
+              className="hidden"
+              onChange={(e) => {
+                const files = e.target.files;
+                if (!files) return;
+                Array.from(files).forEach((file) => {
+                  if (!/\.(cls|sty|bst|bib|tex)$/.test(file.name)) return;
+                  if (supportingFiles.some((f) => f.filename === file.name)) return;
+                  const reader = new FileReader();
+                  reader.onload = () => {
+                    const content = reader.result as string;
+                    setSupportingFiles((prev) => [...prev, { filename: file.name, content }]);
+                  };
+                  reader.readAsText(file);
+                });
+                e.target.value = "";
+              }}
+            />
+
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors"
+              >
+                <Upload className="w-3 h-3" />
+                Upload File
+              </button>
+
+              <span className="text-[11px] text-gray-400 dark:text-gray-500">or</span>
+
+              <input
+                type="text"
+                value={newFileName}
+                onChange={(e) => setNewFileName(e.target.value)}
+                placeholder="resume.cls"
+                className="flex-1 text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 placeholder:text-gray-400 dark:placeholder:text-gray-600 text-gray-700 dark:text-gray-300"
+              />
+              <button
+                onClick={() => {
+                  const name = newFileName.trim();
+                  if (!name || !/\.(cls|sty|bst|bib|tex)$/.test(name)) return;
+                  if (supportingFiles.some((f) => f.filename === name)) return;
+                  const updated = [...supportingFiles, { filename: name, content: "" }];
+                  setSupportingFiles(updated);
+                  setEditingFileIdx(updated.length - 1);
+                  setNewFileName("");
+                }}
+                disabled={!newFileName.trim() || !/\.(cls|sty|bst|bib|tex)$/.test(newFileName.trim())}
+                className="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/50 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+              >
+                <Plus className="w-3 h-3" />
+                Add Empty
+              </button>
+            </div>
+
+            <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-2">
+              Upload .cls, .sty, .bst, .bib, or .tex files that your LaTeX template requires (e.g. resume.cls).
+            </p>
+          </div>
+        </motion.div>
+      )}
 
       {/* Split Pane */}
       <motion.div
@@ -316,10 +535,10 @@ export default function LatexResumeEditor() {
         transition={{ duration: 0.5, delay: 0.25 }}
         className="px-4 sm:px-6"
       >
-        <div className="flex flex-col lg:flex-row gap-4 min-h-[calc(100vh-220px)]">
+        <div className="flex flex-col lg:flex-row gap-4 h-[calc(100vh-180px)] min-h-96">
           {/* Editor Panel */}
           <div
-            className={`lg:w-1/2 flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden ${
+            className={`lg:w-1/2 flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden min-h-0 ${
               mobileView === "preview" ? "hidden lg:flex" : "flex"
             }`}
           >
@@ -354,7 +573,7 @@ export default function LatexResumeEditor() {
 
           {/* Preview Panel */}
           <div
-            className={`lg:w-1/2 flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden ${
+            className={`lg:w-1/2 flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden min-h-0 ${
               mobileView === "editor" ? "hidden lg:flex" : "flex"
             }`}
           >
@@ -379,7 +598,7 @@ export default function LatexResumeEditor() {
               )}
 
               {previewError && (
-                <div className="absolute inset-0 flex items-center justify-center p-6">
+                <div className="absolute inset-0 flex items-start justify-center p-6 overflow-y-auto">
                   <div className="max-w-md w-full">
                     <div className="bg-white dark:bg-gray-900 rounded-2xl border border-red-200 dark:border-red-800/50 shadow-lg p-6">
                       <div className="flex items-start gap-3 mb-4">
@@ -400,6 +619,34 @@ export default function LatexResumeEditor() {
                           {previewError}
                         </pre>
                       </div>
+
+                      {/* Missing file hint */}
+                      {missingFile && (
+                        <div className="mt-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800/50 rounded-xl p-4">
+                          <p className="text-xs font-semibold text-amber-800 dark:text-amber-300 mb-2">
+                            Missing file: {missingFile}
+                          </p>
+                          <p className="text-xs text-amber-700 dark:text-amber-400 mb-3 leading-relaxed">
+                            Your LaTeX template requires <span className="font-mono font-semibold">{missingFile}</span>. Upload it using the <span className="font-semibold">Files</span> button in the toolbar:
+                          </p>
+                          <ol className="text-xs text-amber-700 dark:text-amber-400 space-y-1 mb-3 list-decimal list-inside">
+                            <li>Click the <span className="font-semibold">Files</span> button in the toolbar above</li>
+                            <li>Click <span className="font-semibold">Upload File</span> and select your <span className="font-mono">{missingFile}</span></li>
+                            <li>Click <span className="font-semibold">Compile</span> again</li>
+                          </ol>
+                          <button
+                            onClick={() => {
+                              setFilesOpen(true);
+                              setPreviewError(null);
+                            }}
+                            className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-semibold bg-amber-600 text-white rounded-lg hover:bg-amber-700 transition-colors"
+                          >
+                            <Upload className="w-3 h-3" />
+                            Open Files & Upload
+                          </button>
+                        </div>
+                      )}
+
                       <button
                         onClick={() => setPreviewError(null)}
                         className="mt-4 w-full py-2.5 text-sm font-medium text-gray-600 dark:text-gray-400 bg-gray-100 dark:bg-gray-800 rounded-xl hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
@@ -454,6 +701,15 @@ export default function LatexResumeEditor() {
           </div>
         </div>
       </motion.div>
+
+      {/* AI Chat Panel */}
+      {chatOpen && (
+        <LatexChatPanel
+          code={code}
+          onApplyCode={handleApplyCode}
+          onClose={() => setChatOpen(false)}
+        />
+      )}
     </div>
   );
 }

@@ -40,7 +40,7 @@ export default function RegisterPage() {
         credential: credentialResponse.credential,
         role,
       });
-      login(data.user, data.token);
+      login(data.user);
       redirectAfterAuth(data.user.role);
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
@@ -59,10 +59,11 @@ export default function RegisterPage() {
       const payload: Record<string, string> = { name: form.name, email: form.email, password: form.password, role };
       if (role === "RECRUITER" && form.company) payload.company = form.company;
       const { data } = await api.post("/auth/register", payload);
-      login(data.user, data.token);
       if (!data.user.isVerified) {
+        // Don't log in — redirect to verify email first
         navigate(`/verify-email?email=${encodeURIComponent(form.email)}`);
       } else {
+        login(data.user);
         redirectAfterAuth(data.user.role);
       }
     } catch (err: unknown) {

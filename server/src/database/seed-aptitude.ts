@@ -8,7 +8,7 @@ const adapter = new PrismaPg({ connectionString });
 const prisma = new PrismaClient({ adapter });
 
 // ============================================================
-// IndiaBix Scraper — Aptitude, Logical Reasoning, Verbal Ability
+// IndiaBix Scraper - Aptitude, Logical Reasoning, Verbal Ability
 // ============================================================
 
 interface ScrapedQuestion {

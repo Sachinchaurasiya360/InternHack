@@ -15,7 +15,7 @@ const hackathons = [
   {
     name: "ETHGlobal Istanbul",
     organizer: "ETHGlobal",
-    logo: "https://avatars.githubusercontent.com/u/35137725",
+    logo: "https://ethglobal.b0bd725bc77a3ea7cd3826627d01fcb6.r2.cloudflarestorage.com/events/ud81s/logo/1740089703491_1712119684017_eg-sq-2.png",
     description: "ETHGlobal Istanbul brings together thousands of developers, designers, and builders at the crossroads of Europe and Asia. Over a weekend of intense building, participants create projects spanning DeFi, infrastructure, social, and more, all powered by Ethereum and its ecosystem.",
     prizePool: "$500,000+",
     startDate: "2026-09-18",
@@ -33,7 +33,7 @@ const hackathons = [
   {
     name: "ETHGlobal San Francisco",
     organizer: "ETHGlobal",
-    logo: "https://avatars.githubusercontent.com/u/35137725",
+    logo: "https://ethglobal.b0bd725bc77a3ea7cd3826627d01fcb6.r2.cloudflarestorage.com/events/ud81s/logo/1740089703491_1712119684017_eg-sq-2.png",
     description: "One of the flagship ETHGlobal events, held in the heart of Silicon Valley. Builders from around the world gather to hack on Ethereum projects, attend workshops, and compete for substantial prizes across multiple sponsor tracks.",
     prizePool: "$600,000+",
     startDate: "2026-10-10",
@@ -51,7 +51,7 @@ const hackathons = [
   {
     name: "ETHGlobal Bangkok",
     organizer: "ETHGlobal",
-    logo: "https://avatars.githubusercontent.com/u/35137725",
+    logo: "https://ethglobal.b0bd725bc77a3ea7cd3826627d01fcb6.r2.cloudflarestorage.com/events/ud81s/logo/1740089703491_1712119684017_eg-sq-2.png",
     description: "ETHGlobal Bangkok takes place during the annual Devcon week, making it one of the most anticipated Ethereum hackathons of the year. Thousands of builders converge to prototype, ship, and demo cutting-edge Ethereum applications.",
     prizePool: "$750,000+",
     startDate: "2026-11-14",
@@ -69,7 +69,7 @@ const hackathons = [
   {
     name: "ETHGlobal New York",
     organizer: "ETHGlobal",
-    logo: "https://avatars.githubusercontent.com/u/35137725",
+    logo: "https://ethglobal.b0bd725bc77a3ea7cd3826627d01fcb6.r2.cloudflarestorage.com/events/ud81s/logo/1740089703491_1712119684017_eg-sq-2.png",
     description: "ETHGlobal New York unites developers and entrepreneurs in one of the world's financial capitals. The event emphasizes real-world applications of Ethereum, from DeFi to tokenized assets, with strong participation from institutional partners.",
     prizePool: "$500,000+",
     startDate: "2025-09-26",
@@ -177,7 +177,7 @@ const hackathons = [
   {
     name: "ETHIndia",
     organizer: "ETHGlobal",
-    logo: "https://avatars.githubusercontent.com/u/35137725",
+    logo: "https://ethglobal.b0bd725bc77a3ea7cd3826627d01fcb6.r2.cloudflarestorage.com/events/ud81s/logo/1740089703491_1712119684017_eg-sq-2.png",
     description: "ETHIndia is the largest Ethereum hackathon in Asia, held in Bangalore. It draws thousands of developers from across India and Southeast Asia for a weekend of building, learning, and shipping Ethereum-based projects.",
     prizePool: "$500,000+",
     startDate: "2026-12-04",
@@ -472,7 +472,14 @@ async function main() {
     skipDuplicates: true,
   });
 
-  console.log(`Seeded ${result.count} hackathons.`);
+  // Update logos for existing ETHGlobal hackathons
+  const ethglobalLogo = hackathons[0]!.logo;
+  const updated = await prisma.hackathon.updateMany({
+    where: { organizer: "ETHGlobal" },
+    data: { logo: ethglobalLogo },
+  });
+
+  console.log(`Seeded ${result.count} hackathons, updated ${updated.count} ETHGlobal logos.`);
   await prisma.$disconnect();
 }
 

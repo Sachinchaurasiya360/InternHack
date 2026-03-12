@@ -14,7 +14,7 @@ export function usageLimit(action: UsageAction) {
       const startOfDay = new Date();
       startOfDay.setHours(0, 0, 0, 0);
 
-      // Run both DB calls in parallel — they are fully independent.
+      // Run both DB calls in parallel - they are fully independent.
       const [user, used] = await Promise.all([
         prisma.user.findUnique({
           where: { id: req.user.id },

@@ -83,13 +83,19 @@ export default function ApplicationDetail() {
         </div>
 
         {/* Resume & Cover Letter */}
-        <div className="flex items-center gap-4 mt-4">
+        <div className="flex flex-wrap items-center gap-3 mt-4">
           {application.resumeUrl && (
-            <a href={`${SERVER_URL}${application.resumeUrl}`} target="_blank" rel="noopener noreferrer"
+            <a href={application.resumeUrl.startsWith("http") ? application.resumeUrl : `${SERVER_URL}${application.resumeUrl}`} target="_blank" rel="noopener noreferrer"
               className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-950 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline">
-              <Download className="w-4 h-4" /> Download Resume
+              <Download className="w-4 h-4" /> Application Resume
             </a>
           )}
+          {application.student?.resumes && application.student.resumes.length > 0 && application.student.resumes.map((url, i) => (
+            <a key={i} href={url.startsWith("http") ? url : `${SERVER_URL}${url}`} target="_blank" rel="noopener noreferrer"
+              className="flex items-center gap-2 px-3 py-2 bg-gray-50 dark:bg-gray-950 rounded-lg text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline">
+              <Download className="w-4 h-4" /> Profile Resume {application.student.resumes!.length > 1 ? i + 1 : ""}
+            </a>
+          ))}
           {application.coverLetter && (
             <div className="flex items-center gap-2 text-sm text-gray-500 dark:text-gray-500">
               <FileText className="w-4 h-4" /> Cover letter attached

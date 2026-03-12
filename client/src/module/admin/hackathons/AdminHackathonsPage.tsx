@@ -306,7 +306,7 @@ export default function AdminHackathonsPage() {
                     <td className="px-4 py-3">{statusBadge(h.status)}</td>
                     <td className="px-4 py-3 text-gray-400">{h.locationType}</td>
                     <td className="px-4 py-3 text-gray-300">{h.prizePool}</td>
-                    <td className="px-4 py-3 text-gray-400 text-xs">{h.startDate} — {h.endDate}</td>
+                    <td className="px-4 py-3 text-gray-400 text-xs">{h.startDate} - {h.endDate}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-2">
                         <button onClick={() => handleEdit(h.id)} className="p-1.5 rounded-lg hover:bg-gray-700 text-gray-400 hover:text-white transition-colors">

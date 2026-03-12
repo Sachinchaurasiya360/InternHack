@@ -108,7 +108,14 @@ export class PaymentService {
       .update(`${razorpayOrderId}|${razorpayPaymentId}`)
       .digest("hex");
 
-    if (generatedSignature !== razorpaySignature) {
+    // Use timing-safe comparison to prevent timing attacks
+    const sigBuffer = Buffer.from(generatedSignature, "hex");
+    const providedBuffer = Buffer.from(razorpaySignature, "hex");
+    const sigMatch =
+      sigBuffer.length === providedBuffer.length &&
+      crypto.timingSafeEqual(sigBuffer, providedBuffer);
+
+    if (!sigMatch) {
       // Mark as failed
       await prisma.payment.update({
         where: { razorpayOrderId },
@@ -121,7 +128,23 @@ export class PaymentService {
       throw new Error("Invalid payment signature");
     }
 
-    // 3. Atomically update payment + activate subscription
+    // 3. Verify payment amount matches order amount via Razorpay API
+    try {
+      const rpPayment = await this.razorpay.payments.fetch(razorpayPaymentId);
+      if (Number(rpPayment.amount) !== payment.amount) {
+        await prisma.payment.update({
+          where: { razorpayOrderId },
+          data: { razorpayPaymentId, razorpaySignature, status: "FAILED" },
+        });
+        throw new Error("Payment amount mismatch");
+      }
+    } catch (err) {
+      if (err instanceof Error && err.message === "Payment amount mismatch") throw err;
+      console.error("[Payment] Failed to verify amount with Razorpay API:", err);
+      // Continue if Razorpay API is unreachable - signature was already verified
+    }
+
+    // 4. Atomically update payment + activate subscription
     const now = new Date();
     const endDate = new Date(now);
     if (payment.billing === "yearly") {

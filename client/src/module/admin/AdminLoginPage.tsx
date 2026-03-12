@@ -20,7 +20,7 @@ export default function AdminLoginPage() {
 
     try {
       const { data } = await api.post("/admin/login", form);
-      login(data.user, data.token);
+      login(data.user);
       navigate("/admin");
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };

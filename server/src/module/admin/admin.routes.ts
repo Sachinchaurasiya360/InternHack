@@ -58,13 +58,6 @@ adminRouter.post("/companies/:id/contacts", (req, res, next) => adminController.
 adminRouter.put("/contacts/:id", (req, res, next) => adminController.updateContact(req, res, next));
 adminRouter.delete("/contacts/:id", (req, res, next) => adminController.deleteContact(req, res, next));
 
-// Careers
-adminRouter.get("/careers", (req, res, next) => adminController.listCareers(req, res, next));
-adminRouter.get("/careers/:id", (req, res, next) => adminController.getCareer(req, res, next));
-adminRouter.post("/careers", (req, res, next) => adminController.createCareer(req, res, next));
-adminRouter.put("/careers/:id", (req, res, next) => adminController.updateCareer(req, res, next));
-adminRouter.delete("/careers/:id", (req, res, next) => adminController.deleteCareer(req, res, next));
-
 // Open Source Repos
 adminRouter.get("/repos", (req, res, next) => adminController.listRepos(req, res, next));
 adminRouter.get("/repos/:id", (req, res, next) => adminController.getRepo(req, res, next));
@@ -110,3 +103,14 @@ adminRouter.get("/hackathons/:id", (req, res, next) => adminController.getHackat
 adminRouter.post("/hackathons", (req, res, next) => adminController.createHackathon(req, res, next));
 adminRouter.put("/hackathons/:id", (req, res, next) => adminController.updateHackathon(req, res, next));
 adminRouter.delete("/hackathons/:id", (req, res, next) => adminController.deleteHackathon(req, res, next));
+
+// External Jobs (admin-posted)
+adminRouter.get("/external-jobs", (req, res) => adminController.listExternalJobs(req, res));
+adminRouter.post("/external-jobs", (req, res) => adminController.createExternalJob(req, res));
+adminRouter.put("/external-jobs/:id", (req, res) => adminController.updateExternalJob(req, res));
+adminRouter.delete("/external-jobs/:id", (req, res) => adminController.deleteExternalJob(req, res));
+
+// AI Provider Management
+adminRouter.get("/ai/config", (req, res, next) => adminController.getAIServiceConfigs(req, res, next));
+adminRouter.put("/ai/switch", (req, res, next) => adminController.switchAIProvider(req, res, next));
+adminRouter.get("/ai/stats", (req, res, next) => adminController.getAIRequestStats(req, res, next));

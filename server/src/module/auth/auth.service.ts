@@ -33,6 +33,7 @@ interface UpdateProfileInput {
   linkedinUrl?: string;
   githubUrl?: string;
   portfolioUrl?: string;
+  leetcodeUrl?: string;
   jobStatus?: string | null;
   projects?: { id: string; title: string; description: string; techStack: string[]; liveUrl?: string; repoUrl?: string }[];
   achievements?: { id: string; title: string; description: string; date?: string }[];
@@ -200,6 +201,26 @@ export class AuthService {
       throw new Error("Invalid email or password");
     }
 
+    // Block unverified students/recruiters — admins skip verification
+    if (!user.isVerified && user.role !== "ADMIN") {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      const hashedOtp = await hashPassword(otp);
+      const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { verificationOtp: hashedOtp, otpExpiresAt },
+      });
+
+      sendEmail({
+        to: user.email,
+        subject: "Verify your InternHack account",
+        html: otpEmailHtml(user.name, otp),
+      }).catch((err) => console.error("Failed to send OTP email:", err));
+
+      throw new Error("EMAIL_NOT_VERIFIED");
+    }
+
     const token = generateToken({ id: user.id, email: user.email, role: user.role });
 
     return {
@@ -241,6 +262,7 @@ export class AuthService {
     githubUrl: true,
     portfolioUrl: true,
     jobStatus: true,
+    isProfilePublic: true,
     projects: true,
     achievements: true,
     createdAt: true,
@@ -266,7 +288,7 @@ export class AuthService {
     const updateData: Record<string, unknown> = {};
 
     if (data.name && data.name.trim()) updateData.name = data.name.trim();
-    for (const key of ["contactNo", "company", "designation", "bio", "college", "location", "linkedinUrl", "githubUrl", "portfolioUrl"] as const) {
+    for (const key of ["contactNo", "company", "designation", "bio", "college", "location", "linkedinUrl", "githubUrl", "portfolioUrl", "leetcodeUrl"] as const) {
       if (key in data) updateData[key] = (data[key] as string)?.trim() || null;
     }
     if ("graduationYear" in data) {
@@ -299,7 +321,7 @@ export class AuthService {
 
   async getPublicProfile(userId: number) {
     const user = await prisma.user.findUnique({
-      where: { id: userId, role: "STUDENT" },
+      where: { id: userId, role: "STUDENT", isProfilePublic: true },
       select: {
         ...this.profileSelect,
         verifiedSkills: {
@@ -360,6 +382,12 @@ export class AuthService {
         email: true,
         role: true,
         isVerified: true,
+        company: true,
+        designation: true,
+        createdAt: true,
+        subscriptionPlan: true,
+        subscriptionStatus: true,
+        subscriptionEndDate: true,
       },
     });
 
@@ -370,7 +398,9 @@ export class AuthService {
       html: welcomeEmailHtml(user.name),
     }).catch((err) => console.error("Failed to send welcome email:", err));
 
-    return updated;
+    const token = generateToken({ id: updated.id, email: updated.email, role: updated.role });
+
+    return { user: updated, token };
   }
 
   async resendOtp(email: string) {

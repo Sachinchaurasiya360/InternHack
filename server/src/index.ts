@@ -1,6 +1,7 @@
 import "dotenv/config";
+import crypto from "crypto";
 import express from "express";
-import cors from "cors";
+
 import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
@@ -13,13 +14,13 @@ import { studentRouter } from "./module/student/student.routes.js";
 import { uploadRouter } from "./module/upload/upload.routes.js";
 import { scraperRouter, scraperController } from "./module/scraper/scraper.routes.js";
 import { atsRouter } from "./module/ats/ats.routes.js";
-import { careerRouter } from "./module/career/career.routes.js";
 import { companyRouter } from "./module/company/company.routes.js";
 import { adminRouter } from "./module/admin/admin.routes.js";
+import { AdminService } from "./module/admin/admin.service.js";
+import { AdminController } from "./module/admin/admin.controller.js";
 import { newsletterRouter } from "./module/newsletter/newsletter.routes.js";
 import { opensourceRouter } from "./module/opensource/opensource.routes.js";
 import { paymentRouter } from "./module/payment/payment.routes.js";
-import { quizRouter } from "./module/quiz/quiz.routes.js";
 import { blogRouter } from "./module/blog/blog.routes.js";
 import { gsocRouter } from "./module/gsoc/gsoc.routes.js";
 import { ycRouter } from "./module/yc/yc.routes.js";
@@ -31,11 +32,20 @@ import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
 import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { professorRouter } from "./module/professor/professor.routes.js";
 import { internshipRouter } from "./module/internship/internship.routes.js";
-import { trendsRouter } from "./module/trends/trends.routes.js";
 import { campusDriveRouter } from "./module/campus-drive/campus-drive.routes.js";
 import { badgeRouter } from "./module/badge/badge.routes.js";
+import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
+import { initServiceProviders } from "./lib/ai-provider-registry.js";
+
+// ── Validate required environment variables ──
+const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
+for (const key of REQUIRED_ENV) {
+  if (!process.env[key]) {
+    throw new Error(`Missing required environment variable: ${key}`);
+  }
+}
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -45,24 +55,54 @@ app.set("trust proxy", 1);
 const PORT = process.env["PORT"] || 3000;
 
 // ── Security headers ──
-app.use(helmet({ contentSecurityPolicy: false })); // CSP disabled — SPA serves its own
+app.use(
+  helmet({
+    contentSecurityPolicy: {
+      directives: {
+        defaultSrc: ["'self'"],
+        scriptSrc: ["'self'", "https://accounts.google.com", "https://apis.google.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com"],
+        imgSrc: ["'self'", "data:", "https:", "blob:"],
+        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com"],
+        frameSrc: ["https://accounts.google.com", "https://api.razorpay.com"],
+        fontSrc: ["'self'", "https:", "data:"],
+      },
+    },
+  }),
+);
 
-// ── CORS — env-driven origins ──
-const allowedOrigins = (process.env["ALLOWED_ORIGINS"] ?? "http://localhost:5173,https://www.internhack.xyz").split(",");
-app.use(cors({
-  origin: (origin, callback) => {
-    if (!origin || allowedOrigins.includes(origin)) {
-      callback(null, true);
-    } else {
-      callback(new Error("Not allowed by CORS"));
-    }
-  },
-  credentials: true,
-}));
+// ── CORS - manual headers (cors package breaks with Express 5 + credentials) ──
+const allowedOrigins = new Set(
+  (process.env["ALLOWED_ORIGINS"] ?? "http://localhost:5173,https://www.internhack.xyz")
+    .split(",")
+    .map((s) => s.trim()),
+);
+app.use((req, res, next) => {
+  const origin = req.headers.origin;
+  if (origin && allowedOrigins.has(origin)) {
+    res.setHeader("Access-Control-Allow-Origin", origin);
+    res.setHeader("Access-Control-Allow-Credentials", "true");
+    res.setHeader("Vary", "Origin");
+  }
+  if (req.method === "OPTIONS") {
+    res.setHeader("Access-Control-Allow-Methods", "GET,HEAD,PUT,PATCH,POST,DELETE");
+    res.setHeader("Access-Control-Allow-Headers", "Content-Type,Authorization");
+    res.setHeader("Access-Control-Max-Age", "86400");
+    res.status(204).end();
+    return;
+  }
+  next();
+});
 
 app.use(express.json());
 app.use(cookieParser());
 app.use("/uploads", express.static(path.join(__dirname, "../uploads"), { dotfiles: "deny", index: false }));
+
+// ── Request ID tracing ──
+app.use((req, _res, next) => {
+  req.headers["x-request-id"] ??= crypto.randomUUID();
+  next();
+});
 
 // ── Rate limiters ──
 const globalLimiter = rateLimit({
@@ -81,6 +121,7 @@ const authLimiter = rateLimit({
 });
 app.use("/api/auth/login", authLimiter);
 app.use("/api/auth/register", authLimiter);
+app.use("/api/admin/login", authLimiter);
 
 const latexLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
@@ -97,13 +138,11 @@ app.use("/api/student", studentRouter);
 app.use("/api/upload", uploadRouter);
 app.use("/api/scraped-jobs", scraperRouter);
 app.use("/api/ats", atsRouter);
-app.use("/api/careers", careerRouter);
 app.use("/api/companies", companyRouter);
 app.use("/api/admin", adminRouter);
 app.use("/api/newsletter", newsletterRouter);
 app.use("/api/opensource", opensourceRouter);
 app.use("/api/payments", paymentRouter);
-app.use("/api/quiz", quizRouter);
 app.use("/api/blog", blogRouter);
 app.use("/api/gsoc", gsocRouter);
 app.use("/api/yc", ycRouter);
@@ -115,9 +154,13 @@ app.use("/api/skill-tests", skillTestRouter);
 app.use("/api/hackathons", hackathonRouter);
 app.use("/api/professors", professorRouter);
 app.use("/api/internships", internshipRouter);
-app.use("/api/trends", trendsRouter);
 app.use("/api/campus-drives", campusDriveRouter);
 app.use("/api/badges", badgeRouter);
+app.use("/api/leetcode", leetcodeRouter);
+
+// Public external jobs endpoint (no auth)
+const publicAdminController = new AdminController(new AdminService());
+app.get("/api/external-jobs", (req, res) => publicAdminController.getPublicExternalJobs(req, res));
 
 // ── Static files (public folder) ──
 app.use(express.static(path.join(__dirname, "../public"), { dotfiles: "deny", index: false }));
@@ -132,25 +175,27 @@ app.get("/api/stats", async (_req, res) => {
       return res.json(statsCache.data);
     }
 
-    const [users, jobs, careers, companies] = await Promise.all([
+    const [users, jobs, companies] = await Promise.all([
       prisma.user.count({ where: { role: "STUDENT" } }),
       prisma.job.count({ where: { status: "PUBLISHED" } }),
-      prisma.career.count(),
       prisma.company.count(),
     ]);
 
-    const data = { users, jobs, careers, companies };
+    const data = { users, jobs, companies };
     statsCache = { data, expiresAt: Date.now() + STATS_TTL };
     return res.json(data);
   } catch {
-    return res.json({ users: 0, jobs: 0, careers: 0, companies: 0 });
+    return res.json({ users: 0, jobs: 0, companies: 0 });
   }
 });
 
 app.use(errorMiddleware);
 
-app.listen(PORT, () => {
+app.listen(PORT, async () => {
   console.log(`Server running on http://localhost:${PORT}`);
+
+  // Load AI service provider configs into memory
+  await initServiceProviders().catch((err) => console.error("[AI] Failed to init providers:", err));
 
   // Start the job scraper cron (every 6 hours)
   const cronSchedule = process.env["SCRAPER_CRON"] || "0 */6 * * *";

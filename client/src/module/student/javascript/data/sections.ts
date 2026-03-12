@@ -4,7 +4,7 @@ export const jsSections: JsSection[] = [
   {
     id: "basics",
     title: "JavaScript Basics",
-    description: "Core fundamentals — variables, operators, control flow, loops, and functions.",
+    description: "Core fundamentals - variables, operators, control flow, loops, and functions.",
     orderIndex: 0,
     level: "Beginner",
   },

@@ -52,7 +52,7 @@
         "id": "template-literals-ex1",
         "title": "Build a User Profile Card",
         "description": "Use template literals with interpolation to build a formatted user profile string. Given a user object, produce a multi-line card using expression interpolation including a ternary expression and a method call.",
-        "starterCode": "// Build a profile card using template literals\nconst user = { name: 'Jordan', age: 24, role: 'designer' };\n\n// TODO: Use a template literal to create a multi-line card string\n// - Line 1: \"Name: Jordan\"\n// - Line 2: \"Age: 24 (Adult)\" — use a ternary: age >= 18 ? 'Adult' : 'Minor'\n// - Line 3: \"Role: DESIGNER\" — use .toUpperCase()\n// Log the card with console.log\n",
+        "starterCode": "// Build a profile card using template literals\nconst user = { name: 'Jordan', age: 24, role: 'designer' };\n\n// TODO: Use a template literal to create a multi-line card string\n// - Line 1: \"Name: Jordan\"\n// - Line 2: \"Age: 24 (Adult)\" - use a ternary: age >= 18 ? 'Adult' : 'Minor'\n// - Line 3: \"Role: DESIGNER\" - use .toUpperCase()\n// Log the card with console.log\n",
         "solution": "const user = { name: 'Jordan', age: 24, role: 'designer' };\n\nconst card = `Name: ${user.name}\nAge: ${user.age} (${user.age >= 18 ? 'Adult' : 'Minor'})\nRole: ${user.role.toUpperCase()}`;\nconsole.log(card);",
         "expectedOutput": "Name: Jordan\nAge: 24 (Adult)\nRole: DESIGNER",
         "hints": [
@@ -218,7 +218,7 @@
         "id": "symbols-iterators-ex1",
         "title": "Symbol Uniqueness and Global Registry",
         "description": "Demonstrate that Symbol() always creates unique symbols, and that Symbol.for() returns the same symbol for the same key. Also show that symbol-keyed properties are hidden from Object.keys().",
-        "starterCode": "// TODO: Create two symbols with the same description 'token'\nconst s1 = undefined; // replace\nconst s2 = undefined; // replace\n\n// TODO: Log whether s1 === s2 (should be false)\n\n// TODO: Create two global symbols with key 'app.token' using Symbol.for\nconst g1 = undefined; // replace\nconst g2 = undefined; // replace\n\n// TODO: Log whether g1 === g2 (should be true)\n\n// TODO: Create an object with a string key 'name' = 'Alice'\n//       and a symbol key using s1 with value 'secret'\n// TODO: Log Object.keys(obj) — symbol should be hidden\n// TODO: Log obj[s1] to access the symbol-keyed property\n",
+        "starterCode": "// TODO: Create two symbols with the same description 'token'\nconst s1 = undefined; // replace\nconst s2 = undefined; // replace\n\n// TODO: Log whether s1 === s2 (should be false)\n\n// TODO: Create two global symbols with key 'app.token' using Symbol.for\nconst g1 = undefined; // replace\nconst g2 = undefined; // replace\n\n// TODO: Log whether g1 === g2 (should be true)\n\n// TODO: Create an object with a string key 'name' = 'Alice'\n//       and a symbol key using s1 with value 'secret'\n// TODO: Log Object.keys(obj) - symbol should be hidden\n// TODO: Log obj[s1] to access the symbol-keyed property\n",
         "solution": "const s1 = Symbol('token');\nconst s2 = Symbol('token');\nconsole.log(s1 === s2);\n\nconst g1 = Symbol.for('app.token');\nconst g2 = Symbol.for('app.token');\nconsole.log(g1 === g2);\n\nconst obj = { name: 'Alice', [s1]: 'secret' };\nconsole.log(Object.keys(obj));\nconsole.log(obj[s1]);",
         "expectedOutput": "false\ntrue\n[ 'name' ]\nsecret",
         "hints": [

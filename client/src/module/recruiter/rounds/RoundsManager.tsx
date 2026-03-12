@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Plus, ChevronDown, ChevronUp, Trash2, ArrowUp, ArrowDown } from "lucide-react";
+import { Plus, ChevronDown, ChevronUp, Trash2, ArrowUp, ArrowDown, Calendar } from "lucide-react";
 import { DynamicFieldBuilder } from "../../../components/DynamicFieldBuilder";
 import type { CustomFieldDefinition } from "../../../lib/types";
 
@@ -7,6 +7,7 @@ interface RoundInput {
   name: string;
   description: string;
   instructions: string;
+  activateAt: string;
   customFields: CustomFieldDefinition[];
   evaluationCriteria: { id: string; criterion: string; maxScore: number }[];
 }
@@ -24,6 +25,7 @@ export function RoundsManager({ rounds, onChange }: RoundsManagerProps) {
       name: "",
       description: "",
       instructions: "",
+      activateAt: "",
       customFields: [],
       evaluationCriteria: [],
     }]);
@@ -81,7 +83,13 @@ export function RoundsManager({ rounds, onChange }: RoundsManagerProps) {
                 className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 disabled:opacity-30"><ArrowDown className="w-3 h-3" /></button>
             </div>
             <span className="text-xs font-bold text-gray-400 dark:text-gray-500 w-8">R{index + 1}</span>
-            <span className="flex-1 font-medium text-sm dark:text-white">{round.name || "Untitled Round"}</span>
+            <span className="flex-1 font-medium text-sm dark:text-white truncate">{round.name || "Untitled Round"}</span>
+            {round.activateAt && (
+              <span className="text-xs text-gray-400 dark:text-gray-500 shrink-0 flex items-center gap-1">
+                <Calendar className="w-3 h-3" />
+                {new Date(round.activateAt).toLocaleDateString(undefined, { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" })}
+              </span>
+            )}
             {expandedIndex === index ? <ChevronUp className="w-4 h-4 text-gray-400 dark:text-gray-500" /> : <ChevronDown className="w-4 h-4 text-gray-400 dark:text-gray-500" />}
             <button type="button" onClick={(e) => { e.stopPropagation(); removeRound(index); }}
               className="p-1 text-red-400 hover:text-red-600"><Trash2 className="w-4 h-4" /></button>
@@ -107,6 +115,15 @@ export function RoundsManager({ rounds, onChange }: RoundsManagerProps) {
                   <textarea value={round.instructions} onChange={(e) => updateRound(index, { instructions: e.target.value })}
                     className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
                     placeholder="Instructions candidates will see for this round" rows={2} />
+                </div>
+                <div>
+                  <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">
+                    <span className="flex items-center gap-1"><Calendar className="w-3 h-3" /> Activate At</span>
+                  </label>
+                  <input type="datetime-local" value={round.activateAt} onChange={(e) => updateRound(index, { activateAt: e.target.value })}
+                    className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white"
+                  />
+                  <p className="text-xs text-gray-400 mt-1">Schedule when this round should be activated for candidates</p>
                 </div>
               </div>
 

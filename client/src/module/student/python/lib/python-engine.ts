@@ -96,7 +96,7 @@ sys.stderr = io.StringIO()
         for (const line of stdout.split("\n")) {
           if (line !== "") logs.push({ type: "log", args: [line] });
         }
-        // Preserve trailing newline awareness — if stdout ends with \n and last line is empty, don't add extra
+        // Preserve trailing newline awareness - if stdout ends with \n and last line is empty, don't add extra
       }
 
       if (stderr) {
