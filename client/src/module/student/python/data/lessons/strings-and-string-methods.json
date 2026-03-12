@@ -1,0 +1,449 @@
+[
+  {
+    "id": "string-basics",
+    "sectionId": "strings-and-string-methods",
+    "orderIndex": 0,
+    "title": "String Basics",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["strings", "quotes", "escape characters", "raw strings"],
+    "content": {
+      "explanation": "Strings in Python are sequences of characters enclosed in quotes. You can use single quotes ('hello'), double quotes (\"hello\"), or triple quotes ('''hello''' or \"\"\"hello\"\"\") to create strings. Single and double quotes work identically for single-line strings, so choose whichever avoids the need for escaping internal quotes.\n\nTriple-quoted strings can span multiple lines and preserve line breaks. They are commonly used for docstrings (documentation strings inside functions, classes, and modules) and for any text that naturally spans several lines.\n\nEscape characters let you include special characters inside strings. The backslash (\\) is the escape character: \\n inserts a newline, \\t inserts a tab, \\\\ inserts a literal backslash, and \\' or \\\" inserts a quote character. These are essential when you need characters that cannot be typed directly into a string literal.\n\nRaw strings, prefixed with r or R, treat backslashes as literal characters instead of escape characters. Writing r\"C:\\Users\\name\" keeps every backslash as-is, which is especially useful for Windows file paths and regular expressions where backslashes appear frequently.",
+      "codeExamples": [
+        {
+          "title": "Single, Double, and Triple Quotes",
+          "code": "single = 'Hello, World!'\ndouble = \"Hello, World!\"\ntriple = '''This is\na multi-line\nstring.'''\n\nprint(single)\nprint(double)\nprint(triple)",
+          "output": "Hello, World!\nHello, World!\nThis is\na multi-line\nstring.",
+          "explanation": "Single and double quotes produce identical strings. Triple quotes preserve newlines and allow the string to span multiple lines in source code."
+        },
+        {
+          "title": "Escape Characters",
+          "code": "tab_example = \"Name:\\tAlice\"\nnewline_example = \"Line 1\\nLine 2\"\nquote_example = \"She said \\\"hi\\\"\"\nbackslash_example = \"C:\\\\Users\\\\Alice\"\n\nprint(tab_example)\nprint(newline_example)\nprint(quote_example)\nprint(backslash_example)",
+          "output": "Name:\tAlice\nLine 1\nLine 2\nShe said \"hi\"\nC:\\Users\\Alice",
+          "explanation": "\\t produces a tab, \\n produces a newline, \\\" inserts a double quote inside a double-quoted string, and \\\\ produces a single backslash."
+        },
+        {
+          "title": "Raw Strings",
+          "code": "normal = \"C:\\\\new_folder\\\\test\"\nraw = r\"C:\\new_folder\\test\"\n\nprint(normal)\nprint(raw)\nprint(normal == raw)",
+          "output": "C:\\new_folder\\test\nC:\\new_folder\\test\nTrue",
+          "explanation": "The raw string r\"...\" treats backslashes literally, so \\n is two characters (backslash + n) rather than a newline. Both variables produce the same string."
+        }
+      ],
+      "notes": [
+        "Strings in Python are immutable: once created, individual characters cannot be changed in place.",
+        "Use single quotes inside double-quoted strings (or vice versa) to avoid escape characters: \"It's easy\" or 'She said \"hi\"'.",
+        "Triple-quoted strings are the standard way to write Python docstrings."
+      ],
+      "commonPitfalls": [
+        "Forgetting to escape backslashes in file paths: \"C:\\new\" interprets \\n as a newline. Use raw strings or double backslashes instead.",
+        "Mixing up single and double quotes when nesting: 'It's broken' causes a SyntaxError. Use \"It's fine\" or 'It\\'s fine'.",
+        "Raw strings cannot end with an odd number of backslashes: r\"path\\\" is a SyntaxError because the trailing backslash escapes the closing quote."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "string-basics-ex1",
+        "title": "Quote Practice",
+        "description": "Create a variable called `message` that contains the text: He said \"Python's great!\" (including both types of quotes). Print it.",
+        "starterCode": "# Create the message variable with both quote types\nmessage = \n\nprint(message)",
+        "solution": "# Create the message variable with both quote types\nmessage = '''He said \"Python's great!\"'''\n\nprint(message)",
+        "expectedOutput": "He said \"Python's great!\"",
+        "hints": [
+          "Triple quotes let you include both single and double quotes without escaping.",
+          "Alternatively, you can use escape characters: \"He said \\\"Python's great!\\\"\""
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "string-basics-ex2",
+        "title": "Multi-line Address",
+        "description": "Create a variable `address` using a triple-quoted string containing exactly three lines:\nLine 1: 42 Python Lane\nLine 2: Suite 3.11\nLine 3: Codeville, PY 10001\nPrint the address.",
+        "starterCode": "# Create a multi-line address string\naddress = \n\nprint(address)",
+        "solution": "# Create a multi-line address string\naddress = \"\"\"42 Python Lane\nSuite 3.11\nCodeville, PY 10001\"\"\"\n\nprint(address)",
+        "expectedOutput": "42 Python Lane\nSuite 3.11\nCodeville, PY 10001",
+        "hints": [
+          "Use triple double-quotes or triple single-quotes to span multiple lines.",
+          "Make sure there are no extra blank lines at the start or end of the string."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "string-basics-ex3",
+        "title": "Raw String File Path",
+        "description": "Create a variable `path` using a raw string that stores the Windows path: C:\\Users\\Admin\\Documents\\report.txt — then print it.",
+        "starterCode": "# Create a raw string file path\npath = \n\nprint(path)",
+        "solution": "# Create a raw string file path\npath = r\"C:\\Users\\Admin\\Documents\\report.txt\"\n\nprint(path)",
+        "expectedOutput": "C:\\Users\\Admin\\Documents\\report.txt",
+        "hints": [
+          "Prefix the string with r to make it a raw string.",
+          "In a raw string, backslashes are treated as literal characters."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "string-indexing-slicing",
+    "sectionId": "strings-and-string-methods",
+    "orderIndex": 1,
+    "title": "String Indexing & Slicing",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["indexing", "negative indexing", "slicing", "step", "string reversal"],
+    "content": {
+      "explanation": "Every character in a Python string has a position called an index. Indexing starts at 0, so the first character is at index 0, the second at index 1, and so on. You access a single character using square brackets: text[0] returns the first character.\n\nPython also supports negative indexing, which counts from the end of the string. Index -1 is the last character, -2 is the second to last, and so on. This is extremely convenient when you need characters relative to the end without knowing the string's length.\n\nSlicing extracts a substring using the syntax string[start:stop:step]. The start index is inclusive and the stop index is exclusive. If you omit start, it defaults to 0; if you omit stop, it defaults to the length of the string. The optional step controls the stride between characters.\n\nA common interview trick is reversing a string with slicing: text[::-1]. The -1 step walks backward through the entire string. Understanding slicing thoroughly is critical because the same syntax applies to lists, tuples, and other sequence types in Python.",
+      "codeExamples": [
+        {
+          "title": "Basic Indexing and Negative Indexing",
+          "code": "text = \"Python\"\n\nprint(text[0])\nprint(text[3])\nprint(text[-1])\nprint(text[-3])",
+          "output": "P\nh\nn\nh",
+          "explanation": "text[0] is 'P' (first character), text[3] is 'h', text[-1] is 'n' (last character), and text[-3] is 'h' (third from end)."
+        },
+        {
+          "title": "Slicing with start:stop",
+          "code": "text = \"Hello, World!\"\n\nprint(text[0:5])\nprint(text[7:12])\nprint(text[:5])\nprint(text[7:])",
+          "output": "Hello\nWorld\nHello\nWorld!",
+          "explanation": "text[0:5] extracts indices 0-4. Omitting start defaults to 0; omitting stop goes to the end."
+        },
+        {
+          "title": "Slicing with Step and Reversal",
+          "code": "text = \"abcdefghij\"\n\nprint(text[::2])\nprint(text[1::2])\nprint(text[::-1])\nprint(text[7:2:-1])",
+          "output": "acegi\nbdfhj\njihgfedcba\nhgfed",
+          "explanation": "Step 2 takes every second character. Step -1 reverses the string. text[7:2:-1] walks backward from index 7 to index 3 (stop is exclusive)."
+        }
+      ],
+      "notes": [
+        "Accessing an index beyond the string's length raises an IndexError, but slicing beyond the bounds does not — it simply returns what is available.",
+        "Slicing always creates a new string; it never modifies the original because strings are immutable.",
+        "The slice object can also be stored: s = slice(0, 5) and then used as text[s].",
+        "Negative step reverses traversal direction; when using a negative step, start should be greater than stop."
+      ],
+      "commonPitfalls": [
+        "Off-by-one errors: the stop index is exclusive, so text[0:5] returns 5 characters (indices 0 through 4), not 6.",
+        "Confusing text[-0] with text[0]: -0 equals 0 in Python, so text[-0] returns the first character, not the last.",
+        "Forgetting that a negative step reverses the default start/stop: text[2:7:-1] returns an empty string because 2 < 7 with a backward step."
+      ],
+      "interviewTips": [
+        "Reversing a string with [::-1] is one of the most common Python interview one-liners. Know it cold.",
+        "Be ready to check if a string is a palindrome: s == s[::-1].",
+        "Understand that slicing creates a copy. For very large strings, consider using indices or itertools.islice for memory efficiency."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "string-indexing-ex1",
+        "title": "Extract Initials",
+        "description": "Given the variable `name = \"Alan Turing\"`, use indexing to extract the first letter of each word and print the initials as a single string (e.g., \"AT\").",
+        "starterCode": "name = \"Alan Turing\"\n\n# Extract the first letter of each word using indexing\nfirst = \nsecond = \ninitials = first + second\n\nprint(initials)",
+        "solution": "name = \"Alan Turing\"\n\n# Extract the first letter of each word using indexing\nfirst = name[0]\nsecond = name[5]\ninitials = first + second\n\nprint(initials)",
+        "expectedOutput": "AT",
+        "hints": [
+          "The first name starts at index 0.",
+          "Count the characters (including the space) to find the index where 'Turing' starts."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "string-indexing-ex2",
+        "title": "Reverse a Substring",
+        "description": "Given `text = \"programming\"`, use slicing to extract \"gram\" (indices 3 through 6), then reverse that substring and print the result.",
+        "starterCode": "text = \"programming\"\n\n# Extract 'gram' using slicing, then reverse it\nsubstring = \nreversed_sub = \n\nprint(reversed_sub)",
+        "solution": "text = \"programming\"\n\n# Extract 'gram' using slicing, then reverse it\nsubstring = text[3:7]\nreversed_sub = substring[::-1]\n\nprint(reversed_sub)",
+        "expectedOutput": "marg",
+        "hints": [
+          "Remember that the stop index is exclusive, so to include index 6, use stop=7.",
+          "Use [::-1] to reverse a string."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "string-indexing-ex3",
+        "title": "Palindrome Check",
+        "description": "Given `word = \"racecar\"`, use slicing to check if it is a palindrome (reads the same forward and backward). Print True or False.",
+        "starterCode": "word = \"racecar\"\n\n# Check if the word is a palindrome using slicing\nis_palindrome = \n\nprint(is_palindrome)",
+        "solution": "word = \"racecar\"\n\n# Check if the word is a palindrome using slicing\nis_palindrome = word == word[::-1]\n\nprint(is_palindrome)",
+        "expectedOutput": "True",
+        "hints": [
+          "A palindrome reads the same forward and backward.",
+          "Compare the word with its reversed version using [::-1]."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "string-methods",
+    "sectionId": "strings-and-string-methods",
+    "orderIndex": 2,
+    "title": "String Methods",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["upper", "lower", "strip", "split", "join", "replace", "find", "count"],
+    "content": {
+      "explanation": "Python strings come with a rich set of built-in methods. These methods do not modify the original string (since strings are immutable) but return a new string with the requested transformation applied.\n\nCase-changing methods include upper() which converts all characters to uppercase, lower() which converts to lowercase, title() which capitalizes the first letter of each word, and capitalize() which capitalizes only the first character of the string. These are essential for normalizing user input — for example, comparing emails in a case-insensitive way.\n\nWhitespace handling is done with strip(), lstrip(), and rstrip(). The strip() method removes leading and trailing whitespace (or specified characters) from a string. This is particularly important when processing user input or reading from files where extra spaces or newlines may appear.\n\nSearching and modifying methods include find() which returns the index of the first occurrence of a substring (or -1 if not found), count() which returns the number of non-overlapping occurrences, replace() which substitutes all occurrences of one substring with another, split() which breaks a string into a list of substrings based on a delimiter, and join() which combines a list of strings into one string with a specified separator.",
+      "codeExamples": [
+        {
+          "title": "Case Conversion Methods",
+          "code": "text = \"hello, World!\"\n\nprint(text.upper())\nprint(text.lower())\nprint(text.title())\nprint(text.capitalize())",
+          "output": "HELLO, WORLD!\nhello, world!\nHello, World!\nHello, world!",
+          "explanation": "upper() converts all characters to uppercase, lower() to lowercase, title() capitalizes each word, and capitalize() only capitalizes the first character of the whole string."
+        },
+        {
+          "title": "strip, split, and join",
+          "code": "raw_input = \"  apple, banana, cherry  \"\ncleaned = raw_input.strip()\nfruits = cleaned.split(\", \")\nresult = \" | \".join(fruits)\n\nprint(cleaned)\nprint(fruits)\nprint(result)",
+          "output": "apple, banana, cherry\n['apple', 'banana', 'cherry']\napple | banana | cherry",
+          "explanation": "strip() removes leading/trailing whitespace. split(', ') breaks on the comma-space delimiter. join() connects list items with ' | '."
+        },
+        {
+          "title": "find, count, and replace",
+          "code": "text = \"the cat sat on the mat\"\n\nprint(text.find(\"cat\"))\nprint(text.find(\"dog\"))\nprint(text.count(\"the\"))\nprint(text.replace(\"cat\", \"dog\"))",
+          "output": "4\n-1\n2\nthe dog sat on the mat",
+          "explanation": "find() returns 4 (the index where 'cat' starts) or -1 when the substring is not found. count() finds 2 occurrences of 'the'. replace() substitutes 'cat' with 'dog'."
+        },
+        {
+          "title": "Chaining String Methods",
+          "code": "data = \"  John DOE  \"\nresult = data.strip().lower().replace(\" \", \"_\")\n\nprint(result)",
+          "output": "john_doe",
+          "explanation": "Methods can be chained because each one returns a new string. Here we strip whitespace, convert to lowercase, and replace spaces with underscores."
+        }
+      ],
+      "notes": [
+        "All string methods return new strings; they never modify the original string in place.",
+        "split() with no arguments splits on any whitespace and removes empty strings from the result.",
+        "Use in operator for simple existence checks (e.g., 'cat' in text) instead of find() when you don't need the index.",
+        "replace() replaces all occurrences by default. Pass a third argument to limit replacements: text.replace('a', 'b', 1) replaces only the first 'a'."
+      ],
+      "commonPitfalls": [
+        "Forgetting that string methods return new strings: text.upper() does not change text. You must assign the result: text = text.upper().",
+        "Using index() instead of find() without a try/except: index() raises a ValueError when the substring is not found, while find() safely returns -1.",
+        "Splitting on the wrong delimiter: 'a,b, c'.split(', ') produces ['a,b', 'c'] because 'a,b' has no space after the comma."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "string-methods-ex1",
+        "title": "Clean and Normalize",
+        "description": "Given `raw = \"  hElLo WoRLd  \"`, strip the whitespace, convert to title case, and print the result.",
+        "starterCode": "raw = \"  hElLo WoRLd  \"\n\n# Clean and normalize the string\nresult = \n\nprint(result)",
+        "solution": "raw = \"  hElLo WoRLd  \"\n\n# Clean and normalize the string\nresult = raw.strip().title()\n\nprint(result)",
+        "expectedOutput": "Hello World",
+        "hints": [
+          "Use strip() to remove leading and trailing whitespace.",
+          "Chain title() after strip() to capitalize the first letter of each word."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "string-methods-ex2",
+        "title": "Word Count",
+        "description": "Given `sentence = \"Python is great and Python is fun\"`, use string methods to count how many times the word \"Python\" appears, and also split the sentence into a list of words and print its length (number of words). Print the count first, then the word count on a new line.",
+        "starterCode": "sentence = \"Python is great and Python is fun\"\n\n# Count occurrences of 'Python'\npython_count = \n\n# Split into words and count\nwords = \nword_count = \n\nprint(python_count)\nprint(word_count)",
+        "solution": "sentence = \"Python is great and Python is fun\"\n\n# Count occurrences of 'Python'\npython_count = sentence.count(\"Python\")\n\n# Split into words and count\nwords = sentence.split()\nword_count = len(words)\n\nprint(python_count)\nprint(word_count)",
+        "expectedOutput": "2\n7",
+        "hints": [
+          "Use count() to find how many times a substring appears.",
+          "Use split() with no arguments to split on whitespace, then len() for the count."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "string-methods-ex3",
+        "title": "CSV to Sentence",
+        "description": "Given `csv_data = \"Alice,Bob,Charlie,Diana\"`, split the data by commas and join the names into a sentence like: \"Alice and Bob and Charlie and Diana\". Print the result.",
+        "starterCode": "csv_data = \"Alice,Bob,Charlie,Diana\"\n\n# Split by comma, then join with ' and '\nnames = \nresult = \n\nprint(result)",
+        "solution": "csv_data = \"Alice,Bob,Charlie,Diana\"\n\n# Split by comma, then join with ' and '\nnames = csv_data.split(\",\")\nresult = \" and \".join(names)\n\nprint(result)",
+        "expectedOutput": "Alice and Bob and Charlie and Diana",
+        "hints": [
+          "Use split(',') to break the string at each comma.",
+          "Use ' and '.join(list) to combine the names with ' and ' between them."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "string-formatting",
+    "sectionId": "strings-and-string-methods",
+    "orderIndex": 3,
+    "title": "String Formatting",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["f-strings", "format method", "percent formatting", "alignment", "number formatting"],
+    "content": {
+      "explanation": "String formatting lets you embed variables and expressions directly inside strings. Python offers several approaches, but f-strings (formatted string literals), introduced in Python 3.6, are the most modern and readable method.\n\nF-strings are created by prefixing a string with f or F. Any expression inside curly braces {} is evaluated at runtime and inserted into the string. You can include variables, arithmetic, function calls, and even conditional expressions inside the braces. For example, f\"The sum is {2 + 3}\" produces \"The sum is 5\".\n\nThe .format() method is an older but still widely used approach. Curly braces {} act as placeholders that are filled by the arguments passed to .format(). You can use positional arguments like {0}, {1} or keyword arguments like {name}. This method is preferred when you need to reuse a template or when the format string is constructed dynamically.\n\nFormat specifications control how values are displayed. Use :.2f for two decimal places, :d for integers, :,d for comma-separated thousands, :>10 for right-alignment in a 10-character field, :<10 for left-alignment, and :^10 for center-alignment. These specifiers work with both f-strings and .format(). The older % formatting (printf-style) uses %s for strings, %d for integers, and %f for floats, but it is less flexible and generally discouraged in modern Python code.",
+      "codeExamples": [
+        {
+          "title": "F-String Basics",
+          "code": "name = \"Alice\"\nage = 30\nscore = 95.678\n\nprint(f\"Name: {name}, Age: {age}\")\nprint(f\"Next year: {age + 1}\")\nprint(f\"Score: {score:.2f}\")\nprint(f\"{'Pass' if score > 50 else 'Fail'}\")",
+          "output": "Name: Alice, Age: 30\nNext year: 31\nScore: 95.68\nPass",
+          "explanation": "F-strings evaluate expressions inside {}. The :.2f format specifier rounds to 2 decimal places. Ternary expressions also work inside f-strings."
+        },
+        {
+          "title": "The .format() Method",
+          "code": "template = \"Hello, {}! You have {} messages.\"\nprint(template.format(\"Bob\", 5))\n\ntemplate2 = \"Hello, {name}! You are {age} years old.\"\nprint(template2.format(name=\"Carol\", age=25))\n\ntemplate3 = \"{0} vs {1}: {0} wins!\"\nprint(template3.format(\"Python\", \"Java\"))",
+          "output": "Hello, Bob! You have 5 messages.\nHello, Carol! You are 25 years old.\nPython vs Java: Python wins!",
+          "explanation": "Positional {} arguments are filled in order. Named arguments like {name} are matched by keyword. Indexed arguments like {0} can be reused multiple times."
+        },
+        {
+          "title": "Alignment and Padding",
+          "code": "print(f\"{'left':<15}|\")\nprint(f\"{'center':^15}|\")\nprint(f\"{'right':>15}|\")\nprint(f\"{'padded':*^15}|\")",
+          "output": "left           |\n    center     |\n          right|\n****padded*****|",
+          "explanation": "< left-aligns, ^ centers, > right-aligns within the given width. A fill character (like *) can precede the alignment symbol."
+        },
+        {
+          "title": "Number Formatting",
+          "code": "big_number = 1234567\npi = 3.14159265\n\nprint(f\"{big_number:,}\")\nprint(f\"{pi:.4f}\")\nprint(f\"{0.856:.1%}\")\nprint(f\"{255:08b}\")",
+          "output": "1,234,567\n3.1416\n85.6%\n11111111",
+          "explanation": ":, adds comma separators. :.4f rounds to 4 decimal places. :.1% formats as percentage with 1 decimal. :08b converts to 8-digit binary."
+        }
+      ],
+      "notes": [
+        "F-strings are the fastest and most readable formatting method in Python 3.6+. Prefer them for new code.",
+        "To include a literal curly brace in an f-string, double it: f\"{{value}}\" prints {value}.",
+        "The .format() method is better when you need to reuse a template string multiple times with different values.",
+        "% formatting is considered legacy but still appears in older codebases and logging module format strings."
+      ],
+      "commonPitfalls": [
+        "Forgetting the f prefix: writing \"{name}\" without f just produces the literal string \"{name}\".",
+        "Using the wrong format specifier: f\"{3.14:d}\" raises ValueError because :d expects an integer, not a float.",
+        "Confusing % formatting placeholders: %s converts anything to string, but %d will error on a non-numeric value."
+      ],
+      "interviewTips": [
+        "Be able to explain the differences between f-strings, .format(), and % formatting, and when each is appropriate.",
+        "Know the common format specifiers: .2f (decimals), , (thousands separator), > < ^ (alignment), and % (percentage).",
+        "F-strings can contain any valid Python expression, including function calls and comprehensions, making them extremely powerful for one-liner formatting."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "string-formatting-ex1",
+        "title": "Formatted Receipt",
+        "description": "Create a formatted receipt line. Given `item = \"Widget\"` and `price = 9.99`, print a line where the item name is left-aligned in 20 characters and the price shows 2 decimal places right-aligned in 10 characters. Use an f-string.",
+        "starterCode": "item = \"Widget\"\nprice = 9.99\n\n# Print formatted receipt line\nprint(f\"\")",
+        "solution": "item = \"Widget\"\nprice = 9.99\n\n# Print formatted receipt line\nprint(f\"{item:<20}{price:>10.2f}\")",
+        "expectedOutput": "Widget                    9.99",
+        "hints": [
+          "Use :<20 for left-aligning in 20 characters.",
+          "Use :>10.2f for right-aligning a float with 2 decimals in 10 characters."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "string-formatting-ex2",
+        "title": "Population Report",
+        "description": "Given `country = \"India\"` and `population = 1428627663`, use an f-string to print: \"India: 1,428,627,663 people\" with the population formatted with comma separators.",
+        "starterCode": "country = \"India\"\npopulation = 1428627663\n\n# Print with comma-formatted population\nprint(f\"\")",
+        "solution": "country = \"India\"\npopulation = 1428627663\n\n# Print with comma-formatted population\nprint(f\"{country}: {population:,} people\")",
+        "expectedOutput": "India: 1,428,627,663 people",
+        "hints": [
+          "Use :, inside the curly braces to add comma thousand separators.",
+          "The syntax is f\"{variable:,}\" for comma formatting."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "string-formatting-ex3",
+        "title": "Score Table",
+        "description": "Given the data below, print a formatted table with each name centered in 12 characters and each score right-aligned in 8 characters with 1 decimal place. Print a header line first.",
+        "starterCode": "students = [(\"Alice\", 92.567), (\"Bob\", 87.3), (\"Charlie\", 95.12)]\n\n# Print header\nprint(f\"{'Name':^12}{'Score':^8}\")\nprint(\"-\" * 20)\n\n# Print each student row\nfor name, score in students:\n    print(f\"\")",
+        "solution": "students = [(\"Alice\", 92.567), (\"Bob\", 87.3), (\"Charlie\", 95.12)]\n\n# Print header\nprint(f\"{'Name':^12}{'Score':^8}\")\nprint(\"-\" * 20)\n\n# Print each student row\nfor name, score in students:\n    print(f\"{name:^12}{score:>8.1f}\")",
+        "expectedOutput": "    Name     Score  \n--------------------\n   Alice        92.6\n    Bob         87.3\n  Charlie       95.1",
+        "hints": [
+          "Use :^12 for centering in 12 characters and :>8.1f for right-aligning with 1 decimal.",
+          "The header uses the same alignment specifiers on string literals."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "string-operations",
+    "sectionId": "strings-and-string-methods",
+    "orderIndex": 4,
+    "title": "String Operations",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["concatenation", "repetition", "membership", "comparison", "immutability"],
+    "content": {
+      "explanation": "Python strings support several operators that make working with text intuitive. The + operator concatenates (joins) two strings together, creating a new string. The * operator repeats a string a given number of times. These are the two fundamental string operators.\n\nThe in and not in operators test whether a substring exists within a string, returning True or False. These membership operators are case-sensitive: \"python\" in \"Python is great\" returns False because the cases don't match. For case-insensitive checks, convert both strings to the same case first.\n\nStrings can be compared using comparison operators (==, !=, <, >, <=, >=). String comparison is lexicographic, meaning Python compares characters one by one using their Unicode code point values. Uppercase letters have lower code points than lowercase letters, so \"Apple\" < \"banana\" is True (because 'A' has code point 65 while 'b' has code point 98).\n\nA fundamental property of Python strings is immutability. Once a string is created, you cannot change any individual character. Operations like concatenation, replace(), and upper() always produce new string objects. Attempting text[0] = \"X\" raises a TypeError. If you need to build a string incrementally, use a list of parts and join them at the end for better performance.",
+      "codeExamples": [
+        {
+          "title": "Concatenation and Repetition",
+          "code": "greeting = \"Hello\" + \" \" + \"World\"\nline = \"-\" * 20\nborder = \"*\" * 3 + \" Title \" + \"*\" * 3\n\nprint(greeting)\nprint(line)\nprint(border)",
+          "output": "Hello World\n--------------------\n*** Title ***",
+          "explanation": "The + operator joins strings. The * operator repeats a string. Both create new strings; neither modifies the originals."
+        },
+        {
+          "title": "Membership Testing with in",
+          "code": "text = \"Python programming is powerful\"\n\nprint(\"Python\" in text)\nprint(\"python\" in text)\nprint(\"Java\" not in text)\nprint(\"python\" in text.lower())",
+          "output": "True\nFalse\nTrue\nTrue",
+          "explanation": "The in operator is case-sensitive. 'python' is not found because the original has 'Python'. Converting to lower() makes the check case-insensitive."
+        },
+        {
+          "title": "String Comparison",
+          "code": "print(\"apple\" == \"apple\")\nprint(\"apple\" < \"banana\")\nprint(\"Apple\" < \"apple\")\nprint(\"abc\" < \"abd\")\nprint(ord(\"A\"), ord(\"a\"))",
+          "output": "True\nTrue\nTrue\nTrue\n65 97",
+          "explanation": "Strings are compared character by character using Unicode code points. 'A' (65) < 'a' (97), so uppercase letters sort before lowercase."
+        },
+        {
+          "title": "String Immutability",
+          "code": "text = \"Hello\"\n\n# Cannot do: text[0] = \"J\"  -> TypeError\n# Instead, create a new string:\nnew_text = \"J\" + text[1:]\nprint(new_text)\nprint(text)\nprint(id(text) != id(new_text))",
+          "output": "Jello\nHello\nTrue",
+          "explanation": "The original string 'Hello' is unchanged. A new string 'Jello' is created by concatenating 'J' with a slice. id() confirms they are different objects."
+        }
+      ],
+      "notes": [
+        "String concatenation with + in a loop is inefficient because it creates a new string each iteration. Use ''.join(list) instead for building strings from many parts.",
+        "The * operator requires one operand to be a string and the other an integer. Multiplying by 0 or a negative number returns an empty string.",
+        "Python caches (interns) small strings, so two variables with the same short string content may share the same object in memory.",
+        "Use len() to get the number of characters in a string."
+      ],
+      "commonPitfalls": [
+        "Trying to concatenate a string with a non-string type: \"Age: \" + 25 raises TypeError. Use str(25) or f-strings instead.",
+        "Assuming string concatenation in a loop is efficient: building a string one character at a time with += has O(n^2) time complexity. Prefer join().",
+        "Forgetting that comparison is case-sensitive and lexicographic: \"Zebra\" < \"apple\" is True because uppercase 'Z' (90) < lowercase 'a' (97)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "string-operations-ex1",
+        "title": "Text Banner",
+        "description": "Create a simple text banner. Given `title = \"PYTHON\"`, print a banner with a border of # characters. The border should be the length of the title plus 4 (2 padding on each side). Print three lines: border, then the title centered with a # on each side and a space of padding, then border again.",
+        "starterCode": "title = \"PYTHON\"\n\n# Create the banner\nborder = \nmiddle = \n\nprint(border)\nprint(middle)\nprint(border)",
+        "solution": "title = \"PYTHON\"\n\n# Create the banner\nborder = \"#\" * (len(title) + 4)\nmiddle = \"# \" + title + \" #\"\n\nprint(border)\nprint(middle)\nprint(border)",
+        "expectedOutput": "##########\n# PYTHON #\n##########",
+        "hints": [
+          "The border length is len(title) + 4 to account for '# ' and ' #' on each side.",
+          "Use string repetition with * for the border and concatenation with + for the middle line."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "string-operations-ex2",
+        "title": "Case-Insensitive Search",
+        "description": "Given `paragraph = \"Python is versatile. PYTHON is popular. python is fun.\"` and `search = \"python\"`, count how many times the search word appears (case-insensitive) and print the count.",
+        "starterCode": "paragraph = \"Python is versatile. PYTHON is popular. python is fun.\"\nsearch = \"python\"\n\n# Count case-insensitive occurrences\ncount = \n\nprint(count)",
+        "solution": "paragraph = \"Python is versatile. PYTHON is popular. python is fun.\"\nsearch = \"python\"\n\n# Count case-insensitive occurrences\ncount = paragraph.lower().count(search.lower())\n\nprint(count)",
+        "expectedOutput": "3",
+        "hints": [
+          "Convert both strings to the same case (e.g., lowercase) before counting.",
+          "Use the count() method after converting."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "string-operations-ex3",
+        "title": "Build with Join",
+        "description": "Given a list `words = [\"Python\", \"is\", \"awesome\"]`, build a sentence by joining them with spaces using the join() method. Then build a file path by joining `parts = [\"home\", \"user\", \"documents\", \"file.txt\"]` with '/' as separator. Print both results.",
+        "starterCode": "words = [\"Python\", \"is\", \"awesome\"]\nparts = [\"home\", \"user\", \"documents\", \"file.txt\"]\n\n# Join words into a sentence\nsentence = \n\n# Join parts into a file path\npath = \n\nprint(sentence)\nprint(path)",
+        "solution": "words = [\"Python\", \"is\", \"awesome\"]\nparts = [\"home\", \"user\", \"documents\", \"file.txt\"]\n\n# Join words into a sentence\nsentence = \" \".join(words)\n\n# Join parts into a file path\npath = \"/\".join(parts)\n\nprint(sentence)\nprint(path)",
+        "expectedOutput": "Python is awesome\nhome/user/documents/file.txt",
+        "hints": [
+          "Use ' '.join(list) to join with spaces.",
+          "Use '/'.join(list) to join with forward slashes."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

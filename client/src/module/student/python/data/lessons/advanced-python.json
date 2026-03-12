@@ -1,0 +1,462 @@
+[
+  {
+    "id": "decorators",
+    "sectionId": "advanced-python",
+    "orderIndex": 0,
+    "title": "Decorators",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["function decorators", "@syntax", "functools.wraps", "decorators with arguments"],
+    "content": {
+      "explanation": "Decorators are one of Python's most powerful features, allowing you to modify or extend the behavior of functions and methods without changing their source code. At their core, a decorator is simply a function that takes another function as an argument and returns a new function that usually extends the behavior of the original.\n\nThe @syntax is syntactic sugar that makes applying decorators clean and readable. When you write @my_decorator above a function definition, Python automatically passes that function to my_decorator() and rebinds the name to whatever my_decorator returns. This is equivalent to writing func = my_decorator(func) after the function definition.\n\nA common problem with decorators is that the wrapper function replaces the original function's metadata (name, docstring, etc.). The functools.wraps decorator solves this by copying the original function's attributes to the wrapper. Always use @functools.wraps(func) inside your decorator to preserve introspection.\n\nDecorators can also accept arguments. To achieve this, you need an extra layer of nesting: an outer function that accepts the decorator arguments and returns the actual decorator function, which in turn accepts and wraps the target function. This three-level pattern (decorator factory -> decorator -> wrapper) is essential for configurable decorators.\n\nDecorators are used extensively throughout Python's ecosystem: @property, @staticmethod, @classmethod in OOP; @app.route in Flask; @login_required in Django. Understanding how to write and compose decorators is a critical skill for any advanced Python developer.",
+      "codeExamples": [
+        {
+          "title": "Basic Decorator",
+          "code": "def greet_decorator(func):\n    def wrapper():\n        print(\"Before the function call\")\n        func()\n        print(\"After the function call\")\n    return wrapper\n\n@greet_decorator\ndef say_hello():\n    print(\"Hello!\")\n\nsay_hello()",
+          "output": "Before the function call\nHello!\nAfter the function call",
+          "explanation": "The @greet_decorator syntax wraps say_hello so that wrapper() runs instead, adding behavior before and after the original call."
+        },
+        {
+          "title": "Using functools.wraps",
+          "code": "from functools import wraps\n\ndef my_decorator(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        print(\"Calling:\", func.__name__)\n        return func(*args, **kwargs)\n    return wrapper\n\n@my_decorator\ndef add(a, b):\n    \"\"\"Add two numbers.\"\"\"\n    return a + b\n\nprint(add(3, 4))\nprint(add.__name__)\nprint(add.__doc__)",
+          "output": "Calling: add\n7\nadd\nAdd two numbers.",
+          "explanation": "@wraps(func) preserves the original function's __name__ and __doc__ attributes, which is critical for debugging and introspection."
+        },
+        {
+          "title": "Decorator with Arguments",
+          "code": "from functools import wraps\n\ndef repeat(n):\n    def decorator(func):\n        @wraps(func)\n        def wrapper(*args, **kwargs):\n            for _ in range(n):\n                result = func(*args, **kwargs)\n            return result\n        return wrapper\n    return decorator\n\n@repeat(3)\ndef greet(name):\n    print(f\"Hello, {name}!\")\n\ngreet(\"Alice\")",
+          "output": "Hello, Alice!\nHello, Alice!\nHello, Alice!",
+          "explanation": "repeat(3) returns the actual decorator. The three-level nesting (repeat -> decorator -> wrapper) allows passing configuration to the decorator."
+        },
+        {
+          "title": "Stacking Multiple Decorators",
+          "code": "from functools import wraps\n\ndef bold(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        return \"<b>\" + func(*args, **kwargs) + \"</b>\"\n    return wrapper\n\ndef italic(func):\n    @wraps(func)\n    def wrapper(*args, **kwargs):\n        return \"<i>\" + func(*args, **kwargs) + \"</i>\"\n    return wrapper\n\n@bold\n@italic\ndef format_text(text):\n    return text\n\nprint(format_text(\"Hello\"))",
+          "output": "<b><i>Hello</i></b>",
+          "explanation": "Decorators are applied bottom-up: italic wraps format_text first, then bold wraps the result. This is equivalent to bold(italic(format_text))."
+        }
+      ],
+      "notes": [
+        "A decorator is any callable that takes a function and returns a callable -- it does not have to be a function itself (classes work too).",
+        "Always use @functools.wraps to preserve the decorated function's metadata.",
+        "Stacked decorators apply from bottom to top: the decorator closest to the function runs first."
+      ],
+      "commonPitfalls": [
+        "Forgetting @functools.wraps causes the wrapper to hide the original function's __name__ and __doc__, breaking introspection and debugging.",
+        "When creating decorators with arguments, forgetting the extra nesting level (decorator factory) will cause a TypeError because Python passes the decorated function where the arguments are expected."
+      ],
+      "interviewTips": [
+        "Be ready to write a timing decorator from scratch -- it demonstrates understanding of closures, *args/**kwargs, and wraps.",
+        "Explain that @decorator is just syntactic sugar for func = decorator(func), and that decorators can be stacked with bottom-up application order."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "decorators-ex1",
+        "title": "Logging Decorator",
+        "description": "Write a decorator called `log_call` that prints 'Calling: <function_name>' before the function runs and 'Finished: <function_name>' after. Apply it to a function `multiply(a, b)` that prints the product. Call multiply(5, 3).",
+        "starterCode": "# Write your log_call decorator here\n\n\n@log_call\ndef multiply(a, b):\n    print(a * b)\n\nmultiply(5, 3)",
+        "solution": "def log_call(func):\n    def wrapper(*args, **kwargs):\n        print(f\"Calling: {func.__name__}\")\n        result = func(*args, **kwargs)\n        print(f\"Finished: {func.__name__}\")\n        return result\n    return wrapper\n\n@log_call\ndef multiply(a, b):\n    print(a * b)\n\nmultiply(5, 3)",
+        "expectedOutput": "Calling: multiply\n15\nFinished: multiply",
+        "hints": [
+          "The decorator should return a wrapper function that accepts *args and **kwargs.",
+          "Use func.__name__ to get the original function's name."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "decorators-ex2",
+        "title": "Repeat Decorator with Argument",
+        "description": "Write a decorator factory called `repeat(n)` that causes the decorated function to execute n times. Apply @repeat(2) to a function `say(msg)` that prints the message. Call say(\"Hi\").",
+        "starterCode": "# Write your repeat decorator factory here\n\n\n@repeat(2)\ndef say(msg):\n    print(msg)\n\nsay(\"Hi\")",
+        "solution": "def repeat(n):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            for _ in range(n):\n                func(*args, **kwargs)\n        return wrapper\n    return decorator\n\n@repeat(2)\ndef say(msg):\n    print(msg)\n\nsay(\"Hi\")",
+        "expectedOutput": "Hi\nHi",
+        "hints": [
+          "You need three levels of nesting: repeat(n) returns the decorator, which returns the wrapper.",
+          "The wrapper should loop n times, calling func(*args, **kwargs) each iteration."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "decorators-ex3",
+        "title": "Access Control Decorator",
+        "description": "Write a decorator factory `require_role(role)` that checks if the first argument to the decorated function matches the required role. If it matches, call the function normally. If not, print 'Access denied'. Apply @require_role(\"admin\") to a function `delete_user(role, username)` that prints '<username> deleted'. Test with both 'admin' and 'guest' roles.",
+        "starterCode": "# Write your require_role decorator factory here\n\n\n@require_role(\"admin\")\ndef delete_user(role, username):\n    print(f\"{username} deleted\")\n\ndelete_user(\"admin\", \"bob\")\ndelete_user(\"guest\", \"bob\")",
+        "solution": "def require_role(role):\n    def decorator(func):\n        def wrapper(*args, **kwargs):\n            if args[0] == role:\n                return func(*args, **kwargs)\n            else:\n                print(\"Access denied\")\n        return wrapper\n    return decorator\n\n@require_role(\"admin\")\ndef delete_user(role, username):\n    print(f\"{username} deleted\")\n\ndelete_user(\"admin\", \"bob\")\ndelete_user(\"guest\", \"bob\")",
+        "expectedOutput": "bob deleted\nAccess denied",
+        "hints": [
+          "require_role returns a decorator, which returns a wrapper -- three levels of nesting.",
+          "Inside the wrapper, check args[0] against the required role before calling the original function."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "generators",
+    "sectionId": "advanced-python",
+    "orderIndex": 1,
+    "title": "Generators",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["yield", "generator expressions", "send()", "next()", "itertools"],
+    "content": {
+      "explanation": "Generators are a special type of iterator in Python that allow you to produce a sequence of values lazily -- one at a time, on demand -- rather than computing and storing them all in memory at once. This makes generators extremely memory-efficient for working with large or infinite sequences.\n\nA generator function looks like a regular function but uses the `yield` keyword instead of (or in addition to) `return`. When called, a generator function returns a generator object without executing the function body. Each call to next() on the generator resumes execution until the next yield, which produces a value and suspends the function's state. When the function exits, StopIteration is raised automatically.\n\nGenerator expressions provide a concise syntax similar to list comprehensions but with parentheses instead of brackets: (x**2 for x in range(10)). They create generator objects that produce values lazily, making them ideal for large datasets where you don't need all values at once.\n\nThe send() method allows you to send a value back into a generator, which becomes the result of the yield expression inside the generator. This enables two-way communication and turns generators into coroutines. The first call must be send(None) or next() to advance the generator to its first yield.\n\nPython's itertools module provides a collection of fast, memory-efficient tools for working with iterators. Functions like chain(), islice(), count(), cycle(), and combinations() build on the generator concept and are indispensable for advanced iteration patterns.",
+      "codeExamples": [
+        {
+          "title": "Basic Generator with yield",
+          "code": "def countdown(n):\n    while n > 0:\n        yield n\n        n -= 1\n\nfor num in countdown(5):\n    print(num)",
+          "output": "5\n4\n3\n2\n1",
+          "explanation": "Each iteration calls next() on the generator, which resumes countdown() until the next yield. The function's local state (n) is preserved between calls."
+        },
+        {
+          "title": "Generator Expression vs List Comprehension",
+          "code": "squares_list = [x**2 for x in range(5)]\nprint(type(squares_list))\nprint(squares_list)\n\nsquares_gen = (x**2 for x in range(5))\nprint(type(squares_gen))\nprint(list(squares_gen))",
+          "output": "<class 'list'>\n[0, 1, 4, 9, 16]\n<class 'generator'>\n[0, 1, 4, 9, 16]",
+          "explanation": "List comprehensions build the entire list in memory. Generator expressions produce values lazily, using minimal memory regardless of sequence length."
+        },
+        {
+          "title": "Using next() and StopIteration",
+          "code": "def simple_gen():\n    yield \"first\"\n    yield \"second\"\n    yield \"third\"\n\ng = simple_gen()\nprint(next(g))\nprint(next(g))\nprint(next(g))",
+          "output": "first\nsecond\nthird",
+          "explanation": "Each next() call resumes the generator until the next yield. Calling next() a fourth time would raise StopIteration."
+        },
+        {
+          "title": "Using send() for Two-Way Communication",
+          "code": "def accumulator():\n    total = 0\n    while True:\n        value = yield total\n        if value is None:\n            break\n        total += value\n\ngen = accumulator()\nprint(next(gen))\nprint(gen.send(10))\nprint(gen.send(20))\nprint(gen.send(5))",
+          "output": "0\n10\n30\n35",
+          "explanation": "next(gen) advances to the first yield (total=0). Each send(value) resumes the generator, assigns value to the yield expression, and runs until the next yield returns the updated total."
+        }
+      ],
+      "notes": [
+        "Generators are iterators -- they implement __iter__ and __next__ automatically, so you can use them in for loops and with next().",
+        "Generator expressions use parentheses: (expr for x in iterable). When passed as the sole argument to a function, the extra parentheses can be omitted: sum(x**2 for x in range(10)).",
+        "A generator can only be iterated once. After exhaustion, calling next() raises StopIteration."
+      ],
+      "commonPitfalls": [
+        "Trying to iterate over a generator a second time silently yields nothing -- generators are single-use. Create a new generator object if you need to iterate again.",
+        "Forgetting that send() requires an initial next() call (or send(None)) to advance the generator to its first yield before you can send values."
+      ],
+      "interviewTips": [
+        "Explain the memory advantage: a generator producing 1 million items uses constant memory, while a list stores all 1 million items at once.",
+        "Know the difference between a generator function (defined with yield) and a generator object (what the function returns when called)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "generators-ex1",
+        "title": "Fibonacci Generator",
+        "description": "Write a generator function `fibonacci(n)` that yields the first n Fibonacci numbers starting from 0, 1. Use it to print the first 8 Fibonacci numbers, each on a new line.",
+        "starterCode": "# Write your fibonacci generator here\n\n\nfor num in fibonacci(8):\n    print(num)",
+        "solution": "def fibonacci(n):\n    a, b = 0, 1\n    for _ in range(n):\n        yield a\n        a, b = b, a + b\n\nfor num in fibonacci(8):\n    print(num)",
+        "expectedOutput": "0\n1\n1\n2\n3\n5\n8\n13",
+        "hints": [
+          "Start with a, b = 0, 1 and yield a in each iteration.",
+          "Update with a, b = b, a + b after each yield."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "generators-ex2",
+        "title": "Even Number Filter Generator",
+        "description": "Write a generator function `even_filter(data)` that takes a list and yields only the even numbers. Test it with the list [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] and print each even number.",
+        "starterCode": "# Write your even_filter generator here\n\n\nnumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\nfor n in even_filter(numbers):\n    print(n)",
+        "solution": "def even_filter(data):\n    for item in data:\n        if item % 2 == 0:\n            yield item\n\nnumbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\nfor n in even_filter(numbers):\n    print(n)",
+        "expectedOutput": "2\n4\n6\n8\n10",
+        "hints": [
+          "Loop through data and use an if condition to check for even numbers.",
+          "Use yield instead of return to produce each even number one at a time."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "generators-ex3",
+        "title": "Chunked Generator",
+        "description": "Write a generator function `chunks(lst, size)` that yields successive chunks (as lists) of the given size from the input list. Test with chunks([1,2,3,4,5,6,7], 3) and print each chunk.",
+        "starterCode": "# Write your chunks generator here\n\n\nfor chunk in chunks([1, 2, 3, 4, 5, 6, 7], 3):\n    print(chunk)",
+        "solution": "def chunks(lst, size):\n    for i in range(0, len(lst), size):\n        yield lst[i:i + size]\n\nfor chunk in chunks([1, 2, 3, 4, 5, 6, 7], 3):\n    print(chunk)",
+        "expectedOutput": "[1, 2, 3]\n[4, 5, 6]\n[7]",
+        "hints": [
+          "Use range(0, len(lst), size) to step through the list in increments of size.",
+          "Yield lst[i:i+size] slices -- Python handles the last chunk being smaller automatically."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "iterators-protocol",
+    "sectionId": "advanced-python",
+    "orderIndex": 2,
+    "title": "Iterators Protocol",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["__iter__", "__next__", "custom iterators", "StopIteration"],
+    "content": {
+      "explanation": "The iterator protocol is a fundamental concept in Python that defines how objects support iteration. Any object that implements the __iter__() and __next__() methods follows the iterator protocol and can be used in for loops, comprehensions, and anywhere an iterable is expected.\n\nAn iterable is any object that implements __iter__() and returns an iterator. An iterator is an object that implements both __iter__() (returning itself) and __next__() (returning the next value or raising StopIteration when exhausted). Lists, tuples, dicts, and strings are all iterables -- calling iter() on them returns an iterator.\n\nTo create a custom iterator, you define a class with __iter__() and __next__() methods. The __iter__ method returns the iterator object (usually self), and __next__ returns the next value in the sequence. When there are no more values, __next__ must raise StopIteration to signal that iteration is complete.\n\nUnderstanding the iterator protocol clarifies how Python's for loop works under the hood. When you write `for item in obj`, Python calls iter(obj) to get an iterator, then repeatedly calls next() on that iterator until StopIteration is raised. This mechanism powers list comprehensions, unpacking, and all other iteration contexts.\n\nCustom iterators give you fine-grained control over iteration behavior. Unlike generators (which are simpler to write), class-based iterators can maintain complex state, support reset operations, and implement additional methods. They're essential when you need reusable, configurable iteration objects.",
+      "codeExamples": [
+        {
+          "title": "How for Loops Use the Iterator Protocol",
+          "code": "numbers = [10, 20, 30]\niterator = iter(numbers)\n\nprint(next(iterator))\nprint(next(iterator))\nprint(next(iterator))",
+          "output": "10\n20\n30",
+          "explanation": "iter() calls __iter__ on the list to get an iterator. Each next() call invokes __next__ on the iterator, returning values one at a time."
+        },
+        {
+          "title": "Custom Iterator Class",
+          "code": "class CountDown:\n    def __init__(self, start):\n        self.current = start\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if self.current <= 0:\n            raise StopIteration\n        value = self.current\n        self.current -= 1\n        return value\n\nfor num in CountDown(5):\n    print(num)",
+          "output": "5\n4\n3\n2\n1",
+          "explanation": "CountDown implements __iter__ (returns self) and __next__ (returns current value and decrements). The for loop calls these automatically and stops when StopIteration is raised."
+        },
+        {
+          "title": "Iterable vs Iterator",
+          "code": "class EvenNumbers:\n    def __init__(self, limit):\n        self.limit = limit\n\n    def __iter__(self):\n        self.current = 0\n        return self\n\n    def __next__(self):\n        if self.current >= self.limit:\n            raise StopIteration\n        value = self.current\n        self.current += 2\n        return value\n\nevens = EvenNumbers(10)\nprint(list(evens))\nprint(list(evens))",
+          "output": "[0, 2, 4, 6, 8]\n[0, 2, 4, 6, 8]",
+          "explanation": "Because __iter__ resets self.current to 0 each time, this object can be iterated multiple times. This is a common pattern for making reusable iterables."
+        },
+        {
+          "title": "Manual Iteration with StopIteration Handling",
+          "code": "class TwoItems:\n    def __init__(self, a, b):\n        self.items = [a, b]\n        self.index = 0\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if self.index >= len(self.items):\n            raise StopIteration\n        value = self.items[self.index]\n        self.index += 1\n        return value\n\nit = TwoItems(\"hello\", \"world\")\nprint(next(it))\nprint(next(it))\ntry:\n    next(it)\nexcept StopIteration:\n    print(\"No more items\")",
+          "output": "hello\nworld\nNo more items",
+          "explanation": "After yielding both items, __next__ raises StopIteration. We catch it to demonstrate what happens when a for loop encounters the end of an iterator."
+        }
+      ],
+      "notes": [
+        "Every iterator is an iterable (has __iter__), but not every iterable is an iterator (lists have __iter__ but not __next__).",
+        "Calling iter() on a list returns a list_iterator object -- the list itself is not the iterator.",
+        "Resetting iteration state inside __iter__ (like self.current = 0) allows the object to be iterated multiple times."
+      ],
+      "commonPitfalls": [
+        "Forgetting to raise StopIteration in __next__ causes an infinite loop when used in a for loop.",
+        "Not returning self from __iter__ in an iterator class will cause a TypeError when Python tries to iterate over the object."
+      ],
+      "interviewTips": [
+        "Clearly distinguish between iterables (have __iter__) and iterators (have both __iter__ and __next__). A list is iterable but not an iterator.",
+        "Be prepared to implement a custom iterator class from scratch and explain how Python's for loop desugars into iter() and next() calls."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "iterators-protocol-ex1",
+        "title": "Range Iterator",
+        "description": "Create a class `MyRange` that mimics Python's range(start, stop) for positive steps of 1. It should implement __iter__ and __next__ so it works in a for loop. Test with MyRange(1, 6) and print each number.",
+        "starterCode": "# Write your MyRange class here\n\n\nfor num in MyRange(1, 6):\n    print(num)",
+        "solution": "class MyRange:\n    def __init__(self, start, stop):\n        self.start = start\n        self.stop = stop\n        self.current = start\n\n    def __iter__(self):\n        self.current = self.start\n        return self\n\n    def __next__(self):\n        if self.current >= self.stop:\n            raise StopIteration\n        value = self.current\n        self.current += 1\n        return value\n\nfor num in MyRange(1, 6):\n    print(num)",
+        "expectedOutput": "1\n2\n3\n4\n5",
+        "hints": [
+          "Store start, stop, and current in __init__. Reset current in __iter__.",
+          "In __next__, raise StopIteration when current >= stop, otherwise return current and increment."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "iterators-protocol-ex2",
+        "title": "Cycle Iterator",
+        "description": "Create a class `Cycle` that takes a list and cycles through its elements indefinitely. Implement __iter__ and __next__. Use it to print the first 7 items from Cycle(['A', 'B', 'C']).",
+        "starterCode": "# Write your Cycle class here\n\n\ncycler = Cycle(['A', 'B', 'C'])\nfor _ in range(7):\n    print(next(cycler))",
+        "solution": "class Cycle:\n    def __init__(self, data):\n        self.data = data\n        self.index = 0\n\n    def __iter__(self):\n        return self\n\n    def __next__(self):\n        if not self.data:\n            raise StopIteration\n        value = self.data[self.index % len(self.data)]\n        self.index += 1\n        return value\n\ncycler = Cycle(['A', 'B', 'C'])\nfor _ in range(7):\n    print(next(cycler))",
+        "expectedOutput": "A\nB\nC\nA\nB\nC\nA",
+        "hints": [
+          "Use modulo (%) with the list length to wrap the index around.",
+          "This iterator never raises StopIteration (unless the list is empty), which makes it infinite."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "iterators-protocol-ex3",
+        "title": "Flatten Iterator",
+        "description": "Create a class `Flatten` that takes a list of lists and iterates over all elements as a single flat sequence. Implement __iter__ and __next__. Test with Flatten([[1, 2], [3], [4, 5, 6]]) and print each element.",
+        "starterCode": "# Write your Flatten class here\n\n\nfor item in Flatten([[1, 2], [3], [4, 5, 6]]):\n    print(item)",
+        "solution": "class Flatten:\n    def __init__(self, list_of_lists):\n        self.data = list_of_lists\n        self.outer = 0\n        self.inner = 0\n\n    def __iter__(self):\n        self.outer = 0\n        self.inner = 0\n        return self\n\n    def __next__(self):\n        while self.outer < len(self.data):\n            if self.inner < len(self.data[self.outer]):\n                value = self.data[self.outer][self.inner]\n                self.inner += 1\n                return value\n            else:\n                self.outer += 1\n                self.inner = 0\n        raise StopIteration\n\nfor item in Flatten([[1, 2], [3], [4, 5, 6]]):\n    print(item)",
+        "expectedOutput": "1\n2\n3\n4\n5\n6",
+        "hints": [
+          "Maintain two indices: one for the outer list and one for the inner list.",
+          "When the inner index exceeds the current sublist length, move to the next sublist and reset the inner index."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "context-managers",
+    "sectionId": "advanced-python",
+    "orderIndex": 3,
+    "title": "Context Managers",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["with statement", "__enter__", "__exit__", "contextlib.contextmanager"],
+    "content": {
+      "explanation": "Context managers in Python provide a clean way to manage resources that need setup and teardown, such as database connections, locks, or temporary state changes. The `with` statement ensures that cleanup code always runs, even if an exception occurs inside the block.\n\nThe context manager protocol requires two methods: __enter__() and __exit__(). When a `with` block begins, Python calls __enter__() on the context manager, and the return value is bound to the variable after `as`. When the block ends (normally or due to an exception), Python calls __exit__(), which receives exception information as arguments. If __exit__ returns True, the exception is suppressed; otherwise it propagates.\n\nFor simpler cases, the contextlib module provides the @contextmanager decorator, which lets you write a context manager as a generator function with a single yield. Code before yield runs as __enter__, the yielded value is bound to the `as` variable, and code after yield runs as __exit__. This avoids the boilerplate of writing a full class.\n\nContext managers are used throughout Python's standard library and popular frameworks. The open() function is the most common example, but they also appear in threading (locks), decimal (local precision), and database libraries (transactions). Understanding context managers is essential for writing robust, resource-safe Python code.\n\nYou can also nest context managers or use contextlib.ExitStack to manage a dynamic number of context managers. These advanced patterns are useful when the number of resources to manage is not known until runtime.",
+      "codeExamples": [
+        {
+          "title": "Class-Based Context Manager",
+          "code": "class ManagedResource:\n    def __init__(self, name):\n        self.name = name\n\n    def __enter__(self):\n        print(f\"Acquiring {self.name}\")\n        return self\n\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        print(f\"Releasing {self.name}\")\n        return False\n\nwith ManagedResource(\"database\") as res:\n    print(f\"Using {res.name}\")",
+          "output": "Acquiring database\nUsing database\nReleasing database",
+          "explanation": "__enter__ is called when entering the with block and returns self (bound to 'res'). __exit__ is called when leaving the block, ensuring cleanup always happens."
+        },
+        {
+          "title": "Context Manager with Exception Handling",
+          "code": "class SafeBlock:\n    def __enter__(self):\n        print(\"Entering safe block\")\n        return self\n\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        if exc_type is not None:\n            print(f\"Caught exception: {exc_val}\")\n        print(\"Exiting safe block\")\n        return True\n\nwith SafeBlock():\n    print(\"Inside block\")\n    raise ValueError(\"something went wrong\")\n\nprint(\"After block\")",
+          "output": "Entering safe block\nInside block\nCaught exception: something went wrong\nExiting safe block\nAfter block",
+          "explanation": "Returning True from __exit__ suppresses the exception. Without return True, the ValueError would propagate after __exit__ runs."
+        },
+        {
+          "title": "Using contextlib.contextmanager",
+          "code": "from contextlib import contextmanager\n\n@contextmanager\ndef tag(name):\n    print(f\"<{name}>\")\n    yield name\n    print(f\"</{name}>\")\n\nwith tag(\"div\") as t:\n    print(f\"Content inside {t}\")",
+          "output": "<div>\nContent inside div\n</div>",
+          "explanation": "The @contextmanager decorator turns a generator into a context manager. Code before yield is __enter__, the yielded value is the 'as' variable, and code after yield is __exit__."
+        },
+        {
+          "title": "Nested Context Managers",
+          "code": "class Indent:\n    level = 0\n\n    def __init__(self, label):\n        self.label = label\n\n    def __enter__(self):\n        Indent.level += 1\n        print(\"  \" * Indent.level + f\"Enter {self.label}\")\n        return self\n\n    def __exit__(self, *args):\n        print(\"  \" * Indent.level + f\"Exit {self.label}\")\n        Indent.level -= 1\n        return False\n\nwith Indent(\"outer\"):\n    with Indent(\"inner\"):\n        print(\"  \" * Indent.level + \"Deep inside\")",
+          "output": "  Enter outer\n    Enter inner\n      Deep inside\n    Exit inner\n  Exit outer",
+          "explanation": "Each nested with block calls __enter__ on entry and __exit__ on exit. The class-level 'level' variable tracks nesting depth for proper indentation."
+        }
+      ],
+      "notes": [
+        "The __exit__ method always receives three arguments (exc_type, exc_val, exc_tb) even if no exception occurred -- they will all be None in that case.",
+        "Returning True from __exit__ suppresses the exception. Returning False (or None) lets it propagate.",
+        "The contextlib module also provides suppress(), redirect_stdout(), and ExitStack for advanced use cases."
+      ],
+      "commonPitfalls": [
+        "Accidentally returning True from __exit__ when you don't want to suppress exceptions -- this silently hides bugs.",
+        "When using @contextmanager, forgetting to wrap the yield in a try/finally block means cleanup code won't run if an exception occurs inside the with block."
+      ],
+      "interviewTips": [
+        "Explain how __enter__ and __exit__ map to the with statement, and when you'd choose a class-based context manager vs @contextmanager.",
+        "Know that __exit__ receives exception info and that returning True suppresses the exception."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "context-managers-ex1",
+        "title": "Timer Context Manager",
+        "description": "Write a class-based context manager called `Timer` that prints 'Timer started' when entering and 'Timer stopped' when exiting. Inside the with block, print 'Running task'. Do NOT use actual time measurement -- just print the messages.",
+        "starterCode": "# Write your Timer context manager class here\n\n\nwith Timer():\n    print(\"Running task\")",
+        "solution": "class Timer:\n    def __enter__(self):\n        print(\"Timer started\")\n        return self\n\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        print(\"Timer stopped\")\n        return False\n\nwith Timer():\n    print(\"Running task\")",
+        "expectedOutput": "Timer started\nRunning task\nTimer stopped",
+        "hints": [
+          "__enter__ should print the start message and return self.",
+          "__exit__ should print the stop message and return False."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "context-managers-ex2",
+        "title": "contextlib Tag Generator",
+        "description": "Use @contextmanager from contextlib to write a context manager called `html_tag(tag_name)` that prints the opening tag before the block and the closing tag after. Test with html_tag('h1') and print 'Welcome' inside.",
+        "starterCode": "from contextlib import contextmanager\n\n# Write your html_tag context manager here\n\n\nwith html_tag('h1'):\n    print('Welcome')",
+        "solution": "from contextlib import contextmanager\n\n@contextmanager\ndef html_tag(tag_name):\n    print(f\"<{tag_name}>\")\n    yield\n    print(f\"</{tag_name}>\")\n\nwith html_tag('h1'):\n    print('Welcome')",
+        "expectedOutput": "<h1>\nWelcome\n</h1>",
+        "hints": [
+          "Use @contextmanager and write a generator function with a single yield.",
+          "Print the opening tag before yield and the closing tag after yield."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "context-managers-ex3",
+        "title": "Error-Suppressing Context Manager",
+        "description": "Write a class-based context manager called `Suppress` that takes an exception type in its constructor and suppresses only that type of exception. If a different exception occurs, it should propagate. Test by using it to suppress ValueError while raising one, then print 'Continued after suppressed error'.",
+        "starterCode": "# Write your Suppress context manager class here\n\n\nwith Suppress(ValueError):\n    print(\"About to raise\")\n    raise ValueError(\"oops\")\n\nprint(\"Continued after suppressed error\")",
+        "solution": "class Suppress:\n    def __init__(self, exc_type):\n        self.exc_type = exc_type\n\n    def __enter__(self):\n        return self\n\n    def __exit__(self, exc_type, exc_val, exc_tb):\n        if exc_type is not None and issubclass(exc_type, self.exc_type):\n            return True\n        return False\n\nwith Suppress(ValueError):\n    print(\"About to raise\")\n    raise ValueError(\"oops\")\n\nprint(\"Continued after suppressed error\")",
+        "expectedOutput": "About to raise\nContinued after suppressed error",
+        "hints": [
+          "Store the exception type in __init__ and check it in __exit__.",
+          "Return True from __exit__ only if the raised exception matches the stored type, otherwise return False."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "closures-and-functional",
+    "sectionId": "advanced-python",
+    "orderIndex": 4,
+    "title": "Closures & Functional Programming",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["closures", "functools.partial", "functools.reduce", "operator module", "functional patterns"],
+    "content": {
+      "explanation": "A closure is a function that remembers the values from its enclosing scope even after that scope has finished executing. In Python, when a nested function references variables from its parent function, and the parent function returns the nested function, the returned function 'closes over' those variables, keeping them alive. This is the foundation of decorators and many functional patterns.\n\nClosures are created when three conditions are met: there is a nested function, the nested function references a variable from the enclosing function, and the enclosing function returns the nested function. The captured variables are stored in the function's __closure__ attribute as cell objects. Understanding closures is key to understanding how decorators, callbacks, and factory functions work in Python.\n\nThe functools module provides essential tools for functional programming. functools.partial creates a new function with some arguments pre-filled, which is useful for adapting functions to different interfaces. functools.reduce applies a two-argument function cumulatively to a sequence, reducing it to a single value -- for example, reduce(operator.add, [1,2,3,4]) computes ((1+2)+3)+4 = 10.\n\nThe operator module provides function equivalents of Python's operators: operator.add for +, operator.mul for *, operator.itemgetter for indexing, and operator.attrgetter for attribute access. These are faster than equivalent lambda functions and more readable when passed to higher-order functions like map(), filter(), sorted(), and reduce().\n\nFunctional programming patterns in Python include using map() and filter() for transformations, reduce() for aggregation, and combining these with lambda or operator functions for concise data processing pipelines. While Python is not a purely functional language, these tools are powerful when used appropriately alongside imperative code.",
+      "codeExamples": [
+        {
+          "title": "Basic Closure",
+          "code": "def make_multiplier(factor):\n    def multiply(n):\n        return n * factor\n    return multiply\n\ndouble = make_multiplier(2)\ntriple = make_multiplier(3)\n\nprint(double(5))\nprint(triple(5))\nprint(double(10))",
+          "output": "10\n15\n20",
+          "explanation": "make_multiplier returns multiply, which 'closes over' factor. Each call creates a separate closure with its own factor value."
+        },
+        {
+          "title": "Using functools.partial",
+          "code": "from functools import partial\n\ndef power(base, exponent):\n    return base ** exponent\n\nsquare = partial(power, exponent=2)\ncube = partial(power, exponent=3)\n\nprint(square(5))\nprint(cube(3))\nprint(square(10))",
+          "output": "25\n27\n100",
+          "explanation": "partial freezes the exponent argument, creating specialized versions of power. This is cleaner than using lambda x: power(x, 2)."
+        },
+        {
+          "title": "Using functools.reduce",
+          "code": "from functools import reduce\n\nnumbers = [1, 2, 3, 4, 5]\n\ntotal = reduce(lambda a, b: a + b, numbers)\nprint(total)\n\nproduct = reduce(lambda a, b: a * b, numbers)\nprint(product)\n\nmax_val = reduce(lambda a, b: a if a > b else b, numbers)\nprint(max_val)",
+          "output": "15\n120\n5",
+          "explanation": "reduce applies the function cumulatively: total computes ((((1+2)+3)+4)+5)=15. It reduces a sequence to a single value left to right."
+        },
+        {
+          "title": "Operator Module with sorted and map",
+          "code": "from operator import itemgetter, mul\nfrom functools import reduce\n\nstudents = [\n    {\"name\": \"Alice\", \"grade\": 88},\n    {\"name\": \"Bob\", \"grade\": 95},\n    {\"name\": \"Charlie\", \"grade\": 82},\n]\n\nsorted_students = sorted(students, key=itemgetter(\"grade\"), reverse=True)\nfor s in sorted_students:\n    print(f\"{s['name']}: {s['grade']}\")\n\nfactorial_5 = reduce(mul, range(1, 6))\nprint(f\"5! = {factorial_5}\")",
+          "output": "Bob: 95\nAlice: 88\nCharlie: 82\n5! = 120",
+          "explanation": "itemgetter('grade') creates a callable that extracts the 'grade' key -- cleaner and faster than a lambda. operator.mul replaces lambda a,b: a*b for computing factorial."
+        }
+      ],
+      "notes": [
+        "Closures capture variables by reference, not by value -- if the enclosed variable changes after the closure is created, the closure sees the updated value.",
+        "functools.partial is preferred over lambda for freezing arguments because it's more readable and preserves function metadata.",
+        "reduce was moved from builtins to functools in Python 3 because Guido van Rossum considered it less readable than explicit loops for most use cases."
+      ],
+      "commonPitfalls": [
+        "The classic loop closure bug: creating lambdas or closures in a loop that all capture the same loop variable. Use default arguments (lambda x, i=i: ...) to capture the current value.",
+        "Using reduce for operations where sum(), math.prod(), or a simple loop would be clearer -- reduce should be reserved for cases where the intent is genuinely cumulative folding."
+      ],
+      "interviewTips": [
+        "Demonstrate the loop closure bug and its fix -- it shows deep understanding of Python's scoping and late binding.",
+        "Know when to use partial vs lambda: partial is better for named functions with keyword arguments, lambda for simple inline expressions."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "closures-and-functional-ex1",
+        "title": "Counter Closure",
+        "description": "Write a function `make_counter()` that returns a closure. Each time the returned function is called, it should increment and print the count, starting from 1. Call the returned function 3 times.",
+        "starterCode": "# Write your make_counter function here\n\n\ncounter = make_counter()\ncounter()\ncounter()\ncounter()",
+        "solution": "def make_counter():\n    count = 0\n    def increment():\n        nonlocal count\n        count += 1\n        print(count)\n    return increment\n\ncounter = make_counter()\ncounter()\ncounter()\ncounter()",
+        "expectedOutput": "1\n2\n3",
+        "hints": [
+          "Use a nonlocal variable inside the nested function to maintain state between calls.",
+          "The 'nonlocal' keyword allows the inner function to modify the enclosing scope's variable."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "closures-and-functional-ex2",
+        "title": "Reduce to Compute Factorial",
+        "description": "Use functools.reduce and a lambda to compute the factorial of 6 (6!). Print the result. Then use reduce to find the longest string in the list ['cat', 'elephant', 'dog', 'butterfly'] and print it.",
+        "starterCode": "from functools import reduce\n\n# Compute 6! using reduce\n\n\n# Find the longest string using reduce\nwords = ['cat', 'elephant', 'dog', 'butterfly']",
+        "solution": "from functools import reduce\n\nfactorial = reduce(lambda a, b: a * b, range(1, 7))\nprint(factorial)\n\nwords = ['cat', 'elephant', 'dog', 'butterfly']\nlongest = reduce(lambda a, b: a if len(a) >= len(b) else b, words)\nprint(longest)",
+        "expectedOutput": "720\nbutterfly",
+        "hints": [
+          "For factorial, reduce lambda a, b: a * b over range(1, 7).",
+          "For longest string, compare lengths in the lambda and keep the longer one."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "closures-and-functional-ex3",
+        "title": "Pipeline with Partial",
+        "description": "Create a data processing pipeline using functools.partial. Define a function `transform(value, add, mul)` that returns (value + add) * mul. Use partial to create two specialized functions: `add5_mul2` (add=5, mul=2) and `add10_mul3` (add=10, mul=3). Print the results of applying each to the value 3.",
+        "starterCode": "from functools import partial\n\ndef transform(value, add, mul):\n    return (value + add) * mul\n\n# Create partial functions and print results for value=3",
+        "solution": "from functools import partial\n\ndef transform(value, add, mul):\n    return (value + add) * mul\n\nadd5_mul2 = partial(transform, add=5, mul=2)\nadd10_mul3 = partial(transform, add=10, mul=3)\n\nprint(add5_mul2(3))\nprint(add10_mul3(3))",
+        "expectedOutput": "16\n39",
+        "hints": [
+          "Use partial(transform, add=5, mul=2) to freeze the add and mul arguments.",
+          "add5_mul2(3) computes (3 + 5) * 2 = 16, and add10_mul3(3) computes (3 + 10) * 3 = 39."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

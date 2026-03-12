@@ -1,0 +1,377 @@
+[
+  {
+    "id": "type-challenges",
+    "sectionId": "ts-interview-essentials",
+    "orderIndex": 0,
+    "title": "Type Challenges",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["type challenges", "conditional types", "mapped types", "template literal types", "recursive types", "infer keyword"],
+    "content": {
+      "explanation": "Type challenges are puzzles that test your ability to build complex types using TypeScript's type system. They are a staple of senior-level TypeScript interviews because they demonstrate deep understanding of conditional types, mapped types, template literal types, and the `infer` keyword. Mastering these patterns enables you to write utility types that enforce complex invariants at compile time.\n\nConditional types (`T extends U ? X : Y`) are the if-else of the type system. Combined with the `infer` keyword, they can extract types from complex structures. For example, `type ReturnType<T> = T extends (...args: any[]) => infer R ? R : never` extracts the return type of a function. The `infer` keyword declares a type variable that TypeScript fills in by matching the pattern — it is the cornerstone of type-level programming.\n\nMapped types iterate over the keys of a type and transform each property. The syntax `{ [K in keyof T]: NewType }` creates a new type by applying a transformation to each property. You can add or remove modifiers like `readonly` and `?` using `+` and `-`. Combined with conditional types, mapped types enable powerful transformations like making all properties nullable, extracting only methods, or deeply making an object readonly.\n\nRecursive types allow types to reference themselves, enabling you to handle nested structures of arbitrary depth. A `DeepReadonly<T>` type, for example, makes an object and all its nested properties readonly. A `Flatten<T>` type can recursively unwrap nested arrays. TypeScript has a recursion depth limit (around 1000 levels), but this is sufficient for all practical use cases. These recursive patterns are among the most impressive demonstrations of TypeScript's type system power.",
+      "codeExamples": [
+        {
+          "title": "Implementing Built-in Utility Types",
+          "code": "// Implementing Pick, Omit, and Partial from scratch\n\n// Pick: select specific keys from a type\ntype MyPick<T, K extends keyof T> = {\n  [P in K]: T[P];\n};\n\n// Omit: remove specific keys (using Exclude)\ntype MyExclude<T, U> = T extends U ? never : T;\ntype MyOmit<T, K extends keyof T> = MyPick<T, MyExclude<keyof T, K>>;\n\n// Partial: make all properties optional\ntype MyPartial<T> = {\n  [P in keyof T]?: T[P];\n};\n\ninterface User {\n  id: number;\n  name: string;\n  email: string;\n  age: number;\n}\n\n// Test the utility types at runtime with objects\nconst picked: MyPick<User, 'name' | 'email'> = { name: 'Alice', email: 'alice@test.com' };\nconsole.log(`Picked: ${JSON.stringify(picked)}`);\n\nconst omitted: MyOmit<User, 'id' | 'age'> = { name: 'Bob', email: 'bob@test.com' };\nconsole.log(`Omitted: ${JSON.stringify(omitted)}`);\n\nconst partial: MyPartial<User> = { name: 'Charlie' };\nconsole.log(`Partial: ${JSON.stringify(partial)}`);",
+          "output": "Picked: {\"name\":\"Alice\",\"email\":\"alice@test.com\"}\nOmitted: {\"name\":\"Bob\",\"email\":\"bob@test.com\"}\nPartial: {\"name\":\"Charlie\"}",
+          "explanation": "Pick selects keys using a mapped type over K. Omit uses Exclude to remove keys from keyof T, then picks the remaining ones. Partial adds '?' to every property."
+        },
+        {
+          "title": "Conditional Types with Infer",
+          "code": "// Using infer to extract types from complex structures\n\n// Extract return type of a function\ntype MyReturnType<T> = T extends (...args: any[]) => infer R ? R : never;\n\n// Extract element type from an array\ntype ElementType<T> = T extends (infer E)[] ? E : never;\n\n// Extract Promise resolved type\ntype Awaited<T> = T extends Promise<infer U> ? (U extends Promise<any> ? Awaited<U> : U) : T;\n\n// Demonstrate with runtime values\nfunction getUser(): { name: string; age: number } {\n  return { name: 'Alice', age: 30 };\n}\n\nconst user: MyReturnType<typeof getUser> = { name: 'Alice', age: 30 };\nconsole.log(`ReturnType: ${JSON.stringify(user)}`);\n\nconst numbers: number[] = [1, 2, 3];\nconst element: ElementType<typeof numbers> = numbers[0];\nconsole.log(`ElementType: ${element}`);\n\n// Simulating Awaited\nconst resolved: string = 'hello'; // Awaited<Promise<string>> = string\nconsole.log(`Awaited: ${resolved}`);",
+          "output": "ReturnType: {\"name\":\"Alice\",\"age\":30}\nElementType: 1\nAwaited: hello",
+          "explanation": "The 'infer' keyword declares a type variable that TypeScript fills in by pattern matching. ReturnType infers R from the function's return position. ElementType infers E from the array's element position."
+        },
+        {
+          "title": "Deep Recursive Types",
+          "code": "// DeepReadonly — recursively makes all properties readonly\n// type DeepReadonly<T> = T extends object\n//   ? { readonly [K in keyof T]: DeepReadonly<T[K]> }\n//   : T;\n\n// Runtime simulation of deep freeze\nfunction deepFreeze<T extends Record<string, any>>(obj: T): T {\n  const result: any = {};\n  for (const key of Object.keys(obj)) {\n    const value = obj[key];\n    if (value !== null && typeof value === 'object' && !Array.isArray(value)) {\n      result[key] = deepFreeze(value);\n    } else {\n      result[key] = value;\n    }\n  }\n  return Object.freeze(result) as T;\n}\n\nconst config = deepFreeze({\n  server: {\n    host: 'localhost',\n    port: 3000,\n    ssl: {\n      enabled: true,\n      cert: '/path/to/cert'\n    }\n  },\n  database: {\n    url: 'postgres://localhost:5432/db'\n  }\n});\n\nconsole.log(`Host: ${config.server.host}`);\nconsole.log(`Port: ${config.server.port}`);\nconsole.log(`SSL: ${config.server.ssl.enabled}`);\nconsole.log(`DB: ${config.database.url}`);\nconsole.log(`Is frozen: ${Object.isFrozen(config)}`);",
+          "output": "Host: localhost\nPort: 3000\nSSL: true\nDB: postgres://localhost:5432/db\nIs frozen: true",
+          "explanation": "DeepReadonly recursively applies readonly to nested objects. The runtime equivalent (deepFreeze) uses Object.freeze recursively. Both ensure immutability at their respective levels."
+        }
+      ],
+      "notes": [
+        "Start with the built-in utility types (Pick, Omit, Partial, Required, Readonly, Record) — understanding their implementation unlocks the patterns for custom types.",
+        "The 'infer' keyword only works inside conditional types. It pattern-matches against the structure and captures the matched type.",
+        "Recursive types are powerful but have a depth limit (~1000). For practical use cases, this is never a problem."
+      ],
+      "commonPitfalls": [
+        "Forgetting that conditional types distribute over unions — `MyExclude<'a' | 'b' | 'c', 'a'>` applies the condition to each union member individually, not to the union as a whole.",
+        "Using 'infer' outside of conditional types — the infer keyword is only valid in the extends clause of a conditional type."
+      ],
+      "interviewTips": [
+        "Practice implementing Pick, Omit, Partial, Required, and ReturnType from scratch — these are the most commonly asked type challenges in interviews.",
+        "Understand distributive conditional types: when T is a union, `T extends U ? X : Y` applies to each member individually. Wrap in [T] to prevent distribution.",
+        "Know how to use 'infer' to extract types from function signatures, promise types, and array types — these are foundational patterns.",
+        "Be prepared to explain the difference between homomorphic mapped types (that preserve modifiers) and non-homomorphic ones."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "type-challenges-exercise-1",
+        "title": "Build Custom Utility Types",
+        "description": "Implement RequiredKeys and OptionalKeys utility types, then demonstrate them with runtime code that validates object shapes.",
+        "starterCode": "// Create two functions that work with object shapes:\n// getRequiredKeys(schema: Record<string, boolean>): string[]\n//   - Returns keys where value is true (meaning required)\n// getOptionalKeys(schema: Record<string, boolean>): string[]\n//   - Returns keys where value is false (meaning optional)\n\n// Test with schema: { id: true, name: true, email: true, age: false, bio: false }\n// Print required and optional keys\n\n// Then create a validateObject function that checks if all required keys exist\n// Test with a valid and invalid object\n\n// Your code here",
+        "solution": "function getRequiredKeys(schema: Record<string, boolean>): string[] {\n  return Object.entries(schema).filter(([_, required]) => required).map(([key]) => key);\n}\n\nfunction getOptionalKeys(schema: Record<string, boolean>): string[] {\n  return Object.entries(schema).filter(([_, required]) => !required).map(([key]) => key);\n}\n\nfunction validateObject(obj: Record<string, any>, schema: Record<string, boolean>): { valid: boolean; missing: string[] } {\n  const required = getRequiredKeys(schema);\n  const missing = required.filter(key => !(key in obj));\n  return { valid: missing.length === 0, missing };\n}\n\nconst schema = { id: true, name: true, email: true, age: false, bio: false };\n\nconsole.log(`Required: ${getRequiredKeys(schema).join(', ')}`);\nconsole.log(`Optional: ${getOptionalKeys(schema).join(', ')}`);\n\nconst valid = validateObject({ id: 1, name: 'Alice', email: 'a@b.com', age: 30 }, schema);\nconsole.log(`Valid object: ${valid.valid}, missing: [${valid.missing.join(', ')}]`);\n\nconst invalid = validateObject({ id: 2, name: 'Bob' }, schema);\nconsole.log(`Invalid object: ${invalid.valid}, missing: [${invalid.missing.join(', ')}]`);",
+        "expectedOutput": "Required: id, name, email\nOptional: age, bio\nValid object: true, missing: []\nInvalid object: false, missing: [email]",
+        "hints": [
+          "Use Object.entries to get key-value pairs, then filter based on whether the boolean value is true (required) or false (optional).",
+          "For validation, check if every required key exists in the object using the 'in' operator."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "type-challenges-exercise-2",
+        "title": "Deep Property Access",
+        "description": "Implement a type-safe deep property accessor that navigates nested objects using dot-notation path strings.",
+        "starterCode": "// Create function deepGet(obj: any, path: string): any\n// Splits path by '.' and navigates nested properties\n// Returns undefined if any intermediate property is missing\n\n// Create function deepSet(obj: any, path: string, value: any): any\n// Creates a new object with the nested property set\n// Creates intermediate objects if they don't exist\n\n// Test:\n// const data = { user: { profile: { name: 'Alice', settings: { theme: 'dark' } } } }\n// deepGet(data, 'user.profile.name') -> 'Alice'\n// deepGet(data, 'user.profile.settings.theme') -> 'dark'\n// deepGet(data, 'user.missing.path') -> undefined\n\n// Your code here",
+        "solution": "function deepGet(obj: any, path: string): any {\n  const keys = path.split('.');\n  let current = obj;\n  for (const key of keys) {\n    if (current === null || current === undefined) return undefined;\n    current = current[key];\n  }\n  return current;\n}\n\nfunction deepSet(obj: any, path: string, value: any): any {\n  const keys = path.split('.');\n  if (keys.length === 1) {\n    return { ...obj, [keys[0]]: value };\n  }\n  const [first, ...rest] = keys;\n  return {\n    ...obj,\n    [first]: deepSet(obj[first] || {}, rest.join('.'), value)\n  };\n}\n\nconst data = { user: { profile: { name: 'Alice', settings: { theme: 'dark' } } } };\n\nconsole.log(deepGet(data, 'user.profile.name'));\nconsole.log(deepGet(data, 'user.profile.settings.theme'));\nconsole.log(deepGet(data, 'user.missing.path'));\n\nconst updated = deepSet(data, 'user.profile.settings.theme', 'light');\nconsole.log(deepGet(updated, 'user.profile.settings.theme'));\n\nconst withNew = deepSet(data, 'user.profile.avatar', 'pic.jpg');\nconsole.log(deepGet(withNew, 'user.profile.avatar'));",
+        "expectedOutput": "Alice\ndark\nundefined\nlight\npic.jpg",
+        "hints": [
+          "For deepGet, split the path and iterate through keys, checking for null/undefined at each step.",
+          "For deepSet, recursively create new objects with the spread operator, handling the base case when only one key remains."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "output-questions",
+    "sectionId": "ts-interview-essentials",
+    "orderIndex": 1,
+    "title": "Predict the Output",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["type coercion", "type narrowing", "structural typing", "enum behavior", "type assertions", "runtime vs compile-time"],
+    "content": {
+      "explanation": "Predict-the-output questions test your understanding of how TypeScript code actually behaves at runtime versus compile time. TypeScript adds a type layer on top of JavaScript, but all type information is erased at compile time. This means that type assertions, interfaces, type aliases, and generics have zero runtime impact — they exist only during development. Understanding this distinction is critical for predicting output correctly.\n\nMany output questions focus on areas where TypeScript's type system and JavaScript's runtime behavior diverge. For example, TypeScript enums compile to real JavaScript objects (unless they are const enums), meaning you can access enum values and even reverse-map from values to names at runtime. Type assertions (`value as Type`) perform no runtime conversion — they only tell the compiler to treat a value as a different type. The value itself is unchanged.\n\nType narrowing is another frequent topic. TypeScript narrows types based on control flow analysis — after an `if (typeof x === 'string')` check, the compiler knows x is a string. But the narrowing only affects the type checker; the runtime behavior follows JavaScript rules. Questions often test whether you understand that `typeof null === 'object'`, `typeof NaN === 'number'`, and `typeof [] === 'object'`.\n\nStructural typing means TypeScript checks type compatibility based on shape, not name. Two interfaces with the same properties are compatible even if they have different names. This leads to surprising behaviors in output questions where objects pass type checks despite being instances of different classes. At runtime, JavaScript uses reference identity for instanceof checks, not structural compatibility, which creates interesting interview scenarios.",
+      "codeExamples": [
+        {
+          "title": "Enum Behavior at Runtime",
+          "code": "// TypeScript enums compile to JavaScript objects\nenum Direction {\n  Up = 0,\n  Down = 1,\n  Left = 2,\n  Right = 3\n}\n\n// Numeric enums support reverse mapping\nconsole.log(Direction.Up);\nconsole.log(Direction[0]);\nconsole.log(Direction[Direction.Right]);\n\n// String enums do NOT support reverse mapping\nenum Color {\n  Red = 'RED',\n  Green = 'GREEN',\n  Blue = 'BLUE'\n}\n\nconsole.log(Color.Red);\nconsole.log(typeof Color.Red);\n\n// Enum is a real object at runtime\nconsole.log(typeof Direction);",
+          "output": "0\nUp\nRight\nRED\nstring\nobject",
+          "explanation": "Numeric enums create a bidirectional mapping (name -> value and value -> name). String enums only map name -> value. Both are real objects at runtime."
+        },
+        {
+          "title": "Type Assertions vs Runtime",
+          "code": "// Type assertions do NOT change the runtime value\nconst value: any = '42';\nconst asNumber = value as number; // Still a string at runtime!\n\nconsole.log(typeof asNumber);\nconsole.log(asNumber);\n\n// This would fail at runtime despite passing type check\n// console.log(asNumber.toFixed(2)); // Runtime error: toFixed is not a function\n\n// Type narrowing with typeof\nfunction processValue(val: string | number): string {\n  if (typeof val === 'number') {\n    return `Number: ${val.toFixed(2)}`;\n  }\n  return `String: ${val.toUpperCase()}`;\n}\n\nconsole.log(processValue(3.14159));\nconsole.log(processValue('hello'));\n\n// typeof quirks\nconsole.log(typeof null);\nconsole.log(typeof undefined);\nconsole.log(typeof NaN);\nconsole.log(typeof []);",
+          "output": "string\n42\nNumber: 3.14\nString: HELLO\nobject\nundefined\nnumber\nobject",
+          "explanation": "Type assertions (as Type) only affect compile-time types, not runtime values. The value '42' remains a string even after 'as number'. typeof quirks: null is 'object', NaN is 'number', arrays are 'object'."
+        },
+        {
+          "title": "Structural Typing vs instanceof",
+          "code": "// Structural typing: compatible shapes are assignable\nclass Point2D {\n  constructor(public x: number, public y: number) {}\n}\n\nclass Point3D {\n  constructor(public x: number, public y: number, public z: number) {}\n}\n\n// TypeScript allows this because Point3D has all properties of Point2D\nconst p: Point2D = new Point3D(1, 2, 3);\nconsole.log(`x: ${p.x}, y: ${p.y}`);\n\n// But instanceof checks class identity, not structure\nconsole.log(p instanceof Point2D);\nconsole.log(p instanceof Point3D);\n\n// Interface-based structural compatibility\ninterface HasLength {\n  length: number;\n}\n\nfunction getLength(item: HasLength): number {\n  return item.length;\n}\n\n// All of these work because they have a 'length' property\nconsole.log(getLength('hello'));\nconsole.log(getLength([1, 2, 3]));\nconsole.log(getLength({ length: 42, extra: true }));",
+          "output": "x: 1, y: 2\nfalse\ntrue\n5\n3\n42",
+          "explanation": "TypeScript uses structural typing — any object with the right shape is compatible. But instanceof checks the prototype chain, not the structure. Point3D instance is NOT a Point2D instance despite being structurally compatible."
+        }
+      ],
+      "notes": [
+        "Type assertions (as Type) have zero runtime effect — the value is unchanged. They only silence the compiler.",
+        "Numeric enums create reverse mappings (value to name). String enums do not. Const enums are inlined and produce no runtime object.",
+        "typeof null returns 'object' — this is a famous JavaScript bug that TypeScript does not fix at runtime."
+      ],
+      "commonPitfalls": [
+        "Assuming 'value as number' converts a string to a number — it does not. Use Number(value), parseInt(), or the unary + operator for actual conversion.",
+        "Confusing structural type compatibility with instanceof — TypeScript's type system is structural, but instanceof checks the prototype chain."
+      ],
+      "interviewTips": [
+        "When predicting output, remember that all TypeScript types are erased at runtime. Only JavaScript behavior matters for console.log output.",
+        "Know the typeof quirks: typeof null === 'object', typeof NaN === 'number', typeof function === 'function', typeof undefined === 'undefined'.",
+        "Understand that const enums are completely erased and inlined at compile time, while regular enums produce runtime objects.",
+        "Be ready to explain why 'as' assertions are dangerous — they bypass type checking without any runtime validation."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "output-questions-exercise-1",
+        "title": "Type Coercion Predictor",
+        "description": "Predict and verify the output of various TypeScript/JavaScript type coercion scenarios. Write code that demonstrates each behavior.",
+        "starterCode": "// Predict the output, then verify:\n// 1. What does typeof null return?\n// 2. What is the result of [] + []?\n// 3. What is the result of {} + []? (as an expression)\n// 4. What does Number('') return?\n// 5. What does Number(null) return?\n// 6. What does Number(undefined) return?\n// 7. What does Boolean('false') return?\n\n// Write console.log for each to verify\n\n// Your code here",
+        "solution": "console.log(typeof null);\nconsole.log([] + []);\nconsole.log(String(Number([])));\nconsole.log(Number(''));\nconsole.log(Number(null));\nconsole.log(Number(undefined));\nconsole.log(Boolean('false'));",
+        "expectedOutput": "object\n\n0\n0\n0\nNaN\ntrue",
+        "hints": [
+          "typeof null returns 'object' due to a historical JavaScript bug. [] + [] coerces both arrays to empty strings.",
+          "Number('') is 0, Number(null) is 0, but Number(undefined) is NaN. Boolean of any non-empty string (including 'false') is true."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "output-questions-exercise-2",
+        "title": "Runtime Type Checker",
+        "description": "Build a comprehensive runtime type checker that determines the actual type of any value, handling edge cases that typeof misses.",
+        "starterCode": "// Create function actualType(value: any): string\n// Return the precise type:\n// null -> 'null' (not 'object')\n// undefined -> 'undefined'\n// NaN -> 'NaN' (not 'number')\n// arrays -> 'array' (not 'object')\n// dates -> 'date' (not 'object')\n// regex -> 'regexp' (not 'object')\n// everything else -> typeof result\n\n// Test with: null, undefined, NaN, 42, 'hello', true, [1,2], new Date(), /abc/, {}, function(){}\n\n// Your code here",
+        "solution": "function actualType(value: any): string {\n  if (value === null) return 'null';\n  if (value === undefined) return 'undefined';\n  if (typeof value === 'number' && isNaN(value)) return 'NaN';\n  if (Array.isArray(value)) return 'array';\n  if (value instanceof Date) return 'date';\n  if (value instanceof RegExp) return 'regexp';\n  return typeof value;\n}\n\nconst testValues: [any, string][] = [\n  [null, 'null'],\n  [undefined, 'undefined'],\n  [NaN, 'NaN'],\n  [42, 'number'],\n  ['hello', 'string'],\n  [true, 'boolean'],\n  [[1, 2], 'array'],\n  [new Date(), 'date'],\n  [/abc/, 'regexp'],\n  [{}, 'object'],\n  [function(){}, 'function']\n];\n\ntestValues.forEach(([value, _]) => {\n  console.log(actualType(value));\n});",
+        "expectedOutput": "null\nundefined\nNaN\nnumber\nstring\nboolean\narray\ndate\nregexp\nobject\nfunction",
+        "hints": [
+          "Check for null and undefined first (before typeof), since typeof null === 'object'.",
+          "Use isNaN() to detect NaN, Array.isArray() for arrays, and instanceof for Date and RegExp."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "design-patterns-ts",
+    "sectionId": "ts-interview-essentials",
+    "orderIndex": 2,
+    "title": "Design Patterns in TypeScript",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Singleton", "Factory", "Observer", "Strategy", "Builder", "design patterns", "TypeScript patterns"],
+    "content": {
+      "explanation": "Design patterns are reusable solutions to common software design problems, and TypeScript's type system makes implementing them both safer and more expressive than in plain JavaScript. TypeScript's access modifiers (private, protected, public), interfaces, generics, and abstract classes provide the language features needed to implement classical design patterns with proper encapsulation and type safety.\n\nThe Singleton pattern ensures a class has only one instance and provides a global point of access to it. In TypeScript, you make the constructor private to prevent external instantiation and expose a static `getInstance()` method. This is commonly used for configuration managers, logging services, and database connection pools. TypeScript's private constructor provides a compile-time guarantee that no one can create additional instances.\n\nThe Factory pattern provides an interface for creating objects without specifying their exact class. In TypeScript, you define an interface or abstract class for the product, then implement concrete products and a factory function or class that returns the appropriate type. TypeScript's discriminated unions and type narrowing make the factory pattern particularly elegant — you can use a string literal type as the discriminant and get fully typed return values.\n\nThe Observer pattern defines a one-to-many dependency between objects, so that when one object changes state, all its dependents are notified. In TypeScript, you use generics to type the event data and interfaces to define the subscriber contract. This pattern is the foundation of event emitters, reactive programming, and state management libraries. TypeScript generics ensure that subscribers receive correctly typed event data, catching type mismatches at compile time.",
+      "codeExamples": [
+        {
+          "title": "Singleton Pattern",
+          "code": "class ConfigManager {\n  private static instance: ConfigManager | null = null;\n  private config: Map<string, string>;\n\n  private constructor() {\n    this.config = new Map();\n  }\n\n  static getInstance(): ConfigManager {\n    if (!ConfigManager.instance) {\n      ConfigManager.instance = new ConfigManager();\n    }\n    return ConfigManager.instance;\n  }\n\n  set(key: string, value: string): void {\n    this.config.set(key, value);\n  }\n\n  get(key: string): string | undefined {\n    return this.config.get(key);\n  }\n}\n\n// Both variables reference the same instance\nconst config1 = ConfigManager.getInstance();\nconfig1.set('apiUrl', 'https://api.example.com');\n\nconst config2 = ConfigManager.getInstance();\nconsole.log(config1 === config2);\nconsole.log(config2.get('apiUrl'));\n\nconfig2.set('port', '3000');\nconsole.log(config1.get('port'));",
+          "output": "true\nhttps://api.example.com\n3000",
+          "explanation": "The private constructor prevents 'new ConfigManager()'. Both getInstance() calls return the same instance, so changes through config1 are visible through config2."
+        },
+        {
+          "title": "Factory Pattern",
+          "code": "// Product interface\ninterface Notification {\n  type: string;\n  send(message: string): string;\n}\n\n// Concrete products\nclass EmailNotification implements Notification {\n  type = 'email';\n  constructor(private recipient: string) {}\n  send(message: string): string {\n    return `Email to ${this.recipient}: ${message}`;\n  }\n}\n\nclass SMSNotification implements Notification {\n  type = 'sms';\n  constructor(private phone: string) {}\n  send(message: string): string {\n    return `SMS to ${this.phone}: ${message}`;\n  }\n}\n\nclass PushNotification implements Notification {\n  type = 'push';\n  constructor(private deviceId: string) {}\n  send(message: string): string {\n    return `Push to ${this.deviceId}: ${message}`;\n  }\n}\n\n// Factory function\nfunction createNotification(type: 'email' | 'sms' | 'push', target: string): Notification {\n  switch (type) {\n    case 'email': return new EmailNotification(target);\n    case 'sms': return new SMSNotification(target);\n    case 'push': return new PushNotification(target);\n  }\n}\n\nconst notifications = [\n  createNotification('email', 'alice@test.com'),\n  createNotification('sms', '+1234567890'),\n  createNotification('push', 'device-abc')\n];\n\nnotifications.forEach(n => console.log(n.send('Hello!')));",
+          "output": "Email to alice@test.com: Hello!\nSMS to +1234567890: Hello!\nPush to device-abc: Hello!",
+          "explanation": "The factory function encapsulates object creation logic. Consumers work with the Notification interface without knowing the concrete class. Adding new notification types only requires updating the factory."
+        },
+        {
+          "title": "Observer Pattern with Generics",
+          "code": "// Generic typed EventEmitter\nclass EventEmitter<Events extends Record<string, any>> {\n  private listeners = new Map<string, Function[]>();\n\n  on<K extends keyof Events>(event: K, handler: (data: Events[K]) => void): void {\n    const handlers = this.listeners.get(event as string) || [];\n    handlers.push(handler);\n    this.listeners.set(event as string, handlers);\n  }\n\n  emit<K extends keyof Events>(event: K, data: Events[K]): void {\n    const handlers = this.listeners.get(event as string) || [];\n    handlers.forEach(handler => handler(data));\n  }\n\n  off<K extends keyof Events>(event: K, handler: (data: Events[K]) => void): void {\n    const handlers = this.listeners.get(event as string) || [];\n    this.listeners.set(event as string, handlers.filter(h => h !== handler));\n  }\n}\n\n// Type-safe event definitions\ninterface AppEvents {\n  userLogin: { userId: string; timestamp: number };\n  pageView: { path: string };\n  error: { message: string; code: number };\n}\n\nconst emitter = new EventEmitter<AppEvents>();\n\nemitter.on('userLogin', (data) => {\n  console.log(`User ${data.userId} logged in`);\n});\n\nemitter.on('pageView', (data) => {\n  console.log(`Page viewed: ${data.path}`);\n});\n\nemitter.on('error', (data) => {\n  console.log(`Error ${data.code}: ${data.message}`);\n});\n\nemitter.emit('userLogin', { userId: 'alice', timestamp: Date.now() });\nemitter.emit('pageView', { path: '/dashboard' });\nemitter.emit('error', { message: 'Not found', code: 404 });",
+          "output": "User alice logged in\nPage viewed: /dashboard\nError 404: Not found",
+          "explanation": "Generics ensure that event names and their data types are linked. Emitting 'userLogin' requires data matching { userId: string; timestamp: number }. Mismatches are caught at compile time."
+        }
+      ],
+      "notes": [
+        "TypeScript's private constructor makes the Singleton pattern enforceable at compile time, unlike JavaScript where constructor access cannot be restricted.",
+        "The Factory pattern pairs well with TypeScript's discriminated unions — the factory can return a union type that narrows based on the input.",
+        "Generic event emitters are one of the most practical applications of TypeScript generics, providing type-safe publish-subscribe communication."
+      ],
+      "commonPitfalls": [
+        "Making the Singleton instance public instead of using a getInstance() method — this allows external code to replace the instance, breaking the pattern.",
+        "Not typing event data in the Observer pattern — using 'any' for event data loses the primary benefit of TypeScript in this pattern."
+      ],
+      "interviewTips": [
+        "Be ready to implement Singleton, Factory, and Observer from scratch in TypeScript — these are the three most commonly asked patterns.",
+        "Explain how TypeScript's access modifiers (private, protected) enable patterns that are only conventionally enforced in JavaScript.",
+        "Know when NOT to use patterns: Singleton can be replaced with module scope, Factory is overkill for simple object creation, Observer adds complexity for simple communication.",
+        "Discuss how TypeScript generics improve the Observer/EventEmitter pattern by providing type-safe event names and data."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "design-patterns-exercise-1",
+        "title": "Builder Pattern",
+        "description": "Implement a type-safe Builder pattern for constructing complex objects step by step. The builder should chain methods and validate the final object.",
+        "starterCode": "// Create a QueryBuilder class that builds SQL-like query strings:\n// select(fields: string[]): this\n// from(table: string): this\n// where(condition: string): this\n// orderBy(field: string, direction: 'ASC' | 'DESC'): this\n// limit(count: number): this\n// build(): string\n\n// Test:\n// Build: SELECT name, email FROM users WHERE active = true ORDER BY name ASC LIMIT 10\n// Build: SELECT * FROM products\n\n// Your code here",
+        "solution": "class QueryBuilder {\n  private fields: string[] = [];\n  private table: string = '';\n  private conditions: string[] = [];\n  private ordering: string = '';\n  private limitCount: number | null = null;\n\n  select(fields: string[]): this {\n    this.fields = fields;\n    return this;\n  }\n\n  from(table: string): this {\n    this.table = table;\n    return this;\n  }\n\n  where(condition: string): this {\n    this.conditions.push(condition);\n    return this;\n  }\n\n  orderBy(field: string, direction: 'ASC' | 'DESC'): this {\n    this.ordering = `${field} ${direction}`;\n    return this;\n  }\n\n  limit(count: number): this {\n    this.limitCount = count;\n    return this;\n  }\n\n  build(): string {\n    const parts: string[] = [];\n    parts.push(`SELECT ${this.fields.length > 0 ? this.fields.join(', ') : '*'}`);\n    parts.push(`FROM ${this.table}`);\n    if (this.conditions.length > 0) {\n      parts.push(`WHERE ${this.conditions.join(' AND ')}`);\n    }\n    if (this.ordering) {\n      parts.push(`ORDER BY ${this.ordering}`);\n    }\n    if (this.limitCount !== null) {\n      parts.push(`LIMIT ${this.limitCount}`);\n    }\n    return parts.join(' ');\n  }\n}\n\nconst query1 = new QueryBuilder()\n  .select(['name', 'email'])\n  .from('users')\n  .where('active = true')\n  .orderBy('name', 'ASC')\n  .limit(10)\n  .build();\n\nconsole.log(query1);\n\nconst query2 = new QueryBuilder()\n  .select([])\n  .from('products')\n  .build();\n\nconsole.log(query2);",
+        "expectedOutput": "SELECT name, email FROM users WHERE active = true ORDER BY name ASC LIMIT 10\nSELECT * FROM products",
+        "hints": [
+          "Each method should return 'this' to enable method chaining.",
+          "In build(), assemble the parts array conditionally — only add WHERE, ORDER BY, and LIMIT if they were set."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "design-patterns-exercise-2",
+        "title": "Strategy Pattern",
+        "description": "Implement the Strategy pattern for a text formatter that supports different formatting strategies (uppercase, lowercase, title case, snake_case).",
+        "starterCode": "// Define a FormatStrategy interface: { format(text: string): string }\n// Implement strategies: UpperCase, LowerCase, TitleCase, SnakeCase\n// Create a TextFormatter class that accepts a strategy and can switch strategies\n\n// Test:\n// Format 'hello world typescript' with each strategy\n\n// Your code here",
+        "solution": "interface FormatStrategy {\n  format(text: string): string;\n}\n\nclass UpperCaseStrategy implements FormatStrategy {\n  format(text: string): string {\n    return text.toUpperCase();\n  }\n}\n\nclass LowerCaseStrategy implements FormatStrategy {\n  format(text: string): string {\n    return text.toLowerCase();\n  }\n}\n\nclass TitleCaseStrategy implements FormatStrategy {\n  format(text: string): string {\n    return text.split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');\n  }\n}\n\nclass SnakeCaseStrategy implements FormatStrategy {\n  format(text: string): string {\n    return text.toLowerCase().split(' ').join('_');\n  }\n}\n\nclass TextFormatter {\n  constructor(private strategy: FormatStrategy) {}\n\n  setStrategy(strategy: FormatStrategy): void {\n    this.strategy = strategy;\n  }\n\n  format(text: string): string {\n    return this.strategy.format(text);\n  }\n}\n\nconst formatter = new TextFormatter(new UpperCaseStrategy());\nconst text = 'hello world typescript';\n\nconsole.log(formatter.format(text));\n\nformatter.setStrategy(new LowerCaseStrategy());\nconsole.log(formatter.format(text));\n\nformatter.setStrategy(new TitleCaseStrategy());\nconsole.log(formatter.format(text));\n\nformatter.setStrategy(new SnakeCaseStrategy());\nconsole.log(formatter.format(text));",
+        "expectedOutput": "HELLO WORLD TYPESCRIPT\nhello world typescript\nHello World Typescript\nhello_world_typescript",
+        "hints": [
+          "Each strategy implements the same FormatStrategy interface with a format(text: string): string method.",
+          "For TitleCase, split by spaces, capitalize the first letter of each word, and join back. For SnakeCase, lowercase and replace spaces with underscores."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "common-gotchas",
+    "sectionId": "ts-interview-essentials",
+    "orderIndex": 3,
+    "title": "Common TypeScript Gotchas",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["structural typing", "excess property checks", "type widening", "literal types", "freshness", "type compatibility", "covariance"],
+    "content": {
+      "explanation": "TypeScript has several behaviors that surprise even experienced developers. Understanding these gotchas is essential for interviews and for writing correct TypeScript code. The three most important gotchas are structural typing surprises, excess property checks, and type widening — each represents a case where TypeScript's behavior differs from what most developers expect.\n\nStructural typing means TypeScript checks type compatibility based on shape, not identity. If an object has all the required properties of a type, it is compatible regardless of where it was defined. This means a class instance can be assigned to an interface it does not explicitly implement, and two unrelated interfaces with the same shape are interchangeable. While this is powerful, it can lead to bugs where extra properties sneak through function boundaries undetected.\n\nExcess property checks are a special stricter check that TypeScript applies only to object literals assigned directly to a typed variable or passed as a function argument. When you write `const point: Point = { x: 1, y: 2, z: 3 }`, TypeScript flags `z` as an excess property. However, if you first assign the object to a variable and then pass that variable, the excess property check does not apply — TypeScript only checks structural compatibility. This inconsistency is intentional: direct object literals are likely typos, while pre-existing objects may legitimately have extra properties.\n\nType widening is TypeScript's default behavior of inferring the widest possible type for mutable variables. When you write `let x = 'hello'`, TypeScript infers `string`, not the literal type `'hello'`. This is because `let` variables can be reassigned. Using `const` or `as const` preserves the narrow literal type. This distinction matters when passing values to functions that expect specific string literal types — a `let` variable of type `string` is not assignable to a parameter of type `'hello' | 'world'`.",
+      "codeExamples": [
+        {
+          "title": "Structural Typing Surprises",
+          "code": "interface Point2D {\n  x: number;\n  y: number;\n}\n\ninterface Coordinate {\n  x: number;\n  y: number;\n}\n\n// Different interfaces, same shape — fully compatible\nconst point: Point2D = { x: 1, y: 2 };\nconst coord: Coordinate = point; // No error!\nconsole.log(`coord: (${coord.x}, ${coord.y})`);\n\n// Extra properties are allowed via structural typing\nconst point3D = { x: 1, y: 2, z: 3 };\nconst flat: Point2D = point3D; // OK — has x and y\nconsole.log(`flat: (${flat.x}, ${flat.y})`);\n\n// Accessing z through flat is a type error, but the data is there\nconsole.log(`z exists: ${(flat as any).z}`);\n\n// Function parameters work the same way\nfunction distance(p: Point2D): number {\n  return Math.sqrt(p.x * p.x + p.y * p.y);\n}\n\nconsole.log(`Distance: ${distance(point3D).toFixed(2)}`);",
+          "output": "coord: (1, 2)\nflat: (1, 2)\nz exists: 3\nDistance: 2.24",
+          "explanation": "Structural typing allows point3D (with extra z) to be assigned to Point2D because it has all required properties. The extra z property is preserved at runtime but invisible to the type system through the Point2D reference."
+        },
+        {
+          "title": "Excess Property Checks",
+          "code": "interface Config {\n  host: string;\n  port: number;\n}\n\n// DIRECT object literal — excess property check applies\n// const config: Config = { host: 'localhost', port: 3000, debug: true };\n// Error: 'debug' does not exist in type 'Config'\n\n// INDIRECT assignment — no excess property check\nconst options = { host: 'localhost', port: 3000, debug: true };\nconst config: Config = options; // No error!\n\nconsole.log(`Host: ${config.host}`);\nconsole.log(`Port: ${config.port}`);\nconsole.log(`Has debug: ${'debug' in options}`);\n\n// Function parameter — same behavior\nfunction createServer(config: Config): string {\n  return `Server at ${config.host}:${config.port}`;\n}\n\n// Direct literal would error:\n// createServer({ host: 'localhost', port: 3000, debug: true }); // Error\n\n// Via variable works:\nconst serverConfig = { host: 'localhost', port: 8080, debug: false };\nconsole.log(createServer(serverConfig));",
+          "output": "Host: localhost\nPort: 3000\nHas debug: true\nServer at localhost:8080",
+          "explanation": "Excess property checks only apply to fresh object literals. When assigning a pre-existing variable, TypeScript only checks structural compatibility, allowing extra properties through."
+        },
+        {
+          "title": "Type Widening and Narrowing",
+          "code": "// Type widening with let vs const\nlet mutableStr = 'hello'; // type: string (widened)\nconst immutableStr = 'hello'; // type: 'hello' (literal)\n\nconsole.log(`mutable type: string (widened)`);\nconsole.log(`immutable type: 'hello' (literal)`);\n\n// as const prevents widening\nconst config = {\n  mode: 'production',\n  port: 3000\n} as const;\n// type: { readonly mode: 'production'; readonly port: 3000 }\n\nconsole.log(`mode: ${config.mode}`);\nconsole.log(`port: ${config.port}`);\n\n// Practical impact: function with literal parameter\nfunction setMode(mode: 'development' | 'production'): string {\n  return `Mode set to: ${mode}`;\n}\n\n// let mode = 'production'; // type: string — ERROR: not assignable\nconst mode = 'production'; // type: 'production' — OK\nconsole.log(setMode(mode));\n\n// Array widening\nlet arr = [1, 'two', true]; // type: (number | string | boolean)[]\nconst constArr = [1, 'two', true] as const; // type: readonly [1, 'two', true]\nconsole.log(`Array length: ${arr.length}`);\nconsole.log(`Const tuple length: ${constArr.length}`);",
+          "output": "mutable type: string (widened)\nimmutable type: 'hello' (literal)\nmode: production\nport: 3000\nMode set to: production\nArray length: 3\nConst tuple length: 3",
+          "explanation": "let variables are widened to their base type. const variables and 'as const' preserve literal types. This matters when passing values to functions expecting literal union types."
+        }
+      ],
+      "notes": [
+        "Structural typing means objects are compatible based on shape, not name. Two unrelated interfaces with the same properties are interchangeable.",
+        "Excess property checks only apply to fresh object literals — once stored in a variable, extra properties pass through structural compatibility checks.",
+        "Use 'as const' to prevent type widening when you need literal types, especially for objects and arrays."
+      ],
+      "commonPitfalls": [
+        "Expecting TypeScript to prevent extra properties in all cases — excess property checks only apply to direct object literals, not to variables.",
+        "Using 'let' for values that will be passed to literal-typed parameters — the widened type will not be assignable. Use 'const' or 'as const' instead."
+      ],
+      "interviewTips": [
+        "Be able to explain why excess property checks exist and when they apply — TypeScript assumes direct object literals are intentional, so extra properties are likely typos.",
+        "Know the difference between type widening (let x = 'hello' gives string) and type narrowing (typeof x === 'string' narrows to string) — they go in opposite directions.",
+        "Understand that structural typing is why TypeScript is sometimes called 'duck typing with static types' — if it looks like a duck and quacks like a duck, TypeScript accepts it.",
+        "Be ready to explain 'as const' and when to use it — it creates readonly literal types for objects, arrays, and primitive values."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "common-gotchas-exercise-1",
+        "title": "Excess Property Detection",
+        "description": "Build a function that detects excess properties by comparing an object against a known schema. This simulates what TypeScript does at compile time but at runtime.",
+        "starterCode": "// Create function findExcessProperties(obj: Record<string, any>, allowedKeys: string[]): string[]\n// Return keys in obj that are NOT in allowedKeys\n\n// Create function strictAssign<T>(target: Record<string, any>, allowedKeys: string[]): Record<string, any>\n// Return a new object with only the allowed keys\n\n// Test:\n// obj = { name: 'Alice', age: 30, email: 'alice@test.com', debug: true }\n// allowedKeys = ['name', 'age', 'email']\n// Find excess properties and create a strict object\n\n// Your code here",
+        "solution": "function findExcessProperties(obj: Record<string, any>, allowedKeys: string[]): string[] {\n  return Object.keys(obj).filter(key => !allowedKeys.includes(key));\n}\n\nfunction strictAssign(obj: Record<string, any>, allowedKeys: string[]): Record<string, any> {\n  const result: Record<string, any> = {};\n  for (const key of allowedKeys) {\n    if (key in obj) {\n      result[key] = obj[key];\n    }\n  }\n  return result;\n}\n\nconst obj = { name: 'Alice', age: 30, email: 'alice@test.com', debug: true };\nconst allowedKeys = ['name', 'age', 'email'];\n\nconst excess = findExcessProperties(obj, allowedKeys);\nconsole.log(`Excess properties: ${excess.join(', ')}`);\n\nconst strict = strictAssign(obj, allowedKeys);\nconsole.log(`Strict object: ${JSON.stringify(strict)}`);\nconsole.log(`Original keys: ${Object.keys(obj).length}`);\nconsole.log(`Strict keys: ${Object.keys(strict).length}`);",
+        "expectedOutput": "Excess properties: debug\nStrict object: {\"name\":\"Alice\",\"age\":30,\"email\":\"alice@test.com\"}\nOriginal keys: 4\nStrict keys: 3",
+        "hints": [
+          "Use Object.keys(obj).filter() to find keys that are not in the allowedKeys array.",
+          "For strictAssign, iterate over allowedKeys and copy only those properties that exist in the source object."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "common-gotchas-exercise-2",
+        "title": "Type Widening Simulator",
+        "description": "Build a system that simulates TypeScript's type widening and narrowing behavior, tracking how types change based on assignment and checks.",
+        "starterCode": "// Create a TypeTracker class that simulates type inference:\n// infer(value: any): string — returns the inferred type\n//   For 'let' style: widen (e.g., 'hello' -> 'string', 42 -> 'number')\n//   For literal values, return the literal type as a string\n// narrow(value: any, check: string): string — returns narrowed type\n//   check can be: 'string', 'number', 'truthy', 'nonnull'\n\n// Test with various values showing widening and narrowing\n\n// Your code here",
+        "solution": "class TypeTracker {\n  inferWidened(value: any): string {\n    if (value === null) return 'null';\n    if (value === undefined) return 'undefined';\n    if (Array.isArray(value)) {\n      const types = [...new Set(value.map((v: any) => typeof v))];\n      return `(${types.join(' | ')})[]`;\n    }\n    return typeof value;\n  }\n\n  inferLiteral(value: any): string {\n    if (value === null) return 'null';\n    if (value === undefined) return 'undefined';\n    if (typeof value === 'string') return `'${value}'`;\n    if (typeof value === 'number') return `${value}`;\n    if (typeof value === 'boolean') return `${value}`;\n    return typeof value;\n  }\n\n  narrow(currentType: string, check: string): string {\n    if (check === 'truthy') return currentType.replace(' | null', '').replace(' | undefined', '');\n    if (check === 'nonnull') return currentType.replace(' | null', '');\n    return check;\n  }\n}\n\nconst tracker = new TypeTracker();\n\n// Widening (let-style)\nconsole.log(`let x = 'hello' -> ${tracker.inferWidened('hello')}`);\nconsole.log(`let y = 42 -> ${tracker.inferWidened(42)}`);\nconsole.log(`let z = true -> ${tracker.inferWidened(true)}`);\n\n// Literal (const-style)\nconsole.log(`const a = 'hello' -> ${tracker.inferLiteral('hello')}`);\nconsole.log(`const b = 42 -> ${tracker.inferLiteral(42)}`);\n\n// Narrowing\nconsole.log(`string | number narrowed by 'string' -> ${tracker.narrow('string | number', 'string')}`);\nconsole.log(`string | null narrowed by 'nonnull' -> ${tracker.narrow('string | null', 'nonnull')}`);",
+        "expectedOutput": "let x = 'hello' -> string\nlet y = 42 -> number\nlet z = true -> boolean\nconst a = 'hello' -> 'hello'\nconst b = 42 -> 42\nstring | number narrowed by 'string' -> string\nstring | null narrowed by 'nonnull' -> string",
+        "hints": [
+          "Widening converts literal values to their base types: 'hello' becomes 'string', 42 becomes 'number'.",
+          "Literal inference preserves the exact value as a type: 'hello' stays as the type 'hello', 42 stays as the type 42."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "ts-best-practices",
+    "sectionId": "ts-interview-essentials",
+    "orderIndex": 4,
+    "title": "TypeScript Best Practices",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["best practices", "coding conventions", "migration tips", "type safety", "code organization", "strict typing", "avoid any"],
+    "content": {
+      "explanation": "TypeScript best practices are guidelines that help teams write maintainable, type-safe code. Adopting these practices from the start prevents technical debt and makes the codebase easier to navigate for new team members. The most important principle is to leverage TypeScript's type system fully — use strict mode, avoid `any`, prefer interfaces for object shapes, and use generics to create reusable, type-safe abstractions.\n\nAvoiding `any` is the cornerstone of TypeScript best practices. Every `any` type creates a hole in your type safety net where bugs can hide. Use `unknown` instead of `any` when you do not know the type — it forces you to narrow the type before using the value. Use specific union types (`string | number`) instead of `any` when the value can be one of several known types. In legacy codebases, track `any` usage with the `noImplicitAny` flag and gradually eliminate explicit `any` annotations.\n\nCode organization best practices include separating types into dedicated files or co-locating them with their related code, using barrel exports (index.ts) to simplify imports, and leveraging path aliases for clean import paths. Prefer interfaces over type aliases for object shapes because interfaces are extendable and produce clearer error messages. Use type aliases for unions, intersections, mapped types, and conditional types — cases where interfaces cannot be used.\n\nMigrating a JavaScript project to TypeScript should be done incrementally. Start by renaming .js files to .ts one at a time, adding `allowJs: true` to tsconfig.json so JavaScript files can coexist with TypeScript. Enable strict mode flags one at a time rather than all at once. Begin with `noImplicitAny`, then add `strictNullChecks`, then the rest. Use `@ts-expect-error` comments to suppress known issues temporarily, and track them as technical debt to resolve later.",
+      "codeExamples": [
+        {
+          "title": "Avoiding any with unknown and Type Guards",
+          "code": "// BAD: Using 'any' — no type safety\nfunction processAny(data: any): string {\n  return data.name.toUpperCase(); // No error, but crashes if data has no name\n}\n\n// GOOD: Using 'unknown' with type guards\nfunction processUnknown(data: unknown): string {\n  if (typeof data === 'object' && data !== null && 'name' in data) {\n    const obj = data as { name: string };\n    return obj.name.toUpperCase();\n  }\n  return 'Unknown';\n}\n\n// BETTER: Using generics with constraints\nfunction processTyped<T extends { name: string }>(data: T): string {\n  return data.name.toUpperCase();\n}\n\nconsole.log(processUnknown({ name: 'alice' }));\nconsole.log(processUnknown(42));\nconsole.log(processUnknown(null));\nconsole.log(processTyped({ name: 'bob', age: 25 }));",
+          "output": "ALICE\nUnknown\nUnknown\nBOB",
+          "explanation": "Using 'unknown' forces you to check the type before accessing properties. Using generics with constraints provides compile-time safety without runtime checks."
+        },
+        {
+          "title": "Interface vs Type Alias Best Practices",
+          "code": "// Use INTERFACES for object shapes — they are extendable\ninterface User {\n  id: number;\n  name: string;\n}\n\ninterface Admin extends User {\n  permissions: string[];\n}\n\n// Use TYPE ALIASES for unions, intersections, and computed types\ntype Status = 'active' | 'inactive' | 'pending';\ntype Nullable<T> = T | null;\ntype UserOrAdmin = User | Admin;\n\n// Demonstrate\nconst user: User = { id: 1, name: 'Alice' };\nconst admin: Admin = { id: 2, name: 'Bob', permissions: ['read', 'write'] };\nconst status: Status = 'active';\nconst nullableUser: Nullable<User> = null;\n\nconsole.log(`User: ${user.name}`);\nconsole.log(`Admin: ${admin.name}, permissions: ${admin.permissions.join(', ')}`);\nconsole.log(`Status: ${status}`);\nconsole.log(`Nullable user: ${nullableUser}`);\n\n// Interfaces can be declaration-merged (augmented)\n// interface User { email: string; } // Adds email to User\n// Type aliases cannot be merged\nconsole.log('Interfaces: extendable, mergeable');\nconsole.log('Type aliases: unions, intersections, mapped types');",
+          "output": "User: Alice\nAdmin: Bob, permissions: read, write\nStatus: active\nNullable user: null\nInterfaces: extendable, mergeable\nType aliases: unions, intersections, mapped types",
+          "explanation": "Use interfaces for object shapes (extendable, mergeable, clearer errors). Use type aliases for unions, intersections, and utility types that interfaces cannot express."
+        },
+        {
+          "title": "Incremental Migration Pattern",
+          "code": "// Simulating a migration tracking system\ninterface MigrationFile {\n  name: string;\n  status: 'js' | 'ts-loose' | 'ts-strict';\n  anyCount: number;\n}\n\nfunction getMigrationProgress(files: MigrationFile[]): {\n  total: number;\n  migrated: number;\n  strict: number;\n  anyCount: number;\n  progress: string;\n} {\n  const total = files.length;\n  const migrated = files.filter(f => f.status !== 'js').length;\n  const strict = files.filter(f => f.status === 'ts-strict').length;\n  const anyCount = files.reduce((sum, f) => sum + f.anyCount, 0);\n  const percent = Math.round((migrated / total) * 100);\n  return { total, migrated, strict, anyCount, progress: `${percent}%` };\n}\n\nconst files: MigrationFile[] = [\n  { name: 'utils.ts', status: 'ts-strict', anyCount: 0 },\n  { name: 'api.ts', status: 'ts-loose', anyCount: 5 },\n  { name: 'helpers.js', status: 'js', anyCount: 0 },\n  { name: 'types.ts', status: 'ts-strict', anyCount: 0 },\n  { name: 'legacy.ts', status: 'ts-loose', anyCount: 12 }\n];\n\nconst progress = getMigrationProgress(files);\nconsole.log(`Total files: ${progress.total}`);\nconsole.log(`Migrated to TS: ${progress.migrated}`);\nconsole.log(`Strict mode: ${progress.strict}`);\nconsole.log(`Remaining 'any': ${progress.anyCount}`);\nconsole.log(`Overall progress: ${progress.progress}`);",
+          "output": "Total files: 5\nMigrated to TS: 4\nStrict mode: 2\nRemaining 'any': 17\nOverall progress: 80%",
+          "explanation": "Incremental migration tracks files across three stages: JavaScript, loose TypeScript (with any), and strict TypeScript (no any, all flags enabled)."
+        }
+      ],
+      "notes": [
+        "Use 'unknown' instead of 'any' — it is type-safe and forces you to narrow before accessing properties.",
+        "Prefer interfaces for object shapes and type aliases for unions, intersections, and computed types.",
+        "Migrate to TypeScript incrementally: enable allowJs, rename files one at a time, enable strict flags one by one."
+      ],
+      "commonPitfalls": [
+        "Using 'any' to quickly fix type errors — this silences the compiler but hides bugs. Take the time to find the correct type.",
+        "Enabling all strict flags at once in a large legacy codebase — this creates thousands of errors. Enable them one at a time: noImplicitAny first, then strictNullChecks."
+      ],
+      "interviewTips": [
+        "Be ready to explain your strategy for migrating a large JavaScript codebase to TypeScript — incremental migration with allowJs is the standard approach.",
+        "Know the difference between interface and type alias: interfaces are for object shapes (extendable, mergeable), type aliases are for everything else.",
+        "Discuss your approach to eliminating 'any' — use unknown + type guards for external data, generics for reusable functions, specific types for known shapes.",
+        "Explain why strict mode should be enabled from day one in new projects — it is exponentially harder to enable later."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "best-practices-exercise-1",
+        "title": "Any Eliminator",
+        "description": "Refactor code that uses 'any' to use proper TypeScript types. Demonstrate type-safe alternatives for common 'any' use cases.",
+        "starterCode": "// Refactor these functions to eliminate 'any':\n\n// 1. Parse JSON safely (input is string, output could be anything)\n// function parseJSON(input: any): any { return JSON.parse(input); }\n\n// 2. Merge two objects (both could be any shape)\n// function merge(a: any, b: any): any { return { ...a, ...b }; }\n\n// 3. Get array first element (array could contain anything)\n// function first(arr: any): any { return arr[0]; }\n\n// Rewrite with proper types, then test each\n\n// Your code here",
+        "solution": "function parseJSON<T>(input: string): T | null {\n  try {\n    return JSON.parse(input) as T;\n  } catch {\n    return null;\n  }\n}\n\nfunction merge<A extends Record<string, unknown>, B extends Record<string, unknown>>(a: A, b: B): A & B {\n  return { ...a, ...b } as A & B;\n}\n\nfunction first<T>(arr: T[]): T | undefined {\n  return arr[0];\n}\n\n// Test parseJSON\nconst parsed = parseJSON<{ name: string }>('{\"name\": \"Alice\"}');\nconsole.log(parsed ? parsed.name : 'null');\nconsole.log(parseJSON<number>('invalid'));\n\n// Test merge\nconst merged = merge({ a: 1, b: 2 }, { c: 3, d: 4 });\nconsole.log(JSON.stringify(merged));\n\n// Test first\nconsole.log(first([10, 20, 30]));\nconsole.log(first<string>([]));\nconsole.log(first(['hello', 'world']));",
+        "expectedOutput": "Alice\nnull\n{\"a\":1,\"b\":2,\"c\":3,\"d\":4}\n10\nundefined\nhello",
+        "hints": [
+          "Use generics to replace 'any' — parseJSON<T> returns T | null, merge<A, B> returns A & B, first<T> returns T | undefined.",
+          "Wrap JSON.parse in a try-catch to handle invalid input safely instead of crashing."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "best-practices-exercise-2",
+        "title": "Migration Planner",
+        "description": "Build a tool that analyzes a project structure and creates a migration plan from JavaScript to TypeScript, determining the optimal order to migrate files.",
+        "starterCode": "// Create interface FileInfo:\n// { name: string, extension: 'js' | 'ts', imports: string[], complexity: number }\n\n// Create function planMigration(files: FileInfo[]): string[]\n// Return JS files in migration order:\n// 1. Files with no imports from other JS files first (leaf nodes)\n// 2. Then files whose dependencies are already migrated\n// 3. Sort by complexity (lower first) within each tier\n\n// Test with a set of files\n\n// Your code here",
+        "solution": "interface FileInfo {\n  name: string;\n  extension: 'js' | 'ts';\n  imports: string[];\n  complexity: number;\n}\n\nfunction planMigration(files: FileInfo[]): string[] {\n  const jsFiles = files.filter(f => f.extension === 'js');\n  const tsFiles = new Set(files.filter(f => f.extension === 'ts').map(f => f.name));\n  const migrated = new Set<string>(tsFiles);\n  const order: string[] = [];\n  const remaining = new Set(jsFiles.map(f => f.name));\n\n  while (remaining.size > 0) {\n    const ready = jsFiles\n      .filter(f => remaining.has(f.name))\n      .filter(f => f.imports.every(imp => migrated.has(imp) || !remaining.has(imp)))\n      .sort((a, b) => a.complexity - b.complexity);\n\n    if (ready.length === 0) {\n      // Circular dependency — take the least complex\n      const fallback = jsFiles\n        .filter(f => remaining.has(f.name))\n        .sort((a, b) => a.complexity - b.complexity);\n      if (fallback.length > 0) {\n        order.push(fallback[0].name);\n        migrated.add(fallback[0].name);\n        remaining.delete(fallback[0].name);\n      }\n      continue;\n    }\n\n    for (const file of ready) {\n      order.push(file.name);\n      migrated.add(file.name);\n      remaining.delete(file.name);\n    }\n  }\n\n  return order;\n}\n\nconst files: FileInfo[] = [\n  { name: 'utils', extension: 'js', imports: [], complexity: 2 },\n  { name: 'types', extension: 'ts', imports: [], complexity: 1 },\n  { name: 'api', extension: 'js', imports: ['utils', 'types'], complexity: 5 },\n  { name: 'helpers', extension: 'js', imports: ['utils'], complexity: 3 },\n  { name: 'app', extension: 'js', imports: ['api', 'helpers'], complexity: 8 }\n];\n\nconst plan = planMigration(files);\nconsole.log('Migration order:');\nplan.forEach((name, i) => console.log(`${i + 1}. ${name}`));\nconsole.log(`Total files to migrate: ${plan.length}`);",
+        "expectedOutput": "Migration order:\n1. utils\n2. helpers\n3. api\n4. app\nTotal files to migrate: 4",
+        "hints": [
+          "Start with JS files whose imports are either already TS files or have no JS dependencies (leaf nodes).",
+          "Use a while loop that repeatedly finds 'ready' files (all dependencies migrated), adds them to the order, and marks them as migrated."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

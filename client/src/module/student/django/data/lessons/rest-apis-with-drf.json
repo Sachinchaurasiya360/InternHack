@@ -1,0 +1,284 @@
+[
+  {
+    "id": "drf-setup-and-serializers",
+    "sectionId": "rest-apis-with-drf",
+    "orderIndex": 0,
+    "title": "DRF Setup & Serializers",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["DRF", "Serializer", "ModelSerializer", "Validation", "Nested Serializers"],
+    "content": {
+      "explanation": "Django REST Framework (DRF) is the most popular third-party package for building RESTful APIs with Django. It provides serializers, views, viewsets, routers, authentication, permissions, pagination, filtering, and throttling — everything you need for a production-quality API.\n\nInstall DRF with 'pip install djangorestframework' and add 'rest_framework' to INSTALLED_APPS. DRF configuration lives in settings.py under the REST_FRAMEWORK dictionary, where you can set default authentication, permissions, pagination, and other global settings.\n\nSerializers are the core of DRF. They convert complex data types (like Django model instances and QuerySets) to Python native types that can be rendered into JSON, XML, or other content types. They also handle deserialization — converting parsed data back into complex types after validating the incoming data.\n\nSerializer is the base class. You define fields explicitly, similar to Django forms. Each field type (CharField, IntegerField, DateTimeField, etc.) handles validation and conversion. ModelSerializer is a shortcut that automatically generates serializer fields from a model, similar to how ModelForm works with Django forms.\n\nModelSerializer introspects the model and creates fields automatically. You specify the model and fields in a Meta class. It generates validators from model constraints and provides default create() and update() methods. You can override fields, add extra fields, or customize validation just like with regular Serializers.\n\nSerializer validation follows a similar pattern to Django forms: field-level validation with validate_fieldname() methods, and object-level validation with the validate() method. The validate() method receives the full dictionary of validated data and can check cross-field relationships.\n\nNested serializers allow you to represent related objects inline. A field defined as another serializer class will include the related object's data in the output. For write operations with nested data, you need to override the create() and update() methods to handle the nested creation/update logic.",
+      "codeExamples": [
+        {
+          "title": "Setting Up DRF",
+          "code": "# Install: pip install djangorestframework\n\n# settings.py\nINSTALLED_APPS = [\n    # ...\n    'rest_framework',\n]\n\nREST_FRAMEWORK = {\n    'DEFAULT_AUTHENTICATION_CLASSES': [\n        'rest_framework.authentication.SessionAuthentication',\n        'rest_framework.authentication.TokenAuthentication',\n    ],\n    'DEFAULT_PERMISSION_CLASSES': [\n        'rest_framework.permissions.IsAuthenticated',\n    ],\n    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',\n    'PAGE_SIZE': 20,\n    'DEFAULT_RENDERER_CLASSES': [\n        'rest_framework.renderers.JSONRenderer',\n        'rest_framework.renderers.BrowsableAPIRenderer',\n    ],\n}",
+          "explanation": "Add 'rest_framework' to INSTALLED_APPS and configure defaults in REST_FRAMEWORK. BrowsableAPIRenderer provides a web-based interface for testing your API. Default settings apply to all API views unless overridden."
+        },
+        {
+          "title": "ModelSerializer",
+          "code": "from rest_framework import serializers\nfrom .models import Article, Category\n\nclass CategorySerializer(serializers.ModelSerializer):\n    class Meta:\n        model = Category\n        fields = ['id', 'name', 'slug']\n\nclass ArticleSerializer(serializers.ModelSerializer):\n    # Read-only computed field\n    author_name = serializers.CharField(source='author.get_full_name', read_only=True)\n    # Nested serializer (read-only by default)\n    category = CategorySerializer(read_only=True)\n    # Write-only field for setting category by ID\n    category_id = serializers.PrimaryKeyRelatedField(\n        queryset=Category.objects.all(),\n        source='category',\n        write_only=True,\n    )\n\n    class Meta:\n        model = Article\n        fields = [\n            'id', 'title', 'slug', 'content', 'excerpt',\n            'author', 'author_name', 'category', 'category_id',\n            'is_published', 'created_at', 'updated_at',\n        ]\n        read_only_fields = ['author', 'created_at', 'updated_at']",
+          "explanation": "ModelSerializer auto-generates fields from the model. 'source' maps a serializer field to a model attribute. read_only_fields prevent those fields from being set via the API. Nested serializer shows full category data in responses."
+        },
+        {
+          "title": "Custom Validation",
+          "code": "from rest_framework import serializers\nfrom .models import Article\n\nclass ArticleSerializer(serializers.ModelSerializer):\n    class Meta:\n        model = Article\n        fields = ['id', 'title', 'content', 'status']\n\n    def validate_title(self, value):\n        \"\"\"Field-level validation.\"\"\"\n        if len(value) < 5:\n            raise serializers.ValidationError(\n                'Title must be at least 5 characters.'\n            )\n        return value\n\n    def validate(self, data):\n        \"\"\"Object-level validation.\"\"\"\n        if data.get('status') == 'published' and not data.get('content'):\n            raise serializers.ValidationError(\n                'Published articles must have content.'\n            )\n        return data\n\n    def create(self, validated_data):\n        \"\"\"Custom create with request user.\"\"\"\n        validated_data['author'] = self.context['request'].user\n        return super().create(validated_data)\n\n    def update(self, instance, validated_data):\n        \"\"\"Custom update logic.\"\"\"\n        instance.title = validated_data.get('title', instance.title)\n        instance.content = validated_data.get('content', instance.content)\n        instance.save()\n        return instance",
+          "explanation": "validate_fieldname() validates individual fields. validate() validates across fields. create() and update() handle object creation/modification. self.context['request'] gives access to the HTTP request."
+        },
+        {
+          "title": "Serializer Usage",
+          "code": "from .models import Article\nfrom .serializers import ArticleSerializer\n\n# Serialization (object -> JSON data)\narticle = Article.objects.get(pk=1)\nserializer = ArticleSerializer(article)\nserializer.data\n# {'id': 1, 'title': 'Hello', 'content': '...', ...}\n\n# Serialization of multiple objects\narticles = Article.objects.all()\nserializer = ArticleSerializer(articles, many=True)\nserializer.data\n# [{'id': 1, ...}, {'id': 2, ...}, ...]\n\n# Deserialization (JSON data -> object)\ndata = {'title': 'New Article', 'content': 'Body text'}\nserializer = ArticleSerializer(data=data)\nserializer.is_valid(raise_exception=True)\narticle = serializer.save()\n\n# Update existing object\nserializer = ArticleSerializer(article, data=data, partial=True)\nserializer.is_valid(raise_exception=True)\nupdated = serializer.save()",
+          "explanation": "Pass an instance for serialization (reading). Pass data= for deserialization (writing). many=True handles lists. partial=True allows partial updates (PATCH). is_valid() runs validation and raise_exception=True auto-returns 400 errors."
+        }
+      ],
+      "notes": [
+        "Serializers convert between complex types (models) and primitive types (JSON).",
+        "ModelSerializer auto-generates fields from the model, like ModelForm does for forms.",
+        "Use read_only_fields for fields that should not be set via the API.",
+        "self.context['request'] in serializers gives access to the HTTP request."
+      ],
+      "interviewTips": [
+        "Explain serializers as the DRF equivalent of Django forms — they validate and convert data.",
+        "Know the difference between Serializer (manual fields) and ModelSerializer (auto-generated).",
+        "Describe the validation flow: field-level validate_field() then object-level validate()."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "serializer-ex1",
+        "title": "Create a ModelSerializer",
+        "description": "Create a ProductSerializer for a Product model (name, description, price, category, is_active, created_at). Make created_at read-only and add a custom validate_price method that ensures price is positive.",
+        "starterCode": "from rest_framework import serializers\nfrom .models import Product\n\nclass ProductSerializer(serializers.ModelSerializer):\n    pass\n",
+        "solution": "from rest_framework import serializers\nfrom .models import Product\n\nclass ProductSerializer(serializers.ModelSerializer):\n    class Meta:\n        model = Product\n        fields = ['id', 'name', 'description', 'price', 'category', 'is_active', 'created_at']\n        read_only_fields = ['created_at']\n\n    def validate_price(self, value):\n        if value <= 0:\n            raise serializers.ValidationError('Price must be a positive number.')\n        return value",
+        "hints": [
+          "Define model and fields in the Meta class",
+          "read_only_fields is a list of field names",
+          "validate_price receives and returns the field value"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "serializer-ex2",
+        "title": "Nested Serializer",
+        "description": "Create an OrderSerializer that includes nested OrderItem data. The OrderItem serializer should show product name (read-only), quantity, and price.",
+        "starterCode": "from rest_framework import serializers\nfrom .models import Order, OrderItem\n\n# Create nested serializers\n",
+        "solution": "from rest_framework import serializers\nfrom .models import Order, OrderItem\n\nclass OrderItemSerializer(serializers.ModelSerializer):\n    product_name = serializers.CharField(source='product.name', read_only=True)\n\n    class Meta:\n        model = OrderItem\n        fields = ['id', 'product', 'product_name', 'quantity', 'price']\n\nclass OrderSerializer(serializers.ModelSerializer):\n    items = OrderItemSerializer(many=True, read_only=True)\n    total = serializers.DecimalField(max_digits=10, decimal_places=2, read_only=True)\n\n    class Meta:\n        model = Order\n        fields = ['id', 'customer', 'items', 'total', 'status', 'created_at']\n        read_only_fields = ['customer', 'created_at']",
+        "hints": [
+          "Create the child serializer (OrderItem) first",
+          "Use many=True for the nested serializer field since an order has many items",
+          "Use source='product.name' to display the product name instead of ID"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "apiviews-and-viewsets",
+    "sectionId": "rest-apis-with-drf",
+    "orderIndex": 1,
+    "title": "APIViews & ViewSets",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["APIView", "GenericAPIView", "ViewSet", "ModelViewSet", "Mixins"],
+    "content": {
+      "explanation": "DRF provides several view classes at different abstraction levels. APIView is the base class that adds DRF features (authentication, permissions, content negotiation) to Django's View. GenericAPIView adds queryset and serializer handling. Concrete view classes (ListAPIView, RetrieveAPIView, etc.) add specific behavior. ViewSets combine multiple view actions into a single class.\n\nAPIView is the DRF equivalent of Django's View. You define get(), post(), put(), patch(), delete() methods. It provides request parsing (request.data instead of request.POST), response rendering (Response instead of HttpResponse), authentication, permission checking, and exception handling.\n\nGenericAPIView extends APIView with queryset and serializer_class attributes. Combined with mixins (ListModelMixin, CreateModelMixin, RetrieveModelMixin, UpdateModelMixin, DestroyModelMixin), it provides standard CRUD operations. Concrete generic views combine GenericAPIView with specific mixins.\n\nViewSets are the highest abstraction level. Instead of defining separate views for list, create, retrieve, update, and delete, a ViewSet handles all of them in a single class. ModelViewSet provides complete CRUD functionality with minimal code — just set queryset and serializer_class.\n\nViewSets use 'actions' instead of HTTP method handlers: list() (GET /), create() (POST /), retrieve() (GET /{pk}/), update() (PUT /{pk}/), partial_update() (PATCH /{pk}/), destroy() (DELETE /{pk}/). The Router (covered in the next lesson) maps these actions to URL patterns automatically.\n\nYou can restrict which actions a ViewSet supports using mixins. Instead of ModelViewSet (which includes all CRUD), you can mix specific mixins: CreateModelMixin + ListModelMixin + GenericViewSet gives you only create and list operations.\n\nCustomizing ViewSet behavior follows the same patterns as generic views: override get_queryset(), get_serializer_class(), perform_create(), perform_update(), and perform_destroy() for custom logic.",
+      "codeExamples": [
+        {
+          "title": "APIView (Low-Level)",
+          "code": "from rest_framework.views import APIView\nfrom rest_framework.response import Response\nfrom rest_framework import status\nfrom .models import Article\nfrom .serializers import ArticleSerializer\n\nclass ArticleListView(APIView):\n    def get(self, request):\n        articles = Article.objects.all()\n        serializer = ArticleSerializer(articles, many=True)\n        return Response(serializer.data)\n\n    def post(self, request):\n        serializer = ArticleSerializer(data=request.data)\n        serializer.is_valid(raise_exception=True)\n        serializer.save(author=request.user)\n        return Response(serializer.data, status=status.HTTP_201_CREATED)\n\nclass ArticleDetailView(APIView):\n    def get(self, request, pk):\n        article = get_object_or_404(Article, pk=pk)\n        serializer = ArticleSerializer(article)\n        return Response(serializer.data)\n\n    def put(self, request, pk):\n        article = get_object_or_404(Article, pk=pk)\n        serializer = ArticleSerializer(article, data=request.data)\n        serializer.is_valid(raise_exception=True)\n        serializer.save()\n        return Response(serializer.data)\n\n    def delete(self, request, pk):\n        article = get_object_or_404(Article, pk=pk)\n        article.delete()\n        return Response(status=status.HTTP_204_NO_CONTENT)",
+          "explanation": "APIView gives full control over each HTTP method. request.data handles JSON, form data, and multipart. Response auto-negotiates content type. raise_exception=True auto-returns 400 on validation errors."
+        },
+        {
+          "title": "Generic Views",
+          "code": "from rest_framework import generics\nfrom .models import Article\nfrom .serializers import ArticleSerializer\n\n# List + Create\nclass ArticleListCreateView(generics.ListCreateAPIView):\n    queryset = Article.objects.all()\n    serializer_class = ArticleSerializer\n\n    def perform_create(self, serializer):\n        serializer.save(author=self.request.user)\n\n# Retrieve + Update + Delete\nclass ArticleDetailView(generics.RetrieveUpdateDestroyAPIView):\n    queryset = Article.objects.all()\n    serializer_class = ArticleSerializer\n\n# Read-only views\nclass ArticleListView(generics.ListAPIView):\n    queryset = Article.objects.filter(is_published=True)\n    serializer_class = ArticleSerializer\n\nclass ArticleRetrieveView(generics.RetrieveAPIView):\n    queryset = Article.objects.all()\n    serializer_class = ArticleSerializer\n    lookup_field = 'slug'  # Use slug instead of pk",
+          "explanation": "Generic views provide pre-built combinations: ListCreateAPIView (list + create), RetrieveUpdateDestroyAPIView (detail + edit + delete). perform_create() is the hook for setting non-form fields. lookup_field customizes the URL parameter."
+        },
+        {
+          "title": "ModelViewSet",
+          "code": "from rest_framework import viewsets, permissions\nfrom .models import Article\nfrom .serializers import ArticleSerializer, ArticleDetailSerializer\n\nclass ArticleViewSet(viewsets.ModelViewSet):\n    queryset = Article.objects.all()\n    serializer_class = ArticleSerializer\n    permission_classes = [permissions.IsAuthenticatedOrReadOnly]\n\n    def get_serializer_class(self):\n        if self.action == 'retrieve':\n            return ArticleDetailSerializer\n        return ArticleSerializer\n\n    def get_queryset(self):\n        qs = super().get_queryset()\n        if self.action == 'list':\n            return qs.filter(is_published=True)\n        return qs\n\n    def perform_create(self, serializer):\n        serializer.save(author=self.request.user)\n\n    def perform_update(self, serializer):\n        serializer.save(edited_by=self.request.user)",
+          "explanation": "ModelViewSet provides all CRUD actions in a single class. Override get_serializer_class() for action-specific serializers, get_queryset() for action-specific filtering, and perform_create/update for custom save logic."
+        },
+        {
+          "title": "Custom ViewSet with Mixins",
+          "code": "from rest_framework import viewsets, mixins\nfrom .models import Tag\nfrom .serializers import TagSerializer\n\n# Read-only ViewSet (list + retrieve only)\nclass TagViewSet(\n    mixins.ListModelMixin,\n    mixins.RetrieveModelMixin,\n    viewsets.GenericViewSet,\n):\n    queryset = Tag.objects.all()\n    serializer_class = TagSerializer\n\n# Create + List ViewSet (no update or delete)\nclass CommentViewSet(\n    mixins.CreateModelMixin,\n    mixins.ListModelMixin,\n    viewsets.GenericViewSet,\n):\n    queryset = Comment.objects.all()\n    serializer_class = CommentSerializer\n\n    def perform_create(self, serializer):\n        serializer.save(author=self.request.user)\n\n# Or use ReadOnlyModelViewSet\nclass CategoryViewSet(viewsets.ReadOnlyModelViewSet):\n    queryset = Category.objects.all()\n    serializer_class = CategorySerializer",
+          "explanation": "Mix specific mixins with GenericViewSet to control which actions are available. ReadOnlyModelViewSet provides list + retrieve. This gives fine-grained control over API capabilities."
+        }
+      ],
+      "notes": [
+        "APIView gives full control; generic views reduce boilerplate; ViewSets minimize code for standard CRUD.",
+        "perform_create(), perform_update(), perform_destroy() are hooks for custom save/delete logic.",
+        "Use get_serializer_class() for action-specific serializers (e.g., different detail vs list).",
+        "Mix specific mixins with GenericViewSet to limit which CRUD actions are available."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "viewset-ex1",
+        "title": "Create a ModelViewSet",
+        "description": "Create a ProductViewSet using ModelViewSet that uses ProductSerializer, filters the list to only active products, and sets the creator to request.user on creation.",
+        "starterCode": "from rest_framework import viewsets\nfrom .models import Product\nfrom .serializers import ProductSerializer\n\n# Create the ViewSet\n",
+        "solution": "from rest_framework import viewsets, permissions\nfrom .models import Product\nfrom .serializers import ProductSerializer\n\nclass ProductViewSet(viewsets.ModelViewSet):\n    queryset = Product.objects.all()\n    serializer_class = ProductSerializer\n    permission_classes = [permissions.IsAuthenticatedOrReadOnly]\n\n    def get_queryset(self):\n        qs = super().get_queryset()\n        if self.action == 'list':\n            return qs.filter(is_active=True)\n        return qs\n\n    def perform_create(self, serializer):\n        serializer.save(created_by=self.request.user)",
+        "hints": [
+          "Set queryset and serializer_class on the ViewSet",
+          "Override get_queryset() to filter the list action",
+          "Use perform_create() to set the creator"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "viewset-ex2",
+        "title": "Read-Only ViewSet",
+        "description": "Create a CategoryViewSet that only supports list and retrieve operations (no create, update, or delete). Use the appropriate mixins or built-in ViewSet.",
+        "starterCode": "from rest_framework import viewsets\nfrom .models import Category\nfrom .serializers import CategorySerializer\n\n# Create read-only ViewSet\n",
+        "solution": "from rest_framework import viewsets\nfrom .models import Category\nfrom .serializers import CategorySerializer\n\nclass CategoryViewSet(viewsets.ReadOnlyModelViewSet):\n    queryset = Category.objects.all()\n    serializer_class = CategorySerializer\n    lookup_field = 'slug'",
+        "hints": [
+          "ReadOnlyModelViewSet provides list() and retrieve() only",
+          "Alternatively, mix ListModelMixin + RetrieveModelMixin + GenericViewSet",
+          "lookup_field changes the URL parameter from pk to slug"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "routers-and-urls",
+    "sectionId": "rest-apis-with-drf",
+    "orderIndex": 2,
+    "title": "Routers & URLs",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["DefaultRouter", "SimpleRouter", "register", "Custom Actions", "action Decorator"],
+    "content": {
+      "explanation": "DRF routers automatically generate URL patterns for ViewSets. Instead of manually defining URL patterns for each action (list, create, retrieve, update, delete), you register ViewSets with a router and it creates all the necessary URL patterns.\n\nDRF provides two main routers: SimpleRouter and DefaultRouter. DefaultRouter extends SimpleRouter by adding a root API view that lists all registered endpoints. This root view provides a browsable API index at the base URL.\n\nTo use a router, create an instance, register ViewSets with URL prefixes, and include the router's URLs in your URL configuration. router.register('articles', ArticleViewSet) creates URL patterns for /articles/ (list/create) and /articles/{pk}/ (retrieve/update/delete).\n\nCustom actions extend ViewSets with additional endpoints beyond standard CRUD. Use the @action decorator to define custom actions. By default, actions respond to POST requests and use the ViewSet's detail URL ({pk}/action-name/). Set detail=False for collection-level actions (/articles/action-name/).\n\nThe @action decorator accepts parameters like methods (HTTP methods), detail (True for instance-level, False for collection-level), url_path (custom URL segment), url_name (for URL reversing), and permission_classes (action-specific permissions).\n\nRouters also support nested routing through third-party packages like drf-nested-routers, which creates URL patterns like /authors/{author_pk}/articles/ for nested resources.",
+      "codeExamples": [
+        {
+          "title": "Router Configuration",
+          "code": "# api/urls.py\nfrom django.urls import path, include\nfrom rest_framework.routers import DefaultRouter\nfrom . import views\n\nrouter = DefaultRouter()\nrouter.register('articles', views.ArticleViewSet)\nrouter.register('categories', views.CategoryViewSet)\nrouter.register('tags', views.TagViewSet, basename='tag')\n\nurlpatterns = [\n    path('api/', include(router.urls)),\n]\n\n# Generated URLs:\n# GET/POST    /api/articles/         -> list/create\n# GET/PUT/DELETE /api/articles/{pk}/  -> retrieve/update/destroy\n# GET/POST    /api/categories/       -> list/create\n# GET/PUT/DELETE /api/categories/{pk}/ -> retrieve/update/destroy\n# GET         /api/tags/             -> list\n# GET         /api/tags/{pk}/        -> retrieve\n# GET         /api/                  -> API root (DefaultRouter only)",
+          "explanation": "DefaultRouter auto-generates URL patterns from registered ViewSets. Use basename when the ViewSet does not have a queryset attribute. The API root view at /api/ lists all endpoints."
+        },
+        {
+          "title": "Custom Actions",
+          "code": "from rest_framework import viewsets, status\nfrom rest_framework.decorators import action\nfrom rest_framework.response import Response\nfrom .models import Article\nfrom .serializers import ArticleSerializer\n\nclass ArticleViewSet(viewsets.ModelViewSet):\n    queryset = Article.objects.all()\n    serializer_class = ArticleSerializer\n\n    # Detail action: POST /articles/{pk}/publish/\n    @action(detail=True, methods=['post'])\n    def publish(self, request, pk=None):\n        article = self.get_object()\n        article.is_published = True\n        article.save()\n        return Response({'status': 'Article published'})\n\n    # Detail action: POST /articles/{pk}/archive/\n    @action(detail=True, methods=['post'], url_path='archive')\n    def archive(self, request, pk=None):\n        article = self.get_object()\n        article.status = 'archived'\n        article.save()\n        return Response({'status': 'Article archived'})\n\n    # Collection action: GET /articles/featured/\n    @action(detail=False, methods=['get'])\n    def featured(self, request):\n        featured = self.get_queryset().filter(is_featured=True)[:10]\n        serializer = self.get_serializer(featured, many=True)\n        return Response(serializer.data)\n\n    # Collection action: GET /articles/stats/\n    @action(detail=False, methods=['get'], url_path='stats')\n    def statistics(self, request):\n        qs = self.get_queryset()\n        return Response({\n            'total': qs.count(),\n            'published': qs.filter(is_published=True).count(),\n            'draft': qs.filter(is_published=False).count(),\n        })",
+          "explanation": "detail=True creates /articles/{pk}/action/. detail=False creates /articles/action/. url_path customizes the URL segment. self.get_object() gets the instance for detail actions. self.get_queryset() gets the queryset for collection actions."
+        },
+        {
+          "title": "Mixing Router and Manual URLs",
+          "code": "from django.urls import path, include\nfrom rest_framework.routers import DefaultRouter\nfrom . import views\n\nrouter = DefaultRouter()\nrouter.register('articles', views.ArticleViewSet)\nrouter.register('categories', views.CategoryViewSet)\n\nurlpatterns = [\n    # Router-generated URLs\n    path('api/v1/', include(router.urls)),\n\n    # Manual API URLs (for non-ViewSet views)\n    path('api/v1/auth/login/', views.LoginAPIView.as_view(), name='api-login'),\n    path('api/v1/auth/register/', views.RegisterAPIView.as_view(), name='api-register'),\n    path('api/v1/search/', views.SearchAPIView.as_view(), name='api-search'),\n\n    # DRF browsable API authentication\n    path('api-auth/', include('rest_framework.urls')),\n]",
+          "explanation": "Router URLs and manual URL patterns can coexist. Use manual URLs for non-ViewSet views (like authentication endpoints). Include rest_framework.urls for the browsable API login/logout buttons."
+        },
+        {
+          "title": "API Versioning with Routers",
+          "code": "# api/v1/urls.py\nfrom rest_framework.routers import DefaultRouter\nfrom . import views\n\nrouter = DefaultRouter()\nrouter.register('articles', views.ArticleViewSet)\nrouter.register('users', views.UserViewSet)\n\nurlpatterns = router.urls\n\n# api/v2/urls.py\nfrom rest_framework.routers import DefaultRouter\nfrom . import views\n\nrouter = DefaultRouter()\nrouter.register('articles', views.ArticleV2ViewSet)\nrouter.register('users', views.UserV2ViewSet)\n\nurlpatterns = router.urls\n\n# project/urls.py\nfrom django.urls import path, include\n\nurlpatterns = [\n    path('api/v1/', include('api.v1.urls')),\n    path('api/v2/', include('api.v2.urls')),\n]",
+          "explanation": "API versioning through URL prefixes uses separate routers for each version. Each version can have different ViewSets and serializers while maintaining backward compatibility."
+        }
+      ],
+      "notes": [
+        "DefaultRouter includes an API root view; SimpleRouter does not.",
+        "@action(detail=True) is for instance-level; @action(detail=False) is for collection-level.",
+        "Routers auto-generate URL patterns from ViewSets, reducing boilerplate.",
+        "Use basename when the ViewSet has a custom get_queryset() without a queryset attribute."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "router-ex1",
+        "title": "Register ViewSets",
+        "description": "Create a DefaultRouter and register three ViewSets: ProductViewSet at 'products', CategoryViewSet at 'categories', and OrderViewSet at 'orders'. Include the router URLs under 'api/'.",
+        "starterCode": "from django.urls import path, include\nfrom rest_framework.routers import DefaultRouter\nfrom . import views\n\n# Create router, register ViewSets, define urlpatterns\n",
+        "solution": "from django.urls import path, include\nfrom rest_framework.routers import DefaultRouter\nfrom . import views\n\nrouter = DefaultRouter()\nrouter.register('products', views.ProductViewSet)\nrouter.register('categories', views.CategoryViewSet)\nrouter.register('orders', views.OrderViewSet)\n\nurlpatterns = [\n    path('api/', include(router.urls)),\n]",
+        "hints": [
+          "Create a DefaultRouter instance",
+          "Use router.register('prefix', ViewSetClass) for each ViewSet",
+          "Include router.urls in urlpatterns"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "router-ex2",
+        "title": "Custom Action",
+        "description": "Add a custom action called 'top_rated' to a ProductViewSet that returns the top 10 products sorted by rating descending. It should be a collection-level GET action.",
+        "starterCode": "from rest_framework import viewsets\nfrom rest_framework.decorators import action\nfrom rest_framework.response import Response\n\nclass ProductViewSet(viewsets.ModelViewSet):\n    queryset = Product.objects.all()\n    serializer_class = ProductSerializer\n\n    # Add your custom action\n",
+        "solution": "from rest_framework import viewsets\nfrom rest_framework.decorators import action\nfrom rest_framework.response import Response\nfrom .models import Product\nfrom .serializers import ProductSerializer\n\nclass ProductViewSet(viewsets.ModelViewSet):\n    queryset = Product.objects.all()\n    serializer_class = ProductSerializer\n\n    @action(detail=False, methods=['get'], url_path='top-rated')\n    def top_rated(self, request):\n        top_products = self.get_queryset().order_by('-rating')[:10]\n        serializer = self.get_serializer(top_products, many=True)\n        return Response(serializer.data)",
+        "hints": [
+          "Use @action(detail=False) for collection-level actions",
+          "url_path='top-rated' creates /products/top-rated/",
+          "Use self.get_serializer() to maintain consistent serialization"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "drf-authentication-and-pagination",
+    "sectionId": "rest-apis-with-drf",
+    "orderIndex": 3,
+    "title": "Authentication & Pagination",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["TokenAuth", "JWT", "Permissions", "Pagination", "Filtering", "Throttling"],
+    "content": {
+      "explanation": "DRF provides multiple authentication schemes, each suited for different use cases. SessionAuthentication uses Django's session framework and is ideal for browser-based clients. TokenAuthentication uses a token header and is suited for mobile and single-page applications. JWT (JSON Web Tokens) through third-party packages like djangorestframework-simplejwt is the most popular choice for modern SPAs and mobile apps.\n\nTokenAuthentication works by generating a unique token for each user. The client includes this token in the Authorization header of every request: 'Authorization: Token abc123...'. DRF validates the token and identifies the user. Tokens can be created through a built-in view (obtain_auth_token) or programmatically.\n\nPermissions control who can access API endpoints. DRF provides several built-in permission classes: AllowAny (no restrictions), IsAuthenticated (logged-in users only), IsAdminUser (staff users only), IsAuthenticatedOrReadOnly (anyone can read, only authenticated can write). Custom permissions extend BasePermission and implement has_permission() or has_object_permission().\n\nPagination controls how large result sets are divided into pages. PageNumberPagination uses ?page=2 style. LimitOffsetPagination uses ?limit=10&offset=20 style. CursorPagination uses opaque cursors for consistent ordering with real-time data. Configure pagination globally in REST_FRAMEWORK settings or per-view with pagination_class.\n\nFiltering narrows down results based on query parameters. DRF supports filtering through django-filter (DjangoFilterBackend), search (SearchFilter), and ordering (OrderingFilter). These backends are added to filter_backends on ViewSets and generate query parameters like ?category=electronics&search=laptop&ordering=-price.\n\nThrottling limits the rate of API requests to prevent abuse. DRF provides AnonRateThrottle (for unauthenticated users) and UserRateThrottle (for authenticated users). Rates are specified as 'number/period' like '100/hour' or '1000/day'. Custom throttles can implement more complex rate limiting logic.",
+      "codeExamples": [
+        {
+          "title": "Token Authentication",
+          "code": "# settings.py\nINSTALLED_APPS = [\n    # ...\n    'rest_framework',\n    'rest_framework.authtoken',  # Token auth app\n]\n\nREST_FRAMEWORK = {\n    'DEFAULT_AUTHENTICATION_CLASSES': [\n        'rest_framework.authentication.TokenAuthentication',\n    ],\n}\n\n# urls.py\nfrom rest_framework.authtoken.views import obtain_auth_token\n\nurlpatterns = [\n    path('api/token/', obtain_auth_token, name='api-token'),\n]\n\n# After running migrate, obtain a token:\n# POST /api/token/ {\"username\": \"john\", \"password\": \"pass123\"}\n# Response: {\"token\": \"abc123def456...\"}\n\n# Use the token in requests:\n# GET /api/articles/\n# Authorization: Token abc123def456...",
+          "explanation": "Add rest_framework.authtoken to INSTALLED_APPS and run migrate to create the token table. Clients POST credentials to obtain a token, then include it in the Authorization header for authenticated requests."
+        },
+        {
+          "title": "Custom Permissions",
+          "code": "from rest_framework import permissions\n\nclass IsOwnerOrReadOnly(permissions.BasePermission):\n    \"\"\"Allow owners to edit, everyone else can only read.\"\"\"\n\n    def has_object_permission(self, request, view, obj):\n        # Read permissions for any request (GET, HEAD, OPTIONS)\n        if request.method in permissions.SAFE_METHODS:\n            return True\n        # Write permissions only for the owner\n        return obj.author == request.user\n\nclass IsAdminOrReadOnly(permissions.BasePermission):\n    def has_permission(self, request, view):\n        if request.method in permissions.SAFE_METHODS:\n            return True\n        return request.user and request.user.is_staff\n\n# Usage in ViewSet\nclass ArticleViewSet(viewsets.ModelViewSet):\n    queryset = Article.objects.all()\n    serializer_class = ArticleSerializer\n    permission_classes = [permissions.IsAuthenticated, IsOwnerOrReadOnly]",
+          "explanation": "has_permission() runs for all requests. has_object_permission() runs for single-object views. SAFE_METHODS includes GET, HEAD, OPTIONS. Multiple permission classes are ANDed together."
+        },
+        {
+          "title": "Pagination",
+          "code": "# settings.py - Global pagination\nREST_FRAMEWORK = {\n    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',\n    'PAGE_SIZE': 20,\n}\n\n# Custom pagination class\nfrom rest_framework.pagination import PageNumberPagination\n\nclass LargeResultPagination(PageNumberPagination):\n    page_size = 50\n    page_size_query_param = 'page_size'\n    max_page_size = 100\n\n# Per-view pagination\nclass ArticleViewSet(viewsets.ModelViewSet):\n    queryset = Article.objects.all()\n    serializer_class = ArticleSerializer\n    pagination_class = LargeResultPagination\n\n# Response format:\n# {\n#   \"count\": 150,\n#   \"next\": \"http://api.example.com/articles/?page=2\",\n#   \"previous\": null,\n#   \"results\": [{...}, {...}, ...]\n# }",
+          "explanation": "PageNumberPagination splits results into pages. page_size_query_param lets clients request custom page sizes. The response includes count, next, previous, and results. Set pagination_class per-view to override global settings."
+        },
+        {
+          "title": "Filtering, Search, and Ordering",
+          "code": "# pip install django-filter\n\n# settings.py\nINSTALLED_APPS = ['django_filters']\nREST_FRAMEWORK = {\n    'DEFAULT_FILTER_BACKENDS': [\n        'django_filters.rest_framework.DjangoFilterBackend',\n        'rest_framework.filters.SearchFilter',\n        'rest_framework.filters.OrderingFilter',\n    ],\n}\n\n# ViewSet with filtering\nfrom django_filters.rest_framework import DjangoFilterBackend\nfrom rest_framework.filters import SearchFilter, OrderingFilter\n\nclass ArticleViewSet(viewsets.ModelViewSet):\n    queryset = Article.objects.all()\n    serializer_class = ArticleSerializer\n    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]\n    filterset_fields = ['category', 'status', 'author']\n    search_fields = ['title', 'content', 'author__username']\n    ordering_fields = ['created_at', 'title', 'views']\n    ordering = ['-created_at']  # Default ordering\n\n# Example API calls:\n# GET /api/articles/?category=1&status=published\n# GET /api/articles/?search=django+tutorial\n# GET /api/articles/?ordering=-views\n# GET /api/articles/?category=1&search=django&ordering=-created_at",
+          "explanation": "DjangoFilterBackend filters by exact field values. SearchFilter searches across text fields. OrderingFilter sorts results. All three can be combined in a single request. filterset_fields, search_fields, and ordering_fields control which fields are available."
+        }
+      ],
+      "notes": [
+        "TokenAuthentication is simple but stateful. JWT is stateless and better for SPAs.",
+        "Custom permissions use has_permission() for view-level and has_object_permission() for object-level checks.",
+        "Pagination is essential for large datasets. Configure globally or per-view.",
+        "Combine DjangoFilterBackend, SearchFilter, and OrderingFilter for flexible querying."
+      ],
+      "interviewTips": [
+        "Compare Token vs JWT: Token is stored in database, JWT is self-contained and stateless.",
+        "Explain the difference between has_permission and has_object_permission.",
+        "Describe how DRF pagination wraps results in count/next/previous/results."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "auth-pag-ex1",
+        "title": "Custom Permission",
+        "description": "Write a custom permission class called 'IsOwner' that allows only the object's owner (obj.user == request.user) to access it. Allow all safe methods (GET, HEAD, OPTIONS).",
+        "starterCode": "from rest_framework import permissions\n\nclass IsOwner(permissions.BasePermission):\n    pass\n",
+        "solution": "from rest_framework import permissions\n\nclass IsOwner(permissions.BasePermission):\n    def has_object_permission(self, request, view, obj):\n        if request.method in permissions.SAFE_METHODS:\n            return True\n        return obj.user == request.user",
+        "hints": [
+          "Override has_object_permission for per-object checks",
+          "permissions.SAFE_METHODS includes GET, HEAD, OPTIONS",
+          "Return True to allow, False to deny"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "auth-pag-ex2",
+        "title": "Configure Filtering",
+        "description": "Add filtering, search, and ordering to a ProductViewSet. Enable filtering by category and is_active, searching by name and description, and ordering by price and created_at.",
+        "starterCode": "from rest_framework import viewsets\nfrom .models import Product\nfrom .serializers import ProductSerializer\n\nclass ProductViewSet(viewsets.ModelViewSet):\n    queryset = Product.objects.all()\n    serializer_class = ProductSerializer\n    # Add filtering, search, and ordering\n",
+        "solution": "from rest_framework import viewsets\nfrom rest_framework.filters import SearchFilter, OrderingFilter\nfrom django_filters.rest_framework import DjangoFilterBackend\nfrom .models import Product\nfrom .serializers import ProductSerializer\n\nclass ProductViewSet(viewsets.ModelViewSet):\n    queryset = Product.objects.all()\n    serializer_class = ProductSerializer\n    filter_backends = [DjangoFilterBackend, SearchFilter, OrderingFilter]\n    filterset_fields = ['category', 'is_active']\n    search_fields = ['name', 'description']\n    ordering_fields = ['price', 'created_at']\n    ordering = ['-created_at']",
+        "hints": [
+          "Add filter_backends with all three backend classes",
+          "filterset_fields for exact filtering, search_fields for text search",
+          "ordering sets the default sort order"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

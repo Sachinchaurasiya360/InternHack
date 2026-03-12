@@ -1,0 +1,458 @@
+[
+  {
+    "id": "try-except",
+    "sectionId": "error-handling",
+    "orderIndex": 0,
+    "title": "try/except",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["try/except", "specific exceptions", "multiple except blocks", "exception hierarchy", "bare except"],
+    "content": {
+      "explanation": "Error handling in Python revolves around the try/except statement. When you place code inside a try block, Python attempts to execute it normally. If an exception occurs during execution, Python immediately stops running the try block and looks for a matching except clause. If it finds one, the code in that except block runs, and the program continues normally after the entire try/except structure.\n\nCatching specific exceptions is a best practice in Python. Instead of catching all exceptions with a bare except or except Exception, you should catch the most specific exception type you expect. Python has a rich hierarchy of built-in exceptions: ValueError for invalid values, TypeError for wrong types, KeyError for missing dictionary keys, IndexError for out-of-range indices, ZeroDivisionError for division by zero, and FileNotFoundError for missing files, among many others. Catching specific exceptions makes your code more predictable and easier to debug.\n\nMultiple except blocks allow you to handle different exception types with different logic. Python checks each except clause in order, from top to bottom, and executes the first one that matches the raised exception. Because of this top-down matching, you should always place more specific exception types before more general ones. If you put Exception first, it would catch everything and the more specific handlers below it would never run.\n\nYou can also catch multiple exception types in a single except clause by grouping them in a tuple, such as except (ValueError, TypeError) as e. This is useful when you want to handle several exception types the same way. The as keyword binds the exception object to a variable, giving you access to the error message and other attributes for logging or user feedback.\n\nUnderstanding Python's exception hierarchy is important for effective error handling. All exceptions inherit from BaseException, but most exceptions you will catch inherit from Exception. SystemExit, KeyboardInterrupt, and GeneratorExit inherit directly from BaseException, which is why catching Exception does not intercept Ctrl+C or sys.exit() calls. This design ensures that a broad except Exception clause does not accidentally prevent a program from shutting down gracefully.",
+      "codeExamples": [
+        {
+          "title": "Basic try/except with specific exception",
+          "code": "def safe_divide(a, b):\n    try:\n        result = a / b\n        print(f\"{a} / {b} = {result}\")\n    except ZeroDivisionError as e:\n        print(f\"Caught: {e}\")\n\nsafe_divide(10, 3)\nsafe_divide(10, 0)",
+          "output": "10 / 3 = 3.3333333333333335\nCaught: division by zero",
+          "explanation": "The first call succeeds and prints the result. The second call raises ZeroDivisionError, which is caught by the except clause. The 'as e' syntax captures the exception object so we can print its message."
+        },
+        {
+          "title": "Multiple except blocks for different exceptions",
+          "code": "def process_item(data, index):\n    try:\n        value = data[index]\n        result = int(value)\n        print(f\"Processed: {result}\")\n    except IndexError:\n        print(\"Error: Index out of range\")\n    except ValueError:\n        print(\"Error: Cannot convert to integer\")\n    except TypeError:\n        print(\"Error: Invalid data type\")\n\nitems = [\"42\", \"hello\", \"7\"]\nprocess_item(items, 0)\nprocess_item(items, 1)\nprocess_item(items, 5)\nprocess_item(None, 0)",
+          "output": "Processed: 42\nError: Cannot convert to integer\nError: Index out of range\nError: Invalid data type",
+          "explanation": "Each call triggers a different exception. Index 0 succeeds, index 1 has a non-numeric string causing ValueError, index 5 is out of range causing IndexError, and None is not subscriptable causing TypeError. Each exception is handled by its own except block."
+        },
+        {
+          "title": "Catching multiple exceptions in one clause",
+          "code": "def get_value(data, key):\n    try:\n        return data[key]\n    except (KeyError, TypeError) as e:\n        print(f\"Access error ({type(e).__name__}): {e}\")\n        return None\n\nresult1 = get_value({\"a\": 1}, \"b\")\nprint(f\"Result 1: {result1}\")\nresult2 = get_value(None, \"a\")\nprint(f\"Result 2: {result2}\")",
+          "output": "Access error (KeyError): 'b'\nResult 1: None\nAccess error (TypeError): 'NoneType' object is not subscriptable\nResult 2: None",
+          "explanation": "Both KeyError and TypeError are caught by the same except clause using a tuple. The type(e).__name__ expression prints the actual exception class name so we can tell which error occurred."
+        },
+        {
+          "title": "Exception ordering matters",
+          "code": "def check_age(age):\n    try:\n        age = int(age)\n        if age < 0:\n            raise ValueError(\"Age cannot be negative\")\n        if age > 150:\n            raise ValueError(\"Age seems unrealistic\")\n        print(f\"Valid age: {age}\")\n    except ValueError as e:\n        print(f\"ValueError: {e}\")\n    except Exception as e:\n        print(f\"Unexpected error: {e}\")\n\ncheck_age(\"25\")\ncheck_age(\"-5\")\ncheck_age(\"abc\")\ncheck_age(\"200\")",
+          "output": "Valid age: 25\nValueError: Age cannot be negative\nValueError: invalid literal for int() with base 10: 'abc'\nValueError: Age seems unrealistic",
+          "explanation": "ValueError is listed before Exception because ValueError is a subclass of Exception. If Exception came first, it would catch everything and the specific ValueError handler would never execute. Always order except blocks from most specific to most general."
+        }
+      ],
+      "notes": [
+        "Always catch specific exceptions rather than using bare except or except Exception unless you have a good reason to catch broadly.",
+        "The 'as' keyword in except binds the exception instance to a variable, giving you access to its message, args, and other attributes.",
+        "Python checks except clauses top-to-bottom and runs the first matching one, so order matters -- specific exceptions before general ones.",
+        "A bare except clause (without specifying an exception type) catches all exceptions including SystemExit and KeyboardInterrupt, which is almost never what you want."
+      ],
+      "commonPitfalls": [
+        "Using a bare except: clause which catches SystemExit and KeyboardInterrupt, potentially preventing your program from being stopped with Ctrl+C.",
+        "Catching Exception too broadly and silently ignoring errors, which hides bugs and makes debugging extremely difficult.",
+        "Placing a general exception handler before a specific one, causing the specific handler to be unreachable dead code."
+      ],
+      "interviewTips": [
+        "Explain the difference between except Exception and bare except -- bare except also catches SystemExit, KeyboardInterrupt, and GeneratorExit which do not inherit from Exception.",
+        "Know the common built-in exception hierarchy: BaseException > Exception > (ValueError, TypeError, KeyError, IndexError, etc.).",
+        "Be able to explain why catching specific exceptions is preferred: it avoids masking unrelated bugs and makes error-handling intent clear."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "try-except-ex1",
+        "title": "Safe Type Converter",
+        "description": "Write a function `safe_convert(value)` that tries to convert the given value to an integer using int(). If the conversion succeeds, print 'Converted: <result>'. If a ValueError occurs, print 'Cannot convert: <value>'. If a TypeError occurs, print 'Invalid type: <type_name>' where type_name is the name of the type. Test with the values '42', 'hello', and None.",
+        "starterCode": "# Write function safe_convert(value) that:\n# 1. Tries int(value)\n# 2. On success: prints 'Converted: <result>'\n# 3. On ValueError: prints 'Cannot convert: <value>'\n# 4. On TypeError: prints 'Invalid type: <type_name>'\n\n# Your code here\n\n# Test:\n# safe_convert('42')\n# safe_convert('hello')\n# safe_convert(None)",
+        "solution": "def safe_convert(value):\n    try:\n        result = int(value)\n        print(f\"Converted: {result}\")\n    except ValueError:\n        print(f\"Cannot convert: {value}\")\n    except TypeError:\n        print(f\"Invalid type: {type(value).__name__}\")\n\nsafe_convert('42')\nsafe_convert('hello')\nsafe_convert(None)",
+        "expectedOutput": "Converted: 42\nCannot convert: hello\nInvalid type: NoneType",
+        "hints": [
+          "int('hello') raises ValueError, int(None) raises TypeError",
+          "Use type(value).__name__ to get the string name of the type"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "try-except-ex2",
+        "title": "Dictionary Key Lookup Chain",
+        "description": "Write a function `nested_lookup(data, keys)` that takes a dictionary and a list of keys, then traverses the nested dictionary by looking up each key in sequence. If all keys are found, print 'Found: <value>'. If any key is missing, print 'Missing key: <key>'. If a non-dict value is encountered before all keys are consumed, print 'Not a dict at key: <key>'. Test with a nested dictionary.",
+        "starterCode": "# Write function nested_lookup(data, keys) that:\n# 1. Traverses data by looking up each key in keys sequentially\n# 2. On success: prints 'Found: <final_value>'\n# 3. On KeyError: prints 'Missing key: <key>'\n# 4. On TypeError: prints 'Not a dict at key: <key>'\n\n# Your code here\n\n# Test:\n# config = {\"db\": {\"host\": \"localhost\", \"port\": 5432}}\n# nested_lookup(config, [\"db\", \"host\"])\n# nested_lookup(config, [\"db\", \"password\"])\n# nested_lookup(config, [\"db\", \"port\", \"value\"])",
+        "solution": "def nested_lookup(data, keys):\n    current = data\n    for key in keys:\n        try:\n            current = current[key]\n        except KeyError:\n            print(f\"Missing key: {key}\")\n            return\n        except TypeError:\n            print(f\"Not a dict at key: {key}\")\n            return\n    print(f\"Found: {current}\")\n\nconfig = {\"db\": {\"host\": \"localhost\", \"port\": 5432}}\nnested_lookup(config, [\"db\", \"host\"])\nnested_lookup(config, [\"db\", \"password\"])\nnested_lookup(config, [\"db\", \"port\", \"value\"])",
+        "expectedOutput": "Found: localhost\nMissing key: password\nNot a dict at key: value",
+        "hints": [
+          "Loop through each key and update a 'current' variable with data[key] at each step",
+          "When current is an integer (like 5432) and you try current['value'], it raises TypeError because ints are not subscriptable"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "try-except-ex3",
+        "title": "Batch Number Parser",
+        "description": "Write a function `parse_numbers(items)` that takes a list of strings, attempts to convert each to a float, collects successful conversions into a list, counts failures, and at the end prints 'Parsed: <list>' and 'Failures: <count>'. Test with ['3.14', 'abc', '42', '', '7.5'].",
+        "starterCode": "# Write function parse_numbers(items) that:\n# 1. Iterates through items, tries float(item) on each\n# 2. Collects successful conversions in a results list\n# 3. Counts failures (ValueError)\n# 4. Prints 'Parsed: <results_list>' and 'Failures: <count>'\n\n# Your code here\n\n# Test:\n# parse_numbers(['3.14', 'abc', '42', '', '7.5'])",
+        "solution": "def parse_numbers(items):\n    results = []\n    failures = 0\n    for item in items:\n        try:\n            results.append(float(item))\n        except ValueError:\n            failures += 1\n    print(f\"Parsed: {results}\")\n    print(f\"Failures: {failures}\")\n\nparse_numbers(['3.14', 'abc', '42', '', '7.5'])",
+        "expectedOutput": "Parsed: [3.14, 42.0, 7.5]\nFailures: 2",
+        "hints": [
+          "float('abc') and float('') both raise ValueError",
+          "Use a counter variable initialized to 0 and increment it in the except block"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "try-except-else-finally",
+    "sectionId": "error-handling",
+    "orderIndex": 1,
+    "title": "try/except/else/finally",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["else clause", "finally clause", "cleanup patterns", "resource management", "execution order"],
+    "content": {
+      "explanation": "Python's try statement supports two optional clauses beyond except: else and finally. The else clause runs only when the try block completes without raising any exception. The finally clause runs unconditionally, whether an exception occurred or not. Together, these four clauses -- try, except, else, finally -- give you fine-grained control over how your code responds to success, failure, and cleanup.\n\nThe else clause is often underused but serves an important purpose. Code in the else block only executes if the try block did not raise an exception. This is better than putting the code at the end of the try block because it makes clear which code you expect might raise exceptions (in try) and which code should only run on success (in else). It also prevents the except clause from accidentally catching exceptions raised by the success-path code.\n\nThe finally clause is Python's guarantee for cleanup. No matter what happens -- whether the try block succeeds, an exception is caught, an exception is uncaught, or even if a return statement is encountered -- the finally block will execute. This makes it the ideal place for releasing resources: closing files, disconnecting from databases, releasing locks, or resetting state. In practice, context managers (the with statement) handle most of these cases, but understanding finally is essential.\n\nThe full execution order is: try runs first; if an exception occurs, the matching except runs; if no exception occurs, else runs; and finally always runs last regardless. When a return statement appears in try or except, the finally block still runs before the function actually returns. However, if finally itself contains a return statement, it overrides any return from try or except, which is a well-known pitfall.\n\nA common cleanup pattern uses finally to ensure resources are released even when errors occur. Before context managers became widespread, the try/finally pattern was the standard way to guarantee file closure or lock release. You would open a resource before the try block, use it inside try, and close it in finally. This pattern is still valuable when working with resources that do not support the context manager protocol.",
+      "codeExamples": [
+        {
+          "title": "else clause: separating success code from try",
+          "code": "def load_config(filename):\n    try:\n        with open(filename, 'r') as f:\n            data = f.read()\n    except FileNotFoundError:\n        print(f\"Config file '{filename}' not found\")\n        data = None\n    else:\n        print(f\"Config loaded ({len(data)} chars)\")\n    finally:\n        print(\"Config load attempt finished\")\n    return data\n\nresult = load_config(\"nonexistent.cfg\")\nprint(f\"Result: {result}\")",
+          "output": "Config file 'nonexistent.cfg' not found\nConfig load attempt finished\nResult: None",
+          "explanation": "Since the file does not exist, FileNotFoundError is caught by except. The else block is skipped because an exception occurred. The finally block runs regardless. If the file existed, else would run instead of except."
+        },
+        {
+          "title": "Full try/except/else/finally execution order",
+          "code": "def divide_and_format(a, b):\n    try:\n        result = a / b\n    except ZeroDivisionError:\n        print(\"Step 2: except - division by zero\")\n        return \"error\"\n    else:\n        print(f\"Step 2: else - result is {result}\")\n        return f\"success: {result}\"\n    finally:\n        print(\"Step 3: finally - always runs\")\n\nprint(\"Step 1: calling with valid args\")\noutcome = divide_and_format(10, 3)\nprint(f\"Step 4: outcome = {outcome}\")\nprint(\"---\")\nprint(\"Step 1: calling with zero\")\noutcome = divide_and_format(10, 0)\nprint(f\"Step 4: outcome = {outcome}\")",
+          "output": "Step 1: calling with valid args\nStep 2: else - result is 3.3333333333333335\nStep 3: finally - always runs\nStep 4: outcome = success: 3.3333333333333335\n---\nStep 1: calling with zero\nStep 2: except - division by zero\nStep 3: finally - always runs\nStep 4: outcome = error",
+          "explanation": "In the success case, else runs then finally runs. In the error case, except runs then finally runs. Notice that finally runs before the return value is actually delivered to the caller."
+        },
+        {
+          "title": "Cleanup pattern with finally",
+          "code": "class Connection:\n    def __init__(self, name):\n        self.name = name\n        self.connected = True\n        print(f\"Connected to {name}\")\n\n    def query(self, sql):\n        if \"DROP\" in sql:\n            raise PermissionError(\"DROP not allowed\")\n        return f\"Results from {self.name}\"\n\n    def close(self):\n        self.connected = False\n        print(f\"Closed connection to {self.name}\")\n\ndef run_query(sql):\n    conn = Connection(\"mydb\")\n    try:\n        result = conn.query(sql)\n    except PermissionError as e:\n        print(f\"Query denied: {e}\")\n    else:\n        print(f\"Query result: {result}\")\n    finally:\n        conn.close()\n\nrun_query(\"SELECT * FROM users\")\nprint(\"---\")\nrun_query(\"DROP TABLE users\")",
+          "output": "Connected to mydb\nQuery result: Results from mydb\nClosed connection to mydb\n---\nConnected to mydb\nQuery denied: DROP not allowed\nClosed connection to mydb",
+          "explanation": "The connection is always closed in the finally block, whether the query succeeds or raises a PermissionError. This ensures no resource leaks even when errors occur."
+        }
+      ],
+      "notes": [
+        "The else clause only runs if no exception was raised in the try block -- it does not run if an exception was caught by except.",
+        "The finally block runs even if there is a return, break, or continue in try or except.",
+        "Use else to keep the try block minimal: only put code that might raise the expected exception in try, and put success-path code in else.",
+        "The try/finally pattern without except is valid and useful when you want cleanup but want exceptions to propagate upward."
+      ],
+      "commonPitfalls": [
+        "Placing a return statement in the finally block, which silently overrides return values from try or except and can mask errors.",
+        "Putting too much code in the try block instead of moving success-path logic to else, which can accidentally catch exceptions you did not intend to handle.",
+        "Forgetting that finally runs even when an unhandled exception is propagating -- it does not suppress the exception, it just runs before it propagates."
+      ],
+      "interviewTips": [
+        "Be ready to trace the execution order: try -> except or else -> finally, and explain how return interacts with finally.",
+        "Explain when to use else vs putting code at the end of try: else prevents accidental exception catching and documents intent clearly.",
+        "Know that with statements (context managers) are often preferred over try/finally for resource cleanup in modern Python."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "try-else-finally-ex1",
+        "title": "Safe Division with All Clauses",
+        "description": "Write a function `safe_divide(a, b)` that uses all four clauses: try to perform a/b, except to catch ZeroDivisionError and print 'Error: division by zero', else to print 'Result: <value>', and finally to print 'Operation complete'. Test with (10, 2) and (10, 0).",
+        "starterCode": "# Write function safe_divide(a, b) using all four clauses:\n# try: compute a / b\n# except ZeroDivisionError: print 'Error: division by zero'\n# else: print 'Result: <value>'\n# finally: print 'Operation complete'\n\n# Your code here\n\n# Test:\n# safe_divide(10, 2)\n# safe_divide(10, 0)",
+        "solution": "def safe_divide(a, b):\n    try:\n        result = a / b\n    except ZeroDivisionError:\n        print(\"Error: division by zero\")\n    else:\n        print(f\"Result: {result}\")\n    finally:\n        print(\"Operation complete\")\n\nsafe_divide(10, 2)\nsafe_divide(10, 0)",
+        "expectedOutput": "Result: 5.0\nOperation complete\nError: division by zero\nOperation complete",
+        "hints": [
+          "The else block only runs when no exception occurs in the try block",
+          "The finally block always runs, regardless of success or failure"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "try-else-finally-ex2",
+        "title": "Transaction Simulator",
+        "description": "Write a function `process_transaction(amount)` that simulates a transaction. In try, check if amount is a number (if not, raise TypeError('Amount must be a number')), then check if amount is positive (if not, raise ValueError('Amount must be positive')). In except TypeError, print 'Type error: <message>'. In except ValueError, print 'Value error: <message>'. In else, print 'Transaction of $<amount> processed'. In finally, print 'Transaction log updated'. Test with 100, -50, and 'abc'.",
+        "starterCode": "# Write function process_transaction(amount):\n# try: validate amount is numeric and positive\n# except TypeError: print 'Type error: <message>'\n# except ValueError: print 'Value error: <message>'\n# else: print 'Transaction of $<amount> processed'\n# finally: print 'Transaction log updated'\n\n# Your code here\n\n# Test:\n# process_transaction(100)\n# process_transaction(-50)\n# process_transaction('abc')",
+        "solution": "def process_transaction(amount):\n    try:\n        if not isinstance(amount, (int, float)):\n            raise TypeError(\"Amount must be a number\")\n        if amount <= 0:\n            raise ValueError(\"Amount must be positive\")\n    except TypeError as e:\n        print(f\"Type error: {e}\")\n    except ValueError as e:\n        print(f\"Value error: {e}\")\n    else:\n        print(f\"Transaction of ${amount} processed\")\n    finally:\n        print(\"Transaction log updated\")\n\nprocess_transaction(100)\nprocess_transaction(-50)\nprocess_transaction('abc')",
+        "expectedOutput": "Transaction of $100 processed\nTransaction log updated\nValue error: Amount must be positive\nTransaction log updated\nType error: Amount must be a number\nTransaction log updated",
+        "hints": [
+          "Use isinstance(amount, (int, float)) to check if amount is numeric",
+          "The else block runs only when the try block raises no exceptions, meaning all validations passed"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "try-else-finally-ex3",
+        "title": "Resource Tracker",
+        "description": "Write a function `use_resource(name, should_fail)` that simulates acquiring and releasing a resource. Print 'Acquiring <name>' before the try block. In try, if should_fail is True, raise RuntimeError('Resource failure'). In except, print 'Error: <message>'. In else, print 'Using <name> successfully'. In finally, print 'Releasing <name>'. Test with ('db', False) and ('db', True).",
+        "starterCode": "# Write function use_resource(name, should_fail):\n# Print 'Acquiring <name>' before try\n# try: raise RuntimeError('Resource failure') if should_fail\n# except RuntimeError: print 'Error: <message>'\n# else: print 'Using <name> successfully'\n# finally: print 'Releasing <name>'\n\n# Your code here\n\n# Test:\n# use_resource('db', False)\n# use_resource('db', True)",
+        "solution": "def use_resource(name, should_fail):\n    print(f\"Acquiring {name}\")\n    try:\n        if should_fail:\n            raise RuntimeError(\"Resource failure\")\n    except RuntimeError as e:\n        print(f\"Error: {e}\")\n    else:\n        print(f\"Using {name} successfully\")\n    finally:\n        print(f\"Releasing {name}\")\n\nuse_resource('db', False)\nuse_resource('db', True)",
+        "expectedOutput": "Acquiring db\nUsing db successfully\nReleasing db\nAcquiring db\nError: Resource failure\nReleasing db",
+        "hints": [
+          "The 'Acquiring' print happens before the try block, so it always prints first",
+          "finally guarantees 'Releasing' always prints, simulating proper resource cleanup"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "raising-exceptions",
+    "sectionId": "error-handling",
+    "orderIndex": 2,
+    "title": "Raising Exceptions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["raise", "re-raising", "raise from", "exception chaining", "when to raise"],
+    "content": {
+      "explanation": "The raise statement is how you explicitly signal that an error has occurred in your code. While Python automatically raises exceptions for built-in errors like dividing by zero, you often need to raise exceptions yourself to enforce preconditions, validate inputs, or signal that something unexpected has happened in your application logic. The basic syntax is raise ExceptionType('message'), where you instantiate an exception class with a descriptive error message.\n\nRe-raising an exception is done with a bare raise statement inside an except block. When you catch an exception, perform some action like logging, and then want the exception to continue propagating up the call stack, you simply write raise with no arguments. This preserves the original exception with its traceback intact, which is crucial for debugging. Without re-raising, the exception is considered handled, and the program continues after the try/except block.\n\nThe raise ... from ... syntax creates explicit exception chaining. When you catch one exception and raise a different one, the original exception is attached as the __cause__ attribute of the new exception. This is useful when you want to translate a low-level exception into a domain-specific one while preserving the original error context. For example, you might catch a KeyError from a dictionary lookup and raise a ConfigurationError that provides more meaningful context to the caller.\n\nYou can also use raise ... from None to suppress the implicit exception chain. By default, when you raise an exception inside an except block, Python automatically attaches the original exception as __context__. Using from None tells Python not to display the original exception in the traceback, which is useful when the original exception is an implementation detail that would confuse the user.\n\nKnowing when to raise exceptions versus returning error values is an important design decision. Raise exceptions for truly exceptional conditions -- situations that indicate a programming error, invalid input, or a state that the function cannot handle. Return None or a sentinel value for expected failure cases like a search that finds nothing. The general guideline is: if the caller must handle the error to proceed safely, raise an exception; if the absence of a result is a normal outcome, return a value.",
+      "codeExamples": [
+        {
+          "title": "Basic raise with built-in exceptions",
+          "code": "def set_age(age):\n    if not isinstance(age, int):\n        raise TypeError(f\"Age must be an integer, got {type(age).__name__}\")\n    if age < 0 or age > 150:\n        raise ValueError(f\"Age must be between 0 and 150, got {age}\")\n    print(f\"Age set to {age}\")\n\ntry:\n    set_age(25)\n    set_age(-5)\nexcept ValueError as e:\n    print(f\"Caught ValueError: {e}\")\n\ntry:\n    set_age(\"young\")\nexcept TypeError as e:\n    print(f\"Caught TypeError: {e}\")",
+          "output": "Age set to 25\nCaught ValueError: Age must be between 0 and 150, got -5\nCaught TypeError: Age must be an integer, got str",
+          "explanation": "The function validates its input and raises appropriate exception types with descriptive messages. The caller catches each exception type separately and can respond accordingly."
+        },
+        {
+          "title": "Re-raising exceptions after logging",
+          "code": "def process_data(data):\n    try:\n        result = int(data)\n        return result * 2\n    except ValueError:\n        print(f\"Log: Failed to process '{data}'\")\n        raise  # re-raise the same exception\n\ntry:\n    print(process_data(\"5\"))\n    process_data(\"abc\")\nexcept ValueError as e:\n    print(f\"Caller caught: {e}\")",
+          "output": "10\nLog: Failed to process 'abc'\nCaller caught: invalid literal for int() with base 10: 'abc'",
+          "explanation": "The bare raise statement re-raises the caught ValueError with its original message and traceback. The function logs the failure but lets the caller decide how to ultimately handle it."
+        },
+        {
+          "title": "Exception chaining with raise ... from",
+          "code": "class ConfigError(Exception):\n    pass\n\ndef get_config(settings, key):\n    try:\n        return settings[key]\n    except KeyError as e:\n        raise ConfigError(f\"Missing required setting: {key}\") from e\n\ntry:\n    config = {\"host\": \"localhost\"}\n    get_config(config, \"port\")\nexcept ConfigError as e:\n    print(f\"ConfigError: {e}\")\n    print(f\"Original cause: {e.__cause__}\")",
+          "output": "ConfigError: Missing required setting: port\nOriginal cause: 'port'",
+          "explanation": "The KeyError is caught and translated into a more meaningful ConfigError. The 'from e' syntax chains the original exception as __cause__, preserving the root cause for debugging while presenting a clearer error to the caller."
+        },
+        {
+          "title": "Suppressing exception chain with from None",
+          "code": "def parse_port(value):\n    try:\n        port = int(value)\n    except ValueError:\n        raise ValueError(f\"Invalid port number: '{value}'\") from None\n    if not (1 <= port <= 65535):\n        raise ValueError(f\"Port {port} out of range (1-65535)\")\n    return port\n\ntry:\n    result = parse_port(\"8080\")\n    print(f\"Port: {result}\")\nexcept ValueError as e:\n    print(f\"Error: {e}\")\n\ntry:\n    parse_port(\"abc\")\nexcept ValueError as e:\n    print(f\"Error: {e}\")\n    print(f\"Cause suppressed: {e.__cause__ is None}\")",
+          "output": "Port: 8080\nError: Invalid port number: 'abc'\nCause suppressed: True",
+          "explanation": "Using 'from None' creates a clean ValueError without showing the original int() conversion error in the traceback. The __cause__ is None, confirming the chain was suppressed."
+        }
+      ],
+      "notes": [
+        "Always provide descriptive error messages when raising exceptions -- include the invalid value and what was expected.",
+        "Use bare raise (no arguments) inside an except block to re-raise the current exception with its original traceback.",
+        "raise ... from ... explicitly chains exceptions; raise ... from None suppresses the chain for cleaner tracebacks.",
+        "Choose the most appropriate built-in exception type: ValueError for invalid values, TypeError for wrong types, RuntimeError for general runtime issues."
+      ],
+      "commonPitfalls": [
+        "Using raise e instead of bare raise inside an except block -- this resets the traceback to the current location, losing the original source of the error.",
+        "Raising generic Exception instead of a more specific type, which forces callers to use broad except clauses.",
+        "Raising exceptions for normal control flow (like 'item not found' in a search) instead of returning None or a sentinel value."
+      ],
+      "interviewTips": [
+        "Explain the difference between raise and raise from: plain raise re-raises the same exception, raise from explicitly chains a new exception to an original cause.",
+        "Describe when you would use from None: to suppress implementation-detail exceptions that would confuse end users.",
+        "Discuss the principle that exceptions should be used for exceptional conditions, not for expected outcomes like an empty search result."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "raising-exceptions-ex1",
+        "title": "Input Validator",
+        "description": "Write a function `validate_username(username)` that raises TypeError if username is not a string, ValueError if it is shorter than 3 characters, and ValueError if it contains spaces. If valid, print 'Valid username: <username>'. Test by calling it with 'Alice', 'ab', 'no spaces', and 42, catching each exception and printing its message.",
+        "starterCode": "# Write function validate_username(username):\n# Raise TypeError if not a string\n# Raise ValueError if length < 3\n# Raise ValueError if contains spaces\n# Print 'Valid username: <username>' if valid\n\n# Your code here\n\n# Test each case with try/except, printing the error message",
+        "solution": "def validate_username(username):\n    if not isinstance(username, str):\n        raise TypeError(f\"Username must be a string, got {type(username).__name__}\")\n    if len(username) < 3:\n        raise ValueError(\"Username must be at least 3 characters\")\n    if ' ' in username:\n        raise ValueError(\"Username must not contain spaces\")\n    print(f\"Valid username: {username}\")\n\nfor test in ['Alice', 'ab', 'no spaces', 42]:\n    try:\n        validate_username(test)\n    except (TypeError, ValueError) as e:\n        print(f\"{type(e).__name__}: {e}\")",
+        "expectedOutput": "Valid username: Alice\nValueError: Username must be at least 3 characters\nValueError: Username must not contain spaces\nTypeError: Username must be a string, got int",
+        "hints": [
+          "Use isinstance(username, str) to check the type",
+          "Check length first, then check for spaces, so the first failing condition is reported"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "raising-exceptions-ex2",
+        "title": "Re-raise with Logging",
+        "description": "Write a function `parse_json_field(data, field)` that takes a dictionary and a field name. In a try block, access data[field] and convert it to int. If KeyError occurs, log 'Log: missing field <field>' and re-raise. If ValueError occurs, log 'Log: bad value for <field>' and re-raise. If successful, return the integer. Write a wrapper function `safe_parse(data, field)` that calls parse_json_field, catches any exception, and prints 'Handled: <exception_type>: <message>'. Test with {'age': '25'}, field 'age'; {'age': 'old'}, field 'age'; and {'name': 'Jo'}, field 'age'.",
+        "starterCode": "# Write parse_json_field(data, field):\n#   try to access data[field] and convert to int\n#   On KeyError: print log message and re-raise\n#   On ValueError: print log message and re-raise\n#   On success: return the int value\n# Write safe_parse(data, field):\n#   Call parse_json_field, catch exceptions, print handled message\n\n# Your code here\n\n# Test:\n# safe_parse({'age': '25'}, 'age')\n# safe_parse({'age': 'old'}, 'age')\n# safe_parse({'name': 'Jo'}, 'age')",
+        "solution": "def parse_json_field(data, field):\n    try:\n        value = data[field]\n        return int(value)\n    except KeyError:\n        print(f\"Log: missing field {field}\")\n        raise\n    except ValueError:\n        print(f\"Log: bad value for {field}\")\n        raise\n\ndef safe_parse(data, field):\n    try:\n        result = parse_json_field(data, field)\n        print(f\"Parsed: {result}\")\n    except (KeyError, ValueError) as e:\n        print(f\"Handled: {type(e).__name__}: {e}\")\n\nsafe_parse({'age': '25'}, 'age')\nsafe_parse({'age': 'old'}, 'age')\nsafe_parse({'name': 'Jo'}, 'age')",
+        "expectedOutput": "Parsed: 25\nLog: bad value for age\nHandled: ValueError: invalid literal for int() with base 10: 'old'\nLog: missing field age\nHandled: KeyError: 'age'",
+        "hints": [
+          "Use bare raise (no arguments) to re-raise the current exception",
+          "The safe_parse wrapper catches whatever parse_json_field re-raises"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "custom-exceptions",
+    "sectionId": "error-handling",
+    "orderIndex": 3,
+    "title": "Custom Exceptions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["custom exception classes", "exception hierarchies", "adding attributes", "best practices"],
+    "content": {
+      "explanation": "Custom exception classes let you create domain-specific error types that make your code more readable and your error handling more precise. Instead of raising generic ValueError or RuntimeError everywhere, you can define exceptions like InsufficientFundsError or InvalidTokenError that immediately communicate what went wrong. Custom exceptions are created by subclassing Exception (or one of its subclasses) and optionally adding attributes or methods.\n\nThe simplest custom exception is just a class with pass as its body: class MyError(Exception): pass. This is often sufficient because you inherit the __init__ and __str__ methods from Exception, which accept a message string and display it properly. The exception can be raised with raise MyError('something went wrong') and caught with except MyError as e, giving you a clean and specific error type.\n\nAdding custom attributes to your exception classes makes them more useful. You can override __init__ to accept additional parameters beyond the message, store them as instance attributes, and access them in the except block. For example, a ValidationError might store the field name that failed validation and the invalid value, so the handler can produce a precise error response without parsing the message string.\n\nException hierarchies allow you to organize related errors into a tree. You create a base exception for your application or library, then derive more specific exceptions from it. For example, a PaymentError base class might have InsufficientFundsError, CardDeclinedError, and ExpiredCardError subclasses. Callers can catch the base PaymentError to handle all payment errors generically, or catch specific subclasses when they need different behavior for different failure modes.\n\nWell-designed exception hierarchies are a hallmark of professional Python code. Standard library modules like json, sqlite3, and http follow this pattern, each defining a base exception and specific sub-exceptions. When designing your own hierarchy, keep it shallow (two to three levels deep is usually sufficient), name exceptions clearly with the Error suffix, and document which exceptions each function can raise. This gives callers confidence in writing precise except clauses.",
+      "codeExamples": [
+        {
+          "title": "Simple custom exception",
+          "code": "class InsufficientFundsError(Exception):\n    pass\n\ndef withdraw(balance, amount):\n    if amount > balance:\n        raise InsufficientFundsError(\n            f\"Cannot withdraw ${amount}, balance is ${balance}\"\n        )\n    return balance - amount\n\ntry:\n    new_balance = withdraw(100, 50)\n    print(f\"New balance: ${new_balance}\")\n    new_balance = withdraw(new_balance, 80)\nexcept InsufficientFundsError as e:\n    print(f\"Caught: {e}\")",
+          "output": "New balance: $50\nCaught: Cannot withdraw $80, balance is $50",
+          "explanation": "InsufficientFundsError is a minimal custom exception. It inherits everything from Exception and is raised with a descriptive message. The caller catches it specifically, knowing exactly what kind of error occurred."
+        },
+        {
+          "title": "Custom exception with extra attributes",
+          "code": "class ValidationError(Exception):\n    def __init__(self, field, value, message):\n        self.field = field\n        self.value = value\n        self.message = message\n        super().__init__(f\"{field}: {message} (got {value!r})\")\n\ndef validate_email(email):\n    if not isinstance(email, str):\n        raise ValidationError(\"email\", email, \"must be a string\")\n    if \"@\" not in email:\n        raise ValidationError(\"email\", email, \"must contain @\")\n    print(f\"Valid email: {email}\")\n\ntry:\n    validate_email(\"user@example.com\")\n    validate_email(\"invalid-email\")\nexcept ValidationError as e:\n    print(f\"Validation failed - Field: {e.field}, Value: {e.value!r}\")\n    print(f\"Message: {e.message}\")",
+          "output": "Valid email: user@example.com\nValidation failed - Field: email, Value: 'invalid-email'\nMessage: must contain @",
+          "explanation": "The custom ValidationError stores field, value, and message as separate attributes. The except block can access these attributes individually rather than parsing a message string, making programmatic error handling much easier."
+        },
+        {
+          "title": "Exception hierarchy",
+          "code": "class AppError(Exception):\n    \"\"\"Base exception for the application.\"\"\"\n    pass\n\nclass AuthError(AppError):\n    \"\"\"Authentication related errors.\"\"\"\n    pass\n\nclass NotFoundError(AppError):\n    \"\"\"Resource not found errors.\"\"\"\n    pass\n\nclass PermissionDeniedError(AuthError):\n    \"\"\"Insufficient permissions.\"\"\"\n    pass\n\ndef get_resource(user_role, resource_id):\n    if resource_id > 100:\n        raise NotFoundError(f\"Resource {resource_id} not found\")\n    if user_role != \"admin\":\n        raise PermissionDeniedError(f\"Role '{user_role}' cannot access this\")\n    return f\"Resource {resource_id} data\"\n\nfor role, rid in [(\"admin\", 1), (\"user\", 1), (\"admin\", 200)]:\n    try:\n        result = get_resource(role, rid)\n        print(f\"Success: {result}\")\n    except AuthError as e:\n        print(f\"Auth issue: {e}\")\n    except AppError as e:\n        print(f\"App error: {e}\")",
+          "output": "Success: Resource 1 data\nAuth issue: Role 'user' cannot access this\nApp error: Resource 200 not found",
+          "explanation": "PermissionDeniedError inherits from AuthError, which inherits from AppError. Catching AuthError also catches PermissionDeniedError. NotFoundError is caught by the broader AppError handler. The hierarchy lets callers choose their level of specificity."
+        },
+        {
+          "title": "Using isinstance to check exception types",
+          "code": "class DatabaseError(Exception):\n    pass\n\nclass ConnectionError(DatabaseError):\n    pass\n\nclass QueryError(DatabaseError):\n    pass\n\ndef simulate_db_operation(operation):\n    if operation == \"connect\":\n        raise ConnectionError(\"Cannot reach database server\")\n    elif operation == \"query\":\n        raise QueryError(\"Syntax error in SQL\")\n    print(f\"Operation '{operation}' succeeded\")\n\nfor op in [\"insert\", \"connect\", \"query\"]:\n    try:\n        simulate_db_operation(op)\n    except DatabaseError as e:\n        error_type = type(e).__name__\n        is_connection = isinstance(e, ConnectionError)\n        print(f\"{error_type}: {e} (connection issue: {is_connection})\")",
+          "output": "Operation 'insert' succeeded\nConnectionError: Cannot reach database server (connection issue: True)\nQueryError: Syntax error in SQL (connection issue: False)",
+          "explanation": "Catching the base DatabaseError handles all database-related errors. Inside the handler, isinstance() checks the specific type to determine if retry logic (for connection errors) or different handling (for query errors) is appropriate."
+        }
+      ],
+      "notes": [
+        "Always subclass Exception (not BaseException) for custom exceptions -- BaseException subclasses are reserved for system-level exceptions.",
+        "Use the Error suffix for exception class names: ValidationError, not ValidationException or InvalidValidation.",
+        "Call super().__init__(message) in your custom __init__ to ensure the exception message is set correctly.",
+        "Keep exception hierarchies shallow -- two or three levels is usually sufficient for most applications."
+      ],
+      "commonPitfalls": [
+        "Subclassing BaseException instead of Exception, which makes your exception uncatchable by except Exception clauses and can interfere with cleanup code.",
+        "Creating too many exception classes for situations that could share a common exception with different messages.",
+        "Forgetting to call super().__init__() in a custom __init__, which can break str() and repr() behavior."
+      ],
+      "interviewTips": [
+        "Explain why custom exceptions are better than raising built-in exceptions with messages: they enable precise except clauses and carry structured data.",
+        "Describe a real-world exception hierarchy you would design for a REST API or payment system.",
+        "Know that the standard library follows this pattern: json.JSONDecodeError inherits from ValueError, and OSError has subclasses like FileNotFoundError and PermissionError."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "custom-exceptions-ex1",
+        "title": "Bank Account Exceptions",
+        "description": "Create a BankError base exception, InsufficientFundsError(BankError) with 'balance' and 'amount' attributes, and InvalidAmountError(BankError). Write a function `transfer(balance, amount)` that raises InvalidAmountError if amount <= 0, raises InsufficientFundsError if amount > balance, and otherwise prints 'Transferred: $<amount>, remaining: $<new_balance>'. Test with (1000, 500), (1000, -50), and (100, 500), catching BankError for all.",
+        "starterCode": "# Create exception hierarchy:\n# BankError(Exception) -> base\n# InsufficientFundsError(BankError) -> with balance, amount attrs\n# InvalidAmountError(BankError)\n\n# Write transfer(balance, amount) function\n\n# Your code here\n\n# Test:\n# for args in [(1000, 500), (1000, -50), (100, 500)]:\n#     try: transfer(*args)\n#     except BankError as e: print(...)",
+        "solution": "class BankError(Exception):\n    pass\n\nclass InsufficientFundsError(BankError):\n    def __init__(self, balance, amount):\n        self.balance = balance\n        self.amount = amount\n        super().__init__(f\"Cannot withdraw ${amount}, only ${balance} available\")\n\nclass InvalidAmountError(BankError):\n    pass\n\ndef transfer(balance, amount):\n    if amount <= 0:\n        raise InvalidAmountError(f\"Invalid amount: ${amount}\")\n    if amount > balance:\n        raise InsufficientFundsError(balance, amount)\n    print(f\"Transferred: ${amount}, remaining: ${balance - amount}\")\n\nfor args in [(1000, 500), (1000, -50), (100, 500)]:\n    try:\n        transfer(*args)\n    except BankError as e:\n        print(f\"{type(e).__name__}: {e}\")",
+        "expectedOutput": "Transferred: $500, remaining: $500\nInvalidAmountError: Invalid amount: $-50\nInsufficientFundsError: Cannot withdraw $500, only $100 available",
+        "hints": [
+          "InsufficientFundsError.__init__ should accept balance and amount, store them, and call super().__init__(message)",
+          "Catching BankError will catch both subclass exceptions"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "custom-exceptions-ex2",
+        "title": "Configuration Validator",
+        "description": "Create a ConfigError base exception and two subclasses: MissingKeyError (with a 'key' attribute) and InvalidValueError (with 'key' and 'value' attributes). Write a function `validate_config(config)` that checks a dictionary has keys 'host' (string) and 'port' (int between 1-65535). Raise MissingKeyError for missing keys, InvalidValueError for wrong types or out-of-range port. If valid, print 'Config valid: <host>:<port>'. Test with a valid config, one missing 'port', and one with port='abc'.",
+        "starterCode": "# Create: ConfigError, MissingKeyError(key), InvalidValueError(key, value)\n# Write validate_config(config) that checks host and port\n\n# Your code here\n\n# Test:\n# configs = [\n#     {'host': 'localhost', 'port': 8080},\n#     {'host': 'localhost'},\n#     {'host': 'localhost', 'port': 'abc'}\n# ]",
+        "solution": "class ConfigError(Exception):\n    pass\n\nclass MissingKeyError(ConfigError):\n    def __init__(self, key):\n        self.key = key\n        super().__init__(f\"Missing required key: '{key}'\")\n\nclass InvalidValueError(ConfigError):\n    def __init__(self, key, value):\n        self.key = key\n        self.value = value\n        super().__init__(f\"Invalid value for '{key}': {value!r}\")\n\ndef validate_config(config):\n    for key in ['host', 'port']:\n        if key not in config:\n            raise MissingKeyError(key)\n    if not isinstance(config['host'], str):\n        raise InvalidValueError('host', config['host'])\n    if not isinstance(config['port'], int):\n        raise InvalidValueError('port', config['port'])\n    if not (1 <= config['port'] <= 65535):\n        raise InvalidValueError('port', config['port'])\n    print(f\"Config valid: {config['host']}:{config['port']}\")\n\nconfigs = [\n    {'host': 'localhost', 'port': 8080},\n    {'host': 'localhost'},\n    {'host': 'localhost', 'port': 'abc'}\n]\nfor cfg in configs:\n    try:\n        validate_config(cfg)\n    except ConfigError as e:\n        print(f\"{type(e).__name__}: {e}\")",
+        "expectedOutput": "Config valid: localhost:8080\nMissingKeyError: Missing required key: 'port'\nInvalidValueError: Invalid value for 'port': 'abc'",
+        "hints": [
+          "Check for key existence first with 'key not in config', then check types with isinstance()",
+          "Use !r in f-strings to show the repr of values (adds quotes around strings)"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "custom-exceptions-ex3",
+        "title": "HTTP Error Hierarchy",
+        "description": "Create an HTTPError base exception with a 'status_code' attribute, then subclasses NotFoundError(404), ForbiddenError(403), and ServerError(500). Each should auto-set its status code. Write a function `handle_response(code)` that raises the appropriate error for codes 403, 404, 500, and prints 'OK: <code>' for anything else. Test with codes 200, 404, 403, 500.",
+        "starterCode": "# Create HTTPError(Exception) with status_code attribute\n# Create NotFoundError(HTTPError) -> status_code=404\n# Create ForbiddenError(HTTPError) -> status_code=403\n# Create ServerError(HTTPError) -> status_code=500\n\n# Write handle_response(code) that raises appropriate errors\n\n# Your code here\n\n# Test with: 200, 404, 403, 500",
+        "solution": "class HTTPError(Exception):\n    status_code = 0\n    def __init__(self, message=\"\"):\n        self.message = message\n        super().__init__(f\"HTTP {self.status_code}: {message}\")\n\nclass NotFoundError(HTTPError):\n    status_code = 404\n\nclass ForbiddenError(HTTPError):\n    status_code = 403\n\nclass ServerError(HTTPError):\n    status_code = 500\n\ndef handle_response(code):\n    errors = {404: NotFoundError, 403: ForbiddenError, 500: ServerError}\n    if code in errors:\n        raise errors[code](f\"Response code {code}\")\n    print(f\"OK: {code}\")\n\nfor code in [200, 404, 403, 500]:\n    try:\n        handle_response(code)\n    except HTTPError as e:\n        print(f\"{type(e).__name__} (status {e.status_code}): {e}\")",
+        "expectedOutput": "OK: 200\nNotFoundError (status 404): HTTP 404: Response code 404\nForbiddenError (status 403): HTTP 403: Response code 403\nServerError (status 500): HTTP 500: Response code 500",
+        "hints": [
+          "Set status_code as a class attribute on each subclass so it is auto-assigned without needing __init__",
+          "Use a dictionary to map status codes to exception classes for clean dispatch"
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "assertions-debugging",
+    "sectionId": "error-handling",
+    "orderIndex": 4,
+    "title": "Assertions & Debugging",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["assert", "__debug__", "debugging techniques", "traceback", "defensive programming"],
+    "content": {
+      "explanation": "The assert statement is a debugging aid that tests a condition and raises AssertionError if the condition is False. Its syntax is assert condition, 'optional message'. Assertions document your assumptions about the program state at specific points in the code. They are not meant for validating user input or handling expected errors -- they exist to catch programming bugs during development.\n\nA key characteristic of assert is that it can be disabled. When Python runs with the -O (optimize) flag, all assert statements are completely removed from the bytecode. The global variable __debug__ is True under normal execution and False under -O. This means you should never use assertions for anything that must always be checked, such as input validation, security checks, or data integrity verification. Assertions are strictly for catching bugs that should never occur if the code is correct.\n\nThe traceback module provides tools for working with Python's exception tracebacks programmatically. When an exception occurs, Python creates a traceback object that records the chain of function calls leading to the error. The traceback module lets you format, print, or extract information from these tracebacks. Common functions include traceback.print_exc() to print the current exception's traceback, traceback.format_exc() to get it as a string, and traceback.print_stack() to print the current call stack without an exception.\n\nEffective debugging in Python combines several techniques. Print debugging -- strategically placing print() calls to inspect variable values and execution flow -- remains one of the most practical approaches. The built-in breakpoint() function (Python 3.7+) drops you into the interactive debugger (pdb) at that point. The repr() function shows the precise representation of a value, which is more useful than str() for debugging because it reveals the type and exact content, including hidden characters.\n\nDefensive programming complements error handling by checking preconditions and postconditions. Preconditions validate that a function's inputs meet requirements before processing begins. Postconditions verify that the result makes sense before returning it. While input validation should use if/raise for user-facing code, assertions are appropriate for internal invariants: conditions that should always hold true if your code is correct. For example, asserting that a list is sorted after calling your sort function catches bugs without adding runtime overhead in production.",
+      "codeExamples": [
+        {
+          "title": "Basic assertions with messages",
+          "code": "def calculate_average(numbers):\n    assert len(numbers) > 0, \"Cannot average an empty list\"\n    assert all(isinstance(n, (int, float)) for n in numbers), \"All items must be numbers\"\n    total = sum(numbers)\n    avg = total / len(numbers)\n    assert isinstance(avg, float), \"Average should be a float\"\n    return avg\n\ntry:\n    result = calculate_average([10, 20, 30])\n    print(f\"Average: {result}\")\nexcept AssertionError as e:\n    print(f\"Assertion failed: {e}\")\n\ntry:\n    calculate_average([])\nexcept AssertionError as e:\n    print(f\"Assertion failed: {e}\")\n\ntry:\n    calculate_average([1, 'two', 3])\nexcept AssertionError as e:\n    print(f\"Assertion failed: {e}\")",
+          "output": "Average: 20.0\nAssertion failed: Cannot average an empty list\nAssertion failed: All items must be numbers",
+          "explanation": "Assertions check preconditions (non-empty list, all numeric) and a postcondition (result is float). Each assertion includes a descriptive message. Remember: assertions should catch programmer errors, not validate user input."
+        },
+        {
+          "title": "The __debug__ flag",
+          "code": "print(f\"Debug mode: {__debug__}\")\n\ndef process(value):\n    if __debug__:\n        print(f\"  Debug: processing {value!r}\")\n    result = value * 2\n    assert result > 0, f\"Expected positive result, got {result}\"\n    return result\n\ntry:\n    print(f\"Result: {process(5)}\")\n    print(f\"Result: {process(-3)}\")\nexcept AssertionError as e:\n    print(f\"Assertion failed: {e}\")",
+          "output": "Debug mode: True\n  Debug: processing 5\nResult: 10\n  Debug: processing -3\nAssertion failed: Expected positive result, got -6",
+          "explanation": "__debug__ is True in normal execution. Both debug print statements and assertions run. With python -O, __debug__ becomes False, debug prints are skipped, and assertions are removed entirely."
+        },
+        {
+          "title": "Traceback information extraction",
+          "code": "import traceback\n\ndef inner():\n    raise ValueError(\"something broke\")\n\ndef middle():\n    inner()\n\ndef outer():\n    try:\n        middle()\n    except ValueError:\n        tb_string = traceback.format_exc()\n        lines = tb_string.strip().split('\\n')\n        print(f\"Error chain has {len(lines)} lines\")\n        print(f\"First line: {lines[0]}\")\n        print(f\"Last line: {lines[-1]}\")\n\nouter()",
+          "output": "Error chain has 8 lines\nFirst line: Traceback (most recent call last):\nLast line: ValueError: something broke",
+          "explanation": "traceback.format_exc() captures the full traceback as a string. We split it into lines to analyze the call chain. The first line is always 'Traceback (most recent call last):' and the last line shows the exception type and message."
+        },
+        {
+          "title": "Debugging with repr and type inspection",
+          "code": "def debug_values(*args):\n    for i, val in enumerate(args):\n        print(f\"  arg[{i}]: type={type(val).__name__}, repr={val!r}\")\n\ndef tricky_comparison():\n    a = \"hello\"\n    b = \"hello \"\n    print(f\"Strings look equal: '{a}' vs '{b}'\")\n    print(f\"Are they equal? {a == b}\")\n    debug_values(a, b)\n    print(f\"Lengths: {len(a)} vs {len(b)}\")\n\ntricky_comparison()\nprint(\"---\")\ndebug_values(0, False, \"\", None, [], 0.0)\nprint(\"All are falsy:\", all(not v for v in [0, False, \"\", None, [], 0.0]))",
+          "output": "Strings look equal: 'hello' vs 'hello '\nAre they equal? False\n  arg[0]: type=str, repr='hello'\n  arg[1]: type=str, repr='hello '\nLengths: 5 vs 6\n---\n  arg[0]: type=int, repr=0\n  arg[1]: type=bool, repr=False\n  arg[2]: type=str, repr=''\n  arg[3]: type=NoneType, repr=None\n  arg[4]: type=list, repr=[]\n  arg[5]: type=float, repr=0.0\nAll are falsy: True",
+          "explanation": "Using repr (via !r in f-strings) reveals hidden details like trailing spaces. The debug_values function is a reusable tool that shows both type and repr of any value, invaluable for finding subtle bugs like confusing 0 with False or empty string with None."
+        }
+      ],
+      "notes": [
+        "Assertions are removed when Python runs with -O (optimize flag), so never use them for input validation or security checks.",
+        "Always include a message in assert statements: assert x > 0, f'Expected positive, got {x}' is much more debuggable than assert x > 0.",
+        "Use repr() or !r in f-strings when debugging to see exact values including type information and hidden characters.",
+        "The breakpoint() built-in (Python 3.7+) is the modern way to enter the debugger; it replaces the old import pdb; pdb.set_trace() pattern."
+      ],
+      "commonPitfalls": [
+        "Using assert for input validation: since assertions can be disabled with -O, malicious or invalid input would pass through unchecked in production.",
+        "Writing assert(condition, 'message') with parentheses around both arguments -- this creates a tuple which is always truthy, so the assertion never fails. Correct syntax is assert condition, 'message'.",
+        "Putting side effects in assert statements: assert important_function() would silently skip the function call when optimizations are enabled."
+      ],
+      "interviewTips": [
+        "Explain why assert should not be used for input validation: it can be disabled with python -O, leaving no protection in production.",
+        "Know the assert tuple pitfall: assert(False, 'msg') passes because a non-empty tuple is truthy; the correct form is assert False, 'msg'.",
+        "Describe the difference between assert and if/raise: assert is for catching programmer bugs during development, if/raise is for validating data and handling expected error conditions."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "assertions-debugging-ex1",
+        "title": "Precondition Checker",
+        "description": "Write a function `create_matrix(rows, cols, fill=0)` that uses assertions to verify preconditions: rows and cols must be positive integers. Then build and return a 2D list. After creation, assert that the matrix has the correct dimensions. Print the matrix. Test with (2, 3, 1) for success and (0, 3) for failure.",
+        "starterCode": "# Write create_matrix(rows, cols, fill=0):\n# Assert rows > 0 and cols > 0 with messages\n# Build the 2D list\n# Assert the result has correct dimensions\n# Return and print the matrix\n\n# Your code here\n\n# Test:\n# create_matrix(2, 3, 1)\n# create_matrix(0, 3)",
+        "solution": "def create_matrix(rows, cols, fill=0):\n    assert isinstance(rows, int) and rows > 0, f\"rows must be positive int, got {rows}\"\n    assert isinstance(cols, int) and cols > 0, f\"cols must be positive int, got {cols}\"\n    matrix = [[fill] * cols for _ in range(rows)]\n    assert len(matrix) == rows, \"Row count mismatch\"\n    assert all(len(row) == cols for row in matrix), \"Column count mismatch\"\n    return matrix\n\ntry:\n    result = create_matrix(2, 3, 1)\n    for row in result:\n        print(row)\nexcept AssertionError as e:\n    print(f\"Assertion failed: {e}\")\n\ntry:\n    create_matrix(0, 3)\nexcept AssertionError as e:\n    print(f\"Assertion failed: {e}\")",
+        "expectedOutput": "[1, 1, 1]\n[1, 1, 1]\nAssertion failed: rows must be positive int, got 0",
+        "hints": [
+          "Use list comprehension: [[fill] * cols for _ in range(rows)]",
+          "Assert preconditions at the start and postconditions before returning"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "assertions-debugging-ex2",
+        "title": "Debug Inspector",
+        "description": "Write a function `inspect_and_sum(items)` that iterates through a list. For each item, print its index, type, and repr. Try to add it to a running total (as a float). If conversion fails, print 'Skipping: <repr>'. At the end, print 'Total: <sum>' and 'Processed: <count>/<total>'. Test with [10, '20.5', None, 30, 'abc'].",
+        "starterCode": "# Write inspect_and_sum(items):\n# For each item: print index, type, repr\n# Try to add float(item) to total\n# On failure: print 'Skipping: <repr>'\n# At end: print total and processed count\n\n# Your code here\n\n# Test:\n# inspect_and_sum([10, '20.5', None, 30, 'abc'])",
+        "solution": "def inspect_and_sum(items):\n    total = 0.0\n    processed = 0\n    for i, item in enumerate(items):\n        print(f\"  [{i}] type={type(item).__name__}, repr={item!r}\")\n        try:\n            total += float(item)\n            processed += 1\n        except (ValueError, TypeError):\n            print(f\"  Skipping: {item!r}\")\n    print(f\"Total: {total}\")\n    print(f\"Processed: {processed}/{len(items)}\")\n\ninspect_and_sum([10, '20.5', None, 30, 'abc'])",
+        "expectedOutput": "  [0] type=int, repr=10\n  [1] type=str, repr='20.5'\n  [2] type=NoneType, repr=None\n  Skipping: None\n  [3] type=int, repr=30\n  [4] type=str, repr='abc'\n  Skipping: 'abc'\nTotal: 60.5\nProcessed: 3/5",
+        "hints": [
+          "float(None) raises TypeError, float('abc') raises ValueError -- catch both",
+          "Use !r in f-strings to show repr, which adds quotes around strings and shows None as-is"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "assertions-debugging-ex3",
+        "title": "Assert Tuple Pitfall Demo",
+        "description": "Demonstrate the assert tuple pitfall. First, show the WRONG way: use assert(False, 'This should fail') and print 'Wrong assert passed!' to show it does NOT raise an error. Then show the CORRECT way: use assert False, 'Correct assertion message' inside a try/except and print the caught AssertionError message.",
+        "starterCode": "# 1. Show the WRONG way (tuple pitfall):\n#    assert(False, 'msg') -- this won't fail!\n#    Print 'Wrong assert passed!'\n\n# 2. Show the CORRECT way:\n#    try: assert False, 'Correct assertion message'\n#    except: print the error\n\n# Your code here",
+        "solution": "# Wrong way: tuple is always truthy\nassert(False, 'This should fail')\nprint('Wrong assert passed!')\n\n# Correct way: no parentheses around condition and message\ntry:\n    assert False, 'Correct assertion message'\nexcept AssertionError as e:\n    print(f'Caught: {e}')",
+        "expectedOutput": "Wrong assert passed!\nCaught: Correct assertion message",
+        "hints": [
+          "assert(False, 'msg') is really assert (False, 'msg') which is assert <tuple> -- a non-empty tuple is always truthy",
+          "The correct syntax has no parentheses: assert condition, message"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

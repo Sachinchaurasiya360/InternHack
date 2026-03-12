@@ -1,0 +1,294 @@
+[
+  {
+    "id": "understanding-blueprints",
+    "sectionId": "blueprints-and-project-structure",
+    "orderIndex": 0,
+    "title": "Understanding Blueprints",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Blueprint", "Modular Apps", "Register Blueprint", "URL Prefix", "Namespace"],
+    "content": {
+      "explanation": "Blueprints are Flask's mechanism for organizing a large application into smaller, reusable modules. A Blueprint is like a mini-application that defines routes, templates, static files, and error handlers, but cannot run on its own. It must be registered with a Flask application to become active.\n\nAs your Flask application grows, keeping everything in a single file becomes unmanageable. Blueprints solve this by letting you split your application into logical modules. A typical application might have blueprints for authentication (login, register, logout), the main site (home, about, contact), an admin panel, and an API. Each blueprint is self-contained with its own routes and templates.\n\nCreating a Blueprint is similar to creating a Flask app. You instantiate Blueprint with a name and the import name (usually __name__). Then you define routes using @bp.route() instead of @app.route(). The blueprint is registered with the application using app.register_blueprint().\n\nThe url_prefix parameter is powerful. When you register a blueprint with url_prefix='/api', all routes defined in that blueprint are prefixed. A route defined as @bp.route('/users') becomes accessible at '/api/users'. This keeps URL namespaces clean and prevents conflicts between blueprints.\n\nBlueprints support their own template and static folders. By default, they use the application's template and static folders. You can set template_folder and static_folder when creating the Blueprint to use blueprint-specific resources. Templates in blueprint folders take lower precedence than the application's template folder, so the app can override blueprint templates.\n\nBlueprints can have their own error handlers with @bp.errorhandler() and before/after request hooks with @bp.before_request() and @bp.after_request(). These hooks only run for requests handled by the blueprint, not for all application requests.\n\nWhen using url_for() with blueprints, you prefix the endpoint with the blueprint name: url_for('auth.login') instead of url_for('login'). Within the same blueprint, you can use a dot prefix: url_for('.login'). This namespacing prevents endpoint name conflicts between blueprints.",
+      "codeExamples": [
+        {
+          "title": "Creating and Registering a Blueprint",
+          "code": "# blueprints/auth.py\nfrom flask import Blueprint, request, redirect, url_for, session\n\nauth_bp = Blueprint('auth', __name__)\n\n@auth_bp.route('/login', methods=['GET', 'POST'])\ndef login():\n    if request.method == 'POST':\n        session['user'] = request.form['username']\n        return redirect(url_for('main.index'))\n    return '<form method=\"POST\"><input name=\"username\"><button>Login</button></form>'\n\n@auth_bp.route('/logout')\ndef logout():\n    session.pop('user', None)\n    return redirect(url_for('main.index'))\n\n# app.py\nfrom flask import Flask\nfrom blueprints.auth import auth_bp\n\napp = Flask(__name__)\napp.secret_key = 'secret'\napp.register_blueprint(auth_bp, url_prefix='/auth')\n# Routes: /auth/login, /auth/logout",
+          "explanation": "A Blueprint is created in a separate file. Routes use @auth_bp.route() instead of @app.route(). The blueprint is registered with a url_prefix, so /login becomes /auth/login. Use url_for('auth.login') to reference its routes."
+        },
+        {
+          "title": "Multiple Blueprints",
+          "code": "# blueprints/main.py\nfrom flask import Blueprint\n\nmain_bp = Blueprint('main', __name__)\n\n@main_bp.route('/')\ndef index():\n    return 'Home Page'\n\n# blueprints/api.py\nfrom flask import Blueprint, jsonify\n\napi_bp = Blueprint('api', __name__)\n\n@api_bp.route('/users')\ndef users():\n    return jsonify([{'id': 1, 'name': 'Alice'}])\n\n# app.py\nfrom flask import Flask\nfrom blueprints.main import main_bp\nfrom blueprints.api import api_bp\n\napp = Flask(__name__)\napp.register_blueprint(main_bp)\napp.register_blueprint(api_bp, url_prefix='/api')\n\n# Routes:\n# /          -> main.index\n# /api/users -> api.users",
+          "explanation": "You can register multiple blueprints. The main blueprint has no prefix (serves the root), while the API blueprint is prefixed with /api. Each blueprint is a self-contained module."
+        },
+        {
+          "title": "Blueprint-Specific Templates and Static Files",
+          "code": "# blueprints/admin/__init__.py\nfrom flask import Blueprint\n\nadmin_bp = Blueprint(\n    'admin',\n    __name__,\n    template_folder='templates',  # blueprints/admin/templates/\n    static_folder='static',        # blueprints/admin/static/\n    static_url_path='/admin/static'\n)\n\n@admin_bp.route('/')\ndef dashboard():\n    # Looks for admin/dashboard.html in:\n    # 1. app/templates/admin/dashboard.html (app overrides)\n    # 2. blueprints/admin/templates/admin/dashboard.html\n    from flask import render_template\n    return render_template('admin/dashboard.html')\n\n# File structure:\n# blueprints/admin/\n#     __init__.py\n#     templates/admin/\n#         dashboard.html\n#     static/\n#         css/admin.css",
+          "explanation": "Blueprints can have their own templates and static directories. Template namespacing (admin/ prefix) prevents conflicts. The application's templates can override blueprint templates."
+        },
+        {
+          "title": "Blueprint Hooks and Error Handlers",
+          "code": "from flask import Blueprint, jsonify, g\nimport time\n\napi_bp = Blueprint('api', __name__)\n\n@api_bp.before_request\ndef before_api_request():\n    \"\"\"Runs before every request in this blueprint.\"\"\"\n    g.start_time = time.time()\n\n@api_bp.after_request\ndef after_api_request(response):\n    \"\"\"Add timing header to API responses.\"\"\"\n    elapsed = time.time() - g.start_time\n    response.headers['X-Response-Time'] = f'{elapsed:.3f}s'\n    return response\n\n@api_bp.errorhandler(404)\ndef api_not_found(error):\n    \"\"\"Only handles 404s within the api blueprint.\"\"\"\n    return jsonify({'error': 'Resource not found'}), 404\n\n@api_bp.route('/data')\ndef get_data():\n    return jsonify({'value': 42})",
+          "explanation": "Blueprint hooks (before_request, after_request) only affect requests handled by that blueprint. Blueprint error handlers also only handle errors within the blueprint. This lets you customize behavior per module."
+        }
+      ],
+      "notes": [
+        "Blueprints organize large apps into modules. They define routes, templates, static files, and hooks.",
+        "Register with app.register_blueprint(bp, url_prefix='/prefix') to namespace URLs.",
+        "Use url_for('blueprint_name.endpoint') to reference blueprint routes.",
+        "Blueprint hooks and error handlers are scoped to the blueprint, not the entire app."
+      ],
+      "interviewTips": [
+        "Explain blueprints as Flask's way to structure large apps into modular, reusable components.",
+        "Contrast with Django's app system: both organize code into modules, but Django apps are more self-contained with their own models and migrations.",
+        "Mention that blueprints support URL prefixing, their own templates/static files, and scoped hooks."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "blueprints-ex1",
+        "title": "Create an API Blueprint",
+        "description": "Create a Blueprint named 'api' with two routes: GET '/items' that returns a JSON list of items, and GET '/items/<int:id>' that returns a single item. Register it in the app with url_prefix '/api'.",
+        "starterCode": "from flask import Flask, Blueprint, jsonify\n\n# Create the api blueprint and routes\n\napp = Flask(__name__)\n# Register the blueprint\n",
+        "solution": "from flask import Flask, Blueprint, jsonify\n\napi_bp = Blueprint('api', __name__)\n\nitems = [{'id': 1, 'name': 'Flask'}, {'id': 2, 'name': 'Django'}]\n\n@api_bp.get('/items')\ndef list_items():\n    return jsonify(items)\n\n@api_bp.get('/items/<int:item_id>')\ndef get_item(item_id):\n    item = next((i for i in items if i['id'] == item_id), None)\n    if item is None:\n        return jsonify({'error': 'Not found'}), 404\n    return jsonify(item)\n\napp = Flask(__name__)\napp.register_blueprint(api_bp, url_prefix='/api')\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Create the Blueprint with Blueprint('api', __name__)",
+          "Define routes with @api_bp.get() or @api_bp.route()",
+          "Register with app.register_blueprint(api_bp, url_prefix='/api')"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "blueprints-ex2",
+        "title": "Blueprint with before_request Hook",
+        "description": "Create an 'admin' blueprint that has a before_request hook checking if session contains 'is_admin'. If not, return a 403 JSON error. Add a '/dashboard' route that returns {'page': 'admin dashboard'}.",
+        "starterCode": "from flask import Flask, Blueprint, session, jsonify\n\n# Create the admin blueprint with auth check\n",
+        "solution": "from flask import Flask, Blueprint, session, jsonify\n\nadmin_bp = Blueprint('admin', __name__)\n\n@admin_bp.before_request\ndef require_admin():\n    if not session.get('is_admin'):\n        return jsonify({'error': 'Forbidden'}), 403\n\n@admin_bp.get('/dashboard')\ndef dashboard():\n    return jsonify({'page': 'admin dashboard'})\n\napp = Flask(__name__)\napp.secret_key = 'secret'\napp.register_blueprint(admin_bp, url_prefix='/admin')\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "before_request can return a response to short-circuit the request",
+          "session.get('is_admin') returns None if the key is missing",
+          "Register with url_prefix='/admin'"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "application-factory",
+    "sectionId": "blueprints-and-project-structure",
+    "orderIndex": 1,
+    "title": "Application Factory",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["create_app", "Factory Pattern", "Testing", "Configuration", "Extension Init"],
+    "content": {
+      "explanation": "The application factory pattern is the recommended way to create Flask applications, especially for larger projects. Instead of creating the Flask app at module level, you define a create_app() function that creates and configures the app. This pattern solves several problems and is essential for testing, multiple configurations, and avoiding circular imports.\n\nThe core idea is simple: instead of 'app = Flask(__name__)' at the module level, you wrap it in a function. The create_app function typically accepts a configuration object or config name, creates the Flask instance, loads configuration, initializes extensions, registers blueprints, and returns the app.\n\nThe factory pattern enables several important capabilities. Testing becomes easy because you can create a fresh app for each test with a test-specific configuration (like using a separate test database). You can run multiple instances of the same app with different configurations. And you avoid the circular import problem that occurs when modules need to import the app object.\n\nInitializing extensions with the factory pattern uses a two-step process called init_app. Instead of creating the extension with the app, you create the extension without an app and call extension.init_app(app) inside the factory. For example, you create 'db = SQLAlchemy()' at the module level and call 'db.init_app(app)' in create_app(). This lets other modules import db without needing the app.\n\nThe factory function typically follows this order: create the Flask instance, load configuration from a config object or environment, initialize extensions, register blueprints, register error handlers, and return the app. Flask automatically detects a create_app function and calls it when you use 'flask run'.\n\nThe factory pattern works seamlessly with the Flask CLI. When you run 'flask run', Flask looks for a create_app() or make_app() function in the module specified by FLASK_APP. It calls the function and uses the returned app. You can pass configuration through environment variables that the factory reads.\n\nIn testing, the factory pattern shines. You create a test fixture that calls create_app with a test configuration, then use app.test_client() to make test requests. Each test gets a fresh app instance with its own database and configuration, ensuring tests are isolated and reproducible.",
+      "codeExamples": [
+        {
+          "title": "Basic Application Factory",
+          "code": "# app/__init__.py\nfrom flask import Flask\n\ndef create_app(config_name='default'):\n    app = Flask(__name__)\n\n    # Load configuration\n    if config_name == 'testing':\n        app.config['TESTING'] = True\n        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'\n    else:\n        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'\n\n    app.config['SECRET_KEY'] = 'your-secret-key'\n\n    # Register blueprints\n    from app.views.main import main_bp\n    from app.views.auth import auth_bp\n    from app.views.api import api_bp\n\n    app.register_blueprint(main_bp)\n    app.register_blueprint(auth_bp, url_prefix='/auth')\n    app.register_blueprint(api_bp, url_prefix='/api')\n\n    return app",
+          "explanation": "The create_app function takes an optional config name and returns a configured Flask app. Blueprints are imported inside the function to avoid circular imports. Different configs support testing, development, and production."
+        },
+        {
+          "title": "Factory with Extension init_app",
+          "code": "# app/extensions.py\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_login import LoginManager\nfrom flask_migrate import Migrate\n\ndb = SQLAlchemy()\nlogin_manager = LoginManager()\nmigrate = Migrate()\n\n# app/__init__.py\nfrom flask import Flask\nfrom app.extensions import db, login_manager, migrate\n\ndef create_app(config_class='config.DevelopmentConfig'):\n    app = Flask(__name__)\n    app.config.from_object(config_class)\n\n    # Initialize extensions with the app\n    db.init_app(app)\n    login_manager.init_app(app)\n    migrate.init_app(app, db)\n\n    # Register blueprints\n    from app.views import main_bp, auth_bp\n    app.register_blueprint(main_bp)\n    app.register_blueprint(auth_bp, url_prefix='/auth')\n\n    return app",
+          "explanation": "Extensions are created without an app in extensions.py. The factory calls init_app() to bind them to the app. Other modules can import db from extensions without needing the app, avoiding circular imports."
+        },
+        {
+          "title": "Using the Factory in Tests",
+          "code": "# tests/conftest.py\nimport pytest\nfrom app import create_app\nfrom app.extensions import db\n\n@pytest.fixture\ndef app():\n    \"\"\"Create a fresh app for each test.\"\"\"\n    app = create_app('config.TestingConfig')\n\n    with app.app_context():\n        db.create_all()\n        yield app\n        db.drop_all()\n\n@pytest.fixture\ndef client(app):\n    \"\"\"Test client for making requests.\"\"\"\n    return app.test_client()\n\n# tests/test_api.py\ndef test_get_users(client):\n    response = client.get('/api/users')\n    assert response.status_code == 200\n    assert response.json == []\n\ndef test_create_user(client):\n    response = client.post('/api/users',\n        json={'name': 'Alice', 'email': 'alice@example.com'}\n    )\n    assert response.status_code == 201",
+          "explanation": "The factory makes testing easy. Each test gets a fresh app with a test database (in-memory SQLite). The fixture creates tables before each test and drops them after, ensuring test isolation."
+        },
+        {
+          "title": "Running the Factory App",
+          "code": "# run.py (entry point)\nfrom app import create_app\n\napp = create_app()\n\nif __name__ == '__main__':\n    app.run(debug=True)\n\n# Or use the Flask CLI:\n# export FLASK_APP=app\n# flask run\n\n# Flask automatically finds create_app() in the app package\n# and calls it. No need for run.py when using the CLI.\n\n# For production with Gunicorn:\n# gunicorn 'app:create_app()'",
+          "explanation": "For development, either use run.py or the Flask CLI (which auto-discovers create_app). For production, Gunicorn calls the factory with gunicorn 'app:create_app()'. The factory is called once at startup."
+        }
+      ],
+      "notes": [
+        "The factory pattern avoids circular imports by importing blueprints inside create_app().",
+        "Extensions use the init_app two-step pattern: create without app, then init_app(app) in the factory.",
+        "Flask CLI auto-discovers create_app() or make_app() in the FLASK_APP module.",
+        "The factory pattern is essential for testing with different configurations."
+      ],
+      "interviewTips": [
+        "Explain the factory pattern as Flask's recommended architecture for production applications.",
+        "Highlight the benefits: testability, multiple configurations, no circular imports.",
+        "Describe the init_app two-step pattern for extensions."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "factory-ex1",
+        "title": "Write an Application Factory",
+        "description": "Write a create_app function that creates a Flask app, sets SECRET_KEY to 'dev', registers a blueprint called main_bp at the root, and returns the app.",
+        "starterCode": "from flask import Flask, Blueprint\n\nmain_bp = Blueprint('main', __name__)\n\n@main_bp.route('/')\ndef index():\n    return 'Hello from factory!'\n\n# Write the create_app function\n",
+        "solution": "from flask import Flask, Blueprint\n\nmain_bp = Blueprint('main', __name__)\n\n@main_bp.route('/')\ndef index():\n    return 'Hello from factory!'\n\ndef create_app():\n    app = Flask(__name__)\n    app.config['SECRET_KEY'] = 'dev'\n    app.register_blueprint(main_bp)\n    return app\n\nif __name__ == '__main__':\n    app = create_app()\n    app.run(debug=True)",
+        "hints": [
+          "create_app should take no arguments (or optional config)",
+          "Create Flask(__name__) inside the function",
+          "Register blueprints and return the app"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "factory-ex2",
+        "title": "Factory with Config Parameter",
+        "description": "Write a create_app that accepts a config_name parameter ('development' or 'testing'). For testing, set TESTING=True and DATABASE_URI='sqlite:///:memory:'. For development, set DEBUG=True and DATABASE_URI='sqlite:///dev.db'.",
+        "starterCode": "from flask import Flask\n\n# Write create_app with config support\n",
+        "solution": "from flask import Flask\n\ndef create_app(config_name='development'):\n    app = Flask(__name__)\n    app.config['SECRET_KEY'] = 'dev'\n\n    if config_name == 'testing':\n        app.config['TESTING'] = True\n        app.config['DATABASE_URI'] = 'sqlite:///:memory:'\n    else:\n        app.config['DEBUG'] = True\n        app.config['DATABASE_URI'] = 'sqlite:///dev.db'\n\n    @app.route('/')\n    def index():\n        return {'config': config_name}\n\n    return app\n\nif __name__ == '__main__':\n    app = create_app()\n    app.run()",
+        "hints": [
+          "Use if/else to apply different configs based on config_name",
+          "Default to 'development' when no config is passed",
+          "Return the configured app"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "configuration-management",
+    "sectionId": "blueprints-and-project-structure",
+    "orderIndex": 2,
+    "title": "Configuration Management",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Config Object", "from_object", "Environment Variables", "from_envvar", "Instance Folder"],
+    "content": {
+      "explanation": "Proper configuration management is crucial for Flask applications that need to work across development, testing, and production environments. Flask provides several ways to load configuration, and following best practices ensures your app is secure and deployable.\n\nFlask's app.config is a subclass of Python's dict with additional methods for loading configuration from various sources. You can set values directly with app.config['KEY'] = value, load from a Python object with app.config.from_object(), load from a file with app.config.from_pyfile(), or load from environment variables.\n\nThe most common pattern is config classes. You define a base Config class with shared settings, then subclass it for each environment. DevelopmentConfig enables debug mode, TestingConfig uses an in-memory database, and ProductionConfig loads secrets from environment variables. The create_app factory selects the appropriate config.\n\nEnvironment variables are the recommended way to handle secrets in production. Database URLs, API keys, secret keys, and other sensitive values should never be in source code. Use os.environ.get() to read them, and python-dotenv to load them from a .env file during development. The .env file must be in .gitignore.\n\nFlask's from_envvar() method loads an entire config file whose path is stored in an environment variable. This is useful when your deployment system provides a config file. The from_mapping() method loads config from a dictionary, which is convenient for testing.\n\nThe instance folder (instance/) is a special directory that Flask treats differently. Files in this folder are deployment-specific and should not be committed to version control. Place your production config file, database, or uploaded files here. Access it with app.instance_path and load config from it with app.config.from_pyfile('config.py', instance_relative=True).\n\nCommon Flask configuration values include: SECRET_KEY (session signing), SQLALCHEMY_DATABASE_URI (database connection), DEBUG (debug mode), TESTING (test mode), MAX_CONTENT_LENGTH (upload size limit), JSON_SORT_KEYS (JSON key ordering), and SERVER_NAME (for URL generation outside requests).",
+      "codeExamples": [
+        {
+          "title": "Configuration Classes",
+          "code": "# config.py\nimport os\n\nclass Config:\n    \"\"\"Base configuration.\"\"\"\n    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev-fallback')\n    SQLALCHEMY_TRACK_MODIFICATIONS = False\n    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16 MB\n\nclass DevelopmentConfig(Config):\n    DEBUG = True\n    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'\n\nclass TestingConfig(Config):\n    TESTING = True\n    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'\n    WTF_CSRF_ENABLED = False\n\nclass ProductionConfig(Config):\n    SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')\n    SESSION_COOKIE_SECURE = True\n    SESSION_COOKIE_HTTPONLY = True\n\nconfig = {\n    'development': DevelopmentConfig,\n    'testing': TestingConfig,\n    'production': ProductionConfig,\n    'default': DevelopmentConfig,\n}",
+          "explanation": "Config classes use inheritance. The base class defines shared settings. Each subclass overrides environment-specific values. A config dict maps names to classes for easy selection in the factory."
+        },
+        {
+          "title": "Loading Configuration in the Factory",
+          "code": "# app/__init__.py\nfrom flask import Flask\nimport os\n\ndef create_app(config_name=None):\n    app = Flask(__name__, instance_relative_config=True)\n\n    # Determine config\n    if config_name is None:\n        config_name = os.environ.get('FLASK_CONFIG', 'development')\n\n    # Load from config class\n    from config import config\n    app.config.from_object(config[config_name])\n\n    # Override with instance config (if exists)\n    app.config.from_pyfile('config.py', silent=True)\n\n    # Override with environment variables\n    if os.environ.get('SECRET_KEY'):\n        app.config['SECRET_KEY'] = os.environ['SECRET_KEY']\n\n    # Ensure instance folder exists\n    os.makedirs(app.instance_path, exist_ok=True)\n\n    return app",
+          "explanation": "The factory loads config in layers: base config class, then instance config (deployment-specific overrides), then environment variables. This layered approach provides flexibility for different deployment scenarios."
+        },
+        {
+          "title": "Using python-dotenv",
+          "code": "# .env (not committed to git)\nFLASK_APP=app\nFLASK_DEBUG=1\nSECRET_KEY=super-secret-production-key\nDATABASE_URL=postgresql://user:pass@localhost/mydb\nREDIS_URL=redis://localhost:6379/0\nMAIL_SERVER=smtp.gmail.com\nMAIL_USERNAME=myapp@gmail.com\nMAIL_PASSWORD=app-specific-password\n\n# .gitignore\n.env\ninstance/\nvenv/\n\n# app/__init__.py\nfrom flask import Flask\nfrom dotenv import load_dotenv\nimport os\n\nload_dotenv()  # Load .env file\n\ndef create_app():\n    app = Flask(__name__)\n    app.config['SECRET_KEY'] = os.environ['SECRET_KEY']\n    app.config['SQLALCHEMY_DATABASE_URI'] = os.environ['DATABASE_URL']\n    return app",
+          "explanation": "python-dotenv loads variables from .env into os.environ. This keeps secrets out of code. The .env file is gitignored and each developer has their own. In production, set environment variables directly."
+        },
+        {
+          "title": "Validating Configuration",
+          "code": "from flask import Flask\nimport os\n\ndef create_app():\n    app = Flask(__name__)\n\n    # Load config\n    app.config.from_object('config.ProductionConfig')\n\n    # Validate required config values\n    required_keys = ['SECRET_KEY', 'SQLALCHEMY_DATABASE_URI']\n    missing = [key for key in required_keys\n               if not app.config.get(key)]\n\n    if missing:\n        raise RuntimeError(\n            f'Missing required config keys: {\", \".join(missing)}. '\n            f'Set them as environment variables or in the config file.'\n        )\n\n    # Warn about insecure defaults\n    if app.config['SECRET_KEY'] == 'dev-fallback':\n        import warnings\n        warnings.warn('Using default SECRET_KEY. Set a proper key in production!')\n\n    return app",
+          "explanation": "Validating configuration at startup catches misconfigurations early. Check for required keys and warn about insecure defaults. This prevents cryptic runtime errors when a missing database URL causes a crash later."
+        }
+      ],
+      "notes": [
+        "Never hardcode secrets in source code. Use environment variables and python-dotenv.",
+        "Config classes with inheritance keep settings organized across environments.",
+        "The instance folder (instance/) stores deployment-specific files not in version control.",
+        "Validate required config values at startup to catch misconfigurations early."
+      ],
+      "commonPitfalls": [
+        "Committing SECRET_KEY, database passwords, or API keys to version control.",
+        "Not creating separate configs for testing (using production database in tests).",
+        "Forgetting to set TESTING=True in test config, which disables error catching in tests."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "config-ex1",
+        "title": "Write Config Classes",
+        "description": "Create a base Config class with SECRET_KEY from an environment variable (default 'dev'), then DevelopmentConfig with DEBUG=True and TestingConfig with TESTING=True and a memory SQLite database.",
+        "starterCode": "import os\n\n# Write your config classes\n",
+        "solution": "import os\n\nclass Config:\n    SECRET_KEY = os.environ.get('SECRET_KEY', 'dev')\n    SQLALCHEMY_TRACK_MODIFICATIONS = False\n\nclass DevelopmentConfig(Config):\n    DEBUG = True\n    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'\n\nclass TestingConfig(Config):\n    TESTING = True\n    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'",
+        "hints": [
+          "Use os.environ.get() for environment variables with defaults",
+          "Subclasses inherit from Config base class",
+          "sqlite:///:memory: creates an in-memory database"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "config-ex2",
+        "title": "Config Validation",
+        "description": "Write a validate_config function that takes a Flask app and raises RuntimeError if SECRET_KEY is missing or equals 'dev' in a non-debug environment.",
+        "starterCode": "from flask import Flask\n\ndef validate_config(app):\n    # Validate the configuration\n    pass\n",
+        "solution": "from flask import Flask\n\ndef validate_config(app):\n    if not app.config.get('SECRET_KEY'):\n        raise RuntimeError('SECRET_KEY is required')\n    if not app.debug and app.config['SECRET_KEY'] == 'dev':\n        raise RuntimeError('Do not use default SECRET_KEY in production')",
+        "hints": [
+          "Check if SECRET_KEY exists and is not empty",
+          "Use app.debug to check if we are in debug mode",
+          "Raise RuntimeError with a descriptive message"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "project-organization",
+    "sectionId": "blueprints-and-project-structure",
+    "orderIndex": 3,
+    "title": "Project Organization",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Project Layout", "Package Structure", "Separation of Concerns", "Circular Imports", "Best Practices"],
+    "content": {
+      "explanation": "A well-organized Flask project makes development, testing, and collaboration smoother. While Flask does not enforce any particular project layout, the community has converged on patterns that work well for applications of different sizes.\n\nFor small applications (prototypes, simple APIs), a single-file structure works fine. Everything goes in app.py: routes, configuration, and maybe a few helper functions. The templates/ and static/ directories sit alongside it. This is perfect for learning, tutorials, and microservices with a handful of endpoints.\n\nMedium applications benefit from splitting into a few modules. Separate your routes into a views.py, models into models.py, forms into forms.py, and configuration into config.py. The main app.py ties everything together. This structure scales to maybe 20-30 routes before it gets unwieldy.\n\nLarge applications use the package structure with the application factory pattern. The Flask application is a Python package (a directory with __init__.py) rather than a single file. Blueprints organize routes into logical groups. Extensions are initialized in a separate module. Each blueprint can have its own templates subdirectory. This scales to hundreds of routes and multiple developers.\n\nThe separation of concerns principle guides how you split code. Models define data structures and database interactions. Views handle HTTP request/response logic. Templates handle presentation. Forms handle input validation. Services contain business logic. Utils provide helper functions. Config manages environment-specific settings.\n\nCircular imports are a common problem in Flask projects. They occur when module A imports from module B and module B imports from module A. The most common case is views importing the app object and the app module importing views. The application factory pattern and the extension init_app pattern solve this by deferring imports and initialization.\n\nThe tests directory should mirror the source structure. If you have views/auth.py, create tests/test_auth.py. Use pytest fixtures for the app, client, and database setup. Organize fixtures in conftest.py files at appropriate levels.\n\nA production Flask project also includes: requirements.txt or pyproject.toml for dependencies, a Dockerfile for containerization, a .github/workflows directory for CI/CD, a migrations directory for database migrations (managed by Flask-Migrate), and documentation in docs/.",
+      "codeExamples": [
+        {
+          "title": "Production Project Layout",
+          "code": "# Recommended project structure\nmy_project/\n    app/\n        __init__.py          # create_app factory\n        extensions.py         # db, login_manager, mail, etc.\n        models/\n            __init__.py\n            user.py\n            post.py\n        views/\n            __init__.py       # import all blueprints\n            main.py           # main blueprint\n            auth.py           # auth blueprint\n            api/\n                __init__.py\n                users.py\n                posts.py\n        services/\n            __init__.py\n            email.py\n            payment.py\n        forms/\n            __init__.py\n            auth.py\n            post.py\n        templates/\n            base.html\n            main/\n            auth/\n        static/\n            css/\n            js/\n            images/\n    tests/\n        conftest.py\n        test_auth.py\n        test_api.py\n    migrations/\n    config.py\n    requirements.txt\n    Dockerfile\n    .env\n    .gitignore",
+          "explanation": "This layout separates concerns: models for data, views for HTTP handling, services for business logic, forms for validation. The app/ package contains the create_app factory. Tests mirror the source structure."
+        },
+        {
+          "title": "The __init__.py Factory",
+          "code": "# app/__init__.py\nfrom flask import Flask\nfrom app.extensions import db, login_manager, migrate, mail\nfrom config import config\n\ndef create_app(config_name='development'):\n    app = Flask(__name__)\n    app.config.from_object(config[config_name])\n\n    # Initialize extensions\n    db.init_app(app)\n    login_manager.init_app(app)\n    migrate.init_app(app, db)\n    mail.init_app(app)\n\n    # Register blueprints\n    from app.views.main import main_bp\n    from app.views.auth import auth_bp\n    from app.views.api import api_bp\n\n    app.register_blueprint(main_bp)\n    app.register_blueprint(auth_bp, url_prefix='/auth')\n    app.register_blueprint(api_bp, url_prefix='/api/v1')\n\n    # Register error handlers\n    from app.errors import register_error_handlers\n    register_error_handlers(app)\n\n    # Register CLI commands\n    from app.cli import register_commands\n    register_commands(app)\n\n    return app",
+          "explanation": "The factory imports blueprints inside the function to avoid circular imports. Extensions are imported from a separate module. Error handlers and CLI commands are also registered here for a clean setup."
+        },
+        {
+          "title": "Extensions Module",
+          "code": "# app/extensions.py\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_login import LoginManager\nfrom flask_migrate import Migrate\nfrom flask_mail import Mail\n\n# Create extension instances without app\ndb = SQLAlchemy()\nlogin_manager = LoginManager()\nmigrate = Migrate()\nmail = Mail()\n\n# Configure login manager\nlogin_manager.login_view = 'auth.login'\nlogin_manager.login_message_category = 'info'\n\n# Other modules can import these:\n# from app.extensions import db\n# This works because extensions are created at import time\n# but bound to the app later via init_app()",
+          "explanation": "Creating extensions in a dedicated module avoids circular imports. Any module can import db, login_manager, etc. without importing the app. The factory calls init_app() to bind them to the app."
+        },
+        {
+          "title": "Blueprint Views Module",
+          "code": "# app/views/__init__.py\n# Central place to import all blueprints\nfrom app.views.main import main_bp\nfrom app.views.auth import auth_bp\n\n# app/views/auth.py\nfrom flask import Blueprint, render_template, redirect, url_for, flash, request\nfrom flask_login import login_user, logout_user, login_required\nfrom app.extensions import db\nfrom app.models.user import User\nfrom app.forms.auth import LoginForm, RegisterForm\n\nauth_bp = Blueprint('auth', __name__, template_folder='../templates/auth')\n\n@auth_bp.route('/login', methods=['GET', 'POST'])\ndef login():\n    form = LoginForm()\n    if form.validate_on_submit():\n        user = User.query.filter_by(email=form.email.data).first()\n        if user and user.check_password(form.password.data):\n            login_user(user)\n            next_page = request.args.get('next')\n            return redirect(next_page or url_for('main.index'))\n        flash('Invalid email or password', 'error')\n    return render_template('login.html', form=form)\n\n@auth_bp.route('/logout')\n@login_required\ndef logout():\n    logout_user()\n    return redirect(url_for('main.index'))",
+          "explanation": "Each blueprint module handles a specific feature. It imports models and extensions directly (no circular import because they do not import the app). The template_folder can be customized per blueprint."
+        }
+      ],
+      "notes": [
+        "Start simple (single file) and refactor into a package structure as the app grows.",
+        "The extensions module pattern eliminates circular imports between views and models.",
+        "Blueprints imports should be inside create_app() to avoid circular dependency issues.",
+        "Mirror your source structure in tests for easy navigation."
+      ],
+      "commonPitfalls": [
+        "Creating the app at module level instead of using the factory pattern, causing circular imports.",
+        "Putting business logic in view functions instead of service modules, making testing harder.",
+        "Not using the init_app pattern for extensions, forcing all modules to depend on the app object."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "project-org-ex1",
+        "title": "Design a Project Layout",
+        "description": "Write the directory structure for a Flask blog application with users, posts, and an API. Include the app factory, extensions, models, views (as blueprints), templates, tests, and config.",
+        "starterCode": "# Write your directory structure as a comment\n# my_blog/\n#     ...\n",
+        "solution": "# my_blog/\n#     app/\n#         __init__.py          # create_app factory\n#         extensions.py         # db, login_manager\n#         models/\n#             __init__.py\n#             user.py\n#             post.py\n#         views/\n#             __init__.py\n#             main.py           # main_bp: home, about\n#             auth.py           # auth_bp: login, register\n#             blog.py           # blog_bp: posts, create, edit\n#             api.py            # api_bp: json endpoints\n#         forms/\n#             auth.py\n#             post.py\n#         templates/\n#             base.html\n#             main/\n#             auth/\n#             blog/\n#         static/\n#             css/\n#             js/\n#     tests/\n#         conftest.py\n#         test_auth.py\n#         test_blog.py\n#         test_api.py\n#     migrations/\n#     config.py\n#     requirements.txt\n#     .env\n#     .gitignore",
+        "hints": [
+          "Group related files: models together, views together, forms together",
+          "Mirror the views structure in templates/",
+          "Tests should mirror the source structure"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "project-org-ex2",
+        "title": "Create an Extensions Module",
+        "description": "Write an extensions.py file that creates SQLAlchemy and LoginManager instances without an app. Configure login_manager.login_view to 'auth.login'.",
+        "starterCode": "# app/extensions.py\n# Create extension instances\n",
+        "solution": "# app/extensions.py\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_login import LoginManager\n\ndb = SQLAlchemy()\nlogin_manager = LoginManager()\nlogin_manager.login_view = 'auth.login'\nlogin_manager.login_message_category = 'info'",
+        "hints": [
+          "Create instances without passing an app: SQLAlchemy() not SQLAlchemy(app)",
+          "Set login_manager.login_view to the endpoint name string",
+          "These will be initialized with init_app() in the factory"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

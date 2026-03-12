@@ -1,0 +1,469 @@
+[
+  {
+    "id": "classes-and-objects",
+    "sectionId": "oop",
+    "orderIndex": 0,
+    "title": "Classes & Objects",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["class", "__init__", "self", "instance attributes", "methods", "object instantiation"],
+    "content": {
+      "explanation": "A class in Python is a blueprint for creating objects. It bundles data (attributes) and functionality (methods) into a single unit. You define a class with the class keyword, and by convention class names use PascalCase. Once a class is defined you create instances of it by calling the class name like a function, which triggers the special __init__ method.\n\nThe __init__ method is Python's constructor. It runs automatically every time you create a new instance and is the standard place to initialize the object's attributes. The first parameter of __init__ (and every other instance method) is self, which is a reference to the instance being created. Through self you attach data to the specific object so that each instance carries its own state.\n\nInstance attributes are variables that belong to a particular object. They are typically defined inside __init__ using self.attribute_name = value. Because each instance has its own namespace, two objects created from the same class can hold completely different data in their attributes. This per-instance isolation is fundamental to object-oriented design.\n\nMethods are functions defined inside a class body. Regular instance methods always take self as their first parameter, giving them access to the instance's attributes and other methods. You call a method on an object with dot notation: obj.method(). Python automatically passes the object as the self argument, so you never supply it explicitly when calling.\n\nBeyond instance attributes, Python also supports class attributes, which are shared across all instances. A class attribute is defined directly in the class body (outside any method). When you read an attribute, Python first checks the instance namespace and falls back to the class namespace. Writing to an attribute via self always creates or updates an instance attribute, leaving the class attribute untouched for other instances.",
+      "codeExamples": [
+        {
+          "title": "Defining a basic class with __init__",
+          "code": "class Dog:\n    species = 'Canis familiaris'  # class attribute\n\n    def __init__(self, name, age):\n        self.name = name   # instance attribute\n        self.age = age     # instance attribute\n\n    def bark(self):\n        return f'{self.name} says Woof!'\n\n    def describe(self):\n        return f'{self.name} is {self.age} years old'\n\ndog1 = Dog('Rex', 3)\ndog2 = Dog('Buddy', 5)\n\nprint(dog1.bark())\nprint(dog2.describe())\nprint(dog1.species)\nprint(dog2.species)",
+          "output": "Rex says Woof!\nBuddy is 5 years old\nCanis familiaris\nCanis familiaris",
+          "explanation": "Dog is a class with one class attribute (species) shared by all dogs and two instance attributes (name, age) unique to each dog. Methods bark() and describe() use self to access the specific instance's data."
+        },
+        {
+          "title": "Instance vs class attribute behavior",
+          "code": "class Counter:\n    count = 0  # class attribute\n\n    def __init__(self, label):\n        self.label = label\n        Counter.count += 1  # modify class attribute via class name\n\n    def display(self):\n        return f'{self.label}: total instances = {Counter.count}'\n\nc1 = Counter('A')\nc2 = Counter('B')\nc3 = Counter('C')\n\nprint(c1.display())\nprint(c3.display())\nprint(Counter.count)",
+          "output": "A: total instances = 3\nC: total instances = 3\n3",
+          "explanation": "Counter.count is a class attribute modified via the class name itself. Every instance sees the same value because they all share the class namespace. Each instance has its own label attribute set through self."
+        },
+        {
+          "title": "Multiple methods interacting",
+          "code": "class BankAccount:\n    def __init__(self, owner, balance=0):\n        self.owner = owner\n        self.balance = balance\n\n    def deposit(self, amount):\n        self.balance += amount\n        return self.balance\n\n    def withdraw(self, amount):\n        if amount > self.balance:\n            return 'Insufficient funds'\n        self.balance -= amount\n        return self.balance\n\n    def summary(self):\n        return f'{self.owner}: ${self.balance}'\n\naccount = BankAccount('Alice', 100)\nprint(account.summary())\nprint(account.deposit(50))\nprint(account.withdraw(30))\nprint(account.withdraw(200))\nprint(account.summary())",
+          "output": "Alice: $100\n150\n120\nInsufficient funds\nAlice: $120",
+          "explanation": "BankAccount shows methods that modify instance state. deposit and withdraw update self.balance and return the new balance or an error message. The default parameter balance=0 lets you create an account without specifying an initial balance."
+        }
+      ],
+      "notes": [
+        "self is not a keyword in Python but a strong convention. You could technically name it anything, but using self is universally expected.",
+        "Class attributes are useful for constants or counters shared across all instances. Modify them via the class name (ClassName.attr) to avoid accidentally creating an instance attribute.",
+        "Calling a class like Dog('Rex', 3) internally calls Dog.__new__ to create the object, then Dog.__init__ to initialize it."
+      ],
+      "commonPitfalls": [
+        "Using a mutable default argument in __init__ (e.g., def __init__(self, items=[])). The list is shared across all calls. Use None as the default and create a new list inside the method instead.",
+        "Forgetting self as the first parameter of an instance method causes a TypeError when the method is called on an object.",
+        "Modifying a class attribute through self (self.count += 1) creates a new instance attribute that shadows the class attribute instead of updating it."
+      ],
+      "interviewTips": [
+        "Explain the difference between class attributes and instance attributes and how Python's attribute lookup order works (instance namespace first, then class namespace).",
+        "Be able to trace what happens when you call MyClass(args): __new__ creates the instance, __init__ initializes it, and the instance is returned."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "classes-objects-ex1",
+        "title": "Student Record",
+        "description": "Create a class called Student with __init__ that accepts name and grades (a list of integers). Add a method average() that returns the average grade rounded to 1 decimal place, and a method status() that returns 'Pass' if the average is >= 50 and 'Fail' otherwise. Create two students and print their averages and statuses.",
+        "starterCode": "# Create a Student class\n# __init__ takes name and grades (list of ints)\n# average() returns the average rounded to 1 decimal\n# status() returns 'Pass' if average >= 50, else 'Fail'\n\n# Your code here\n\ns1 = Student('Alice', [80, 90, 70])\ns2 = Student('Bob', [40, 30, 45])\nprint(s1.average())\nprint(s1.status())\nprint(s2.average())\nprint(s2.status())",
+        "solution": "class Student:\n    def __init__(self, name, grades):\n        self.name = name\n        self.grades = grades\n\n    def average(self):\n        return round(sum(self.grades) / len(self.grades), 1)\n\n    def status(self):\n        return 'Pass' if self.average() >= 50 else 'Fail'\n\ns1 = Student('Alice', [80, 90, 70])\ns2 = Student('Bob', [40, 30, 45])\nprint(s1.average())\nprint(s1.status())\nprint(s2.average())\nprint(s2.status())",
+        "expectedOutput": "80.0\nPass\n38.3\nFail",
+        "hints": [
+          "Use sum(self.grades) / len(self.grades) to calculate the average, and wrap it in round(..., 1) for one decimal place.",
+          "The status method can call self.average() to avoid recalculating."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "classes-objects-ex2",
+        "title": "Shopping Cart",
+        "description": "Create a ShoppingCart class. __init__ takes no arguments but initializes an empty items list. Add methods: add_item(name, price) appends a dict to items, total() returns the sum of all prices rounded to 2 decimal places, and item_count() returns the number of items. Demonstrate by adding items and printing the count and total.",
+        "starterCode": "# Create a ShoppingCart class\n# __init__: initialize empty items list\n# add_item(name, price): append {'name': name, 'price': price}\n# total(): return sum of prices rounded to 2 decimals\n# item_count(): return number of items\n\n# Your code here\n\ncart = ShoppingCart()\ncart.add_item('Book', 12.99)\ncart.add_item('Pen', 1.50)\ncart.add_item('Notebook', 5.75)\nprint(cart.item_count())\nprint(cart.total())",
+        "solution": "class ShoppingCart:\n    def __init__(self):\n        self.items = []\n\n    def add_item(self, name, price):\n        self.items.append({'name': name, 'price': price})\n\n    def total(self):\n        return round(sum(item['price'] for item in self.items), 2)\n\n    def item_count(self):\n        return len(self.items)\n\ncart = ShoppingCart()\ncart.add_item('Book', 12.99)\ncart.add_item('Pen', 1.50)\ncart.add_item('Notebook', 5.75)\nprint(cart.item_count())\nprint(cart.total())",
+        "expectedOutput": "3\n20.24",
+        "hints": [
+          "Initialize self.items as an empty list inside __init__, not as a default parameter.",
+          "Use a generator expression inside sum() to add up all the prices from the list of dicts."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "classes-objects-ex3",
+        "title": "Instance Counter with Class Attribute",
+        "description": "Create a Tracker class with a class attribute instance_count initialized to 0. Each time a new Tracker is created, increment instance_count. Add a class method get_count() using @classmethod that returns the current count. Add an instance method identify() that returns 'Tracker #{n}' where n is the instance number at creation time. Create three trackers and print their identities and the total count.",
+        "starterCode": "# Create a Tracker class\n# Class attribute: instance_count = 0\n# __init__: increment instance_count, store this instance's number\n# get_count(): @classmethod returning instance_count\n# identify(): return 'Tracker #N' where N is this tracker's number\n\n# Your code here\n\nt1 = Tracker()\nt2 = Tracker()\nt3 = Tracker()\nprint(t1.identify())\nprint(t2.identify())\nprint(t3.identify())\nprint(Tracker.get_count())",
+        "solution": "class Tracker:\n    instance_count = 0\n\n    def __init__(self):\n        Tracker.instance_count += 1\n        self.number = Tracker.instance_count\n\n    @classmethod\n    def get_count(cls):\n        return cls.instance_count\n\n    def identify(self):\n        return f'Tracker #{self.number}'\n\nt1 = Tracker()\nt2 = Tracker()\nt3 = Tracker()\nprint(t1.identify())\nprint(t2.identify())\nprint(t3.identify())\nprint(Tracker.get_count())",
+        "expectedOutput": "Tracker #1\nTracker #2\nTracker #3\n3",
+        "hints": [
+          "Increment the class attribute using Tracker.instance_count += 1 (not self.instance_count) to update the shared counter.",
+          "Store the current count in an instance attribute (self.number) inside __init__ so each tracker remembers its own creation number."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "inheritance",
+    "sectionId": "oop",
+    "orderIndex": 1,
+    "title": "Inheritance",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["single inheritance", "multiple inheritance", "super()", "MRO", "method overriding", "isinstance"],
+    "content": {
+      "explanation": "Inheritance allows a class (the child or subclass) to acquire the attributes and methods of another class (the parent or superclass). This promotes code reuse: you define common behavior in a base class and extend or specialize it in subclasses. In Python you specify the parent class in parentheses after the class name, e.g., class Child(Parent).\n\nWhen a child class defines a method with the same name as one in the parent, it overrides that method. The child's version is called instead of the parent's when invoked on a child instance. If you still need the parent's implementation you call it explicitly using super(). The super() function returns a proxy object that delegates method calls to the parent class, following the method resolution order.\n\nPython supports multiple inheritance, where a class can inherit from more than one parent: class C(A, B). This is powerful but introduces complexity around which parent's method is called when both parents define the same method. Python resolves this using the C3 linearization algorithm, which produces a deterministic Method Resolution Order (MRO). You can inspect the MRO with ClassName.__mro__ or ClassName.mro().\n\nThe super() function is MRO-aware. When you call super().method() inside class C, Python does not simply go to C's direct parent. It follows the MRO and calls the next class in the chain. This is essential for cooperative multiple inheritance, where each class in the hierarchy calls super() to ensure every class in the MRO gets a chance to run its version of the method. Without this cooperation, some parent __init__ methods might be skipped.\n\nThe isinstance() and issubclass() built-in functions are the idiomatic way to check inheritance relationships at runtime. isinstance(obj, ClassName) returns True if obj is an instance of ClassName or any of its subclasses. issubclass(ChildClass, ParentClass) checks whether one class is derived from another. These are preferred over direct type checks with type() because they respect the inheritance hierarchy.",
+      "codeExamples": [
+        {
+          "title": "Single inheritance and method overriding",
+          "code": "class Animal:\n    def __init__(self, name):\n        self.name = name\n\n    def speak(self):\n        return f'{self.name} makes a sound'\n\n    def info(self):\n        return f'Animal: {self.name}'\n\nclass Dog(Animal):\n    def __init__(self, name, breed):\n        super().__init__(name)  # call parent __init__\n        self.breed = breed\n\n    def speak(self):  # override parent method\n        return f'{self.name} barks'\n\n    def info(self):\n        return f'Dog: {self.name}, Breed: {self.breed}'\n\ndog = Dog('Rex', 'Labrador')\nprint(dog.speak())\nprint(dog.info())\nprint(isinstance(dog, Dog))\nprint(isinstance(dog, Animal))",
+          "output": "Rex barks\nDog: Rex, Breed: Labrador\nTrue\nTrue",
+          "explanation": "Dog inherits from Animal and overrides both speak() and info(). super().__init__(name) calls Animal's __init__ so the name attribute is properly set. isinstance confirms that a Dog is also an Animal."
+        },
+        {
+          "title": "Multiple inheritance and MRO",
+          "code": "class A:\n    def greet(self):\n        return 'Hello from A'\n\nclass B(A):\n    def greet(self):\n        return 'Hello from B'\n\nclass C(A):\n    def greet(self):\n        return 'Hello from C'\n\nclass D(B, C):\n    pass\n\nd = D()\nprint(d.greet())\nprint(D.__mro__)",
+          "output": "Hello from B\n(<class '__main__.D'>, <class '__main__.B'>, <class '__main__.C'>, <class '__main__.A'>, <class 'object'>)",
+          "explanation": "D inherits from both B and C. Since D does not override greet(), Python follows the MRO: D -> B -> C -> A -> object. B is checked first and has greet(), so B's version runs. The __mro__ tuple shows the full resolution order."
+        },
+        {
+          "title": "Cooperative multiple inheritance with super()",
+          "code": "class Base:\n    def __init__(self):\n        self.initialized = []\n        print('Base init')\n\nclass Left(Base):\n    def __init__(self):\n        super().__init__()\n        self.initialized.append('Left')\n        print('Left init')\n\nclass Right(Base):\n    def __init__(self):\n        super().__init__()\n        self.initialized.append('Right')\n        print('Right init')\n\nclass Child(Left, Right):\n    def __init__(self):\n        super().__init__()\n        self.initialized.append('Child')\n        print('Child init')\n\nc = Child()\nprint(c.initialized)",
+          "output": "Base init\nRight init\nLeft init\nChild init\n['Right', 'Left', 'Child']",
+          "explanation": "Each class calls super().__init__(), and Python follows the MRO: Child -> Left -> Right -> Base. super() in Left does not call Base directly; it calls the next in MRO, which is Right. This ensures every class is initialized exactly once."
+        },
+        {
+          "title": "isinstance and issubclass checks",
+          "code": "class Vehicle:\n    pass\n\nclass Car(Vehicle):\n    pass\n\nclass ElectricCar(Car):\n    pass\n\nev = ElectricCar()\n\nprint(isinstance(ev, ElectricCar))\nprint(isinstance(ev, Car))\nprint(isinstance(ev, Vehicle))\nprint(issubclass(ElectricCar, Car))\nprint(issubclass(ElectricCar, Vehicle))\nprint(issubclass(Car, ElectricCar))",
+          "output": "True\nTrue\nTrue\nTrue\nTrue\nFalse",
+          "explanation": "isinstance checks the entire inheritance chain, so an ElectricCar instance is also a Car and a Vehicle. issubclass works on classes, not instances. Car is not a subclass of ElectricCar, so the last check is False."
+        }
+      ],
+      "notes": [
+        "Always call super().__init__() in child classes to ensure the parent's initialization logic runs.",
+        "Python's MRO uses C3 linearization, which guarantees a consistent and predictable order. If no valid linearization exists, Python raises a TypeError at class creation time.",
+        "isinstance() respects inheritance and is preferred over type(obj) == ClassName for type checks.",
+        "Multiple inheritance should be used sparingly. Mixins (small classes that add a single capability) are the safest pattern."
+      ],
+      "commonPitfalls": [
+        "Forgetting to call super().__init__() in a child class, which means the parent's attributes are never set and attribute access raises an AttributeError.",
+        "Assuming super() always calls the direct parent. In multiple inheritance, super() calls the next class in the MRO, which might not be the immediate parent listed in the class definition.",
+        "Creating diamond inheritance without cooperative super() calls, causing some __init__ methods to run twice or not at all."
+      ],
+      "interviewTips": [
+        "Be ready to explain the MRO and trace the method resolution for a diamond inheritance scenario.",
+        "Explain the difference between isinstance() and type() and why isinstance is preferred in polymorphic code.",
+        "Know when to use composition over inheritance: if the relationship is 'has-a' rather than 'is-a', prefer composition."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "inheritance-ex1",
+        "title": "Shape Hierarchy",
+        "description": "Create a base class Shape with a method area() that returns 0. Create two subclasses: Rectangle(width, height) and Circle(radius). Each overrides area(). For Circle, use 3.14159 as pi. Print the area of a 4x6 rectangle and a circle with radius 5, each rounded to 2 decimal places.",
+        "starterCode": "# Base class Shape with area() returning 0\n# Rectangle(width, height) overrides area()\n# Circle(radius) overrides area() using pi = 3.14159\n\n# Your code here\n\nrect = Rectangle(4, 6)\ncirc = Circle(5)\nprint(round(rect.area(), 2))\nprint(round(circ.area(), 2))",
+        "solution": "class Shape:\n    def area(self):\n        return 0\n\nclass Rectangle(Shape):\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n\n    def area(self):\n        return self.width * self.height\n\nclass Circle(Shape):\n    def __init__(self, radius):\n        self.radius = radius\n\n    def area(self):\n        return 3.14159 * self.radius ** 2\n\nrect = Rectangle(4, 6)\ncirc = Circle(5)\nprint(round(rect.area(), 2))\nprint(round(circ.area(), 2))",
+        "expectedOutput": "24\n78.54",
+        "hints": [
+          "Rectangle.area() returns self.width * self.height. Circle.area() returns 3.14159 * self.radius ** 2.",
+          "round(24.0, 2) in Python prints as 24 (no trailing zeros), while round(78.53975, 2) prints as 78.54."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "inheritance-ex2",
+        "title": "MRO Prediction",
+        "description": "Given the following class hierarchy: class X, class Y(X), class Z(X), class W(Y, Z) -- each class defines a method who() returning its own name. Without creating an instance of W, predict and print the MRO. Then create an instance of W and call who() to confirm which class's method is used.",
+        "starterCode": "# Define classes X, Y(X), Z(X), W(Y, Z)\n# Each has a method who() returning the class name as a string\n# Print W's MRO\n# Create instance and call who()\n\n# Your code here",
+        "solution": "class X:\n    def who(self):\n        return 'X'\n\nclass Y(X):\n    def who(self):\n        return 'Y'\n\nclass Z(X):\n    def who(self):\n        return 'Z'\n\nclass W(Y, Z):\n    pass\n\nprint([cls.__name__ for cls in W.__mro__])\nw = W()\nprint(w.who())",
+        "expectedOutput": "['W', 'Y', 'Z', 'X', 'object']\nY",
+        "hints": [
+          "W inherits from Y first, then Z. The MRO is W -> Y -> Z -> X -> object.",
+          "Since W does not override who(), Python follows the MRO and finds who() in Y first."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "inheritance-ex3",
+        "title": "Employee Hierarchy with super()",
+        "description": "Create a base class Employee(name, salary). Add a method details() returning 'Name: {name}, Salary: {salary}'. Create a subclass Manager(name, salary, department) that calls super().__init__() and overrides details() to also include the department. Create a manager and print their details.",
+        "starterCode": "# Employee(name, salary) with details()\n# Manager(name, salary, department) extends Employee\n# Manager.details() includes department\n\n# Your code here\n\nmgr = Manager('Alice', 90000, 'Engineering')\nprint(mgr.details())\nprint(isinstance(mgr, Employee))",
+        "solution": "class Employee:\n    def __init__(self, name, salary):\n        self.name = name\n        self.salary = salary\n\n    def details(self):\n        return f'Name: {self.name}, Salary: {self.salary}'\n\nclass Manager(Employee):\n    def __init__(self, name, salary, department):\n        super().__init__(name, salary)\n        self.department = department\n\n    def details(self):\n        return f'Name: {self.name}, Salary: {self.salary}, Dept: {self.department}'\n\nmgr = Manager('Alice', 90000, 'Engineering')\nprint(mgr.details())\nprint(isinstance(mgr, Employee))",
+        "expectedOutput": "Name: Alice, Salary: 90000, Dept: Engineering\nTrue",
+        "hints": [
+          "Use super().__init__(name, salary) in Manager.__init__ to set the inherited attributes.",
+          "Override details() in Manager to include self.department in the return string."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "encapsulation-abstraction",
+    "sectionId": "oop",
+    "orderIndex": 2,
+    "title": "Encapsulation & Abstraction",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["public attributes", "private attributes", "protected attributes", "name mangling", "@property", "getters and setters"],
+    "content": {
+      "explanation": "Encapsulation is the practice of bundling data and the methods that operate on that data within a class, and restricting direct access to some of the object's internals. In Python, encapsulation is achieved through naming conventions rather than strict access modifiers like those in Java or C++. There are three conventional access levels: public (no underscore prefix), protected (single underscore prefix), and private (double underscore prefix).\n\nPublic attributes have no underscore prefix and are freely accessible from anywhere. Protected attributes start with a single underscore, like _balance. This is a convention signaling that the attribute is intended for internal use by the class and its subclasses. Python does not enforce this restriction; you can still access _balance from outside the class, but doing so is considered bad practice.\n\nPrivate attributes start with a double underscore, like __secret. Python applies name mangling to these: the attribute is internally renamed to _ClassName__secret. This makes accidental access from outside harder, though it is still possible if you know the mangled name. Name mangling exists primarily to prevent name collisions in subclasses rather than to provide security.\n\nThe @property decorator is Python's idiomatic way to implement getters and setters. Instead of writing explicit get_x() and set_x() methods, you define a property that looks like a regular attribute access to the caller but runs custom code behind the scenes. This gives you validation, computed values, or lazy loading while maintaining a clean interface. You define a getter with @property, a setter with @attribute_name.setter, and optionally a deleter with @attribute_name.deleter.\n\nAbstraction is the complementary concept of hiding complex implementation details behind a simple interface. Users of a class interact with its public methods and properties without needing to understand the underlying logic. For example, a BankAccount class might expose deposit() and withdraw() methods while keeping the balance validation and transaction logging hidden. Python's abc module provides the ABC base class and @abstractmethod decorator for formal abstract classes that cannot be instantiated directly.",
+      "codeExamples": [
+        {
+          "title": "Public, protected, and private attributes",
+          "code": "class Account:\n    def __init__(self, owner, balance):\n        self.owner = owner          # public\n        self._type = 'savings'      # protected (convention)\n        self.__balance = balance    # private (name-mangled)\n\n    def get_balance(self):\n        return self.__balance\n\na = Account('Alice', 1000)\nprint(a.owner)\nprint(a._type)\nprint(a.get_balance())\nprint(a._Account__balance)  # name-mangled access",
+          "output": "Alice\nsavings\n1000\n1000",
+          "explanation": "owner is public and freely accessible. _type is protected by convention. __balance is name-mangled to _Account__balance. You can still access it via the mangled name, but this is strongly discouraged."
+        },
+        {
+          "title": "@property for getters and setters",
+          "code": "class Temperature:\n    def __init__(self, celsius):\n        self._celsius = celsius\n\n    @property\n    def celsius(self):\n        return self._celsius\n\n    @celsius.setter\n    def celsius(self, value):\n        if value < -273.15:\n            raise ValueError('Temperature below absolute zero')\n        self._celsius = value\n\n    @property\n    def fahrenheit(self):\n        return self._celsius * 9 / 5 + 32\n\nt = Temperature(25)\nprint(t.celsius)\nprint(t.fahrenheit)\nt.celsius = 100\nprint(t.celsius)\nprint(t.fahrenheit)",
+          "output": "25\n77.0\n100\n212.0",
+          "explanation": "celsius uses @property as a getter and @celsius.setter for validation. fahrenheit is a read-only computed property with no setter. Access looks like a simple attribute (t.celsius) but runs the property methods behind the scenes."
+        },
+        {
+          "title": "Name mangling in inheritance",
+          "code": "class Parent:\n    def __init__(self):\n        self.__secret = 'parent secret'\n        self._protected = 'parent protected'\n\n    def reveal(self):\n        return self.__secret\n\nclass Child(Parent):\n    def __init__(self):\n        super().__init__()\n        self.__secret = 'child secret'  # does NOT override parent's\n\n    def child_reveal(self):\n        return self.__secret\n\nc = Child()\nprint(c.reveal())\nprint(c.child_reveal())\nprint(c._protected)",
+          "output": "parent secret\nchild secret\nparent protected",
+          "explanation": "Parent's __secret becomes _Parent__secret and Child's __secret becomes _Child__secret. They are two separate attributes. This is exactly the name-collision prevention that name mangling is designed for. The protected _protected attribute is shared normally."
+        },
+        {
+          "title": "Encapsulation with validation",
+          "code": "class Product:\n    def __init__(self, name, price):\n        self._name = name\n        self._price = 0\n        self.price = price  # triggers setter validation\n\n    @property\n    def name(self):\n        return self._name\n\n    @property\n    def price(self):\n        return self._price\n\n    @price.setter\n    def price(self, value):\n        if not isinstance(value, (int, float)):\n            raise TypeError('Price must be a number')\n        if value < 0:\n            raise ValueError('Price cannot be negative')\n        self._price = round(value, 2)\n\n    def display(self):\n        return f'{self._name}: ${self._price}'\n\np = Product('Widget', 19.999)\nprint(p.display())\np.price = 24.50\nprint(p.display())\nprint(p.price)",
+          "output": "Widget: $20.0\nWidget: $24.5\n24.5",
+          "explanation": "The price setter validates the type and value before storing it. Even inside __init__, assigning self.price = price routes through the setter, ensuring the validation always runs. The name property has no setter, making it read-only after creation."
+        }
+      ],
+      "notes": [
+        "Python's access control is by convention, not enforcement. A single underscore means 'internal', double underscore triggers name mangling.",
+        "Name mangling changes __attr to _ClassName__attr. It is designed to avoid accidental name collisions in subclasses, not to provide security.",
+        "@property lets you start with simple attributes and add validation later without changing the public API.",
+        "Use the abc module (ABC and @abstractmethod) when you want to enforce that subclasses implement specific methods."
+      ],
+      "commonPitfalls": [
+        "Over-using name mangling (__double_underscore) when a single underscore convention is sufficient. Name mangling should be reserved for avoiding subclass name collisions.",
+        "Forgetting that self.price = value inside __init__ calls the setter when price is a @property, which is actually desirable for validation but can surprise beginners.",
+        "Creating a @property getter and setter that operate on the same name as the property itself (e.g., self.celsius instead of self._celsius), causing infinite recursion."
+      ],
+      "interviewTips": [
+        "Explain that Python does not have true private attributes. The double underscore convention uses name mangling for collision avoidance, not access restriction.",
+        "Demonstrate when and why you would use @property over plain attributes: validation, computed values, or maintaining backward compatibility.",
+        "Distinguish encapsulation (bundling data + methods, controlling access) from abstraction (hiding complexity behind a simple interface)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "encapsulation-ex1",
+        "title": "Validated Age Property",
+        "description": "Create a Person class with a name (public) and age (using @property with validation). The age setter should only accept integers between 0 and 150 inclusive, printing 'Invalid age' for bad values and keeping the old value. Initialize age to 0 before setting it via the property. Demonstrate with valid and invalid assignments.",
+        "starterCode": "# Create Person class with name and age property\n# age setter: accept int 0-150, print 'Invalid age' otherwise\n\n# Your code here\n\np = Person('Alice')\np.age = 25\nprint(p.age)\np.age = -5\nprint(p.age)\np.age = 200\nprint(p.age)\np.age = 30\nprint(p.age)",
+        "solution": "class Person:\n    def __init__(self, name):\n        self.name = name\n        self._age = 0\n\n    @property\n    def age(self):\n        return self._age\n\n    @age.setter\n    def age(self, value):\n        if isinstance(value, int) and 0 <= value <= 150:\n            self._age = value\n        else:\n            print('Invalid age')\n\np = Person('Alice')\np.age = 25\nprint(p.age)\np.age = -5\nprint(p.age)\np.age = 200\nprint(p.age)\np.age = 30\nprint(p.age)",
+        "expectedOutput": "25\nInvalid age\n25\nInvalid age\n25\n30",
+        "hints": [
+          "Store the actual value in self._age and use @property for the getter and @age.setter for the setter.",
+          "In the setter, check isinstance(value, int) and 0 <= value <= 150. If invalid, print 'Invalid age' and do not update self._age."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "encapsulation-ex2",
+        "title": "Name Mangling Explorer",
+        "description": "Create a Secret class with __hidden = 'treasure' set in __init__. Add a method reveal() that returns __hidden. Create a subclass Spy with its own __hidden = 'spy data' set in __init__ (calling super().__init__() first) and a spy_reveal() method. Show that both values coexist due to name mangling.",
+        "starterCode": "# Secret class with self.__hidden = 'treasure'\n# reveal() returns self.__hidden\n# Spy(Secret) with self.__hidden = 'spy data'\n# spy_reveal() returns self.__hidden\n\n# Your code here\n\ns = Spy()\nprint(s.reveal())\nprint(s.spy_reveal())\nprint(s._Secret__hidden)\nprint(s._Spy__hidden)",
+        "solution": "class Secret:\n    def __init__(self):\n        self.__hidden = 'treasure'\n\n    def reveal(self):\n        return self.__hidden\n\nclass Spy(Secret):\n    def __init__(self):\n        super().__init__()\n        self.__hidden = 'spy data'\n\n    def spy_reveal(self):\n        return self.__hidden\n\ns = Spy()\nprint(s.reveal())\nprint(s.spy_reveal())\nprint(s._Secret__hidden)\nprint(s._Spy__hidden)",
+        "expectedOutput": "treasure\nspy data\ntreasure\nspy data",
+        "hints": [
+          "Name mangling converts __hidden to _Secret__hidden in the Secret class and _Spy__hidden in the Spy class.",
+          "reveal() in Secret accesses _Secret__hidden, while spy_reveal() in Spy accesses _Spy__hidden. They are different attributes."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "encapsulation-ex3",
+        "title": "Read-Only and Computed Properties",
+        "description": "Create a Circle class that takes radius in __init__. Make radius a read-only property. Add computed read-only properties for area (using 3.14159) and circumference (using 2 * 3.14159 * radius). Both should be rounded to 2 decimal places. Demonstrate that setting radius raises an AttributeError by catching the exception and printing 'Cannot set radius'.",
+        "starterCode": "# Circle class with read-only radius, area, circumference\n# Use 3.14159 for pi\n# Round area and circumference to 2 decimal places\n\n# Your code here\n\nc = Circle(7)\nprint(c.radius)\nprint(c.area)\nprint(c.circumference)\ntry:\n    c.radius = 10\nexcept AttributeError:\n    print('Cannot set radius')",
+        "solution": "class Circle:\n    def __init__(self, radius):\n        self._radius = radius\n\n    @property\n    def radius(self):\n        return self._radius\n\n    @property\n    def area(self):\n        return round(3.14159 * self._radius ** 2, 2)\n\n    @property\n    def circumference(self):\n        return round(2 * 3.14159 * self._radius, 2)\n\nc = Circle(7)\nprint(c.radius)\nprint(c.area)\nprint(c.circumference)\ntry:\n    c.radius = 10\nexcept AttributeError:\n    print('Cannot set radius')",
+        "expectedOutput": "7\n153.94\n43.98\nCannot set radius",
+        "hints": [
+          "A @property without a corresponding @attr.setter is read-only. Attempting to set it raises an AttributeError.",
+          "Computed properties recalculate every time they are accessed, so area and circumference are always consistent with the radius."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "polymorphism",
+    "sectionId": "oop",
+    "orderIndex": 3,
+    "title": "Polymorphism",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["duck typing", "method overriding", "operator overloading", "__add__", "__len__", "polymorphic functions"],
+    "content": {
+      "explanation": "Polymorphism means 'many forms' and refers to the ability of different objects to respond to the same method call in their own way. In Python, polymorphism is deeply embedded in the language. When you call len() on a list, a string, or a dictionary, each type handles the call differently through its own __len__ implementation. The caller does not need to know the specific type; it only needs to know that the object supports the operation.\n\nDuck typing is Python's primary mechanism for polymorphism. The phrase comes from the saying: 'If it walks like a duck and quacks like a duck, it is a duck.' Python does not check an object's type before calling a method. It simply tries to call the method, and if the object has it, the call succeeds. This means unrelated classes can be used interchangeably as long as they implement the same interface (i.e., the same method names with compatible signatures).\n\nMethod overriding is the most explicit form of polymorphism. A subclass provides its own implementation of a method defined in its parent class. When the method is called on an instance of the subclass, the overriding version runs. This is commonly used with a base class that defines a generic interface and subclasses that provide specialized behavior.\n\nOperator overloading lets you define how built-in operators (+, -, *, ==, <, etc.) work with your custom objects. You implement this by defining special (dunder) methods like __add__ for +, __eq__ for ==, __lt__ for <, and __mul__ for *. This makes your objects behave naturally with Python's syntax. For example, defining __add__ lets you write obj1 + obj2 instead of obj1.add(obj2).\n\nPolymorphic functions and iteration are everywhere in Python. Built-in functions like len(), str(), iter(), and sorted() all work through duck typing. For-loops call __iter__ and __next__. The print function calls __str__. By implementing the right dunder methods, your custom objects integrate seamlessly with Python's built-in syntax and standard library functions.",
+      "codeExamples": [
+        {
+          "title": "Duck typing with unrelated classes",
+          "code": "class Dog:\n    def speak(self):\n        return 'Woof!'\n\nclass Cat:\n    def speak(self):\n        return 'Meow!'\n\nclass Robot:\n    def speak(self):\n        return 'Beep boop!'\n\ndef make_them_speak(things):\n    for thing in things:\n        print(thing.speak())\n\ncreatures = [Dog(), Cat(), Robot()]\nmake_them_speak(creatures)",
+          "output": "Woof!\nMeow!\nBeep boop!",
+          "explanation": "Dog, Cat, and Robot have no common base class, yet make_them_speak works with all three because each implements speak(). This is duck typing: Python does not check the type, only that the method exists."
+        },
+        {
+          "title": "Method overriding for polymorphic behavior",
+          "code": "class Shape:\n    def area(self):\n        return 0\n\n    def describe(self):\n        return f'{self.__class__.__name__}: area = {self.area()}'\n\nclass Square(Shape):\n    def __init__(self, side):\n        self.side = side\n\n    def area(self):\n        return self.side ** 2\n\nclass Triangle(Shape):\n    def __init__(self, base, height):\n        self.base = base\n        self.height = height\n\n    def area(self):\n        return 0.5 * self.base * self.height\n\nshapes = [Square(4), Triangle(6, 3)]\nfor s in shapes:\n    print(s.describe())",
+          "output": "Square: area = 16\nTriangle: area = 9.0",
+          "explanation": "describe() is defined once in Shape and calls self.area(). Because each subclass overrides area(), the same describe() method produces different output depending on the actual type. This is runtime polymorphism."
+        },
+        {
+          "title": "Operator overloading with __add__ and __eq__",
+          "code": "class Vector:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n    def __add__(self, other):\n        return Vector(self.x + other.x, self.y + other.y)\n\n    def __eq__(self, other):\n        return self.x == other.x and self.y == other.y\n\n    def __repr__(self):\n        return f'Vector({self.x}, {self.y})'\n\nv1 = Vector(1, 2)\nv2 = Vector(3, 4)\nv3 = v1 + v2\n\nprint(v3)\nprint(v1 + v2 == Vector(4, 6))\nprint(v1 == v2)",
+          "output": "Vector(4, 6)\nTrue\nFalse",
+          "explanation": "__add__ is called when you use + between two Vector objects. __eq__ handles ==. __repr__ provides the string representation used by print. These dunder methods make Vector work naturally with Python operators."
+        },
+        {
+          "title": "Polymorphism with built-in functions",
+          "code": "class Playlist:\n    def __init__(self, name, songs):\n        self.name = name\n        self.songs = songs\n\n    def __len__(self):\n        return len(self.songs)\n\n    def __str__(self):\n        return f'{self.name} ({len(self)} songs)'\n\n    def __contains__(self, song):\n        return song in self.songs\n\np = Playlist('Road Trip', ['Song A', 'Song B', 'Song C'])\nprint(len(p))\nprint(str(p))\nprint('Song B' in p)\nprint('Song D' in p)",
+          "output": "3\nRoad Trip (3 songs)\nTrue\nFalse",
+          "explanation": "By implementing __len__, __str__, and __contains__, the Playlist class works seamlessly with len(), str()/print(), and the 'in' operator. This is polymorphism through Python's protocol system."
+        }
+      ],
+      "notes": [
+        "Duck typing means you should program to an interface, not a type. If an object has the methods you need, it works.",
+        "Python does not have method overloading (multiple methods with the same name but different parameter lists) like Java. Use default arguments or *args/**kwargs instead.",
+        "Operator overloading methods should return new objects rather than modifying self, matching the behavior of built-in types.",
+        "The __repr__ method should ideally return a string that could recreate the object, while __str__ should return a human-readable description."
+      ],
+      "commonPitfalls": [
+        "Implementing __add__ but mutating self instead of returning a new object. v1 + v2 should not change v1.",
+        "Confusing method overloading (not natively supported in Python) with method overriding (supported via inheritance).",
+        "Forgetting to implement __eq__ when your class needs equality comparison. Without it, == falls back to identity comparison (is), which is almost never what you want."
+      ],
+      "interviewTips": [
+        "Explain duck typing with a concrete example: 'If I need an object that has a read() method, I don't care if it is a file, a socket, or a StringIO buffer.'",
+        "Know the common operator overloading methods: __add__, __sub__, __mul__, __eq__, __lt__, __len__, __str__, __repr__, __contains__, __getitem__.",
+        "Describe how polymorphism in Python differs from statically typed languages: there are no interfaces or abstract method requirements enforced at compile time, just runtime duck typing."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "polymorphism-ex1",
+        "title": "Polymorphic Area Calculator",
+        "description": "Create three classes: Rectangle(w, h), Circle(r), and RightTriangle(base, height). Each has an area() method. Rectangle area = w*h, Circle area = 3.14159*r*r, Triangle area = 0.5*base*height. Write a function total_area(shapes) that sums all areas. Print the total rounded to 2 decimal places for a Rectangle(3,4), Circle(5), and RightTriangle(6,8).",
+        "starterCode": "# Rectangle, Circle, RightTriangle each with area()\n# total_area(shapes) returns sum of all areas\n\n# Your code here\n\nshapes = [Rectangle(3, 4), Circle(5), RightTriangle(6, 8)]\nprint(round(total_area(shapes), 2))",
+        "solution": "class Rectangle:\n    def __init__(self, w, h):\n        self.w = w\n        self.h = h\n\n    def area(self):\n        return self.w * self.h\n\nclass Circle:\n    def __init__(self, r):\n        self.r = r\n\n    def area(self):\n        return 3.14159 * self.r * self.r\n\nclass RightTriangle:\n    def __init__(self, base, height):\n        self.base = base\n        self.height = height\n\n    def area(self):\n        return 0.5 * self.base * self.height\n\ndef total_area(shapes):\n    return sum(s.area() for s in shapes)\n\nshapes = [Rectangle(3, 4), Circle(5), RightTriangle(6, 8)]\nprint(round(total_area(shapes), 2))",
+        "expectedOutput": "114.54",
+        "hints": [
+          "Rectangle area = 12, Circle area = 78.53975, Triangle area = 24.0. Total = 114.53975, rounded to 114.54.",
+          "total_area uses duck typing: it calls area() on each shape without checking the type."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "polymorphism-ex2",
+        "title": "Custom Money Class with Operators",
+        "description": "Create a Money class with amount and currency attributes. Implement __add__ (raises ValueError if currencies differ), __eq__, __lt__, and __repr__ (format: 'Money(100, USD)'). Demonstrate adding two Money objects with the same currency, comparing them, and printing the result.",
+        "starterCode": "# Money class with amount and currency\n# __add__: add amounts if same currency, else raise ValueError\n# __eq__: compare amount and currency\n# __lt__: compare amounts (same currency only)\n# __repr__: 'Money(amount, currency)'\n\n# Your code here\n\nm1 = Money(50, 'USD')\nm2 = Money(30, 'USD')\nm3 = m1 + m2\nprint(m3)\nprint(m1 == Money(50, 'USD'))\nprint(m1 < m2)\nprint(m2 < m1)",
+        "solution": "class Money:\n    def __init__(self, amount, currency):\n        self.amount = amount\n        self.currency = currency\n\n    def __add__(self, other):\n        if self.currency != other.currency:\n            raise ValueError('Cannot add different currencies')\n        return Money(self.amount + other.amount, self.currency)\n\n    def __eq__(self, other):\n        return self.amount == other.amount and self.currency == other.currency\n\n    def __lt__(self, other):\n        if self.currency != other.currency:\n            raise ValueError('Cannot compare different currencies')\n        return self.amount < other.amount\n\n    def __repr__(self):\n        return f'Money({self.amount}, {self.currency})'\n\nm1 = Money(50, 'USD')\nm2 = Money(30, 'USD')\nm3 = m1 + m2\nprint(m3)\nprint(m1 == Money(50, 'USD'))\nprint(m1 < m2)\nprint(m2 < m1)",
+        "expectedOutput": "Money(80, USD)\nTrue\nFalse\nTrue",
+        "hints": [
+          "In __add__, check if self.currency == other.currency before adding. Return a new Money object with the summed amount.",
+          "In __lt__, 50 < 30 is False, and 30 < 50 is True."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "polymorphism-ex3",
+        "title": "Protocol-Compatible Collection",
+        "description": "Create a WordBag class that stores a list of words. Implement __len__ (number of words), __contains__ (check if a word is in the bag), __getitem__ (access by index), and __str__ (comma-separated words). Demonstrate all four operations using Python's built-in syntax.",
+        "starterCode": "# WordBag class storing a list of words\n# __len__, __contains__, __getitem__, __str__\n\n# Your code here\n\nbag = WordBag(['hello', 'world', 'python', 'code'])\nprint(len(bag))\nprint('python' in bag)\nprint('java' in bag)\nprint(bag[2])\nprint(str(bag))",
+        "solution": "class WordBag:\n    def __init__(self, words):\n        self.words = words\n\n    def __len__(self):\n        return len(self.words)\n\n    def __contains__(self, word):\n        return word in self.words\n\n    def __getitem__(self, index):\n        return self.words[index]\n\n    def __str__(self):\n        return ', '.join(self.words)\n\nbag = WordBag(['hello', 'world', 'python', 'code'])\nprint(len(bag))\nprint('python' in bag)\nprint('java' in bag)\nprint(bag[2])\nprint(str(bag))",
+        "expectedOutput": "4\nTrue\nFalse\npython\nhello, world, python, code",
+        "hints": [
+          "Each dunder method maps to a built-in operation: __len__ -> len(), __contains__ -> 'in', __getitem__ -> [], __str__ -> str()/print().",
+          "Delegate to self.words for each operation since it is a regular list that already supports all these operations."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "magic-methods",
+    "sectionId": "oop",
+    "orderIndex": 4,
+    "title": "Magic Methods (Dunder Methods)",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["__str__", "__repr__", "__len__", "__eq__", "__lt__", "__add__", "__getitem__", "dunder methods"],
+    "content": {
+      "explanation": "Magic methods (also called dunder methods, short for double underscore) are special methods with names surrounded by double underscores. They let you hook into Python's built-in behavior and make your custom objects work with operators, built-in functions, and language constructs like for-loops and with-statements. They are never called directly by name; instead, Python calls them automatically when you use the corresponding syntax.\n\n__str__ and __repr__ control how your objects are converted to strings. __str__ is called by print() and str() and should return a human-friendly description. __repr__ is called by the interactive interpreter and repr(), and should ideally return a string that could recreate the object. If only one is defined, Python falls back from __str__ to __repr__ (but not vice versa), so if you define only one, make it __repr__.\n\n__eq__ and __lt__ are comparison methods. __eq__ defines behavior for == and should return True or False. Without __eq__, Python defaults to identity comparison (same as 'is'). __lt__ defines behavior for < and, when combined with the functools.total_ordering decorator, can auto-generate <=, >, and >= as well. These methods are crucial for sorting and using your objects in sets or as dictionary keys.\n\n__len__ and __getitem__ make your object behave like a collection. __len__ is called by the len() function. __getitem__ is called when you use square bracket notation obj[key]. Implementing __getitem__ also makes your object iterable (you can use it in a for-loop) because Python will call __getitem__ with increasing integer indices until an IndexError is raised. For more control over iteration, implement __iter__ and __next__ instead.\n\n__add__, __sub__, __mul__, and other arithmetic dunder methods define how operators work with your objects. __add__ handles the + operator, __sub__ handles -, and so on. There are also reflected versions like __radd__ that are called when your object appears on the right side of the operator and the left object does not know how to handle the operation. These methods should return new objects rather than modifying the originals, consistent with how built-in types behave.",
+      "codeExamples": [
+        {
+          "title": "__str__ vs __repr__",
+          "code": "class Book:\n    def __init__(self, title, author, pages):\n        self.title = title\n        self.author = author\n        self.pages = pages\n\n    def __str__(self):\n        return f'{self.title} by {self.author}'\n\n    def __repr__(self):\n        return f\"Book('{self.title}', '{self.author}', {self.pages})\"\n\nb = Book('1984', 'Orwell', 328)\nprint(str(b))\nprint(repr(b))\nprint(b)  # print calls __str__",
+          "output": "1984 by Orwell\nBook('1984', 'Orwell', 328)\n1984 by Orwell",
+          "explanation": "__str__ returns a readable description for end users. __repr__ returns a detailed string that could recreate the object. print() calls __str__ by default."
+        },
+        {
+          "title": "__eq__ and __lt__ for comparison and sorting",
+          "code": "class Student:\n    def __init__(self, name, grade):\n        self.name = name\n        self.grade = grade\n\n    def __eq__(self, other):\n        return self.grade == other.grade\n\n    def __lt__(self, other):\n        return self.grade < other.grade\n\n    def __repr__(self):\n        return f'{self.name}:{self.grade}'\n\nstudents = [Student('Alice', 88), Student('Bob', 95), Student('Charlie', 72)]\nstudents.sort()\nprint(students)\nprint(Student('X', 88) == Student('Y', 88))\nprint(Student('X', 70) < Student('Y', 90))",
+          "output": "[Charlie:72, Alice:88, Bob:95]\nTrue\nTrue",
+          "explanation": "sort() uses __lt__ to order the students by grade. __eq__ compares grades regardless of name, so two students with the same grade are considered equal. __repr__ controls how they appear in the list printout."
+        },
+        {
+          "title": "__len__ and __getitem__ for collection behavior",
+          "code": "class Deck:\n    def __init__(self):\n        suits = ['Hearts', 'Diamonds', 'Clubs', 'Spades']\n        ranks = ['A', '2', '3']\n        self.cards = [f'{r} of {s}' for s in suits for r in ranks]\n\n    def __len__(self):\n        return len(self.cards)\n\n    def __getitem__(self, index):\n        return self.cards[index]\n\ndeck = Deck()\nprint(len(deck))\nprint(deck[0])\nprint(deck[-1])\nprint(deck[2:5])",
+          "output": "12\nA of Hearts\n3 of Spades\n['3 of Hearts', 'A of Diamonds', '2 of Diamonds']",
+          "explanation": "__len__ lets len() work on the deck. __getitem__ supports integer indexing, negative indexing, and slicing because Python's slice objects are passed directly to __getitem__ and the internal list handles them."
+        },
+        {
+          "title": "__add__ and __mul__ for arithmetic",
+          "code": "class Matrix:\n    def __init__(self, rows):\n        self.rows = rows\n\n    def __add__(self, other):\n        result = []\n        for r1, r2 in zip(self.rows, other.rows):\n            result.append([a + b for a, b in zip(r1, r2)])\n        return Matrix(result)\n\n    def __mul__(self, scalar):\n        result = [[val * scalar for val in row] for row in self.rows]\n        return Matrix(result)\n\n    def __repr__(self):\n        return '\\n'.join(str(row) for row in self.rows)\n\nm1 = Matrix([[1, 2], [3, 4]])\nm2 = Matrix([[5, 6], [7, 8]])\nprint(m1 + m2)\nprint('---')\nprint(m1 * 3)",
+          "output": "[6, 8]\n[10, 12]\n---\n[3, 6]\n[9, 12]",
+          "explanation": "__add__ performs element-wise addition of two matrices. __mul__ multiplies every element by a scalar. Both return new Matrix objects. __repr__ formats the matrix row by row."
+        }
+      ],
+      "notes": [
+        "If you only define one of __str__ or __repr__, define __repr__. Python falls back to __repr__ when __str__ is not defined, but not the other way around.",
+        "Implementing __getitem__ gives you basic iteration for free. Python will call __getitem__(0), __getitem__(1), etc. until IndexError.",
+        "__eq__ must be defined for your objects to work correctly in sets and as dict keys. You should also define __hash__ if you define __eq__.",
+        "Use functools.total_ordering to auto-generate all comparison methods from just __eq__ and one ordering method like __lt__."
+      ],
+      "commonPitfalls": [
+        "Defining __eq__ without __hash__. If you define __eq__, Python sets __hash__ to None, making your objects unhashable (they cannot be used in sets or as dict keys). Define __hash__ explicitly if needed.",
+        "Returning a string from __repr__ that is not valid Python. While not always possible, __repr__ should aim to return a string like ClassName(args) that could recreate the object.",
+        "Implementing __add__ but forgetting __radd__. If you write 5 + my_obj, Python tries int.__add__(5, my_obj) first. When that fails, it looks for my_obj.__radd__(5). Without __radd__, you get a TypeError."
+      ],
+      "interviewTips": [
+        "Know the key dunder method pairs: __str__/__repr__, __eq__/__hash__, __lt__/__le__/__gt__/__ge__, __add__/__radd__, __len__/__getitem__.",
+        "Explain why __repr__ is more important than __str__: it is used in debugging, logging, and as a fallback for __str__.",
+        "Be prepared to implement a simple class with __eq__, __lt__, and __repr__ that works with sorted(), sets, and print()."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "magic-methods-ex1",
+        "title": "Fraction Class with Dunder Methods",
+        "description": "Create a Fraction class with numerator and denominator. Implement __repr__ (format: 'Fraction(n, d)'), __str__ (format: 'n/d'), __add__ (add two fractions and simplify), and __eq__ (compare simplified forms). Use math.gcd to simplify. Demonstrate adding 1/3 + 1/6 and checking equality.",
+        "starterCode": "from math import gcd\n\n# Fraction class with numerator and denominator\n# Simplify in __init__ using gcd\n# __repr__: 'Fraction(n, d)'\n# __str__: 'n/d'\n# __add__: add fractions, return simplified Fraction\n# __eq__: compare simplified fractions\n\n# Your code here\n\nf1 = Fraction(1, 3)\nf2 = Fraction(1, 6)\nf3 = f1 + f2\nprint(repr(f1))\nprint(str(f2))\nprint(f3)\nprint(f3 == Fraction(2, 4))",
+        "solution": "from math import gcd\n\nclass Fraction:\n    def __init__(self, num, den):\n        g = gcd(abs(num), abs(den))\n        self.num = num // g\n        self.den = den // g\n\n    def __repr__(self):\n        return f'Fraction({self.num}, {self.den})'\n\n    def __str__(self):\n        return f'{self.num}/{self.den}'\n\n    def __add__(self, other):\n        new_num = self.num * other.den + other.num * self.den\n        new_den = self.den * other.den\n        return Fraction(new_num, new_den)\n\n    def __eq__(self, other):\n        return self.num == other.num and self.den == other.den\n\nf1 = Fraction(1, 3)\nf2 = Fraction(1, 6)\nf3 = f1 + f2\nprint(repr(f1))\nprint(str(f2))\nprint(f3)\nprint(f3 == Fraction(2, 4))",
+        "expectedOutput": "Fraction(1, 3)\n1/6\n1/2\nTrue",
+        "hints": [
+          "To add fractions: (a/b) + (c/d) = (a*d + c*b) / (b*d). Then simplify by dividing both by gcd.",
+          "Simplify in __init__ so all Fractions are stored in reduced form. Then __eq__ can just compare num and den directly."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "magic-methods-ex2",
+        "title": "Sortable Scoreboard Entry",
+        "description": "Create a ScoreEntry class with player (string) and score (int). Implement __repr__ (format: 'player:score'), __eq__ (compare scores), and __lt__ (lower score is 'less than'). Create a list of entries, sort them, and print the sorted list. Also demonstrate == between entries with the same score but different names.",
+        "starterCode": "# ScoreEntry class with player and score\n# __repr__: 'player:score'\n# __eq__: compare by score\n# __lt__: compare by score\n\n# Your code here\n\nentries = [ScoreEntry('Alice', 150), ScoreEntry('Bob', 90), ScoreEntry('Charlie', 200)]\nentries.sort()\nprint(entries)\nprint(ScoreEntry('X', 100) == ScoreEntry('Y', 100))",
+        "solution": "class ScoreEntry:\n    def __init__(self, player, score):\n        self.player = player\n        self.score = score\n\n    def __repr__(self):\n        return f'{self.player}:{self.score}'\n\n    def __eq__(self, other):\n        return self.score == other.score\n\n    def __lt__(self, other):\n        return self.score < other.score\n\nentries = [ScoreEntry('Alice', 150), ScoreEntry('Bob', 90), ScoreEntry('Charlie', 200)]\nentries.sort()\nprint(entries)\nprint(ScoreEntry('X', 100) == ScoreEntry('Y', 100))",
+        "expectedOutput": "[Bob:90, Alice:150, Charlie:200]\nTrue",
+        "hints": [
+          "sort() uses __lt__ to determine ordering. Entries with lower scores come first.",
+          "__eq__ compares only scores, so two entries with score 100 are equal regardless of player name."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "magic-methods-ex3",
+        "title": "Custom Range with __getitem__ and __len__",
+        "description": "Create a SteppedRange class that takes start, stop, and step. Implement __len__ (number of elements) and __getitem__ (return the value at a given index, raising IndexError if out of range). Do NOT store all values in a list; compute them on the fly. Demonstrate with SteppedRange(10, 50, 10).",
+        "starterCode": "# SteppedRange class with start, stop, step\n# __len__: compute number of elements\n# __getitem__: compute value at index, raise IndexError if out of range\n# Do NOT pre-compute a list\n\n# Your code here\n\nsr = SteppedRange(10, 50, 10)\nprint(len(sr))\nprint(sr[0])\nprint(sr[2])\nprint(sr[3])\nfor val in sr:\n    print(val, end=' ')\nprint()",
+        "solution": "class SteppedRange:\n    def __init__(self, start, stop, step):\n        self.start = start\n        self.stop = stop\n        self.step = step\n\n    def __len__(self):\n        if (self.stop - self.start) * self.step <= 0:\n            return 0\n        return max(0, (self.stop - self.start + self.step - 1) // self.step)\n\n    def __getitem__(self, index):\n        if index < 0 or index >= len(self):\n            raise IndexError('index out of range')\n        return self.start + index * self.step\n\nsr = SteppedRange(10, 50, 10)\nprint(len(sr))\nprint(sr[0])\nprint(sr[2])\nprint(sr[3])\nfor val in sr:\n    print(val, end=' ')\nprint()",
+        "expectedOutput": "4\n10\n30\n40\n10 20 30 40 ",
+        "hints": [
+          "The number of elements is (stop - start + step - 1) // step for positive steps. For SteppedRange(10, 50, 10) that is (40 + 9) // 10 = 4.",
+          "Implementing __getitem__ with IndexError on out-of-range makes for-loop iteration work automatically. Python calls __getitem__(0), __getitem__(1), etc. until IndexError."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

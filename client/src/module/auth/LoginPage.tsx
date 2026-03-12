@@ -24,6 +24,10 @@ export default function LoginPage() {
         credential: credentialResponse.credential,
       });
       login(data.user, data.token);
+      if (!data.user.isVerified) {
+        navigate(`/verify-email?email=${encodeURIComponent(data.user.email)}`);
+        return;
+      }
       if (data.user.role === "ADMIN") {
         navigate("/admin");
       } else if (data.user.role === "RECRUITER") {
@@ -47,6 +51,10 @@ export default function LoginPage() {
     try {
       const { data } = await api.post("/auth/login", form);
       login(data.user, data.token);
+      if (!data.user.isVerified) {
+        navigate(`/verify-email?email=${encodeURIComponent(form.email)}`);
+        return;
+      }
       if (data.user.role === "ADMIN") {
         navigate("/admin");
       } else if (data.user.role === "RECRUITER") {
@@ -122,6 +130,12 @@ export default function LoginPage() {
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
+          </div>
+
+          <div className="flex justify-end">
+            <Link to="/forgot-password" className="text-sm text-gray-500 hover:text-gray-900 dark:hover:text-white">
+              Forgot Password?
+            </Link>
           </div>
 
           <motion.button

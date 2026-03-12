@@ -1,0 +1,266 @@
+[
+  {
+    "id": "response-models",
+    "sectionId": "response-models-and-status-codes",
+    "orderIndex": 0,
+    "title": "Response Models",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["response_model", "Data Filtering", "Exclude Fields", "Response Schema", "Documentation"],
+    "content": {
+      "explanation": "Response models in FastAPI control what data your API sends back to clients. While you can return any dictionary or Pydantic model from a handler, using the response_model parameter ensures that the output is validated, filtered, and documented according to a specific schema. This is one of FastAPI's most powerful features for building secure and well-documented APIs.\n\nThe response_model parameter is set on the route decorator: @app.get(\"/users/{id}\", response_model=UserResponse). When specified, FastAPI takes whatever your handler returns and filters it through the response model. Only fields defined in the response model are included in the response. This means even if your database returns sensitive fields like password_hash, they will be automatically stripped if UserResponse does not include that field.\n\nThis filtering behavior is a critical security feature. In many applications, the internal data model (from the database) contains fields that should never be exposed to clients: password hashes, internal IDs, admin flags, API keys. By defining a response model that excludes these fields, you create a safe boundary between your internal data and the API output.\n\nYou typically create separate models for different operations: a Create model for input, a Response model for output, and an Update model for partial updates. For example, UserCreate might have name, email, and password. UserResponse might have id, name, and email (no password). UserUpdate might have optional name and email (for PATCH).\n\nFastAPI also supports response_model_exclude and response_model_include parameters for quick field filtering without creating a separate model. However, creating explicit response models is preferred because they are reusable, self-documenting, and type-safe.\n\nResponse models also drive the API documentation. The Swagger UI shows the response schema based on the response_model, helping clients understand exactly what to expect. This is much more useful than showing a generic 'object' type.",
+      "codeExamples": [
+        {
+          "title": "Filtering Sensitive Data",
+          "code": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n# Internal model (has sensitive fields)\nclass UserInDB(BaseModel):\n    id: int\n    name: str\n    email: str\n    password_hash: str\n    is_admin: bool\n\n# Response model (safe for clients)\nclass UserResponse(BaseModel):\n    id: int\n    name: str\n    email: str\n\n# Create model (input from client)\nclass UserCreate(BaseModel):\n    name: str\n    email: str\n    password: str\n\n# Simulated database\nfake_db: dict[int, UserInDB] = {\n    1: UserInDB(id=1, name=\"Alice\", email=\"alice@example.com\",\n                password_hash=\"$2b$12$abc...\", is_admin=True),\n}\n\n@app.get(\"/users/{user_id}\", response_model=UserResponse)\ndef get_user(user_id: int):\n    user = fake_db.get(user_id)\n    if not user:\n        raise HTTPException(status_code=404)\n    # Returns full UserInDB, but response_model filters to UserResponse\n    return user\n\n# Response: {\"id\": 1, \"name\": \"Alice\", \"email\": \"alice@example.com\"}\n# password_hash and is_admin are automatically stripped!",
+          "explanation": "Even though the handler returns a UserInDB with password_hash and is_admin, the response_model=UserResponse filters the output to only include id, name, and email. This prevents accidental data leaks."
+        },
+        {
+          "title": "Multiple Response Models",
+          "code": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass UserBrief(BaseModel):\n    id: int\n    name: str\n\nclass UserDetail(BaseModel):\n    id: int\n    name: str\n    email: str\n    bio: str | None\n    post_count: int\n\n@app.get(\"/users\", response_model=list[UserBrief])\ndef list_users():\n    \"\"\"Returns minimal info for listing\"\"\"\n    return [\n        {\"id\": 1, \"name\": \"Alice\", \"email\": \"hidden\", \"bio\": \"hidden\"},\n        {\"id\": 2, \"name\": \"Bob\", \"email\": \"hidden\", \"bio\": \"hidden\"},\n    ]\n\n@app.get(\"/users/{user_id}\", response_model=UserDetail)\ndef get_user(user_id: int):\n    \"\"\"Returns full detail for a single user\"\"\"\n    return {\n        \"id\": user_id,\n        \"name\": \"Alice\",\n        \"email\": \"alice@example.com\",\n        \"bio\": \"Software developer\",\n        \"post_count\": 42,\n    }",
+          "explanation": "Different endpoints can use different response models. The list endpoint returns minimal UserBrief data for efficiency. The detail endpoint returns full UserDetail. Swagger UI documents both response shapes separately."
+        },
+        {
+          "title": "Response Model Options",
+          "code": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Item(BaseModel):\n    name: str\n    description: str | None = None\n    price: float\n    tax: float = 0.0\n    internal_code: str | None = None\n\n# Exclude None values from response\n@app.get(\"/items/{item_id}\", response_model=Item, response_model_exclude_unset=True)\ndef get_item(item_id: int):\n    return {\"name\": \"Widget\", \"price\": 9.99}\n    # Response: {\"name\": \"Widget\", \"price\": 9.99}\n    # description, tax, internal_code are excluded (not set)\n\n# Exclude specific fields\n@app.get(\n    \"/items-safe/{item_id}\",\n    response_model=Item,\n    response_model_exclude={\"internal_code\"},\n)\ndef get_item_safe(item_id: int):\n    return {\n        \"name\": \"Widget\",\n        \"price\": 9.99,\n        \"internal_code\": \"INTERNAL-123\",\n    }\n    # Response: {\"name\": \"Widget\", \"price\": 9.99, ...}\n    # internal_code is excluded\n\n# Include only specific fields\n@app.get(\n    \"/items-minimal/{item_id}\",\n    response_model=Item,\n    response_model_include={\"name\", \"price\"},\n)\ndef get_item_minimal(item_id: int):\n    return {\"name\": \"Widget\", \"price\": 9.99, \"description\": \"A widget\"}\n    # Response: {\"name\": \"Widget\", \"price\": 9.99}",
+          "explanation": "response_model_exclude_unset=True omits fields that were not explicitly set (useful for sparse objects). response_model_exclude and response_model_include filter specific fields. Creating separate models is preferred over ad-hoc filtering."
+        }
+      ],
+      "notes": [
+        "response_model filters output data, preventing accidental exposure of sensitive fields.",
+        "Create separate input (Create/Update) and output (Response) models for each resource.",
+        "response_model also generates the response schema in Swagger documentation.",
+        "Use response_model=list[Model] for endpoints that return arrays."
+      ],
+      "interviewTips": [
+        "Explain that response_model is a security feature that prevents data leaks by filtering output.",
+        "Know the difference between response_model_exclude_unset (excludes fields not explicitly set) and response_model_exclude_none (excludes fields that are None).",
+        "Describe the Create/Response/Update model pattern and why separating input and output models matters."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "response-models-ex1",
+        "title": "Secure User Endpoint",
+        "description": "Create a UserInDB model (id, name, email, password_hash, role) and a UserPublic model (id, name, email). Create GET /users/{id} that returns data from a fake database using response_model=UserPublic to filter out sensitive fields.",
+        "starterCode": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n# Define models\n\n# Fake database\nusers_db = {\n    1: {\"id\": 1, \"name\": \"Alice\", \"email\": \"alice@example.com\", \"password_hash\": \"$2b$abc\", \"role\": \"admin\"},\n}\n\n# Define GET /users/{id} with response_model\n",
+        "solution": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass UserInDB(BaseModel):\n    id: int\n    name: str\n    email: str\n    password_hash: str\n    role: str\n\nclass UserPublic(BaseModel):\n    id: int\n    name: str\n    email: str\n\nusers_db = {\n    1: {\"id\": 1, \"name\": \"Alice\", \"email\": \"alice@example.com\", \"password_hash\": \"$2b$abc\", \"role\": \"admin\"},\n}\n\n@app.get(\"/users/{user_id}\", response_model=UserPublic)\ndef get_user(user_id: int):\n    if user_id not in users_db:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    return users_db[user_id]",
+        "hints": [
+          "UserPublic should only include fields safe for public consumption",
+          "response_model automatically filters out fields not in the model"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "response-models-ex2",
+        "title": "List and Detail Response Models",
+        "description": "Create two response models: ProductBrief (id, name, price) and ProductDetail (id, name, price, description, stock, category). Create GET /products returning list[ProductBrief] and GET /products/{id} returning ProductDetail.",
+        "starterCode": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nproducts_db = {\n    1: {\"id\": 1, \"name\": \"Laptop\", \"price\": 999.99, \"description\": \"Powerful laptop\", \"stock\": 50, \"category\": \"electronics\"},\n    2: {\"id\": 2, \"name\": \"Mouse\", \"price\": 29.99, \"description\": \"Wireless mouse\", \"stock\": 200, \"category\": \"accessories\"},\n}\n\n# Define models and endpoints\n",
+        "solution": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass ProductBrief(BaseModel):\n    id: int\n    name: str\n    price: float\n\nclass ProductDetail(BaseModel):\n    id: int\n    name: str\n    price: float\n    description: str\n    stock: int\n    category: str\n\nproducts_db = {\n    1: {\"id\": 1, \"name\": \"Laptop\", \"price\": 999.99, \"description\": \"Powerful laptop\", \"stock\": 50, \"category\": \"electronics\"},\n    2: {\"id\": 2, \"name\": \"Mouse\", \"price\": 29.99, \"description\": \"Wireless mouse\", \"stock\": 200, \"category\": \"accessories\"},\n}\n\n@app.get(\"/products\", response_model=list[ProductBrief])\ndef list_products():\n    return list(products_db.values())\n\n@app.get(\"/products/{product_id}\", response_model=ProductDetail)\ndef get_product(product_id: int):\n    if product_id not in products_db:\n        raise HTTPException(status_code=404, detail=\"Product not found\")\n    return products_db[product_id]",
+        "hints": [
+          "Use list[ProductBrief] as response_model for the list endpoint",
+          "The detail endpoint returns more fields than the list endpoint"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "status-codes-detail",
+    "sectionId": "response-models-and-status-codes",
+    "orderIndex": 1,
+    "title": "Status Codes",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["HTTP Status Codes", "status Module", "Dynamic Status", "Multiple Responses", "OpenAPI Responses"],
+    "content": {
+      "explanation": "Proper use of HTTP status codes communicates the result of an API operation clearly. FastAPI makes it easy to set status codes both statically (in the decorator) and dynamically (in the handler), and to document all possible response codes in the OpenAPI specification.\n\nStatic status codes are set via the status_code parameter in the route decorator. This is the most common approach for the success case. For example, @app.post(\"/items\", status_code=201) always returns 201 for successful creation. The starlette.status module provides named constants for all HTTP status codes.\n\nDynamic status codes are set by modifying the Response object within the handler. This is useful when the same endpoint can return different success codes depending on the logic. For example, creating a resource might return 201, while updating an existing one returns 200.\n\nTo document multiple possible responses in the OpenAPI spec, use the responses parameter in the decorator. This tells Swagger UI about all the possible response codes and their shapes, including error responses. Clients can then see all possible outcomes when using the endpoint.\n\nFastAPI automatically documents 422 responses for endpoints with validated parameters. This is one of the standard responses that appears in every endpoint's documentation. You do not need to explicitly declare it.\n\nA good practice is to use consistent status codes across your API. POST creates return 201, successful updates return 200, deletions return 204, client errors use 4xx, and server errors use 5xx. This consistency makes your API predictable for clients.",
+      "codeExamples": [
+        {
+          "title": "Status Code Best Practices",
+          "code": "from fastapi import FastAPI, HTTPException\nfrom starlette import status\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Item(BaseModel):\n    name: str\n    price: float\n\nitems_db: dict[int, dict] = {}\nnext_id = 1\n\n@app.post(\"/items\", status_code=status.HTTP_201_CREATED)\ndef create_item(item: Item):\n    \"\"\"201 Created: Resource was successfully created\"\"\"\n    global next_id\n    items_db[next_id] = {\"id\": next_id, **item.model_dump()}\n    next_id += 1\n    return items_db[next_id - 1]\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: int):\n    \"\"\"200 OK (default) or 404 Not Found\"\"\"\n    if item_id not in items_db:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=\"Item not found\")\n    return items_db[item_id]\n\n@app.put(\"/items/{item_id}\")\ndef update_item(item_id: int, item: Item):\n    \"\"\"200 OK for update\"\"\"\n    if item_id not in items_db:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=\"Item not found\")\n    items_db[item_id] = {\"id\": item_id, **item.model_dump()}\n    return items_db[item_id]\n\n@app.delete(\"/items/{item_id}\", status_code=status.HTTP_204_NO_CONTENT)\ndef delete_item(item_id: int):\n    \"\"\"204 No Content: Successfully deleted, no body\"\"\"\n    if item_id not in items_db:\n        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=\"Item not found\")\n    del items_db[item_id]",
+          "explanation": "Each operation uses the appropriate status code: 201 for creation, 200 (default) for reads and updates, 204 for deletion. Error cases use HTTPException with 404."
+        },
+        {
+          "title": "Dynamic Status Codes",
+          "code": "from fastapi import FastAPI, Response\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Item(BaseModel):\n    name: str\n    price: float\n\nitems_db: dict[str, dict] = {}\n\n@app.put(\"/items/{item_id}\")\ndef upsert_item(item_id: str, item: Item, response: Response):\n    \"\"\"Create or update: 201 if created, 200 if updated\"\"\"\n    if item_id in items_db:\n        items_db[item_id] = {\"id\": item_id, **item.model_dump()}\n        response.status_code = 200\n        return {\"action\": \"updated\", **items_db[item_id]}\n    else:\n        items_db[item_id] = {\"id\": item_id, **item.model_dump()}\n        response.status_code = 201\n        return {\"action\": \"created\", **items_db[item_id]}",
+          "explanation": "The Response parameter lets you set the status code dynamically. This upsert endpoint returns 201 when creating a new item and 200 when updating an existing one. The status code changes based on runtime logic."
+        },
+        {
+          "title": "Documenting Multiple Responses",
+          "code": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass Item(BaseModel):\n    id: int\n    name: str\n    price: float\n\nclass ErrorResponse(BaseModel):\n    detail: str\n\n@app.get(\n    \"/items/{item_id}\",\n    response_model=Item,\n    responses={\n        200: {\"description\": \"Item found\", \"model\": Item},\n        404: {\"description\": \"Item not found\", \"model\": ErrorResponse},\n        422: {\"description\": \"Validation error\"},\n    },\n)\ndef get_item(item_id: int):\n    if item_id < 1:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    return {\"id\": item_id, \"name\": \"Widget\", \"price\": 9.99}\n\n# Swagger UI will show all three possible responses\n# with their schemas and descriptions",
+          "explanation": "The responses parameter documents all possible response codes in Swagger UI. Each response can have a description and an optional model for the response body schema. This helps clients understand all possible outcomes."
+        }
+      ],
+      "notes": [
+        "Use starlette.status constants for readable code: HTTP_201_CREATED, HTTP_404_NOT_FOUND, etc.",
+        "204 No Content means the handler should not return any data.",
+        "The responses parameter documents non-success responses in the OpenAPI spec.",
+        "FastAPI automatically adds 422 to the documentation for endpoints with validation."
+      ],
+      "commonPitfalls": [
+        "Returning data with a 204 status code. 204 means no content — the response body should be empty.",
+        "Not documenting error responses in the OpenAPI spec. Use the responses parameter to inform clients about possible errors.",
+        "Using 200 for everything. Different operations warrant different status codes for proper HTTP semantics."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "status-codes-detail-ex1",
+        "title": "Upsert Endpoint",
+        "description": "Create a PUT /settings/{key} endpoint that accepts a value (str) in the body. If the key already exists in a dict, update it and return 200. If it does not exist, create it and return 201. Return the key and value in both cases.",
+        "starterCode": "from fastapi import FastAPI, Response\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass SettingValue(BaseModel):\n    value: str\n\nsettings_db: dict[str, str] = {}\n\n# Define PUT /settings/{key}\n",
+        "solution": "from fastapi import FastAPI, Response\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass SettingValue(BaseModel):\n    value: str\n\nsettings_db: dict[str, str] = {}\n\n@app.put(\"/settings/{key}\")\ndef upsert_setting(key: str, body: SettingValue, response: Response):\n    if key in settings_db:\n        settings_db[key] = body.value\n        response.status_code = 200\n    else:\n        settings_db[key] = body.value\n        response.status_code = 201\n    return {\"key\": key, \"value\": settings_db[key]}",
+        "hints": [
+          "Use the Response parameter to set status code dynamically",
+          "Check if the key exists before deciding the status code"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "status-codes-detail-ex2",
+        "title": "Document All Responses",
+        "description": "Create a GET /users/{user_id} endpoint with response_model=UserResponse and document three possible responses: 200 (user found), 404 (user not found), 422 (validation error). Use the responses parameter.",
+        "starterCode": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass UserResponse(BaseModel):\n    id: int\n    name: str\n\nclass ErrorDetail(BaseModel):\n    detail: str\n\n# Define GET /users/{user_id} with documented responses\n",
+        "solution": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass UserResponse(BaseModel):\n    id: int\n    name: str\n\nclass ErrorDetail(BaseModel):\n    detail: str\n\n@app.get(\n    \"/users/{user_id}\",\n    response_model=UserResponse,\n    responses={\n        200: {\"description\": \"User found\", \"model\": UserResponse},\n        404: {\"description\": \"User not found\", \"model\": ErrorDetail},\n        422: {\"description\": \"Invalid user ID format\"},\n    },\n)\ndef get_user(user_id: int):\n    if user_id > 100:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    return {\"id\": user_id, \"name\": \"Alice\"}",
+        "hints": [
+          "Use the responses parameter in the decorator to document all possible outcomes",
+          "Each response entry has a description and optional model"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "response-headers",
+    "sectionId": "response-models-and-status-codes",
+    "orderIndex": 2,
+    "title": "Response Headers",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Custom Headers", "Cache-Control", "Pagination Headers", "Content-Type", "Response Object"],
+    "content": {
+      "explanation": "HTTP response headers provide metadata about the response itself — information about caching, content type, pagination, rate limiting, and more. FastAPI provides multiple ways to set custom response headers, from the simple Response parameter injection to returning full Response objects.\n\nThe simplest way to add custom headers is to declare a Response parameter in your handler. FastAPI injects a Response object that you can modify. Any headers you set on this object are included in the final response. You can still return your data normally, and FastAPI handles the serialization.\n\nFor full control over the response, return a Response object directly (like JSONResponse, PlainTextResponse, etc.). This gives you control over the body, status code, headers, and content type. However, you lose automatic serialization and response_model filtering.\n\nCommon custom headers include X-Request-Id for request tracing, X-Total-Count for pagination totals, Cache-Control for caching directives, X-RateLimit-Remaining for rate limit information, and Content-Disposition for file downloads.\n\nHeaders for pagination are particularly important for list endpoints. Instead of including pagination metadata in the response body, some APIs use headers like X-Total-Count, X-Page, X-Per-Page, and Link (for next/previous page URLs). This keeps the response body clean — just the array of items.\n\nNote that custom headers should use the X- prefix by convention for application-specific headers, though this convention is technically deprecated. Standard headers like Cache-Control, Content-Type, and Content-Disposition have defined meanings and should be used according to their specifications.",
+      "codeExamples": [
+        {
+          "title": "Adding Custom Headers via Response",
+          "code": "from fastapi import FastAPI, Response\nimport uuid\n\napp = FastAPI()\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: int, response: Response):\n    response.headers[\"X-Request-Id\"] = str(uuid.uuid4())\n    response.headers[\"Cache-Control\"] = \"max-age=300, public\"\n    response.headers[\"X-Item-Version\"] = \"2\"\n    return {\"id\": item_id, \"name\": \"Widget\"}\n\n# Response headers:\n# X-Request-Id: 550e8400-e29b-41d4-a716-446655440000\n# Cache-Control: max-age=300, public\n# X-Item-Version: 2\n# Content-Type: application/json",
+          "explanation": "The Response parameter is injected by FastAPI. Setting headers on it adds them to the final response. You can still return data normally — FastAPI handles JSON serialization and adds your custom headers."
+        },
+        {
+          "title": "Pagination Headers",
+          "code": "from fastapi import FastAPI, Response, Query\n\napp = FastAPI()\n\nall_items = [{\"id\": i, \"name\": f\"Item {i}\"} for i in range(1, 101)]\n\n@app.get(\"/items\")\ndef list_items(\n    page: int = Query(default=1, ge=1),\n    per_page: int = Query(default=20, ge=1, le=100),\n    response: Response = None,\n):\n    total = len(all_items)\n    start = (page - 1) * per_page\n    end = start + per_page\n    items = all_items[start:end]\n\n    response.headers[\"X-Total-Count\"] = str(total)\n    response.headers[\"X-Page\"] = str(page)\n    response.headers[\"X-Per-Page\"] = str(per_page)\n    response.headers[\"X-Total-Pages\"] = str(-(-total // per_page))\n\n    return items\n\n# GET /items?page=2&per_page=10\n# Response headers:\n# X-Total-Count: 100\n# X-Page: 2\n# X-Per-Page: 10\n# X-Total-Pages: 10\n# Body: [{\"id\": 11, ...}, ..., {\"id\": 20, ...}]",
+          "explanation": "Pagination metadata is sent via headers, keeping the response body as a clean array. X-Total-Count tells the client how many items exist in total. The client can calculate if there are more pages."
+        },
+        {
+          "title": "Direct Response Objects",
+          "code": "from fastapi import FastAPI\nfrom fastapi.responses import JSONResponse, StreamingResponse\nimport json\n\napp = FastAPI()\n\n@app.get(\"/download\")\ndef download_report():\n    data = {\"report\": \"Q1 Sales\", \"total\": 150000}\n    content = json.dumps(data, indent=2)\n    return JSONResponse(\n        content=data,\n        headers={\n            \"Content-Disposition\": \"attachment; filename=report.json\",\n            \"X-Report-Generated\": \"2026-03-12\",\n        },\n    )\n\n@app.get(\"/stream\")\ndef stream_data():\n    def generate():\n        for i in range(10):\n            yield f\"data: {i}\\n\\n\"\n\n    return StreamingResponse(\n        generate(),\n        media_type=\"text/event-stream\",\n        headers={\"Cache-Control\": \"no-cache\"},\n    )",
+          "explanation": "Returning Response objects directly gives full control over headers, status, and content type. Content-Disposition triggers a file download in browsers. StreamingResponse is useful for server-sent events and large file downloads."
+        }
+      ],
+      "notes": [
+        "Header values must be strings. Convert numbers with str() before setting them.",
+        "The Response parameter approach lets you add headers while keeping automatic JSON serialization.",
+        "Returning Response objects directly bypasses response_model filtering — use with care.",
+        "Standard headers like Cache-Control and Content-Disposition have specific formats defined by HTTP specs."
+      ],
+      "commonPitfalls": [
+        "Setting non-string header values. All HTTP header values must be strings.",
+        "Using response headers for data that belongs in the response body. Headers are for metadata, not primary data.",
+        "Forgetting that returning a Response object directly bypasses response_model validation."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "response-headers-ex1",
+        "title": "Add Request Tracing Headers",
+        "description": "Create a GET /api/data endpoint that returns some sample data and adds three custom headers: X-Request-Id (a UUID), X-Response-Time (hardcode '45ms'), and Cache-Control set to 'no-cache'.",
+        "starterCode": "from fastapi import FastAPI, Response\nimport uuid\n\napp = FastAPI()\n\n# Define GET /api/data with custom headers\n",
+        "solution": "from fastapi import FastAPI, Response\nimport uuid\n\napp = FastAPI()\n\n@app.get(\"/api/data\")\ndef get_data(response: Response):\n    response.headers[\"X-Request-Id\"] = str(uuid.uuid4())\n    response.headers[\"X-Response-Time\"] = \"45ms\"\n    response.headers[\"Cache-Control\"] = \"no-cache\"\n    return {\"data\": [1, 2, 3], \"count\": 3}",
+        "hints": [
+          "Use the Response parameter to add headers",
+          "Generate a UUID with str(uuid.uuid4())"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "response-headers-ex2",
+        "title": "Paginated Response with Headers",
+        "description": "Create GET /posts that accepts page (default 1) and limit (default 10) query params. Use a fake list of 50 posts. Return the paginated slice in the body and set X-Total-Count and X-Has-More (true/false) headers.",
+        "starterCode": "from fastapi import FastAPI, Response, Query\n\napp = FastAPI()\n\nall_posts = [{\"id\": i, \"title\": f\"Post {i}\"} for i in range(1, 51)]\n\n# Define GET /posts with pagination headers\n",
+        "solution": "from fastapi import FastAPI, Response, Query\n\napp = FastAPI()\n\nall_posts = [{\"id\": i, \"title\": f\"Post {i}\"} for i in range(1, 51)]\n\n@app.get(\"/posts\")\ndef list_posts(\n    page: int = Query(default=1, ge=1),\n    limit: int = Query(default=10, ge=1, le=50),\n    response: Response = None,\n):\n    total = len(all_posts)\n    start = (page - 1) * limit\n    end = start + limit\n    posts = all_posts[start:end]\n\n    response.headers[\"X-Total-Count\"] = str(total)\n    response.headers[\"X-Has-More\"] = str(end < total).lower()\n    return posts",
+        "hints": [
+          "Calculate start and end indices from page and limit",
+          "X-Has-More is 'true' if there are more items beyond the current page"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "error-responses",
+    "sectionId": "response-models-and-status-codes",
+    "orderIndex": 3,
+    "title": "Error Responses",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["HTTPException", "Custom Exceptions", "Exception Handlers", "Error Format", "Validation Errors"],
+    "content": {
+      "explanation": "Error handling is a critical part of API design. Well-structured error responses help clients understand what went wrong and how to fix it. FastAPI provides several mechanisms for error handling, from the simple HTTPException to custom exception classes with registered handlers.\n\nHTTPException is the primary way to return error responses in FastAPI. It accepts a status_code, a detail message (string or any JSON-serializable data), and optional headers. When raised inside a handler, FastAPI catches it and returns the appropriate error response. The detail field can be a string for simple errors or a dictionary/list for structured error data.\n\nFor consistent error formats across your API, you can create custom exception classes and register exception handlers using @app.exception_handler(). This lets you standardize the error response structure — for example, always including an 'error_code', 'message', and 'details' field. The handler receives the Request and the exception, and returns a Response.\n\nFastAPI automatically handles Pydantic validation errors, returning a 422 status code with detailed information about which fields failed validation and why. You can override the default validation error handler to customize the format. The default format includes the error location (query, path, or body), the field name, the type of error, and a human-readable message.\n\nThe RequestValidationError is raised by FastAPI when request validation fails. You can import it from fastapi.exceptions and register a custom handler. This is useful for transforming the verbose default validation errors into a simpler format that matches your API's error convention.\n\nA robust error handling strategy includes: consistent error response format, proper HTTP status codes, actionable error messages, unique error codes for programmatic handling, and logging of server errors for debugging. Never expose internal details (like stack traces or database queries) in error responses.",
+      "codeExamples": [
+        {
+          "title": "HTTPException Patterns",
+          "code": "from fastapi import FastAPI, HTTPException\n\napp = FastAPI()\n\n@app.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    if user_id < 1:\n        raise HTTPException(\n            status_code=400,\n            detail=\"User ID must be a positive integer\",\n        )\n    if user_id > 1000:\n        raise HTTPException(\n            status_code=404,\n            detail=\"User not found\",\n            headers={\"X-Error\": \"user-not-found\"},\n        )\n    return {\"id\": user_id, \"name\": \"Alice\"}\n\n# Structured error detail\n@app.post(\"/transfer\")\ndef transfer(amount: float):\n    if amount <= 0:\n        raise HTTPException(\n            status_code=400,\n            detail={\n                \"error_code\": \"INVALID_AMOUNT\",\n                \"message\": \"Transfer amount must be positive\",\n                \"field\": \"amount\",\n                \"received\": amount,\n            },\n        )\n    return {\"transferred\": amount}",
+          "explanation": "HTTPException's detail can be a string or a structured object. Structured errors are more useful for clients that need to programmatically handle different error types. Custom headers can carry machine-readable error codes."
+        },
+        {
+          "title": "Custom Exception Classes and Handlers",
+          "code": "from fastapi import FastAPI, Request\nfrom fastapi.responses import JSONResponse\n\napp = FastAPI()\n\nclass AppError(Exception):\n    def __init__(self, code: str, message: str, status: int = 400):\n        self.code = code\n        self.message = message\n        self.status = status\n\nclass NotFoundError(AppError):\n    def __init__(self, resource: str, resource_id: str):\n        super().__init__(\n            code=f\"{resource.upper()}_NOT_FOUND\",\n            message=f\"{resource} with id '{resource_id}' not found\",\n            status=404,\n        )\n\nclass ConflictError(AppError):\n    def __init__(self, message: str):\n        super().__init__(code=\"CONFLICT\", message=message, status=409)\n\n@app.exception_handler(AppError)\nasync def app_error_handler(request: Request, exc: AppError):\n    return JSONResponse(\n        status_code=exc.status,\n        content={\n            \"error\": exc.code,\n            \"message\": exc.message,\n            \"path\": str(request.url),\n        },\n    )\n\n@app.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    raise NotFoundError(resource=\"User\", resource_id=str(user_id))\n\n@app.post(\"/users\")\ndef create_user():\n    raise ConflictError(message=\"Email already registered\")",
+          "explanation": "A base AppError class standardizes error attributes. Subclasses like NotFoundError and ConflictError fill in specific details. A single exception handler catches all AppError subclasses and formats them consistently."
+        },
+        {
+          "title": "Custom Validation Error Handler",
+          "code": "from fastapi import FastAPI, Request\nfrom fastapi.exceptions import RequestValidationError\nfrom fastapi.responses import JSONResponse\n\napp = FastAPI()\n\n@app.exception_handler(RequestValidationError)\nasync def validation_error_handler(request: Request, exc: RequestValidationError):\n    errors = []\n    for error in exc.errors():\n        errors.append({\n            \"field\": \".\".join(str(loc) for loc in error[\"loc\"]),\n            \"message\": error[\"msg\"],\n            \"type\": error[\"type\"],\n        })\n    return JSONResponse(\n        status_code=422,\n        content={\n            \"error\": \"VALIDATION_ERROR\",\n            \"message\": \"Request validation failed\",\n            \"details\": errors,\n        },\n    )\n\nfrom pydantic import BaseModel, Field\n\nclass UserCreate(BaseModel):\n    name: str = Field(min_length=1)\n    age: int = Field(ge=0)\n\n@app.post(\"/users\")\ndef create_user(user: UserCreate):\n    return user\n\n# POST /users with body: {\"name\": \"\", \"age\": -1}\n# Custom response:\n# {\n#   \"error\": \"VALIDATION_ERROR\",\n#   \"message\": \"Request validation failed\",\n#   \"details\": [\n#     {\"field\": \"body.name\", \"message\": \"...\", \"type\": \"...\"}\n#   ]\n# }",
+          "explanation": "Overriding the RequestValidationError handler lets you customize the validation error format. The default format is verbose — this custom handler simplifies it to field, message, and type. The exc.errors() method returns a list of all validation errors."
+        }
+      ],
+      "notes": [
+        "HTTPException detail can be any JSON-serializable data, not just strings.",
+        "Custom exception handlers for base classes also catch all subclasses.",
+        "Override RequestValidationError to customize the 422 error format.",
+        "Never expose internal details (stack traces, SQL queries) in API error responses."
+      ],
+      "commonPitfalls": [
+        "Returning an HTTPException instead of raising it. Always use 'raise HTTPException(...)' not 'return HTTPException(...)'.",
+        "Not handling all possible error cases. Unhandled exceptions result in 500 Internal Server Error with no useful detail.",
+        "Inconsistent error formats across endpoints. Use custom exception classes and handlers for consistency."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "error-responses-ex1",
+        "title": "Consistent Error Format",
+        "description": "Create a custom AppException class with code (str), message (str), and status_code (int). Register an exception handler that returns JSON with 'error', 'message', and 'status' fields. Create a GET /items/{id} that raises AppException with code='ITEM_NOT_FOUND' for IDs > 100.",
+        "starterCode": "from fastapi import FastAPI, Request\nfrom fastapi.responses import JSONResponse\n\napp = FastAPI()\n\n# Define AppException and handler\n\n# Define GET /items/{id}\n",
+        "solution": "from fastapi import FastAPI, Request\nfrom fastapi.responses import JSONResponse\n\napp = FastAPI()\n\nclass AppException(Exception):\n    def __init__(self, code: str, message: str, status_code: int = 400):\n        self.code = code\n        self.message = message\n        self.status_code = status_code\n\n@app.exception_handler(AppException)\nasync def app_exception_handler(request: Request, exc: AppException):\n    return JSONResponse(\n        status_code=exc.status_code,\n        content={\n            \"error\": exc.code,\n            \"message\": exc.message,\n            \"status\": exc.status_code,\n        },\n    )\n\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: int):\n    if item_id > 100:\n        raise AppException(\n            code=\"ITEM_NOT_FOUND\",\n            message=f\"Item {item_id} does not exist\",\n            status_code=404,\n        )\n    return {\"id\": item_id, \"name\": \"Widget\"}",
+        "hints": [
+          "The exception handler receives the Request and the exception instance",
+          "Return a JSONResponse with the error fields from the exception"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "error-responses-ex2",
+        "title": "Custom Validation Error Format",
+        "description": "Override the default RequestValidationError handler to return a simpler format: {\"error\": \"VALIDATION_ERROR\", \"fields\": [{\"name\": \"field_name\", \"issue\": \"error message\"}]}. Create a POST /signup endpoint with a model requiring name (min 2 chars) and email (str) to test it.",
+        "starterCode": "from fastapi import FastAPI, Request\nfrom fastapi.exceptions import RequestValidationError\nfrom fastapi.responses import JSONResponse\nfrom pydantic import BaseModel, Field\n\napp = FastAPI()\n\n# Override validation error handler\n\n# Define signup model and endpoint\n",
+        "solution": "from fastapi import FastAPI, Request\nfrom fastapi.exceptions import RequestValidationError\nfrom fastapi.responses import JSONResponse\nfrom pydantic import BaseModel, Field\n\napp = FastAPI()\n\n@app.exception_handler(RequestValidationError)\nasync def custom_validation_handler(request: Request, exc: RequestValidationError):\n    fields = []\n    for error in exc.errors():\n        field_name = \".\".join(str(loc) for loc in error[\"loc\"] if loc != \"body\")\n        fields.append({\"name\": field_name, \"issue\": error[\"msg\"]})\n    return JSONResponse(\n        status_code=422,\n        content={\"error\": \"VALIDATION_ERROR\", \"fields\": fields},\n    )\n\nclass SignupRequest(BaseModel):\n    name: str = Field(min_length=2)\n    email: str\n\n@app.post(\"/signup\")\ndef signup(body: SignupRequest):\n    return {\"name\": body.name, \"email\": body.email}",
+        "hints": [
+          "Import RequestValidationError from fastapi.exceptions",
+          "exc.errors() returns a list of error dicts with 'loc', 'msg', and 'type' keys"
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

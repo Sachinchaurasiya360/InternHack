@@ -1,0 +1,289 @@
+[
+  {
+    "id": "user-model",
+    "sectionId": "authentication-and-authorization",
+    "orderIndex": 0,
+    "title": "User Model",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["User", "AbstractUser", "AUTH_USER_MODEL", "get_user_model", "UserManager"],
+    "content": {
+      "explanation": "Django ships with a built-in User model in django.contrib.auth that provides fields for username, password, email, first_name, last_name, is_active, is_staff, is_superuser, last_login, and date_joined. The password is stored as a hash using PBKDF2 by default, never as plain text.\n\nThe built-in User model is sufficient for many applications, but you should always reference it indirectly using settings.AUTH_USER_MODEL (in models, for ForeignKey) or get_user_model() (in code that runs at runtime). This allows you to swap the User model later without changing every reference throughout your codebase.\n\nDjango provides several ways to work with users. User.objects.create_user() creates a regular user with a properly hashed password. User.objects.create_superuser() creates a superuser. The authenticate() function verifies credentials and returns the user or None. The check_password() and set_password() methods handle password verification and setting.\n\nThe User model includes important methods: is_authenticated (True for real users, False for AnonymousUser), has_perm() checks specific permissions, has_perms() checks multiple permissions, and get_all_permissions() returns all permissions. The user object is automatically attached to every request as request.user by the authentication middleware.\n\nDjango strongly recommends creating a custom user model at the start of every new project, even if you do not need extra fields initially. Changing the User model after the initial migration is extremely difficult because it requires migrating all existing tables that reference User. Starting with a custom model (even an empty one that just extends AbstractUser) gives you the flexibility to add fields later.\n\nThe AbstractUser class provides the same fields and functionality as the default User model but can be extended with additional fields. AbstractBaseUser is a more bare-bones base class that only provides password hashing and session management — you must define all other fields yourself. Most projects should use AbstractUser unless they need a fundamentally different user model (like using email instead of username for login).",
+      "codeExamples": [
+        {
+          "title": "Working with the Built-in User Model",
+          "code": "from django.contrib.auth.models import User\nfrom django.contrib.auth import authenticate, login, logout\n\n# Create a user\nuser = User.objects.create_user(\n    username='john',\n    email='john@example.com',\n    password='securepassword123',\n)\n\n# Create a superuser\nadmin = User.objects.create_superuser(\n    username='admin',\n    email='admin@example.com',\n    password='adminpass123',\n)\n\n# Authenticate\nuser = authenticate(username='john', password='securepassword123')\nif user is not None:\n    print('Authentication successful')\n    # login(request, user)  # In a view\n\n# Check and set password\nuser.check_password('securepassword123')  # True\nuser.set_password('newpassword456')\nuser.save()\n\n# User properties\nprint(user.is_authenticated)   # True\nprint(user.is_staff)           # False\nprint(user.is_superuser)       # False\nprint(user.get_full_name())    # 'John Doe'",
+          "explanation": "create_user() hashes the password automatically. authenticate() verifies credentials. set_password() hashes the new password (you must call save() after). Never store or compare passwords as plain text."
+        },
+        {
+          "title": "Referencing the User Model",
+          "code": "from django.conf import settings\nfrom django.contrib.auth import get_user_model\nfrom django.db import models\n\n# In models: use settings.AUTH_USER_MODEL (string reference)\nclass Article(models.Model):\n    author = models.ForeignKey(\n        settings.AUTH_USER_MODEL,  # NOT User directly\n        on_delete=models.CASCADE,\n    )\n    title = models.CharField(max_length=200)\n\n# In runtime code: use get_user_model() (actual model class)\nUser = get_user_model()\nusers = User.objects.filter(is_active=True)\n\n# WHY:\n# settings.AUTH_USER_MODEL returns a string like 'auth.User'\n# or 'accounts.CustomUser' - works at class definition time\n#\n# get_user_model() returns the actual model class\n# - works at runtime, after all apps are loaded\n#\n# NEVER do this:\n# from django.contrib.auth.models import User  # Hardcoded!",
+          "explanation": "settings.AUTH_USER_MODEL is for model definitions (ForeignKey, M2M). get_user_model() is for runtime code (queries, forms). Both ensure your code works with custom user models. Never import User directly."
+        },
+        {
+          "title": "Custom User with AbstractUser",
+          "code": "# accounts/models.py\nfrom django.contrib.auth.models import AbstractUser\nfrom django.db import models\n\nclass CustomUser(AbstractUser):\n    # Add custom fields\n    bio = models.TextField(blank=True)\n    avatar = models.ImageField(upload_to='avatars/', blank=True)\n    date_of_birth = models.DateField(null=True, blank=True)\n    phone = models.CharField(max_length=20, blank=True)\n\n    def __str__(self):\n        return self.username\n\n# settings.py\nAUTH_USER_MODEL = 'accounts.CustomUser'\n\n# accounts/admin.py\nfrom django.contrib import admin\nfrom django.contrib.auth.admin import UserAdmin\nfrom .models import CustomUser\n\n@admin.register(CustomUser)\nclass CustomUserAdmin(UserAdmin):\n    fieldsets = UserAdmin.fieldsets + (\n        ('Profile', {'fields': ('bio', 'avatar', 'date_of_birth', 'phone')}),\n    )\n    add_fieldsets = UserAdmin.add_fieldsets + (\n        ('Profile', {'fields': ('bio', 'avatar')}),\n    )",
+          "explanation": "AbstractUser gives you all built-in User fields plus your custom ones. Set AUTH_USER_MODEL in settings.py BEFORE running the first migration. Extend UserAdmin to include custom fields in the admin."
+        },
+        {
+          "title": "Custom User with AbstractBaseUser",
+          "code": "# accounts/models.py\nfrom django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin\nfrom django.db import models\n\nclass CustomUserManager(BaseUserManager):\n    def create_user(self, email, password=None, **extra_fields):\n        if not email:\n            raise ValueError('Email is required')\n        email = self.normalize_email(email)\n        user = self.model(email=email, **extra_fields)\n        user.set_password(password)\n        user.save(using=self._db)\n        return user\n\n    def create_superuser(self, email, password=None, **extra_fields):\n        extra_fields.setdefault('is_staff', True)\n        extra_fields.setdefault('is_superuser', True)\n        return self.create_user(email, password, **extra_fields)\n\nclass CustomUser(AbstractBaseUser, PermissionsMixin):\n    email = models.EmailField(unique=True)\n    name = models.CharField(max_length=200)\n    is_active = models.BooleanField(default=True)\n    is_staff = models.BooleanField(default=False)\n    date_joined = models.DateTimeField(auto_now_add=True)\n\n    objects = CustomUserManager()\n\n    USERNAME_FIELD = 'email'       # Field used for login\n    REQUIRED_FIELDS = ['name']     # Required for createsuperuser\n\n    def __str__(self):\n        return self.email",
+          "explanation": "AbstractBaseUser is for fundamentally different user models (e.g., email-based login). You must define USERNAME_FIELD, REQUIRED_FIELDS, is_active, is_staff, and a custom manager. PermissionsMixin adds permission support."
+        }
+      ],
+      "notes": [
+        "Always create a custom user model at the start of a new project, even if empty.",
+        "Use settings.AUTH_USER_MODEL in models, get_user_model() in runtime code.",
+        "AbstractUser extends the default User; AbstractBaseUser starts from scratch.",
+        "AUTH_USER_MODEL must be set BEFORE the first migration. Changing it later is very difficult."
+      ],
+      "interviewTips": [
+        "Explain why you should always start with a custom user model: difficult to change later.",
+        "Know the difference between AbstractUser (extends default) and AbstractBaseUser (bare minimum).",
+        "Mention settings.AUTH_USER_MODEL for models, get_user_model() for runtime code."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "user-ex1",
+        "title": "Custom User Model",
+        "description": "Create a CustomUser model extending AbstractUser with fields: bio (text, optional), phone (char max 20, optional), and date_of_birth (date, nullable). Set AUTH_USER_MODEL in settings.",
+        "starterCode": "from django.contrib.auth.models import AbstractUser\nfrom django.db import models\n\n# Define your custom user model\n",
+        "solution": "from django.contrib.auth.models import AbstractUser\nfrom django.db import models\n\nclass CustomUser(AbstractUser):\n    bio = models.TextField(blank=True)\n    phone = models.CharField(max_length=20, blank=True)\n    date_of_birth = models.DateField(null=True, blank=True)\n\n    def __str__(self):\n        return self.username\n\n# In settings.py:\n# AUTH_USER_MODEL = 'accounts.CustomUser'",
+        "hints": [
+          "Extend AbstractUser to keep all default User functionality",
+          "Use blank=True for optional text fields, null=True for optional date fields",
+          "Set AUTH_USER_MODEL before running migrations"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "user-ex2",
+        "title": "User References in Models",
+        "description": "Create an Article model with an author ForeignKey and a Comment model with a user ForeignKey. Use the proper way to reference the user model (settings.AUTH_USER_MODEL).",
+        "starterCode": "from django.db import models\n\n# Create Article and Comment models with proper user references\n",
+        "solution": "from django.conf import settings\nfrom django.db import models\n\nclass Article(models.Model):\n    author = models.ForeignKey(\n        settings.AUTH_USER_MODEL,\n        on_delete=models.CASCADE,\n        related_name='articles',\n    )\n    title = models.CharField(max_length=200)\n    content = models.TextField()\n\nclass Comment(models.Model):\n    user = models.ForeignKey(\n        settings.AUTH_USER_MODEL,\n        on_delete=models.CASCADE,\n        related_name='comments',\n    )\n    article = models.ForeignKey(Article, on_delete=models.CASCADE, related_name='comments')\n    content = models.TextField()",
+        "hints": [
+          "Import settings from django.conf",
+          "Use settings.AUTH_USER_MODEL as the first argument to ForeignKey",
+          "Set related_name to avoid reverse accessor conflicts"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "login-and-logout",
+    "sectionId": "authentication-and-authorization",
+    "orderIndex": 1,
+    "title": "Login & Logout",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["login", "logout", "authenticate", "LoginView", "LogoutView", "Sessions"],
+    "content": {
+      "explanation": "Django's authentication system provides both low-level functions and high-level views for handling user login and logout. Understanding both levels is important for implementing authentication correctly.\n\nThe authentication flow involves three steps: (1) verify credentials with authenticate(), (2) create a session with login(), and (3) redirect the user. authenticate() takes credentials (typically username and password), checks them against the database, and returns the User object if valid or None if invalid. login() takes the request and authenticated user, creates a session, and sets a session cookie in the browser.\n\nFor logout, the logout() function clears the session data and deletes the session cookie. After logout, request.user becomes an AnonymousUser instance. Always redirect after logout to prevent issues with cached pages.\n\nDjango provides built-in class-based views for authentication: LoginView, LogoutView, PasswordChangeView, PasswordChangeDoneView, PasswordResetView, PasswordResetDoneView, PasswordResetConfirmView, and PasswordResetCompleteView. These views handle all the logic — you only need to provide templates.\n\nLoginView renders a login form, validates credentials, and logs the user in. It looks for a template at 'registration/login.html' by default. After successful login, it redirects to settings.LOGIN_REDIRECT_URL (default '/accounts/profile/'). You can customize the redirect with the 'next' parameter or by overriding get_success_url().\n\nLogoutView logs the user out and redirects to settings.LOGOUT_REDIRECT_URL. It can also render a 'logged out' template if LOGOUT_REDIRECT_URL is not set.\n\nThe @login_required decorator (for FBVs) and LoginRequiredMixin (for CBVs) protect views from unauthenticated access. They redirect unauthenticated users to settings.LOGIN_URL (default '/accounts/login/') and pass a 'next' parameter so the user is redirected back after login.\n\nDjango sessions store authentication state between requests. When a user logs in, Django creates a session record in the database (or cache, depending on SESSION_ENGINE) and sends a session ID cookie to the browser. Each subsequent request includes this cookie, allowing Django to identify the user.",
+      "codeExamples": [
+        {
+          "title": "Manual Login View",
+          "code": "from django.contrib.auth import authenticate, login, logout\nfrom django.shortcuts import render, redirect\nfrom django import forms\n\nclass LoginForm(forms.Form):\n    username = forms.CharField()\n    password = forms.CharField(widget=forms.PasswordInput)\n\ndef login_view(request):\n    if request.user.is_authenticated:\n        return redirect('dashboard')\n\n    if request.method == 'POST':\n        form = LoginForm(request.POST)\n        if form.is_valid():\n            user = authenticate(\n                request,\n                username=form.cleaned_data['username'],\n                password=form.cleaned_data['password'],\n            )\n            if user is not None:\n                login(request, user)\n                next_url = request.GET.get('next', 'dashboard')\n                return redirect(next_url)\n            else:\n                form.add_error(None, 'Invalid username or password.')\n    else:\n        form = LoginForm()\n\n    return render(request, 'accounts/login.html', {'form': form})\n\ndef logout_view(request):\n    logout(request)\n    return redirect('home')",
+          "explanation": "authenticate() verifies credentials. login() creates the session. The 'next' parameter preserves the intended destination. logout() clears the session. Always redirect authenticated users away from the login page."
+        },
+        {
+          "title": "Built-in Auth Views",
+          "code": "# project/urls.py\nfrom django.contrib.auth import views as auth_views\nfrom django.urls import path\n\nurlpatterns = [\n    path('accounts/login/',\n         auth_views.LoginView.as_view(\n             template_name='accounts/login.html',\n         ),\n         name='login'),\n\n    path('accounts/logout/',\n         auth_views.LogoutView.as_view(),\n         name='logout'),\n\n    path('accounts/password-change/',\n         auth_views.PasswordChangeView.as_view(\n             template_name='accounts/password_change.html',\n             success_url='/accounts/password-change/done/',\n         ),\n         name='password-change'),\n\n    path('accounts/password-change/done/',\n         auth_views.PasswordChangeDoneView.as_view(\n             template_name='accounts/password_change_done.html',\n         ),\n         name='password-change-done'),\n]\n\n# settings.py\nLOGIN_URL = '/accounts/login/'\nLOGIN_REDIRECT_URL = '/dashboard/'\nLOGOUT_REDIRECT_URL = '/'",
+          "explanation": "Django's built-in auth views handle all authentication logic. You only provide templates. LOGIN_URL is where unauthenticated users are redirected. LOGIN_REDIRECT_URL is where users go after login."
+        },
+        {
+          "title": "Protecting Views",
+          "code": "# Function-based: @login_required decorator\nfrom django.contrib.auth.decorators import login_required\n\n@login_required\ndef dashboard(request):\n    return render(request, 'dashboard.html')\n\n@login_required(login_url='/custom-login/')\ndef profile(request):\n    return render(request, 'profile.html')\n\n# Class-based: LoginRequiredMixin\nfrom django.contrib.auth.mixins import LoginRequiredMixin\nfrom django.views.generic import TemplateView\n\nclass DashboardView(LoginRequiredMixin, TemplateView):\n    template_name = 'dashboard.html'\n    login_url = '/accounts/login/'\n    redirect_field_name = 'next'\n\n# In templates: check authentication\n# {% if user.is_authenticated %}\n#   <p>Welcome, {{ user.username }}!</p>\n#   <a href=\"{% url 'logout' %}\">Logout</a>\n# {% else %}\n#   <a href=\"{% url 'login' %}\">Login</a>\n# {% endif %}",
+          "explanation": "@login_required redirects unauthenticated users to LOGIN_URL with a 'next' parameter. LoginRequiredMixin does the same for CBVs. In templates, user.is_authenticated checks if the user is logged in."
+        },
+        {
+          "title": "Login Template",
+          "code": "<!-- templates/accounts/login.html -->\n{% extends 'base.html' %}\n\n{% block content %}\n<div class=\"login-form\">\n  <h2>Login</h2>\n\n  {% if form.non_field_errors %}\n    <div class=\"alert alert-danger\">\n      {% for error in form.non_field_errors %}\n        <p>{{ error }}</p>\n      {% endfor %}\n    </div>\n  {% endif %}\n\n  <form method=\"post\">\n    {% csrf_token %}\n\n    <div class=\"field\">\n      <label for=\"{{ form.username.id_for_label }}\">Username</label>\n      {{ form.username }}\n    </div>\n\n    <div class=\"field\">\n      <label for=\"{{ form.password.id_for_label }}\">Password</label>\n      {{ form.password }}\n    </div>\n\n    <!-- Preserve the 'next' parameter -->\n    {% if next %}\n      <input type=\"hidden\" name=\"next\" value=\"{{ next }}\">\n    {% endif %}\n\n    <button type=\"submit\">Login</button>\n  </form>\n\n  <p><a href=\"{% url 'password_reset' %}\">Forgot password?</a></p>\n</div>\n{% endblock %}",
+          "explanation": "The login template renders the authentication form. Non-field errors display invalid credential messages. The hidden 'next' input preserves the redirect destination. csrf_token is required for the POST form."
+        }
+      ],
+      "notes": [
+        "authenticate() verifies credentials; login() creates the session; logout() clears it.",
+        "Django provides built-in views for login, logout, password change, and password reset.",
+        "Use @login_required (FBV) or LoginRequiredMixin (CBV) to protect views.",
+        "Set LOGIN_URL, LOGIN_REDIRECT_URL, and LOGOUT_REDIRECT_URL in settings."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "login-ex1",
+        "title": "Registration View",
+        "description": "Write a view function for user registration. Create a form with username, email, password, and confirm_password fields. Validate that passwords match, create the user with create_user(), log them in, and redirect to 'dashboard'.",
+        "starterCode": "from django.contrib.auth import login\nfrom django.contrib.auth import get_user_model\nfrom django.shortcuts import render, redirect\nfrom django import forms\n\nUser = get_user_model()\n\n# Create form and view\n",
+        "solution": "from django.contrib.auth import login\nfrom django.contrib.auth import get_user_model\nfrom django.shortcuts import render, redirect\nfrom django import forms\nfrom django.core.exceptions import ValidationError\n\nUser = get_user_model()\n\nclass RegisterForm(forms.Form):\n    username = forms.CharField(max_length=150)\n    email = forms.EmailField()\n    password = forms.CharField(widget=forms.PasswordInput, min_length=8)\n    confirm_password = forms.CharField(widget=forms.PasswordInput)\n\n    def clean(self):\n        cleaned_data = super().clean()\n        pw = cleaned_data.get('password')\n        confirm = cleaned_data.get('confirm_password')\n        if pw and confirm and pw != confirm:\n            raise ValidationError('Passwords do not match.')\n        return cleaned_data\n\ndef register_view(request):\n    if request.method == 'POST':\n        form = RegisterForm(request.POST)\n        if form.is_valid():\n            user = User.objects.create_user(\n                username=form.cleaned_data['username'],\n                email=form.cleaned_data['email'],\n                password=form.cleaned_data['password'],\n            )\n            login(request, user)\n            return redirect('dashboard')\n    else:\n        form = RegisterForm()\n    return render(request, 'accounts/register.html', {'form': form})",
+        "hints": [
+          "Use clean() to validate that passwords match",
+          "Use User.objects.create_user() which hashes the password",
+          "Call login(request, user) to immediately log in the new user"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "login-ex2",
+        "title": "Auth URL Configuration",
+        "description": "Write the URL patterns for login, logout, and password change using Django's built-in auth views. Set custom template names for each.",
+        "starterCode": "from django.contrib.auth import views as auth_views\nfrom django.urls import path\n\nurlpatterns = [\n    # Add auth URL patterns\n]\n",
+        "solution": "from django.contrib.auth import views as auth_views\nfrom django.urls import path\n\nurlpatterns = [\n    path('login/', auth_views.LoginView.as_view(\n        template_name='accounts/login.html',\n    ), name='login'),\n    path('logout/', auth_views.LogoutView.as_view(), name='logout'),\n    path('password-change/', auth_views.PasswordChangeView.as_view(\n        template_name='accounts/password_change.html',\n        success_url='/password-change/done/',\n    ), name='password-change'),\n]",
+        "hints": [
+          "Use auth_views.LoginView.as_view() for the login view",
+          "Pass template_name to customize which template is rendered",
+          "LogoutView redirects to LOGOUT_REDIRECT_URL from settings"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "permissions-and-groups",
+    "sectionId": "authentication-and-authorization",
+    "orderIndex": 2,
+    "title": "Permissions & Groups",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Permission", "Group", "has_perm", "permission_required", "Custom Permissions"],
+    "content": {
+      "explanation": "Django's permission system provides fine-grained access control. Every model automatically gets four permissions: add, change, delete, and view. These are named in the format 'app_label.action_modelname' (e.g., 'blog.add_article', 'blog.change_article'). You can also define custom permissions on models.\n\nPermissions can be assigned to individual users or to groups. Groups are collections of permissions that can be assigned to multiple users. For example, an 'Editor' group might have permission to add, change, and view articles but not delete them. When a user belongs to a group, they inherit all of the group's permissions.\n\nThe user.has_perm('app.permission') method checks whether a user has a specific permission. Superusers always return True for all permission checks. The @permission_required decorator (FBV) and PermissionRequiredMixin (CBV) protect views by checking permissions before allowing access.\n\nCustom permissions are defined in the model's Meta class using the 'permissions' attribute. They follow the same naming convention and integrate with the admin and permission checking system. Custom permissions are useful for business-specific access control that goes beyond CRUD operations.\n\nIn templates, you can check permissions using the {{ perms }} variable: {% if perms.blog.add_article %}. This allows you to show or hide UI elements based on the user's permissions. The perms variable is available automatically through the auth context processor.\n\nObject-level permissions (per-object rather than per-model) are not built into Django but can be implemented using third-party packages like django-guardian or django-rules. Django's built-in permissions are model-level — they control access to all instances of a model, not specific instances.",
+      "codeExamples": [
+        {
+          "title": "Built-in and Custom Permissions",
+          "code": "from django.db import models\n\nclass Article(models.Model):\n    title = models.CharField(max_length=200)\n    is_published = models.BooleanField(default=False)\n\n    class Meta:\n        permissions = [\n            ('publish_article', 'Can publish article'),\n            ('feature_article', 'Can feature article on homepage'),\n            ('export_articles', 'Can export articles to CSV'),\n        ]\n\n# Django auto-creates these permissions:\n# blog.add_article\n# blog.change_article\n# blog.delete_article\n# blog.view_article\n\n# Plus your custom permissions:\n# blog.publish_article\n# blog.feature_article\n# blog.export_articles",
+          "explanation": "Custom permissions are defined in Meta.permissions as a list of (codename, description) tuples. Django auto-creates the four default CRUD permissions. Custom permissions appear in the admin alongside built-in ones."
+        },
+        {
+          "title": "Checking Permissions in Views",
+          "code": "from django.contrib.auth.decorators import permission_required, login_required\nfrom django.contrib.auth.mixins import PermissionRequiredMixin\nfrom django.views.generic import ListView\nfrom django.shortcuts import render\nfrom .models import Article\n\n# FBV with permission check\n@permission_required('blog.publish_article', raise_exception=True)\ndef publish_article(request, pk):\n    article = Article.objects.get(pk=pk)\n    article.is_published = True\n    article.save()\n    return redirect('blog:article-detail', pk=pk)\n\n# CBV with permission check\nclass ArticleListView(PermissionRequiredMixin, ListView):\n    model = Article\n    permission_required = 'blog.view_article'\n    # Multiple permissions:\n    # permission_required = ['blog.view_article', 'blog.change_article']\n\n# Manual permission check in view\n@login_required\ndef admin_dashboard(request):\n    if not request.user.has_perm('blog.publish_article'):\n        return render(request, 'forbidden.html', status=403)\n    articles = Article.objects.filter(is_published=False)\n    return render(request, 'admin_dashboard.html', {'articles': articles})",
+          "explanation": "@permission_required checks a specific permission. raise_exception=True returns 403 instead of redirecting to login. PermissionRequiredMixin does the same for CBVs. has_perm() allows manual checks in view logic."
+        },
+        {
+          "title": "Groups and Assigning Permissions",
+          "code": "from django.contrib.auth.models import Group, Permission\nfrom django.contrib.contenttypes.models import ContentType\nfrom .models import Article\n\n# Create a group\neditor_group = Group.objects.create(name='Editors')\n\n# Get permissions\ncontent_type = ContentType.objects.get_for_model(Article)\npermissions = Permission.objects.filter(content_type=content_type)\n\n# Assign permissions to group\neditor_group.permissions.add(\n    Permission.objects.get(codename='add_article'),\n    Permission.objects.get(codename='change_article'),\n    Permission.objects.get(codename='view_article'),\n    Permission.objects.get(codename='publish_article'),\n)\n\n# Add user to group\nuser.groups.add(editor_group)\n\n# Check user permissions (includes group permissions)\nuser.has_perm('blog.publish_article')  # True\nuser.get_all_permissions()\n# {'blog.add_article', 'blog.change_article', 'blog.view_article', 'blog.publish_article'}\n\n# Assign permission directly to user\nuser.user_permissions.add(\n    Permission.objects.get(codename='delete_article')\n)",
+          "explanation": "Groups bundle permissions for easy assignment. Users inherit group permissions. Direct user permissions are also supported. get_all_permissions() returns the union of group and user permissions."
+        },
+        {
+          "title": "Permissions in Templates",
+          "code": "<!-- Check permissions in templates -->\n{% if perms.blog.add_article %}\n  <a href=\"{% url 'blog:article-create' %}\">New Article</a>\n{% endif %}\n\n{% if perms.blog.change_article %}\n  <a href=\"{% url 'blog:article-edit' pk=article.pk %}\">Edit</a>\n{% endif %}\n\n{% if perms.blog.delete_article %}\n  <form method=\"post\" action=\"{% url 'blog:article-delete' pk=article.pk %}\">\n    {% csrf_token %}\n    <button type=\"submit\">Delete</button>\n  </form>\n{% endif %}\n\n{% if perms.blog.publish_article %}\n  <button>Publish</button>\n{% endif %}\n\n<!-- Check group membership -->\n{% if user.groups.all|length %}\n  <p>Groups: {{ user.groups.all|join:\", \" }}</p>\n{% endif %}",
+          "explanation": "The {{ perms }} template variable provides permission checking. Use perms.app_label.codename to check specific permissions. This allows showing/hiding UI elements based on the user's access level."
+        }
+      ],
+      "notes": [
+        "Django auto-creates add, change, delete, and view permissions for every model.",
+        "Groups bundle permissions for easy assignment to multiple users.",
+        "Superusers bypass all permission checks (has_perm always returns True).",
+        "Use {{ perms }} in templates to show/hide UI elements based on permissions."
+      ],
+      "interviewTips": [
+        "Explain the four auto-created permissions: add, change, delete, view.",
+        "Describe the relationship between users, groups, and permissions.",
+        "Mention that Django provides model-level permissions, not object-level (need django-guardian for that)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "perms-ex1",
+        "title": "Define Custom Permissions",
+        "description": "Create an Article model with custom permissions: 'publish_article' and 'archive_article'. Then write a view function protected by the 'publish_article' permission.",
+        "starterCode": "from django.db import models\nfrom django.contrib.auth.decorators import permission_required\n\n# Define model with custom permissions and a protected view\n",
+        "solution": "from django.db import models\nfrom django.contrib.auth.decorators import permission_required\nfrom django.shortcuts import get_object_or_404, redirect\n\nclass Article(models.Model):\n    title = models.CharField(max_length=200)\n    is_published = models.BooleanField(default=False)\n\n    class Meta:\n        permissions = [\n            ('publish_article', 'Can publish article'),\n            ('archive_article', 'Can archive article'),\n        ]\n\n@permission_required('blog.publish_article', raise_exception=True)\ndef publish_article(request, pk):\n    article = get_object_or_404(Article, pk=pk)\n    article.is_published = True\n    article.save()\n    return redirect('blog:article-detail', pk=pk)",
+        "hints": [
+          "Define custom permissions in Meta.permissions as a list of tuples",
+          "Use @permission_required('app.codename') to protect the view",
+          "raise_exception=True returns 403 instead of redirecting to login"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "perms-ex2",
+        "title": "Create Groups Programmatically",
+        "description": "Write a function that creates two groups: 'Editors' (with add, change, view article permissions) and 'Viewers' (with only view article permission). Use the Permission model to look up permissions.",
+        "starterCode": "from django.contrib.auth.models import Group, Permission\n\ndef create_groups():\n    pass\n",
+        "solution": "from django.contrib.auth.models import Group, Permission\n\ndef create_groups():\n    editor_group, _ = Group.objects.get_or_create(name='Editors')\n    viewer_group, _ = Group.objects.get_or_create(name='Viewers')\n\n    add_perm = Permission.objects.get(codename='add_article')\n    change_perm = Permission.objects.get(codename='change_article')\n    view_perm = Permission.objects.get(codename='view_article')\n\n    editor_group.permissions.set([add_perm, change_perm, view_perm])\n    viewer_group.permissions.set([view_perm])",
+        "hints": [
+          "Use get_or_create to avoid duplicates when running multiple times",
+          "Look up permissions by codename using Permission.objects.get()",
+          "Use .set() to replace all group permissions, or .add() to append"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "custom-user-model",
+    "sectionId": "authentication-and-authorization",
+    "orderIndex": 3,
+    "title": "Custom User Model",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["AbstractBaseUser", "PermissionsMixin", "UserManager", "USERNAME_FIELD", "Email Auth"],
+    "content": {
+      "explanation": "While AbstractUser is sufficient for most projects (adding fields to the default User), some applications need fundamentally different user models. The most common case is using email as the primary identifier instead of username. This requires AbstractBaseUser, which provides only the bare minimum: password hashing and session management.\n\nWhen using AbstractBaseUser, you must define several components: the model fields (including at least one unique identifier field), USERNAME_FIELD (the field used for authentication), REQUIRED_FIELDS (additional required fields for createsuperuser), is_active (required by the admin), is_staff (required for admin access), and a custom manager with create_user() and create_superuser() methods.\n\nPermissionsMixin adds the permission-related fields and methods (groups, user_permissions, is_superuser, has_perm, has_module_perms) to your custom user model. Without it, your user model will not integrate with Django's permission system or the admin.\n\nThe custom UserManager must inherit from BaseUserManager and implement create_user() and create_superuser(). create_user() should normalize the email, create the user instance, hash the password with set_password(), and save to the database. create_superuser() should call create_user() and set is_staff and is_superuser to True.\n\nAfter creating a custom user model, you need to: (1) set AUTH_USER_MODEL in settings.py, (2) create an admin class (usually extending BaseUserAdmin or UserAdmin), (3) create forms for the admin (UserCreationForm and UserChangeForm), and (4) run migrations. Remember, AUTH_USER_MODEL must be set before the first migration.\n\nCustom authentication backends allow even more flexibility. By default, Django authenticates against the User model using username and password. You can create custom backends that authenticate using email, phone number, social accounts, or external services. Authentication backends are configured in settings.AUTHENTICATION_BACKENDS.",
+      "codeExamples": [
+        {
+          "title": "Email-Based User Model",
+          "code": "# accounts/models.py\nfrom django.contrib.auth.models import AbstractBaseUser, BaseUserManager, PermissionsMixin\nfrom django.db import models\nfrom django.utils import timezone\n\nclass CustomUserManager(BaseUserManager):\n    def create_user(self, email, password=None, **extra_fields):\n        if not email:\n            raise ValueError('The Email field must be set')\n        email = self.normalize_email(email)\n        user = self.model(email=email, **extra_fields)\n        user.set_password(password)\n        user.save(using=self._db)\n        return user\n\n    def create_superuser(self, email, password=None, **extra_fields):\n        extra_fields.setdefault('is_staff', True)\n        extra_fields.setdefault('is_superuser', True)\n\n        if extra_fields.get('is_staff') is not True:\n            raise ValueError('Superuser must have is_staff=True.')\n        if extra_fields.get('is_superuser') is not True:\n            raise ValueError('Superuser must have is_superuser=True.')\n\n        return self.create_user(email, password, **extra_fields)\n\nclass CustomUser(AbstractBaseUser, PermissionsMixin):\n    email = models.EmailField(unique=True)\n    first_name = models.CharField(max_length=150, blank=True)\n    last_name = models.CharField(max_length=150, blank=True)\n    is_active = models.BooleanField(default=True)\n    is_staff = models.BooleanField(default=False)\n    date_joined = models.DateTimeField(default=timezone.now)\n\n    objects = CustomUserManager()\n\n    USERNAME_FIELD = 'email'\n    REQUIRED_FIELDS = ['first_name', 'last_name']\n\n    def __str__(self):\n        return self.email\n\n    def get_full_name(self):\n        return f'{self.first_name} {self.last_name}'.strip()\n\n    def get_short_name(self):\n        return self.first_name",
+          "explanation": "This email-based user model uses email as the primary identifier. USERNAME_FIELD='email' means email is used for login. REQUIRED_FIELDS are additional prompts for createsuperuser. The custom manager handles user creation with proper password hashing."
+        },
+        {
+          "title": "Custom User Admin",
+          "code": "# accounts/admin.py\nfrom django.contrib import admin\nfrom django.contrib.auth.admin import UserAdmin as BaseUserAdmin\nfrom .models import CustomUser\n\n@admin.register(CustomUser)\nclass CustomUserAdmin(BaseUserAdmin):\n    list_display = ['email', 'first_name', 'last_name', 'is_staff', 'is_active']\n    list_filter = ['is_staff', 'is_active', 'groups']\n    search_fields = ['email', 'first_name', 'last_name']\n    ordering = ['email']\n\n    fieldsets = (\n        (None, {'fields': ('email', 'password')}),\n        ('Personal Info', {'fields': ('first_name', 'last_name')}),\n        ('Permissions', {'fields': ('is_active', 'is_staff', 'is_superuser', 'groups', 'user_permissions')}),\n        ('Important dates', {'fields': ('last_login', 'date_joined')}),\n    )\n\n    add_fieldsets = (\n        (None, {\n            'classes': ('wide',),\n            'fields': ('email', 'first_name', 'last_name', 'password1', 'password2'),\n        }),\n    )",
+          "explanation": "Custom UserAdmin extends BaseUserAdmin with fieldsets tailored to your user model. add_fieldsets defines the form for creating new users. Since there is no username field, we use email throughout."
+        },
+        {
+          "title": "Custom Authentication Backend",
+          "code": "# accounts/backends.py\nfrom django.contrib.auth import get_user_model\nfrom django.contrib.auth.backends import ModelBackend\n\nclass EmailBackend(ModelBackend):\n    def authenticate(self, request, username=None, password=None, **kwargs):\n        User = get_user_model()\n        email = kwargs.get('email', username)\n        try:\n            user = User.objects.get(email=email)\n        except User.DoesNotExist:\n            return None\n\n        if user.check_password(password) and self.user_can_authenticate(user):\n            return user\n        return None\n\n# settings.py\nAUTHENTICATION_BACKENDS = [\n    'accounts.backends.EmailBackend',\n]\n\n# Usage in views:\n# user = authenticate(request, email='user@example.com', password='pass123')\n# Or: user = authenticate(request, username='user@example.com', password='pass123')",
+          "explanation": "A custom backend extends ModelBackend and overrides authenticate(). It looks up users by email and verifies the password. user_can_authenticate() checks is_active. Multiple backends can be listed in AUTHENTICATION_BACKENDS."
+        },
+        {
+          "title": "Settings Configuration",
+          "code": "# settings.py\n\n# Point to your custom user model\nAUTH_USER_MODEL = 'accounts.CustomUser'\n\n# Custom authentication backend\nAUTHENTICATION_BACKENDS = [\n    'accounts.backends.EmailBackend',\n]\n\n# Auth URLs\nLOGIN_URL = '/accounts/login/'\nLOGIN_REDIRECT_URL = '/dashboard/'\nLOGOUT_REDIRECT_URL = '/'\n\n# Password validation\nAUTH_PASSWORD_VALIDATORS = [\n    {'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator'},\n    {'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',\n     'OPTIONS': {'min_length': 8}},\n    {'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator'},\n    {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},\n]",
+          "explanation": "AUTH_USER_MODEL must be set before the first migration. AUTHENTICATION_BACKENDS defines how authentication works. AUTH_PASSWORD_VALIDATORS enforce password strength requirements."
+        }
+      ],
+      "notes": [
+        "Set AUTH_USER_MODEL BEFORE running the first migration. Changing it later requires complex data migration.",
+        "AbstractBaseUser requires: USERNAME_FIELD, REQUIRED_FIELDS, is_active, is_staff, and a custom manager.",
+        "PermissionsMixin adds permission support (groups, is_superuser, has_perm).",
+        "Custom authentication backends enable email login, social auth, or any custom logic."
+      ],
+      "interviewTips": [
+        "Explain why to always create a custom user model: flexibility and future-proofing.",
+        "Know the components needed for AbstractBaseUser: manager, USERNAME_FIELD, REQUIRED_FIELDS.",
+        "Describe how custom authentication backends work and when to use them."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "custom-user-ex1",
+        "title": "Email User Manager",
+        "description": "Write a CustomUserManager with create_user() and create_superuser() methods. create_user should normalize email, set password, and save. create_superuser should set is_staff and is_superuser to True.",
+        "starterCode": "from django.contrib.auth.models import BaseUserManager\n\nclass CustomUserManager(BaseUserManager):\n    def create_user(self, email, password=None, **extra_fields):\n        pass\n\n    def create_superuser(self, email, password=None, **extra_fields):\n        pass\n",
+        "solution": "from django.contrib.auth.models import BaseUserManager\n\nclass CustomUserManager(BaseUserManager):\n    def create_user(self, email, password=None, **extra_fields):\n        if not email:\n            raise ValueError('Email is required')\n        email = self.normalize_email(email)\n        user = self.model(email=email, **extra_fields)\n        user.set_password(password)\n        user.save(using=self._db)\n        return user\n\n    def create_superuser(self, email, password=None, **extra_fields):\n        extra_fields.setdefault('is_staff', True)\n        extra_fields.setdefault('is_superuser', True)\n        return self.create_user(email, password, **extra_fields)",
+        "hints": [
+          "normalize_email lowercases the domain part of the email",
+          "set_password hashes the password before storing",
+          "create_superuser should delegate to create_user with extra defaults"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "custom-user-ex2",
+        "title": "Custom Auth Backend",
+        "description": "Write a custom authentication backend that authenticates users by email instead of username. Override the authenticate() method to look up users by email and verify their password.",
+        "starterCode": "from django.contrib.auth.backends import ModelBackend\nfrom django.contrib.auth import get_user_model\n\nclass EmailBackend(ModelBackend):\n    def authenticate(self, request, **kwargs):\n        pass\n",
+        "solution": "from django.contrib.auth.backends import ModelBackend\nfrom django.contrib.auth import get_user_model\n\nclass EmailBackend(ModelBackend):\n    def authenticate(self, request, username=None, password=None, **kwargs):\n        User = get_user_model()\n        email = kwargs.get('email', username)\n        if email is None or password is None:\n            return None\n        try:\n            user = User.objects.get(email=email)\n        except User.DoesNotExist:\n            return None\n        if user.check_password(password) and self.user_can_authenticate(user):\n            return user\n        return None",
+        "hints": [
+          "Accept username parameter for compatibility, but use it as email",
+          "Use get_user_model() to support custom user models",
+          "user_can_authenticate() checks if the user's is_active is True"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

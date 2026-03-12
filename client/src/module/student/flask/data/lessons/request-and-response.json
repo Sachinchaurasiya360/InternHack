@@ -1,0 +1,296 @@
+[
+  {
+    "id": "request-object",
+    "sectionId": "request-and-response",
+    "orderIndex": 0,
+    "title": "Request Object",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["request", "Query Parameters", "Headers", "request.args", "request.method", "Context Locals"],
+    "content": {
+      "explanation": "The Flask request object is a context-local proxy that gives you access to all data sent by the client in the current HTTP request. It is imported from flask and is available inside any view function without being passed as an argument. Understanding the request object is essential for building any Flask application that processes user input.\n\nFlask's request object is actually a Werkzeug Request instance, wrapped in Flask's context-local system. This means that even though you import request as a global, each concurrent request gets its own isolated request object. This design pattern is called 'context locals' and is unique to Flask's approach to handling request data.\n\nThe request.args attribute is an ImmutableMultiDict containing the parsed query string parameters. For a URL like '/search?q=flask&page=2', request.args['q'] returns 'flask' and request.args['page'] returns '2' (as a string). Use request.args.get('key', default) for safe access that returns a default instead of raising a KeyError. The get method also accepts a type parameter for automatic conversion: request.args.get('page', 1, type=int).\n\nThe request.method attribute tells you which HTTP method was used (GET, POST, PUT, DELETE, etc.). The request.headers object provides access to HTTP request headers as a dict-like object. Headers are case-insensitive: request.headers['Content-Type'] and request.headers['content-type'] both work.\n\nThe request.url gives the full URL including scheme, host, path, and query string. Related attributes include request.base_url (without query string), request.host_url (scheme and host only), request.path (just the path), and request.url_root (scheme, host, and application root).\n\nThe request.remote_addr attribute provides the client's IP address. However, behind a reverse proxy (like Nginx), this will be the proxy's IP. Use the ProxyFix middleware or the X-Forwarded-For header to get the real client IP in production.\n\nThe request object also provides request.is_json (true if the content type is JSON), request.is_secure (true for HTTPS), request.content_type, request.content_length, and request.referrer (the page that linked to this request). The request.environ attribute gives raw access to the underlying WSGI environ dictionary.\n\nFor testing and working outside of request context, Flask provides a test_request_context() context manager. Inside it, the request object is available just as it would be during a real request.",
+      "codeExamples": [
+        {
+          "title": "Accessing Query Parameters",
+          "code": "from flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/search')\ndef search():\n    # /search?q=flask&page=2&limit=10\n    query = request.args.get('q', '')\n    page = request.args.get('page', 1, type=int)\n    limit = request.args.get('limit', 20, type=int)\n\n    return {\n        'query': query,\n        'page': page,\n        'limit': limit,\n        'results': f'Searching for \"{query}\" (page {page})'\n    }",
+          "output": "{\"query\":\"flask\",\"page\":2,\"limit\":10,\"results\":\"Searching for \\\"flask\\\" (page 2)\"}",
+          "explanation": "request.args.get() safely retrieves query parameters with optional defaults and type conversion. The type parameter automatically converts '2' to int 2, returning the default if conversion fails."
+        },
+        {
+          "title": "Request Properties",
+          "code": "from flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/debug')\ndef debug_request():\n    return {\n        'method': request.method,\n        'url': request.url,\n        'base_url': request.base_url,\n        'path': request.path,\n        'host': request.host,\n        'remote_addr': request.remote_addr,\n        'content_type': request.content_type,\n        'is_json': request.is_json,\n        'is_secure': request.is_secure,\n        'user_agent': request.user_agent.string,\n        'referrer': request.referrer,\n    }",
+          "explanation": "The request object exposes dozens of useful properties. These give you full access to the HTTP request metadata including URLs, headers, client information, and content negotiation details."
+        },
+        {
+          "title": "Accessing Headers",
+          "code": "from flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/api/data')\ndef get_data():\n    # Headers are case-insensitive\n    auth_header = request.headers.get('Authorization', '')\n    content_type = request.headers.get('Content-Type', 'text/html')\n    accept = request.headers.get('Accept', '*/*')\n    custom = request.headers.get('X-Custom-Header')\n\n    # Check for Bearer token\n    token = None\n    if auth_header.startswith('Bearer '):\n        token = auth_header[7:]\n\n    return {\n        'has_token': token is not None,\n        'content_type': content_type,\n        'accept': accept,\n        'custom_header': custom,\n    }",
+          "explanation": "request.headers provides case-insensitive access to HTTP headers. Use .get() with a default to avoid KeyErrors for missing headers. Bearer token extraction from the Authorization header is a common pattern."
+        },
+        {
+          "title": "ImmutableMultiDict Methods",
+          "code": "from flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/multi')\ndef multi_values():\n    # URL: /multi?tag=python&tag=flask&tag=web\n\n    # get() returns the first value\n    first_tag = request.args.get('tag')  # 'python'\n\n    # getlist() returns ALL values\n    all_tags = request.args.getlist('tag')  # ['python', 'flask', 'web']\n\n    # to_dict() converts to regular dict (first values only)\n    as_dict = request.args.to_dict()  # {'tag': 'python'}\n\n    # to_dict(flat=False) preserves all values\n    as_multi = request.args.to_dict(flat=False)  # {'tag': ['python', 'flask', 'web']}\n\n    return {\n        'first': first_tag,\n        'all': all_tags,\n        'dict': as_dict,\n        'multi_dict': as_multi\n    }",
+          "output": "{\"first\":\"python\",\"all\":[\"python\",\"flask\",\"web\"],\"dict\":{\"tag\":\"python\"},\"multi_dict\":{\"tag\":[\"python\",\"flask\",\"web\"]}}",
+          "explanation": "request.args is an ImmutableMultiDict that supports multiple values for the same key. Use getlist() for multi-value parameters like checkboxes or multi-select. to_dict(flat=False) preserves all values."
+        }
+      ],
+      "notes": [
+        "The request object is a context-local proxy, so it is safe to use in concurrent environments.",
+        "Use request.args.get() with a default and type for safe query parameter access.",
+        "Headers are case-insensitive in request.headers.",
+        "Behind a reverse proxy, request.remote_addr shows the proxy IP. Use ProxyFix middleware for the real client IP."
+      ],
+      "interviewTips": [
+        "Explain that Flask's request is a context-local proxy: each thread/greenlet gets its own isolated request object.",
+        "Mention request.args for query params, request.form for POST data, request.json for JSON, and request.files for uploads.",
+        "Discuss the difference between request.args (query string) and request.form (POST body)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "request-obj-ex1",
+        "title": "Build a Search Endpoint",
+        "description": "Create a '/search' route that reads 'q' (query string), 'page' (int, default 1), and 'sort' (string, default 'relevance') from query parameters and returns them as JSON.",
+        "starterCode": "from flask import Flask, request\n\napp = Flask(__name__)\n\n# Create the search route\n",
+        "solution": "from flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/search')\ndef search():\n    q = request.args.get('q', '')\n    page = request.args.get('page', 1, type=int)\n    sort = request.args.get('sort', 'relevance')\n    return {'q': q, 'page': page, 'sort': sort}\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Use request.args.get() with default values",
+          "Pass type=int to automatically convert the page parameter",
+          "Return a dict for automatic JSON conversion"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "request-obj-ex2",
+        "title": "Header-Based Authentication Check",
+        "description": "Create an '/api/secret' route that checks for a Bearer token in the Authorization header. If the token equals 'valid-token-123', return {'access': 'granted'}. Otherwise return {'error': 'unauthorized'} with status 401.",
+        "starterCode": "from flask import Flask, request\n\napp = Flask(__name__)\n\n# Create the protected route\n",
+        "solution": "from flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/api/secret')\ndef secret():\n    auth = request.headers.get('Authorization', '')\n    if auth == 'Bearer valid-token-123':\n        return {'access': 'granted'}\n    return {'error': 'unauthorized'}, 401\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Use request.headers.get('Authorization', '') for safe header access",
+          "Bearer tokens have the format 'Bearer <token>'",
+          "Return a tuple (dict, status_code) to set the HTTP status"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "form-data-files",
+    "sectionId": "request-and-response",
+    "orderIndex": 1,
+    "title": "Form Data & Files",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["request.form", "request.files", "File Upload", "secure_filename", "Multipart"],
+    "content": {
+      "explanation": "Handling form submissions and file uploads is fundamental to web applications. Flask provides request.form for accessing form field data and request.files for handling uploaded files. Understanding these mechanisms lets you build everything from contact forms to file management systems.\n\nWhen an HTML form submits with method POST and the default encoding (application/x-www-form-urlencoded), the form data is available in request.form. This is an ImmutableMultiDict, just like request.args. Access values with request.form['key'] (raises KeyError if missing) or request.form.get('key', default) for safe access.\n\nFor file uploads, the HTML form must use enctype='multipart/form-data'. Without this attribute, the browser sends only the filename, not the file contents. When multipart encoding is used, uploaded files appear in request.files, which is also an ImmutableMultiDict. Each file is a FileStorage object with attributes like filename, content_type, and stream, plus methods like save() and read().\n\nSecurity is critical when handling file uploads. Never trust the filename provided by the client. Use werkzeug.utils.secure_filename() to sanitize it, removing path separators and special characters. Always validate the file extension and content type. Set a maximum file size to prevent denial-of-service attacks (app.config['MAX_CONTENT_LENGTH']).\n\nFlask's MAX_CONTENT_LENGTH config value limits the total request body size. If a request exceeds this limit, Flask aborts with a 413 Request Entity Too Large error. This protects your server from extremely large uploads. Set it in bytes: app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024 for 16 MB.\n\nThe request.get_json() method parses JSON request bodies. It returns None if parsing fails (or raises a 400 error if you pass force=True or silent=False). This is the standard way to handle JSON API requests. You can also access the raw JSON data via request.json, which is equivalent to request.get_json(silent=True).\n\nFor handling both form data and JSON, you can check request.content_type or request.is_json to determine the format. A common pattern in APIs is to accept JSON for programmatic access and form data for browser-based forms.",
+      "codeExamples": [
+        {
+          "title": "Handling Form Data",
+          "code": "from flask import Flask, request, redirect, url_for\n\napp = Flask(__name__)\n\n@app.route('/register', methods=['GET', 'POST'])\ndef register():\n    if request.method == 'POST':\n        username = request.form.get('username', '').strip()\n        email = request.form.get('email', '').strip()\n        password = request.form['password']\n        agree = request.form.get('agree')  # Checkbox: 'on' or None\n\n        if not username or not email:\n            return 'Missing fields', 400\n\n        # Process registration...\n        return redirect(url_for('index'))\n\n    return '''\n        <form method=\"POST\">\n            <input name=\"username\" placeholder=\"Username\" required>\n            <input name=\"email\" type=\"email\" placeholder=\"Email\" required>\n            <input name=\"password\" type=\"password\" required>\n            <label><input name=\"agree\" type=\"checkbox\"> I agree</label>\n            <button type=\"submit\">Register</button>\n        </form>\n    '''",
+          "explanation": "request.form accesses POST form data. Checkboxes send 'on' when checked and are absent when unchecked, so use .get() which returns None for missing keys. Always validate and strip user input."
+        },
+        {
+          "title": "File Upload",
+          "code": "import os\nfrom flask import Flask, request\nfrom werkzeug.utils import secure_filename\n\napp = Flask(__name__)\napp.config['UPLOAD_FOLDER'] = 'uploads'\napp.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16 MB\n\nALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'pdf'}\n\ndef allowed_file(filename):\n    return '.' in filename and \\\n        filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS\n\n@app.route('/upload', methods=['POST'])\ndef upload_file():\n    if 'file' not in request.files:\n        return {'error': 'No file part'}, 400\n\n    file = request.files['file']\n\n    if file.filename == '':\n        return {'error': 'No file selected'}, 400\n\n    if not allowed_file(file.filename):\n        return {'error': 'File type not allowed'}, 400\n\n    filename = secure_filename(file.filename)\n    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)\n    file.save(filepath)\n\n    return {'message': 'File uploaded', 'filename': filename}, 201",
+          "explanation": "Always validate uploads: check the file exists, has a filename, and has an allowed extension. secure_filename removes dangerous characters. MAX_CONTENT_LENGTH prevents oversized uploads."
+        },
+        {
+          "title": "Handling JSON Request Bodies",
+          "code": "from flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/api/users', methods=['POST'])\ndef create_user():\n    # Parse JSON body\n    data = request.get_json()\n\n    if data is None:\n        return {'error': 'Request must be JSON'}, 400\n\n    # Validate required fields\n    required = ['name', 'email']\n    missing = [f for f in required if f not in data]\n    if missing:\n        return {'error': f'Missing fields: {\", \".join(missing)}'}, 400\n\n    name = data['name']\n    email = data['email']\n    role = data.get('role', 'user')  # Optional with default\n\n    return {'created': {'name': name, 'email': email, 'role': role}}, 201",
+          "explanation": "request.get_json() parses the JSON request body. It returns None if the Content-Type is not JSON or parsing fails. Always validate required fields before processing the data."
+        },
+        {
+          "title": "Multiple File Upload",
+          "code": "from flask import Flask, request\nfrom werkzeug.utils import secure_filename\nimport os\n\napp = Flask(__name__)\n\n@app.route('/upload-multiple', methods=['POST'])\ndef upload_multiple():\n    # HTML: <input type=\"file\" name=\"files\" multiple>\n    files = request.files.getlist('files')\n    uploaded = []\n\n    for file in files:\n        if file and file.filename:\n            filename = secure_filename(file.filename)\n            file.save(os.path.join('uploads', filename))\n            uploaded.append(filename)\n\n    return {\n        'uploaded': uploaded,\n        'count': len(uploaded)\n    }",
+          "explanation": "For multiple file inputs, use request.files.getlist() to get all files with the same field name. The HTML input must have the 'multiple' attribute. Process each file individually with validation."
+        }
+      ],
+      "notes": [
+        "request.form is for POST form data (application/x-www-form-urlencoded). request.files is for uploaded files (multipart/form-data).",
+        "Always use secure_filename() to sanitize uploaded filenames. Never trust client-provided filenames.",
+        "Set MAX_CONTENT_LENGTH to limit upload sizes and prevent denial-of-service attacks.",
+        "request.get_json() returns None for non-JSON requests. Always check for None before accessing the data."
+      ],
+      "commonPitfalls": [
+        "Forgetting enctype='multipart/form-data' on the HTML form, causing file uploads to send only filenames.",
+        "Using the raw filename from file.filename without sanitizing it with secure_filename().",
+        "Not setting MAX_CONTENT_LENGTH, allowing unlimited upload sizes that can exhaust server memory."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "form-files-ex1",
+        "title": "Contact Form Handler",
+        "description": "Create a POST route at '/contact' that reads 'name', 'email', and 'message' from form data. Validate that all three are present and non-empty. Return the data as JSON on success, or an error with 400 status.",
+        "starterCode": "from flask import Flask, request\n\napp = Flask(__name__)\n\n# Create the contact form handler\n",
+        "solution": "from flask import Flask, request\n\napp = Flask(__name__)\n\n@app.post('/contact')\ndef contact():\n    name = request.form.get('name', '').strip()\n    email = request.form.get('email', '').strip()\n    message = request.form.get('message', '').strip()\n\n    if not all([name, email, message]):\n        return {'error': 'All fields are required'}, 400\n\n    return {'name': name, 'email': email, 'message': message}\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Use request.form.get() with .strip() for safe access",
+          "all() returns False if any value is empty",
+          "Return a tuple (dict, status_code) for error responses"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "form-files-ex2",
+        "title": "Image Upload Endpoint",
+        "description": "Create a POST route '/upload' that accepts a file field named 'image'. Validate that the file exists, has a filename, and ends with .png, .jpg, or .jpeg. Return the sanitized filename on success.",
+        "starterCode": "from flask import Flask, request\nfrom werkzeug.utils import secure_filename\n\napp = Flask(__name__)\n\nALLOWED = {'png', 'jpg', 'jpeg'}\n\n# Create the upload route\n",
+        "solution": "from flask import Flask, request\nfrom werkzeug.utils import secure_filename\n\napp = Flask(__name__)\n\nALLOWED = {'png', 'jpg', 'jpeg'}\n\n@app.post('/upload')\ndef upload():\n    if 'image' not in request.files:\n        return {'error': 'No image field'}, 400\n\n    file = request.files['image']\n    if file.filename == '':\n        return {'error': 'No file selected'}, 400\n\n    ext = file.filename.rsplit('.', 1)[-1].lower()\n    if ext not in ALLOWED:\n        return {'error': 'File type not allowed'}, 400\n\n    filename = secure_filename(file.filename)\n    return {'filename': filename}, 201\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Check 'image' in request.files first",
+          "Extract the extension with rsplit('.', 1)[-1].lower()",
+          "Use secure_filename() to sanitize the filename"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "cookies-and-sessions",
+    "sectionId": "request-and-response",
+    "orderIndex": 2,
+    "title": "Cookies & Sessions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Cookies", "Sessions", "SECRET_KEY", "session Object", "Signed Cookies", "Expiration"],
+    "content": {
+      "explanation": "Cookies and sessions are mechanisms for maintaining state across HTTP requests. HTTP is stateless by nature, meaning each request is independent. Cookies store small pieces of data in the browser, while sessions provide server-side state management. Flask uses a clever approach where sessions are actually stored in signed cookies on the client side.\n\nCookies are key-value pairs that the server sends to the browser via the Set-Cookie response header. The browser stores them and sends them back with every subsequent request to the same domain. You can set cookies by calling response.set_cookie() on a Response object, and read them from request.cookies.\n\nCookies have several attributes that control their behavior. max_age sets the lifetime in seconds. expires sets an absolute expiration datetime. path restricts the cookie to specific URL paths. domain sets which domain can access the cookie. secure ensures the cookie is only sent over HTTPS. httponly prevents JavaScript from accessing the cookie (important for security). samesite controls cross-site request behavior (Lax or Strict).\n\nFlask sessions provide a higher-level abstraction over cookies. The session object (imported from flask) works like a dictionary. When you modify session data, Flask serializes it, signs it with the app's SECRET_KEY, and stores it in a cookie. On subsequent requests, Flask reads the cookie, verifies the signature, and deserializes the data back into the session object.\n\nThe SECRET_KEY is critical for session security. It is used to cryptographically sign the session cookie. If an attacker discovers your secret key, they can forge session data. Always use a strong, random secret key in production and never commit it to version control. Flask uses the itsdangerous library for signing.\n\nBecause Flask sessions are stored in cookies (client-side), they have limitations. The total cookie size must be under 4 KB. Session data is visible to the client (though not tamper-proof thanks to signing). For larger session data or truly secret server-side sessions, use an extension like Flask-Session, which stores session data in Redis, Memcached, or a database.\n\nFlask sessions support several configuration options. SESSION_COOKIE_NAME (default 'session') sets the cookie name. PERMANENT_SESSION_LIFETIME (default 31 days) sets the expiration for permanent sessions. SESSION_COOKIE_SECURE ensures the cookie is only sent over HTTPS. SESSION_COOKIE_HTTPONLY prevents JavaScript access. SESSION_COOKIE_SAMESITE controls cross-site behavior.",
+      "codeExamples": [
+        {
+          "title": "Setting and Reading Cookies",
+          "code": "from flask import Flask, request, make_response\n\napp = Flask(__name__)\n\n@app.route('/set-cookie')\ndef set_cookie():\n    resp = make_response('Cookie set!')\n    resp.set_cookie(\n        'username', 'alice',\n        max_age=3600,          # 1 hour\n        httponly=True,          # Not accessible via JS\n        secure=True,            # HTTPS only\n        samesite='Lax'          # CSRF protection\n    )\n    return resp\n\n@app.route('/get-cookie')\ndef get_cookie():\n    username = request.cookies.get('username', 'Guest')\n    return f'Hello, {username}!'\n\n@app.route('/delete-cookie')\ndef delete_cookie():\n    resp = make_response('Cookie deleted!')\n    resp.delete_cookie('username')\n    return resp",
+          "explanation": "Cookies are set on the response with set_cookie() and read from request.cookies. Always set httponly for sensitive cookies and secure for HTTPS. delete_cookie() sends an expired cookie to remove it."
+        },
+        {
+          "title": "Flask Sessions",
+          "code": "from flask import Flask, session, redirect, url_for, request\n\napp = Flask(__name__)\napp.secret_key = 'your-secret-key-change-in-production'\n\n@app.route('/')\ndef index():\n    if 'username' in session:\n        return f'Logged in as {session[\"username\"]}'\n    return 'You are not logged in'\n\n@app.route('/login', methods=['POST'])\ndef login():\n    session['username'] = request.form['username']\n    session['visits'] = session.get('visits', 0) + 1\n    return redirect(url_for('index'))\n\n@app.route('/logout')\ndef logout():\n    session.pop('username', None)  # Remove specific key\n    # Or: session.clear()  # Remove everything\n    return redirect(url_for('index'))",
+          "explanation": "Flask sessions work like dictionaries. Set values with assignment, check with 'in', remove with pop() or clear(). The secret_key is required for session signing. All session data is stored in a signed cookie."
+        },
+        {
+          "title": "Permanent Sessions",
+          "code": "from flask import Flask, session\nfrom datetime import timedelta\n\napp = Flask(__name__)\napp.secret_key = 'your-secret-key'\n\n# Session expires after 7 days\napp.config['PERMANENT_SESSION_LIFETIME'] = timedelta(days=7)\n\n@app.route('/login', methods=['POST'])\ndef login():\n    session.permanent = True  # Enable permanent session\n    session['user_id'] = 42\n    session['role'] = 'admin'\n    return {'message': 'Logged in'}\n\n@app.route('/profile')\ndef profile():\n    if 'user_id' not in session:\n        return {'error': 'Not authenticated'}, 401\n    return {\n        'user_id': session['user_id'],\n        'role': session['role']\n    }",
+          "explanation": "By default, session cookies expire when the browser closes. Setting session.permanent = True makes the session last for PERMANENT_SESSION_LIFETIME (default 31 days). Set it per-request in the login handler."
+        },
+        {
+          "title": "Session Configuration",
+          "code": "from flask import Flask\nimport os\n\napp = Flask(__name__)\n\n# Session configuration\napp.config.update(\n    SECRET_KEY=os.environ.get('SECRET_KEY', 'dev-fallback-key'),\n    SESSION_COOKIE_NAME='myapp_session',\n    SESSION_COOKIE_HTTPONLY=True,\n    SESSION_COOKIE_SECURE=True,      # Requires HTTPS\n    SESSION_COOKIE_SAMESITE='Lax',\n    PERMANENT_SESSION_LIFETIME=3600,  # 1 hour in seconds\n)\n\n# For server-side sessions, use Flask-Session:\n# pip install Flask-Session\n# from flask_session import Session\n# app.config['SESSION_TYPE'] = 'redis'\n# Session(app)",
+          "explanation": "Configure session cookies for security: httponly prevents XSS cookie theft, secure ensures HTTPS-only, samesite prevents CSRF. For server-side sessions, Flask-Session stores data in Redis or a database instead of cookies."
+        }
+      ],
+      "notes": [
+        "Flask sessions are stored in signed cookies, not on the server. They are tamper-proof but visible to the client.",
+        "SECRET_KEY is required for sessions. Use a strong, random key in production.",
+        "Cookie size limit is ~4 KB. For larger session data, use Flask-Session with Redis or a database.",
+        "Always set httponly, secure, and samesite on sensitive cookies."
+      ],
+      "interviewTips": [
+        "Explain that Flask uses signed cookies for sessions (client-side storage with cryptographic signing via itsdangerous).",
+        "Compare client-side sessions (Flask default) with server-side sessions (Flask-Session with Redis).",
+        "Discuss cookie security attributes: httponly (prevents XSS theft), secure (HTTPS only), samesite (CSRF protection)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "cookies-sessions-ex1",
+        "title": "Visit Counter with Sessions",
+        "description": "Create a route '/' that uses Flask sessions to count how many times the user has visited. Return 'Visit count: X' where X is the count. The count should start at 1 on the first visit.",
+        "starterCode": "from flask import Flask, session\n\napp = Flask(__name__)\napp.secret_key = 'dev-secret'\n\n# Create the visit counter\n",
+        "solution": "from flask import Flask, session\n\napp = Flask(__name__)\napp.secret_key = 'dev-secret'\n\n@app.route('/')\ndef index():\n    session['visits'] = session.get('visits', 0) + 1\n    return f'Visit count: {session[\"visits\"]}'\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Use session.get('visits', 0) to get the current count with a default of 0",
+          "Increment and store back in session with assignment",
+          "The session is automatically saved after the request"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "cookies-sessions-ex2",
+        "title": "Theme Preference Cookie",
+        "description": "Create two routes: POST '/set-theme' reads a 'theme' form field and stores it as a cookie lasting 30 days. GET '/theme' reads the cookie and returns the current theme (default 'light').",
+        "starterCode": "from flask import Flask, request, make_response\n\napp = Flask(__name__)\n\n# Create theme routes\n",
+        "solution": "from flask import Flask, request, make_response\n\napp = Flask(__name__)\n\n@app.post('/set-theme')\ndef set_theme():\n    theme = request.form.get('theme', 'light')\n    resp = make_response({'theme': theme})\n    resp.set_cookie('theme', theme, max_age=30*24*3600)\n    return resp\n\n@app.get('/theme')\ndef get_theme():\n    theme = request.cookies.get('theme', 'light')\n    return {'theme': theme}\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Use make_response() to get a response object you can set cookies on",
+          "max_age is in seconds: 30 days = 30*24*3600",
+          "Read cookies from request.cookies.get()"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "response-object",
+    "sectionId": "request-and-response",
+    "orderIndex": 3,
+    "title": "Response Object",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["make_response", "jsonify", "Response", "Status Codes", "Headers", "Streaming"],
+    "content": {
+      "explanation": "The Response object in Flask represents the HTTP response that gets sent back to the client. While Flask automatically converts view function return values into responses, understanding the Response object gives you full control over status codes, headers, cookies, and the response body.\n\nFlask view functions can return several types that are automatically converted to Response objects. A string becomes an HTML response with status 200. A dict is converted to a JSON response via jsonify(). A tuple of (body, status) or (body, status, headers) gives you control over the status code and headers. A Response object is returned as-is.\n\nThe make_response() function creates a Response object from the same types of values you would return from a view. It is useful when you need to modify the response before returning it, such as setting cookies, custom headers, or cache control directives.\n\nThe jsonify() function creates a JSON response with the correct Content-Type header (application/json). While returning a dict from a view also creates JSON, jsonify() offers more flexibility: it accepts keyword arguments, handles top-level arrays, and sets proper headers. In Flask 2.2+, returning a dict is effectively equivalent to jsonify().\n\nHTTP status codes communicate the result of a request. Common codes include 200 (OK), 201 (Created), 204 (No Content), 301 (Moved Permanently), 302 (Found/Redirect), 400 (Bad Request), 401 (Unauthorized), 403 (Forbidden), 404 (Not Found), 405 (Method Not Allowed), and 500 (Internal Server Error). Flask provides abort() to immediately terminate a request with an error status.\n\nCustom response headers let you control browser behavior. Common headers include Cache-Control (caching), Content-Disposition (file downloads), X-Content-Type-Options (MIME sniffing prevention), and Access-Control-Allow-Origin (CORS). You set them on the response object or via the after_request hook.\n\nFor large responses, Flask supports streaming. Instead of building the entire response in memory, you can return a generator function. Flask sends chunks as they are produced, keeping memory usage low. The stream_with_context() wrapper is needed if your generator accesses the request context.\n\nFlask's after_request and teardown_request hooks let you modify every response. after_request runs after each request and receives the response object, letting you add headers, log responses, or modify content. teardown_request runs even if an error occurred and is used for cleanup.",
+      "codeExamples": [
+        {
+          "title": "Creating Responses with make_response",
+          "code": "from flask import Flask, make_response\n\napp = Flask(__name__)\n\n@app.route('/custom')\ndef custom_response():\n    resp = make_response('Hello, World!')\n    resp.status_code = 200\n    resp.headers['X-Custom-Header'] = 'MyValue'\n    resp.headers['Cache-Control'] = 'no-cache, no-store'\n    return resp\n\n@app.route('/xml')\ndef xml_response():\n    xml = '<?xml version=\"1.0\"?><data><item>Flask</item></data>'\n    resp = make_response(xml)\n    resp.headers['Content-Type'] = 'application/xml'\n    return resp\n\n@app.route('/download')\ndef download():\n    data = 'name,age\\nAlice,30\\nBob,25'\n    resp = make_response(data)\n    resp.headers['Content-Type'] = 'text/csv'\n    resp.headers['Content-Disposition'] = 'attachment; filename=data.csv'\n    return resp",
+          "explanation": "make_response() creates a Response object you can customize. Set headers, status codes, content types, and more. The download example triggers a file download in the browser using Content-Disposition."
+        },
+        {
+          "title": "Using jsonify and abort",
+          "code": "from flask import Flask, jsonify, abort\n\napp = Flask(__name__)\n\nusers = [\n    {'id': 1, 'name': 'Alice'},\n    {'id': 2, 'name': 'Bob'},\n]\n\n@app.route('/api/users')\ndef list_users():\n    return jsonify(users)  # Top-level array\n\n@app.route('/api/users/<int:user_id>')\ndef get_user(user_id):\n    user = next((u for u in users if u['id'] == user_id), None)\n    if user is None:\n        abort(404)  # Immediately returns 404 error\n    return jsonify(user)\n\n@app.errorhandler(404)\ndef not_found(error):\n    return jsonify({'error': 'Not found'}), 404",
+          "explanation": "jsonify() handles arrays and sets Content-Type to application/json. abort() immediately stops the request with an error status. @app.errorhandler customizes the error response format."
+        },
+        {
+          "title": "Error Handlers",
+          "code": "from flask import Flask, jsonify\n\napp = Flask(__name__)\n\n@app.errorhandler(400)\ndef bad_request(error):\n    return jsonify({'error': 'Bad request', 'message': str(error)}), 400\n\n@app.errorhandler(404)\ndef not_found(error):\n    return jsonify({'error': 'Not found'}), 404\n\n@app.errorhandler(500)\ndef server_error(error):\n    return jsonify({'error': 'Internal server error'}), 500\n\n# Handle specific exceptions\n@app.errorhandler(ValueError)\ndef handle_value_error(error):\n    return jsonify({'error': str(error)}), 400\n\n@app.route('/api/divide/<int:a>/<int:b>')\ndef divide(a, b):\n    if b == 0:\n        raise ValueError('Division by zero')\n    return {'result': a / b}",
+          "explanation": "Error handlers customize error responses for specific status codes or exception types. This lets you return consistent JSON error responses instead of Flask's default HTML error pages."
+        },
+        {
+          "title": "after_request Hook",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.after_request\ndef add_security_headers(response):\n    \"\"\"Add security headers to every response.\"\"\"\n    response.headers['X-Content-Type-Options'] = 'nosniff'\n    response.headers['X-Frame-Options'] = 'DENY'\n    response.headers['X-XSS-Protection'] = '1; mode=block'\n    return response\n\n@app.after_request\ndef add_cors_headers(response):\n    \"\"\"Add CORS headers for API access.\"\"\"\n    response.headers['Access-Control-Allow-Origin'] = '*'\n    response.headers['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE'\n    response.headers['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'\n    return response\n\n@app.route('/api/data')\ndef data():\n    return {'value': 42}",
+          "explanation": "after_request runs after every request and receives the response object. It is perfect for adding security headers, CORS headers, or logging. The function must return the response object."
+        }
+      ],
+      "notes": [
+        "Flask auto-converts strings to HTML responses, dicts to JSON, and tuples to (body, status, headers).",
+        "make_response() gives you full control over the response object before returning it.",
+        "abort() immediately terminates the request with an HTTP error. Customize error pages with @app.errorhandler.",
+        "after_request hooks run after every request and can modify the response globally."
+      ],
+      "commonPitfalls": [
+        "Forgetting to return the response from an after_request handler, causing None to be returned.",
+        "Using abort() without custom error handlers, resulting in HTML error pages in a JSON API.",
+        "Not setting Content-Type when returning non-HTML content like XML or CSV."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "response-obj-ex1",
+        "title": "CSV Download Endpoint",
+        "description": "Create a route '/export' that returns a CSV file download. The CSV should have headers 'name,email' and two rows. Set the Content-Type to 'text/csv' and Content-Disposition to trigger a download named 'users.csv'.",
+        "starterCode": "from flask import Flask, make_response\n\napp = Flask(__name__)\n\n# Create the CSV export route\n",
+        "solution": "from flask import Flask, make_response\n\napp = Flask(__name__)\n\n@app.route('/export')\ndef export():\n    csv_data = 'name,email\\nAlice,alice@example.com\\nBob,bob@example.com'\n    resp = make_response(csv_data)\n    resp.headers['Content-Type'] = 'text/csv'\n    resp.headers['Content-Disposition'] = 'attachment; filename=users.csv'\n    return resp\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Use make_response() to create a response from the CSV string",
+          "Set Content-Type to 'text/csv'",
+          "Content-Disposition with 'attachment' triggers a browser download"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "response-obj-ex2",
+        "title": "Custom Error Handlers",
+        "description": "Create error handlers for 404 and 500 that return JSON responses with 'error' and 'status' keys. Also create a route '/fail' that aborts with 404.",
+        "starterCode": "from flask import Flask, jsonify, abort\n\napp = Flask(__name__)\n\n# Create error handlers and the /fail route\n",
+        "solution": "from flask import Flask, jsonify, abort\n\napp = Flask(__name__)\n\n@app.errorhandler(404)\ndef not_found(error):\n    return jsonify({'error': 'Not found', 'status': 404}), 404\n\n@app.errorhandler(500)\ndef server_error(error):\n    return jsonify({'error': 'Internal server error', 'status': 500}), 500\n\n@app.route('/fail')\ndef fail():\n    abort(404)\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Error handlers receive the error as an argument",
+          "Return a tuple of (jsonify result, status code)",
+          "abort(404) triggers the 404 error handler"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

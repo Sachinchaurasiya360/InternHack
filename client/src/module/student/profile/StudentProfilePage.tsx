@@ -14,6 +14,8 @@ import { SEO } from "../../../components/SEO";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "react-hot-toast";
 import ImageCropModal from "../../../components/ImageCropModal";
+import GitHubImportModal from "./GitHubImportModal";
+import { BadgesSection } from "../badges/BadgesSection";
 
 interface ProfileData {
   name: string;
@@ -45,11 +47,9 @@ const JOB_STATUS_OPTIONS = [
 ] as const;
 
 interface CollegeSuggestion {
-  id: number;
   name: string;
-  city: string;
-  state: string;
-  type: string;
+  country: string;
+  stateProvince: string | null;
 }
 
 function getFileNameFromUrl(url: string): string {
@@ -98,6 +98,7 @@ export default function StudentProfilePage() {
   });
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [cropType, setCropType] = useState<"profile" | "cover" | null>(null);
+  const [showGitHubImport, setShowGitHubImport] = useState(false);
   const picInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const resumeInputRef = useRef<HTMLInputElement>(null);
@@ -157,8 +158,19 @@ export default function StudentProfilePage() {
     collegeTimerRef.current = setTimeout(async () => {
       setCollegeLoading(true);
       try {
-        const res = await api.get(`/colleges?search=${encodeURIComponent(query)}&limit=8`);
-        setCollegeSuggestions(res.data.colleges ?? []);
+        const res = await fetch(`https://universities.hipolabs.com/search?name=${encodeURIComponent(query)}`);
+        const data: Array<{ name: string; country: string; "state-province": string | null }> = await res.json();
+        // Deduplicate by name and take first 8
+        const seen = new Set<string>();
+        const suggestions: CollegeSuggestion[] = [];
+        for (const u of data) {
+          const key = u.name.toLowerCase();
+          if (seen.has(key)) continue;
+          seen.add(key);
+          suggestions.push({ name: u.name, country: u.country, stateProvince: u["state-province"] });
+          if (suggestions.length >= 8) break;
+        }
+        setCollegeSuggestions(suggestions);
         setShowCollegeSuggestions(true);
       } catch {
         setCollegeSuggestions([]);
@@ -547,9 +559,21 @@ export default function StudentProfilePage() {
             </p>
           </motion.div>
 
+          {/* Badges */}
+          {user?.id && (
+            <motion.div
+              custom={2}
+              variants={fadeInUp}
+              initial="hidden"
+              animate="visible"
+            >
+              <BadgesSection studentId={user.id} />
+            </motion.div>
+          )}
+
           {/* Account Info */}
           <motion.div
-            custom={2}
+            custom={3}
             variants={fadeInUp}
             initial="hidden"
             animate="visible"
@@ -690,11 +714,11 @@ export default function StudentProfilePage() {
                     {showCollegeSuggestions && collegeSuggestions.length > 0 && (
                       <div ref={collegeDropdownRef}
                         className="absolute z-50 left-0 right-0 top-full mt-1 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-xl shadow-xl max-h-56 overflow-y-auto">
-                        {collegeSuggestions.map((c) => (
-                          <button key={c.id} type="button" onClick={() => selectCollege(c.name)}
+                        {collegeSuggestions.map((c, i) => (
+                          <button key={i} type="button" onClick={() => selectCollege(c.name)}
                             className="w-full text-left px-4 py-2.5 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 transition-colors first:rounded-t-xl last:rounded-b-xl">
                             <p className="text-sm font-medium text-gray-900 dark:text-white truncate">{c.name}</p>
-                            <p className="text-xs text-gray-500 dark:text-gray-400">{c.city}, {c.state} · {c.type}</p>
+                            <p className="text-xs text-gray-500 dark:text-gray-400">{c.stateProvince ? `${c.stateProvince}, ` : ""}{c.country}</p>
                           </button>
                         ))}
                       </div>
@@ -773,17 +797,26 @@ export default function StudentProfilePage() {
           {/* Projects */}
           <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible"
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
-            <button type="button" onClick={() => toggleSection("projects")}
-              className="w-full flex items-center justify-between px-6 py-4 text-left">
-              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
-                  <FolderGit2 className="w-4 h-4 text-white dark:text-gray-900" />
-                </div>
-                Projects
-                <span className="text-xs font-normal text-gray-400 ml-1">{form.projects.length}/10</span>
-              </h3>
-              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.projects ? "rotate-180" : ""}`} />
-            </button>
+            <div className="flex items-center justify-between px-6 py-4">
+              <button type="button" onClick={() => toggleSection("projects")}
+                className="flex items-center justify-between flex-1 text-left">
+                <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
+                  <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
+                    <FolderGit2 className="w-4 h-4 text-white dark:text-gray-900" />
+                  </div>
+                  Projects
+                  <span className="text-xs font-normal text-gray-400 ml-1">{form.projects.length}/10</span>
+                </h3>
+                <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.projects ? "rotate-180" : ""}`} />
+              </button>
+              <button
+                type="button"
+                onClick={() => setShowGitHubImport(true)}
+                className="ml-3 inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-medium bg-gray-100 dark:bg-gray-800 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors shrink-0"
+              >
+                <Github className="w-3.5 h-3.5" /> Import GitHub
+              </button>
+            </div>
             {openSections.projects && (
               <ProjectsSection projects={form.projects} onChange={(projects) => { setForm((prev) => ({ ...prev, projects })); if (fieldErrors.projects) setFieldErrors((prev) => { const next = { ...prev }; delete next.projects; return next; }); }} inputClass={inputClass} labelClass={labelClass} errors={fieldErrors.projects} />
             )}
@@ -910,6 +943,24 @@ export default function StudentProfilePage() {
           onClose={() => { setCropSrc(null); setCropType(null); }}
         />
       )}
+
+      {/* GitHub Import Modal */}
+      <GitHubImportModal
+        open={showGitHubImport}
+        onClose={() => setShowGitHubImport(false)}
+        currentSkills={form.skills}
+        currentProjects={form.projects}
+        onImport={(data) => {
+          setForm((prev) => ({
+            ...prev,
+            skills: data.skills,
+            projects: data.projects,
+            ...(data.bio ? { bio: data.bio } : {}),
+            ...(data.location ? { location: data.location } : {}),
+            ...(data.githubUrl ? { githubUrl: data.githubUrl } : {}),
+          }));
+        }}
+      />
     </div>
   );
 }

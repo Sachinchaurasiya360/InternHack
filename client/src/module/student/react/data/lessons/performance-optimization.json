@@ -1,0 +1,281 @@
+[
+  {
+    "id": "react-memo",
+    "sectionId": "performance-optimization",
+    "orderIndex": 0,
+    "title": "React.memo and Memoization",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["React.memo", "useMemo", "useCallback", "shallow comparison", "referential equality", "memoization tradeoffs"],
+    "content": {
+      "explanation": "React.memo is a higher-order component that wraps a functional component and prevents it from re-rendering if its props have not changed. By default, React re-renders a child component whenever its parent re-renders, even if the child's props are identical. React.memo adds a shallow comparison of the previous and next props — if all props are the same by reference, the render is skipped.\n\nShallow comparison means React checks each prop with Object.is (essentially ===). Primitives (strings, numbers, booleans) are compared by value, so they work naturally. But objects, arrays, and functions are compared by reference. If a parent creates a new object or function on every render (which is the default behavior), the shallow comparison will always see 'new' props and React.memo will have no effect. This is the most common mistake.\n\nTo make React.memo effective with non-primitive props, you need useMemo (for objects/arrays) and useCallback (for functions). useMemo returns a memoized value that only recomputes when its dependencies change. useCallback returns a memoized function reference that stays stable across renders. Together with React.memo, they form a complete memoization strategy.\n\nHowever, memoization is not free. It adds memory overhead (storing previous values), CPU overhead (running comparisons), and code complexity. You should only memoize when you have measured a performance problem. The React Profiler or React DevTools Highlight Updates feature can show you which components re-render and how long they take. Memoize the expensive ones, not everything.\n\nA good rule of thumb: use React.memo for components that (1) render often due to parent updates, (2) render the same output for the same props most of the time, and (3) are medium-to-large in complexity. Small components (a paragraph, a simple button) re-render so cheaply that memoization overhead exceeds the benefit.",
+      "codeExamples": [
+        {
+          "title": "React.memo preventing unnecessary re-renders",
+          "code": "const ExpensiveList = React.memo(function ExpensiveList({ items }) {\n  console.log('ExpensiveList rendered');\n  return (\n    <ul>\n      {items.map(item => <li key={item.id}>{item.name}</li>)}\n    </ul>\n  );\n});\n\nfunction Parent() {\n  const [count, setCount] = React.useState(0);\n  const items = React.useMemo(() => [\n    { id: 1, name: 'Item A' },\n    { id: 2, name: 'Item B' },\n  ], []); // stable reference\n\n  return (\n    <div>\n      <button onClick={() => setCount(c => c + 1)}>\n        Count: {count}\n      </button>\n      <ExpensiveList items={items} />\n    </div>\n  );\n}",
+          "output": "ExpensiveList renders once on mount. Clicking the button does NOT re-render it.",
+          "explanation": "React.memo checks if items changed. Because items is memoized with useMemo and has no dependencies, it keeps the same reference. The shallow comparison passes, and ExpensiveList skips re-rendering."
+        },
+        {
+          "title": "useCallback for stable function references",
+          "code": "const SearchInput = React.memo(function SearchInput({ value, onChange }) {\n  console.log('SearchInput rendered');\n  return <input value={value} onChange={onChange} />;\n});\n\nfunction SearchPage() {\n  const [query, setQuery] = React.useState('');\n  const [results, setResults] = React.useState([]);\n\n  // Without useCallback: onChange is a new function every render\n  // With useCallback: onChange is stable\n  const handleChange = React.useCallback((e) => {\n    setQuery(e.target.value);\n  }, []);\n\n  return (\n    <div>\n      <SearchInput value={query} onChange={handleChange} />\n      <ResultsList results={results} />\n    </div>\n  );\n}",
+          "output": "SearchInput only re-renders when value changes, not when results update",
+          "explanation": "Without useCallback, handleChange would be a new function on every render, causing React.memo to see different props every time. useCallback keeps the same reference."
+        },
+        {
+          "title": "Custom comparison function",
+          "code": "const UserCard = React.memo(\n  function UserCard({ user, onSelect }) {\n    console.log('UserCard rendered for:', user.name);\n    return (\n      <div onClick={() => onSelect(user.id)}>\n        <h3>{user.name}</h3>\n        <p>{user.email}</p>\n      </div>\n    );\n  },\n  // Custom comparator: only re-render if user.id changes\n  (prevProps, nextProps) => prevProps.user.id === nextProps.user.id\n);\n\n// Even if the user object reference changes, UserCard won't re-render\n// as long as user.id stays the same.",
+          "explanation": "The second argument to React.memo is a custom comparison function. Return true to skip re-render (props are equal), false to re-render. This gives fine-grained control beyond shallow comparison."
+        }
+      ],
+      "notes": [
+        "React.memo only checks props. If the component uses context or internal state, it will still re-render when those change.",
+        "useMemo and useCallback are necessary companions to React.memo when passing objects or functions as props.",
+        "Profile before you memoize. Premature memoization adds complexity without measurable benefit."
+      ],
+      "commonPitfalls": [
+        "Using React.memo but passing inline objects or arrow functions as props, which defeats memoization because the reference changes every render.",
+        "Memoizing every component in the app. The comparison cost and memory overhead can actually make performance worse for small, cheap-to-render components."
+      ],
+      "interviewTips": [
+        "Explain the difference between React.memo (component-level), useMemo (value-level), and useCallback (function-level) — interviewers often ask you to distinguish them.",
+        "Mention that React.memo does a shallow comparison by default and explain why that matters for objects and functions.",
+        "Discuss when NOT to use memoization: small components, components that always receive new props, or when you haven't profiled to confirm a problem.",
+        "Be ready to explain that React's default behavior (re-render on parent update) is usually fine. The framework is optimized for this, and unnecessary memoization is a common code smell."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "react-memo-ex1",
+        "title": "Shallow Comparison Implementation",
+        "description": "Implement a shallowEqual function that compares two objects the way React.memo does. It should return true if all keys have the same values (using ===). Test it with both matching and non-matching objects.",
+        "starterCode": "// Implement shallowEqual(objA, objB)\n// Returns true if all keys are === equal\n// Returns false if any key differs or key count differs\n\nfunction shallowEqual(objA, objB) {\n  // TODO\n}\n\n// Test cases",
+        "solution": "function shallowEqual(objA, objB) {\n  if (objA === objB) return true;\n\n  const keysA = Object.keys(objA);\n  const keysB = Object.keys(objB);\n\n  if (keysA.length !== keysB.length) return false;\n\n  for (const key of keysA) {\n    if (objA[key] !== objB[key]) return false;\n  }\n\n  return true;\n}\n\n// Test cases\nconsole.log('Same values: ' + shallowEqual({ a: 1, b: 2 }, { a: 1, b: 2 }));\nconsole.log('Different values: ' + shallowEqual({ a: 1, b: 2 }, { a: 1, b: 3 }));\nconsole.log('Different keys: ' + shallowEqual({ a: 1 }, { a: 1, b: 2 }));\nconsole.log('Same reference: ' + shallowEqual({ a: 1 }, { a: 1 }));\n\nconst arr = [1, 2, 3];\nconsole.log('Same array ref: ' + shallowEqual({ items: arr }, { items: arr }));\nconsole.log('Different array ref: ' + shallowEqual({ items: [1, 2] }, { items: [1, 2] }));",
+        "expectedOutput": "Same values: true\nDifferent values: false\nDifferent keys: false\nSame reference: true\nSame array ref: true\nDifferent array ref: false",
+        "hints": [
+          "First check if the objects are the same reference (===). Then compare key counts. Then compare each value with ===.",
+          "Remember: === on arrays/objects compares by reference, not by contents. Two separate [1,2] arrays are NOT ===."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "react-memo-ex2",
+        "title": "Memoized Component Simulation",
+        "description": "Simulate React.memo behavior. Create a memoize wrapper that takes a render function and only calls it when props change (using shallow comparison). Log 'RENDER' when the function runs and 'SKIP' when memoization prevents it.",
+        "starterCode": "// Simulate React.memo\n// memoComponent(renderFn) returns a function that only calls renderFn\n// when props have changed (shallow comparison)\n\nfunction memoComponent(renderFn) {\n  // TODO: return a function that checks props before rendering\n}\n\n// Test: call with same props (should skip), then different props (should render)",
+        "solution": "function shallowEqual(a, b) {\n  if (a === b) return true;\n  const keysA = Object.keys(a);\n  const keysB = Object.keys(b);\n  if (keysA.length !== keysB.length) return false;\n  for (const key of keysA) {\n    if (a[key] !== b[key]) return false;\n  }\n  return true;\n}\n\nfunction memoComponent(renderFn) {\n  let prevProps = null;\n  let prevResult = null;\n\n  return function(props) {\n    if (prevProps && shallowEqual(prevProps, props)) {\n      console.log('SKIP (memoized)');\n      return prevResult;\n    }\n    console.log('RENDER');\n    prevResult = renderFn(props);\n    prevProps = { ...props };\n    return prevResult;\n  };\n}\n\nconst MemoizedCard = memoComponent((props) => {\n  return 'Card: ' + props.name + ', Age: ' + props.age;\n});\n\nconsole.log(MemoizedCard({ name: 'Alice', age: 25 }));\nconsole.log(MemoizedCard({ name: 'Alice', age: 25 }));\nconsole.log(MemoizedCard({ name: 'Bob', age: 30 }));\nconsole.log(MemoizedCard({ name: 'Bob', age: 30 }));",
+        "expectedOutput": "RENDER\nCard: Alice, Age: 25\nSKIP (memoized)\nCard: Alice, Age: 25\nRENDER\nCard: Bob, Age: 30\nSKIP (memoized)\nCard: Bob, Age: 30",
+        "hints": [
+          "Store the previous props and result. On each call, shallow-compare current props with previous. If equal, return the cached result.",
+          "Make sure to copy the props (spread into a new object) when storing them, so later mutations don't affect the comparison."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "avoiding-rerenders",
+    "sectionId": "performance-optimization",
+    "orderIndex": 1,
+    "title": "Avoiding Unnecessary Re-renders",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["re-render causes", "state colocation", "children as props", "composition pattern", "React DevTools profiler"],
+    "content": {
+      "explanation": "Unnecessary re-renders are the most common performance problem in React applications. A re-render happens when a component's state changes, when its parent re-renders, or when a consumed context value changes. While React is fast at re-rendering, doing it thousands of times on every interaction creates noticeable lag, especially on mobile devices.\n\nThe first and most impactful technique is state colocation — moving state down to the component that actually needs it. If only a search input needs to track its value, that state should live in the search input component, not in a parent that also renders a heavy list. When state lives too high in the tree, every state change re-renders the entire subtree, including components that don't care about that state.\n\nThe children-as-props pattern is a powerful technique that is often overlooked. When a parent component has state that causes frequent re-renders, any JSX passed as the children prop is NOT re-created — it was created by the grandparent and passed down as a stable reference. This means wrapping expensive children in a stateful parent does not re-render the children on every state change.\n\nComposition over wrapping is another pattern. Instead of one large component that manages multiple concerns, break it into smaller components where each manages only the state it needs. The expensive rendering work happens in components that don't have rapidly-changing state, so they stay stable.\n\nUse the React DevTools Profiler to identify which components re-render and why. The 'Highlight updates' feature visually flashes components that re-render. The Profiler tab records render timings and shows you the commit with the longest duration. Always measure before optimizing — intuition about performance is often wrong.",
+      "codeExamples": [
+        {
+          "title": "State colocation — moving state down",
+          "code": "// BAD: State in parent re-renders the expensive list\nfunction PageBad() {\n  const [search, setSearch] = React.useState('');\n  return (\n    <div>\n      <input value={search} onChange={e => setSearch(e.target.value)} />\n      <ExpensiveList /> {/* Re-renders on every keystroke! */}\n    </div>\n  );\n}\n\n// GOOD: State colocated in its own component\nfunction PageGood() {\n  return (\n    <div>\n      <SearchInput /> {/* Has its own state */}\n      <ExpensiveList /> {/* Never re-renders from search */}\n    </div>\n  );\n}\n\nfunction SearchInput() {\n  const [search, setSearch] = React.useState('');\n  return <input value={search} onChange={e => setSearch(e.target.value)} />;\n}",
+          "output": "In PageGood, typing in search does NOT re-render ExpensiveList",
+          "explanation": "Moving the search state into SearchInput means only SearchInput re-renders on keystrokes. ExpensiveList is a sibling with no state dependency, so it stays stable."
+        },
+        {
+          "title": "Children as props pattern",
+          "code": "// The children prop is created by the caller and stays stable\nfunction ScrollTracker({ children }) {\n  const [scrollY, setScrollY] = React.useState(0);\n\n  React.useEffect(() => {\n    const handler = () => setScrollY(window.scrollY);\n    window.addEventListener('scroll', handler);\n    return () => window.removeEventListener('scroll', handler);\n  }, []);\n\n  return (\n    <div>\n      <p>Scroll: {scrollY}px</p>\n      {children} {/* This does NOT re-render on scroll */}\n    </div>\n  );\n}\n\n// Usage\nfunction Page() {\n  return (\n    <ScrollTracker>\n      <ExpensiveContent /> {/* Created by Page, not ScrollTracker */}\n    </ScrollTracker>\n  );\n}",
+          "output": "ScrollTracker updates on scroll, but ExpensiveContent does not re-render",
+          "explanation": "ExpensiveContent is created by Page (the parent of ScrollTracker) and passed as children. When ScrollTracker re-renders due to scrollY state change, children is the same reference — it was not recreated."
+        },
+        {
+          "title": "Identifying re-renders with a render counter",
+          "code": "function useRenderCount(componentName) {\n  const renderCount = React.useRef(0);\n  renderCount.current += 1;\n  console.log(`${componentName} rendered: ${renderCount.current} times`);\n}\n\nfunction Parent() {\n  const [count, setCount] = React.useState(0);\n  useRenderCount('Parent');\n\n  return (\n    <div>\n      <button onClick={() => setCount(c => c + 1)}>+1</button>\n      <Child name=\"Alice\" />\n    </div>\n  );\n}\n\nfunction Child({ name }) {\n  useRenderCount('Child');\n  return <p>Hello {name}</p>;\n}\n\n// Clicking button logs:\n// Parent rendered: 2 times\n// Child rendered: 2 times (unnecessary!)",
+          "explanation": "Child re-renders even though its props haven't changed, because React re-renders all children when a parent's state changes. Use React.memo on Child to prevent this."
+        }
+      ],
+      "notes": [
+        "State colocation is the single most effective optimization — it reduces the scope of re-renders without any memoization overhead.",
+        "The children-as-props pattern works because React elements are just objects. If the same object reference is passed as children, React skips re-rendering it.",
+        "Use React DevTools Profiler to measure before optimizing. Focus on components that take more than 16ms to render (one frame at 60fps)."
+      ],
+      "commonPitfalls": [
+        "Keeping all state at the top of the component tree 'for convenience', causing the entire app to re-render on every state change.",
+        "Wrapping everything in React.memo instead of restructuring components. Memoization is a bandaid — composition and state colocation solve the root cause."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "avoiding-rerenders-ex1",
+        "title": "State Colocation Refactor",
+        "description": "Simulate a bad component structure where state in a parent causes unnecessary re-renders of siblings. Then refactor using state colocation and show that the expensive sibling no longer re-renders.",
+        "starterCode": "// BAD structure: parent state re-renders everything\n// Refactor so ExpensiveComponent doesn't re-render when input changes\n\nfunction simulateBadStructure() {\n  // TODO: simulate parent with input state + expensive child both re-rendering\n}\n\nfunction simulateGoodStructure() {\n  // TODO: colocate input state, show expensive child doesn't re-render\n}",
+        "solution": "function simulateBadStructure() {\n  console.log('=== Bad Structure ===');\n  let renderCounts = { Parent: 0, Input: 0, Expensive: 0 };\n\n  function render(inputValue) {\n    renderCounts.Parent++;\n    renderCounts.Input++;\n    renderCounts.Expensive++;\n    console.log('Input: ' + inputValue + ' | Renders - Parent: ' + renderCounts.Parent + ', Input: ' + renderCounts.Input + ', Expensive: ' + renderCounts.Expensive);\n  }\n\n  render('H');\n  render('He');\n  render('Hel');\n}\n\nfunction simulateGoodStructure() {\n  console.log('=== Good Structure (Colocated) ===');\n  let renderCounts = { Page: 0, SearchInput: 0, Expensive: 0 };\n\n  function renderInput(inputValue) {\n    renderCounts.SearchInput++;\n    // Page and Expensive don't re-render because state is colocated\n    console.log('Input: ' + inputValue + ' | Renders - Page: ' + renderCounts.Page + ', SearchInput: ' + renderCounts.SearchInput + ', Expensive: ' + renderCounts.Expensive);\n  }\n\n  // Initial page render\n  renderCounts.Page++;\n  renderCounts.Expensive++;\n  console.log('Initial render - Page: ' + renderCounts.Page + ', Expensive: ' + renderCounts.Expensive);\n\n  // Typing only re-renders SearchInput\n  renderInput('H');\n  renderInput('He');\n  renderInput('Hel');\n}\n\nsimulateBadStructure();\nsimulateBadStructure();\nsimulateGoodStructure();",
+        "expectedOutput": "=== Bad Structure ===\nInput: H | Renders - Parent: 1, Input: 1, Expensive: 1\nInput: He | Renders - Parent: 2, Input: 2, Expensive: 2\nInput: Hel | Renders - Parent: 3, Input: 3, Expensive: 3\n=== Bad Structure ===\nInput: H | Renders - Parent: 1, Input: 1, Expensive: 1\nInput: He | Renders - Parent: 2, Input: 2, Expensive: 2\nInput: Hel | Renders - Parent: 3, Input: 3, Expensive: 3\n=== Good Structure (Colocated) ===\nInitial render - Page: 1, Expensive: 1\nInput: H | Renders - Page: 1, SearchInput: 1, Expensive: 1\nInput: He | Renders - Page: 1, SearchInput: 2, Expensive: 1\nInput: Hel | Renders - Page: 1, SearchInput: 3, Expensive: 1",
+        "hints": [
+          "In the bad structure, every state change increments ALL render counts. In the good structure, only SearchInput's count increases on keystrokes.",
+          "The key insight: in the good structure, Page and Expensive render only once (on mount) and never again when the search input changes."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "avoiding-rerenders-ex2",
+        "title": "Children as Props Pattern",
+        "description": "Simulate the children-as-props optimization. Create a wrapper component that has frequently-changing state (like a timer). Show that children passed from the parent are not affected by the wrapper's state changes.",
+        "starterCode": "// Simulate children-as-props pattern\n// A timer wrapper updates every tick\n// Children should NOT be affected by timer updates\n\nfunction simulateChildrenAsProps() {\n  // TODO\n}",
+        "solution": "function simulateChildrenAsProps() {\n  let childrenRenderCount = 0;\n  let timerRenderCount = 0;\n\n  // Children are created once by the parent (stable reference)\n  function createChildren() {\n    childrenRenderCount++;\n    return 'ExpensiveContent (rendered ' + childrenRenderCount + ' time(s))';\n  }\n\n  // Create children once (simulating parent creating JSX)\n  const children = createChildren();\n\n  // Timer wrapper re-renders on every tick\n  function timerTick(tick) {\n    timerRenderCount++;\n    console.log('Timer tick: ' + tick + ' | Timer renders: ' + timerRenderCount + ' | Children: ' + children);\n  }\n\n  console.log('Children created once: ' + children);\n  timerTick(1);\n  timerTick(2);\n  timerTick(3);\n  console.log('Children render count: ' + childrenRenderCount);\n  console.log('Timer render count: ' + timerRenderCount);\n}\n\nsimulateChildrenAsProps();",
+        "expectedOutput": "Children created once: ExpensiveContent (rendered 1 time(s))\nTimer tick: 1 | Timer renders: 1 | Children: ExpensiveContent (rendered 1 time(s))\nTimer tick: 2 | Timer renders: 2 | Children: ExpensiveContent (rendered 1 time(s))\nTimer tick: 3 | Timer renders: 3 | Children: ExpensiveContent (rendered 1 time(s))\nChildren render count: 1\nTimer render count: 3",
+        "hints": [
+          "Create the children string ONCE before the timer loop. The children value stays the same across all timer ticks.",
+          "The timer re-renders 3 times but children are only created once — this is the key optimization of the children-as-props pattern."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "code-splitting",
+    "sectionId": "performance-optimization",
+    "orderIndex": 2,
+    "title": "Code Splitting",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["React.lazy", "dynamic import", "route-based splitting", "bundle analysis", "prefetching"],
+    "content": {
+      "explanation": "Code splitting is the practice of breaking your application's JavaScript bundle into smaller chunks that load on demand. Without code splitting, users download the entire app's code upfront — even for pages they never visit. This increases the initial load time and wastes bandwidth. Code splitting ensures users only download the code they need, when they need it.\n\nReact.lazy and dynamic import() are the primary tools for code splitting in React. React.lazy takes a function that calls import() and returns a component that loads on demand. The bundler (Vite, webpack) sees the dynamic import and automatically creates a separate chunk for that module and its dependencies. When the component first renders, the chunk downloads, and Suspense shows a fallback during the download.\n\nRoute-based splitting is the most impactful strategy because routes are natural loading boundaries. Users expect a brief loading moment when navigating between pages. By lazy-loading each route component, the initial bundle contains only the layout, navigation, and current page. Other pages load on demand. This can reduce the initial bundle by 50-80% in large applications.\n\nComponent-based splitting is useful for heavy features that not all users interact with: complex modals, rich text editors, chart libraries, or admin panels. Instead of including chart.js in the main bundle (it's 200KB+), lazy-load the chart component only when the user navigates to the analytics page.\n\nBundle analysis tools like rollup-plugin-visualizer (for Vite) or webpack-bundle-analyzer show you exactly what is in each chunk and how large it is. Run the analysis, identify the largest chunks, and split them. Common culprits are large libraries (moment.js, lodash, chart libraries) that should be dynamically imported or replaced with lighter alternatives.",
+      "codeExamples": [
+        {
+          "title": "Route-based code splitting",
+          "code": "import React, { Suspense, lazy } from 'react';\nimport { Routes, Route } from 'react-router-dom';\nimport Layout from './Layout'; // Always loaded\n\n// Each route is a separate chunk\nconst Home = lazy(() => import('./pages/Home'));\nconst Dashboard = lazy(() => import('./pages/Dashboard'));\nconst Settings = lazy(() => import('./pages/Settings'));\nconst AdminPanel = lazy(() => import('./pages/AdminPanel'));\n\nfunction App() {\n  return (\n    <Layout>\n      <Suspense fallback={<PageSkeleton />}>\n        <Routes>\n          <Route path=\"/\" element={<Home />} />\n          <Route path=\"/dashboard\" element={<Dashboard />} />\n          <Route path=\"/settings\" element={<Settings />} />\n          <Route path=\"/admin\" element={<AdminPanel />} />\n        </Routes>\n      </Suspense>\n    </Layout>\n  );\n}",
+          "output": "Initial bundle: Layout + routing. Each page loads on navigation.",
+          "explanation": "Layout loads immediately. When the user navigates to /dashboard, only then does Dashboard.js download. Users who never visit /admin never download its code."
+        },
+        {
+          "title": "Component-based splitting for heavy features",
+          "code": "const RichTextEditor = lazy(() => import('./components/RichTextEditor'));\nconst ChartDashboard = lazy(() => import('./components/ChartDashboard'));\n\nfunction ArticleEditor() {\n  const [showPreview, setShowPreview] = React.useState(false);\n\n  return (\n    <div>\n      <Suspense fallback={<p>Loading editor...</p>}>\n        <RichTextEditor />\n      </Suspense>\n\n      <button onClick={() => setShowPreview(true)}>Preview</button>\n\n      {showPreview && (\n        <Suspense fallback={<p>Loading charts...</p>}>\n          <ChartDashboard />\n        </Suspense>\n      )}\n    </div>\n  );\n}",
+          "output": "Editor loads on mount. Charts only load when Preview is clicked.",
+          "explanation": "The chart library (often 200KB+) is not in the initial bundle. It downloads only when the user clicks Preview, which many users may never do."
+        },
+        {
+          "title": "Prefetching on hover for instant navigation",
+          "code": "const Dashboard = lazy(() => import('./pages/Dashboard'));\n\nfunction NavLink({ to, children }) {\n  const prefetch = () => {\n    // Trigger the dynamic import on hover\n    if (to === '/dashboard') {\n      import('./pages/Dashboard');\n    }\n  };\n\n  return (\n    <Link\n      to={to}\n      onMouseEnter={prefetch}\n      onFocus={prefetch}\n    >\n      {children}\n    </Link>\n  );\n}\n\n// When user hovers over the link, the chunk starts downloading.\n// By the time they click, it's often already cached.",
+          "output": "Hovering triggers download; clicking shows the page instantly",
+          "explanation": "Calling import() on hover starts the download. The browser caches the module. When React.lazy renders the component on navigation, the chunk is already available — no loading spinner."
+        }
+      ],
+      "notes": [
+        "Route-based splitting gives the biggest bang for the buck — start there before splitting individual components.",
+        "React.lazy must be called at the module level, not inside a component. Defining it inside a component creates a new lazy component on every render.",
+        "Use a bundle analyzer to find the largest chunks and identify code-splitting opportunities."
+      ],
+      "commonPitfalls": [
+        "Splitting too aggressively — every tiny component in its own chunk creates excessive HTTP requests and can actually slow things down due to request overhead.",
+        "Forgetting to wrap lazy components with Suspense, causing React to throw an error about missing Suspense boundaries."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "code-splitting-ex1",
+        "title": "Simulated Dynamic Import",
+        "description": "Simulate the dynamic import and lazy loading pattern. Create a moduleLoader that registers modules and a lazyLoad function that loads them on demand. Track which modules have been loaded and log the loading process.",
+        "starterCode": "// Simulate dynamic import and lazy loading\n// 1. Register modules (simulate having separate files)\n// 2. lazyLoad(moduleName) loads a module only on first call\n// 3. Log 'Loading module...' on first access, 'Already loaded' on subsequent\n\nfunction createModuleSystem() {\n  // TODO\n}\n\n// Register 3 modules\n// Load 'Dashboard' (first time - downloads)\n// Load 'Dashboard' (second time - cached)\n// Load 'Settings' (first time - downloads)",
+        "solution": "function createModuleSystem() {\n  const registry = {};\n  const loaded = {};\n\n  return {\n    register: (name, factory) => {\n      registry[name] = factory;\n    },\n    lazyLoad: (name) => {\n      if (loaded[name]) {\n        console.log('[' + name + '] Already loaded (cached)');\n        return loaded[name];\n      }\n      if (!registry[name]) {\n        console.log('[' + name + '] Module not found!');\n        return null;\n      }\n      console.log('[' + name + '] Loading module...');\n      loaded[name] = registry[name]();\n      console.log('[' + name + '] Loaded successfully');\n      return loaded[name];\n    },\n    getLoadedCount: () => Object.keys(loaded).length\n  };\n}\n\nconst modules = createModuleSystem();\nmodules.register('Dashboard', () => 'Dashboard Component');\nmodules.register('Settings', () => 'Settings Component');\nmodules.register('Admin', () => 'Admin Component');\n\nconsole.log('Result: ' + modules.lazyLoad('Dashboard'));\nconsole.log('Result: ' + modules.lazyLoad('Dashboard'));\nconsole.log('Result: ' + modules.lazyLoad('Settings'));\nconsole.log('Loaded modules: ' + modules.getLoadedCount() + '/3');",
+        "expectedOutput": "[Dashboard] Loading module...\n[Dashboard] Loaded successfully\nResult: Dashboard Component\n[Dashboard] Already loaded (cached)\nResult: Dashboard Component\n[Settings] Loading module...\n[Settings] Loaded successfully\nResult: Settings Component\nLoaded modules: 2/3",
+        "hints": [
+          "Use two objects: registry (all available modules) and loaded (only modules that have been accessed). Check loaded first, then registry.",
+          "The factory function simulates the dynamic import — it's only called once, and the result is cached in the loaded object."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "code-splitting-ex2",
+        "title": "Bundle Size Impact Analysis",
+        "description": "Simulate a bundle size analysis. Given a list of modules with their sizes, calculate the initial bundle size (only eagerly loaded modules) vs the total size. Show the savings from code splitting.",
+        "starterCode": "// Simulate bundle analysis\n// Given modules with sizes and loading strategy (eager vs lazy)\n// Calculate initial bundle vs total and show savings\n\nconst modules = [\n  { name: 'Framework', size: 45, loading: 'eager' },\n  { name: 'Router', size: 12, loading: 'eager' },\n  { name: 'Layout', size: 8, loading: 'eager' },\n  { name: 'Home', size: 15, loading: 'eager' },\n  { name: 'Dashboard', size: 35, loading: 'lazy' },\n  { name: 'Settings', size: 20, loading: 'lazy' },\n  { name: 'Admin', size: 50, loading: 'lazy' },\n  { name: 'ChartLib', size: 65, loading: 'lazy' }\n];\n\n// TODO: calculate and log the analysis",
+        "solution": "const modules = [\n  { name: 'Framework', size: 45, loading: 'eager' },\n  { name: 'Router', size: 12, loading: 'eager' },\n  { name: 'Layout', size: 8, loading: 'eager' },\n  { name: 'Home', size: 15, loading: 'eager' },\n  { name: 'Dashboard', size: 35, loading: 'lazy' },\n  { name: 'Settings', size: 20, loading: 'lazy' },\n  { name: 'Admin', size: 50, loading: 'lazy' },\n  { name: 'ChartLib', size: 65, loading: 'lazy' }\n];\n\nconst eager = modules.filter(m => m.loading === 'eager');\nconst lazy = modules.filter(m => m.loading === 'lazy');\nconst eagerSize = eager.reduce((sum, m) => sum + m.size, 0);\nconst lazySize = lazy.reduce((sum, m) => sum + m.size, 0);\nconst totalSize = eagerSize + lazySize;\nconst savings = Math.round((lazySize / totalSize) * 100);\n\nconsole.log('Initial bundle (eager):');\neager.forEach(m => console.log('  ' + m.name + ': ' + m.size + 'KB'));\nconsole.log('Initial size: ' + eagerSize + 'KB');\nconsole.log('');\nconsole.log('Lazy-loaded chunks:');\nlazy.forEach(m => console.log('  ' + m.name + ': ' + m.size + 'KB'));\nconsole.log('Lazy size: ' + lazySize + 'KB');\nconsole.log('');\nconsole.log('Total: ' + totalSize + 'KB');\nconsole.log('Savings: ' + savings + '% smaller initial load');",
+        "expectedOutput": "Initial bundle (eager):\n  Framework: 45KB\n  Router: 12KB\n  Layout: 8KB\n  Home: 15KB\nInitial size: 80KB\n\nLazy-loaded chunks:\n  Dashboard: 35KB\n  Settings: 20KB\n  Admin: 50KB\n  ChartLib: 65KB\nLazy size: 170KB\n\nTotal: 250KB\nSavings: 68% smaller initial load",
+        "hints": [
+          "Filter modules by loading strategy. Sum sizes with reduce. Calculate percentage savings as (lazySize / totalSize * 100).",
+          "This demonstrates the real-world impact: users initially download 80KB instead of 250KB — a 68% reduction."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "virtualization",
+    "sectionId": "performance-optimization",
+    "orderIndex": 3,
+    "title": "List Virtualization",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["virtualization", "windowing", "react-window", "overscan", "variable-size lists", "scroll performance"],
+    "content": {
+      "explanation": "List virtualization (also called windowing) is a technique for efficiently rendering large lists by only mounting the DOM nodes that are currently visible in the viewport. Instead of rendering 10,000 list items (creating 10,000 DOM nodes), virtualization renders only the ~20 items visible on screen plus a small buffer (overscan). As the user scrolls, items entering the viewport are mounted and items leaving are unmounted.\n\nWithout virtualization, a list of 10,000 items creates 10,000 DOM nodes. Each node takes memory, and the browser must lay out and paint all of them. Initial render can take several seconds, scrolling becomes janky, and memory usage spikes. Users on mobile devices with limited RAM may see the browser tab crash.\n\nThe react-window library (by Brian Vaughn, a React core team member) is the standard solution. It provides FixedSizeList for items with uniform height and VariableSizeList for items with different heights. You provide the total item count, item size, and a render function. react-window calculates which items are visible based on scroll position and only renders those.\n\nThe overscan property controls how many items are rendered outside the visible area. A small overscan (1-2 items) gives faster scroll performance but may show brief blank areas during fast scrolling. A larger overscan (5-10 items) provides smoother scrolling at the cost of rendering more items. The default of 1 works well for most cases.\n\nVirtualization is most beneficial when you have hundreds or thousands of items. For lists under 100 items, the overhead of virtualization (measuring scroll position, calculating visible range) may exceed the cost of just rendering all items. Use it when you have large datasets and can confirm (via profiling) that rendering is the bottleneck.",
+      "codeExamples": [
+        {
+          "title": "Basic FixedSizeList with react-window",
+          "code": "import { FixedSizeList } from 'react-window';\n\nconst items = Array.from({ length: 10000 }, (_, i) => ({\n  id: i,\n  name: `Item ${i + 1}`,\n}));\n\nfunction Row({ index, style }) {\n  const item = items[index];\n  return (\n    <div style={style} className=\"flex items-center px-4 border-b\">\n      <span className=\"font-medium\">{item.name}</span>\n    </div>\n  );\n}\n\nfunction VirtualList() {\n  return (\n    <FixedSizeList\n      height={400}      // viewport height\n      width=\"100%\"\n      itemCount={items.length}\n      itemSize={50}      // each row is 50px\n      overscanCount={5}\n    >\n      {Row}\n    </FixedSizeList>\n  );\n}",
+          "output": "Renders only ~13 rows (400px / 50px + overscan), not 10,000",
+          "explanation": "react-window renders only the visible items plus 5 overscan items above and below. The total DOM node count stays around 20 regardless of list length."
+        },
+        {
+          "title": "VariableSizeList for different item heights",
+          "code": "import { VariableSizeList } from 'react-window';\n\nconst messages = Array.from({ length: 5000 }, (_, i) => ({\n  id: i,\n  text: i % 3 === 0\n    ? 'This is a longer message that takes up more vertical space in the list.'\n    : 'Short message.',\n}));\n\n// Height estimation function\nconst getItemSize = (index) => messages[index].text.length > 30 ? 80 : 40;\n\nfunction MessageRow({ index, style }) {\n  return (\n    <div style={style} className=\"px-4 py-2 border-b\">\n      <p>{messages[index].text}</p>\n    </div>\n  );\n}\n\nfunction MessageList() {\n  return (\n    <VariableSizeList\n      height={500}\n      width=\"100%\"\n      itemCount={messages.length}\n      itemSize={getItemSize}\n      estimatedItemSize={50}\n    >\n      {MessageRow}\n    </VariableSizeList>\n  );\n}",
+          "output": "Efficiently renders variable-height chat messages",
+          "explanation": "VariableSizeList calls getItemSize for each index to determine the row height. estimatedItemSize helps with initial scroll bar sizing before all heights are measured."
+        },
+        {
+          "title": "Performance comparison: virtual vs non-virtual",
+          "code": "// Non-virtualized: renders ALL 10,000 items\nfunction SlowList({ items }) {\n  console.time('SlowList render');\n  const result = (\n    <div style={{ height: 400, overflow: 'auto' }}>\n      {items.map(item => (\n        <div key={item.id} style={{ height: 50, borderBottom: '1px solid #eee' }}>\n          {item.name}\n        </div>\n      ))}\n    </div>\n  );\n  console.timeEnd('SlowList render');\n  return result;\n}\n// SlowList render: ~200-500ms, 10,000 DOM nodes\n\n// Virtualized: renders ~20 items\n// FastList render: ~5ms, ~20 DOM nodes\n// Scrolling is smooth because only ~20 items are in the DOM at any time",
+          "explanation": "The non-virtualized list creates 10,000 DOM nodes taking hundreds of milliseconds. The virtualized list creates ~20 nodes in under 5ms. The difference grows exponentially with list size."
+        }
+      ],
+      "notes": [
+        "Virtualization is most impactful for lists with 500+ items. For smaller lists, plain rendering is usually fast enough.",
+        "The style prop in the row component is required — react-window uses absolute positioning to place each row, and the style contains the position and size.",
+        "react-window is lighter than react-virtualized. Use react-window for most cases; react-virtualized only if you need its extra features (multi-grid, table, collection)."
+      ],
+      "commonPitfalls": [
+        "Forgetting to apply the style prop to the row component — without it, all rows stack at position 0 and the list appears broken.",
+        "Using virtualization for short lists (under 100 items) where the overhead of windowing exceeds the cost of rendering all items."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "virtualization-ex1",
+        "title": "Simulated Windowing Algorithm",
+        "description": "Implement a basic windowing function. Given a total item count, viewport height, and item height, calculate which items should be visible. Return the start and end indices of the visible window.",
+        "starterCode": "// Implement a windowing calculator\n// Given: totalItems, viewportHeight, itemHeight, scrollTop\n// Return: { startIndex, endIndex, visibleCount }\n\nfunction calculateWindow(totalItems, viewportHeight, itemHeight, scrollTop) {\n  // TODO\n}\n\n// Test with different scroll positions",
+        "solution": "function calculateWindow(totalItems, viewportHeight, itemHeight, scrollTop) {\n  const visibleCount = Math.ceil(viewportHeight / itemHeight);\n  const startIndex = Math.floor(scrollTop / itemHeight);\n  const endIndex = Math.min(startIndex + visibleCount - 1, totalItems - 1);\n\n  return { startIndex, endIndex, visibleCount };\n}\n\nconsole.log('--- At top (scrollTop: 0) ---');\nconst w1 = calculateWindow(10000, 400, 50, 0);\nconsole.log('Start: ' + w1.startIndex + ', End: ' + w1.endIndex + ', Visible: ' + w1.visibleCount);\n\nconsole.log('--- Scrolled down (scrollTop: 500) ---');\nconst w2 = calculateWindow(10000, 400, 50, 500);\nconsole.log('Start: ' + w2.startIndex + ', End: ' + w2.endIndex + ', Visible: ' + w2.visibleCount);\n\nconsole.log('--- Near bottom (scrollTop: 499500) ---');\nconst w3 = calculateWindow(10000, 400, 50, 499500);\nconsole.log('Start: ' + w3.startIndex + ', End: ' + w3.endIndex + ', Visible: ' + w3.visibleCount);\n\nconsole.log('--- Rendered vs total ---');\nconsole.log('Rendering ' + w1.visibleCount + ' of 10000 items (' + (w1.visibleCount / 10000 * 100).toFixed(2) + '%)');",
+        "expectedOutput": "--- At top (scrollTop: 0) ---\nStart: 0, End: 7, Visible: 8\n--- Scrolled down (scrollTop: 500) ---\nStart: 10, End: 17, Visible: 8\n--- Near bottom (scrollTop: 499500) ---\nStart: 9990, End: 9997, Visible: 8\n--- Rendered vs total ---\nRendering 8 of 10000 items (0.08%)",
+        "hints": [
+          "startIndex = Math.floor(scrollTop / itemHeight) gives the first visible item. visibleCount = Math.ceil(viewportHeight / itemHeight) gives how many fit.",
+          "Clamp endIndex to totalItems - 1 to avoid going past the end of the list."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "virtualization-ex2",
+        "title": "Virtual List Renderer",
+        "description": "Build on the windowing calculator to create a virtual list renderer. Given a list of items, render only the visible ones based on scroll position. Include overscan (extra items above and below the visible area).",
+        "starterCode": "// Build a virtual list renderer with overscan\n// Only render items in the visible window + overscan buffer\n\nfunction virtualRender(items, viewportHeight, itemHeight, scrollTop, overscan) {\n  // TODO: calculate window, apply overscan, render only visible items\n}\n\n// Create 1000 items, render at different scroll positions with overscan of 2",
+        "solution": "function virtualRender(items, viewportHeight, itemHeight, scrollTop, overscan) {\n  const visibleCount = Math.ceil(viewportHeight / itemHeight);\n  const rawStart = Math.floor(scrollTop / itemHeight);\n  const rawEnd = rawStart + visibleCount - 1;\n\n  // Apply overscan\n  const startIndex = Math.max(0, rawStart - overscan);\n  const endIndex = Math.min(items.length - 1, rawEnd + overscan);\n  const renderedCount = endIndex - startIndex + 1;\n\n  console.log('Scroll: ' + scrollTop + 'px | Window: [' + startIndex + '-' + endIndex + '] | Rendered: ' + renderedCount + '/' + items.length);\n\n  for (let i = startIndex; i <= endIndex; i++) {\n    const isOverscan = i < rawStart || i > rawEnd;\n    console.log('  ' + (isOverscan ? '(buffer) ' : '') + items[i]);\n  }\n}\n\nconst items = Array.from({ length: 1000 }, (_, i) => 'Item ' + (i + 1));\n\nconsole.log('=== Top of list ===');\nvirtualRender(items, 200, 50, 0, 2);\nconsole.log('=== Scrolled to middle ===');\nvirtualRender(items, 200, 50, 25000, 2);",
+        "expectedOutput": "=== Top of list ===\nScroll: 0px | Window: [0-5] | Rendered: 6/1000\n  Item 1\n  Item 2\n  Item 3\n  Item 4\n  (buffer) Item 5\n  (buffer) Item 6\n=== Scrolled to middle ===\nScroll: 25000px | Window: [498-505] | Rendered: 8/1000\n  (buffer) Item 499\n  (buffer) Item 500\n  Item 501\n  Item 502\n  Item 503\n  Item 504\n  (buffer) Item 505\n  (buffer) Item 506",
+        "hints": [
+          "Calculate the raw visible range first, then expand it by overscan in both directions. Clamp to [0, items.length - 1].",
+          "Mark items outside the raw visible range but inside the overscan range as buffer items to show the difference."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -11,10 +11,23 @@ export function usageLimit(action: UsageAction) {
     }
 
     try {
-      const user = await prisma.user.findUnique({
-        where: { id: req.user.id },
-        select: { subscriptionPlan: true, subscriptionStatus: true },
-      });
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0);
+
+      // Run both DB calls in parallel — they are fully independent.
+      const [user, used] = await Promise.all([
+        prisma.user.findUnique({
+          where: { id: req.user.id },
+          select: { subscriptionPlan: true, subscriptionStatus: true },
+        }),
+        prisma.usageLog.count({
+          where: {
+            userId: req.user.id,
+            action,
+            createdAt: { gte: startOfDay },
+          },
+        }),
+      ]);
 
       if (!user) {
         res.status(401).json({ message: "User not found" });
@@ -23,17 +36,6 @@ export function usageLimit(action: UsageAction) {
 
       const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus);
       const limit = DAILY_LIMITS[action][tier];
-
-      const startOfDay = new Date();
-      startOfDay.setHours(0, 0, 0, 0);
-
-      const used = await prisma.usageLog.count({
-        where: {
-          userId: req.user.id,
-          action,
-          createdAt: { gte: startOfDay },
-        },
-      });
 
       if (used >= limit) {
         res.status(429).json({

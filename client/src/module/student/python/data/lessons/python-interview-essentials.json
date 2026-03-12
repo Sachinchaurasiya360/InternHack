@@ -1,0 +1,477 @@
+[
+  {
+    "id": "mutable-vs-immutable",
+    "sectionId": "python-interview-essentials",
+    "orderIndex": 0,
+    "title": "Mutable vs Immutable Types",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["mutability", "shallow copy", "deep copy", "aliasing"],
+    "content": {
+      "explanation": "In Python, every object is either mutable or immutable. Immutable objects -- such as int, float, str, tuple, frozenset, and bytes -- cannot be changed after creation. Any operation that appears to modify them actually creates a new object. Mutable objects -- such as list, dict, set, and bytearray -- can be changed in place without creating a new object.\n\nThis distinction matters enormously when you pass objects to functions, store them in data structures, or assign one variable to another. When you write `b = a` and `a` refers to a mutable object, both `a` and `b` point to the exact same object in memory. Mutating through one name is visible through the other. This is called aliasing and is one of the most common sources of bugs in Python.\n\nThe `copy` module provides two functions to deal with this. `copy.copy()` creates a shallow copy: it makes a new outer container but does not duplicate nested objects. `copy.deepcopy()` recursively copies every nested object, producing a fully independent clone. Understanding when to use each is critical for writing correct code.\n\nA useful way to check identity vs equality is with the `is` operator (checks if two names point to the same object in memory) versus `==` (checks if two objects have the same value). For immutable types Python sometimes reuses objects (like small integers and interned strings), so `is` may return True even for separately created values, but you should never rely on this behavior.\n\nIn interviews, you will frequently be asked to predict the output of code that involves aliasing, default mutable arguments, or shallow copies of nested structures. Mastering these concepts separates confident Python developers from those who guess.",
+      "codeExamples": [
+        {
+          "title": "Aliasing with mutable objects",
+          "code": "a = [1, 2, 3]\nb = a\nb.append(4)\nprint(\"a:\", a)\nprint(\"b:\", b)\nprint(\"same object?\", a is b)",
+          "output": "a: [1, 2, 3, 4]\nb: [1, 2, 3, 4]\nsame object? True",
+          "explanation": "b = a does not copy the list. Both names refer to the same list object, so appending through b also changes a."
+        },
+        {
+          "title": "Shallow copy vs deep copy",
+          "code": "import copy\n\noriginal = [[1, 2], [3, 4]]\nshallow = copy.copy(original)\ndeep = copy.deepcopy(original)\n\noriginal[0].append(99)\n\nprint(\"original:\", original)\nprint(\"shallow:\", shallow)\nprint(\"deep:\", deep)",
+          "output": "original: [[1, 2, 99], [3, 4]]\nshallow: [[1, 2, 99], [3, 4]]\ndeep: [[1, 2], [3, 4]]",
+          "explanation": "Shallow copy creates a new outer list but inner lists are still shared. Deep copy creates fully independent nested objects."
+        },
+        {
+          "title": "Immutable types create new objects on modification",
+          "code": "x = \"hello\"\nprint(\"id before:\", id(x))\nx = x + \" world\"\nprint(\"id after:\", id(x))\nprint(\"value:\", x)",
+          "output": "id before: <some_id>\nid after: <different_id>\nvalue: hello world",
+          "explanation": "Strings are immutable. Concatenation creates a brand new string object with a different id. The original string is unchanged and eventually garbage collected."
+        },
+        {
+          "title": "Tuple immutability with mutable contents",
+          "code": "t = ([1, 2], [3, 4])\nt[0].append(99)\nprint(\"tuple:\", t)\n\ntry:\n    t[0] = [5, 6]\nexcept TypeError as e:\n    print(\"error:\", e)",
+          "output": "tuple: ([1, 2, 99], [3, 4])\nerror: 'tuple' object does not support item assignment",
+          "explanation": "The tuple itself is immutable (you cannot reassign its slots), but if a slot holds a mutable object like a list, that list can still be mutated in place."
+        }
+      ],
+      "notes": [
+        "Immutable types: int, float, str, tuple, frozenset, bytes. Mutable types: list, dict, set, bytearray.",
+        "Use copy.copy() for shallow copies and copy.deepcopy() for fully independent clones of nested structures.",
+        "Assignment (b = a) never copies -- it creates an alias. Use slicing (a[:]), list(), or copy() to make actual copies.",
+        "Tuples containing mutable objects are immutable in structure but their mutable contents can still change."
+      ],
+      "commonPitfalls": [
+        "Assuming b = a creates a copy of a list -- it creates an alias, and mutations through either name affect the same object.",
+        "Using shallow copy on nested structures and expecting inner objects to be independent -- they are still shared.",
+        "Relying on 'is' for value comparison instead of '==' -- 'is' checks identity, not equality."
+      ],
+      "interviewTips": [
+        "When asked about mutability, start by listing the immutable and mutable built-in types, then explain aliasing and copy behavior.",
+        "Draw a memory diagram showing two variables pointing to the same object to illustrate aliasing -- interviewers love visual explanations.",
+        "Mention that tuple immutability is shallow: the tuple cannot be reassigned but its mutable elements can still change."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "mutable-alias-predict",
+        "title": "Predict the Aliased List Output",
+        "description": "Create two variables pointing to the same list, modify one, and print both to demonstrate aliasing behavior.",
+        "starterCode": "# Create a list and an alias\nnums = [10, 20, 30]\nalias = nums\n\n# Modify through the alias\nalias.append(40)\nalias[0] = 99\n\n# Print both to show they are the same object\nprint(nums)\nprint(alias)\nprint(nums is alias)",
+        "solution": "nums = [10, 20, 30]\nalias = nums\n\nalias.append(40)\nalias[0] = 99\n\nprint(nums)\nprint(alias)\nprint(nums is alias)",
+        "expectedOutput": "[99, 20, 30, 40]\n[99, 20, 30, 40]\nTrue",
+        "hints": [
+          "alias = nums does not copy the list -- both names point to the same object.",
+          "Any mutation through alias is visible through nums and vice versa."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "shallow-vs-deep-copy",
+        "title": "Shallow vs Deep Copy Behavior",
+        "description": "Demonstrate the difference between shallow and deep copy on a nested list. Modify the original and show how each copy is affected.",
+        "starterCode": "import copy\n\n# Create a nested list and both kinds of copies\noriginal = [[1, 2], [3, 4]]\nshallow = copy.copy(original)\ndeep = copy.deepcopy(original)\n\n# Modify a nested element in the original\noriginal[0].append(999)\n\n# Print all three\nprint(\"original:\", original)\nprint(\"shallow:\", shallow)\nprint(\"deep:\", deep)",
+        "solution": "import copy\n\noriginal = [[1, 2], [3, 4]]\nshallow = copy.copy(original)\ndeep = copy.deepcopy(original)\n\noriginal[0].append(999)\n\nprint(\"original:\", original)\nprint(\"shallow:\", shallow)\nprint(\"deep:\", deep)",
+        "expectedOutput": "original: [[1, 2, 999], [3, 4]]\nshallow: [[1, 2, 999], [3, 4]]\ndeep: [[1, 2], [3, 4]]",
+        "hints": [
+          "Shallow copy duplicates the outer list but inner lists are still shared references.",
+          "Deep copy recursively copies every nested object, making them fully independent."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "immutable-tuple-gotcha",
+        "title": "Mutable Objects Inside Tuples",
+        "description": "Show that a tuple's mutable contents can change even though the tuple itself is immutable. Mutate a list inside a tuple and catch the error when trying to reassign a tuple slot.",
+        "starterCode": "# Create a tuple containing lists\nt = ([1, 2], [3, 4])\n\n# This works -- mutating the list inside the tuple\nt[0].append(5)\nprint(\"after append:\", t)\n\n# This fails -- trying to reassign a tuple element\ntry:\n    t[0] = [9, 9]\nexcept TypeError as e:\n    print(\"error:\", e)",
+        "solution": "t = ([1, 2], [3, 4])\n\nt[0].append(5)\nprint(\"after append:\", t)\n\ntry:\n    t[0] = [9, 9]\nexcept TypeError as e:\n    print(\"error:\", e)",
+        "expectedOutput": "after append: ([1, 2, 5], [3, 4])\nerror: 'tuple' object does not support item assignment",
+        "hints": [
+          "Tuple immutability means you cannot change which objects the tuple holds, but you can still mutate those objects if they are mutable.",
+          "Use try/except to catch the TypeError when attempting tuple element reassignment."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "python-gotchas",
+    "sectionId": "python-interview-essentials",
+    "orderIndex": 1,
+    "title": "Python Gotchas",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["mutable default args", "late binding closures", "is vs ==", "integer caching", "chained comparisons"],
+    "content": {
+      "explanation": "Python has several well-known gotchas that trip up even experienced developers. These come up frequently in interviews because they test deep understanding of how the language actually works rather than surface-level syntax knowledge.\n\nThe mutable default argument gotcha is perhaps the most famous. When you define a function with a mutable default value like `def f(lst=[])`, that default object is created once at function definition time, not on each call. Every call that uses the default shares the same object, so mutations accumulate across calls. The fix is to use `None` as the default and create the mutable object inside the function body.\n\nLate binding closures are another classic trap. When you create closures in a loop, the variable captured by the closure is looked up at call time, not at definition time. This means all closures end up using the final value of the loop variable. The fix is to bind the value at definition time using a default argument.\n\nThe `is` vs `==` distinction catches many beginners. `==` checks value equality (calls `__eq__`), while `is` checks object identity (same memory address). Python caches small integers (typically -5 to 256) and short strings, so `is` may appear to work for these values, but it is unreliable and should never be used for value comparison.\n\nChained comparisons in Python are syntactic sugar that can be surprising. `1 < 2 < 3` works as expected (it means `1 < 2 and 2 < 3`), but something like `False == False in [False]` evaluates as `(False == False) and (False in [False])` which is True. Understanding how Python chains comparisons prevents confusing bugs.",
+      "codeExamples": [
+        {
+          "title": "Mutable default argument trap",
+          "code": "def append_to(item, lst=[]):\n    lst.append(item)\n    return lst\n\nprint(append_to(1))\nprint(append_to(2))\nprint(append_to(3))",
+          "output": "[1]\n[1, 2]\n[1, 2, 3]",
+          "explanation": "The default list is created once and shared across all calls. Each call mutates the same list, so values accumulate."
+        },
+        {
+          "title": "Fixed: using None as default",
+          "code": "def append_to_fixed(item, lst=None):\n    if lst is None:\n        lst = []\n    lst.append(item)\n    return lst\n\nprint(append_to_fixed(1))\nprint(append_to_fixed(2))\nprint(append_to_fixed(3))",
+          "output": "[1]\n[2]\n[3]",
+          "explanation": "Using None as default and creating a new list inside the function ensures each call gets its own fresh list."
+        },
+        {
+          "title": "Late binding closures in a loop",
+          "code": "funcs = []\nfor i in range(4):\n    funcs.append(lambda: i)\n\nresults = [f() for f in funcs]\nprint(\"late binding:\", results)\n\n# Fix: capture i at definition time\nfuncs_fixed = []\nfor i in range(4):\n    funcs_fixed.append(lambda i=i: i)\n\nresults_fixed = [f() for f in funcs_fixed]\nprint(\"fixed:\", results_fixed)",
+          "output": "late binding: [3, 3, 3, 3]\nfixed: [0, 1, 2, 3]",
+          "explanation": "Closures capture the variable i by reference, not by value. At call time i is 3 for all. Using a default parameter (i=i) captures the current value."
+        },
+        {
+          "title": "Integer caching and is vs ==",
+          "code": "a = 256\nb = 256\nprint(\"256 is 256:\", a is b)\nprint(\"256 == 256:\", a == b)\n\nx = 1000\ny = 1000\nprint(\"1000 == 1000:\", x == y)\nprint(\"use == for values, is for None\")",
+          "output": "256 is 256: True\n256 == 256: True\n1000 == 1000: True\nuse == for values, is for None",
+          "explanation": "Python caches integers -5 to 256. For 256, 'is' returns True because both reference the cached object. For 1000, behavior of 'is' is implementation-dependent. Always use == for value comparison."
+        }
+      ],
+      "notes": [
+        "Never use mutable objects (list, dict, set) as default function arguments -- use None and create inside the function.",
+        "Closures capture variables by reference, not by value. Use default arguments to capture current values in loops.",
+        "Use == for value comparison and 'is' only for checking against None (e.g., if x is None).",
+        "Python caches small integers (-5 to 256) and some short strings. Never rely on this with 'is'."
+      ],
+      "commonPitfalls": [
+        "Using a mutable default argument and being surprised when it retains values from previous calls.",
+        "Creating lambda functions in a loop and expecting each to capture its own loop variable value.",
+        "Using 'is' to compare strings or numbers -- it may work for small values due to caching but fails for larger ones."
+      ],
+      "interviewTips": [
+        "When explaining mutable defaults, show both the broken and fixed versions -- interviewers want to see you know the solution, not just the problem.",
+        "For late binding, mention that this applies to all closures (not just lambda) and that the default-argument fix is the standard idiom.",
+        "If asked about 'is' vs '==', explain the CPython integer cache but emphasize it is an implementation detail, not part of the language spec."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "fix-mutable-default",
+        "title": "Fix the Mutable Default Argument",
+        "description": "The function below has a mutable default argument bug. Fix it so each call without an explicit list gets a fresh empty list.",
+        "starterCode": "def add_item(item, lst=None):\n    # Fix this function so each call gets a fresh list\n    if lst is None:\n        lst = []\n    lst.append(item)\n    return lst\n\nprint(add_item(\"a\"))\nprint(add_item(\"b\"))\nprint(add_item(\"c\"))",
+        "solution": "def add_item(item, lst=None):\n    if lst is None:\n        lst = []\n    lst.append(item)\n    return lst\n\nprint(add_item(\"a\"))\nprint(add_item(\"b\"))\nprint(add_item(\"c\"))",
+        "expectedOutput": "['a']\n['b']\n['c']",
+        "hints": [
+          "Use None as the default value instead of an empty list.",
+          "Check if lst is None inside the function and create a new list there."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "fix-closure-loop",
+        "title": "Fix Late Binding Closures",
+        "description": "Create a list of functions where each function returns its index number (0 through 3). Fix the late binding problem so they don't all return the same value.",
+        "starterCode": "funcs = []\nfor i in range(4):\n    funcs.append(lambda i=i: i)\n\nfor f in funcs:\n    print(f())",
+        "solution": "funcs = []\nfor i in range(4):\n    funcs.append(lambda i=i: i)\n\nfor f in funcs:\n    print(f())",
+        "expectedOutput": "0\n1\n2\n3",
+        "hints": [
+          "Lambda captures the variable by reference. At call time, i has its final loop value.",
+          "Use a default parameter (lambda i=i: i) to capture the current value of i at each iteration."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "is-vs-equals",
+        "title": "Identity vs Equality Comparison",
+        "description": "Write code that demonstrates the difference between 'is' and '==' using None, small integers, and lists. Show when each should be used.",
+        "starterCode": "# Compare with None -- use 'is'\nx = None\nprint(\"x is None:\", x is None)\nprint(\"x == None:\", x == None)\n\n# Compare values -- use '=='\na = [1, 2, 3]\nb = [1, 2, 3]\nprint(\"a == b:\", a == b)\nprint(\"a is b:\", a is b)\n\n# Same object\nc = a\nprint(\"c is a:\", c is a)",
+        "solution": "x = None\nprint(\"x is None:\", x is None)\nprint(\"x == None:\", x == None)\n\na = [1, 2, 3]\nb = [1, 2, 3]\nprint(\"a == b:\", a == b)\nprint(\"a is b:\", a is b)\n\nc = a\nprint(\"c is a:\", c is a)",
+        "expectedOutput": "x is None: True\nx == None: True\na == b: True\na is b: False\nc is a: True",
+        "hints": [
+          "'is' checks if two variables reference the exact same object in memory.",
+          "Two lists with the same content are equal (==) but are different objects (is returns False)."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "pythonic-patterns",
+    "sectionId": "python-interview-essentials",
+    "orderIndex": 2,
+    "title": "Pythonic Patterns",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["list comprehension", "enumerate", "zip", "unpacking", "walrus operator", "ternary"],
+    "content": {
+      "explanation": "Writing Pythonic code means using the language's features idiomatically rather than translating patterns from other languages. Interviewers look for this because it signals fluency and practical experience with Python.\n\nList comprehensions are one of the most distinctive Python features. They replace verbose for-loops-with-append patterns into concise, readable one-liners: `[x**2 for x in range(10) if x % 2 == 0]`. Dict and set comprehensions follow the same pattern. Comprehensions are generally faster than equivalent loops because they are optimized at the bytecode level.\n\nThe built-in functions `enumerate()` and `zip()` are indispensable. `enumerate()` gives you index-value pairs without maintaining a manual counter. `zip()` iterates over multiple sequences in parallel, stopping at the shortest. Combined with unpacking, they produce clean, readable iteration patterns.\n\nUnpacking is used everywhere in Python: multiple assignment (`a, b = 1, 2`), swapping (`a, b = b, a`), starred expressions (`first, *rest = items`), and function argument unpacking (`func(*args, **kwargs)`). Understanding unpacking is essential for writing concise code.\n\nThe walrus operator (`:=`), introduced in Python 3.8, allows assignment within expressions. It is useful in while-loops, list comprehensions, and conditional expressions where you want to both compute and test a value. The ternary expression `x if condition else y` replaces verbose if-else blocks for simple conditional assignments.\n\nThese patterns are not just stylistic preferences -- they make code shorter, more readable, and often faster. Interviewers expect you to use them naturally when solving problems.",
+      "codeExamples": [
+        {
+          "title": "List comprehension with filtering",
+          "code": "# Squares of even numbers from 0 to 9\nsquares = [x**2 for x in range(10) if x % 2 == 0]\nprint(\"squares:\", squares)\n\n# Dict comprehension\nword_lengths = {w: len(w) for w in [\"python\", \"is\", \"great\"]}\nprint(\"lengths:\", word_lengths)",
+          "output": "squares: [0, 4, 16, 36, 64]\nlengths: {'python': 6, 'is': 2, 'great': 5}",
+          "explanation": "Comprehensions replace multi-line loops with concise expressions. The filter condition (if x % 2 == 0) is optional."
+        },
+        {
+          "title": "enumerate and zip",
+          "code": "fruits = [\"apple\", \"banana\", \"cherry\"]\nfor i, fruit in enumerate(fruits, start=1):\n    print(f\"{i}. {fruit}\")\n\nnames = [\"Alice\", \"Bob\", \"Charlie\"]\nscores = [95, 87, 92]\nfor name, score in zip(names, scores):\n    print(f\"{name}: {score}\")",
+          "output": "1. apple\n2. banana\n3. cherry\nAlice: 95\nBob: 87\nCharlie: 92",
+          "explanation": "enumerate provides index-value pairs. zip combines multiple iterables element-wise. Both use unpacking in the for loop."
+        },
+        {
+          "title": "Unpacking patterns",
+          "code": "# Multiple assignment and swap\na, b = 1, 2\na, b = b, a\nprint(f\"swapped: a={a}, b={b}\")\n\n# Starred unpacking\nfirst, *middle, last = [1, 2, 3, 4, 5]\nprint(f\"first={first}, middle={middle}, last={last}\")\n\n# Nested unpacking\npairs = [(1, \"a\"), (2, \"b\"), (3, \"c\")]\nfor num, letter in pairs:\n    print(f\"{num}->{letter}\", end=\" \")\nprint()",
+          "output": "swapped: a=2, b=1\nfirst=1, middle=[2, 3, 4], last=5\n1->a 2->b 3->c ",
+          "explanation": "Python's unpacking works with any iterable. Starred expressions capture remaining elements into a list."
+        },
+        {
+          "title": "Walrus operator and ternary",
+          "code": "# Walrus operator: assign and test in one expression\ndata = [1, 5, 3, 8, 2, 7]\nresult = [y for x in data if (y := x * 2) > 6]\nprint(\"filtered doubled:\", result)\n\n# Ternary expression\nage = 20\nstatus = \"adult\" if age >= 18 else \"minor\"\nprint(f\"age {age}: {status}\")",
+          "output": "filtered doubled: [10, 16, 14]\nadult",
+          "explanation": "The walrus operator (:=) assigns x*2 to y and filters by y > 6 in a single comprehension. Ternary provides inline conditional assignment."
+        }
+      ],
+      "notes": [
+        "Prefer list comprehensions over for-loop-append patterns -- they are more readable and faster.",
+        "Use enumerate() instead of range(len(...)) for indexed iteration.",
+        "zip() stops at the shortest iterable. Use itertools.zip_longest() if you need to process all elements.",
+        "The walrus operator (:=) is great for avoiding repeated computation in comprehensions and while-loops."
+      ],
+      "commonPitfalls": [
+        "Writing overly complex nested comprehensions that are harder to read than equivalent loops -- readability counts.",
+        "Forgetting that zip() truncates to the shortest iterable, silently losing data from longer ones.",
+        "Using ternary expressions for complex logic with side effects -- keep them simple and pure."
+      ],
+      "interviewTips": [
+        "When solving problems in interviews, naturally use comprehensions, enumerate, and zip to show Pythonic fluency.",
+        "If an interviewer sees you writing range(len(lst)) instead of enumerate, it signals less Python experience.",
+        "Mention that comprehensions are not just syntactic sugar -- they are often faster because Python optimizes them internally."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "comprehension-challenge",
+        "title": "Filtered Comprehension",
+        "description": "Use a list comprehension to create a list of tuples (number, square) for all numbers from 1 to 10 where the square is greater than 20.",
+        "starterCode": "result = [(x, x**2) for x in range(1, 11) if x**2 > 20]\nprint(result)",
+        "solution": "result = [(x, x**2) for x in range(1, 11) if x**2 > 20]\nprint(result)",
+        "expectedOutput": "[(5, 25), (6, 36), (7, 49), (8, 64), (9, 81), (10, 100)]",
+        "hints": [
+          "Use a conditional filter in the comprehension: if x**2 > 20.",
+          "Each element should be a tuple (x, x**2)."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "enumerate-zip-combine",
+        "title": "Combine enumerate and zip",
+        "description": "Given two lists of names and scores, print each entry as a numbered line using enumerate and zip together.",
+        "starterCode": "names = [\"Alice\", \"Bob\", \"Charlie\", \"Diana\"]\nscores = [92, 85, 78, 96]\n\nfor i, (name, score) in enumerate(zip(names, scores), start=1):\n    print(f\"{i}. {name} scored {score}\")",
+        "solution": "names = [\"Alice\", \"Bob\", \"Charlie\", \"Diana\"]\nscores = [92, 85, 78, 96]\n\nfor i, (name, score) in enumerate(zip(names, scores), start=1):\n    print(f\"{i}. {name} scored {score}\")",
+        "expectedOutput": "1. Alice scored 92\n2. Bob scored 85\n3. Charlie scored 78\n4. Diana scored 96",
+        "hints": [
+          "Wrap zip(names, scores) with enumerate(..., start=1).",
+          "Use nested unpacking: for i, (name, score) in enumerate(zip(...))."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "walrus-filter",
+        "title": "Walrus Operator Filtering",
+        "description": "Use the walrus operator in a list comprehension to compute len(word) once per word and keep only words with length > 4. Store the lengths in the result.",
+        "starterCode": "words = [\"hi\", \"python\", \"is\", \"awesome\", \"code\", \"interview\"]\n\nlong_words = [(word, length) for word in words if (length := len(word)) > 4]\n\nfor word, length in long_words:\n    print(f\"{word}: {length} chars\")",
+        "solution": "words = [\"hi\", \"python\", \"is\", \"awesome\", \"code\", \"interview\"]\n\nlong_words = [(word, length) for word in words if (length := len(word)) > 4]\n\nfor word, length in long_words:\n    print(f\"{word}: {length} chars\")",
+        "expectedOutput": "python: 6 chars\nawesome: 7 chars\ninterview: 9 chars",
+        "hints": [
+          "The walrus operator (:=) lets you assign and test in one expression.",
+          "Use (length := len(word)) > 4 in the if clause, then use length in the tuple."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "common-interview-questions",
+    "sectionId": "python-interview-essentials",
+    "orderIndex": 3,
+    "title": "Common Interview Questions",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["string reversal", "palindrome", "anagram", "flatten list", "find duplicates"],
+    "content": {
+      "explanation": "Certain coding questions appear in Python interviews with remarkable frequency. While the algorithms behind them are straightforward, interviewers use them to assess your Python fluency, ability to handle edge cases, and whether you can write clean, efficient code under pressure.\n\nReversing a string is the simplest of these but reveals a lot about your Python knowledge. The Pythonic way is slicing: `s[::-1]`. You can also use `reversed()` with `''.join()`. Knowing multiple approaches and their trade-offs shows depth.\n\nPalindrome checking builds on string reversal: a string is a palindrome if it reads the same forwards and backwards. The key is handling case sensitivity and non-alphanumeric characters. A clean solution filters and lowercases first, then compares with the reverse.\n\nAnagram detection asks whether two strings contain exactly the same characters in different orders. The Pythonic approach uses `sorted()` on both strings, or `collections.Counter` for O(n) comparison. Interviewers expect you to discuss time complexity: sorting is O(n log n) while Counter is O(n).\n\nFlattening a nested list is a recursion classic. The challenge is handling arbitrary nesting depth. A recursive solution checks if each element is itself a list and recurses into it. Iterative solutions using a stack are also acceptable.\n\nFinding duplicates in a list tests your knowledge of sets and dictionary counting. The most Pythonic approach uses a set to track seen elements, or `Counter` to count occurrences. Interviewers care about O(n) time complexity and O(n) space.",
+      "codeExamples": [
+        {
+          "title": "String reversal techniques",
+          "code": "s = \"hello world\"\n\n# Slicing\nprint(\"slicing:\", s[::-1])\n\n# reversed() + join\nprint(\"reversed:\", \"\".join(reversed(s)))\n\n# Manual loop\nresult = \"\"\nfor char in s:\n    result = char + result\nprint(\"manual:\", result)",
+          "output": "slicing: dlrow olleh\nreversed: dlrow olleh\nmanual: dlrow olleh",
+          "explanation": "Slicing with [::-1] is the most Pythonic and fastest approach. reversed() returns an iterator that join() consumes."
+        },
+        {
+          "title": "Palindrome check with cleaning",
+          "code": "def is_palindrome(s):\n    cleaned = \"\".join(c.lower() for c in s if c.isalnum())\n    return cleaned == cleaned[::-1]\n\nprint(is_palindrome(\"racecar\"))\nprint(is_palindrome(\"A man, a plan, a canal: Panama\"))\nprint(is_palindrome(\"hello\"))",
+          "output": "True\nTrue\nFalse",
+          "explanation": "First strip non-alphanumeric characters and lowercase, then compare with the reverse. This handles punctuation and mixed case."
+        },
+        {
+          "title": "Anagram detection",
+          "code": "from collections import Counter\n\ndef are_anagrams(s1, s2):\n    return Counter(s1.lower()) == Counter(s2.lower())\n\nprint(are_anagrams(\"listen\", \"silent\"))\nprint(are_anagrams(\"hello\", \"world\"))\nprint(are_anagrams(\"Dormitory\", \"Dirty room\"))",
+          "output": "True\nFalse\nFalse",
+          "explanation": "Counter creates a frequency map of characters. Two strings are anagrams if their frequency maps are equal. Note: spaces are counted unless explicitly filtered."
+        },
+        {
+          "title": "Finding duplicates with a set",
+          "code": "def find_duplicates(lst):\n    seen = set()\n    duplicates = set()\n    for item in lst:\n        if item in seen:\n            duplicates.add(item)\n        seen.add(item)\n    return sorted(duplicates)\n\nnums = [1, 3, 5, 3, 7, 1, 9, 5]\nprint(\"duplicates:\", find_duplicates(nums))",
+          "output": "duplicates: [1, 3, 5]",
+          "explanation": "Using a set for 'seen' items gives O(1) lookups. When an item is already in 'seen', it is a duplicate. This runs in O(n) time."
+        }
+      ],
+      "notes": [
+        "String slicing [::-1] is the fastest and most Pythonic way to reverse a string.",
+        "Always clarify edge cases with the interviewer: empty strings, single characters, case sensitivity, spaces.",
+        "Counter is O(n) for anagram detection while sorted() is O(n log n) -- mention the trade-off.",
+        "For flatten, clarify whether the input can have non-list iterables (tuples, generators) and how deep nesting can go."
+      ],
+      "commonPitfalls": [
+        "Forgetting to handle case sensitivity and non-alphanumeric characters in palindrome checks.",
+        "Not accounting for spaces when comparing anagrams -- 'Dormitory' vs 'Dirty room' requires filtering spaces.",
+        "Using nested loops O(n^2) for finding duplicates when a set-based O(n) approach exists."
+      ],
+      "interviewTips": [
+        "Start with the brute-force approach, explain its complexity, then optimize -- interviewers want to see your thought process.",
+        "For string problems, always ask about Unicode, case sensitivity, and special characters before coding.",
+        "When using Counter or sorted, mention the time complexity to show algorithmic awareness."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "reverse-and-palindrome",
+        "title": "Reverse String and Palindrome Check",
+        "description": "Write a function to check if a given string is a palindrome, ignoring case and non-alphanumeric characters. Test it with several inputs.",
+        "starterCode": "def is_palindrome(s):\n    cleaned = \"\".join(c.lower() for c in s if c.isalnum())\n    return cleaned == cleaned[::-1]\n\nprint(is_palindrome(\"racecar\"))\nprint(is_palindrome(\"Was it a car or a cat I saw?\"))\nprint(is_palindrome(\"hello\"))\nprint(is_palindrome(\"A Santa at NASA\"))",
+        "solution": "def is_palindrome(s):\n    cleaned = \"\".join(c.lower() for c in s if c.isalnum())\n    return cleaned == cleaned[::-1]\n\nprint(is_palindrome(\"racecar\"))\nprint(is_palindrome(\"Was it a car or a cat I saw?\"))\nprint(is_palindrome(\"hello\"))\nprint(is_palindrome(\"A Santa at NASA\"))",
+        "expectedOutput": "True\nTrue\nFalse\nTrue",
+        "hints": [
+          "Filter the string to keep only alphanumeric characters using isalnum().",
+          "Convert to lowercase before comparing with the reverse."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "anagram-checker",
+        "title": "Anagram Checker",
+        "description": "Write a function that checks if two strings are anagrams of each other, ignoring case and spaces. Test with multiple examples.",
+        "starterCode": "from collections import Counter\n\ndef are_anagrams(s1, s2):\n    clean1 = s1.lower().replace(\" \", \"\")\n    clean2 = s2.lower().replace(\" \", \"\")\n    return Counter(clean1) == Counter(clean2)\n\nprint(are_anagrams(\"listen\", \"silent\"))\nprint(are_anagrams(\"Dormitory\", \"Dirty room\"))\nprint(are_anagrams(\"hello\", \"world\"))",
+        "solution": "from collections import Counter\n\ndef are_anagrams(s1, s2):\n    clean1 = s1.lower().replace(\" \", \"\")\n    clean2 = s2.lower().replace(\" \", \"\")\n    return Counter(clean1) == Counter(clean2)\n\nprint(are_anagrams(\"listen\", \"silent\"))\nprint(are_anagrams(\"Dormitory\", \"Dirty room\"))\nprint(are_anagrams(\"hello\", \"world\"))",
+        "expectedOutput": "True\nTrue\nFalse",
+        "hints": [
+          "Remove spaces and convert to lowercase before comparing.",
+          "Counter gives a character frequency dict -- two anagrams have identical frequency dicts."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "flatten-nested-list",
+        "title": "Flatten a Nested List",
+        "description": "Write a recursive function that flattens a nested list of arbitrary depth into a single flat list.",
+        "starterCode": "def flatten(lst):\n    result = []\n    for item in lst:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\nnested = [1, [2, 3], [4, [5, 6, [7]]], 8]\nprint(flatten(nested))\nprint(flatten([]))\nprint(flatten([[1, 2], [3, [4, [5]]]]))",
+        "solution": "def flatten(lst):\n    result = []\n    for item in lst:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\nnested = [1, [2, 3], [4, [5, 6, [7]]], 8]\nprint(flatten(nested))\nprint(flatten([]))\nprint(flatten([[1, 2], [3, [4, [5]]]]))",
+        "expectedOutput": "[1, 2, 3, 4, 5, 6, 7, 8]\n[]\n[1, 2, 3, 4, 5]",
+        "hints": [
+          "Use isinstance(item, list) to check if an element is a nested list.",
+          "Recursively call flatten on nested lists and extend the result."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "python-internals",
+    "sectionId": "python-interview-essentials",
+    "orderIndex": 4,
+    "title": "Python Internals",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["GIL", "memory management", "reference counting", "garbage collection", "__slots__"],
+    "content": {
+      "explanation": "Understanding Python's internal mechanisms is what separates senior developers from intermediate ones in interviews. These topics rarely affect day-to-day coding but demonstrate deep knowledge of how the language works under the hood.\n\nThe Global Interpreter Lock (GIL) is a mutex in CPython that allows only one thread to execute Python bytecode at a time. This means CPU-bound multi-threaded programs do not achieve true parallelism in CPython. The GIL exists because CPython's memory management (reference counting) is not thread-safe. For CPU-bound parallelism, you must use multiprocessing instead of threading. I/O-bound programs still benefit from threading because threads release the GIL while waiting for I/O.\n\nPython manages memory primarily through reference counting. Every object has a reference count that tracks how many names or containers refer to it. When the count drops to zero, the memory is immediately freed. You can inspect reference counts using `sys.getrefcount()` (which itself temporarily increases the count by one because the function argument is a reference).\n\nReference counting alone cannot handle circular references -- when two or more objects reference each other but are no longer reachable from the program. Python's garbage collector (gc module) uses a generational approach to detect and collect these cycles. Objects are grouped into three generations: young objects are checked frequently, older objects less so. This is efficient because most objects die young.\n\nThe `__slots__` mechanism allows you to declare a fixed set of attributes for a class, replacing the default per-instance `__dict__`. This reduces memory usage significantly for classes with many instances because it uses a more compact internal structure. The trade-off is that you cannot add arbitrary attributes to instances at runtime.\n\nIn interviews, you will not be asked to write threading or gc code, but you will be asked to explain these concepts clearly and discuss their practical implications -- when to use threads vs processes, why memory leaks can still happen in Python, and when __slots__ is appropriate.",
+      "codeExamples": [
+        {
+          "title": "Reference counting with sys.getrefcount",
+          "code": "import sys\n\na = [1, 2, 3]\nprint(\"refcount of a:\", sys.getrefcount(a))\n\nb = a  # another reference\nprint(\"refcount after b=a:\", sys.getrefcount(a))\n\nc = [a, a]  # two more references inside a list\nprint(\"refcount after c=[a,a]:\", sys.getrefcount(a))\n\ndel b\nprint(\"refcount after del b:\", sys.getrefcount(a))",
+          "output": "refcount of a: 2\nrefcount after b=a: 3\nrefcount after c=[a,a]: 5\nrefcount after del b: 4",
+          "explanation": "sys.getrefcount() itself adds 1 to the count (the function parameter is a reference). Creating aliases and containers increases the count, del decreases it."
+        },
+        {
+          "title": "__slots__ for memory optimization",
+          "code": "class WithoutSlots:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\nclass WithSlots:\n    __slots__ = ['x', 'y']\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\nobj1 = WithoutSlots(1, 2)\nobj2 = WithSlots(1, 2)\n\nprint(\"without slots has __dict__:\", hasattr(obj1, '__dict__'))\nprint(\"with slots has __dict__:\", hasattr(obj2, '__dict__'))\nprint(\"obj2.x:\", obj2.x, \"obj2.y:\", obj2.y)\n\ntry:\n    obj2.z = 3\nexcept AttributeError as e:\n    print(\"slots error:\", e)",
+          "output": "without slots has __dict__: True\nwith slots has __dict__: False\nobj2.x: 1 obj2.y: 2\nslots error: 'WithSlots' object has no attribute 'z'",
+          "explanation": "__slots__ replaces the per-instance __dict__ with a fixed-size structure. You cannot add attributes not listed in __slots__, but memory usage is significantly reduced."
+        },
+        {
+          "title": "GIL conceptual demonstration",
+          "code": "# The GIL prevents true CPU-bound parallelism in threads.\n# This is a conceptual explanation, not a threading demo.\n\nfacts = {\n    \"what\": \"Global Interpreter Lock - a mutex in CPython\",\n    \"why\": \"CPython's reference counting is not thread-safe\",\n    \"effect\": \"Only one thread executes Python bytecode at a time\",\n    \"cpu_bound\": \"Use multiprocessing for CPU parallelism\",\n    \"io_bound\": \"Threading still helps - GIL released during I/O\"\n}\n\nfor key, value in facts.items():\n    print(f\"{key}: {value}\")",
+          "output": "what: Global Interpreter Lock - a mutex in CPython\nwhy: CPython's reference counting is not thread-safe\neffect: Only one thread executes Python bytecode at a time\ncpu_bound: Use multiprocessing for CPU parallelism\nio_bound: Threading still helps - GIL released during I/O",
+          "explanation": "The GIL is a CPython implementation detail. It makes single-threaded code fast but prevents multi-threaded CPU parallelism. I/O-bound code still benefits from threads."
+        },
+        {
+          "title": "Garbage collection generations",
+          "code": "# Conceptual demo of Python's generational garbage collection\n\nclass Node:\n    def __init__(self, name):\n        self.name = name\n        self.ref = None\n    def __repr__(self):\n        return f\"Node({self.name})\"\n\n# Create a circular reference\na = Node(\"A\")\nb = Node(\"B\")\na.ref = b\nb.ref = a\n\nprint(\"a.ref:\", a.ref)\nprint(\"b.ref:\", b.ref)\nprint(\"circular: a.ref.ref is a:\", a.ref.ref is a)\n\n# Explain the concept\nprint(\"\\nGC generations:\")\nprint(\"Gen 0: new objects, checked frequently\")\nprint(\"Gen 1: survived one collection\")\nprint(\"Gen 2: long-lived objects, checked rarely\")\nprint(\"Circular refs like a<->b need GC to collect\")",
+          "output": "a.ref: Node(B)\nb.ref: Node(A)\ncircular: a.ref.ref is a: True\n\nGC generations:\nGen 0: new objects, checked frequently\nGen 1: survived one collection\nGen 2: long-lived objects, checked rarely\nCircular refs like a<->b need GC to collect",
+          "explanation": "Circular references cannot be freed by reference counting alone. Python's generational GC detects and collects these cycles. Objects start in gen 0 and promote to older generations if they survive."
+        }
+      ],
+      "notes": [
+        "The GIL is a CPython implementation detail -- Jython and IronPython do not have a GIL.",
+        "Reference counting frees objects immediately when refcount hits 0. The GC only handles circular references.",
+        "Use __slots__ when you have many instances of a class with fixed attributes -- it can save 40-50% memory.",
+        "Python's GC uses three generations: gen 0 (checked often), gen 1 (medium), gen 2 (checked rarely)."
+      ],
+      "commonPitfalls": [
+        "Assuming threading gives CPU parallelism in Python -- the GIL prevents this. Use multiprocessing for CPU-bound work.",
+        "Forgetting that __slots__ prevents adding new attributes at runtime -- this can break code that relies on dynamic attributes.",
+        "Creating circular references in complex data structures without realizing the GC must clean them up, which is slower than reference counting."
+      ],
+      "interviewTips": [
+        "When asked about the GIL, explain what it is, why it exists (reference counting safety), and the practical workaround (multiprocessing for CPU, threading for I/O).",
+        "For memory questions, explain the two-layer system: reference counting for most objects, generational GC for circular references.",
+        "If asked about __slots__, mention both the memory benefit and the trade-off of losing dynamic attribute assignment."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "refcount-exploration",
+        "title": "Reference Counting Exploration",
+        "description": "Use sys.getrefcount to observe how reference counts change as you create aliases, containers, and delete references.",
+        "starterCode": "import sys\n\ndata = {\"key\": \"value\"}\nprint(\"initial:\", sys.getrefcount(data))\n\nalias = data\nprint(\"after alias:\", sys.getrefcount(data))\n\ncontainer = [data, data, data]\nprint(\"after container:\", sys.getrefcount(data))\n\ndel alias\nprint(\"after del alias:\", sys.getrefcount(data))\n\ndel container\nprint(\"after del container:\", sys.getrefcount(data))",
+        "solution": "import sys\n\ndata = {\"key\": \"value\"}\nprint(\"initial:\", sys.getrefcount(data))\n\nalias = data\nprint(\"after alias:\", sys.getrefcount(data))\n\ncontainer = [data, data, data]\nprint(\"after container:\", sys.getrefcount(data))\n\ndel alias\nprint(\"after del alias:\", sys.getrefcount(data))\n\ndel container\nprint(\"after del container:\", sys.getrefcount(data))",
+        "expectedOutput": "initial: 2\nafter alias: 3\nafter container: 6\nafter del alias: 5\nafter del container: 2",
+        "hints": [
+          "sys.getrefcount() itself adds 1 to the count because the argument is temporarily a reference.",
+          "Each slot in the container list holding data adds 1 to the reference count."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "slots-memory",
+        "title": "__slots__ vs __dict__",
+        "description": "Create two classes -- one with __slots__ and one without. Demonstrate the differences in attribute access and dynamic attribute restriction.",
+        "starterCode": "class Regular:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\nclass Optimized:\n    __slots__ = ['name', 'age']\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\nr = Regular(\"Alice\", 30)\no = Optimized(\"Bob\", 25)\n\n# Regular class allows dynamic attributes\nr.email = \"alice@example.com\"\nprint(f\"{r.name}, {r.age}, {r.email}\")\nprint(\"Regular __dict__:\", r.__dict__)\n\n# Optimized class restricts attributes\nprint(f\"{o.name}, {o.age}\")\nprint(\"Has __dict__:\", hasattr(o, '__dict__'))\n\ntry:\n    o.email = \"bob@example.com\"\nexcept AttributeError as e:\n    print(\"Cannot add attribute:\", e)",
+        "solution": "class Regular:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\nclass Optimized:\n    __slots__ = ['name', 'age']\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n\nr = Regular(\"Alice\", 30)\no = Optimized(\"Bob\", 25)\n\nr.email = \"alice@example.com\"\nprint(f\"{r.name}, {r.age}, {r.email}\")\nprint(\"Regular __dict__:\", r.__dict__)\n\nprint(f\"{o.name}, {o.age}\")\nprint(\"Has __dict__:\", hasattr(o, '__dict__'))\n\ntry:\n    o.email = \"bob@example.com\"\nexcept AttributeError as e:\n    print(\"Cannot add attribute:\", e)",
+        "expectedOutput": "Alice, 30, alice@example.com\nRegular __dict__: {'name': 'Alice', 'age': 30, 'email': 'alice@example.com'}\nBob, 25\nHas __dict__: False\nCannot add attribute: 'Optimized' object has no attribute 'email'",
+        "hints": [
+          "__slots__ replaces the per-instance __dict__ with a fixed structure.",
+          "Attempting to set an attribute not in __slots__ raises AttributeError."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "gil-concepts-quiz",
+        "title": "GIL and Memory Concepts",
+        "description": "Print a structured summary of GIL and memory management concepts. This is a conceptual exercise -- demonstrate understanding by printing correct facts.",
+        "starterCode": "# GIL Concepts\nprint(\"=== GIL ===\")\nprint(\"Full name: Global Interpreter Lock\")\nprint(\"Exists in: CPython (not Jython/IronPython)\")\nprint(\"Purpose: Protects reference counting from race conditions\")\nprint(\"CPU-bound threads: NO parallelism (use multiprocessing)\")\nprint(\"I/O-bound threads: YES benefit (GIL released during I/O)\")\n\nprint()\n\n# Memory Management\nprint(\"=== Memory Management ===\")\nprint(\"Primary: Reference counting (immediate cleanup at refcount 0)\")\nprint(\"Secondary: Generational GC (handles circular references)\")\nprint(\"Generations: 3 (gen0=frequent, gen1=medium, gen2=rare)\")\nprint(\"Optimization: __slots__ reduces per-instance memory by ~40-50%\")\nprint(\"Tool: sys.getrefcount() to inspect reference counts\")",
+        "solution": "print(\"=== GIL ===\")\nprint(\"Full name: Global Interpreter Lock\")\nprint(\"Exists in: CPython (not Jython/IronPython)\")\nprint(\"Purpose: Protects reference counting from race conditions\")\nprint(\"CPU-bound threads: NO parallelism (use multiprocessing)\")\nprint(\"I/O-bound threads: YES benefit (GIL released during I/O)\")\n\nprint()\n\nprint(\"=== Memory Management ===\")\nprint(\"Primary: Reference counting (immediate cleanup at refcount 0)\")\nprint(\"Secondary: Generational GC (handles circular references)\")\nprint(\"Generations: 3 (gen0=frequent, gen1=medium, gen2=rare)\")\nprint(\"Optimization: __slots__ reduces per-instance memory by ~40-50%\")\nprint(\"Tool: sys.getrefcount() to inspect reference counts\")",
+        "expectedOutput": "=== GIL ===\nFull name: Global Interpreter Lock\nExists in: CPython (not Jython/IronPython)\nPurpose: Protects reference counting from race conditions\nCPU-bound threads: NO parallelism (use multiprocessing)\nI/O-bound threads: YES benefit (GIL released during I/O)\n\n=== Memory Management ===\nPrimary: Reference counting (immediate cleanup at refcount 0)\nSecondary: Generational GC (handles circular references)\nGenerations: 3 (gen0=frequent, gen1=medium, gen2=rare)\nOptimization: __slots__ reduces per-instance memory by ~40-50%\nTool: sys.getrefcount() to inspect reference counts",
+        "hints": [
+          "This is a conceptual exercise. Make sure each printed line matches the expected output exactly.",
+          "The GIL exists because CPython's reference counting is not thread-safe."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

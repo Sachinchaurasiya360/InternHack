@@ -1,0 +1,466 @@
+[
+  {
+    "id": "recursion",
+    "sectionId": "data-structures-algorithms",
+    "orderIndex": 0,
+    "title": "Recursion",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["base case", "recursive case", "call stack"],
+    "content": {
+      "explanation": "Recursion is a programming technique where a function calls itself to solve a problem by breaking it down into smaller sub-problems. Every recursive function must have two essential components: a base case that stops the recursion, and a recursive case that moves the problem closer to the base case.\n\nThe base case is the simplest version of the problem that can be solved directly without further recursion. Without a proper base case, a recursive function will keep calling itself indefinitely until Python raises a RecursionError due to exceeding the maximum call stack depth (default 1000 frames). The recursive case is where the function calls itself with a modified argument that progresses toward the base case.\n\nClassic examples of recursion include computing factorials, generating Fibonacci numbers, and traversing tree-like data structures. Factorial of n (n!) is defined as n * (n-1)!, with the base case being 0! = 1. The Fibonacci sequence is defined as fib(n) = fib(n-1) + fib(n-2), with base cases fib(0) = 0 and fib(1) = 1.\n\nWhile recursion produces elegant and readable code, it can be inefficient for certain problems. Naive recursive Fibonacci has exponential time complexity O(2^n) because it recomputes the same sub-problems repeatedly. Techniques like memoization can drastically improve performance by caching previously computed results. Python provides functools.lru_cache as a built-in memoization decorator.\n\nUnderstanding how the call stack works is crucial for debugging recursive functions. Each recursive call adds a new frame to the stack, and frames are removed (popped) as each call returns its result. Visualizing this stack helps you trace through recursive logic and identify issues like missing base cases or incorrect recursive steps.",
+      "codeExamples": [
+        {
+          "title": "Factorial using recursion",
+          "code": "def factorial(n):\n    if n == 0:\n        return 1\n    return n * factorial(n - 1)\n\nprint(factorial(5))\nprint(factorial(0))\nprint(factorial(10))",
+          "output": "120\n1\n3628800",
+          "explanation": "The base case returns 1 when n is 0. Otherwise, the function multiplies n by factorial(n-1), unwinding the call stack once the base case is reached."
+        },
+        {
+          "title": "Fibonacci with and without memoization",
+          "code": "def fib(n):\n    if n <= 1:\n        return n\n    return fib(n - 1) + fib(n - 2)\n\nprint(fib(10))\n\nfrom functools import lru_cache\n\n@lru_cache(maxsize=None)\ndef fib_memo(n):\n    if n <= 1:\n        return n\n    return fib_memo(n - 1) + fib_memo(n - 2)\n\nprint(fib_memo(50))",
+          "output": "55\n12586269025",
+          "explanation": "The naive fib function recomputes sub-problems, making it very slow for large n. The memoized version caches results, reducing time complexity from O(2^n) to O(n)."
+        },
+        {
+          "title": "Sum of a list using recursion",
+          "code": "def recursive_sum(lst):\n    if len(lst) == 0:\n        return 0\n    return lst[0] + recursive_sum(lst[1:])\n\nprint(recursive_sum([1, 2, 3, 4, 5]))\nprint(recursive_sum([]))",
+          "output": "15\n0",
+          "explanation": "The base case handles an empty list. Each recursive call processes the first element and recurses on the remaining slice of the list."
+        }
+      ],
+      "notes": [
+        "Every recursive function must have at least one base case to prevent infinite recursion.",
+        "Python's default recursion limit is 1000 frames. You can change it with sys.setrecursionlimit(), but deep recursion should usually be converted to iteration.",
+        "Memoization (functools.lru_cache) turns exponential recursive solutions into polynomial ones by caching results."
+      ],
+      "commonPitfalls": [
+        "Forgetting the base case, which causes RecursionError: maximum recursion depth exceeded.",
+        "Using naive recursion for problems with overlapping sub-problems (like Fibonacci) without memoization, leading to exponential time complexity.",
+        "Modifying mutable default arguments in recursive calls, causing unexpected shared state between calls."
+      ],
+      "interviewTips": [
+        "Always identify the base case first, then define the recursive relationship. Interviewers look for clear separation of these two components.",
+        "When asked about recursion vs iteration, mention that recursion uses O(n) stack space while iteration typically uses O(1), but recursion can be more readable for tree/graph traversals.",
+        "If a recursive solution is too slow, mention memoization or converting to dynamic programming as optimization strategies."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "recursion-power",
+        "title": "Power Function",
+        "description": "Write a recursive function called 'power' that takes a base and an exponent (non-negative integer) and returns base raised to the exponent. Do not use the ** operator or pow().",
+        "starterCode": "def power(base, exp):\n    # Your code here\n    pass\n\nprint(power(2, 10))\nprint(power(3, 0))\nprint(power(5, 3))",
+        "solution": "def power(base, exp):\n    if exp == 0:\n        return 1\n    return base * power(base, exp - 1)\n\nprint(power(2, 10))\nprint(power(3, 0))\nprint(power(5, 3))",
+        "expectedOutput": "1024\n1\n125",
+        "hints": [
+          "Any number raised to the power 0 is 1 -- that is your base case.",
+          "base^exp = base * base^(exp-1)"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "recursion-reverse-string",
+        "title": "Reverse a String Recursively",
+        "description": "Write a recursive function called 'reverse_string' that takes a string and returns it reversed. Do not use slicing shortcuts like s[::-1].",
+        "starterCode": "def reverse_string(s):\n    # Your code here\n    pass\n\nprint(reverse_string(\"hello\"))\nprint(reverse_string(\"Python\"))\nprint(reverse_string(\"\"))",
+        "solution": "def reverse_string(s):\n    if len(s) <= 1:\n        return s\n    return reverse_string(s[1:]) + s[0]\n\nprint(reverse_string(\"hello\"))\nprint(reverse_string(\"Python\"))\nprint(reverse_string(\"\"))",
+        "expectedOutput": "olleh\nnohtyP\n",
+        "hints": [
+          "Base case: an empty string or single character is already reversed.",
+          "Take the first character, recurse on the rest, and append the first character at the end."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "recursion-flatten-list",
+        "title": "Flatten a Nested List",
+        "description": "Write a recursive function called 'flatten' that takes a nested list (which may contain lists within lists) and returns a single flat list of all elements.",
+        "starterCode": "def flatten(lst):\n    # Your code here\n    pass\n\nprint(flatten([1, [2, 3], [4, [5, 6]]]))\nprint(flatten([[1, 2], [3, [4, [5]]]]))",
+        "solution": "def flatten(lst):\n    result = []\n    for item in lst:\n        if isinstance(item, list):\n            result.extend(flatten(item))\n        else:\n            result.append(item)\n    return result\n\nprint(flatten([1, [2, 3], [4, [5, 6]]]))\nprint(flatten([[1, 2], [3, [4, [5]]]]))",
+        "expectedOutput": "[1, 2, 3, 4, 5, 6]\n[1, 2, 3, 4, 5]",
+        "hints": [
+          "Check each element: if it is a list, recursively flatten it; otherwise, add it directly to the result.",
+          "Use isinstance(item, list) to check if an element is a list."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "searching-algorithms",
+    "sectionId": "data-structures-algorithms",
+    "orderIndex": 1,
+    "title": "Searching Algorithms",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["linear search", "binary search", "bisect module"],
+    "content": {
+      "explanation": "Searching algorithms are fundamental techniques used to find a specific element within a collection of data. The choice of algorithm depends on whether the data is sorted and the performance requirements of your application.\n\nLinear search is the simplest searching algorithm. It checks each element in the collection sequentially until it finds the target or exhausts all elements. It works on both sorted and unsorted data and has a time complexity of O(n) in the worst case. While straightforward, linear search becomes impractical for very large datasets.\n\nBinary search is a dramatically faster algorithm that works exclusively on sorted data. It repeatedly divides the search space in half by comparing the target with the middle element. If the target equals the middle element, the search is complete. If the target is smaller, the search continues in the left half; if larger, in the right half. This divide-and-conquer approach gives binary search a time complexity of O(log n), making it vastly superior to linear search for large datasets.\n\nPython's standard library provides the bisect module, which implements binary search operations for maintaining sorted lists. The bisect_left and bisect_right functions find insertion points for elements, while insort_left and insort_right insert elements while keeping the list sorted. These functions are implemented in C, making them extremely fast.\n\nIn practice, Python offers the 'in' operator for membership testing (which performs linear search on lists and O(1) lookup on sets/dicts), and the index() method on lists. However, understanding how these algorithms work under the hood is essential for interviews and for choosing the right data structure for your specific use case.",
+      "codeExamples": [
+        {
+          "title": "Linear search implementation",
+          "code": "def linear_search(arr, target):\n    for i in range(len(arr)):\n        if arr[i] == target:\n            return i\n    return -1\n\nnumbers = [4, 2, 7, 1, 9, 3]\nprint(linear_search(numbers, 7))\nprint(linear_search(numbers, 5))",
+          "output": "2\n-1",
+          "explanation": "Linear search checks each element from left to right. It returns the index when the target is found, or -1 if the target is not in the list. Time complexity is O(n)."
+        },
+        {
+          "title": "Binary search (iterative)",
+          "code": "def binary_search(arr, target):\n    low, high = 0, len(arr) - 1\n    while low <= high:\n        mid = (low + high) // 2\n        if arr[mid] == target:\n            return mid\n        elif arr[mid] < target:\n            low = mid + 1\n        else:\n            high = mid - 1\n    return -1\n\nsorted_nums = [1, 3, 5, 7, 9, 11, 13, 15]\nprint(binary_search(sorted_nums, 7))\nprint(binary_search(sorted_nums, 6))\nprint(binary_search(sorted_nums, 15))",
+          "output": "3\n-1\n7",
+          "explanation": "Binary search halves the search space each iteration. The array must be sorted. Time complexity is O(log n), which for 1 million elements means at most ~20 comparisons."
+        },
+        {
+          "title": "Using Python's bisect module",
+          "code": "import bisect\n\nsorted_list = [1, 3, 5, 7, 9, 11]\n\npos = bisect.bisect_left(sorted_list, 5)\nprint(pos)\n\npos_right = bisect.bisect_right(sorted_list, 5)\nprint(pos_right)\n\nbisect.insort(sorted_list, 6)\nprint(sorted_list)",
+          "output": "2\n3\n[1, 3, 5, 6, 7, 9, 11]",
+          "explanation": "bisect_left returns the leftmost position where the element can be inserted to maintain order. bisect_right returns the rightmost such position. insort inserts the element while keeping the list sorted."
+        },
+        {
+          "title": "Binary search (recursive)",
+          "code": "def binary_search_recursive(arr, target, low, high):\n    if low > high:\n        return -1\n    mid = (low + high) // 2\n    if arr[mid] == target:\n        return mid\n    elif arr[mid] < target:\n        return binary_search_recursive(arr, target, mid + 1, high)\n    else:\n        return binary_search_recursive(arr, target, low, mid - 1)\n\nnums = [2, 4, 6, 8, 10, 12, 14]\nprint(binary_search_recursive(nums, 10, 0, len(nums) - 1))\nprint(binary_search_recursive(nums, 3, 0, len(nums) - 1))",
+          "output": "4\n-1",
+          "explanation": "The recursive version works identically to the iterative one but uses function calls instead of a loop. Each call narrows the search range by adjusting low or high."
+        }
+      ],
+      "notes": [
+        "Binary search requires the input array to be sorted. If you need to search an unsorted array repeatedly, sort it first (O(n log n)) then use binary search for each query.",
+        "Python's 'in' operator uses linear search on lists but O(1) average on sets and dicts. Choose the right data structure for frequent lookups.",
+        "The bisect module is implemented in C and is faster than a pure Python binary search implementation."
+      ],
+      "commonPitfalls": [
+        "Applying binary search to unsorted data, which produces incorrect results.",
+        "Off-by-one errors in binary search: the condition must be low <= high (not low < high) to check the last remaining element.",
+        "Integer overflow when computing mid as (low + high) // 2 is not an issue in Python (arbitrary precision integers) but matters in languages like Java or C++."
+      ],
+      "interviewTips": [
+        "When asked to search in a sorted array, always suggest binary search first. Mention that it reduces O(n) to O(log n).",
+        "Be ready to implement binary search both iteratively and recursively. Most interviewers prefer the iterative version as it avoids stack overhead.",
+        "Know how to adapt binary search for variants: finding the first/last occurrence, finding the insertion point, or searching in rotated sorted arrays."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "search-count-occurrences",
+        "title": "Count Occurrences in Sorted Array",
+        "description": "Write a function called 'count_occurrences' that uses binary search (via the bisect module) to count how many times a target value appears in a sorted list.",
+        "starterCode": "import bisect\n\ndef count_occurrences(sorted_arr, target):\n    # Your code here\n    pass\n\nprint(count_occurrences([1, 2, 2, 2, 3, 4, 5], 2))\nprint(count_occurrences([1, 1, 1, 1, 1], 1))\nprint(count_occurrences([1, 3, 5, 7], 4))",
+        "solution": "import bisect\n\ndef count_occurrences(sorted_arr, target):\n    left = bisect.bisect_left(sorted_arr, target)\n    right = bisect.bisect_right(sorted_arr, target)\n    return right - left\n\nprint(count_occurrences([1, 2, 2, 2, 3, 4, 5], 2))\nprint(count_occurrences([1, 1, 1, 1, 1], 1))\nprint(count_occurrences([1, 3, 5, 7], 4))",
+        "expectedOutput": "3\n5\n0",
+        "hints": [
+          "bisect_left gives the index of the first occurrence; bisect_right gives the index just after the last occurrence.",
+          "The count is simply bisect_right - bisect_left."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "search-find-peak",
+        "title": "Find Peak Element",
+        "description": "Write a function called 'find_peak' that finds any peak element in a list (an element that is greater than its neighbors). Return the index of the peak. Use a binary search approach for O(log n) performance. You can assume the list has at least one element and that elements at the boundaries only need to be greater than their single neighbor.",
+        "starterCode": "def find_peak(nums):\n    # Your code here\n    pass\n\nprint(find_peak([1, 3, 5, 7, 6, 4, 2]))\nprint(find_peak([10, 5, 3, 1]))\nprint(find_peak([1, 2, 3, 4, 5]))",
+        "solution": "def find_peak(nums):\n    low, high = 0, len(nums) - 1\n    while low < high:\n        mid = (low + high) // 2\n        if nums[mid] < nums[mid + 1]:\n            low = mid + 1\n        else:\n            high = mid\n    return low\n\nprint(find_peak([1, 3, 5, 7, 6, 4, 2]))\nprint(find_peak([10, 5, 3, 1]))\nprint(find_peak([1, 2, 3, 4, 5]))",
+        "expectedOutput": "3\n0\n4",
+        "hints": [
+          "If the middle element is less than its right neighbor, a peak must exist on the right side.",
+          "Use low < high (not low <= high) because you are narrowing down to a single element."
+        ],
+        "difficulty": "Hard"
+      },
+      {
+        "id": "search-first-last-position",
+        "title": "First and Last Position",
+        "description": "Write a function called 'find_first_last' that takes a sorted list and a target, and returns a list [first_index, last_index] of the target. If the target is not found, return [-1, -1].",
+        "starterCode": "def find_first_last(nums, target):\n    # Your code here\n    pass\n\nprint(find_first_last([1, 2, 2, 2, 3, 4], 2))\nprint(find_first_last([1, 3, 5, 7], 5))\nprint(find_first_last([1, 3, 5, 7], 6))",
+        "solution": "def find_first_last(nums, target):\n    def find_left(nums, target):\n        low, high = 0, len(nums) - 1\n        result = -1\n        while low <= high:\n            mid = (low + high) // 2\n            if nums[mid] == target:\n                result = mid\n                high = mid - 1\n            elif nums[mid] < target:\n                low = mid + 1\n            else:\n                high = mid - 1\n        return result\n\n    def find_right(nums, target):\n        low, high = 0, len(nums) - 1\n        result = -1\n        while low <= high:\n            mid = (low + high) // 2\n            if nums[mid] == target:\n                result = mid\n                low = mid + 1\n            elif nums[mid] < target:\n                low = mid + 1\n            else:\n                high = mid - 1\n        return result\n\n    return [find_left(nums, target), find_right(nums, target)]\n\nprint(find_first_last([1, 2, 2, 2, 3, 4], 2))\nprint(find_first_last([1, 3, 5, 7], 5))\nprint(find_first_last([1, 3, 5, 7], 6))",
+        "expectedOutput": "[1, 3]\n[2, 2]\n[-1, -1]",
+        "hints": [
+          "Use two separate binary searches: one to find the first occurrence (keep searching left after finding target) and one for the last (keep searching right).",
+          "When you find the target, do not return immediately. Instead, record it and continue narrowing the search."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "sorting-algorithms",
+    "sectionId": "data-structures-algorithms",
+    "orderIndex": 2,
+    "title": "Sorting Algorithms",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["bubble sort", "selection sort", "insertion sort", "Timsort"],
+    "content": {
+      "explanation": "Sorting algorithms arrange elements of a collection in a specific order (ascending or descending). Understanding how different sorting algorithms work, their time complexities, and when to use each one is a cornerstone of computer science and a frequent topic in technical interviews.\n\nBubble sort is the simplest sorting algorithm. It repeatedly steps through the list, compares adjacent elements, and swaps them if they are in the wrong order. This process repeats until no more swaps are needed. While easy to understand, bubble sort has O(n^2) time complexity in the average and worst cases, making it impractical for large datasets. An optimization is to track whether any swaps occurred in a pass; if not, the list is already sorted and we can stop early.\n\nSelection sort works by repeatedly finding the minimum element from the unsorted portion and placing it at the beginning of the unsorted section. It divides the list into a sorted and unsorted region, growing the sorted region one element at a time. Like bubble sort, it has O(n^2) time complexity, but it makes fewer swaps (at most n-1), which can be advantageous when write operations are expensive.\n\nInsertion sort builds the sorted array one element at a time by inserting each new element into its correct position among the previously sorted elements. It is efficient for small datasets and nearly sorted data (O(n) best case). Many real-world sorting implementations, including Python's Timsort, use insertion sort for small sub-arrays because of its low overhead.\n\nPython's built-in sorted() function and the list .sort() method both use Timsort, a hybrid algorithm combining merge sort and insertion sort. Timsort has O(n log n) worst-case time complexity and O(n) best case for nearly sorted data. The key difference: sorted() returns a new list and works on any iterable, while .sort() sorts the list in-place and returns None. Both accept key and reverse parameters for custom sorting behavior.",
+      "codeExamples": [
+        {
+          "title": "Bubble sort with early exit optimization",
+          "code": "def bubble_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        swapped = False\n        for j in range(0, n - i - 1):\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n                swapped = True\n        if not swapped:\n            break\n    return arr\n\nprint(bubble_sort([64, 34, 25, 12, 22, 11, 90]))",
+          "output": "[11, 12, 22, 25, 34, 64, 90]",
+          "explanation": "Each pass bubbles the largest unsorted element to its correct position. The swapped flag enables early termination if the list becomes sorted before all passes complete."
+        },
+        {
+          "title": "Selection sort",
+          "code": "def selection_sort(arr):\n    n = len(arr)\n    for i in range(n):\n        min_idx = i\n        for j in range(i + 1, n):\n            if arr[j] < arr[min_idx]:\n                min_idx = j\n        arr[i], arr[min_idx] = arr[min_idx], arr[i]\n    return arr\n\nprint(selection_sort([29, 10, 14, 37, 13]))",
+          "output": "[10, 13, 14, 29, 37]",
+          "explanation": "Selection sort finds the smallest element in the unsorted portion and swaps it with the first unsorted element. It performs exactly n-1 swaps regardless of input."
+        },
+        {
+          "title": "Insertion sort",
+          "code": "def insertion_sort(arr):\n    for i in range(1, len(arr)):\n        key = arr[i]\n        j = i - 1\n        while j >= 0 and arr[j] > key:\n            arr[j + 1] = arr[j]\n            j -= 1\n        arr[j + 1] = key\n    return arr\n\nprint(insertion_sort([5, 2, 4, 6, 1, 3]))",
+          "output": "[1, 2, 3, 4, 5, 6]",
+          "explanation": "Insertion sort picks each element and inserts it into the correct position among the already-sorted elements to its left. It is very efficient for nearly sorted data."
+        },
+        {
+          "title": "Python's built-in sorted() and .sort()",
+          "code": "numbers = [3, 1, 4, 1, 5, 9, 2, 6]\n\nsorted_new = sorted(numbers)\nprint(sorted_new)\nprint(numbers)\n\nnumbers.sort(reverse=True)\nprint(numbers)\n\nwords = [\"banana\", \"apple\", \"cherry\"]\nprint(sorted(words, key=len))",
+          "output": "[1, 1, 2, 3, 4, 5, 6, 9]\n[3, 1, 4, 1, 5, 9, 2, 6]\n[9, 6, 5, 4, 3, 2, 1, 1]\n['apple', 'banana', 'cherry']",
+          "explanation": "sorted() returns a new sorted list without modifying the original. .sort() modifies the list in-place and returns None. Both accept key (a function applied to each element for comparison) and reverse (boolean for descending order)."
+        }
+      ],
+      "notes": [
+        "For production code, always use Python's built-in sorted() or .sort() -- they use Timsort, which is O(n log n) and highly optimized.",
+        "Insertion sort is the best O(n^2) algorithm for nearly sorted data, achieving O(n) in the best case.",
+        "sorted() works on any iterable (strings, tuples, generators), while .sort() is only available on lists."
+      ],
+      "commonPitfalls": [
+        "Using result = my_list.sort() and expecting result to contain the sorted list. .sort() returns None because it sorts in-place.",
+        "Forgetting that sorted() creates a new list. For large lists where memory is a concern, use .sort() to sort in-place.",
+        "Implementing bubble sort without the early exit optimization, causing unnecessary passes on already-sorted data."
+      ],
+      "interviewTips": [
+        "Know the time and space complexities of each sorting algorithm. Bubble, selection, and insertion sort are all O(n^2) average/worst but differ in best case and number of swaps.",
+        "When asked 'which sorting algorithm would you use?', the answer for Python is almost always the built-in sort (Timsort). Explain why: O(n log n) worst case, O(n) for nearly sorted data, stable, and implemented in C.",
+        "Understand stability in sorting: a stable sort preserves the relative order of equal elements. Python's sort is stable. Bubble sort and insertion sort are stable; selection sort is not."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "sort-custom-key",
+        "title": "Sort by Multiple Criteria",
+        "description": "Given a list of tuples (name, age, score), sort them by score in descending order. If scores are equal, sort by age in ascending order. Use Python's sorted() with a custom key.",
+        "starterCode": "students = [\n    (\"Alice\", 22, 88),\n    (\"Bob\", 20, 95),\n    (\"Charlie\", 21, 88),\n    (\"Diana\", 20, 95)\n]\n\n# Sort by score descending, then age ascending\nresult = None  # Replace with your sorting code\n\nfor name, age, score in result:\n    print(f\"{name} {age} {score}\")",
+        "solution": "students = [\n    (\"Alice\", 22, 88),\n    (\"Bob\", 20, 95),\n    (\"Charlie\", 21, 88),\n    (\"Diana\", 20, 95)\n]\n\nresult = sorted(students, key=lambda s: (-s[2], s[1]))\n\nfor name, age, score in result:\n    print(f\"{name} {age} {score}\")",
+        "expectedOutput": "Bob 20 95\nDiana 20 95\nCharlie 21 88\nAlice 22 88",
+        "hints": [
+          "Use a lambda that returns a tuple for multi-criteria sorting.",
+          "Negate the score (-s[2]) to sort it in descending order while keeping age ascending."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "sort-count-swaps",
+        "title": "Count Bubble Sort Swaps",
+        "description": "Write a function called 'count_swaps' that performs bubble sort and returns the total number of swaps needed to sort the array.",
+        "starterCode": "def count_swaps(arr):\n    # Your code here\n    pass\n\nprint(count_swaps([4, 3, 2, 1]))\nprint(count_swaps([1, 2, 3, 4]))\nprint(count_swaps([3, 1, 2]))",
+        "solution": "def count_swaps(arr):\n    arr = arr[:]\n    swaps = 0\n    n = len(arr)\n    for i in range(n):\n        for j in range(0, n - i - 1):\n            if arr[j] > arr[j + 1]:\n                arr[j], arr[j + 1] = arr[j + 1], arr[j]\n                swaps += 1\n    return swaps\n\nprint(count_swaps([4, 3, 2, 1]))\nprint(count_swaps([1, 2, 3, 4]))\nprint(count_swaps([3, 1, 2]))",
+        "expectedOutput": "6\n0\n2",
+        "hints": [
+          "Copy the array first so you do not modify the original.",
+          "Increment a counter each time a swap is performed."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "sort-merge-sorted-lists",
+        "title": "Merge Two Sorted Lists",
+        "description": "Write a function called 'merge_sorted' that takes two sorted lists and returns a single sorted list by merging them. Do not use sorted() or .sort() -- implement the merge step manually.",
+        "starterCode": "def merge_sorted(list1, list2):\n    # Your code here\n    pass\n\nprint(merge_sorted([1, 3, 5], [2, 4, 6]))\nprint(merge_sorted([1, 2, 3], []))\nprint(merge_sorted([], [4, 5, 6]))",
+        "solution": "def merge_sorted(list1, list2):\n    result = []\n    i, j = 0, 0\n    while i < len(list1) and j < len(list2):\n        if list1[i] <= list2[j]:\n            result.append(list1[i])\n            i += 1\n        else:\n            result.append(list2[j])\n            j += 1\n    result.extend(list1[i:])\n    result.extend(list2[j:])\n    return result\n\nprint(merge_sorted([1, 3, 5], [2, 4, 6]))\nprint(merge_sorted([1, 2, 3], []))\nprint(merge_sorted([], [4, 5, 6]))",
+        "expectedOutput": "[1, 2, 3, 4, 5, 6]\n[1, 2, 3]\n[4, 5, 6]",
+        "hints": [
+          "Use two pointers, one for each list. Compare elements at each pointer and append the smaller one.",
+          "After one list is exhausted, append all remaining elements from the other list."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "stacks-and-queues",
+    "sectionId": "data-structures-algorithms",
+    "orderIndex": 3,
+    "title": "Stacks & Queues",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["stack", "queue", "collections.deque"],
+    "content": {
+      "explanation": "Stacks and queues are abstract data types that define specific rules for how elements are added and removed. They are foundational to many algorithms and appear frequently in coding interviews.\n\nA stack follows the Last-In, First-Out (LIFO) principle. The last element added is the first one removed. Think of a stack of plates: you add to the top and remove from the top. The core operations are push (add to top), pop (remove from top), and peek (view the top without removing). In Python, a regular list works efficiently as a stack using append() for push and pop() for pop, both of which are O(1) operations.\n\nA queue follows the First-In, First-Out (FIFO) principle. The first element added is the first one removed, like a line at a ticket counter. The core operations are enqueue (add to back) and dequeue (remove from front). Using a Python list for a queue is inefficient because list.pop(0) is O(n) since all remaining elements must be shifted. Instead, Python provides collections.deque (double-ended queue), which supports O(1) append and popleft operations.\n\nStacks have many practical applications: function call management (the call stack), undo/redo functionality, expression evaluation and syntax parsing, depth-first search (DFS), and balancing parentheses. Queues are used in breadth-first search (BFS), task scheduling, print spooling, and buffering.\n\nPython's collections.deque is versatile and can be used as both a stack and a queue. It supports append/pop from both ends in O(1). You can also create a bounded deque with a maxlen parameter, which automatically discards elements from the opposite end when the deque is full. For thread-safe queue operations, Python provides the queue.Queue class.",
+      "codeExamples": [
+        {
+          "title": "Stack using a Python list",
+          "code": "stack = []\n\nstack.append(10)\nstack.append(20)\nstack.append(30)\nprint(\"Stack:\", stack)\n\ntop = stack.pop()\nprint(\"Popped:\", top)\nprint(\"Stack after pop:\", stack)\n\nprint(\"Peek:\", stack[-1])\nprint(\"Is empty:\", len(stack) == 0)",
+          "output": "Stack: [10, 20, 30]\nPopped: 30\nStack after pop: [10, 20]\nPeek: 20\nIs empty: False",
+          "explanation": "Python lists support O(1) append and pop from the end, making them suitable as stacks. Peek is done by accessing the last element with index -1."
+        },
+        {
+          "title": "Queue using collections.deque",
+          "code": "from collections import deque\n\nqueue = deque()\n\nqueue.append(\"first\")\nqueue.append(\"second\")\nqueue.append(\"third\")\nprint(\"Queue:\", list(queue))\n\nfront = queue.popleft()\nprint(\"Dequeued:\", front)\nprint(\"Queue after dequeue:\", list(queue))\n\nprint(\"Front:\", queue[0])\nprint(\"Size:\", len(queue))",
+          "output": "Queue: ['first', 'second', 'third']\nDequeued: first\nQueue after dequeue: ['second', 'third']\nFront: second\nSize: 2",
+          "explanation": "deque provides O(1) append to the right and popleft from the left, making it the ideal queue implementation in Python. Using list.pop(0) would be O(n)."
+        },
+        {
+          "title": "Balanced parentheses checker using stack",
+          "code": "def is_balanced(s):\n    stack = []\n    pairs = {')': '(', ']': '[', '}': '{'}\n    for char in s:\n        if char in '([{':\n            stack.append(char)\n        elif char in pairs:\n            if not stack or stack[-1] != pairs[char]:\n                return False\n            stack.pop()\n    return len(stack) == 0\n\nprint(is_balanced(\"({[]})\"))\nprint(is_balanced(\"([)]\"))\nprint(is_balanced(\"{{}}\"))\nprint(is_balanced(\"(\"))",
+          "output": "True\nFalse\nTrue\nFalse",
+          "explanation": "Opening brackets are pushed onto the stack. When a closing bracket is encountered, we check if the top of the stack has the matching opening bracket. If the stack is empty at the end, all brackets were balanced."
+        },
+        {
+          "title": "Bounded deque as a sliding window",
+          "code": "from collections import deque\n\nrecent = deque(maxlen=3)\n\nfor i in range(1, 6):\n    recent.append(i)\n    print(f\"Added {i}: {list(recent)}\")",
+          "output": "Added 1: [1]\nAdded 2: [1, 2]\nAdded 3: [1, 2, 3]\nAdded 4: [2, 3, 4]\nAdded 5: [3, 4, 5]",
+          "explanation": "A deque with maxlen automatically discards the oldest element when a new one is added beyond the limit. This is useful for maintaining a sliding window of recent items."
+        }
+      ],
+      "notes": [
+        "Use list for stacks (append/pop are O(1)) and collections.deque for queues (append/popleft are O(1)).",
+        "Never use list.pop(0) for queue operations -- it is O(n). Always use deque.popleft() instead.",
+        "deque supports appendleft(), pop(), append(), and popleft(), making it usable as both a stack and a queue."
+      ],
+      "commonPitfalls": [
+        "Using a list as a queue with pop(0) instead of deque with popleft(). This creates O(n) performance per dequeue operation.",
+        "Forgetting to check if the stack/queue is empty before calling pop() or popleft(), which raises an IndexError.",
+        "Confusing LIFO (stack) and FIFO (queue) behavior when solving problems. Always clarify which data structure the problem requires."
+      ],
+      "interviewTips": [
+        "The balanced parentheses problem is one of the most common stack interview questions. Practice implementing it cleanly with a dictionary for bracket pairs.",
+        "When an interviewer asks you to implement a queue, mention collections.deque immediately and explain why lists are suboptimal (O(n) pop(0) vs O(1) popleft).",
+        "Know how to implement a stack that supports getMin() in O(1) -- use an auxiliary stack that tracks the current minimum at each level."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "stack-reverse-string",
+        "title": "Reverse String Using Stack",
+        "description": "Write a function called 'reverse_with_stack' that reverses a string using a stack (list). Push all characters onto the stack, then pop them off to build the reversed string.",
+        "starterCode": "def reverse_with_stack(s):\n    # Your code here\n    pass\n\nprint(reverse_with_stack(\"hello\"))\nprint(reverse_with_stack(\"Python\"))\nprint(reverse_with_stack(\"a\"))",
+        "solution": "def reverse_with_stack(s):\n    stack = []\n    for char in s:\n        stack.append(char)\n    result = \"\"\n    while stack:\n        result += stack.pop()\n    return result\n\nprint(reverse_with_stack(\"hello\"))\nprint(reverse_with_stack(\"Python\"))\nprint(reverse_with_stack(\"a\"))",
+        "expectedOutput": "olleh\nnohtyP\na",
+        "hints": [
+          "Push each character of the string onto the stack one by one.",
+          "Pop characters from the stack and concatenate them to build the reversed string."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "queue-hot-potato",
+        "title": "Hot Potato Simulation",
+        "description": "Write a function called 'hot_potato' that simulates the hot potato game. Given a list of names and a number n, repeatedly dequeue a person and enqueue them back (passing the potato). Every nth pass, the person is eliminated (not re-enqueued). Return the name of the last person remaining.",
+        "starterCode": "from collections import deque\n\ndef hot_potato(names, num):\n    # Your code here\n    pass\n\nprint(hot_potato([\"Alice\", \"Bob\", \"Charlie\", \"Diana\", \"Eve\"], 3))\nprint(hot_potato([\"A\", \"B\", \"C\", \"D\"], 2))",
+        "solution": "from collections import deque\n\ndef hot_potato(names, num):\n    queue = deque(names)\n    while len(queue) > 1:\n        for _ in range(num - 1):\n            queue.append(queue.popleft())\n        queue.popleft()\n    return queue[0]\n\nprint(hot_potato([\"Alice\", \"Bob\", \"Charlie\", \"Diana\", \"Eve\"], 3))\nprint(hot_potato([\"A\", \"B\", \"C\", \"D\"], 2))",
+        "expectedOutput": "Alice\nA",
+        "hints": [
+          "Rotate the queue by dequeuing and re-enqueuing (num - 1) times, then the next dequeue eliminates that person.",
+          "Repeat until only one person remains in the queue."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "stack-min-stack",
+        "title": "Min Stack",
+        "description": "Implement a MinStack class that supports push, pop, top, and get_min operations, all in O(1) time. Use an auxiliary stack to track minimums.",
+        "starterCode": "class MinStack:\n    def __init__(self):\n        # Your code here\n        pass\n\n    def push(self, val):\n        pass\n\n    def pop(self):\n        pass\n\n    def top(self):\n        pass\n\n    def get_min(self):\n        pass\n\nms = MinStack()\nms.push(5)\nms.push(3)\nms.push(7)\nms.push(1)\nprint(ms.get_min())\nms.pop()\nprint(ms.get_min())\nprint(ms.top())",
+        "solution": "class MinStack:\n    def __init__(self):\n        self.stack = []\n        self.min_stack = []\n\n    def push(self, val):\n        self.stack.append(val)\n        if not self.min_stack or val <= self.min_stack[-1]:\n            self.min_stack.append(val)\n\n    def pop(self):\n        val = self.stack.pop()\n        if val == self.min_stack[-1]:\n            self.min_stack.pop()\n        return val\n\n    def top(self):\n        return self.stack[-1]\n\n    def get_min(self):\n        return self.min_stack[-1]\n\nms = MinStack()\nms.push(5)\nms.push(3)\nms.push(7)\nms.push(1)\nprint(ms.get_min())\nms.pop()\nprint(ms.get_min())\nprint(ms.top())",
+        "expectedOutput": "1\n3\n7",
+        "hints": [
+          "Maintain a second stack that only records new minimums. Push to it when the incoming value is less than or equal to its top.",
+          "When popping from the main stack, also pop from the min stack if the value matches the current minimum."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "time-complexity",
+    "sectionId": "data-structures-algorithms",
+    "orderIndex": 4,
+    "title": "Time Complexity",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Big O notation", "space complexity", "algorithm analysis"],
+    "content": {
+      "explanation": "Time complexity describes how the running time of an algorithm grows as the input size increases. It is expressed using Big O notation, which characterizes the upper bound of an algorithm's growth rate, focusing on the dominant term and ignoring constants and lower-order terms.\n\nThe most common time complexities, from fastest to slowest, are: O(1) constant time -- the operation takes the same time regardless of input size (e.g., accessing a list element by index, dictionary lookup). O(log n) logarithmic -- the problem size is halved each step (e.g., binary search). O(n) linear -- the time grows proportionally with input (e.g., iterating through a list). O(n log n) linearithmic -- common in efficient sorting algorithms (e.g., merge sort, Timsort). O(n^2) quadratic -- nested loops over the input (e.g., bubble sort). O(2^n) exponential -- recursive solutions that branch twice at each step (e.g., naive Fibonacci). O(n!) factorial -- generating all permutations.\n\nAnalyzing time complexity involves examining the structure of your code: single loops typically give O(n), nested loops give O(n^2) or O(n*m), and halving loops give O(log n). When combining operations, the total complexity is dominated by the most expensive one: O(n) + O(n^2) simplifies to O(n^2). When operations are nested, their complexities multiply: an O(n) loop containing an O(n) operation gives O(n^2).\n\nSpace complexity measures how much additional memory an algorithm uses relative to input size. An in-place algorithm uses O(1) extra space (e.g., bubble sort), while creating a copy of the input uses O(n) space. Recursive algorithms use O(depth) stack space. Space complexity is especially important when dealing with large datasets or memory-constrained environments.\n\nIn interviews, you will be expected to analyze the time and space complexity of your solutions and discuss trade-offs. A common pattern is trading space for time: using a hash set for O(1) lookups instead of scanning a list in O(n), or memoizing recursive results to avoid recomputation.",
+      "codeExamples": [
+        {
+          "title": "Common time complexities demonstrated",
+          "code": "# O(1) - Constant\ndef get_first(lst):\n    return lst[0] if lst else None\n\n# O(n) - Linear\ndef find_max(lst):\n    maximum = lst[0]\n    for num in lst:\n        if num > maximum:\n            maximum = num\n    return maximum\n\n# O(n^2) - Quadratic\ndef has_duplicates(lst):\n    for i in range(len(lst)):\n        for j in range(i + 1, len(lst)):\n            if lst[i] == lst[j]:\n                return True\n    return False\n\nprint(get_first([10, 20, 30]))\nprint(find_max([3, 7, 2, 9, 4]))\nprint(has_duplicates([1, 2, 3, 2]))",
+          "output": "10\n9\nTrue",
+          "explanation": "get_first is O(1) because it accesses one element. find_max is O(n) because it checks every element once. has_duplicates is O(n^2) because the nested loop compares every pair."
+        },
+        {
+          "title": "O(log n) - Halving the search space",
+          "code": "def count_halvings(n):\n    count = 0\n    while n > 1:\n        n //= 2\n        count += 1\n    return count\n\nprint(f\"n=8: {count_halvings(8)} steps\")\nprint(f\"n=1024: {count_halvings(1024)} steps\")\nprint(f\"n=1000000: {count_halvings(1000000)} steps\")",
+          "output": "n=8: 3 steps\nn=1024: 10 steps\nn=1000000: 19 steps",
+          "explanation": "Halving n each step results in log2(n) iterations. This is why binary search on 1 million elements takes at most ~20 comparisons, making O(log n) extremely efficient."
+        },
+        {
+          "title": "Time vs space trade-off: Two Sum problem",
+          "code": "# O(n^2) time, O(1) space - brute force\ndef two_sum_brute(nums, target):\n    for i in range(len(nums)):\n        for j in range(i + 1, len(nums)):\n            if nums[i] + nums[j] == target:\n                return [i, j]\n    return []\n\n# O(n) time, O(n) space - hash map\ndef two_sum_hash(nums, target):\n    seen = {}\n    for i, num in enumerate(nums):\n        complement = target - num\n        if complement in seen:\n            return [seen[complement], i]\n        seen[num] = i\n    return []\n\nprint(two_sum_brute([2, 7, 11, 15], 9))\nprint(two_sum_hash([2, 7, 11, 15], 9))",
+          "output": "[0, 1]\n[0, 1]",
+          "explanation": "The brute force checks every pair (O(n^2) time, O(1) space). The hash map version uses extra memory to store seen values (O(n) space) but finds the answer in one pass (O(n) time). This is a classic time-space trade-off."
+        },
+        {
+          "title": "Analyzing nested loops with different bounds",
+          "code": "def example_nested(n):\n    count = 0\n    for i in range(n):           # O(n)\n        for j in range(n):       # O(n) -> total O(n^2)\n            count += 1\n    print(f\"n={n}, n^2 ops: {count}\")\n\n    count2 = 0\n    for i in range(n):           # O(n)\n        for j in range(i):       # 0+1+2+...+(n-1) = n(n-1)/2\n            count2 += 1\n    print(f\"n={n}, triangular ops: {count2}\")\n\nexample_nested(5)\nexample_nested(10)",
+          "output": "n=5, n^2 ops: 25\nn=5, triangular ops: 10\nn=10, n^2 ops: 100\nn=10, triangular ops: 45",
+          "explanation": "Both nested loops are O(n^2). The second loop runs 0+1+2+...+(n-1) = n(n-1)/2 times, which is still O(n^2) because we drop constants and lower-order terms in Big O analysis."
+        }
+      ],
+      "notes": [
+        "Big O describes the worst-case growth rate. O(n) + O(n) = O(n), not O(2n), because constants are dropped.",
+        "Common Python operation complexities: list append O(1), list insert at 0 O(n), dict lookup O(1) average, set 'in' O(1) average, list 'in' O(n).",
+        "Space complexity of recursive functions equals O(max recursion depth) due to the call stack."
+      ],
+      "commonPitfalls": [
+        "Confusing O(n) with O(n^2) when a loop contains a hidden O(n) operation like 'if x in list' (linear search) or list slicing.",
+        "Assuming dictionary operations are always O(1). In the worst case (hash collisions), dict lookup can degrade to O(n), though this is extremely rare in practice.",
+        "Ignoring space complexity entirely. An O(n) time solution that uses O(n^2) space may be worse than an O(n log n) solution using O(1) space for large inputs."
+      ],
+      "interviewTips": [
+        "Always state the time AND space complexity of your solution. Interviewers expect both. Say something like 'This runs in O(n) time and O(n) space for the hash map.'",
+        "When optimizing, look for ways to reduce from O(n^2) to O(n log n) (sorting) or O(n) (hash maps). The Two Sum problem is the classic example of this optimization.",
+        "Know the complexities of Python built-in operations: sorted() is O(n log n), list.append() is amortized O(1), 'x in set' is O(1), 'x in list' is O(n)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "complexity-identify",
+        "title": "Identify Time Complexity",
+        "description": "Write a function called 'analyze_complexity' that takes a number n and runs three different loop patterns. For each, count the number of operations and print the result. This exercise helps you see how different loop structures lead to different growth rates.",
+        "starterCode": "def analyze_complexity(n):\n    # Pattern 1: Single loop\n    count1 = 0\n    # Your code here\n\n    # Pattern 2: Nested loops\n    count2 = 0\n    # Your code here\n\n    # Pattern 3: Halving loop\n    count3 = 0\n    # Your code here\n\n    print(f\"Linear: {count1}\")\n    print(f\"Quadratic: {count2}\")\n    print(f\"Logarithmic: {count3}\")\n\nanalyze_complexity(8)",
+        "solution": "def analyze_complexity(n):\n    count1 = 0\n    for i in range(n):\n        count1 += 1\n\n    count2 = 0\n    for i in range(n):\n        for j in range(n):\n            count2 += 1\n\n    count3 = 0\n    val = n\n    while val > 1:\n        val //= 2\n        count3 += 1\n\n    print(f\"Linear: {count1}\")\n    print(f\"Quadratic: {count2}\")\n    print(f\"Logarithmic: {count3}\")\n\nanalyze_complexity(8)",
+        "expectedOutput": "Linear: 8\nQuadratic: 64\nLogarithmic: 3",
+        "hints": [
+          "A single loop from 0 to n runs n times (O(n)). Nested loops multiply: n * n = n^2.",
+          "A halving loop (dividing by 2 each iteration) runs log2(n) times."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "complexity-optimize",
+        "title": "Optimize from O(n^2) to O(n)",
+        "description": "Write a function called 'find_pair_with_sum' that takes a list of integers and a target sum, and returns True if any two distinct elements add up to the target, False otherwise. Implement it in O(n) time using a set.",
+        "starterCode": "def find_pair_with_sum(nums, target):\n    # Your code here\n    pass\n\nprint(find_pair_with_sum([1, 4, 5, 7, 9], 13))\nprint(find_pair_with_sum([1, 2, 3, 4], 10))\nprint(find_pair_with_sum([5, 5, 5], 10))",
+        "solution": "def find_pair_with_sum(nums, target):\n    seen = set()\n    for num in nums:\n        complement = target - num\n        if complement in seen:\n            return True\n        seen.add(num)\n    return False\n\nprint(find_pair_with_sum([1, 4, 5, 7, 9], 13))\nprint(find_pair_with_sum([1, 2, 3, 4], 10))\nprint(find_pair_with_sum([5, 5, 5], 10))",
+        "expectedOutput": "True\nFalse\nTrue",
+        "hints": [
+          "For each number, compute target - number (the complement). If the complement is already in a set of seen numbers, you found a pair.",
+          "Using a set gives O(1) lookups, making the overall algorithm O(n) instead of O(n^2)."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "complexity-compare-approaches",
+        "title": "Compare Duplicate Detection Approaches",
+        "description": "Write two functions to check if a list has duplicate elements: 'has_dup_brute' using a nested loop (O(n^2)) and 'has_dup_set' using a set (O(n)). Then demonstrate both on the same input to confirm they produce the same result.",
+        "starterCode": "def has_dup_brute(lst):\n    # Your code here (O(n^2) approach)\n    pass\n\ndef has_dup_set(lst):\n    # Your code here (O(n) approach)\n    pass\n\ntest1 = [1, 2, 3, 4, 5]\ntest2 = [1, 2, 3, 2, 5]\n\nprint(has_dup_brute(test1))\nprint(has_dup_brute(test2))\nprint(has_dup_set(test1))\nprint(has_dup_set(test2))",
+        "solution": "def has_dup_brute(lst):\n    for i in range(len(lst)):\n        for j in range(i + 1, len(lst)):\n            if lst[i] == lst[j]:\n                return True\n    return False\n\ndef has_dup_set(lst):\n    return len(lst) != len(set(lst))\n\ntest1 = [1, 2, 3, 4, 5]\ntest2 = [1, 2, 3, 2, 5]\n\nprint(has_dup_brute(test1))\nprint(has_dup_brute(test2))\nprint(has_dup_set(test1))\nprint(has_dup_set(test2))",
+        "expectedOutput": "False\nTrue\nFalse\nTrue",
+        "hints": [
+          "The brute force approach compares every pair of elements using nested loops.",
+          "The set approach converts the list to a set (which removes duplicates) and compares lengths. If they differ, duplicates exist."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

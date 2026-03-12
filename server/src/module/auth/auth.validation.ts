@@ -15,6 +15,10 @@ export const loginSchema = z.object({
   password: z.string().min(1, "Password is required"),
 });
 
+export const importGitHubSchema = z.object({
+  username: z.string().min(1).max(39).regex(/^[a-zA-Z0-9](?:[a-zA-Z0-9]|-(?=[a-zA-Z0-9])){0,38}$/, "Invalid GitHub username"),
+});
+
 export const updateProfileSchema = z.object({
   name: z.string().min(2).optional(),
   contactNo: z.string().optional(),

@@ -146,6 +146,39 @@ export const queryKeys = {
     stats: () => ["professors", "stats"] as const,
   },
 
+  // Trends
+  trends: {
+    overview: () => ["trends", "overview"] as const,
+    skills: () => ["trends", "skills"] as const,
+    locations: () => ["trends", "locations"] as const,
+    salaries: () => ["trends", "salaries"] as const,
+    timeline: () => ["trends", "timeline"] as const,
+    supply: () => ["trends", "supply"] as const,
+  },
+
+  // Badges
+  badges: {
+    all: () => ["badges", "all"] as const,
+    my: () => ["badges", "my"] as const,
+    student: (id: number) => ["badges", "student", id] as const,
+    admin: (params?: Record<string, string | number>) => ["badges", "admin", params] as const,
+  },
+
+  // Talent Pools
+  talentPools: {
+    list: () => ["talent-pools", "list"] as const,
+    detail: (poolId: number) => ["talent-pools", "detail", poolId] as const,
+  },
+
+  // Campus Drives
+  campusDrives: {
+    recruiter: (params?: Record<string, string | number>) => ["campus-drives", "recruiter", params] as const,
+    detail: (id: number) => ["campus-drives", "detail", id] as const,
+    registrations: (id: number) => ["campus-drives", "registrations", id] as const,
+    eligible: (params?: Record<string, string | number>) => ["campus-drives", "eligible", params] as const,
+    my: () => ["campus-drives", "my"] as const,
+  },
+
   // DSA Practice
   dsa: {
     topics: (filter?: string) => ["dsa", "topics", filter] as const,

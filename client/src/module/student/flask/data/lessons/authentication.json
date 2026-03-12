@@ -1,0 +1,294 @@
+[
+  {
+    "id": "flask-login-setup",
+    "sectionId": "authentication",
+    "orderIndex": 0,
+    "title": "Flask-Login Setup",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Flask-Login", "LoginManager", "UserMixin", "login_required", "current_user"],
+    "content": {
+      "explanation": "Flask-Login is the standard extension for handling user authentication in Flask. It manages user sessions, provides the login_required decorator, and makes the current user accessible throughout your application via the current_user proxy. It handles the session management layer while leaving the actual authentication logic (verifying credentials) to you.\n\nFlask-Login needs four things to work: a LoginManager instance configured on your app, a User model that implements certain properties, a user_loader callback that loads a user from the session, and view functions for login and logout.\n\nThe LoginManager is initialized with your app (or via init_app for the factory pattern). You configure it with login_view (the endpoint for the login page), login_message (flash message when redirected), and login_message_category (flash message category).\n\nYour User model must implement four properties/methods: is_authenticated (returns True if the user is logged in), is_active (returns True if the account is active), is_anonymous (returns True for anonymous users), and get_id() (returns a unique string identifier). The UserMixin class provides default implementations of all four, so you just need to inherit from it.\n\nThe user_loader callback tells Flask-Login how to load a user from the session. Flask-Login stores only the user ID in the session. On each request, it calls user_loader with that ID to get the full user object. This function should query your database and return the user or None.\n\nThe login_user() function logs a user in by storing their ID in the session. The logout_user() function logs them out by clearing the session. The login_required decorator protects views that require authentication, redirecting anonymous users to the login page.\n\ncurrent_user is a proxy that returns the logged-in user object (loaded by user_loader) or an AnonymousUserMixin for unauthenticated users. It is available in view functions and Jinja2 templates. You can check current_user.is_authenticated to determine if the user is logged in.",
+      "codeExamples": [
+        {
+          "title": "Basic Flask-Login Setup",
+          "code": "from flask import Flask, redirect, url_for, request, flash, render_template\nfrom flask_login import LoginManager, UserMixin, login_user, logout_user, \\\n    login_required, current_user\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'your-secret-key'\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'\n\ndb = SQLAlchemy(app)\nlogin_manager = LoginManager(app)\nlogin_manager.login_view = 'login'\nlogin_manager.login_message = 'Please log in to access this page.'\n\nclass User(UserMixin, db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True, nullable=False)\n    password_hash = db.Column(db.String(256), nullable=False)\n\n@login_manager.user_loader\ndef load_user(user_id):\n    return User.query.get(int(user_id))",
+          "explanation": "LoginManager connects to the app and is configured with the login endpoint. User inherits UserMixin for required properties. The user_loader callback loads users by ID from the database for each request."
+        },
+        {
+          "title": "Login and Logout Views",
+          "code": "from flask_login import login_user, logout_user, login_required, current_user\nfrom werkzeug.security import check_password_hash\n\n@app.route('/login', methods=['GET', 'POST'])\ndef login():\n    if current_user.is_authenticated:\n        return redirect(url_for('dashboard'))\n\n    if request.method == 'POST':\n        username = request.form['username']\n        password = request.form['password']\n        remember = 'remember' in request.form\n\n        user = User.query.filter_by(username=username).first()\n        if user and check_password_hash(user.password_hash, password):\n            login_user(user, remember=remember)\n            # Redirect to the page they were trying to access\n            next_page = request.args.get('next')\n            return redirect(next_page or url_for('dashboard'))\n\n        flash('Invalid username or password', 'error')\n    return render_template('login.html')\n\n@app.route('/logout')\n@login_required\ndef logout():\n    logout_user()\n    return redirect(url_for('index'))\n\n@app.route('/dashboard')\n@login_required\ndef dashboard():\n    return f'Welcome, {current_user.username}!'",
+          "explanation": "login_user() stores the user ID in the session. The remember parameter keeps the session active after the browser closes. login_required redirects to login_view if the user is not authenticated. The 'next' parameter preserves the original destination."
+        },
+        {
+          "title": "current_user in Templates",
+          "code": "<!-- templates/base.html -->\n<nav>\n    <a href=\"{{ url_for('index') }}\">Home</a>\n\n    {% if current_user.is_authenticated %}\n        <a href=\"{{ url_for('dashboard') }}\">Dashboard</a>\n        <span>{{ current_user.username }}</span>\n        <a href=\"{{ url_for('logout') }}\">Logout</a>\n    {% else %}\n        <a href=\"{{ url_for('login') }}\">Login</a>\n        <a href=\"{{ url_for('register') }}\">Register</a>\n    {% endif %}\n</nav>\n\n{% with messages = get_flashed_messages(with_categories=true) %}\n    {% for category, message in messages %}\n        <div class=\"alert alert-{{ category }}\">{{ message }}</div>\n    {% endfor %}\n{% endwith %}",
+          "explanation": "current_user is automatically available in all Jinja2 templates. Check is_authenticated to show different navigation for logged-in vs anonymous users. Flash messages display login feedback."
+        },
+        {
+          "title": "Factory Pattern Setup",
+          "code": "# app/extensions.py\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_login import LoginManager\n\ndb = SQLAlchemy()\nlogin_manager = LoginManager()\nlogin_manager.login_view = 'auth.login'\n\n# app/models/user.py\nfrom flask_login import UserMixin\nfrom app.extensions import db, login_manager\n\nclass User(UserMixin, db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True)\n    password_hash = db.Column(db.String(256))\n\n@login_manager.user_loader\ndef load_user(user_id):\n    return User.query.get(int(user_id))\n\n# app/__init__.py\nfrom flask import Flask\nfrom app.extensions import db, login_manager\n\ndef create_app():\n    app = Flask(__name__)\n    app.config['SECRET_KEY'] = 'secret'\n    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'\n\n    db.init_app(app)\n    login_manager.init_app(app)\n\n    from app.views.auth import auth_bp\n    app.register_blueprint(auth_bp)\n\n    return app",
+          "explanation": "With the factory pattern, create LoginManager in extensions.py without an app. The user_loader goes in the models file. init_app() binds the login manager to the app in create_app()."
+        }
+      ],
+      "notes": [
+        "Flask-Login handles session management, not credential verification. You verify passwords yourself.",
+        "UserMixin provides default implementations of is_authenticated, is_active, is_anonymous, and get_id().",
+        "The user_loader must return the User object or None. It runs on every request to load the current user.",
+        "login_required redirects to login_view with a 'next' parameter preserving the original URL."
+      ],
+      "interviewTips": [
+        "Explain that Flask-Login manages sessions while you handle authentication logic (password checking).",
+        "Describe the user_loader: stores user ID in session, loads full user object on each request.",
+        "Mention the remember me feature and how it uses a secure cookie beyond the session."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "flask-login-ex1",
+        "title": "Setup Flask-Login",
+        "description": "Create a User model with UserMixin, setup LoginManager with login_view='login', and implement the user_loader callback. Include id, username, and email columns.",
+        "starterCode": "from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_login import LoginManager, UserMixin\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'dev'\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'\n\ndb = SQLAlchemy(app)\n\n# Setup LoginManager, User model, and user_loader\n",
+        "solution": "from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_login import LoginManager, UserMixin\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'dev'\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'\n\ndb = SQLAlchemy(app)\nlogin_manager = LoginManager(app)\nlogin_manager.login_view = 'login'\n\nclass User(UserMixin, db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True, nullable=False)\n    email = db.Column(db.String(120), unique=True, nullable=False)\n\n@login_manager.user_loader\ndef load_user(user_id):\n    return User.query.get(int(user_id))",
+        "hints": [
+          "Inherit from both UserMixin and db.Model",
+          "The user_loader converts the string ID to int for querying",
+          "Set login_view to the endpoint name of your login route"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "flask-login-ex2",
+        "title": "Protected Dashboard Route",
+        "description": "Write a '/dashboard' route protected by login_required that returns a greeting with the current_user's username. If the user is not logged in, they should be redirected to '/login'.",
+        "starterCode": "from flask_login import login_required, current_user\n\n# Create the protected dashboard route\n",
+        "solution": "from flask import Flask\nfrom flask_login import LoginManager, login_required, current_user\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'dev'\n\nlogin_manager = LoginManager(app)\nlogin_manager.login_view = 'login'\n\n@app.route('/dashboard')\n@login_required\ndef dashboard():\n    return f'Welcome, {current_user.username}!'\n\n@app.route('/login')\ndef login():\n    return 'Login page'",
+        "hints": [
+          "@login_required decorator goes after @app.route()",
+          "current_user.username accesses the logged-in user's data",
+          "login_view must point to an existing endpoint"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "session-management",
+    "sectionId": "authentication",
+    "orderIndex": 1,
+    "title": "Session Management",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Remember Me", "Session Lifetime", "Fresh Login", "Session Protection", "Anonymous Users"],
+    "content": {
+      "explanation": "Session management controls how long users stay logged in, how sessions are protected, and how sensitive actions require re-authentication. Flask-Login provides several features for managing authentication sessions securely.\n\nThe remember me feature lets users stay logged in after closing their browser. By default, Flask sessions use session cookies that expire when the browser closes. When you call login_user(user, remember=True), Flask-Login sets a persistent remember cookie alongside the session cookie. This cookie contains a secure token that Flask-Login uses to restore the session.\n\nThe REMEMBER_COOKIE_DURATION config (default 365 days) controls how long the remember cookie lasts. REMEMBER_COOKIE_SECURE ensures it is only sent over HTTPS. REMEMBER_COOKIE_HTTPONLY prevents JavaScript access. Always set these in production.\n\nFlask-Login's session protection feature detects session hijacking attempts. When set to 'strong', Flask-Login stores a hash of the user's IP address and user agent in the session. If these change, the session is invalidated. 'basic' mode stores only a hash of the user agent. 'None' disables session protection entirely.\n\nFresh logins are an important security concept. Some sensitive actions (changing password, adding payment method) should require a recent login, not just any valid session. Flask-Login tracks whether the current login is 'fresh' (the user just entered credentials) or 'non-fresh' (restored from a remember cookie). The fresh_login_required decorator enforces this.\n\nYou can customize the anonymous user by setting login_manager.anonymous_user to a custom class. This class should implement is_authenticated (False), is_active (False), is_anonymous (True), and get_id() (returns None). This is useful for giving anonymous users certain default permissions or attributes.\n\nFor server-side session storage (more secure than client-side cookies), use Flask-Session. It stores session data in Redis, Memcached, or a database. This removes the 4 KB cookie size limit and prevents clients from seeing session data.",
+      "codeExamples": [
+        {
+          "title": "Remember Me Configuration",
+          "code": "from flask import Flask\nfrom flask_login import LoginManager, login_user\nfrom datetime import timedelta\n\napp = Flask(__name__)\napp.config.update(\n    SECRET_KEY='your-secret-key',\n    REMEMBER_COOKIE_DURATION=timedelta(days=14),\n    REMEMBER_COOKIE_SECURE=True,\n    REMEMBER_COOKIE_HTTPONLY=True,\n    REMEMBER_COOKIE_SAMESITE='Lax',\n)\n\nlogin_manager = LoginManager(app)\n\n@app.route('/login', methods=['POST'])\ndef login():\n    user = authenticate(request.form)  # Your auth logic\n    if user:\n        remember = request.form.get('remember') == 'on'\n        login_user(user, remember=remember)\n        return redirect(url_for('dashboard'))\n    return 'Login failed', 401",
+          "explanation": "Remember me keeps the session alive for REMEMBER_COOKIE_DURATION (14 days here). Secure and httponly flags protect the cookie. The checkbox value is 'on' when checked."
+        },
+        {
+          "title": "Session Protection",
+          "code": "from flask import Flask\nfrom flask_login import LoginManager\n\napp = Flask(__name__)\nlogin_manager = LoginManager(app)\n\n# Session protection modes:\n# 'basic' - regenerate session if user agent changes\n# 'strong' - regenerate session if user agent OR IP changes\n# None - no session protection\nlogin_manager.session_protection = 'strong'\n\n# When session is invalidated, redirect here\nlogin_manager.login_view = 'auth.login'\nlogin_manager.login_message = 'Your session has expired. Please log in again.'",
+          "explanation": "Strong session protection detects IP or user agent changes and invalidates the session, protecting against session hijacking. This may cause issues for mobile users whose IP changes frequently."
+        },
+        {
+          "title": "Fresh Login Requirement",
+          "code": "from flask import Flask, redirect, url_for, request\nfrom flask_login import LoginManager, login_user, fresh_login_required, \\\n    login_required, confirm_login, current_user\n\napp = Flask(__name__)\nlogin_manager = LoginManager(app)\nlogin_manager.login_view = 'login'\nlogin_manager.needs_refresh_message = 'Please re-authenticate for this action.'\nlogin_manager.refresh_view = 'reauthenticate'\n\n@app.route('/settings')\n@login_required\ndef settings():\n    # Any logged-in user can access this\n    return 'General Settings'\n\n@app.route('/change-password', methods=['GET', 'POST'])\n@fresh_login_required\ndef change_password():\n    # Only recently authenticated users can access this\n    return 'Change Password Form'\n\n@app.route('/reauthenticate', methods=['GET', 'POST'])\n@login_required\ndef reauthenticate():\n    if request.method == 'POST':\n        password = request.form['password']\n        if current_user.check_password(password):\n            confirm_login()  # Mark session as fresh\n            return redirect(request.args.get('next') or url_for('settings'))\n    return 'Enter your password to continue'",
+          "explanation": "fresh_login_required protects sensitive actions. Users restored from a remember cookie have a non-fresh session and must re-enter their password. confirm_login() marks the session as fresh again."
+        },
+        {
+          "title": "Custom Anonymous User",
+          "code": "from flask_login import LoginManager, AnonymousUserMixin\n\nclass CustomAnonymousUser(AnonymousUserMixin):\n    \"\"\"Custom anonymous user with default permissions.\"\"\"\n\n    @property\n    def is_admin(self):\n        return False\n\n    @property\n    def permissions(self):\n        return ['read']  # Anonymous users can only read\n\n    @property\n    def theme(self):\n        return 'light'  # Default theme\n\nlogin_manager = LoginManager()\nlogin_manager.anonymous_user = CustomAnonymousUser\n\n# Now in templates and views:\n# current_user.permissions works for both logged-in and anonymous users\n# current_user.is_admin works for both",
+          "explanation": "Custom anonymous users let you check permissions consistently without always checking is_authenticated first. current_user.is_admin works for both logged-in users (returns their actual value) and anonymous users (returns False)."
+        }
+      ],
+      "notes": [
+        "Remember me uses a separate persistent cookie, not the session cookie.",
+        "Strong session protection may cause issues for users behind load balancers or on mobile networks with changing IPs.",
+        "Fresh login enforcement is important for sensitive actions like password changes and payment info updates.",
+        "Consider Flask-Session for server-side sessions in production."
+      ],
+      "commonPitfalls": [
+        "Not configuring REMEMBER_COOKIE_SECURE in production, sending the remember cookie over plain HTTP.",
+        "Using 'strong' session protection behind a load balancer without forwarding client IPs, invalidating all sessions.",
+        "Not implementing re-authentication for sensitive actions, allowing access from stale remember-me sessions."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "session-mgmt-ex1",
+        "title": "Configure Secure Sessions",
+        "description": "Write the app config that sets: remember cookie for 7 days, secure (HTTPS only), httponly, SameSite=Lax, and strong session protection.",
+        "starterCode": "from flask import Flask\nfrom flask_login import LoginManager\nfrom datetime import timedelta\n\napp = Flask(__name__)\n\n# Configure secure sessions\n",
+        "solution": "from flask import Flask\nfrom flask_login import LoginManager\nfrom datetime import timedelta\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'production-secret-key'\napp.config['REMEMBER_COOKIE_DURATION'] = timedelta(days=7)\napp.config['REMEMBER_COOKIE_SECURE'] = True\napp.config['REMEMBER_COOKIE_HTTPONLY'] = True\napp.config['REMEMBER_COOKIE_SAMESITE'] = 'Lax'\n\nlogin_manager = LoginManager(app)\nlogin_manager.session_protection = 'strong'\nlogin_manager.login_view = 'login'",
+        "hints": [
+          "Use timedelta for cookie duration",
+          "Set session_protection on the LoginManager, not in config",
+          "REMEMBER_COOKIE_SECURE requires HTTPS"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "session-mgmt-ex2",
+        "title": "Fresh Login Re-authentication",
+        "description": "Write a '/reauthenticate' route that accepts POST with a password field. If the password matches the current user's password (use check_password method), call confirm_login() and redirect to the 'next' parameter. On failure, return 'Invalid password' with 401.",
+        "starterCode": "from flask import Flask, request, redirect, url_for\nfrom flask_login import login_required, current_user, confirm_login\n\napp = Flask(__name__)\n\n# Write the reauthenticate route\n",
+        "solution": "from flask import Flask, request, redirect, url_for\nfrom flask_login import login_required, current_user, confirm_login\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'dev'\n\n@app.route('/reauthenticate', methods=['POST'])\n@login_required\ndef reauthenticate():\n    password = request.form.get('password', '')\n    if current_user.check_password(password):\n        confirm_login()\n        next_url = request.args.get('next', url_for('index'))\n        return redirect(next_url)\n    return 'Invalid password', 401",
+        "hints": [
+          "Use @login_required to ensure user is logged in",
+          "confirm_login() marks the session as fresh",
+          "Get the redirect target from request.args.get('next')"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "password-hashing",
+    "sectionId": "authentication",
+    "orderIndex": 2,
+    "title": "Password Hashing",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Hashing", "bcrypt", "Werkzeug Security", "Salt", "Password Verification"],
+    "content": {
+      "explanation": "Storing passwords securely is one of the most critical aspects of web application security. Never store plaintext passwords. Instead, store a cryptographic hash of the password. If your database is compromised, attackers cannot recover the original passwords from the hashes.\n\nA hash function transforms input data into a fixed-size string. Good password hashing has these properties: it is deterministic (same input always produces same output), it is one-way (you cannot reverse the hash to get the password), small input changes produce completely different outputs, and it is computationally expensive (to slow down brute-force attacks).\n\nWerkzeug (Flask's underlying library) provides generate_password_hash() and check_password_hash() functions. generate_password_hash uses the scrypt algorithm by default (or pbkdf2:sha256 in older versions) and automatically generates a random salt. The salt is stored as part of the hash string, so you do not need to manage it separately.\n\nThe salt is a random value added to the password before hashing. Without a salt, two users with the same password would have the same hash, and attackers could use precomputed rainbow tables. With a salt, each hash is unique even for identical passwords.\n\nbcrypt is another popular password hashing algorithm. It is intentionally slow and includes a configurable work factor (cost). As computers get faster, you increase the work factor to keep hashing slow. Flask-Bcrypt provides bcrypt integration with Flask.\n\nThe verify flow is: user submits credentials, you find the user by username/email, retrieve the stored hash, and call check_password_hash(stored_hash, submitted_password). If it returns True, the password matches. Never compare password hashes directly; always use the timing-safe comparison provided by the library.\n\nPassword hashing should be performed in the User model for clean encapsulation. Define set_password and check_password methods on the model. This keeps the hashing logic centralized and makes it easy to change the algorithm later.",
+      "codeExamples": [
+        {
+          "title": "Werkzeug Password Hashing",
+          "code": "from werkzeug.security import generate_password_hash, check_password_hash\n\n# Hash a password (automatically generates salt)\nhash1 = generate_password_hash('mypassword')\nhash2 = generate_password_hash('mypassword')\n\nprint(hash1)  # scrypt:32768:8:1$salt$hash...\nprint(hash2)  # Different hash! (different salt)\n\n# Verify a password\nprint(check_password_hash(hash1, 'mypassword'))   # True\nprint(check_password_hash(hash1, 'wrongpassword')) # False\n\n# Specify method and salt length\nhash3 = generate_password_hash('mypassword', method='pbkdf2:sha256', salt_length=16)",
+          "explanation": "generate_password_hash creates a unique hash with a random salt each time. check_password_hash extracts the salt from the stored hash and verifies the password. Even the same password produces different hashes."
+        },
+        {
+          "title": "User Model with Password Methods",
+          "code": "from flask_login import UserMixin\nfrom werkzeug.security import generate_password_hash, check_password_hash\nfrom app.extensions import db\n\nclass User(UserMixin, db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True, nullable=False)\n    email = db.Column(db.String(120), unique=True, nullable=False)\n    password_hash = db.Column(db.String(256), nullable=False)\n\n    def set_password(self, password):\n        \"\"\"Hash and store the password.\"\"\"\n        self.password_hash = generate_password_hash(password)\n\n    def check_password(self, password):\n        \"\"\"Verify a password against the stored hash.\"\"\"\n        return check_password_hash(self.password_hash, password)\n\n# Usage:\nuser = User(username='alice', email='alice@example.com')\nuser.set_password('SecurePass123')\ndb.session.add(user)\ndb.session.commit()\n\n# Later, during login:\nif user.check_password('SecurePass123'):\n    login_user(user)",
+          "explanation": "Encapsulate hashing in model methods. set_password hashes and stores. check_password verifies against the stored hash. The actual hash string is stored in the database, never the plaintext."
+        },
+        {
+          "title": "Registration and Login Flow",
+          "code": "from flask import Flask, request, redirect, url_for, flash\nfrom flask_login import login_user\n\n@app.route('/register', methods=['POST'])\ndef register():\n    username = request.form['username']\n    email = request.form['email']\n    password = request.form['password']\n\n    # Check if user exists\n    if User.query.filter_by(email=email).first():\n        flash('Email already registered', 'error')\n        return redirect(url_for('register'))\n\n    # Create user with hashed password\n    user = User(username=username, email=email)\n    user.set_password(password)\n    db.session.add(user)\n    db.session.commit()\n\n    login_user(user)\n    return redirect(url_for('dashboard'))\n\n@app.route('/login', methods=['POST'])\ndef login():\n    email = request.form['email']\n    password = request.form['password']\n\n    user = User.query.filter_by(email=email).first()\n\n    # Check user exists AND password matches\n    if user is None or not user.check_password(password):\n        flash('Invalid email or password', 'error')\n        return redirect(url_for('login'))\n\n    login_user(user)\n    return redirect(url_for('dashboard'))",
+          "explanation": "Registration hashes the password before storing. Login retrieves the user and verifies the password. The error message is intentionally vague ('Invalid email or password') to prevent user enumeration attacks."
+        },
+        {
+          "title": "Using Flask-Bcrypt",
+          "code": "from flask import Flask\nfrom flask_bcrypt import Bcrypt\n\napp = Flask(__name__)\nbcrypt = Bcrypt(app)\n\n# Hash a password\nhashed = bcrypt.generate_password_hash('mypassword').decode('utf-8')\n\n# Verify\nprint(bcrypt.check_password_hash(hashed, 'mypassword'))   # True\nprint(bcrypt.check_password_hash(hashed, 'wrongpass'))     # False\n\n# In a model\nclass User(db.Model):\n    password_hash = db.Column(db.String(128))\n\n    def set_password(self, password):\n        self.password_hash = bcrypt.generate_password_hash(password).decode('utf-8')\n\n    def check_password(self, password):\n        return bcrypt.check_password_hash(self.password_hash, password)",
+          "explanation": "Flask-Bcrypt is an alternative to Werkzeug's hashing. Bcrypt includes a cost factor that makes it intentionally slow. The .decode('utf-8') converts bytes to string for database storage."
+        }
+      ],
+      "notes": [
+        "Never store plaintext passwords. Always hash them before saving to the database.",
+        "Werkzeug's generate_password_hash automatically salts the password.",
+        "Use generic error messages ('Invalid email or password') to prevent user enumeration.",
+        "Timing-safe comparison is built into check_password_hash to prevent timing attacks."
+      ],
+      "interviewTips": [
+        "Explain why hashing (not encryption): hashing is one-way, encryption is reversible. You never need to recover the original password.",
+        "Describe salting: prevents rainbow table attacks and ensures identical passwords produce different hashes.",
+        "Mention bcrypt's cost factor: intentionally slow to make brute-force attacks computationally expensive."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "password-hash-ex1",
+        "title": "User Model with Hashing",
+        "description": "Create a User model with set_password and check_password methods using Werkzeug's security functions. The model should have id, username, and password_hash columns.",
+        "starterCode": "from flask_sqlalchemy import SQLAlchemy\nfrom werkzeug.security import generate_password_hash, check_password_hash\n\ndb = SQLAlchemy()\n\n# Create User model with password methods\n",
+        "solution": "from flask_sqlalchemy import SQLAlchemy\nfrom werkzeug.security import generate_password_hash, check_password_hash\n\ndb = SQLAlchemy()\n\nclass User(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True, nullable=False)\n    password_hash = db.Column(db.String(256), nullable=False)\n\n    def set_password(self, password):\n        self.password_hash = generate_password_hash(password)\n\n    def check_password(self, password):\n        return check_password_hash(self.password_hash, password)",
+        "hints": [
+          "generate_password_hash takes the plaintext password",
+          "check_password_hash takes the stored hash and the submitted password",
+          "Store the hash string in password_hash column"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "password-hash-ex2",
+        "title": "Secure Login View",
+        "description": "Write a login POST handler that looks up a user by email, checks the password, and either logs them in (login_user) or returns an error. Use a generic error message to prevent user enumeration.",
+        "starterCode": "from flask import request, redirect, url_for, flash\nfrom flask_login import login_user\n\n# Write the login handler\n",
+        "solution": "from flask import Flask, request, redirect, url_for, flash\nfrom flask_login import login_user\n\napp = Flask(__name__)\n\n@app.route('/login', methods=['POST'])\ndef login():\n    email = request.form.get('email', '')\n    password = request.form.get('password', '')\n\n    user = User.query.filter_by(email=email).first()\n\n    if user is None or not user.check_password(password):\n        flash('Invalid email or password', 'error')\n        return redirect(url_for('login'))\n\n    login_user(user)\n    next_page = request.args.get('next', url_for('dashboard'))\n    return redirect(next_page)",
+        "hints": [
+          "Check both user existence and password in one condition",
+          "Use the same error message for wrong email and wrong password",
+          "Handle the 'next' parameter for post-login redirect"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "oauth-integration",
+    "sectionId": "authentication",
+    "orderIndex": 3,
+    "title": "OAuth Integration",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["OAuth 2.0", "Flask-OAuthlib", "Authlib", "Social Login", "Google OAuth", "GitHub OAuth"],
+    "content": {
+      "explanation": "OAuth 2.0 allows users to log in to your application using their existing accounts from providers like Google, GitHub, Facebook, or Twitter. Instead of creating yet another username/password combination, users authenticate through a trusted provider, and your application receives an access token to access their profile information.\n\nThe OAuth 2.0 flow for web applications works like this: your app redirects the user to the provider's authorization page. The user grants permission. The provider redirects back to your app with an authorization code. Your app exchanges this code for an access token. Your app uses the token to fetch the user's profile from the provider's API.\n\nAuthlib is the recommended library for OAuth integration in Flask. It provides both OAuth client (for logging in via external providers) and OAuth server (for building your own OAuth provider) functionality. Flask-Dance is another popular alternative that provides pre-built integrations for common providers.\n\nTo set up OAuth with a provider, you first register your application on the provider's developer console (Google Cloud Console, GitHub Developer Settings, etc.). You receive a client_id and client_secret. You configure the redirect URI (the URL the provider sends users back to after authorization). Then you configure Authlib with these credentials.\n\nAfter the OAuth callback, you have the user's profile information (email, name, avatar). You need to either find an existing user in your database that matches or create a new one. This is often called 'social login' or 'federated identity'. A common approach is to link OAuth accounts to local user accounts via an OAuthAccount table.\n\nSecurity considerations include: always validate the state parameter (prevents CSRF), use HTTPS for redirect URIs, store tokens securely, and handle token expiration and refresh. Never expose your client_secret in client-side code.\n\nImplementing social login alongside traditional email/password login requires careful design. Users should be able to link multiple OAuth accounts to a single user. They should also be able to set a password if they initially signed up via OAuth. Consider edge cases like the same email address appearing with different OAuth providers.",
+      "codeExamples": [
+        {
+          "title": "Google OAuth with Authlib",
+          "code": "from flask import Flask, redirect, url_for, session\nfrom authlib.integrations.flask_client import OAuth\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'secret'\napp.config['GOOGLE_CLIENT_ID'] = 'your-client-id'\napp.config['GOOGLE_CLIENT_SECRET'] = 'your-client-secret'\n\noauth = OAuth(app)\ngoogle = oauth.register(\n    name='google',\n    server_metadata_url='https://accounts.google.com/.well-known/openid-configuration',\n    client_kwargs={'scope': 'openid email profile'},\n)\n\n@app.route('/login/google')\ndef google_login():\n    redirect_uri = url_for('google_callback', _external=True)\n    return google.authorize_redirect(redirect_uri)\n\n@app.route('/login/google/callback')\ndef google_callback():\n    token = google.authorize_access_token()\n    userinfo = token.get('userinfo')\n    # userinfo contains: email, name, picture, sub (Google user ID)\n\n    # Find or create user\n    user = User.query.filter_by(email=userinfo['email']).first()\n    if not user:\n        user = User(\n            username=userinfo['name'],\n            email=userinfo['email'],\n            oauth_provider='google',\n            oauth_id=userinfo['sub']\n        )\n        db.session.add(user)\n        db.session.commit()\n\n    login_user(user)\n    return redirect(url_for('dashboard'))",
+          "explanation": "Authlib handles the OAuth flow. google_login redirects to Google's consent screen. google_callback exchanges the code for a token and fetches user info. You then find or create a local user."
+        },
+        {
+          "title": "GitHub OAuth",
+          "code": "from flask import Flask, redirect, url_for\nfrom authlib.integrations.flask_client import OAuth\n\napp = Flask(__name__)\noauth = OAuth(app)\n\ngithub = oauth.register(\n    name='github',\n    client_id='your-github-client-id',\n    client_secret='your-github-client-secret',\n    access_token_url='https://github.com/login/oauth/access_token',\n    authorize_url='https://github.com/login/oauth/authorize',\n    api_base_url='https://api.github.com/',\n    client_kwargs={'scope': 'user:email'},\n)\n\n@app.route('/login/github')\ndef github_login():\n    redirect_uri = url_for('github_callback', _external=True)\n    return github.authorize_redirect(redirect_uri)\n\n@app.route('/login/github/callback')\ndef github_callback():\n    token = github.authorize_access_token()\n    resp = github.get('user')\n    profile = resp.json()\n    # profile contains: login, id, name, email, avatar_url\n\n    user = find_or_create_user(\n        provider='github',\n        provider_id=str(profile['id']),\n        username=profile['login'],\n        email=profile.get('email'),\n    )\n    login_user(user)\n    return redirect(url_for('dashboard'))",
+          "explanation": "GitHub OAuth follows the same pattern but with different URLs and scopes. The github.get('user') call uses the access token to fetch the user's GitHub profile."
+        },
+        {
+          "title": "OAuth Account Linking Model",
+          "code": "from app.extensions import db\n\nclass User(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True)\n    email = db.Column(db.String(120), unique=True)\n    password_hash = db.Column(db.String(256), nullable=True)  # Nullable for OAuth-only\n    oauth_accounts = db.relationship('OAuthAccount', backref='user', cascade='all, delete-orphan')\n\nclass OAuthAccount(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    provider = db.Column(db.String(50), nullable=False)  # 'google', 'github'\n    provider_id = db.Column(db.String(256), nullable=False)  # Provider's user ID\n    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)\n\n    __table_args__ = (\n        db.UniqueConstraint('provider', 'provider_id', name='uq_oauth_provider_id'),\n    )\n\ndef find_or_create_user(provider, provider_id, username, email):\n    \"\"\"Find user by OAuth account or create a new one.\"\"\"\n    oauth = OAuthAccount.query.filter_by(\n        provider=provider, provider_id=provider_id\n    ).first()\n\n    if oauth:\n        return oauth.user\n\n    # Check if user with this email exists\n    user = User.query.filter_by(email=email).first() if email else None\n\n    if not user:\n        user = User(username=username, email=email)\n        db.session.add(user)\n\n    oauth = OAuthAccount(provider=provider, provider_id=provider_id, user=user)\n    db.session.add(oauth)\n    db.session.commit()\n    return user",
+          "explanation": "An OAuthAccount model links OAuth identities to local users. One user can have multiple OAuth accounts (Google + GitHub). The find_or_create function handles both new and returning users."
+        },
+        {
+          "title": "Login Page with Multiple Providers",
+          "code": "<!-- templates/login.html -->\n<h1>Login</h1>\n\n<!-- Traditional login -->\n<form method=\"POST\" action=\"{{ url_for('login') }}\">\n    {{ form.hidden_tag() }}\n    {{ form.email(placeholder='Email') }}\n    {{ form.password(placeholder='Password') }}\n    <button type=\"submit\">Log In</button>\n</form>\n\n<hr>\n<p>Or continue with:</p>\n\n<!-- Social login buttons -->\n<a href=\"{{ url_for('google_login') }}\" class=\"btn btn-google\">\n    Continue with Google\n</a>\n<a href=\"{{ url_for('github_login') }}\" class=\"btn btn-github\">\n    Continue with GitHub\n</a>",
+          "explanation": "Offer both traditional and social login. Users choose their preferred authentication method. All paths eventually call login_user() with a local User object."
+        }
+      ],
+      "notes": [
+        "Register your app with each OAuth provider to get client_id and client_secret.",
+        "The redirect URI must match exactly what you registered with the provider.",
+        "Always validate the state parameter (Authlib handles this automatically).",
+        "Handle the case where OAuth returns an email that already exists in your database."
+      ],
+      "commonPitfalls": [
+        "Exposing client_secret in client-side code or version control.",
+        "Not handling the case where the OAuth provider does not return an email (GitHub email can be private).",
+        "Redirect URI mismatch between what is registered and what your app uses (HTTP vs HTTPS, different ports)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "oauth-ex1",
+        "title": "Setup OAuth Provider",
+        "description": "Configure an Authlib OAuth client for GitHub with client_id and client_secret from environment variables. Register it with the appropriate URLs and the 'user:email' scope.",
+        "starterCode": "from flask import Flask\nfrom authlib.integrations.flask_client import OAuth\nimport os\n\napp = Flask(__name__)\n\n# Configure GitHub OAuth\n",
+        "solution": "from flask import Flask\nfrom authlib.integrations.flask_client import OAuth\nimport os\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'dev')\n\noauth = OAuth(app)\ngithub = oauth.register(\n    name='github',\n    client_id=os.environ.get('GITHUB_CLIENT_ID'),\n    client_secret=os.environ.get('GITHUB_CLIENT_SECRET'),\n    access_token_url='https://github.com/login/oauth/access_token',\n    authorize_url='https://github.com/login/oauth/authorize',\n    api_base_url='https://api.github.com/',\n    client_kwargs={'scope': 'user:email'},\n)",
+        "hints": [
+          "Use os.environ.get() for credentials",
+          "GitHub's authorize URL is https://github.com/login/oauth/authorize",
+          "The scope 'user:email' grants access to the user's email"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "oauth-ex2",
+        "title": "OAuth Callback Handler",
+        "description": "Write the GitHub OAuth callback route that exchanges the code for a token, fetches the user profile, and prints the username. Handle the case where the token exchange fails.",
+        "starterCode": "from flask import redirect, url_for\n\n# Write the callback route\n",
+        "solution": "from flask import Flask, redirect, url_for\nfrom authlib.integrations.flask_client import OAuth\n\napp = Flask(__name__)\noauth = OAuth(app)\ngithub = oauth.register(name='github')\n\n@app.route('/login/github/callback')\ndef github_callback():\n    try:\n        token = github.authorize_access_token()\n    except Exception:\n        return 'Authorization failed', 400\n\n    resp = github.get('user')\n    profile = resp.json()\n    username = profile.get('login', 'unknown')\n\n    # Here you would find_or_create_user and login_user\n    return f'Welcome, {username}!'\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "authorize_access_token() exchanges the code for a token",
+          "github.get('user') fetches the profile using the token",
+          "Wrap in try/except to handle authorization failures"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

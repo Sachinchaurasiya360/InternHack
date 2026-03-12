@@ -1,15 +1,30 @@
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, User, Sun, Moon } from "lucide-react";
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useState, useMemo } from "react";
+import { Link, useNavigate, useLocation } from "react-router";
 import { useAuthStore } from "../lib/auth.store";
 import { useThemeStore } from "../lib/theme.store";
+import GooeyNav from "./reactbits/GooeyNav";
+
+const NAV_ITEMS = [
+  { label: "Home", href: "/" },
+  { label: "Jobs", href: "/jobs" },
+  { label: "Learn", href: "/learn" },
+  { label: "Companies", href: "/companies" },
+  { label: "Blog", href: "/blog" },
+];
 
 export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
   const [isOpen, setIsOpen] = useState(false);
   const { isAuthenticated, user, logout } = useAuthStore();
   const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
+  const location = useLocation();
+
+  const initialNavIndex = useMemo(() => {
+    const idx = NAV_ITEMS.findIndex((item) => item.href === location.pathname);
+    return idx >= 0 ? idx : 0;
+  }, [location.pathname]);
 
   const handleLogout = () => {
     logout();
@@ -37,14 +52,20 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
               </span>
             </Link>
 
-            {/* Desktop Menu */}
-            <div className="hidden lg:flex items-center gap-0.5">
-              <NavItem href="/">Home</NavItem>
-              <NavItem href="/jobs">Jobs</NavItem>
-              <NavItem href="/learn">Learn</NavItem>
-              <NavItem href="/companies">Companies</NavItem>
-              <NavItem href="/blog">Blog</NavItem>
-              {!isAuthenticated && <NavItem href="/for-recruiters">For Recruiters</NavItem>}
+            {/* Desktop Menu - GooeyNav */}
+            <div className="hidden lg:flex items-center">
+              <GooeyNav
+                items={NAV_ITEMS}
+                initialActiveIndex={initialNavIndex}
+                animationTime={500}
+                particleCount={12}
+                particleDistances={[70, 10]}
+                particleR={80}
+                timeVariance={200}
+                colors={[1, 2, 3, 1, 2, 3, 1, 4]}
+                onItemClick={(href) => navigate(href)}
+                className="[--gooey-color-1:theme(--color-indigo-400)] [--gooey-color-2:theme(--color-violet-400)] [--gooey-color-3:theme(--color-sky-400)] [--gooey-color-4:theme(--color-emerald-400)]"
+              />
             </div>
 
             {/* Desktop Actions */}
@@ -153,22 +174,6 @@ export function Navbar({ sidebarOffset = 0 }: { sidebarOffset?: number }) {
         </div>
       </div>
     </motion.nav>
-  );
-}
-
-function NavItem({
-  href,
-  children,
-}: {
-  href: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <Link to={href} className="no-underline">
-      <span className="block px-3 py-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white hover:bg-gray-50 dark:hover:bg-gray-800 rounded-lg transition-all font-medium cursor-pointer">
-        {children}
-      </span>
-    </Link>
   );
 }
 

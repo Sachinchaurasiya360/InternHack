@@ -1,0 +1,351 @@
+[
+  {
+    "id": "typeof-narrowing",
+    "sectionId": "type-guards-and-narrowing",
+    "orderIndex": 0,
+    "title": "typeof Narrowing",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["typeof operator", "type narrowing", "truthiness narrowing", "equality narrowing"],
+    "content": {
+      "explanation": "Type narrowing is TypeScript's ability to refine a broad type to a more specific one based on control flow analysis. The most basic form of narrowing uses the JavaScript `typeof` operator. When you write `typeof x === 'string'`, TypeScript understands that within the `true` branch, `x` is a `string`, and in the `false` branch, it is whatever remains of the original type.\n\nThe `typeof` operator returns one of these strings at runtime: `'string'`, `'number'`, `'boolean'`, `'undefined'`, `'object'`, `'function'`, `'symbol'`, and `'bigint'`. TypeScript recognizes all of these as type guards. Note that `typeof null === 'object'` is a well-known JavaScript quirk, so `typeof` alone cannot distinguish between objects and null.\n\nTruthiness narrowing is another common pattern. When you write `if (value)`, TypeScript narrows out `null`, `undefined`, `0`, `\"\"`, `false`, and `NaN` from the type. This is useful for quickly checking whether an optional value exists. However, truthiness narrowing can be too aggressive — it also eliminates legitimate falsy values like `0` and `\"\"`, so use it carefully.\n\nEquality narrowing uses `===`, `!==`, `==`, and `!=` to narrow types. When you compare a union type value to a specific literal, TypeScript narrows within the matching branch. The `==` and `!=` operators are especially useful with `null` because `x == null` checks for both `null` and `undefined`, which is often exactly what you want. These narrowing mechanisms work together to provide type safety with zero runtime overhead — they use checks you would write anyway.",
+      "codeExamples": [
+        {
+          "title": "typeof Narrowing in Action",
+          "code": "function padLeft(value: string, padding: string | number): string {\n  if (typeof padding === \"number\") {\n    // padding is narrowed to number\n    return \" \".repeat(padding) + value;\n  }\n  // padding is narrowed to string\n  return padding + value;\n}\n\nconsole.log(padLeft(\"Hello\", 4));\nconsole.log(padLeft(\"Hello\", \">>> \"));",
+          "output": "    Hello\n>>> Hello",
+          "explanation": "After the typeof check, TypeScript knows padding is number in the if branch and string in the else branch, allowing you to call type-specific operations safely."
+        },
+        {
+          "title": "Truthiness Narrowing",
+          "code": "function printName(name: string | null | undefined): string {\n  if (name) {\n    // name is narrowed to string (null and undefined removed)\n    return name.toUpperCase();\n  }\n  return \"Anonymous\";\n}\n\nfunction getLength(value: string | string[] | null): number {\n  if (!value) {\n    return 0;\n  }\n  // value is narrowed to string | string[]\n  return value.length;\n}\n\nconsole.log(printName(\"alice\"));\nconsole.log(printName(null));\nconsole.log(getLength([\"a\", \"b\", \"c\"]));\nconsole.log(getLength(null));",
+          "output": "ALICE\nAnonymous\n3\n0",
+          "explanation": "Truthiness checks narrow out null and undefined. In getLength, the !value check handles null, and the remaining code can safely access .length on string or string[]."
+        },
+        {
+          "title": "Equality Narrowing",
+          "code": "function compare(a: string | number, b: string | boolean): string {\n  if (a === b) {\n    // Both narrowed to string (the only common type)\n    return `Both are the string: ${a.toUpperCase()}`;\n  }\n  return `Different: ${a} and ${b}`;\n}\n\nfunction handleValue(value: string | null | undefined): string {\n  if (value == null) {\n    // Catches both null and undefined\n    return \"No value\";\n  }\n  return value.trim();\n}\n\nconsole.log(compare(\"hello\", \"hello\"));\nconsole.log(compare(42, true));\nconsole.log(handleValue(null));\nconsole.log(handleValue(\"  spaced  \"));",
+          "output": "Both are the string: HELLO\nDifferent: 42 and true\nNo value\nspaced",
+          "explanation": "When a === b, TypeScript narrows both to their common type (string). The == null check catches both null and undefined in a single comparison."
+        }
+      ],
+      "notes": [
+        "TypeScript narrows types in all branches: the if branch, the else branch, and after the if statement (when no return/throw occurs).",
+        "Truthiness narrowing removes `null`, `undefined`, `0`, `NaN`, `\"\"`, and `false`. Be careful if these are valid values in your domain.",
+        "The `== null` check is one of the few places where loose equality is preferred in TypeScript, as it catches both null and undefined."
+      ],
+      "commonPitfalls": [
+        "Using `typeof x === 'object'` to check for objects also matches `null` because `typeof null === 'object'` in JavaScript. Always check for null separately.",
+        "Truthiness narrowing can accidentally exclude `0` or `\"\"` which may be valid values. Use explicit `!== null && !== undefined` checks when zero or empty string are legitimate."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "typeof-narrowing-ex1",
+        "title": "Flexible Stringify",
+        "description": "Write a function `stringify(value: string | number | boolean | null | undefined)` that returns: the string unchanged, numbers formatted with toFixed(1), booleans as 'true'/'false', and null/undefined as 'N/A'. Log results as shown.",
+        "starterCode": "// Write the stringify function here\n\nconsole.log(stringify(\"hello\"));\nconsole.log(stringify(3.14159));\nconsole.log(stringify(true));\nconsole.log(stringify(null));\nconsole.log(stringify(undefined));",
+        "solution": "function stringify(value: string | number | boolean | null | undefined): string {\n  if (value == null) {\n    return \"N/A\";\n  }\n  if (typeof value === \"string\") {\n    return value;\n  }\n  if (typeof value === \"number\") {\n    return value.toFixed(1);\n  }\n  return String(value);\n}\n\nconsole.log(stringify(\"hello\"));\nconsole.log(stringify(3.14159));\nconsole.log(stringify(true));\nconsole.log(stringify(null));\nconsole.log(stringify(undefined));",
+        "expectedOutput": "hello\n3.1\ntrue\nN/A\nN/A",
+        "hints": [
+          "Check for null/undefined first using `value == null` (loose equality catches both).",
+          "Use `typeof` to distinguish between string, number, and boolean in subsequent checks."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "typeof-narrowing-ex2",
+        "title": "Safe Math Operations",
+        "description": "Write a function `safeDivide(a: number | string, b: number | string)` that converts both inputs to numbers (using `Number()`), checks if `b` is zero, and returns the division result as a string with 2 decimal places, or `'Error: division by zero'` / `'Error: invalid input'`. Log results.",
+        "starterCode": "// Write the safeDivide function here\n\nconsole.log(safeDivide(10, 3));\nconsole.log(safeDivide(\"20\", \"4\"));\nconsole.log(safeDivide(10, 0));\nconsole.log(safeDivide(\"abc\", 5));",
+        "solution": "function safeDivide(a: number | string, b: number | string): string {\n  const numA = typeof a === \"string\" ? Number(a) : a;\n  const numB = typeof b === \"string\" ? Number(b) : b;\n\n  if (isNaN(numA) || isNaN(numB)) {\n    return \"Error: invalid input\";\n  }\n  if (numB === 0) {\n    return \"Error: division by zero\";\n  }\n  return (numA / numB).toFixed(2);\n}\n\nconsole.log(safeDivide(10, 3));\nconsole.log(safeDivide(\"20\", \"4\"));\nconsole.log(safeDivide(10, 0));\nconsole.log(safeDivide(\"abc\", 5));",
+        "expectedOutput": "3.33\n5.00\nError: division by zero\nError: invalid input",
+        "hints": [
+          "Use typeof to check if each input is a string, then convert with Number(). If already a number, use as-is.",
+          "Check for NaN with isNaN() after conversion, and check for zero divisor before performing division."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "instanceof-and-in",
+    "sectionId": "type-guards-and-narrowing",
+    "orderIndex": 1,
+    "title": "instanceof & in Narrowing",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["instanceof operator", "in operator", "class narrowing", "property checking"],
+    "content": {
+      "explanation": "The `instanceof` operator narrows types based on the prototype chain. When you write `x instanceof SomeClass`, TypeScript narrows `x` to `SomeClass` in the true branch. This works with any class, including built-in classes like `Date`, `RegExp`, `Error`, and custom classes. It is the primary way to narrow types when working with class hierarchies.\n\nThe `instanceof` check works at runtime by traversing the prototype chain of the object. If the constructor function's `prototype` property appears anywhere in the chain, the check returns true. This means it works with inheritance — an instance of a subclass is also an instance of its parent class. TypeScript's type narrowing respects this relationship.\n\nThe `in` operator checks whether a property name exists in an object. When you write `'propertyName' in obj`, TypeScript narrows the type of `obj` to whichever members of a union type contain that property. This is particularly useful for discriminating between object types in a union without needing a dedicated discriminant property.\n\nThe `in` operator is a pragmatic alternative to discriminated unions when you are working with types that don't share a common tag property. For example, if you have a union of `Bird | Fish` where Bird has a `fly` method and Fish has a `swim` method, you can use `'fly' in animal` to narrow to Bird. This technique is common when integrating with external APIs or libraries whose types you cannot modify.",
+      "codeExamples": [
+        {
+          "title": "instanceof Narrowing with Classes",
+          "code": "class HttpError {\n  constructor(public status: number, public message: string) {}\n}\n\nclass ValidationError {\n  constructor(public field: string, public message: string) {}\n}\n\nfunction handleError(error: HttpError | ValidationError): string {\n  if (error instanceof HttpError) {\n    return `HTTP ${error.status}: ${error.message}`;\n  }\n  return `Validation error on '${error.field}': ${error.message}`;\n}\n\nconsole.log(handleError(new HttpError(404, \"Not Found\")));\nconsole.log(handleError(new ValidationError(\"email\", \"Invalid format\")));",
+          "output": "HTTP 404: Not Found\nValidation error on 'email': Invalid format",
+          "explanation": "After the instanceof check, TypeScript knows the error is an HttpError in the if branch and a ValidationError in the else branch, providing access to their specific properties."
+        },
+        {
+          "title": "in Operator for Property Narrowing",
+          "code": "type Bird = { fly: () => string; name: string };\ntype Fish = { swim: () => string; name: string };\n\nfunction move(animal: Bird | Fish): string {\n  if (\"fly\" in animal) {\n    return animal.fly();\n  }\n  return animal.swim();\n}\n\nconst eagle: Bird = { name: \"Eagle\", fly: () => \"Soaring through the sky\" };\nconst salmon: Fish = { name: \"Salmon\", swim: () => \"Swimming upstream\" };\n\nconsole.log(move(eagle));\nconsole.log(move(salmon));",
+          "output": "Soaring through the sky\nSwimming upstream",
+          "explanation": "The `in` operator checks for the presence of the `fly` property. TypeScript narrows to Bird in the true branch and Fish in the false branch."
+        },
+        {
+          "title": "Combining instanceof and in",
+          "code": "class ApiResponse {\n  constructor(public data: unknown) {}\n}\n\nfunction processResponse(response: ApiResponse): string {\n  const data = response.data;\n\n  if (data instanceof Array) {\n    return `Array with ${data.length} items`;\n  }\n\n  if (typeof data === \"object\" && data !== null && \"message\" in data) {\n    return `Message: ${(data as { message: string }).message}`;\n  }\n\n  return `Raw: ${String(data)}`;\n}\n\nconsole.log(processResponse(new ApiResponse([1, 2, 3])));\nconsole.log(processResponse(new ApiResponse({ message: \"Success\" })));\nconsole.log(processResponse(new ApiResponse(\"text\")));",
+          "output": "Array with 3 items\nMessage: Success\nRaw: text",
+          "explanation": "This example combines instanceof (for Array) and in (for checking object shape) to safely narrow unknown data into specific types."
+        }
+      ],
+      "notes": [
+        "The `instanceof` operator only works with classes and constructor functions, not interfaces or type aliases.",
+        "The `in` operator checks for property existence on the object and its prototype chain, similar to `hasOwnProperty` but broader.",
+        "Both `instanceof` and `in` are JavaScript runtime operators — they work in emitted JavaScript, unlike type annotations."
+      ],
+      "commonPitfalls": [
+        "Using `instanceof` with interfaces will not work because interfaces do not exist at runtime. Use `in` or custom type guards instead.",
+        "The `in` operator requires the left operand to be a `string | number | symbol` literal, not a variable. `'prop' in obj` works, but `const p = 'prop'; p in obj` may not narrow as expected in all cases."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "instanceof-in-ex1",
+        "title": "Error Handler",
+        "description": "Create classes `NotFoundError` (with `path: string`) and `AuthError` (with `userId: string`), both extending the built-in `Error` class. Write a function `describeError(err: Error)` that uses `instanceof` to check for each subclass and returns a descriptive string. Log results.",
+        "starterCode": "// Define error classes and describeError function here\n\nconsole.log(describeError(new NotFoundError(\"/api/users\")));\nconsole.log(describeError(new AuthError(\"user-42\")));\nconsole.log(describeError(new Error(\"Unknown error\")));",
+        "solution": "class NotFoundError extends Error {\n  constructor(public path: string) {\n    super(`Not found: ${path}`);\n  }\n}\n\nclass AuthError extends Error {\n  constructor(public userId: string) {\n    super(`Unauthorized: ${userId}`);\n  }\n}\n\nfunction describeError(err: Error): string {\n  if (err instanceof NotFoundError) {\n    return `404 - Path not found: ${err.path}`;\n  }\n  if (err instanceof AuthError) {\n    return `401 - Unauthorized user: ${err.userId}`;\n  }\n  return `General error: ${err.message}`;\n}\n\nconsole.log(describeError(new NotFoundError(\"/api/users\")));\nconsole.log(describeError(new AuthError(\"user-42\")));\nconsole.log(describeError(new Error(\"Unknown error\")));",
+        "expectedOutput": "404 - Path not found: /api/users\n401 - Unauthorized user: user-42\nGeneral error: Unknown error",
+        "hints": [
+          "Both custom error classes should extend `Error` and call `super()` in the constructor.",
+          "Use `instanceof` to check for the most specific types first, then fall back to the general `Error` case."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "instanceof-in-ex2",
+        "title": "Shape Area with in Operator",
+        "description": "Define types: `Circle = { radius: number }`, `Rectangle = { width: number; height: number }`, `Triangle = { base: number; height: number }`. Write a function `getArea(shape: Circle | Rectangle | Triangle)` that uses the `in` operator to narrow the type and calculate the area. Log results rounded to 2 decimal places.",
+        "starterCode": "// Define types and getArea function here\n\nconsole.log(getArea({ radius: 5 }));\nconsole.log(getArea({ width: 4, height: 6 }));\nconsole.log(getArea({ base: 10, height: 3 }));",
+        "solution": "type Circle = { radius: number };\ntype Rectangle = { width: number; height: number };\ntype Triangle = { base: number; height: number };\n\nfunction getArea(shape: Circle | Rectangle | Triangle): string {\n  if (\"radius\" in shape) {\n    return (Math.PI * shape.radius ** 2).toFixed(2);\n  }\n  if (\"width\" in shape) {\n    return (shape.width * shape.height).toFixed(2);\n  }\n  return (0.5 * shape.base * shape.height).toFixed(2);\n}\n\nconsole.log(getArea({ radius: 5 }));\nconsole.log(getArea({ width: 4, height: 6 }));\nconsole.log(getArea({ base: 10, height: 3 }));",
+        "expectedOutput": "78.54\n24.00\n15.00",
+        "hints": [
+          "Check for `'radius' in shape` first (unique to Circle), then `'width' in shape` (unique to Rectangle). The remaining case is Triangle.",
+          "Use `.toFixed(2)` on the calculated area to format the output to 2 decimal places."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "custom-type-guards",
+    "sectionId": "type-guards-and-narrowing",
+    "orderIndex": 2,
+    "title": "Custom Type Guards",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["type predicates", "is keyword", "user-defined type guards", "type narrowing functions"],
+    "content": {
+      "explanation": "Custom type guards are functions that return a type predicate — a special return type annotation of the form `paramName is Type`. When such a function returns `true`, TypeScript narrows the parameter to the specified type in the calling scope. This extends TypeScript's built-in narrowing (typeof, instanceof, in) to handle any custom logic you need.\n\nThe syntax is straightforward: instead of returning `boolean`, you annotate the return type as `param is SomeType`. Inside the function body, you perform whatever runtime checks are necessary and return true or false. The key insight is that the type predicate tells TypeScript what the `true` return value means for the type system. This bridges runtime validation with compile-time type safety.\n\nCustom type guards are essential when working with data from external sources — API responses, user input, localStorage, or any data that enters your application as `unknown` or `any`. By writing a type guard that validates the shape of the data, you get both runtime safety (the validation check) and compile-time safety (TypeScript narrows the type after the check). This pattern eliminates the need for type assertions (`as SomeType`) which are unsafe.\n\nA common pattern is to create a library of type guard functions for your application's data types. These guards serve double duty as runtime validators and compile-time narrowing functions. When combined with discriminated unions and exhaustive checks, they form a comprehensive type safety strategy that catches errors at both compile time and runtime.",
+      "codeExamples": [
+        {
+          "title": "Basic Type Guard Function",
+          "code": "interface Cat {\n  meow(): string;\n  purr(): string;\n}\n\ninterface Dog {\n  bark(): string;\n  fetch(): string;\n}\n\nfunction isCat(animal: Cat | Dog): animal is Cat {\n  return \"meow\" in animal;\n}\n\nfunction interact(animal: Cat | Dog): string {\n  if (isCat(animal)) {\n    return animal.purr();\n  }\n  return animal.fetch();\n}\n\nconst kitty: Cat = { meow: () => \"Meow!\", purr: () => \"Purrrr\" };\nconst doggo: Dog = { bark: () => \"Woof!\", fetch: () => \"Fetched the ball!\" };\n\nconsole.log(interact(kitty));\nconsole.log(interact(doggo));",
+          "output": "Purrrr\nFetched the ball!",
+          "explanation": "The isCat function returns `animal is Cat`. When it returns true, TypeScript narrows animal to Cat in the if block, giving access to Cat-specific methods."
+        },
+        {
+          "title": "Validating Unknown Data",
+          "code": "interface User {\n  name: string;\n  email: string;\n  age: number;\n}\n\nfunction isUser(data: unknown): data is User {\n  return (\n    typeof data === \"object\" &&\n    data !== null &&\n    \"name\" in data &&\n    typeof (data as any).name === \"string\" &&\n    \"email\" in data &&\n    typeof (data as any).email === \"string\" &&\n    \"age\" in data &&\n    typeof (data as any).age === \"number\"\n  );\n}\n\nconst raw: unknown = JSON.parse('{\"name\":\"Alice\",\"email\":\"a@b.com\",\"age\":30}');\n\nif (isUser(raw)) {\n  console.log(`${raw.name} (${raw.age}) - ${raw.email}`);\n} else {\n  console.log(\"Invalid data\");\n}\n\nconst bad: unknown = { name: \"Bob\" };\nconsole.log(isUser(bad) ? \"Valid\" : \"Invalid\");",
+          "output": "Alice (30) - a@b.com\nInvalid",
+          "explanation": "The isUser guard validates that unknown data matches the User shape. After the check, TypeScript treats the data as User with full type safety."
+        },
+        {
+          "title": "Type Guard with Arrays",
+          "code": "function isStringArray(value: unknown): value is string[] {\n  return Array.isArray(value) && value.every(item => typeof item === \"string\");\n}\n\nfunction processInput(input: unknown): string {\n  if (isStringArray(input)) {\n    return input.map(s => s.toUpperCase()).join(\", \");\n  }\n  if (typeof input === \"string\") {\n    return input.toUpperCase();\n  }\n  return \"Unsupported input\";\n}\n\nconsole.log(processInput([\"hello\", \"world\"]));\nconsole.log(processInput(\"test\"));\nconsole.log(processInput(42));",
+          "output": "HELLO, WORLD\nTEST\nUnsupported input",
+          "explanation": "The isStringArray guard validates both that the value is an array and that every element is a string. After the guard, TypeScript knows the value is string[] and allows array string methods."
+        }
+      ],
+      "notes": [
+        "The type predicate `param is Type` only applies when the function returns `true`. It does not assert anything when the function returns `false`.",
+        "Type guard functions should perform actual runtime validation — a guard that always returns true would lie to the type system and cause runtime errors.",
+        "You can use type guards with `Array.filter()` to narrow array element types: `arr.filter(isString)` produces a `string[]` from a `(string | number)[]`."
+      ],
+      "commonPitfalls": [
+        "Writing a type guard that does not actually validate the data at runtime. The TypeScript compiler trusts your predicate — if your check is incomplete, narrowed code may fail at runtime.",
+        "Forgetting the `is` keyword and returning plain `boolean`. Without the type predicate, TypeScript will not narrow the type in the calling scope."
+      ],
+      "interviewTips": [
+        "Interviewers often ask you to write a type guard for validating API response data. Practice writing thorough guards that check every property's existence and type.",
+        "Be prepared to explain the difference between a type guard (returns `paramName is Type`) and a regular boolean function. The type guard provides compile-time narrowing, while a boolean function does not."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "custom-type-guards-ex1",
+        "title": "API Response Guard",
+        "description": "Create types `SuccessResponse` (with `status: 'ok'` and `data: string`) and `ErrorResponse` (with `status: 'error'` and `message: string`). Write a type guard `isSuccess(response: SuccessResponse | ErrorResponse): response is SuccessResponse`. Use it to handle responses and log results.",
+        "starterCode": "// Define types and type guard here\n\nfunction handleResponse(response: SuccessResponse | ErrorResponse): string {\n  if (isSuccess(response)) {\n    return `Data: ${response.data}`;\n  }\n  return `Error: ${response.message}`;\n}\n\nconsole.log(handleResponse({ status: \"ok\", data: \"loaded\" }));\nconsole.log(handleResponse({ status: \"error\", message: \"timeout\" }));",
+        "solution": "type SuccessResponse = { status: \"ok\"; data: string };\ntype ErrorResponse = { status: \"error\"; message: string };\n\nfunction isSuccess(response: SuccessResponse | ErrorResponse): response is SuccessResponse {\n  return response.status === \"ok\";\n}\n\nfunction handleResponse(response: SuccessResponse | ErrorResponse): string {\n  if (isSuccess(response)) {\n    return `Data: ${response.data}`;\n  }\n  return `Error: ${response.message}`;\n}\n\nconsole.log(handleResponse({ status: \"ok\", data: \"loaded\" }));\nconsole.log(handleResponse({ status: \"error\", message: \"timeout\" }));",
+        "expectedOutput": "Data: loaded\nError: timeout",
+        "hints": [
+          "The type guard checks if `response.status === 'ok'` and uses the return type `response is SuccessResponse`.",
+          "In the calling function, after `isSuccess` returns true, TypeScript narrows the type to SuccessResponse."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "custom-type-guards-ex2",
+        "title": "Validate Unknown Config Object",
+        "description": "Write a type guard `isConfig(data: unknown): data is Config` for the interface `Config { host: string; port: number; debug: boolean }`. It should validate all three properties exist with correct types. Test with valid and invalid data and log results.",
+        "starterCode": "interface Config {\n  host: string;\n  port: number;\n  debug: boolean;\n}\n\n// Write the isConfig type guard here\n\nconst inputs: unknown[] = [\n  { host: \"localhost\", port: 3000, debug: true },\n  { host: \"localhost\", port: \"3000\", debug: true },\n  { host: \"localhost\" },\n  null\n];\n\ninputs.forEach((input, i) => {\n  if (isConfig(input)) {\n    console.log(`${i}: ${input.host}:${input.port} debug=${input.debug}`);\n  } else {\n    console.log(`${i}: invalid`);\n  }\n});",
+        "solution": "interface Config {\n  host: string;\n  port: number;\n  debug: boolean;\n}\n\nfunction isConfig(data: unknown): data is Config {\n  return (\n    typeof data === \"object\" &&\n    data !== null &&\n    \"host\" in data &&\n    typeof (data as any).host === \"string\" &&\n    \"port\" in data &&\n    typeof (data as any).port === \"number\" &&\n    \"debug\" in data &&\n    typeof (data as any).debug === \"boolean\"\n  );\n}\n\nconst inputs: unknown[] = [\n  { host: \"localhost\", port: 3000, debug: true },\n  { host: \"localhost\", port: \"3000\", debug: true },\n  { host: \"localhost\" },\n  null\n];\n\ninputs.forEach((input, i) => {\n  if (isConfig(input)) {\n    console.log(`${i}: ${input.host}:${input.port} debug=${input.debug}`);\n  } else {\n    console.log(`${i}: invalid`);\n  }\n});",
+        "expectedOutput": "0: localhost:3000 debug=true\n1: invalid\n2: invalid\n3: invalid",
+        "hints": [
+          "First check `typeof data === 'object' && data !== null`, then check each property with `'prop' in data && typeof (data as any).prop === 'expectedType'`.",
+          "The second input has port as a string, so the typeof check for number should catch it."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "assertion-functions",
+    "sectionId": "type-guards-and-narrowing",
+    "orderIndex": 3,
+    "title": "Assertion Functions",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["asserts keyword", "assertion functions", "assert condition", "asserts param is Type"],
+    "content": {
+      "explanation": "Assertion functions are a specialized form of type narrowing in TypeScript. Unlike type guards that return a boolean, assertion functions throw an error if a condition is not met. They use the `asserts` keyword in their return type annotation, telling TypeScript that if the function returns normally (without throwing), the asserted condition is true.\n\nThere are two forms of assertion functions. The first is `asserts condition`, where condition is a boolean expression. If the function returns, TypeScript knows the condition was true. The second is `asserts param is Type`, which narrows a specific parameter to a specific type. Both forms throw an error when the assertion fails, acting as runtime validators with compile-time type narrowing.\n\nAssertion functions are ideal for fail-fast validation at the boundaries of your application. Instead of returning a boolean and making the caller handle both cases, an assertion function eliminates the failure case entirely — after the assertion, the rest of the code can proceed with the narrowed type. This reduces nesting and makes code more linear and readable.\n\nThe `asserts` return type annotation is a contract with TypeScript: the function promises that if it returns normally, the asserted condition holds. If you write an assertion function that does not actually throw on invalid input, TypeScript will still trust the assertion, leading to potential runtime errors. Always ensure your assertion functions actually validate and throw as promised.",
+      "codeExamples": [
+        {
+          "title": "Basic Assertion Function",
+          "code": "function assertDefined<T>(value: T | null | undefined, name: string): asserts value is T {\n  if (value === null || value === undefined) {\n    throw new Error(`${name} must be defined`);\n  }\n}\n\nfunction processUser(name: string | null, age: number | undefined): string {\n  assertDefined(name, \"name\");\n  assertDefined(age, \"age\");\n  // After assertions, name is string and age is number\n  return `${name.toUpperCase()} is ${age} years old`;\n}\n\nconsole.log(processUser(\"Alice\", 30));\n\ntry {\n  processUser(null, 25);\n} catch (e: any) {\n  console.log(e.message);\n}",
+          "output": "ALICE is 30 years old\nname must be defined",
+          "explanation": "After assertDefined returns, TypeScript narrows the value from `T | null | undefined` to just `T`. If the assertion fails, an error is thrown."
+        },
+        {
+          "title": "Assert Condition Form",
+          "code": "function assert(condition: boolean, message: string): asserts condition {\n  if (!condition) {\n    throw new Error(message);\n  }\n}\n\nfunction divide(a: number, b: number): number {\n  assert(b !== 0, \"Cannot divide by zero\");\n  return a / b;\n}\n\nconsole.log(divide(10, 3).toFixed(2));\n\ntry {\n  divide(10, 0);\n} catch (e: any) {\n  console.log(e.message);\n}",
+          "output": "3.33\nCannot divide by zero",
+          "explanation": "The assert function with `asserts condition` narrows based on a boolean condition. After it returns, TypeScript knows the condition was true."
+        },
+        {
+          "title": "Assertion for Type Validation",
+          "code": "interface ApiData {\n  id: number;\n  name: string;\n}\n\nfunction assertIsApiData(data: unknown): asserts data is ApiData {\n  if (typeof data !== \"object\" || data === null) {\n    throw new Error(\"Expected an object\");\n  }\n  if (!(\"id\" in data) || typeof (data as any).id !== \"number\") {\n    throw new Error(\"Expected numeric id\");\n  }\n  if (!(\"name\" in data) || typeof (data as any).name !== \"string\") {\n    throw new Error(\"Expected string name\");\n  }\n}\n\nfunction processApiResponse(raw: unknown): string {\n  assertIsApiData(raw);\n  // raw is now ApiData\n  return `#${raw.id}: ${raw.name}`;\n}\n\nconsole.log(processApiResponse({ id: 1, name: \"Widget\" }));\n\ntry {\n  processApiResponse({ id: \"bad\" });\n} catch (e: any) {\n  console.log(e.message);\n}",
+          "output": "#1: Widget\nExpected numeric id",
+          "explanation": "The assertion function validates unknown data and throws if invalid. After it returns, TypeScript treats the data as ApiData with full type safety."
+        }
+      ],
+      "notes": [
+        "Assertion functions must have an explicit `asserts` return type — TypeScript does not infer assertion signatures.",
+        "After an assertion function call, the rest of the block operates with the narrowed type, similar to `if (guard) { ... }` but without the nesting.",
+        "Assertion functions should always throw when the assertion fails. If they silently return on invalid input, the type system will be incorrect."
+      ],
+      "commonPitfalls": [
+        "Writing an assertion function that returns without throwing when the condition is false. TypeScript trusts the `asserts` annotation unconditionally.",
+        "Confusing assertion functions with type guards. Type guards return boolean and let the caller handle both cases; assertion functions throw on failure and narrow after the call."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "assertion-functions-ex1",
+        "title": "Assert Non-Empty Array",
+        "description": "Write an assertion function `assertNonEmpty<T>(arr: T[], label: string): asserts arr is [T, ...T[]]` that throws if the array is empty. Use it to safely access the first element. Log results as shown.",
+        "starterCode": "// Write the assertNonEmpty function here\n\nfunction getFirst<T>(arr: T[], label: string): T {\n  assertNonEmpty(arr, label);\n  return arr[0];\n}\n\nconsole.log(getFirst([10, 20, 30], \"numbers\"));\n\ntry {\n  getFirst([], \"empty\");\n} catch (e: any) {\n  console.log(e.message);\n}",
+        "solution": "function assertNonEmpty<T>(arr: T[], label: string): asserts arr is [T, ...T[]] {\n  if (arr.length === 0) {\n    throw new Error(`${label} must not be empty`);\n  }\n}\n\nfunction getFirst<T>(arr: T[], label: string): T {\n  assertNonEmpty(arr, label);\n  return arr[0];\n}\n\nconsole.log(getFirst([10, 20, 30], \"numbers\"));\n\ntry {\n  getFirst([], \"empty\");\n} catch (e: any) {\n  console.log(e.message);\n}",
+        "expectedOutput": "10\nempty must not be empty",
+        "hints": [
+          "The assertion narrows `T[]` to a non-empty tuple `[T, ...T[]]`, which guarantees index 0 exists.",
+          "Throw an error with a descriptive message including the label when the array is empty."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "assertion-functions-ex2",
+        "title": "Assert Instance Type",
+        "description": "Write a generic assertion function `assertInstanceOf<T>(value: unknown, ctor: new (...args: any[]) => T, name: string): asserts value is T` that throws if the value is not an instance of the given constructor. Test with Date and Error. Log results.",
+        "starterCode": "// Write the assertInstanceOf function here\n\nfunction formatDate(value: unknown): string {\n  assertInstanceOf(value, Date, \"Date\");\n  return value.toISOString().split(\"T\")[0];\n}\n\nconsole.log(formatDate(new Date(\"2025-06-15\")));\n\ntry {\n  formatDate(\"not a date\");\n} catch (e: any) {\n  console.log(e.message);\n}",
+        "solution": "function assertInstanceOf<T>(value: unknown, ctor: new (...args: any[]) => T, name: string): asserts value is T {\n  if (!(value instanceof ctor)) {\n    throw new Error(`Expected instance of ${name}`);\n  }\n}\n\nfunction formatDate(value: unknown): string {\n  assertInstanceOf(value, Date, \"Date\");\n  return value.toISOString().split(\"T\")[0];\n}\n\nconsole.log(formatDate(new Date(\"2025-06-15\")));\n\ntry {\n  formatDate(\"not a date\");\n} catch (e: any) {\n  console.log(e.message);\n}",
+        "expectedOutput": "2025-06-15\nExpected instance of Date",
+        "hints": [
+          "Use `instanceof` to check if the value is an instance of the constructor. The constructor parameter type is `new (...args: any[]) => T`.",
+          "After the assertion, TypeScript narrows the unknown value to T, allowing Date-specific methods."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "exhaustive-checks",
+    "sectionId": "type-guards-and-narrowing",
+    "orderIndex": 4,
+    "title": "Exhaustive Checks & satisfies",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["never type", "exhaustive switch", "satisfies operator", "compile-time safety"],
+    "content": {
+      "explanation": "Exhaustive checking is a technique that ensures every possible variant of a union type is handled in your code. The key insight is that if you narrow a union type through all its members, the remaining type should be `never` — meaning no possible value is left. By assigning the remaining value to a variable of type `never`, you create a compile-time error if any variant is unhandled.\n\nThe pattern works with switch statements, if/else chains, or any control flow that narrows a union. In the default case of a switch, if all variants are covered, the discriminant variable has type `never`. If you add a new variant to the union but forget to add a case, the variable will not be `never`, and the assignment to a `never` variable will fail to compile. This turns a potential runtime bug into a guaranteed compile error.\n\nYou can also create a helper function like `assertNever(value: never): never` that throws at runtime while also serving as a compile-time exhaustiveness check. This provides both compile-time safety (the type system catches missing cases) and runtime safety (an error is thrown if an unexpected value somehow reaches the default case).\n\nThe `satisfies` operator, introduced in TypeScript 4.9, is a different but related concept. It validates that an expression conforms to a type without widening it. The syntax `expression satisfies Type` checks that the expression matches the Type while preserving the expression's own narrower type for inference. This is useful when you want type checking on an object literal but don't want to lose the specific literal types of its properties.",
+      "codeExamples": [
+        {
+          "title": "Exhaustive Switch with never",
+          "code": "type Shape =\n  | { kind: \"circle\"; radius: number }\n  | { kind: \"square\"; side: number }\n  | { kind: \"triangle\"; base: number; height: number };\n\nfunction assertNever(value: never): never {\n  throw new Error(`Unexpected value: ${JSON.stringify(value)}`);\n}\n\nfunction area(shape: Shape): number {\n  switch (shape.kind) {\n    case \"circle\":\n      return Math.round(Math.PI * shape.radius ** 2 * 100) / 100;\n    case \"square\":\n      return shape.side ** 2;\n    case \"triangle\":\n      return (shape.base * shape.height) / 2;\n    default:\n      return assertNever(shape);\n  }\n}\n\nconsole.log(area({ kind: \"circle\", radius: 3 }));\nconsole.log(area({ kind: \"square\", side: 5 }));\nconsole.log(area({ kind: \"triangle\", base: 4, height: 6 }));",
+          "output": "28.27\n25\n12",
+          "explanation": "In the default branch, shape has type `never` because all variants are handled. If a new variant were added without a case, the code would not compile."
+        },
+        {
+          "title": "satisfies Operator",
+          "code": "type ColorConfig = Record<string, string | number[]>;\n\nconst palette = {\n  red: \"#ff0000\",\n  green: [0, 255, 0],\n  blue: \"#0000ff\"\n} satisfies ColorConfig;\n\n// palette.red is still typed as string (not string | number[])\nconsole.log(palette.red.toUpperCase());\n// palette.green is still typed as number[] (not string | number[])\nconsole.log(palette.green.length);\nconsole.log(palette.blue.startsWith(\"#\"));",
+          "output": "#FF0000\n3\ntrue",
+          "explanation": "Without `satisfies`, typing the object as ColorConfig would widen each property to `string | number[]`. With `satisfies`, TypeScript validates the shape while preserving the narrow literal types."
+        },
+        {
+          "title": "Combining Exhaustive Checks with Mapped Types",
+          "code": "type Status = \"pending\" | \"active\" | \"closed\";\n\nconst statusLabels: Record<Status, string> = {\n  pending: \"Pending Review\",\n  active: \"Currently Active\",\n  closed: \"Closed\"\n};\n\n// Record<Status, string> already ensures all keys are present\n// If a new Status is added, this object literal will error\n\nfunction getLabel(status: Status): string {\n  return statusLabels[status];\n}\n\nconst statuses: Status[] = [\"pending\", \"active\", \"closed\"];\nstatuses.forEach(s => console.log(getLabel(s)));",
+          "output": "Pending Review\nCurrently Active\nClosed",
+          "explanation": "Using Record<Status, string> as the type of a config object is another form of exhaustive checking — TypeScript requires an entry for every member of the Status union."
+        }
+      ],
+      "notes": [
+        "The `never` type represents values that can never occur. It is the bottom type of TypeScript's type system.",
+        "The `satisfies` operator does not change the runtime value or its inferred type — it only adds a compile-time validation layer.",
+        "Record<UnionType, ValueType> is an alternative to switch-based exhaustive checks for configuration objects."
+      ],
+      "commonPitfalls": [
+        "Forgetting the `assertNever` helper means no compile error when a new variant is added — the default case silently handles it without warning.",
+        "Confusing `satisfies` with type annotation. `const x: Type = value` widens to Type; `const x = value satisfies Type` validates against Type but keeps the narrow inferred type."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "exhaustive-checks-ex1",
+        "title": "Exhaustive HTTP Method Handler",
+        "description": "Create a type `HttpMethod = 'GET' | 'POST' | 'PUT' | 'DELETE'`. Write a function `describeMethod(method: HttpMethod): string` with exhaustive checking using the `never` type. Return a description for each method. Log results.",
+        "starterCode": "// Define the type, assertNever, and describeMethod function here\n\nconst methods: HttpMethod[] = [\"GET\", \"POST\", \"PUT\", \"DELETE\"];\nmethods.forEach(m => console.log(describeMethod(m)));",
+        "solution": "type HttpMethod = \"GET\" | \"POST\" | \"PUT\" | \"DELETE\";\n\nfunction assertNever(value: never): never {\n  throw new Error(`Unhandled value: ${value}`);\n}\n\nfunction describeMethod(method: HttpMethod): string {\n  switch (method) {\n    case \"GET\":\n      return \"Retrieve resource\";\n    case \"POST\":\n      return \"Create resource\";\n    case \"PUT\":\n      return \"Update resource\";\n    case \"DELETE\":\n      return \"Remove resource\";\n    default:\n      return assertNever(method);\n  }\n}\n\nconst methods: HttpMethod[] = [\"GET\", \"POST\", \"PUT\", \"DELETE\"];\nmethods.forEach(m => console.log(describeMethod(m)));",
+        "expectedOutput": "Retrieve resource\nCreate resource\nUpdate resource\nRemove resource",
+        "hints": [
+          "Handle each HttpMethod literal in a switch case. In the default branch, call assertNever(method).",
+          "If all cases are handled, `method` in the default branch has type `never`, satisfying the assertNever parameter."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "exhaustive-checks-ex2",
+        "title": "satisfies with Route Config",
+        "description": "Create a type `RouteConfig = Record<string, { path: string; auth: boolean }>`. Define a routes object using `satisfies` so that TypeScript validates the shape but preserves the specific key types. Write a function that lists all routes. Log results.",
+        "starterCode": "type RouteConfig = Record<string, { path: string; auth: boolean }>;\n\n// Define routes using satisfies\n\nconst routes = {\n  home: { path: \"/\", auth: false },\n  dashboard: { path: \"/dashboard\", auth: true },\n  profile: { path: \"/profile\", auth: true }\n} satisfies RouteConfig;\n\n// Because of satisfies, routes.home.path is string, not string | undefined\nObject.entries(routes).forEach(([name, config]) => {\n  console.log(`${name}: ${config.path} (auth: ${config.auth})`);  \n});",
+        "solution": "type RouteConfig = Record<string, { path: string; auth: boolean }>;\n\nconst routes = {\n  home: { path: \"/\", auth: false },\n  dashboard: { path: \"/dashboard\", auth: true },\n  profile: { path: \"/profile\", auth: true }\n} satisfies RouteConfig;\n\nObject.entries(routes).forEach(([name, config]) => {\n  console.log(`${name}: ${config.path} (auth: ${config.auth})`);\n});",
+        "expectedOutput": "home: / (auth: false)\ndashboard: /dashboard (auth: true)\nprofile: /profile (auth: true)",
+        "hints": [
+          "The `satisfies` operator goes after the object literal. It validates the shape without widening the type.",
+          "Without satisfies, you would need a type annotation that loses the specific keys 'home', 'dashboard', 'profile'."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -158,26 +158,6 @@ export const createRepoSchema = z.object({
 
 export const updateRepoSchema = createRepoSchema.partial();
 
-// ==================== COLLEGE MANAGEMENT ====================
-
-export const adminCollegeQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(20),
-  search: z.string().optional(),
-  state: z.string().optional(),
-  isApproved: z.enum(["true", "false"]).optional(),
-});
-
-export const updateCollegeReviewStatusSchema = z.object({
-  status: z.enum(["APPROVED", "REJECTED"]),
-});
-
-export const adminCollegeReviewQuerySchema = z.object({
-  page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(20),
-  status: z.enum(["PENDING", "APPROVED", "REJECTED"]).optional(),
-});
-
 export const repoQuerySchema = z.object({
   page: z.coerce.number().int().positive().default(1),
   limit: z.coerce.number().int().positive().max(100).default(20),

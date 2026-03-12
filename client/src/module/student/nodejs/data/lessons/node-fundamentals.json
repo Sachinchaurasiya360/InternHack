@@ -1,0 +1,331 @@
+[
+  {
+    "id": "introduction-to-nodejs",
+    "sectionId": "node-fundamentals",
+    "orderIndex": 0,
+    "title": "Introduction to Node.js",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Node.js History", "V8 Engine", "Non-blocking I/O", "Single-Threaded", "Use Cases"],
+    "content": {
+      "explanation": "Node.js is a JavaScript runtime built on Chrome's V8 engine that allows you to run JavaScript outside the browser. Created by Ryan Dahl in 2009, Node.js was born out of frustration with the way web servers like Apache handled concurrent connections. Apache created a new thread for every incoming connection, which consumed significant memory and made it difficult to scale to thousands of simultaneous users. Dahl's insight was that most of the time a server spends handling a request is spent waiting for I/O operations like reading from a database or file system, and the CPU is idle during that wait.\n\nNode.js solves this with an event-driven, non-blocking I/O model. Instead of creating a new thread for each request and blocking while waiting for I/O, Node.js uses a single thread with an event loop. When an I/O operation is initiated, Node.js registers a callback and moves on to handle the next request. When the I/O operation completes, the callback is placed in the event queue and eventually executed. This architecture makes Node.js extremely efficient for I/O-heavy workloads like web servers, APIs, real-time applications, and microservices.\n\nThe V8 engine, developed by Google for Chrome, is the heart of Node.js. V8 compiles JavaScript directly to native machine code using just-in-time (JIT) compilation rather than interpreting it line by line. This gives Node.js performance that rivals traditionally compiled languages for many workloads. V8 also handles memory management and garbage collection, so developers do not need to manually allocate or free memory.\n\nNode.js has become one of the most popular platforms for backend development. Companies like Netflix, LinkedIn, PayPal, Uber, and NASA use Node.js in production. It excels at building RESTful APIs, real-time chat applications, streaming services, command-line tools, and serverless functions. The npm ecosystem (Node Package Manager) is the largest software registry in the world with over two million packages, giving developers access to a vast library of reusable code.\n\nIt is important to understand what Node.js is NOT ideal for. CPU-intensive tasks like video encoding, complex mathematical computations, or machine learning training can block the single thread and starve other requests. For such workloads, you would use worker threads, child processes, or offload the work to a specialized service. Node.js shines when the bottleneck is I/O, not computation.",
+      "codeExamples": [
+        {
+          "title": "Your First Node.js Script",
+          "code": "// Save this as hello.js and run: node hello.js\nconsole.log(\"Hello from Node.js!\");\nconsole.log(\"Node version:\", process.version);\nconsole.log(\"Platform:\", process.platform);\nconsole.log(\"Architecture:\", process.arch);",
+          "output": "Hello from Node.js!\nNode version: v20.11.0\nPlatform: linux\nArchitecture: x64",
+          "explanation": "This script runs entirely in the terminal, not in a browser. The process object is a Node.js global that provides information about the current running process, including the Node version, operating system platform, and CPU architecture."
+        },
+        {
+          "title": "Non-blocking I/O in Action",
+          "code": "const fs = require('fs');\n\nconsole.log(\"1. Starting to read file...\");\n\n// Asynchronous (non-blocking) file read\nfs.readFile('example.txt', 'utf8', (err, data) => {\n  if (err) {\n    console.log(\"3. File not found, but that's okay for this demo\");\n    return;\n  }\n  console.log(\"3. File contents:\", data);\n});\n\nconsole.log(\"2. This runs BEFORE the file is read!\");",
+          "output": "1. Starting to read file...\n2. This runs BEFORE the file is read!\n3. File not found, but that's okay for this demo",
+          "explanation": "Notice that line 2 prints before line 3 even though the readFile call appears first in the code. This is non-blocking I/O in action. Node.js initiates the file read operation and immediately moves to the next line. When the file operation completes (or fails), the callback function is called."
+        },
+        {
+          "title": "Simple HTTP Server",
+          "code": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  res.writeHead(200, { 'Content-Type': 'text/plain' });\n  res.end('Hello World from Node.js!');\n});\n\nserver.listen(3000, () => {\n  console.log('Server running at http://localhost:3000/');\n});",
+          "output": "Server running at http://localhost:3000/",
+          "explanation": "This creates a basic HTTP server in just a few lines. The createServer callback runs for every incoming request. Node.js can handle thousands of concurrent connections with this single-threaded model because it never blocks waiting for I/O."
+        }
+      ],
+      "notes": [
+        "Node.js is NOT a programming language and NOT a framework. It is a runtime environment that lets you execute JavaScript outside the browser.",
+        "The single-threaded nature of Node.js does not mean it can only do one thing at a time. The event loop and libuv thread pool handle concurrent I/O operations efficiently behind the scenes.",
+        "Node.js uses libuv, a C library, under the hood to handle asynchronous I/O operations across different operating systems. This is what makes cross-platform file system, networking, and timer operations possible."
+      ],
+      "commonPitfalls": [
+        "Assuming Node.js is single-threaded means it cannot handle concurrency. Node.js handles thousands of concurrent I/O operations through its event loop and libuv thread pool.",
+        "Using Node.js for CPU-intensive tasks without worker threads. Heavy computation blocks the event loop and makes the server unresponsive to all other requests.",
+        "Confusing Node.js with a web framework. Node.js is a runtime; Express, Fastify, and Koa are frameworks built on top of it."
+      ],
+      "interviewTips": [
+        "Be ready to explain the difference between Node.js and browser JavaScript: same language, different runtime APIs (fs, http vs DOM, window).",
+        "Know that Node.js uses V8 (same as Chrome) and libuv for its event loop and async I/O."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "introduction-to-nodejs-ex1",
+        "title": "System Information Script",
+        "description": "Use console.log to print the Node.js version (process.version), the operating system platform (process.platform), and the current working directory (process.cwd()), each on a separate line.",
+        "starterCode": "// Print the Node.js version\n// Print the OS platform\n// Print the current working directory\n",
+        "solution": "console.log(process.version);\nconsole.log(process.platform);\nconsole.log(process.cwd());",
+        "expectedOutput": "v20.11.0\nlinux\n/home/user/project",
+        "hints": [
+          "The process object is available globally in Node.js without requiring any module",
+          "process.cwd() is a function call (with parentheses), while process.version and process.platform are properties"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "installing-nodejs-and-repl",
+    "sectionId": "node-fundamentals",
+    "orderIndex": 1,
+    "title": "Installing Node.js & REPL",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["nvm", "Node Versions", "REPL", "Running Scripts", "LTS vs Current"],
+    "content": {
+      "explanation": "Before writing Node.js applications, you need to install the runtime on your machine. The recommended approach is to use a version manager like nvm (Node Version Manager) on macOS and Linux, or nvm-windows on Windows. A version manager lets you install multiple versions of Node.js side by side and switch between them easily. This is essential because different projects may require different Node versions, and you do not want to be stuck with a single system-wide installation.\n\nNode.js follows a predictable release schedule with two main tracks: LTS (Long Term Support) and Current. Even-numbered major versions (18, 20, 22) become LTS releases and receive bug fixes and security patches for 30 months. Odd-numbered versions (19, 21, 23) are Current releases with the latest features but shorter support windows. For production applications, always use an LTS version. For experimenting with cutting-edge features, you can use the Current release.\n\nOnce installed, Node.js provides two primary ways to run JavaScript. The first is the REPL (Read-Eval-Print Loop), an interactive shell you launch by typing 'node' in your terminal with no arguments. The REPL reads your input, evaluates it, prints the result, and loops back for more input. It is excellent for quick experiments, testing snippets, and exploring APIs. The REPL supports tab completion, multi-line input, and special commands like .help, .clear, .exit, and .save.\n\nThe second way to run JavaScript is by executing script files. You create a .js file and run it with 'node filename.js'. This is how you run actual applications. You can also use the --watch flag (node --watch app.js) to automatically restart the script when the file changes, which is very useful during development. For TypeScript, tools like tsx and ts-node let you run .ts files directly without a separate compilation step.\n\nThe Node.js installation also comes with npm (Node Package Manager) and, starting from Node 16.9, corepack which provides access to yarn and pnpm. You can verify your installation by running 'node --version' and 'npm --version' in your terminal. The npx command, bundled with npm, lets you execute packages without installing them globally, which is useful for one-off commands like creating new projects with 'npx create-react-app my-app'.",
+      "codeExamples": [
+        {
+          "title": "Using nvm to Manage Node Versions",
+          "code": "# Install nvm (macOS/Linux)\n# curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash\n\n# List available versions\n# nvm ls-remote\n\n# Install latest LTS\n# nvm install --lts\n\n# Install a specific version\n# nvm install 20.11.0\n\n# Switch between versions\n# nvm use 20\n# nvm use 18\n\n# Set a default version\n# nvm alias default 20\n\n# Check current version\nconsole.log(\"Node version:\", process.version);\nconsole.log(\"npm would be checked with: npm --version\");",
+          "output": "Node version: v20.11.0\nnpm would be checked with: npm --version",
+          "explanation": "nvm allows you to install and switch between multiple Node.js versions. The commented lines show terminal commands (not JavaScript). Always use an LTS version for production projects."
+        },
+        {
+          "title": "REPL Features and Commands",
+          "code": "// In the REPL (type 'node' in terminal):\n// > 2 + 2\n// 4\n// > const name = \"Node\"\n// undefined\n// > `Hello ${name}`\n// 'Hello Node'\n// > .help\n// Shows all REPL commands\n// > .exit\n// Exits the REPL\n\n// The _ variable holds the last evaluated result:\n// > 5 * 3\n// 15\n// > _ + 1\n// 16\n\n// You can also evaluate expressions in one shot:\n// node -e \"console.log(2 ** 10)\"\n// 1024\n\nconsole.log(\"REPL special variable _ holds last result\");\nconsole.log(\"Use .help in REPL to see all commands\");",
+          "output": "REPL special variable _ holds last result\nUse .help in REPL to see all commands",
+          "explanation": "The REPL is an interactive playground for testing code quickly. The underscore (_) variable always contains the result of the last expression. The -e flag lets you evaluate a JavaScript expression directly from the command line."
+        },
+        {
+          "title": "Running Scripts with Useful Flags",
+          "code": "// Save as app.js and run with different flags:\n\n// Basic execution:\n// node app.js\n\n// Watch mode (auto-restart on changes):\n// node --watch app.js\n\n// Check syntax without running:\n// node --check app.js\n\n// Print the V8 version:\n// node -p \"process.versions.v8\"\n\nconsole.log(\"Script is running!\");\nconsole.log(\"V8 version:\", process.versions.v8);\nconsole.log(\"All versions:\", JSON.stringify(process.versions, null, 2));",
+          "output": "Script is running!\nV8 version: 11.3.244.8\nAll versions: {\n  \"node\": \"20.11.0\",\n  \"v8\": \"11.3.244.8\",\n  \"uv\": \"1.46.0\"\n}",
+          "explanation": "The --watch flag is built into Node.js 18+ and eliminates the need for nodemon during development. The process.versions object contains version strings for all the native dependencies bundled with Node.js including V8, libuv, and OpenSSL."
+        }
+      ],
+      "notes": [
+        "Always use a version manager (nvm, fnm, or volta) instead of installing Node.js directly. It prevents permission issues and lets you switch versions per project.",
+        "The .nvmrc file in a project root specifies the required Node version. Running 'nvm use' in that directory automatically switches to the correct version.",
+        "Node.js 18+ includes a built-in --watch flag, reducing the need for external tools like nodemon for simple development workflows."
+      ],
+      "commonPitfalls": [
+        "Installing Node.js with sudo or as root. This causes permission issues with global npm packages. Use nvm instead to install Node in your home directory.",
+        "Not specifying a Node version for your project. Without an .nvmrc or engines field in package.json, team members may run different versions causing subtle bugs.",
+        "Relying on the Current (odd-numbered) release for production. Always use LTS versions for deployed applications."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "installing-nodejs-and-repl-ex1",
+        "title": "Version Information Object",
+        "description": "Create an object called 'info' with three properties: 'nodeVersion' set to process.version, 'platform' set to process.platform, and 'v8' set to process.versions.v8. Then log the object using console.log.",
+        "starterCode": "// Create an 'info' object with nodeVersion, platform, and v8 properties\n// Log the object\n",
+        "solution": "const info = {\n  nodeVersion: process.version,\n  platform: process.platform,\n  v8: process.versions.v8\n};\nconsole.log(info);",
+        "expectedOutput": "{ nodeVersion: 'v20.11.0', platform: 'linux', v8: '11.3.244.8' }",
+        "hints": [
+          "process.version gives the Node.js version as a string",
+          "process.versions is an object containing versions of Node.js and its dependencies"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "global-objects-and-process",
+    "sectionId": "node-fundamentals",
+    "orderIndex": 2,
+    "title": "Global Objects & process",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["global", "__dirname", "__filename", "process.env", "process.argv", "globalThis"],
+    "content": {
+      "explanation": "In browser JavaScript, the global object is 'window'. In Node.js, the global object is called 'global' (or the standardized 'globalThis' which works in both environments). Any property attached to the global object is accessible everywhere without imports. However, unlike the browser where variables declared with var at the top level become properties of window, Node.js modules are wrapped in a function scope, so top-level variables are local to that module.\n\nNode.js provides several important global variables and functions. The __dirname variable contains the absolute path of the directory containing the current module file. The __filename variable contains the absolute path of the current module file itself. These are essential when working with file paths because they give you reliable absolute paths regardless of where the Node.js process was started from. Note that __dirname and __filename are only available in CommonJS modules; in ES modules, you need to use import.meta.url instead.\n\nThe process object is one of the most important globals in Node.js. It provides information about and control over the current Node.js process. process.env is an object containing the user environment variables, which is how you access configuration like database URLs, API keys, and port numbers. process.argv is an array containing the command-line arguments passed when the Node.js process was launched, where argv[0] is the path to the node executable and argv[1] is the path to the script being run.\n\nBeyond env and argv, the process object offers many useful methods and properties. process.exit(code) terminates the process with the given exit code (0 for success, 1 for failure). process.cwd() returns the current working directory. process.memoryUsage() returns an object showing heap memory consumption. process.uptime() returns the number of seconds the process has been running. process.stdin, process.stdout, and process.stderr are streams for reading input and writing output.\n\nOther global utilities include console (for logging), setTimeout, setInterval, setImmediate (Node-specific), queueMicrotask, Buffer (for binary data), URL and URLSearchParams (for URL parsing), TextEncoder and TextDecoder, and the performance object for high-resolution timing. Starting from Node.js 18, fetch is also available globally for making HTTP requests.",
+      "codeExamples": [
+        {
+          "title": "Global Variables: __dirname, __filename, and global",
+          "code": "// __dirname: absolute path of the current file's directory\nconsole.log(\"Directory:\", __dirname);\n\n// __filename: absolute path of the current file\nconsole.log(\"File:\", __filename);\n\n// globalThis works in both Node.js and browsers\nconsole.log(\"globalThis === global:\", globalThis === global);\n\n// Variables in modules are NOT global\nconst secret = \"hidden\";\nconsole.log(\"global.secret:\", global.secret); // undefined\n\n// But you CAN explicitly attach to global (not recommended)\nglobal.sharedValue = 42;\nconsole.log(\"global.sharedValue:\", global.sharedValue);",
+          "output": "Directory: /home/user/project\nFile: /home/user/project/app.js\nglobalThis === global: true\nglobal.secret: undefined\nglobal.sharedValue: 42",
+          "explanation": "__dirname and __filename provide reliable absolute paths. Unlike browser JavaScript, top-level variables in Node.js are scoped to the module, not the global object. You can attach values to global explicitly, but this is considered bad practice as it creates hidden dependencies."
+        },
+        {
+          "title": "Working with process.env",
+          "code": "// Access environment variables\nconsole.log(\"PATH:\", process.env.PATH ? \"(exists)\" : \"(not set)\");\nconsole.log(\"NODE_ENV:\", process.env.NODE_ENV || \"not set\");\nconsole.log(\"HOME:\", process.env.HOME || process.env.USERPROFILE);\n\n// Set environment variables at runtime\nprocess.env.MY_APP_PORT = \"8080\";\nprocess.env.MY_APP_DEBUG = \"true\";\n\nconsole.log(\"Port:\", process.env.MY_APP_PORT);\nconsole.log(\"Debug:\", process.env.MY_APP_DEBUG);\n\n// Note: all env values are strings\nconsole.log(\"Type of port:\", typeof process.env.MY_APP_PORT);\n\n// Common pattern: default values\nconst port = parseInt(process.env.PORT || \"3000\", 10);\nconsole.log(\"Server port:\", port);",
+          "output": "PATH: (exists)\nNODE_ENV: not set\nHOME: /home/user\nPort: 8080\nDebug: true\nType of port: string\nServer port: 3000",
+          "explanation": "Environment variables are the standard way to configure Node.js applications. All values in process.env are strings, so you must parse numbers and booleans yourself. In production, tools like dotenv or the --env-file flag (Node 20.6+) load variables from .env files."
+        },
+        {
+          "title": "Command-Line Arguments with process.argv",
+          "code": "// Run with: node script.js hello --name=World --verbose\n\n// process.argv is an array:\n// [0] = path to node executable\n// [1] = path to the script\n// [2+] = user-supplied arguments\n\nconsole.log(\"Full argv:\", process.argv);\nconsole.log(\"Node path:\", process.argv[0]);\nconsole.log(\"Script path:\", process.argv[1]);\nconsole.log(\"User args:\", process.argv.slice(2));\n\n// Simple argument parsing\nconst args = process.argv.slice(2);\nconst flags = {};\nargs.forEach(arg => {\n  if (arg.startsWith('--')) {\n    const [key, value] = arg.slice(2).split('=');\n    flags[key] = value || true;\n  }\n});\nconsole.log(\"Parsed flags:\", flags);",
+          "output": "Full argv: ['/usr/bin/node', '/home/user/script.js', 'hello', '--name=World', '--verbose']\nNode path: /usr/bin/node\nScript path: /home/user/script.js\nUser args: ['hello', '--name=World', '--verbose']\nParsed flags: { name: 'World', verbose: true }",
+          "explanation": "process.argv gives you raw access to command-line arguments. The first two elements are always the node path and script path. For complex CLI tools, use libraries like commander, yargs, or the built-in util.parseArgs (Node 18.3+)."
+        }
+      ],
+      "notes": [
+        "In ES modules (.mjs or type:module), __dirname and __filename are not available. Use import.meta.url with the url and path modules instead: import { fileURLToPath } from 'url'; const __filename = fileURLToPath(import.meta.url);",
+        "process.env values are always strings. process.env.PORT = 3000 becomes the string '3000'. Always parse with parseInt() or Number() when you need a numeric value.",
+        "Node.js 20.6+ supports the --env-file flag (node --env-file=.env app.js) to load environment variables from a file without needing the dotenv package."
+      ],
+      "commonPitfalls": [
+        "Using __dirname in ES modules where it is not defined. This causes a ReferenceError. Use import.meta.url with fileURLToPath instead.",
+        "Forgetting that process.env values are always strings. Comparing process.env.DEBUG === true will always be false; compare against the string 'true' instead.",
+        "Hardcoding configuration values instead of using environment variables. This makes applications inflexible and risks leaking secrets into version control."
+      ],
+      "interviewTips": [
+        "Explain the difference between global scope in Node.js and browser JavaScript: in Node.js, each file is a module with its own scope; top-level variables are not global.",
+        "Know how to access command-line arguments (process.argv) and environment variables (process.env) and why they matter for application configuration."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "global-objects-and-process-ex1",
+        "title": "Environment Config Reader",
+        "description": "Set process.env.APP_NAME to 'MyApp' and process.env.APP_PORT to '5000'. Then create an object called 'config' with properties 'name' (from APP_NAME) and 'port' (parsed as an integer from APP_PORT). Log the config object.",
+        "starterCode": "// Set APP_NAME and APP_PORT environment variables\n// Create a config object with name and port (as integer)\n// Log the config object\n",
+        "solution": "process.env.APP_NAME = 'MyApp';\nprocess.env.APP_PORT = '5000';\n\nconst config = {\n  name: process.env.APP_NAME,\n  port: parseInt(process.env.APP_PORT, 10)\n};\nconsole.log(config);",
+        "expectedOutput": "{ name: 'MyApp', port: 5000 }",
+        "hints": [
+          "Use parseInt() with radix 10 to convert the port string to a number",
+          "Environment variables are always stored as strings"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "global-objects-and-process-ex2",
+        "title": "Argument Parser",
+        "description": "Given a simulated process.argv array ['node', 'script.js', '--host=localhost', '--port=3000'], write code that parses the arguments after index 2 and creates an object with key-value pairs. Log the resulting object.",
+        "starterCode": "const simulatedArgv = ['node', 'script.js', '--host=localhost', '--port=3000'];\n\n// Parse arguments starting from index 2\n// Create an object with the parsed key-value pairs\n// Log the result\n",
+        "solution": "const simulatedArgv = ['node', 'script.js', '--host=localhost', '--port=3000'];\n\nconst parsed = {};\nsimulatedArgv.slice(2).forEach(arg => {\n  const [key, value] = arg.replace('--', '').split('=');\n  parsed[key] = value;\n});\nconsole.log(parsed);",
+        "expectedOutput": "{ host: 'localhost', port: '3000' }",
+        "hints": [
+          "Use .slice(2) to skip the node path and script path",
+          "Use .split('=') to separate the key from the value"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "the-event-loop",
+    "sectionId": "node-fundamentals",
+    "orderIndex": 3,
+    "title": "The Event Loop",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Event Loop Phases", "Microtasks", "Macrotasks", "setTimeout vs setImmediate", "process.nextTick", "Call Stack"],
+    "content": {
+      "explanation": "The event loop is the core mechanism that allows Node.js to perform non-blocking I/O operations despite JavaScript being single-threaded. Understanding the event loop is critical for writing performant Node.js applications and is one of the most commonly asked topics in Node.js interviews. The event loop continuously checks whether the call stack is empty, and if it is, it picks up the next callback from the queue and pushes it onto the stack for execution.\n\nThe Node.js event loop (powered by libuv) operates in phases, and each phase has a FIFO queue of callbacks to execute. The main phases are: Timers (executes callbacks scheduled by setTimeout and setInterval), Pending Callbacks (executes I/O callbacks deferred from the previous loop iteration), Idle/Prepare (internal use only), Poll (retrieves new I/O events and executes I/O-related callbacks), Check (executes setImmediate callbacks), and Close Callbacks (executes close event callbacks like socket.on('close')). The loop cycles through these phases repeatedly.\n\nMicrotasks and macrotasks are two categories of asynchronous operations with different priority levels. Microtasks include process.nextTick callbacks and resolved Promise callbacks (.then, .catch, .finally, and async/await continuations). Macrotasks include setTimeout, setInterval, setImmediate, and I/O callbacks. The critical rule is: after each phase of the event loop (and after each macrotask), Node.js drains the entire microtask queue before moving on. Within microtasks, process.nextTick has higher priority than Promise callbacks.\n\nThe execution order follows this priority: (1) Synchronous code on the call stack, (2) process.nextTick callbacks, (3) Promise microtasks, (4) Macrotasks in the current event loop phase. This means process.nextTick can starve the event loop if called recursively, because Node.js will keep processing nextTick callbacks before moving to any I/O or timer callbacks. For this reason, queueMicrotask (which uses the Promise microtask queue) is often preferred over process.nextTick.\n\nA common interview question is the execution order of setTimeout vs setImmediate. When called from within an I/O callback, setImmediate always executes before setTimeout(fn, 0) because after the Poll phase, the Check phase (setImmediate) runs before the loop wraps around to the Timers phase. However, when called from the main module (not inside an I/O callback), the order is non-deterministic because it depends on process performance and timer resolution.",
+      "codeExamples": [
+        {
+          "title": "Event Loop Execution Order",
+          "code": "console.log('1. Synchronous - start');\n\nsetTimeout(() => {\n  console.log('5. setTimeout (macrotask)');\n}, 0);\n\nsetImmediate(() => {\n  console.log('6. setImmediate (macrotask)');\n});\n\nPromise.resolve().then(() => {\n  console.log('3. Promise.then (microtask)');\n});\n\nprocess.nextTick(() => {\n  console.log('2. process.nextTick (microtask, highest priority)');\n});\n\nqueueMicrotask(() => {\n  console.log('4. queueMicrotask (microtask)');\n});\n\nconsole.log('1b. Synchronous - end');",
+          "output": "1. Synchronous - start\n1b. Synchronous - end\n2. process.nextTick (microtask, highest priority)\n3. Promise.then (microtask)\n4. queueMicrotask (microtask)\n5. setTimeout (macrotask)\n6. setImmediate (macrotask)",
+          "explanation": "Synchronous code runs first. Then all microtasks are drained (nextTick before Promises). Finally, macrotasks execute. The setTimeout vs setImmediate order may vary when called from the main module, but in this example setTimeout typically fires first due to timer scheduling."
+        },
+        {
+          "title": "setImmediate vs setTimeout Inside I/O",
+          "code": "const fs = require('fs');\n\n// Inside an I/O callback, setImmediate ALWAYS runs before setTimeout\nfs.readFile(__filename, () => {\n  console.log('Inside I/O callback');\n\n  setTimeout(() => {\n    console.log('setTimeout inside I/O');\n  }, 0);\n\n  setImmediate(() => {\n    console.log('setImmediate inside I/O');\n  });\n});\n\n// This order is guaranteed: setImmediate before setTimeout\n// because after Poll phase, Check phase runs before Timers",
+          "output": "Inside I/O callback\nsetImmediate inside I/O\nsetTimeout inside I/O",
+          "explanation": "Within an I/O callback, the order is deterministic. The Poll phase completes, then the Check phase runs (setImmediate), and only on the next loop iteration does the Timers phase run (setTimeout). This is a very common interview question."
+        },
+        {
+          "title": "Microtask Queue Starvation",
+          "code": "// WARNING: process.nextTick can starve the event loop\n\nlet count = 0;\n\nfunction recursiveNextTick() {\n  if (count < 5) {\n    count++;\n    console.log(`nextTick call #${count}`);\n    process.nextTick(recursiveNextTick);\n  }\n}\n\nsetTimeout(() => {\n  console.log('setTimeout fires after all nextTick calls');\n}, 0);\n\nrecursiveNextTick();\nconsole.log('Synchronous code done');",
+          "output": "Synchronous code done\nnextTick call #1\nnextTick call #2\nnextTick call #3\nnextTick call #4\nnextTick call #5\nsetTimeout fires after all nextTick calls",
+          "explanation": "All nextTick callbacks execute before the setTimeout callback, even though setTimeout was scheduled first. If the recursion had no limit, the setTimeout would never fire. This is called starvation. Use queueMicrotask or setImmediate for recursive patterns to avoid blocking the event loop."
+        }
+      ],
+      "notes": [
+        "The event loop phases in order: Timers -> Pending Callbacks -> Idle/Prepare -> Poll -> Check -> Close Callbacks. Between each phase, Node drains the microtask queue.",
+        "process.nextTick is NOT technically part of the event loop. It runs between each phase transition and has the highest priority among async callbacks.",
+        "In real-world code, you rarely need to think about event loop phases directly. Understanding the general priority (sync > nextTick > promises > timers/IO) is usually sufficient."
+      ],
+      "commonPitfalls": [
+        "Using recursive process.nextTick without a termination condition. This starves the event loop and prevents I/O callbacks and timers from ever executing.",
+        "Assuming setTimeout(fn, 0) executes immediately. It is placed in the Timers phase queue and only runs after synchronous code and microtasks complete.",
+        "Not understanding that async/await code after 'await' is a microtask (Promise continuation), not synchronous code."
+      ],
+      "interviewTips": [
+        "Memorize the execution priority: synchronous code > process.nextTick > Promise microtasks > macrotasks (setTimeout, setImmediate, I/O).",
+        "Be prepared to trace the output of code mixing sync code, nextTick, Promises, setTimeout, and setImmediate. Draw the call stack and queues if needed.",
+        "Know the setImmediate vs setTimeout difference inside I/O callbacks (setImmediate always first) vs outside I/O (non-deterministic)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "the-event-loop-ex1",
+        "title": "Predict the Output",
+        "description": "Write the following code and predict the output order: log 'A' synchronously, schedule 'B' with setTimeout(fn, 0), schedule 'C' with Promise.resolve().then(), schedule 'D' with process.nextTick(), and log 'E' synchronously. Then run it to verify.",
+        "starterCode": "// Log 'A' synchronously\n// Schedule 'B' with setTimeout\n// Schedule 'C' with Promise.resolve().then()\n// Schedule 'D' with process.nextTick()\n// Log 'E' synchronously\n",
+        "solution": "console.log('A');\nsetTimeout(() => console.log('B'), 0);\nPromise.resolve().then(() => console.log('C'));\nprocess.nextTick(() => console.log('D'));\nconsole.log('E');",
+        "expectedOutput": "A\nE\nD\nC\nB",
+        "hints": [
+          "Synchronous code always runs first, in order",
+          "process.nextTick has higher priority than Promise.then",
+          "setTimeout is a macrotask and runs after all microtasks"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "timers-and-async-patterns",
+    "sectionId": "node-fundamentals",
+    "orderIndex": 4,
+    "title": "Timers & Async Patterns",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["setTimeout", "setInterval", "setImmediate", "queueMicrotask", "clearTimeout", "AbortController"],
+    "content": {
+      "explanation": "Node.js provides several timer functions for scheduling code execution. These timers are fundamental building blocks for many asynchronous patterns, from delaying operations to implementing polling, debouncing, and retry logic. While they look similar to browser timers, there are important differences in behavior and additional Node-specific features.\n\nsetTimeout(callback, delay) schedules a callback to run after at least the specified number of milliseconds. The key word is 'at least' because the actual delay may be longer if the event loop is busy processing other callbacks. setTimeout returns a Timeout object (not a numeric ID like in browsers) that you can pass to clearTimeout to cancel the timer. A delay of 0 does not mean immediate execution; it means the callback will be queued for the next iteration of the event loop's Timer phase, after all synchronous code and microtasks complete.\n\nsetInterval(callback, delay) repeatedly executes a callback with a fixed time delay between each call. Like setTimeout, it returns a Timeout object that can be cancelled with clearInterval. Be cautious with setInterval: if the callback takes longer to execute than the interval delay, callbacks will stack up. For long-running periodic tasks, it is safer to use recursive setTimeout, where you schedule the next execution only after the current one completes. This guarantees a consistent delay between the end of one execution and the start of the next.\n\nsetImmediate(callback) is a Node.js-specific timer that schedules a callback to execute in the Check phase of the current (or next) event loop iteration. It is conceptually similar to setTimeout(fn, 0) but executes in a different phase. setImmediate is useful when you want to break up a long-running synchronous operation into chunks to let I/O callbacks process in between. It is cancelled with clearImmediate.\n\nqueueMicrotask(callback) schedules a microtask that runs before any macrotask timers. It is similar to process.nextTick but uses the Promise microtask queue instead of the nextTick queue. Since microtasks run between event loop phases, queueMicrotask is useful when you need something to execute after the current synchronous code but before any I/O or timer callbacks. Unlike process.nextTick, recursive queueMicrotask calls are interleaved with other microtasks rather than forming an uninterruptible chain.\n\nModern Node.js also provides promise-based timer APIs through the 'timers/promises' module. These return Promises instead of using callbacks, making them much cleaner to use with async/await. You can write 'await setTimeout(1000)' to pause execution for one second, and use AbortController to cancel timers. This is the preferred approach in modern Node.js code.",
+      "codeExamples": [
+        {
+          "title": "setTimeout and clearTimeout",
+          "code": "// Basic setTimeout\nsetTimeout(() => {\n  console.log('Executed after 1 second');\n}, 1000);\n\n// setTimeout with 0 delay (still async)\nconsole.log('Before setTimeout');\nsetTimeout(() => {\n  console.log('setTimeout 0 - runs after sync code');\n}, 0);\nconsole.log('After setTimeout');\n\n// Cancelling a timer\nconst timer = setTimeout(() => {\n  console.log('This will NOT print');\n}, 5000);\n\nclearTimeout(timer);\nconsole.log('Timer cancelled');",
+          "output": "Before setTimeout\nAfter setTimeout\nTimer cancelled\nsetTimeout 0 - runs after sync code\nExecuted after 1 second",
+          "explanation": "setTimeout(fn, 0) does not execute immediately. It queues the callback for the next Timer phase. clearTimeout cancels a pending timer before it fires. The synchronous console.log statements always run first."
+        },
+        {
+          "title": "setInterval vs Recursive setTimeout",
+          "code": "// setInterval: fixed delay between START of each call\nlet intervalCount = 0;\nconst interval = setInterval(() => {\n  intervalCount++;\n  console.log(`Interval tick ${intervalCount}`);\n  if (intervalCount >= 3) {\n    clearInterval(interval);\n    console.log('Interval cleared');\n\n    // Start recursive setTimeout demo\n    recursiveTimer(1);\n  }\n}, 100);\n\n// Recursive setTimeout: fixed delay between END of each call\nfunction recursiveTimer(count) {\n  if (count > 3) {\n    console.log('Recursive timer done');\n    return;\n  }\n  console.log(`Recursive tick ${count}`);\n  setTimeout(() => recursiveTimer(count + 1), 100);\n}",
+          "output": "Interval tick 1\nInterval tick 2\nInterval tick 3\nInterval cleared\nRecursive tick 1\nRecursive tick 2\nRecursive tick 3\nRecursive timer done",
+          "explanation": "setInterval fires every N ms regardless of how long the callback takes. Recursive setTimeout waits N ms after the callback completes before scheduling the next one. The recursive pattern is safer for tasks with variable execution times."
+        },
+        {
+          "title": "Promise-based Timers (Modern Node.js)",
+          "code": "const { setTimeout: sleep } = require('timers/promises');\n\nasync function main() {\n  console.log('Starting...');\n\n  // Await a delay (like sleep in other languages)\n  await sleep(100);\n  console.log('After 100ms');\n\n  await sleep(100);\n  console.log('After 200ms total');\n\n  // With AbortController for cancellation\n  const ac = new AbortController();\n  const { signal } = ac;\n\n  // Cancel after 50ms\n  setTimeout(() => ac.abort(), 50);\n\n  try {\n    await sleep(1000, 'result', { signal });\n  } catch (err) {\n    console.log('Timer aborted:', err.code);\n  }\n\n  console.log('Done');\n}\n\nmain();",
+          "output": "Starting...\nAfter 100ms\nAfter 200ms total\nTimer aborted: ABORT_ERR\nDone",
+          "explanation": "The timers/promises module provides async-friendly timer functions. You can await them like sleep functions in other languages. AbortController lets you cancel pending timers, which is useful for implementing timeouts on operations."
+        }
+      ],
+      "notes": [
+        "setTimeout delay is a minimum, not exact. The callback runs after at least the specified ms, but could be delayed if the event loop is busy.",
+        "The timers/promises module (Node 16+) is the modern way to work with timers. It returns Promises you can await instead of using callbacks.",
+        "setImmediate is often used to yield control back to the event loop during long synchronous operations, allowing I/O callbacks to process."
+      ],
+      "commonPitfalls": [
+        "Using setInterval for tasks with variable execution time. If the task takes longer than the interval, callbacks pile up. Use recursive setTimeout instead.",
+        "Not clearing intervals when they are no longer needed. Forgotten intervals keep running and can cause memory leaks, especially in long-lived server processes.",
+        "Expecting setTimeout(fn, 0) to run immediately. It still goes through the event loop and runs after the current synchronous code and microtasks."
+      ],
+      "interviewTips": [
+        "Know the difference between setTimeout(fn, 0), setImmediate, process.nextTick, and queueMicrotask in terms of when they execute.",
+        "Be able to explain why recursive setTimeout is preferred over setInterval for many use cases."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "timers-and-async-patterns-ex1",
+        "title": "Countdown Timer",
+        "description": "Create a countdown from 3 to 1 using recursive setTimeout with a 100ms delay. Print each number, then print 'Go!' after the countdown. Use a function called 'countdown' that takes the current number as a parameter.",
+        "starterCode": "// Create a countdown function that counts from 3 to 1\n// Use recursive setTimeout with 100ms delay\n// Print 'Go!' after reaching 0\n",
+        "solution": "function countdown(n) {\n  if (n <= 0) {\n    console.log('Go!');\n    return;\n  }\n  console.log(n);\n  setTimeout(() => countdown(n - 1), 100);\n}\n\ncountdown(3);",
+        "expectedOutput": "3\n2\n1\nGo!",
+        "hints": [
+          "Use a base case to stop recursion when n reaches 0",
+          "Schedule the next call inside the setTimeout callback"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "timers-and-async-patterns-ex2",
+        "title": "Delayed Greeting",
+        "description": "Use the timers/promises module to create an async function called 'greet' that takes a name parameter. It should log 'Preparing...', wait 100ms, then log 'Hello, {name}!'. Call the function with 'Node'.",
+        "starterCode": "const { setTimeout: sleep } = require('timers/promises');\n\n// Create an async function 'greet' that:\n// 1. Logs 'Preparing...'\n// 2. Waits 100ms\n// 3. Logs 'Hello, {name}!'\n",
+        "solution": "const { setTimeout: sleep } = require('timers/promises');\n\nasync function greet(name) {\n  console.log('Preparing...');\n  await sleep(100);\n  console.log(`Hello, ${name}!`);\n}\n\ngreet('Node');",
+        "expectedOutput": "Preparing...\nHello, Node!",
+        "hints": [
+          "Import setTimeout from 'timers/promises' and alias it as 'sleep'",
+          "Use async/await to pause execution for 100ms"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

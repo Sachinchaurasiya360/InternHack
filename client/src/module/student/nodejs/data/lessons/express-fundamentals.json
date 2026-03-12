@@ -1,0 +1,306 @@
+[
+  {
+    "id": "introduction-to-express",
+    "sectionId": "express-fundamentals",
+    "orderIndex": 0,
+    "title": "Introduction to Express",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Express.js", "Web Framework", "npm install", "app.listen", "app.get", "Hello World"],
+    "content": {
+      "explanation": "Express is a minimal, unopinionated web framework for Node.js. It is the most popular Node.js framework by a wide margin, powering millions of applications worldwide. Express provides a thin layer of fundamental web application features on top of Node.js, without obscuring the Node.js features that developers already know and love.\n\nThe key reason developers choose Express over raw Node.js HTTP servers is productivity. As you saw with the built-in http module, handling routes, parsing request bodies, serving static files, and managing middleware all require significant boilerplate code. Express provides clean, declarative APIs for all of these tasks. What takes 30 lines with raw Node.js often takes 3 lines with Express.\n\nExpress follows the middleware pattern: every request passes through a chain of functions (middleware) that can read the request, modify the response, or pass control to the next function in the chain. This is the core architectural concept that makes Express so flexible. Routing, body parsing, authentication, logging, error handling — they are all implemented as middleware.\n\nTo get started with Express, you initialize a Node.js project with 'npm init', install Express with 'npm install express', and create your application file. The express() function creates an application instance (conventionally named 'app') that you configure with routes and middleware. Finally, app.listen() starts the server. Express sits on top of Node.js HTTP — under the hood, app.listen() calls http.createServer() with your Express app as the request handler.\n\nExpress is described as 'unopinionated' because it does not enforce any particular project structure, database choice, template engine, or architectural pattern. You can organize your code however you want, use any database, and choose from dozens of template engines and middleware packages. This flexibility is both a strength (maximum freedom) and a challenge (you must make more architectural decisions yourself).",
+      "codeExamples": [
+        {
+          "title": "Express Hello World",
+          "code": "const express = require('express');\nconst app = express();\nconst PORT = 3000;\n\n// Define a route for GET /\napp.get('/', (req, res) => {\n  res.send('Hello, World!');\n});\n\n// Define a route for GET /api/status\napp.get('/api/status', (req, res) => {\n  res.json({ status: 'ok', uptime: process.uptime() });\n});\n\n// Start the server\napp.listen(PORT, () => {\n  console.log(`Server running at http://localhost:${PORT}`);\n});",
+          "output": "Server running at http://localhost:3000",
+          "explanation": "express() creates the app. app.get() defines a route handler for GET requests. res.send() automatically sets Content-Type based on the argument type. res.json() sends a JSON response. app.listen() starts the server on the specified port."
+        },
+        {
+          "title": "Express vs Raw Node.js Comparison",
+          "code": "// --- Raw Node.js (verbose) ---\nconst http = require('http');\nconst server = http.createServer((req, res) => {\n  if (req.method === 'GET' && req.url === '/api/users') {\n    res.writeHead(200, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify([{ id: 1, name: 'Alice' }]));\n  } else {\n    res.writeHead(404, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify({ error: 'Not Found' }));\n  }\n});\nserver.listen(3000);\n\n// --- Express (clean) ---\nconst express = require('express');\nconst app = express();\n\napp.get('/api/users', (req, res) => {\n  res.json([{ id: 1, name: 'Alice' }]);\n});\n\napp.listen(3000);",
+          "explanation": "The Express version is significantly shorter and more readable. Express handles Content-Type headers, JSON serialization, 404 responses, and status codes automatically. The declarative routing with app.get() is clearer than if/else chains."
+        },
+        {
+          "title": "Multiple Routes and Methods",
+          "code": "const express = require('express');\nconst app = express();\n\n// Parse JSON request bodies\napp.use(express.json());\n\nlet tasks = [\n  { id: 1, title: 'Learn Express', done: false }\n];\n\n// GET all tasks\napp.get('/api/tasks', (req, res) => {\n  res.json(tasks);\n});\n\n// GET single task\napp.get('/api/tasks/:id', (req, res) => {\n  const task = tasks.find(t => t.id === parseInt(req.params.id));\n  if (!task) return res.status(404).json({ error: 'Task not found' });\n  res.json(task);\n});\n\n// POST create task\napp.post('/api/tasks', (req, res) => {\n  const task = {\n    id: tasks.length + 1,\n    title: req.body.title,\n    done: false\n  };\n  tasks.push(task);\n  res.status(201).json(task);\n});\n\n// DELETE task\napp.delete('/api/tasks/:id', (req, res) => {\n  tasks = tasks.filter(t => t.id !== parseInt(req.params.id));\n  res.json({ message: 'Task deleted' });\n});\n\napp.listen(3000, () => console.log('Task API running on port 3000'));",
+          "output": "Task API running on port 3000",
+          "explanation": "This shows a complete CRUD API in Express. app.use(express.json()) is middleware that parses JSON request bodies. Route parameters like :id are accessed via req.params.id. res.status() sets the HTTP status code, and it is chainable with .json()."
+        }
+      ],
+      "notes": [
+        "Express is built on top of Node.js HTTP. Under the hood, app.listen() creates an http.Server. Everything you learned about req and res still applies — Express extends these objects with additional convenience methods.",
+        "res.send() is smart about Content-Type: it sends 'text/html' for strings, 'application/json' for objects, and 'application/octet-stream' for Buffers. Use res.json() when you specifically want JSON.",
+        "Express 5 (the latest major version) adds native Promise support — if a route handler returns a rejected Promise or throws an async error, Express automatically forwards it to the error handler."
+      ],
+      "commonPitfalls": [
+        "Forgetting to install Express before requiring it. Run 'npm install express' first, or you will get a MODULE_NOT_FOUND error.",
+        "Not calling app.use(express.json()) before routes that need to read req.body — without this middleware, req.body will be undefined.",
+        "Defining routes after app.listen() — routes must be defined before the server starts listening for them to take effect."
+      ],
+      "interviewTips": [
+        "Be able to explain what 'unopinionated' means in the context of Express and contrast it with opinionated frameworks like NestJS or Ruby on Rails.",
+        "Understand the relationship between Express and Node.js HTTP — Express is not a separate server, it is a request handler function passed to http.createServer()."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "introduction-to-express-ex1",
+        "title": "Express Hello World",
+        "description": "Create an Express app with a GET '/' route that responds with 'Hello, Express!' and a GET '/api/health' route that returns JSON { status: 'healthy' }. Listen on port 3000.",
+        "starterCode": "const express = require('express');\nconst app = express();\n\n// Add GET '/' route that sends 'Hello, Express!'\n// Add GET '/api/health' route that returns { status: 'healthy' }\n// Listen on port 3000\n",
+        "solution": "const express = require('express');\nconst app = express();\n\napp.get('/', (req, res) => {\n  res.send('Hello, Express!');\n});\n\napp.get('/api/health', (req, res) => {\n  res.json({ status: 'healthy' });\n});\n\napp.listen(3000);",
+        "expectedOutput": "Hello, Express!",
+        "hints": [
+          "Use app.get() to define GET routes",
+          "Use res.send() for text and res.json() for JSON",
+          "Call app.listen(3000) to start the server"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "application-structure",
+    "sectionId": "express-fundamentals",
+    "orderIndex": 1,
+    "title": "Application Structure",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Project Layout", "Separation of Concerns", "MVC Pattern", "Routes", "Controllers", "Services"],
+    "content": {
+      "explanation": "As Express applications grow beyond a simple hello world, organizing your code becomes critical. A well-structured project is easier to understand, maintain, test, and extend. While Express does not enforce any particular project structure, the community has converged on several proven patterns.\n\nThe most common pattern is the MVC-like structure adapted for APIs: Models define your data schema and database interactions, Controllers handle HTTP request/response logic (parsing input, calling services, sending responses), and Services contain the business logic (data processing, validation rules, external API calls). Routes define which URL patterns map to which controllers. This separation of concerns means each file has one clear responsibility.\n\nA typical Express project structure looks like this: the root contains package.json, .env, and configuration files. The src/ directory contains your application code, organized into subdirectories: routes/ for route definitions, controllers/ for request handlers, services/ for business logic, models/ for database schemas, middleware/ for custom middleware, utils/ for helper functions, and config/ for configuration management.\n\nThe key principle is that each layer only communicates with its adjacent layers. Routes call controllers, controllers call services, services call models. A controller should never access the database directly — it delegates that to a service. This makes each layer independently testable and replaceable. You can swap your database from PostgreSQL to MongoDB by only changing the model layer, without touching controllers or routes.\n\nIn practice, many teams organize by feature (module) rather than by type. Instead of having all routes in one directory and all controllers in another, you group everything related to a feature together: users/users.routes.js, users/users.controller.js, users/users.service.js. This approach scales better for large applications because related code stays together, and teams can work on different features without merge conflicts.",
+      "codeExamples": [
+        {
+          "title": "Project Directory Structure",
+          "code": "// Typical Express project structure:\n//\n// my-app/\n// ├── src/\n// │   ├── index.js              # App entry point\n// │   ├── app.js                # Express app configuration\n// │   ├── routes/\n// │   │   ├── index.js           # Route aggregator\n// │   │   └── users.routes.js    # User routes\n// │   ├── controllers/\n// │   │   └── users.controller.js\n// │   ├── services/\n// │   │   └── users.service.js\n// │   ├── models/\n// │   │   └── user.model.js\n// │   ├── middleware/\n// │   │   ├── auth.js\n// │   │   └── errorHandler.js\n// │   ├── utils/\n// │   │   └── logger.js\n// │   └── config/\n// │       └── index.js\n// ├── package.json\n// ├── .env\n// └── .gitignore\n\n// --- src/app.js ---\nconst express = require('express');\nconst routes = require('./routes');\n\nconst app = express();\n\napp.use(express.json());\napp.use('/api', routes);\n\nmodule.exports = app;",
+          "explanation": "Separating app configuration (app.js) from server startup (index.js) allows you to import the app in tests without starting the server. The routes aggregator collects all route modules and mounts them under a common prefix."
+        },
+        {
+          "title": "Separation of Concerns: Route, Controller, Service",
+          "code": "// --- routes/users.routes.js ---\nconst express = require('express');\nconst router = express.Router();\nconst usersController = require('../controllers/users.controller');\n\nrouter.get('/', usersController.getAllUsers);\nrouter.get('/:id', usersController.getUserById);\nrouter.post('/', usersController.createUser);\n\nmodule.exports = router;\n\n// --- controllers/users.controller.js ---\nconst usersService = require('../services/users.service');\n\nexports.getAllUsers = (req, res) => {\n  const users = usersService.getAll();\n  res.json(users);\n};\n\nexports.getUserById = (req, res) => {\n  const user = usersService.getById(parseInt(req.params.id));\n  if (!user) return res.status(404).json({ error: 'User not found' });\n  res.json(user);\n};\n\nexports.createUser = (req, res) => {\n  const user = usersService.create(req.body);\n  res.status(201).json(user);\n};\n\n// --- services/users.service.js ---\nlet users = [{ id: 1, name: 'Alice', email: 'alice@example.com' }];\nlet nextId = 2;\n\nexports.getAll = () => users;\n\nexports.getById = (id) => users.find(u => u.id === id);\n\nexports.create = (data) => {\n  const user = { id: nextId++, name: data.name, email: data.email };\n  users.push(user);\n  return user;\n};",
+          "explanation": "Routes only define URL patterns and map them to controller methods. Controllers handle HTTP concerns (request parsing, response formatting). Services contain pure business logic with no knowledge of HTTP. This separation makes each layer independently testable."
+        },
+        {
+          "title": "Entry Point and App Separation",
+          "code": "// --- src/app.js (Express configuration) ---\nconst express = require('express');\nconst cors = require('cors');\nconst usersRoutes = require('./routes/users.routes');\nconst errorHandler = require('./middleware/errorHandler');\n\nconst app = express();\n\n// Global middleware\napp.use(cors());\napp.use(express.json());\napp.use(express.urlencoded({ extended: true }));\n\n// Routes\napp.use('/api/users', usersRoutes);\n\n// Error handling (must be last)\napp.use(errorHandler);\n\nmodule.exports = app;\n\n// --- src/index.js (Server startup) ---\nconst app = require('./app');\nconst PORT = process.env.PORT || 3000;\n\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});\n\n// --- middleware/errorHandler.js ---\nmodule.exports = (err, req, res, next) => {\n  console.error(err.stack);\n  res.status(err.status || 500).json({\n    error: err.message || 'Internal Server Error'\n  });\n};",
+          "output": "Server running on port 3000",
+          "explanation": "app.js configures middleware and routes but does not start the server. index.js imports the app and starts listening. This separation is essential for testing — you can import app.js in your test files and use supertest to make requests without starting a real server."
+        }
+      ],
+      "notes": [
+        "The 'feature-based' (modular) structure is generally preferred over 'type-based' structure for larger applications. Grouping related files together (user.routes.js, user.controller.js, user.service.js in one folder) makes code easier to find and manage.",
+        "Always separate app configuration from server startup. This enables testing with tools like supertest without actually binding to a port.",
+        "The error handler middleware must have exactly four parameters (err, req, res, next) and must be registered after all routes with app.use()."
+      ],
+      "commonPitfalls": [
+        "Putting all routes, controllers, and business logic in a single file. This creates an unmaintainable monolith as the application grows.",
+        "Controllers directly accessing the database instead of going through a service layer. This tightly couples HTTP handling to database logic and makes testing harder.",
+        "Registering the error handling middleware before routes — Express only forwards errors to middleware that comes after the point where the error occurred."
+      ],
+      "interviewTips": [
+        "Be ready to explain the MVC pattern and how it applies to Express APIs. In API-only applications, the 'View' layer is typically replaced by JSON responses.",
+        "Discuss the tradeoffs between organizing by type (all routes together, all controllers together) versus organizing by feature (all user-related files together)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "application-structure-ex1",
+        "title": "Controller and Service Split",
+        "description": "Given a products service that has getAll() and getById(id) methods, write a controller with getAllProducts and getProductById functions that use the service and send proper JSON responses (404 if product not found).",
+        "starterCode": "// Assume this service exists:\n// const productsService = require('../services/products.service');\n// productsService.getAll() => returns array of products\n// productsService.getById(id) => returns product or undefined\n\nconst productsService = {\n  getAll: () => [{ id: 1, name: 'Laptop' }, { id: 2, name: 'Phone' }],\n  getById: (id) => [{ id: 1, name: 'Laptop' }, { id: 2, name: 'Phone' }].find(p => p.id === id)\n};\n\n// Write getAllProducts controller\n// Write getProductById controller\n",
+        "solution": "const productsService = {\n  getAll: () => [{ id: 1, name: 'Laptop' }, { id: 2, name: 'Phone' }],\n  getById: (id) => [{ id: 1, name: 'Laptop' }, { id: 2, name: 'Phone' }].find(p => p.id === id)\n};\n\nconst getAllProducts = (req, res) => {\n  const products = productsService.getAll();\n  res.json(products);\n};\n\nconst getProductById = (req, res) => {\n  const product = productsService.getById(parseInt(req.params.id));\n  if (!product) return res.status(404).json({ error: 'Product not found' });\n  res.json(product);\n};",
+        "expectedOutput": "[{\"id\":1,\"name\":\"Laptop\"},{\"id\":2,\"name\":\"Phone\"}]",
+        "hints": [
+          "Controllers receive (req, res) and call service methods",
+          "Parse req.params.id to an integer with parseInt()",
+          "Return 404 status with an error message if the product is not found"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "serving-static-files",
+    "sectionId": "express-fundamentals",
+    "orderIndex": 2,
+    "title": "Serving Static Files",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["express.static", "Public Directory", "Path Configuration", "Virtual Path Prefix", "Static Assets"],
+    "content": {
+      "explanation": "Web applications need to serve static files such as HTML pages, CSS stylesheets, JavaScript files, images, fonts, and downloadable documents. Express provides the built-in express.static() middleware to serve files from a directory on your file system. This is one of the most commonly used middleware functions in Express.\n\nThe express.static() function takes a directory path as its argument and returns a middleware function. When a request comes in, it checks if a file matching the request path exists in the specified directory. If it does, it sends the file with the correct Content-Type header (determined automatically from the file extension). If the file does not exist, it passes the request to the next middleware in the chain.\n\nThe conventional directory for static files is named 'public' and sits at the root of your project. Inside public/, you typically organize files into subdirectories: css/ for stylesheets, js/ for client-side JavaScript, images/ for image files, and so on. When you mount express.static('public'), a file at public/css/style.css becomes accessible at http://localhost:3000/css/style.css (notice that 'public' is not part of the URL).\n\nYou can also mount static files under a virtual path prefix by passing it as the first argument to app.use(). For example, app.use('/static', express.static('public')) would serve public/css/style.css at /static/css/style.css. This is useful when you want to namespace your static files or serve from multiple directories.\n\nIt is important to use path.join() or path.resolve() to construct the directory path, especially when your application might be started from different working directories. Using path.join(__dirname, 'public') ensures the path is always relative to the file where the code lives, not the current working directory. This prevents the common issue of static files not being found when running the app from a different directory.",
+      "codeExamples": [
+        {
+          "title": "Basic Static File Serving",
+          "code": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\n// Serve static files from the 'public' directory\napp.use(express.static(path.join(__dirname, 'public')));\n\n// API routes still work alongside static files\napp.get('/api/data', (req, res) => {\n  res.json({ message: 'API is working' });\n});\n\napp.listen(3000, () => {\n  console.log('Server running on port 3000');\n  console.log('Static files served from:', path.join(__dirname, 'public'));\n});\n\n// Directory structure:\n// project/\n// ├── public/\n// │   ├── index.html\n// │   ├── css/\n// │   │   └── style.css\n// │   ├── js/\n// │   │   └── main.js\n// │   └── images/\n// │       └── logo.png\n// └── server.js\n//\n// Accessible URLs:\n// http://localhost:3000/              -> public/index.html\n// http://localhost:3000/css/style.css -> public/css/style.css\n// http://localhost:3000/images/logo.png -> public/images/logo.png",
+          "output": "Server running on port 3000\nStatic files served from: /app/public",
+          "explanation": "express.static() automatically maps URLs to files in the public directory. The 'public' folder name is not included in the URL. path.join(__dirname, 'public') ensures the path works regardless of where the app is started from."
+        },
+        {
+          "title": "Virtual Path Prefix and Multiple Directories",
+          "code": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\n// Serve files under /static prefix\napp.use('/static', express.static(path.join(__dirname, 'public')));\n\n// Serve uploaded files from a different directory\napp.use('/uploads', express.static(path.join(__dirname, 'uploads')));\n\n// Serve node_modules for frontend libraries\napp.use('/vendor', express.static(path.join(__dirname, 'node_modules')));\n\napp.listen(3000, () => {\n  console.log('Server running on port 3000');\n});\n\n// URL mapping:\n// /static/css/style.css  -> public/css/style.css\n// /uploads/photo.jpg     -> uploads/photo.jpg\n// /vendor/bootstrap/dist/css/bootstrap.min.css -> node_modules/bootstrap/...",
+          "explanation": "You can mount multiple static directories with different prefixes. This is useful for separating application assets, user uploads, and third-party libraries. Each mount is independent — Express checks them in order until it finds a matching file."
+        },
+        {
+          "title": "Static Files with Options",
+          "code": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\n// Static files with caching and custom options\napp.use(express.static(path.join(__dirname, 'public'), {\n  maxAge: '1d',          // Cache static assets for 1 day\n  etag: true,            // Enable ETag headers for caching\n  lastModified: true,    // Send Last-Modified header\n  index: 'index.html',   // Default file for directory requests\n  dotfiles: 'ignore',    // Ignore dotfiles (.env, .gitignore)\n  extensions: ['html']   // Serve .html files without extension\n}));\n\n// Fallback for SPA (Single Page Application)\napp.get('*', (req, res) => {\n  res.sendFile(path.join(__dirname, 'public', 'index.html'));\n});\n\napp.listen(3000, () => {\n  console.log('Server running on port 3000');\n});",
+          "explanation": "express.static accepts an options object for fine-tuning. maxAge sets browser cache duration. The extensions option allows accessing '/about' instead of '/about.html'. The SPA fallback catches all unmatched routes and serves index.html, letting the frontend router handle the URL."
+        }
+      ],
+      "notes": [
+        "express.static() is the only built-in middleware in Express (besides express.json and express.urlencoded). It handles Content-Type headers, caching headers, range requests, and conditional requests automatically.",
+        "Always use path.join(__dirname, 'public') instead of just 'public' to avoid issues when the app is started from a different working directory.",
+        "Static middleware should generally be registered before API routes so static file requests are handled quickly without going through API middleware like body parsers."
+      ],
+      "commonPitfalls": [
+        "Using a relative path like express.static('public') without path.join(__dirname) — this breaks when the app is started from a parent directory or by a process manager like PM2.",
+        "Not setting cache headers for production. Without maxAge, browsers will re-request every static file on every page load, slowing down your application.",
+        "Accidentally serving sensitive files by pointing express.static at the project root instead of a dedicated public directory."
+      ],
+      "interviewTips": [
+        "Explain the difference between serving static files with Express and using a reverse proxy like Nginx. In production, Nginx is typically used for static files because it is much faster at file I/O than Node.js.",
+        "Know what the SPA fallback pattern is and why single-page applications need it — client-side routing URLs like /about do not correspond to actual files on the server."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "serving-static-files-ex1",
+        "title": "Serve a Public Directory",
+        "description": "Create an Express app that serves static files from a 'public' directory using path.join(__dirname, 'public'). Also add a GET '/api/info' route that returns { name: 'My App', version: '1.0.0' }.",
+        "starterCode": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\n// Serve static files from 'public' directory\n// Add GET '/api/info' route returning { name: 'My App', version: '1.0.0' }\n// Listen on port 3000\n",
+        "solution": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\napp.use(express.static(path.join(__dirname, 'public')));\n\napp.get('/api/info', (req, res) => {\n  res.json({ name: 'My App', version: '1.0.0' });\n});\n\napp.listen(3000);",
+        "expectedOutput": "{\"name\":\"My App\",\"version\":\"1.0.0\"}",
+        "hints": [
+          "Use app.use(express.static()) to mount the static middleware",
+          "Use path.join(__dirname, 'public') for a reliable path",
+          "Static middleware and API routes can coexist on the same app"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "template-engines",
+    "sectionId": "express-fundamentals",
+    "orderIndex": 3,
+    "title": "Template Engines",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["EJS", "Pug", "Server-Side Rendering", "res.render", "View Engine", "Passing Data to Views"],
+    "content": {
+      "explanation": "Template engines allow you to generate dynamic HTML on the server by embedding data into HTML templates. Instead of sending raw HTML strings from your route handlers, you create template files with placeholders that get replaced with actual data at render time. This is called server-side rendering (SSR) and was the standard way to build web applications before single-page applications (SPAs) became popular.\n\nExpress has built-in support for template engines through its view system. You configure it by setting two properties: 'view engine' tells Express which template engine to use (e.g., 'ejs', 'pug'), and 'views' tells Express where to find template files (defaults to a 'views' directory). Once configured, you use res.render('templateName', data) to render a template with dynamic data and send the resulting HTML to the client.\n\nEJS (Embedded JavaScript) is one of the most popular template engines because it uses plain HTML with embedded JavaScript expressions. The syntax is straightforward: <%= expression %> outputs an HTML-escaped value, <%- expression %> outputs raw unescaped HTML, and <% code %> executes JavaScript without outputting anything (used for loops, conditionals, etc.). EJS templates look like regular HTML files with special tags, making them easy to learn.\n\nPug (formerly Jade) takes a completely different approach with a whitespace-sensitive, indentation-based syntax that eliminates the need for closing tags, angle brackets, and most quotes. While Pug produces cleaner template code, it has a steeper learning curve and the syntax looks nothing like HTML. The choice between EJS and Pug is largely a team preference.\n\nWhile many modern applications use client-side rendering with React, Vue, or Angular, template engines are still valuable for certain use cases: server-rendered marketing pages for better SEO, email templates, admin dashboards, server-rendered error pages, and applications where JavaScript is not available on the client.",
+      "codeExamples": [
+        {
+          "title": "EJS Template Engine Setup",
+          "code": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\n// Configure EJS as the view engine\napp.set('view engine', 'ejs');\napp.set('views', path.join(__dirname, 'views'));\n\n// Route that renders a template\napp.get('/', (req, res) => {\n  res.render('home', {\n    title: 'My Website',\n    username: 'Alice',\n    items: ['Node.js', 'Express', 'EJS']\n  });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));\n\n// --- views/home.ejs ---\n// <!DOCTYPE html>\n// <html>\n// <head><title><%= title %></title></head>\n// <body>\n//   <h1>Welcome, <%= username %>!</h1>\n//   <h2>Learning:</h2>\n//   <ul>\n//     <% items.forEach(item => { %>\n//       <li><%= item %></li>\n//     <% }) %>\n//   </ul>\n// </body>\n// </html>",
+          "output": "Server on port 3000",
+          "explanation": "app.set('view engine', 'ejs') tells Express to use EJS. res.render('home', data) looks for views/home.ejs and passes the data object. Inside the template, <%= %> outputs values and <% %> runs JavaScript logic like loops."
+        },
+        {
+          "title": "EJS Partials and Layouts",
+          "code": "// --- views/partials/header.ejs ---\n// <!DOCTYPE html>\n// <html>\n// <head>\n//   <title><%= title %></title>\n//   <link rel=\"stylesheet\" href=\"/css/style.css\">\n// </head>\n// <body>\n//   <nav>\n//     <a href=\"/\">Home</a>\n//     <a href=\"/about\">About</a>\n//   </nav>\n\n// --- views/partials/footer.ejs ---\n//   <footer><p>&copy; 2026 My App</p></footer>\n// </body>\n// </html>\n\n// --- views/home.ejs ---\n// <%- include('partials/header') %>\n//   <main>\n//     <h1><%= title %></h1>\n//     <p>Welcome to the home page!</p>\n//   </main>\n// <%- include('partials/footer') %>\n\nconst express = require('express');\nconst path = require('path');\nconst app = express();\n\napp.set('view engine', 'ejs');\napp.set('views', path.join(__dirname, 'views'));\napp.use(express.static(path.join(__dirname, 'public')));\n\napp.get('/', (req, res) => {\n  res.render('home', { title: 'Home' });\n});\n\napp.get('/about', (req, res) => {\n  res.render('about', { title: 'About Us' });\n});\n\napp.listen(3000);",
+          "explanation": "EJS partials are reusable template fragments included with <%- include('path') %>. Note the use of <%- (unescaped output) instead of <%= because the partial contains HTML that should not be escaped. This pattern avoids duplicating header/footer HTML across every page."
+        },
+        {
+          "title": "Pug Template Basics",
+          "code": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\n// Configure Pug as the view engine\napp.set('view engine', 'pug');\napp.set('views', path.join(__dirname, 'views'));\n\napp.get('/', (req, res) => {\n  res.render('home', {\n    title: 'Pug Example',\n    user: { name: 'Bob', role: 'Developer' },\n    skills: ['JavaScript', 'Node.js', 'Express']\n  });\n});\n\napp.listen(3000);\n\n// --- views/home.pug ---\n// doctype html\n// html\n//   head\n//     title= title\n//   body\n//     h1 Welcome, #{user.name}\n//     p Role: #{user.role}\n//     h2 Skills:\n//     ul\n//       each skill in skills\n//         li= skill",
+          "output": "Server listening on port 3000",
+          "explanation": "Pug uses indentation instead of closing tags. '= value' outputs an expression. #{variable} interpolates inside text. 'each item in array' creates loops. The syntax is concise but requires learning Pug-specific conventions."
+        }
+      ],
+      "notes": [
+        "You need to install template engines separately: 'npm install ejs' or 'npm install pug'. Express does not include any template engine by default.",
+        "EJS's <%= %> automatically escapes HTML entities to prevent XSS attacks. Only use <%- %> (unescaped) when you trust the content, such as including partials.",
+        "Template engines are still widely used for server-rendered pages, email templates, and PDF generation even in applications that primarily use client-side rendering."
+      ],
+      "commonPitfalls": [
+        "Using <%- %> (unescaped output) with user-provided data, which creates XSS vulnerabilities. Always use <%= %> for user content.",
+        "Forgetting to install the template engine package. app.set('view engine', 'ejs') only tells Express which engine to use; you still need to npm install ejs.",
+        "Putting business logic in templates. Templates should only handle presentation — keep data processing in controllers and services."
+      ],
+      "interviewTips": [
+        "Explain the difference between server-side rendering (SSR) and client-side rendering (CSR). SSR generates HTML on the server (better for SEO and initial load), while CSR generates HTML in the browser (better for interactivity).",
+        "Know when template engines are still the right choice: email templates, PDF generation, content-heavy sites where SEO is critical, and admin dashboards."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "template-engines-ex1",
+        "title": "Render a Dynamic Page",
+        "description": "Set up an Express app with EJS as the view engine. Create a GET '/profile' route that renders a 'profile' template with data: { name: 'Alice', age: 28, hobbies: ['coding', 'reading', 'hiking'] }.",
+        "starterCode": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\n// Set up EJS as the view engine\n// Set the views directory\n// Create GET '/profile' route that renders 'profile' template with data\n",
+        "solution": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\napp.set('view engine', 'ejs');\napp.set('views', path.join(__dirname, 'views'));\n\napp.get('/profile', (req, res) => {\n  res.render('profile', {\n    name: 'Alice',\n    age: 28,\n    hobbies: ['coding', 'reading', 'hiking']\n  });\n});\n\napp.listen(3000);",
+        "expectedOutput": "HTML page with Alice's profile and hobbies list",
+        "hints": [
+          "Use app.set('view engine', 'ejs') to configure the template engine",
+          "Use res.render('templateName', dataObject) to render a template",
+          "The data object's properties become variables in the template"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "environment-configuration",
+    "sectionId": "express-fundamentals",
+    "orderIndex": 4,
+    "title": "Environment Configuration",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["dotenv", "process.env", "NODE_ENV", "Configuration Patterns", "Secrets Management", "Environment Variables"],
+    "content": {
+      "explanation": "Every real application needs configuration that varies between environments: database URLs, API keys, port numbers, feature flags, and secret tokens. Hardcoding these values in your source code is a security risk (anyone with access to the code sees your secrets) and makes it impossible to run the same code in development, staging, and production without modification. Environment variables solve this problem.\n\nEnvironment variables are key-value pairs that exist outside your application code, set by the operating system or the deployment platform. In Node.js, you access them through the process.env object. For example, process.env.PORT reads the PORT environment variable. If the variable is not set, it returns undefined, so you should always provide sensible defaults: const port = process.env.PORT || 3000.\n\nThe dotenv package is the standard tool for loading environment variables from a .env file during development. You create a .env file in your project root with KEY=VALUE pairs, call require('dotenv').config() at the very beginning of your application (before any other code that reads process.env), and the variables become available on process.env. The .env file must be added to .gitignore to prevent secrets from being committed to version control.\n\nThe NODE_ENV variable is a convention used by Express and many Node.js packages to determine the runtime environment. When NODE_ENV is set to 'production', Express disables verbose error messages, enables view template caching, and optimizes performance. In development, you get detailed error stacks and more helpful debugging output. Always set NODE_ENV=production in your production environment.\n\nA robust configuration pattern is to create a centralized config module that reads all environment variables, validates them, and exports a structured configuration object. This gives you one place to manage defaults, one place to add validation (e.g., ensure required variables are set), and a clean API for the rest of your application. If a required variable like DATABASE_URL is missing, the application should fail immediately on startup with a clear error message, not silently break at runtime.",
+      "codeExamples": [
+        {
+          "title": "Basic dotenv Setup",
+          "code": "// --- .env file ---\n// PORT=3000\n// DATABASE_URL=postgresql://user:password@localhost:5432/mydb\n// JWT_SECRET=my-super-secret-key-123\n// NODE_ENV=development\n\n// --- server.js ---\nrequire('dotenv').config(); // Load .env file first!\n\nconst express = require('express');\nconst app = express();\n\nconst PORT = process.env.PORT || 3000;\nconst DB_URL = process.env.DATABASE_URL;\nconst SECRET = process.env.JWT_SECRET;\n\nconsole.log('Environment:', process.env.NODE_ENV);\nconsole.log('Port:', PORT);\nconsole.log('DB configured:', !!DB_URL);\n\napp.get('/', (req, res) => {\n  res.json({ environment: process.env.NODE_ENV });\n});\n\napp.listen(PORT, () => {\n  console.log(`Server running on port ${PORT}`);\n});",
+          "output": "Environment: development\nPort: 3000\nDB configured: true\nServer running on port 3000",
+          "explanation": "dotenv.config() reads the .env file and populates process.env. It must be called before any code that reads environment variables. The .env file should never be committed to git — add it to .gitignore."
+        },
+        {
+          "title": "Centralized Configuration Module",
+          "code": "// --- config/index.js ---\nrequire('dotenv').config();\n\nconst requiredVars = ['DATABASE_URL', 'JWT_SECRET'];\n\n// Validate required variables exist\nfor (const varName of requiredVars) {\n  if (!process.env[varName]) {\n    console.error(`Missing required env variable: ${varName}`);\n    process.exit(1);\n  }\n}\n\nmodule.exports = {\n  port: parseInt(process.env.PORT) || 3000,\n  nodeEnv: process.env.NODE_ENV || 'development',\n  isProduction: process.env.NODE_ENV === 'production',\n  db: {\n    url: process.env.DATABASE_URL\n  },\n  jwt: {\n    secret: process.env.JWT_SECRET,\n    expiresIn: process.env.JWT_EXPIRES_IN || '7d'\n  },\n  cors: {\n    origin: process.env.CORS_ORIGIN || 'http://localhost:5173'\n  }\n};\n\n// --- server.js ---\nconst config = require('./config');\nconst express = require('express');\nconst app = express();\n\nconsole.log(`Starting in ${config.nodeEnv} mode`);\n\napp.listen(config.port, () => {\n  console.log(`Server running on port ${config.port}`);\n});",
+          "output": "Starting in development mode\nServer running on port 3000",
+          "explanation": "A centralized config module validates all required variables at startup and exports a clean, structured object. If DATABASE_URL or JWT_SECRET is missing, the app exits immediately with a clear message instead of crashing later with a confusing error."
+        },
+        {
+          "title": "Environment-Specific Behavior",
+          "code": "require('dotenv').config();\nconst express = require('express');\nconst app = express();\n\nconst isDev = process.env.NODE_ENV !== 'production';\n\n// Development-only middleware\nif (isDev) {\n  const morgan = require('morgan');\n  app.use(morgan('dev'));\n  console.log('Morgan logger enabled (development only)');\n}\n\n// Error handler shows stack traces only in development\napp.use((err, req, res, next) => {\n  const status = err.status || 500;\n  const response = {\n    error: err.message || 'Internal Server Error'\n  };\n\n  // Include stack trace only in development\n  if (isDev) {\n    response.stack = err.stack;\n  }\n\n  res.status(status).json(response);\n});\n\n// CORS configuration based on environment\nconst cors = require('cors');\napp.use(cors({\n  origin: isDev\n    ? 'http://localhost:5173'\n    : process.env.CORS_ORIGIN\n}));\n\nconst PORT = process.env.PORT || 3000;\napp.listen(PORT, () => {\n  console.log(`Server running in ${process.env.NODE_ENV || 'development'} mode on port ${PORT}`);\n});",
+          "output": "Morgan logger enabled (development only)\nServer running in development mode on port 3000",
+          "explanation": "Use NODE_ENV to conditionally enable features. Verbose logging and stack traces are helpful in development but should be hidden in production for security. CORS origins typically differ between environments."
+        }
+      ],
+      "notes": [
+        "Never commit .env files to version control. Add .env to .gitignore immediately when creating a project. Instead, provide a .env.example file with all required variable names (but no actual values) for other developers.",
+        "dotenv.config() must be called before any code that reads process.env. The safest approach is to make it the very first line of your entry file.",
+        "In production environments (Heroku, AWS, Vercel, etc.), you set environment variables through the platform's dashboard or CLI — you do not use .env files in production."
+      ],
+      "commonPitfalls": [
+        "Committing the .env file to git, exposing database passwords, API keys, and JWT secrets to anyone with repository access.",
+        "Calling dotenv.config() too late — if other modules read process.env before dotenv loads, they will get undefined values.",
+        "Not providing default values for optional variables. process.env.PORT is a string or undefined; using it directly without a default can cause unexpected behavior."
+      ],
+      "interviewTips": [
+        "Explain the twelve-factor app methodology, specifically factor III (Store config in the environment). Configuration should be strictly separated from code.",
+        "Discuss how secrets management works in production: environment variables set by the platform, secret managers like AWS Secrets Manager or HashiCorp Vault, and encrypted configuration files."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "environment-configuration-ex1",
+        "title": "Config Module",
+        "description": "Create a configuration object that reads PORT (default 3000), NODE_ENV (default 'development'), and API_KEY from environment variables. If API_KEY is missing, log an error and exit the process.",
+        "starterCode": "require('dotenv').config();\n\n// Create a config object with:\n// - port: from PORT env var, default 3000 (as integer)\n// - nodeEnv: from NODE_ENV env var, default 'development'\n// - apiKey: from API_KEY env var (required)\n// Exit with process.exit(1) if API_KEY is missing\n",
+        "solution": "require('dotenv').config();\n\nif (!process.env.API_KEY) {\n  console.error('Missing required environment variable: API_KEY');\n  process.exit(1);\n}\n\nconst config = {\n  port: parseInt(process.env.PORT) || 3000,\n  nodeEnv: process.env.NODE_ENV || 'development',\n  apiKey: process.env.API_KEY\n};\n\nconsole.log(config);",
+        "expectedOutput": "{ port: 3000, nodeEnv: 'development', apiKey: '...' }",
+        "hints": [
+          "Use parseInt() to convert PORT from string to number",
+          "Use || to provide default values for optional variables",
+          "Check for required variables early and exit with a clear error message"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

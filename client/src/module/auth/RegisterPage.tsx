@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
-import { Zap, Eye, EyeOff } from "lucide-react";
+import {  Eye, EyeOff } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
 import api from "../../lib/axios";
 import { useAuthStore } from "../../lib/auth.store";
@@ -60,7 +60,11 @@ export default function RegisterPage() {
       if (role === "RECRUITER" && form.company) payload.company = form.company;
       const { data } = await api.post("/auth/register", payload);
       login(data.user, data.token);
-      redirectAfterAuth(data.user.role);
+      if (!data.user.isVerified) {
+        navigate(`/verify-email?email=${encodeURIComponent(form.email)}`);
+      } else {
+        redirectAfterAuth(data.user.role);
+      }
     } catch (err: unknown) {
       const error = err as { response?: { data?: { message?: string } } };
       setError(error.response?.data?.message || "Registration failed");
@@ -84,12 +88,7 @@ export default function RegisterPage() {
         className="w-full max-w-md"
       >
         <div className="text-center mb-8">
-          <Link to="/" className="inline-flex items-center gap-2 no-underline">
-            <div className="w-10 h-10 bg-gradient-to-br from-black to-gray-700 flex items-center justify-center rounded-xl">
-              <Zap className="w-6 h-6 text-white fill-white" />
-            </div>
-            <span className="text-2xl font-bold text-black dark:text-white">InternHack</span>
-          </Link>
+          
           <h1 className="text-2xl font-bold mt-6 text-gray-900 dark:text-white">Create an account</h1>
           <p className="text-gray-500 dark:text-gray-500 mt-1">Join InternHack today</p>
         </div>

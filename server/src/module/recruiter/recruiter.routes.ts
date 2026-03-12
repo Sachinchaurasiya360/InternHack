@@ -35,3 +35,12 @@ recruiterRouter.get("/talent-search", (req, res) => recruiterController.searchTa
 // Dashboard & Analytics
 recruiterRouter.get("/dashboard", (req, res) => recruiterController.getDashboard(req, res));
 recruiterRouter.get("/jobs/:jobId/analytics", (req, res) => recruiterController.getJobAnalytics(req, res));
+
+// Talent Pools
+recruiterRouter.post("/talent-pools", (req, res) => recruiterController.createTalentPool(req, res));
+recruiterRouter.get("/talent-pools", (req, res) => recruiterController.getTalentPools(req, res));
+recruiterRouter.get("/talent-pools/:poolId", (req, res) => recruiterController.getTalentPoolById(req, res));
+recruiterRouter.put("/talent-pools/:poolId", (req, res) => recruiterController.updateTalentPool(req, res));
+recruiterRouter.delete("/talent-pools/:poolId", (req, res) => recruiterController.deleteTalentPool(req, res));
+recruiterRouter.post("/talent-pools/:poolId/members", (req, res) => recruiterController.addPoolMember(req, res));
+recruiterRouter.delete("/talent-pools/:poolId/members/:studentId", (req, res) => recruiterController.removePoolMember(req, res));

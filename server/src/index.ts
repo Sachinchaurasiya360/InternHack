@@ -31,6 +31,9 @@ import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
 import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { professorRouter } from "./module/professor/professor.routes.js";
 import { internshipRouter } from "./module/internship/internship.routes.js";
+import { trendsRouter } from "./module/trends/trends.routes.js";
+import { campusDriveRouter } from "./module/campus-drive/campus-drive.routes.js";
+import { badgeRouter } from "./module/badge/badge.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 
@@ -112,6 +115,9 @@ app.use("/api/skill-tests", skillTestRouter);
 app.use("/api/hackathons", hackathonRouter);
 app.use("/api/professors", professorRouter);
 app.use("/api/internships", internshipRouter);
+app.use("/api/trends", trendsRouter);
+app.use("/api/campus-drives", campusDriveRouter);
+app.use("/api/badges", badgeRouter);
 
 // ── Static files (public folder) ──
 app.use(express.static(path.join(__dirname, "../public"), { dotfiles: "deny", index: false }));

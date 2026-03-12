@@ -9,6 +9,8 @@ import { LoadingScreen } from "./components/LoadingScreen";
 const LandingPage = lazy(() => import("./module/LandingPage/landingPage"));
 const LoginPage = lazy(() => import("./module/auth/LoginPage"));
 const RegisterPage = lazy(() => import("./module/auth/RegisterPage"));
+const VerifyEmailPage = lazy(() => import("./module/auth/VerifyEmailPage"));
+const ForgotPasswordPage = lazy(() => import("./module/auth/ForgotPasswordPage"));
 const JobBrowsePage = lazy(() => import("./module/student/jobs/JobBrowsePage"));
 const JobDetailPage = lazy(() => import("./module/student/jobs/JobDetailPage"));
 const ScrapedJobsPage = lazy(() => import("./module/scraped-jobs/ScrapedJobsPage"));
@@ -80,6 +82,27 @@ const HtmlLessonDetailPage = lazy(() => import("./module/student/html/HtmlLesson
 const CssLessonsPage = lazy(() => import("./module/student/css/CssLessonsPage"));
 const CssSectionPage = lazy(() => import("./module/student/css/CssSectionPage"));
 const CssLessonDetailPage = lazy(() => import("./module/student/css/CssLessonDetailPage"));
+const TsLessonsPage = lazy(() => import("./module/student/typescript/TsLessonsPage"));
+const TsSectionPage = lazy(() => import("./module/student/typescript/TsSectionPage"));
+const TsLessonDetailPage = lazy(() => import("./module/student/typescript/TsLessonDetailPage"));
+const ReactLessonsPage = lazy(() => import("./module/student/react/ReactLessonsPage"));
+const ReactSectionPage = lazy(() => import("./module/student/react/ReactSectionPage"));
+const ReactLessonDetailPage = lazy(() => import("./module/student/react/ReactLessonDetailPage"));
+const FastApiLessonsPage = lazy(() => import("./module/student/fastapi/FastApiLessonsPage"));
+const FastApiSectionPage = lazy(() => import("./module/student/fastapi/FastApiSectionPage"));
+const FastApiLessonDetailPage = lazy(() => import("./module/student/fastapi/FastApiLessonDetailPage"));
+const FlaskLessonsPage = lazy(() => import("./module/student/flask/FlaskLessonsPage"));
+const FlaskSectionPage = lazy(() => import("./module/student/flask/FlaskSectionPage"));
+const FlaskLessonDetailPage = lazy(() => import("./module/student/flask/FlaskLessonDetailPage"));
+const DjangoLessonsPage = lazy(() => import("./module/student/django/DjangoLessonsPage"));
+const DjangoSectionPage = lazy(() => import("./module/student/django/DjangoSectionPage"));
+const DjangoLessonDetailPage = lazy(() => import("./module/student/django/DjangoLessonDetailPage"));
+const NodeLessonsPage = lazy(() => import("./module/student/nodejs/NodeLessonsPage"));
+const NodeSectionPage = lazy(() => import("./module/student/nodejs/NodeSectionPage"));
+const NodeLessonDetailPage = lazy(() => import("./module/student/nodejs/NodeLessonDetailPage"));
+const PythonLessonsPage = lazy(() => import("./module/student/python/PythonLessonsPage"));
+const PythonSectionPage = lazy(() => import("./module/student/python/PythonSectionPage"));
+const PythonLessonDetailPage = lazy(() => import("./module/student/python/PythonLessonDetailPage"));
 
 // Recruiter pages
 const RecruiterLayout = lazy(() => import("./module/recruiter/RecruiterLayout"));
@@ -91,6 +114,16 @@ const ApplicationsList = lazy(() => import("./module/recruiter/applications/Appl
 const ApplicationDetail = lazy(() => import("./module/recruiter/applications/ApplicationDetail"));
 const JobAnalyticsPage = lazy(() => import("./module/recruiter/analytics/JobAnalyticsPage"));
 const TalentSearchPage = lazy(() => import("./module/recruiter/talent/TalentSearchPage"));
+const TalentPoolsPage = lazy(() => import("./module/recruiter/talent/TalentPoolsPage"));
+const TalentPoolDetailPage = lazy(() => import("./module/recruiter/talent/TalentPoolDetailPage"));
+const DrivesListPage = lazy(() => import("./module/recruiter/drives/DrivesListPage"));
+const CreateDrivePage = lazy(() => import("./module/recruiter/drives/CreateDrivePage"));
+const DriveDetailPage = lazy(() => import("./module/recruiter/drives/DriveDetailPage"));
+
+// Student new feature pages
+const TrendsPage = lazy(() => import("./module/student/trends/TrendsPage"));
+const CampusDrivesPage = lazy(() => import("./module/student/campus/CampusDrivesPage"));
+const CampusDriveDetailPage = lazy(() => import("./module/student/campus/CampusDriveDetailPage"));
 
 // Admin pages
 const AdminLoginPage = lazy(() => import("./module/admin/AdminLoginPage"));
@@ -111,6 +144,7 @@ const AdminDsaPage = lazy(() => import("./module/admin/dsa/AdminDsaPage"));
 const AdminAptitudePage = lazy(() => import("./module/admin/aptitude/AdminAptitudePage"));
 const AdminSkillTestsPage = lazy(() => import("./module/admin/skill-tests/AdminSkillTestsPage"));
 const AdminHackathonsPage = lazy(() => import("./module/admin/hackathons/AdminHackathonsPage"));
+const AdminBadgesPage = lazy(() => import("./module/admin/AdminBadgesPage"));
 
 function App() {
   return (
@@ -123,6 +157,8 @@ function App() {
           <Route path="/" element={<LandingPage />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
+          <Route path="/verify-email" element={<VerifyEmailPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/jobs" element={<JobBrowsePage />} />
           <Route path="/jobs/:id" element={<JobDetailPage />} />
           <Route path="/internships" element={<GovInternshipsPage />} />
@@ -149,6 +185,27 @@ function App() {
             <Route path="css" element={<CssLessonsPage />} />
             <Route path="css/:sectionSlug" element={<CssSectionPage />} />
             <Route path="css/:sectionSlug/:lessonId" element={<CssLessonDetailPage />} />
+            <Route path="typescript" element={<TsLessonsPage />} />
+            <Route path="typescript/:sectionSlug" element={<TsSectionPage />} />
+            <Route path="typescript/:sectionSlug/:lessonId" element={<TsLessonDetailPage />} />
+            <Route path="react" element={<ReactLessonsPage />} />
+            <Route path="react/:sectionSlug" element={<ReactSectionPage />} />
+            <Route path="react/:sectionSlug/:lessonId" element={<ReactLessonDetailPage />} />
+            <Route path="fastapi" element={<FastApiLessonsPage />} />
+            <Route path="fastapi/:sectionSlug" element={<FastApiSectionPage />} />
+            <Route path="fastapi/:sectionSlug/:lessonId" element={<FastApiLessonDetailPage />} />
+            <Route path="flask" element={<FlaskLessonsPage />} />
+            <Route path="flask/:sectionSlug" element={<FlaskSectionPage />} />
+            <Route path="flask/:sectionSlug/:lessonId" element={<FlaskLessonDetailPage />} />
+            <Route path="django" element={<DjangoLessonsPage />} />
+            <Route path="django/:sectionSlug" element={<DjangoSectionPage />} />
+            <Route path="django/:sectionSlug/:lessonId" element={<DjangoLessonDetailPage />} />
+            <Route path="nodejs" element={<NodeLessonsPage />} />
+            <Route path="nodejs/:sectionSlug" element={<NodeSectionPage />} />
+            <Route path="nodejs/:sectionSlug/:lessonId" element={<NodeLessonDetailPage />} />
+            <Route path="python" element={<PythonLessonsPage />} />
+            <Route path="python/:sectionSlug" element={<PythonSectionPage />} />
+            <Route path="python/:sectionSlug/:lessonId" element={<PythonLessonDetailPage />} />
             <Route path="sql" element={<SqlPracticePage />} />
             <Route path="sql/playground" element={<SqlPlaygroundPage />} />
             <Route path="sql/:sectionSlug" element={<SqlExercisePage />} />
@@ -178,9 +235,18 @@ function App() {
           <Route path="/css/*" element={<Navigate to="/learn/css" replace />} />
           <Route path="/student/html/*" element={<Navigate to="/learn/html" replace />} />
           <Route path="/student/css/*" element={<Navigate to="/learn/css" replace />} />
+          <Route path="/typescript/*" element={<Navigate to="/learn/typescript" replace />} />
+          <Route path="/student/typescript/*" element={<Navigate to="/learn/typescript" replace />} />
+          <Route path="/react/*" element={<Navigate to="/learn/react" replace />} />
+          <Route path="/student/react/*" element={<Navigate to="/learn/react" replace />} />
           <Route path="/student/sql/*" element={<Navigate to="/learn/sql" replace />} />
           <Route path="/student/dsa/*" element={<Navigate to="/learn/dsa" replace />} />
           <Route path="/student/aptitude/*" element={<Navigate to="/learn/aptitude" replace />} />
+          <Route path="/fastapi/*" element={<Navigate to="/learn/fastapi" replace />} />
+          <Route path="/flask/*" element={<Navigate to="/learn/flask" replace />} />
+          <Route path="/django/*" element={<Navigate to="/learn/django" replace />} />
+          <Route path="/python/*" element={<Navigate to="/learn/python" replace />} />
+          <Route path="/student/python/*" element={<Navigate to="/learn/python" replace />} />
 
           {/* Standalone proctored test - no layout chrome */}
           <Route path="/test/:testId" element={<ProtectedRoute role="STUDENT"><SkillTestPage /></ProtectedRoute>} />
@@ -222,6 +288,9 @@ function App() {
             <Route path="opensource/first-pr" element={<FirstPRRoadmapPage />} />
             <Route path="opensource/gsoc-proposal" element={<GSoCProposalPage />} />
             <Route path="opensource/analytics" element={<OpenSourceAnalyticsPage />} />
+            <Route path="trends" element={<TrendsPage />} />
+            <Route path="campus-drives" element={<CampusDrivesPage />} />
+            <Route path="campus-drives/:id" element={<CampusDriveDetailPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="profile" element={<StudentProfilePage />} />
           </Route>
@@ -236,6 +305,11 @@ function App() {
             <Route path="jobs/:id/analytics" element={<JobAnalyticsPage />} />
             <Route path="applications/:applicationId" element={<ApplicationDetail />} />
             <Route path="talent-search" element={<TalentSearchPage />} />
+            <Route path="talent-pools" element={<TalentPoolsPage />} />
+            <Route path="talent-pools/:poolId" element={<TalentPoolDetailPage />} />
+            <Route path="campus-drives" element={<DrivesListPage />} />
+            <Route path="campus-drives/new" element={<CreateDrivePage />} />
+            <Route path="campus-drives/:id" element={<DriveDetailPage />} />
             <Route path="profile/:id" element={<PublicProfilePage />} />
           </Route>
 
@@ -261,6 +335,7 @@ function App() {
             <Route path="aptitude" element={<AdminAptitudePage />} />
             <Route path="skill-tests" element={<AdminSkillTestsPage />} />
             <Route path="hackathons" element={<AdminHackathonsPage />} />
+            <Route path="badges" element={<AdminBadgesPage />} />
             <Route path="blog" element={<AdminBlogPage />} />
             <Route path="blog/editor" element={<AdminBlogEditor />} />
             <Route path="blog/editor/:id" element={<AdminBlogEditor />} />

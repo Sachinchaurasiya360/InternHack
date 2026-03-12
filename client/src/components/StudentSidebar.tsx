@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap } from "lucide-react";
+import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, TrendingUp, School } from "lucide-react";
 import { useAuthStore } from "../lib/auth.store";
 
 const NAV_ITEMS = [
@@ -11,6 +11,8 @@ const NAV_ITEMS = [
   { to: "/student/skill-verification", icon: ShieldCheck, label: "Skill Tests" },
   { to: "/student/mock-interview", icon: Video, label: "Mock Interview" },
   { to: "/student/companies", icon: Building2, label: "Explore Companies" },
+  { to: "/student/trends", icon: TrendingUp, label: "Job Trends" },
+  { to: "/student/campus-drives", icon: School, label: "Campus Drives" },
   { to: "/student/grants", icon: Award, label: "Grants" },
   { to: "/student/opensource", icon: Globe, label: "Open Source" },
   { to: "/student/checkout", icon: Crown, label: "Upgrade" },

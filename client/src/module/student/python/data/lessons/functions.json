@@ -1,0 +1,496 @@
+[
+  {
+    "id": "defining-functions",
+    "sectionId": "functions",
+    "orderIndex": 0,
+    "title": "Defining Functions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": [
+      "def Keyword",
+      "return Statement",
+      "Docstrings",
+      "Default Parameters"
+    ],
+    "content": {
+      "explanation": "Functions in Python are defined using the `def` keyword followed by the function name, parentheses containing any parameters, and a colon. The function body is an indented block of code that executes when the function is called. Functions allow you to encapsulate reusable logic, making your code modular, testable, and easier to maintain. Every Python function returns a value -- if no explicit `return` statement is provided, the function returns `None` by default.\n\nThe `return` statement exits the function and sends a value back to the caller. A function can have multiple `return` statements (for example, inside conditional branches), but only one executes per call. You can also return multiple values as a tuple by separating them with commas. This is a common Python idiom that leverages tuple unpacking to assign returned values to individual variables in a single line.\n\nDocstrings are string literals placed as the very first statement inside a function body. They serve as the function's documentation and are accessible at runtime via the `__doc__` attribute or through the built-in `help()` function. The convention is to use triple-quoted strings, with the first line being a concise summary, optionally followed by a blank line and a more detailed description. Well-written docstrings make your code self-documenting and are essential for collaborative projects.\n\nDefault parameters allow you to specify fallback values for function arguments. When the caller omits those arguments, the defaults kick in. This is extremely useful for creating flexible APIs where most callers use common values but some need customization. Parameters with defaults must come after parameters without defaults in the function signature, or Python will raise a `SyntaxError`.",
+      "codeExamples": [
+        {
+          "title": "Basic Function Definition and Return",
+          "code": "def add(a, b):\n    \"\"\"Return the sum of two numbers.\"\"\"\n    return a + b\n\ndef is_even(n):\n    \"\"\"Check whether a number is even.\"\"\"\n    return n % 2 == 0\n\nprint(add(3, 7))\nprint(is_even(4))\nprint(is_even(5))",
+          "output": "10\nTrue\nFalse",
+          "explanation": "The `add` function takes two parameters and returns their sum. The `is_even` function returns a boolean indicating whether the number is divisible by 2. Both functions use docstrings to describe their purpose."
+        },
+        {
+          "title": "Returning Multiple Values",
+          "code": "def min_max(numbers):\n    \"\"\"Return both the minimum and maximum of a list.\"\"\"\n    return min(numbers), max(numbers)\n\nlowest, highest = min_max([4, 1, 8, 2, 9])\nprint(f\"Min: {lowest}\")\nprint(f\"Max: {highest}\")",
+          "output": "Min: 1\nMax: 9",
+          "explanation": "Python allows returning multiple values separated by commas, which creates a tuple. The caller can use tuple unpacking to assign each value to a separate variable in one line."
+        },
+        {
+          "title": "Default Parameters",
+          "code": "def greet(name, greeting=\"Hello\", punctuation=\"!\"):\n    \"\"\"Build a greeting string with optional customization.\"\"\"\n    return f\"{greeting}, {name}{punctuation}\"\n\nprint(greet(\"Alice\"))\nprint(greet(\"Bob\", \"Hi\"))\nprint(greet(\"Charlie\", \"Hey\", \".\"))",
+          "output": "Hello, Alice!\nHi, Bob!\nHey, Charlie.",
+          "explanation": "The `greeting` and `punctuation` parameters have default values, so the caller can omit them. When provided, the caller's values override the defaults. Parameters with defaults must appear after those without."
+        },
+        {
+          "title": "Docstrings and the __doc__ Attribute",
+          "code": "def calculate_area(radius):\n    \"\"\"Calculate the area of a circle.\n\n    Args:\n        radius: The radius of the circle (non-negative number).\n\n    Returns:\n        The area as a float.\n    \"\"\"\n    import math\n    return math.pi * radius ** 2\n\nprint(round(calculate_area(5), 2))\nprint(calculate_area.__doc__.strip().split('\\n')[0])",
+          "output": "78.54\nCalculate the area of a circle.",
+          "explanation": "The docstring follows the Google style guide format with Args and Returns sections. Accessing `__doc__` at runtime retrieves the raw docstring, which tools like `help()` and documentation generators use."
+        }
+      ],
+      "notes": [
+        "Every Python function returns `None` implicitly if no `return` statement is reached.",
+        "Default parameter values are evaluated once at function definition time, not at each call -- this matters for mutable defaults like lists and dicts.",
+        "Use triple-quoted docstrings for multi-line documentation; single-line docstrings are fine for simple functions.",
+        "Function names should follow snake_case by PEP 8 convention."
+      ],
+      "commonPitfalls": [
+        "Using a mutable object (like a list or dict) as a default parameter value. Because defaults are evaluated once, the same object is shared across all calls, leading to unexpected accumulation of data. Use `None` as the default and create the mutable object inside the function body instead.",
+        "Placing parameters without defaults after parameters with defaults causes a SyntaxError. Always put required parameters first."
+      ],
+      "interviewTips": [
+        "Be prepared to explain why mutable default arguments are dangerous and how to fix the pattern using `None` as a sentinel.",
+        "Know that Python functions are objects -- they can be assigned to variables, stored in data structures, and have attributes like `__doc__` and `__name__`."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "defining-functions-ex1",
+        "title": "Temperature Converter",
+        "description": "Write a function `celsius_to_fahrenheit` that takes a Celsius temperature and returns the Fahrenheit equivalent using the formula F = C * 9/5 + 32. Test it with 0, 100, and -40.",
+        "starterCode": "def celsius_to_fahrenheit(celsius):\n    # your code here\n    pass\n\nprint(celsius_to_fahrenheit(0))\nprint(celsius_to_fahrenheit(100))\nprint(celsius_to_fahrenheit(-40))",
+        "solution": "def celsius_to_fahrenheit(celsius):\n    return celsius * 9 / 5 + 32\n\nprint(celsius_to_fahrenheit(0))\nprint(celsius_to_fahrenheit(100))\nprint(celsius_to_fahrenheit(-40))",
+        "expectedOutput": "32.0\n212.0\n-40.0",
+        "hints": [
+          "Apply the formula: fahrenheit = celsius * 9 / 5 + 32",
+          "Python's division operator `/` returns a float, so 0 * 9 / 5 + 32 gives 32.0"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "defining-functions-ex2",
+        "title": "Power Function with Default Exponent",
+        "description": "Write a function `power` that takes a base and an optional exponent (default 2). It should return the base raised to the exponent. Test with power(3), power(2, 10), and power(5, 3).",
+        "starterCode": "def power(base, exponent=2):\n    # your code here\n    pass\n\nprint(power(3))\nprint(power(2, 10))\nprint(power(5, 3))",
+        "solution": "def power(base, exponent=2):\n    return base ** exponent\n\nprint(power(3))\nprint(power(2, 10))\nprint(power(5, 3))",
+        "expectedOutput": "9\n1024\n125",
+        "hints": [
+          "Use the ** operator to raise base to the exponent.",
+          "When no exponent is passed, the default value 2 is used, so power(3) computes 3 ** 2."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "defining-functions-ex3",
+        "title": "Safe Division with Multiple Returns",
+        "description": "Write a function `safe_divide` that takes two numbers and returns their quotient. If the divisor is zero, return the string 'Cannot divide by zero'. Test with safe_divide(10, 3), safe_divide(10, 0), and safe_divide(7, 2).",
+        "starterCode": "def safe_divide(a, b):\n    # your code here\n    pass\n\nprint(safe_divide(10, 3))\nprint(safe_divide(10, 0))\nprint(safe_divide(7, 2))",
+        "solution": "def safe_divide(a, b):\n    if b == 0:\n        return 'Cannot divide by zero'\n    return a / b\n\nprint(safe_divide(10, 3))\nprint(safe_divide(10, 0))\nprint(safe_divide(7, 2))",
+        "expectedOutput": "3.3333333333333335\nCannot divide by zero\n3.5",
+        "hints": [
+          "Check if b is zero before performing the division.",
+          "Use an early return for the zero case, then the normal division as the default path."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "args-and-kwargs",
+    "sectionId": "functions",
+    "orderIndex": 1,
+    "title": "Args and Kwargs",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": [
+      "*args",
+      "**kwargs",
+      "Positional-Only Parameters",
+      "Keyword-Only Parameters"
+    ],
+    "content": {
+      "explanation": "Python provides two special syntaxes for writing functions that accept a variable number of arguments: `*args` and `**kwargs`. The `*args` syntax collects any number of positional arguments into a tuple, while `**kwargs` collects any number of keyword arguments into a dictionary. These mechanisms make it possible to write highly flexible functions and are used extensively in frameworks, decorators, and wrapper functions.\n\nWhen you define a function with `*args`, any positional arguments that do not match a named parameter are gathered into a tuple named `args` (the name `args` is convention, not a requirement -- the `*` is what matters). Similarly, `**kwargs` collects unmatched keyword arguments into a dictionary. You can use both in the same function, but `*args` must come before `**kwargs` in the parameter list. A common pattern is `def wrapper(*args, **kwargs)` which forwards all arguments to another function.\n\nPython 3 introduced positional-only parameters (using `/` in the signature) and keyword-only parameters (any parameters defined after `*` or `*args`). Positional-only parameters cannot be passed by name, which is useful when the parameter name is an implementation detail you do not want callers to depend on. Keyword-only parameters must be passed by name, improving readability at the call site for functions with many arguments.\n\nThe order of parameters in a function signature follows strict rules: regular positional parameters come first, then `/` for positional-only boundary, then regular parameters, then `*args` or bare `*`, then keyword-only parameters, and finally `**kwargs`. Understanding this ordering is essential for reading library source code and for writing robust public APIs.\n\nThese features also play an important role in function forwarding and the decorator pattern. When writing a decorator, you typically define an inner wrapper that accepts `*args, **kwargs` and passes them through to the decorated function. This ensures the decorator works with any function signature without needing to know the specific parameters in advance.",
+      "codeExamples": [
+        {
+          "title": "Using *args to Accept Variable Positional Arguments",
+          "code": "def total(*args):\n    \"\"\"Sum all provided numbers.\"\"\"\n    print(f\"Received: {args}\")\n    return sum(args)\n\nprint(total(1, 2, 3))\nprint(total(10, 20, 30, 40, 50))",
+          "output": "Received: (1, 2, 3)\n6\nReceived: (10, 20, 30, 40, 50)\n150",
+          "explanation": "The `*args` parameter collects all positional arguments into a tuple. Inside the function, `args` is a regular tuple that you can iterate over, index, or pass to built-in functions like `sum()`."
+        },
+        {
+          "title": "Using **kwargs to Accept Variable Keyword Arguments",
+          "code": "def build_profile(name, **kwargs):\n    \"\"\"Build a user profile dictionary.\"\"\"\n    profile = {\"name\": name}\n    profile.update(kwargs)\n    return profile\n\nresult = build_profile(\"Alice\", age=30, city=\"NYC\", role=\"Developer\")\nfor key, value in sorted(result.items()):\n    print(f\"{key}: {value}\")",
+          "output": "age: 30\ncity: NYC\nname: Alice\nrole: Developer",
+          "explanation": "The `**kwargs` parameter collects all extra keyword arguments into a dictionary. This pattern is common for building configuration objects or forwarding options to other functions."
+        },
+        {
+          "title": "Combining *args and **kwargs",
+          "code": "def log_call(func_name, *args, **kwargs):\n    \"\"\"Log a function call with its arguments.\"\"\"\n    parts = [repr(a) for a in args]\n    parts += [f\"{k}={v!r}\" for k, v in kwargs.items()]\n    print(f\"{func_name}({', '.join(parts)})\")\n\nlog_call(\"greet\", \"Alice\", greeting=\"Hello\")\nlog_call(\"add\", 3, 5)\nlog_call(\"configure\", timeout=30, retries=3, verbose=True)",
+          "output": "greet('Alice', greeting='Hello')\nadd(3, 5)\nconfigure(timeout=30, retries=3, verbose=True)",
+          "explanation": "Regular parameters come first, then `*args` collects remaining positional arguments, and `**kwargs` collects remaining keyword arguments. This is the standard pattern for wrapper and logging functions."
+        },
+        {
+          "title": "Positional-Only and Keyword-Only Parameters",
+          "code": "def search(query, /, *, case_sensitive=False, limit=10):\n    \"\"\"Demonstrate positional-only and keyword-only params.\"\"\"\n    print(f\"Query: {query}\")\n    print(f\"Case sensitive: {case_sensitive}\")\n    print(f\"Limit: {limit}\")\n\nsearch(\"python\")\nprint(\"---\")\nsearch(\"decorators\", case_sensitive=True, limit=5)",
+          "output": "Query: python\nCase sensitive: False\nLimit: 10\n---\nQuery: decorators\nCase sensitive: True\nLimit: 5",
+          "explanation": "The `/` marks everything before it as positional-only. The `*` (or `*args`) marks everything after it as keyword-only. This means `query` must be passed by position, while `case_sensitive` and `limit` must be passed by name."
+        }
+      ],
+      "notes": [
+        "The names `args` and `kwargs` are conventions -- only the `*` and `**` prefixes have syntactic meaning.",
+        "Inside the function, `args` is a tuple and `kwargs` is a dictionary.",
+        "You can unpack sequences into function calls with `*` and dictionaries with `**`: `func(*my_list, **my_dict)`.",
+        "Positional-only parameters (using `/`) were introduced in Python 3.8."
+      ],
+      "commonPitfalls": [
+        "Placing `**kwargs` before `*args` in the parameter list causes a SyntaxError. The correct order is always `*args` before `**kwargs`.",
+        "Forgetting that `*args` produces a tuple, not a list. If you need list operations like `.append()`, convert it first with `list(args)`."
+      ],
+      "interviewTips": [
+        "Be ready to explain the full parameter ordering: positional, /, regular, *args (or bare *), keyword-only, **kwargs.",
+        "Know how to use `*args` and `**kwargs` to write a generic decorator wrapper that works with any function signature.",
+        "Understand unpacking: `*` unpacks iterables into positional args, `**` unpacks dicts into keyword args at the call site."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "args-and-kwargs-ex1",
+        "title": "Flexible Average",
+        "description": "Write a function `average` that uses `*args` to accept any number of numeric arguments and returns their average. Print the result rounded to 2 decimal places for average(10, 20, 30), average(4, 8, 15, 16, 23, 42), and average(100).",
+        "starterCode": "def average(*args):\n    # your code here\n    pass\n\nprint(round(average(10, 20, 30), 2))\nprint(round(average(4, 8, 15, 16, 23, 42), 2))\nprint(round(average(100), 2))",
+        "solution": "def average(*args):\n    return sum(args) / len(args)\n\nprint(round(average(10, 20, 30), 2))\nprint(round(average(4, 8, 15, 16, 23, 42), 2))\nprint(round(average(100), 2))",
+        "expectedOutput": "20.0\n18.0\n100.0",
+        "hints": [
+          "Use sum(args) to get the total and len(args) to get the count.",
+          "Division with / always returns a float in Python 3."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "args-and-kwargs-ex2",
+        "title": "HTML Tag Builder",
+        "description": "Write a function `make_tag(tag, content, **attrs)` that builds an HTML-like string. The attrs should be rendered as key=\"value\" pairs inside the opening tag. Test with the examples below.",
+        "starterCode": "def make_tag(tag, content, **attrs):\n    # your code here\n    pass\n\nprint(make_tag(\"p\", \"Hello\"))\nprint(make_tag(\"a\", \"Click here\", href=\"https://example.com\"))\nprint(make_tag(\"div\", \"Box\", id=\"main\", style=\"color:red\"))",
+        "solution": "def make_tag(tag, content, **attrs):\n    attr_str = \"\"\n    if attrs:\n        attr_str = \" \" + \" \".join(f'{k}=\"{v}\"' for k, v in attrs.items())\n    return f\"<{tag}{attr_str}>{content}</{tag}>\"\n\nprint(make_tag(\"p\", \"Hello\"))\nprint(make_tag(\"a\", \"Click here\", href=\"https://example.com\"))\nprint(make_tag(\"div\", \"Box\", id=\"main\", style=\"color:red\"))",
+        "expectedOutput": "<p>Hello</p>\n<a href=\"https://example.com\">Click here</a>\n<div id=\"main\" style=\"color:red\">Box</div>",
+        "hints": [
+          "Use **kwargs to collect HTML attributes as key-value pairs.",
+          "Join the attributes into a string with spaces and format each as key=\"value\"."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "args-and-kwargs-ex3",
+        "title": "Argument Unpacking",
+        "description": "Given a function `multiply(a, b, c)`, demonstrate argument unpacking by calling it with a list and a dictionary. Print the results.",
+        "starterCode": "def multiply(a, b, c):\n    return a * b * c\n\nnums = [2, 3, 4]\nparams = {\"a\": 5, \"b\": 6, \"c\": 7}\n\n# Call multiply using * unpacking with nums\n# Call multiply using ** unpacking with params\n# your code here",
+        "solution": "def multiply(a, b, c):\n    return a * b * c\n\nnums = [2, 3, 4]\nparams = {\"a\": 5, \"b\": 6, \"c\": 7}\n\nprint(multiply(*nums))\nprint(multiply(**params))",
+        "expectedOutput": "24\n210",
+        "hints": [
+          "Use *nums to unpack the list into positional arguments: multiply(*nums).",
+          "Use **params to unpack the dictionary into keyword arguments: multiply(**params)."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "lambda-functions",
+    "sectionId": "functions",
+    "orderIndex": 2,
+    "title": "Lambda Functions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": [
+      "Lambda Syntax",
+      "map()",
+      "filter()",
+      "reduce()",
+      "sorted() with key"
+    ],
+    "content": {
+      "explanation": "Lambda functions are small anonymous functions defined with the `lambda` keyword. Unlike regular functions defined with `def`, a lambda is a single expression that is evaluated and returned automatically -- no `return` statement is needed or allowed. The syntax is `lambda parameters: expression`. Lambdas are most useful as short throwaway functions passed as arguments to higher-order functions like `map()`, `filter()`, and `sorted()`.\n\nThe `map()` function applies a given function to every item in an iterable and returns a map object (a lazy iterator). It is commonly used with lambda functions to transform data in a concise, functional style. For example, `map(lambda x: x ** 2, numbers)` squares every element. Since `map()` returns an iterator, you typically wrap it in `list()` to see all results at once.\n\nThe `filter()` function works similarly but keeps only the items for which the function returns `True`. It is the functional equivalent of a list comprehension with an `if` clause. Combined with lambda, it reads naturally: `filter(lambda x: x > 0, numbers)` keeps only positive numbers. Like `map()`, it returns a lazy iterator.\n\nThe `reduce()` function, found in the `functools` module, applies a two-argument function cumulatively to the items of an iterable, reducing them to a single value. For example, `reduce(lambda a, b: a + b, [1, 2, 3, 4])` computes `((1 + 2) + 3) + 4 = 10`. While powerful, `reduce()` can be harder to read than an explicit loop, so Python's style guide recommends using it judiciously.\n\nThe `sorted()` function and the `list.sort()` method both accept a `key` parameter -- a function that extracts a comparison key from each element. Lambda functions are the most common way to supply custom sort keys. For instance, `sorted(words, key=lambda w: len(w))` sorts strings by length. You can also sort tuples, dictionaries, and objects by any attribute or computed value using this pattern.",
+      "codeExamples": [
+        {
+          "title": "Lambda Basics",
+          "code": "# A simple lambda that adds two numbers\nadd = lambda a, b: a + b\nprint(add(3, 5))\n\n# Lambda with a conditional expression\nclassify = lambda x: \"even\" if x % 2 == 0 else \"odd\"\nprint(classify(4))\nprint(classify(7))",
+          "output": "8\neven\nodd",
+          "explanation": "A lambda is a one-line anonymous function. The first lambda takes two parameters and returns their sum. The second uses a conditional expression (ternary) to classify a number as even or odd."
+        },
+        {
+          "title": "map() and filter() with Lambda",
+          "code": "numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\n\nsquared = list(map(lambda x: x ** 2, numbers))\nprint(f\"Squared: {squared}\")\n\nevens = list(filter(lambda x: x % 2 == 0, numbers))\nprint(f\"Evens: {evens}\")\n\n# Chaining: square only the even numbers\nresult = list(map(lambda x: x ** 2, filter(lambda x: x % 2 == 0, numbers)))\nprint(f\"Squared evens: {result}\")",
+          "output": "Squared: [1, 4, 9, 16, 25, 36, 49, 64, 81, 100]\nEvens: [2, 4, 6, 8, 10]\nSquared evens: [4, 16, 36, 64, 100]",
+          "explanation": "map() transforms each element, filter() keeps elements that satisfy the condition. Nesting them together chains the operations: first filter for evens, then square the results."
+        },
+        {
+          "title": "reduce() for Accumulation",
+          "code": "from functools import reduce\n\nnumbers = [1, 2, 3, 4, 5]\n\ntotal = reduce(lambda a, b: a + b, numbers)\nprint(f\"Sum: {total}\")\n\nproduct = reduce(lambda a, b: a * b, numbers)\nprint(f\"Product: {product}\")\n\nlargest = reduce(lambda a, b: a if a > b else b, numbers)\nprint(f\"Max: {largest}\")",
+          "output": "Sum: 15\nProduct: 120\nMax: 5",
+          "explanation": "reduce() takes a two-argument function and applies it cumulatively. For the sum: ((((1+2)+3)+4)+5) = 15. For the product: ((((1*2)*3)*4)*5) = 120. The max example compares pairs and keeps the larger value."
+        },
+        {
+          "title": "sorted() with key Lambda",
+          "code": "students = [\n    {\"name\": \"Charlie\", \"grade\": 82},\n    {\"name\": \"Alice\", \"grade\": 95},\n    {\"name\": \"Bob\", \"grade\": 88},\n]\n\nby_grade = sorted(students, key=lambda s: s[\"grade\"])\nfor s in by_grade:\n    print(f\"{s['name']}: {s['grade']}\")\n\nprint(\"---\")\n\nwords = [\"banana\", \"pie\", \"Washington\", \"cat\"]\nby_length = sorted(words, key=lambda w: len(w))\nprint(by_length)",
+          "output": "Charlie: 82\nBob: 88\nAlice: 95\n---\n['pie', 'cat', 'banana', 'Washington']",
+          "explanation": "The key parameter extracts the value used for comparison. Sorting students by grade produces ascending order. Sorting words by length groups shorter words first. Use reverse=True for descending order."
+        }
+      ],
+      "notes": [
+        "Lambdas are limited to a single expression -- no statements, assignments, or multiple lines.",
+        "PEP 8 discourages assigning lambdas to variables. If you need a named function, use `def` instead.",
+        "List comprehensions are often preferred over `map()` and `filter()` for readability: `[x**2 for x in nums if x % 2 == 0]`.",
+        "reduce() was moved from builtins to `functools` in Python 3 because Guido van Rossum felt it was overused."
+      ],
+      "commonPitfalls": [
+        "Trying to put statements (like print or assignment) inside a lambda. Lambdas can only contain a single expression, not statements.",
+        "Forgetting to wrap map() or filter() results in list() -- they return lazy iterators, not lists."
+      ],
+      "interviewTips": [
+        "Know when to use lambda vs. def. Lambda is for short, throwaway functions; def is for anything reusable or longer than one expression.",
+        "Be ready to rewrite map/filter chains as list comprehensions and vice versa. Interviewers often ask for both approaches.",
+        "Understand how reduce() accumulates values and be able to trace through its execution step by step."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "lambda-functions-ex1",
+        "title": "Sort by Last Character",
+        "description": "Given a list of words, use `sorted()` with a lambda key to sort them by their last character. If two words share the same last character, their relative order should follow the default (alphabetical by full string).",
+        "starterCode": "words = [\"hello\", \"world\", \"python\", \"code\", \"lambda\"]\n\n# Sort words by their last character using sorted() and a lambda\n# your code here\n",
+        "solution": "words = [\"hello\", \"world\", \"python\", \"code\", \"lambda\"]\n\nresult = sorted(words, key=lambda w: w[-1])\nprint(result)",
+        "expectedOutput": "['lambda', 'code', 'world', 'python', 'hello']",
+        "hints": [
+          "Use w[-1] to access the last character of a string.",
+          "Pass the lambda as the key argument to sorted()."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "lambda-functions-ex2",
+        "title": "Pipeline with map, filter, reduce",
+        "description": "Given a list of integers, use `filter()` to keep only numbers greater than 3, then use `map()` to double them, and finally use `reduce()` to find their sum. Print each intermediate result and the final sum.",
+        "starterCode": "from functools import reduce\n\nnumbers = [1, 2, 3, 4, 5, 6, 7]\n\n# Step 1: filter numbers > 3\n# Step 2: map to double each\n# Step 3: reduce to sum\n# your code here",
+        "solution": "from functools import reduce\n\nnumbers = [1, 2, 3, 4, 5, 6, 7]\n\nfiltered = list(filter(lambda x: x > 3, numbers))\nprint(f\"Filtered: {filtered}\")\n\ndoubled = list(map(lambda x: x * 2, filtered))\nprint(f\"Doubled: {doubled}\")\n\ntotal = reduce(lambda a, b: a + b, doubled)\nprint(f\"Sum: {total}\")",
+        "expectedOutput": "Filtered: [4, 5, 6, 7]\nDoubled: [8, 10, 12, 14]\nSum: 44",
+        "hints": [
+          "filter(lambda x: x > 3, numbers) keeps elements greater than 3.",
+          "Chain the output of filter into map, then the output of map into reduce."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "lambda-functions-ex3",
+        "title": "Multi-Key Sort",
+        "description": "Given a list of tuples representing (name, age, score), sort them by score descending, then by age ascending as a tiebreaker. Use sorted() with a lambda key.",
+        "starterCode": "students = [\n    (\"Alice\", 22, 88),\n    (\"Bob\", 20, 95),\n    (\"Charlie\", 21, 88),\n    (\"Diana\", 20, 95),\n]\n\n# Sort by score descending, then age ascending\n# your code here",
+        "solution": "students = [\n    (\"Alice\", 22, 88),\n    (\"Bob\", 20, 95),\n    (\"Charlie\", 21, 88),\n    (\"Diana\", 20, 95),\n]\n\nresult = sorted(students, key=lambda s: (-s[2], s[1]))\nfor s in result:\n    print(f\"{s[0]}: age={s[1]}, score={s[2]}\")",
+        "expectedOutput": "Bob: age=20, score=95\nDiana: age=20, score=95\nCharlie: age=21, score=88\nAlice: age=22, score=88",
+        "hints": [
+          "Negate the score (-s[2]) to sort descending while using ascending order overall.",
+          "Return a tuple from the lambda to sort by multiple criteria: (-score, age)."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "scope-and-closures",
+    "sectionId": "functions",
+    "orderIndex": 3,
+    "title": "Scope and Closures",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": [
+      "LEGB Rule",
+      "global Keyword",
+      "nonlocal Keyword",
+      "Closures"
+    ],
+    "content": {
+      "explanation": "In Python, scope determines the visibility and lifetime of variables. When you reference a name, Python searches for it using the LEGB rule, checking four scopes in order: Local (inside the current function), Enclosing (inside any enclosing functions), Global (at the module level), and Built-in (Python's built-in namespace). Understanding this lookup chain is fundamental to predicting how your code behaves, especially when multiple functions are nested.\n\nThe Local scope contains variables defined within the current function. These are created when the function is called and destroyed when it returns. The Enclosing scope applies to nested functions -- an inner function can read variables from its outer (enclosing) function. The Global scope contains names defined at the top level of the module, and the Built-in scope contains Python's pre-defined names like `len`, `print`, and `range`.\n\nThe `global` keyword lets you modify a module-level variable from inside a function. Without it, assigning to a variable name inside a function creates a new local variable that shadows the global one. The `nonlocal` keyword serves a similar purpose for enclosing scopes -- it allows a nested function to modify a variable from its enclosing function rather than creating a new local variable. Both keywords should be used sparingly because they create implicit dependencies between functions and the state they modify.\n\nA closure is a function that remembers the values from its enclosing scope even after the outer function has finished executing. When a nested function references a variable from its outer function, Python captures that variable in the inner function's closure. This is what makes function factories and decorators possible. The closed-over variables live on as long as the inner function exists, stored in the function's `__closure__` attribute.\n\nClosures are one of Python's most powerful features. They enable patterns like memoization, where a function remembers previous results; factory functions, which produce configured functions on the fly; and decorators, which wrap existing functions with additional behavior. Mastering closures is essential for understanding how frameworks and libraries work under the hood.",
+      "codeExamples": [
+        {
+          "title": "The LEGB Rule in Action",
+          "code": "x = \"global\"\n\ndef outer():\n    x = \"enclosing\"\n\n    def inner():\n        x = \"local\"\n        print(f\"Inner: {x}\")\n\n    inner()\n    print(f\"Outer: {x}\")\n\nouter()\nprint(f\"Global: {x}\")",
+          "output": "Inner: local\nOuter: enclosing\nGlobal: global",
+          "explanation": "Each scope has its own `x`. The inner function finds `x` in its local scope first (L). The outer function sees its own local `x` (which is the enclosing scope for inner). The module level sees the global `x`. Each assignment creates a new variable in its respective scope."
+        },
+        {
+          "title": "Using global and nonlocal",
+          "code": "counter = 0\n\ndef increment_global():\n    global counter\n    counter += 1\n\ndef outer_counter():\n    count = 0\n\n    def increment():\n        nonlocal count\n        count += 1\n        return count\n\n    print(increment())\n    print(increment())\n    print(increment())\n\nincrement_global()\nincrement_global()\nprint(f\"Global counter: {counter}\")\n\nouter_counter()",
+          "output": "Global counter: 2\n1\n2\n3",
+          "explanation": "The `global` keyword allows `increment_global` to modify the module-level `counter`. The `nonlocal` keyword allows the inner `increment` function to modify `count` from the enclosing `outer_counter` scope. Without these keywords, the assignments would create new local variables instead."
+        },
+        {
+          "title": "Closures: Functions that Remember",
+          "code": "def make_counter(start=0):\n    count = start\n\n    def increment():\n        nonlocal count\n        count += 1\n        return count\n\n    def get_count():\n        return count\n\n    return increment, get_count\n\ninc, get = make_counter(10)\nprint(inc())\nprint(inc())\nprint(inc())\nprint(f\"Current: {get()}\")",
+          "output": "11\n12\n13\nCurrent: 13",
+          "explanation": "After `make_counter` returns, the `count` variable survives because both `increment` and `get_count` close over it. Each call to `inc()` modifies the same `count` variable. This is a closure in action -- the inner functions remember their enclosing environment."
+        },
+        {
+          "title": "Closure Pitfall: Late Binding in Loops",
+          "code": "# Common mistake: closures in a loop\nfunctions = []\nfor i in range(4):\n    functions.append(lambda: i)\n\nprint(\"Late binding:\", [f() for f in functions])\n\n# Fix: capture the value with a default argument\nfixed = []\nfor i in range(4):\n    fixed.append(lambda i=i: i)\n\nprint(\"Fixed:       \", [f() for f in fixed])",
+          "output": "Late binding: [3, 3, 3, 3]\nFixed:        [0, 1, 2, 3]",
+          "explanation": "In the first loop, all lambdas share the same variable `i`, which ends up as 3 after the loop completes. In the fixed version, `i=i` captures the current value of `i` as a default parameter at each iteration, preserving the expected value."
+        }
+      ],
+      "notes": [
+        "LEGB stands for Local, Enclosing, Global, Built-in -- Python searches these scopes in order when resolving a name.",
+        "Assignments inside a function create local variables by default. Reading a variable does not require `global` or `nonlocal`.",
+        "A closure's captured variables are stored in the function's `__closure__` attribute as cell objects.",
+        "Avoid overusing `global` -- it creates hidden coupling between functions and module state, making code harder to test and debug."
+      ],
+      "commonPitfalls": [
+        "Forgetting that assigning to a variable inside a function makes it local for the entire function, even before the assignment line. This causes an `UnboundLocalError` if you try to read the variable before assigning it.",
+        "Creating closures inside loops without capturing the loop variable's current value. All closures will share the final value of the loop variable due to late binding."
+      ],
+      "interviewTips": [
+        "Be able to explain the LEGB rule and trace through nested function examples showing which scope each variable comes from.",
+        "Know the closure-in-a-loop pitfall and the default argument fix. This is one of the most frequently asked Python gotcha questions.",
+        "Understand that closures capture variables by reference, not by value -- changes to the variable in the enclosing scope affect the closure."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "scope-and-closures-ex1",
+        "title": "LEGB Tracing",
+        "description": "Predict and print the output of nested functions accessing variables from different scopes. Fill in the function bodies so each print statement shows the correct scope name.",
+        "starterCode": "x = \"global\"\n\ndef level_one():\n    x = \"enclosing\"\n\n    def level_two():\n        # Do NOT define x here -- let it come from enclosing scope\n        print(f\"level_two sees: {x}\")\n\n    level_two()\n    print(f\"level_one sees: {x}\")\n\nlevel_one()\nprint(f\"module sees: {x}\")",
+        "solution": "x = \"global\"\n\ndef level_one():\n    x = \"enclosing\"\n\n    def level_two():\n        print(f\"level_two sees: {x}\")\n\n    level_two()\n    print(f\"level_one sees: {x}\")\n\nlevel_one()\nprint(f\"module sees: {x}\")",
+        "expectedOutput": "level_two sees: enclosing\nlevel_one sees: enclosing\nmodule sees: global",
+        "hints": [
+          "level_two has no local x, so it looks up to the enclosing scope (level_one).",
+          "The global x is never modified because level_one creates its own local x."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "scope-and-closures-ex2",
+        "title": "Build a Multiplier Factory",
+        "description": "Write a function `make_multiplier(factor)` that returns a closure which multiplies its argument by `factor`. Create multipliers for 3, 5, and 10, then test each.",
+        "starterCode": "def make_multiplier(factor):\n    # your code here\n    pass\n\ntimes3 = make_multiplier(3)\ntimes5 = make_multiplier(5)\ntimes10 = make_multiplier(10)\n\nprint(times3(7))\nprint(times5(7))\nprint(times10(7))",
+        "solution": "def make_multiplier(factor):\n    def multiply(n):\n        return n * factor\n    return multiply\n\ntimes3 = make_multiplier(3)\ntimes5 = make_multiplier(5)\ntimes10 = make_multiplier(10)\n\nprint(times3(7))\nprint(times5(7))\nprint(times10(7))",
+        "expectedOutput": "21\n35\n70",
+        "hints": [
+          "The inner function should accept a number and return it multiplied by the captured factor.",
+          "Return the inner function (without calling it) from make_multiplier."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "scope-and-closures-ex3",
+        "title": "Running Total Closure",
+        "description": "Write a function `make_accumulator(initial)` that returns a function. Each time the returned function is called with a number, it adds that number to a running total (starting from `initial`) and returns the new total. Use `nonlocal`.",
+        "starterCode": "def make_accumulator(initial):\n    # your code here\n    pass\n\nacc = make_accumulator(100)\nprint(acc(10))\nprint(acc(20))\nprint(acc(5))",
+        "solution": "def make_accumulator(initial):\n    total = initial\n\n    def add(n):\n        nonlocal total\n        total += n\n        return total\n\n    return add\n\nacc = make_accumulator(100)\nprint(acc(10))\nprint(acc(20))\nprint(acc(5))",
+        "expectedOutput": "110\n130\n135",
+        "hints": [
+          "Store the running total in a variable in the enclosing scope and use `nonlocal` to modify it.",
+          "Each call should add the argument to the running total and return the updated value."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "higher-order-functions",
+    "sectionId": "functions",
+    "orderIndex": 4,
+    "title": "Higher-Order Functions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": [
+      "First-Class Functions",
+      "Passing Functions as Arguments",
+      "Returning Functions"
+    ],
+    "content": {
+      "explanation": "In Python, functions are first-class objects. This means they can be assigned to variables, stored in data structures like lists and dictionaries, passed as arguments to other functions, and returned as values from functions. This property is the foundation of functional programming in Python and enables powerful patterns like callbacks, strategy dispatch, and function composition.\n\nA higher-order function is any function that takes one or more functions as arguments, returns a function, or both. You have already seen built-in higher-order functions like `map()`, `filter()`, and `sorted()`. Writing your own higher-order functions lets you create abstractions that separate what to do from how to do it. For example, a `retry` function can take any operation as a parameter and handle the retry logic generically.\n\nPassing functions as arguments is one of the most common patterns. When you pass a function to another function, the receiving function can call it whenever needed, with whatever arguments it chooses. This is the callback pattern. In Python, you pass the function object itself (without parentheses); adding parentheses would call it immediately and pass the return value instead.\n\nReturning functions from functions creates what are known as function factories or configurators. The outer function sets up some configuration or state, and the inner function uses that state when called later. This pattern works because of closures -- the returned function retains access to the variables from the enclosing scope. Decorators, one of Python's most distinctive features, are simply higher-order functions that take a function and return a modified version of it.\n\nFunction composition is another powerful technique enabled by higher-order functions. You can create a new function that applies multiple transformations in sequence by chaining functions together. While Python does not have a built-in composition operator, you can easily build a `compose` utility that takes multiple functions and returns a single function that applies them in order.",
+      "codeExamples": [
+        {
+          "title": "Functions as First-Class Objects",
+          "code": "def shout(text):\n    return text.upper()\n\ndef whisper(text):\n    return text.lower()\n\n# Assign function to a variable\ntransform = shout\nprint(transform(\"hello\"))\n\ntransform = whisper\nprint(transform(\"HELLO\"))\n\n# Store functions in a list\noperations = [shout, whisper, len]\nfor op in operations:\n    print(f\"{op.__name__}: {op('Python')}\")",
+          "output": "HELLO\nhello\nshout: PYTHON\nwhisper: python\nlen: 6",
+          "explanation": "Functions can be assigned to variables, stored in lists, and iterated over. The `__name__` attribute reveals the original function name. Notice that `len` is a built-in function but works exactly the same way as user-defined ones -- all functions are first-class."
+        },
+        {
+          "title": "Passing Functions as Arguments",
+          "code": "def apply_operation(func, values):\n    \"\"\"Apply a function to each value and return results.\"\"\"\n    return [func(v) for v in values]\n\nnumbers = [1, -2, 3, -4, 5]\n\nprint(apply_operation(abs, numbers))\nprint(apply_operation(lambda x: x ** 2, numbers))\nprint(apply_operation(str, numbers))",
+          "output": "[1, 2, 3, 4, 5]\n[1, 4, 9, 16, 25]\n['1', '-2', '3', '-4', '5']",
+          "explanation": "The `apply_operation` function does not know or care what transformation is applied -- it delegates that to the function passed in. This separation of concerns is the core benefit of higher-order functions."
+        },
+        {
+          "title": "Returning Functions (Function Factory)",
+          "code": "def make_validator(min_len, max_len):\n    \"\"\"Return a function that validates string length.\"\"\"\n    def validate(text):\n        length = len(text)\n        if length < min_len:\n            return f\"Too short ({length} < {min_len})\"\n        if length > max_len:\n            return f\"Too long ({length} > {max_len})\"\n        return \"Valid\"\n    return validate\n\nusername_ok = make_validator(3, 20)\npassword_ok = make_validator(8, 50)\n\nprint(username_ok(\"Al\"))\nprint(username_ok(\"Alice\"))\nprint(password_ok(\"short\"))\nprint(password_ok(\"a_very_secure_password\"))",
+          "output": "Too short (2 < 3)\nValid\nToo short (5 < 8)\nValid",
+          "explanation": "make_validator is a function factory that produces configured validator functions. Each returned function closes over the min_len and max_len values that were passed when it was created."
+        },
+        {
+          "title": "Function Composition",
+          "code": "def compose(*funcs):\n    \"\"\"Compose multiple functions: compose(f, g, h)(x) = f(g(h(x))).\"\"\"\n    from functools import reduce\n    def composed(x):\n        return reduce(lambda acc, f: f(acc), reversed(funcs), x)\n    return composed\n\ndouble = lambda x: x * 2\nadd_ten = lambda x: x + 10\nsquare = lambda x: x ** 2\n\npipeline = compose(square, add_ten, double)\n\n# double(3) = 6 -> add_ten(6) = 16 -> square(16) = 256\nprint(pipeline(3))\nprint(pipeline(5))\nprint(pipeline(0))",
+          "output": "256\n400\n100",
+          "explanation": "The compose function chains functions right-to-left. For pipeline(3): double(3)=6, add_ten(6)=16, square(16)=256. This pattern lets you build complex transformations from simple, reusable building blocks."
+        }
+      ],
+      "notes": [
+        "In Python, everything is an object -- including functions. Functions have attributes like `__name__`, `__doc__`, and `__closure__`.",
+        "Pass the function object (without parentheses) as an argument. Adding parentheses calls it immediately.",
+        "Higher-order functions enable the Strategy pattern: swap behavior at runtime by passing different functions.",
+        "Python decorators are syntactic sugar for higher-order functions: `@decorator` is equivalent to `func = decorator(func)`."
+      ],
+      "commonPitfalls": [
+        "Accidentally calling the function when you mean to pass it: `apply(my_func())` passes the return value, while `apply(my_func)` passes the function itself.",
+        "Forgetting that `lambda` is limited to a single expression. For anything multi-step, define a regular function with `def` and pass that."
+      ],
+      "interviewTips": [
+        "Be ready to explain what it means for functions to be first-class objects and give examples of assigning, passing, and returning functions.",
+        "Know how to implement a simple decorator from scratch -- it is a higher-order function that takes a function and returns a wrapper function.",
+        "Understand function composition and be able to explain how compose(f, g)(x) evaluates to f(g(x))."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "higher-order-functions-ex1",
+        "title": "Custom apply_to_each",
+        "description": "Write a function `apply_to_each(func, items)` that applies `func` to every element in `items` and returns a list of results. Test it with `abs`, a squaring lambda, and `str.upper` on appropriate inputs.",
+        "starterCode": "def apply_to_each(func, items):\n    # your code here\n    pass\n\nprint(apply_to_each(abs, [-3, -1, 0, 2, -5]))\nprint(apply_to_each(lambda x: x ** 2, [1, 2, 3, 4]))\nprint(apply_to_each(str.upper, [\"hello\", \"world\"]))",
+        "solution": "def apply_to_each(func, items):\n    return [func(item) for item in items]\n\nprint(apply_to_each(abs, [-3, -1, 0, 2, -5]))\nprint(apply_to_each(lambda x: x ** 2, [1, 2, 3, 4]))\nprint(apply_to_each(str.upper, [\"hello\", \"world\"]))",
+        "expectedOutput": "[3, 1, 0, 2, 5]\n[1, 4, 9, 16]\n['HELLO', 'WORLD']",
+        "hints": [
+          "Use a list comprehension to apply func to each item.",
+          "Remember to pass the function object, not call it -- func(item) calls it on each element."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "higher-order-functions-ex2",
+        "title": "Strategy Pattern with Function Dispatch",
+        "description": "Create a dictionary mapping operation names to functions ('add', 'sub', 'mul'). Write a function `calculate(op_name, a, b)` that looks up the operation and applies it. Handle unknown operations by printing 'Unknown operation'.",
+        "starterCode": "# Define operations dict and calculate function\n# your code here\n\nprint(calculate(\"add\", 10, 5))\nprint(calculate(\"sub\", 10, 5))\nprint(calculate(\"mul\", 10, 5))\nprint(calculate(\"div\", 10, 5))",
+        "solution": "operations = {\n    \"add\": lambda a, b: a + b,\n    \"sub\": lambda a, b: a - b,\n    \"mul\": lambda a, b: a * b,\n}\n\ndef calculate(op_name, a, b):\n    if op_name in operations:\n        return operations[op_name](a, b)\n    return \"Unknown operation\"\n\nprint(calculate(\"add\", 10, 5))\nprint(calculate(\"sub\", 10, 5))\nprint(calculate(\"mul\", 10, 5))\nprint(calculate(\"div\", 10, 5))",
+        "expectedOutput": "15\n5\n50\nUnknown operation",
+        "hints": [
+          "Store lambda functions as dictionary values keyed by operation name.",
+          "Check if op_name exists in the dictionary before calling the function."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "higher-order-functions-ex3",
+        "title": "Simple Retry Wrapper",
+        "description": "Write a higher-order function `make_retry(func, max_attempts)` that returns a new function. The returned function calls `func` and, if it raises an exception, retries up to `max_attempts` times. If all attempts fail, it prints the last error message.",
+        "starterCode": "import random\n\ndef make_retry(func, max_attempts):\n    # your code here\n    pass\n\ncall_count = 0\n\ndef flaky_function():\n    global call_count\n    call_count += 1\n    if call_count < 3:\n        raise ValueError(f\"Attempt {call_count} failed\")\n    return f\"Success on attempt {call_count}\"\n\nrandom.seed(42)\nsafe_call = make_retry(flaky_function, 5)\nprint(safe_call())",
+        "solution": "import random\n\ndef make_retry(func, max_attempts):\n    def wrapper():\n        last_error = None\n        for attempt in range(max_attempts):\n            try:\n                return func()\n            except Exception as e:\n                last_error = e\n        print(f\"All {max_attempts} attempts failed: {last_error}\")\n        return None\n    return wrapper\n\ncall_count = 0\n\ndef flaky_function():\n    global call_count\n    call_count += 1\n    if call_count < 3:\n        raise ValueError(f\"Attempt {call_count} failed\")\n    return f\"Success on attempt {call_count}\"\n\nrandom.seed(42)\nsafe_call = make_retry(flaky_function, 5)\nprint(safe_call())",
+        "expectedOutput": "Success on attempt 3",
+        "hints": [
+          "The wrapper function should loop up to max_attempts times, calling func() in a try/except block.",
+          "If func() succeeds, return the result immediately. If it raises, store the exception and continue."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

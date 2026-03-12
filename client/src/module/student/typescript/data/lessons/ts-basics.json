@@ -1,0 +1,347 @@
+[
+  {
+    "id": "what-is-typescript",
+    "sectionId": "ts-basics",
+    "orderIndex": 0,
+    "title": "What is TypeScript?",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["TypeScript overview", "Static typing", "TypeScript vs JavaScript", "Type safety"],
+    "content": {
+      "explanation": "TypeScript is a strongly-typed superset of JavaScript developed and maintained by Microsoft. First released in 2012, it was created by Anders Hejlsberg, the same engineer behind C# and Delphi. TypeScript adds optional static type checking to JavaScript, which means you can catch errors at compile time rather than at runtime. Every valid JavaScript program is also a valid TypeScript program, making adoption incremental and straightforward.\n\nThe core value proposition of TypeScript is type safety. In plain JavaScript, you might pass a string where a number is expected and only discover the bug when your application crashes in production. TypeScript catches these mismatches during development, right in your editor. This leads to fewer bugs, better refactoring support, and significantly improved developer experience through autocompletion and inline documentation.\n\nTypeScript compiles (or more accurately, transpiles) down to plain JavaScript. The TypeScript compiler, `tsc`, strips away all type annotations and produces clean JavaScript that runs in any browser, Node.js, or JavaScript runtime. This means there is zero runtime overhead — types exist only during development and compilation. The compiled output is standard JavaScript that behaves identically to hand-written JS.\n\nAdoption of TypeScript has grown dramatically across the industry. Major frameworks like Angular, React (via community types), Vue 3, and Next.js all provide first-class TypeScript support. Companies like Microsoft, Google, Airbnb, and Stripe use TypeScript extensively. The npm ecosystem now includes type definitions for thousands of packages through the DefinitelyTyped project (@types/* packages).",
+      "codeExamples": [
+        {
+          "title": "JavaScript vs TypeScript comparison",
+          "code": "// JavaScript — no type safety\nfunction greet(name) {\n  return \"Hello, \" + name.toUpperCase();\n}\n\ngreet(42); // Runtime error: name.toUpperCase is not a function\n\n// TypeScript — catches the error at compile time\nfunction greetSafe(name: string): string {\n  return \"Hello, \" + name.toUpperCase();\n}\n\n// greetSafe(42); // Compile error: Argument of type 'number' is not assignable to parameter of type 'string'\nconsole.log(greetSafe(\"world\"));",
+          "output": "Hello, WORLD",
+          "explanation": "TypeScript prevents you from passing incorrect types. The compiler catches the error before your code ever runs, saving you from runtime crashes."
+        },
+        {
+          "title": "Type annotations provide documentation",
+          "code": "interface User {\n  id: number;\n  name: string;\n  email: string;\n  isActive: boolean;\n}\n\nfunction formatUser(user: User): string {\n  return `${user.name} (${user.email})`;\n}\n\nconst user: User = {\n  id: 1,\n  name: \"Alice\",\n  email: \"alice@example.com\",\n  isActive: true\n};\n\nconsole.log(formatUser(user));",
+          "output": "Alice (alice@example.com)",
+          "explanation": "Interfaces serve as both type enforcement and living documentation. Any developer reading this code immediately understands the shape of a User object."
+        },
+        {
+          "title": "TypeScript catches common mistakes",
+          "code": "const items: string[] = [\"apple\", \"banana\", \"cherry\"];\n\n// TypeScript knows .find() might return undefined\nconst found = items.find(item => item === \"banana\");\n\n// found is string | undefined — TS forces you to handle the undefined case\nif (found) {\n  console.log(found.toUpperCase());\n} else {\n  console.log(\"Not found\");\n}",
+          "output": "BANANA",
+          "explanation": "TypeScript tracks nullable values and encourages you to handle edge cases, preventing the infamous 'Cannot read property of undefined' errors."
+        }
+      ],
+      "notes": [
+        "TypeScript is a compile-time tool — all types are erased before the code runs, so there is zero performance cost at runtime.",
+        "You do not need to convert an entire project at once. Rename files from .js to .ts incrementally and add types gradually.",
+        "The TypeScript compiler can target different JavaScript versions (ES5, ES2015, ESNext), making it compatible with older environments."
+      ],
+      "commonPitfalls": [
+        "Thinking TypeScript types exist at runtime — they do not. You cannot check `if (typeof x === 'User')` because interfaces are erased after compilation.",
+        "Over-using the `any` type to silence errors — this defeats the purpose of TypeScript and hides real bugs."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "what-is-ts-ex1",
+        "title": "Add type annotations",
+        "description": "Add proper type annotations to the function parameters and return type so that TypeScript can catch errors at compile time.",
+        "starterCode": "// Add type annotations to this function\nfunction add(a, b) {\n  return a + b;\n}\n\nconsole.log(add(5, 3));",
+        "solution": "function add(a: number, b: number): number {\n  return a + b;\n}\n\nconsole.log(add(5, 3));",
+        "expectedOutput": "8",
+        "hints": [
+          "Both parameters should be numbers, and the function returns a number.",
+          "Type annotations go after the parameter name with a colon: `param: type`."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "what-is-ts-ex2",
+        "title": "Type-safe greeting",
+        "description": "Create a function called `createGreeting` that takes a `name` (string) and an `age` (number) and returns a greeting string. Use proper type annotations.",
+        "starterCode": "// Create the createGreeting function with proper types\n\n\nconsole.log(createGreeting(\"Alice\", 30));",
+        "solution": "function createGreeting(name: string, age: number): string {\n  return `Hello, ${name}! You are ${age} years old.`;\n}\n\nconsole.log(createGreeting(\"Alice\", 30));",
+        "expectedOutput": "Hello, Alice! You are 30 years old.",
+        "hints": [
+          "Use template literals (backtick strings) to build the greeting message.",
+          "The function takes a string and a number, and returns a string."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "setting-up-typescript",
+    "sectionId": "ts-basics",
+    "orderIndex": 1,
+    "title": "Setting Up TypeScript",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["tsc compiler", "tsconfig.json", "Installation", "Compilation"],
+    "content": {
+      "explanation": "Getting started with TypeScript requires installing the TypeScript compiler and understanding how to configure it. The compiler (`tsc`) is distributed as an npm package and can be installed globally or as a project dependency. For most projects, installing it locally as a dev dependency is recommended so that every developer on the team uses the same version.\n\nThe TypeScript compiler is invoked with the `tsc` command. You can compile a single file with `tsc myFile.ts`, which produces a `myFile.js` output. For larger projects, you create a `tsconfig.json` configuration file that tells the compiler which files to include, what JavaScript version to target, how strict the type checking should be, and where to output compiled files. Running `tsc --init` generates a default tsconfig with commented explanations for every option.\n\nThe `tsconfig.json` file has several important sections. The `compilerOptions` object controls the compilation behavior: `target` sets the output JavaScript version, `module` sets the module system (CommonJS, ESModules), `strict` enables all strict type-checking options, and `outDir` specifies where compiled JS files are written. The `include` and `exclude` arrays control which files the compiler processes.\n\nIn modern development, you often don't invoke `tsc` directly. Build tools like Vite, webpack, esbuild, and swc handle TypeScript compilation as part of a larger build pipeline. These tools typically use their own TypeScript parsers for speed and rely on `tsc` only for type checking (via `tsc --noEmit`). This separation of concerns — fast builds with a separate type-checking step — has become the standard pattern in large TypeScript projects.",
+      "codeExamples": [
+        {
+          "title": "Installing TypeScript and compiling",
+          "code": "// Terminal commands (not runnable here)\n// npm install -D typescript\n// npx tsc --init          # Creates tsconfig.json\n// npx tsc                 # Compiles entire project\n// npx tsc --watch         # Recompiles on file changes\n\n// A simple TypeScript file: hello.ts\nconst message: string = \"TypeScript is set up!\";\nconsole.log(message);",
+          "output": "TypeScript is set up!",
+          "explanation": "After installing TypeScript as a dev dependency, you use npx tsc to compile. The --watch flag is useful during development as it recompiles automatically when files change."
+        },
+        {
+          "title": "Basic tsconfig.json structure",
+          "code": "// tsconfig.json\n// {\n//   \"compilerOptions\": {\n//     \"target\": \"ES2020\",\n//     \"module\": \"ESNext\",\n//     \"strict\": true,\n//     \"outDir\": \"./dist\",\n//     \"rootDir\": \"./src\",\n//     \"esModuleInterop\": true,\n//     \"skipLibCheck\": true,\n//     \"forceConsistentCasingInFileNames\": true\n//   },\n//   \"include\": [\"src/**/*\"],\n//   \"exclude\": [\"node_modules\", \"dist\"]\n// }\n\n// With this config, src/index.ts compiles to dist/index.js\nconst version: number = 5;\nconsole.log(`TypeScript version target: ES2020, strict: ${version >= 4}`);",
+          "output": "TypeScript version target: ES2020, strict: true",
+          "explanation": "The tsconfig.json controls compilation behavior. 'strict: true' enables all strict checks and is recommended for new projects. 'outDir' and 'rootDir' control the directory structure of compiled output."
+        },
+        {
+          "title": "Strict mode benefits",
+          "code": "// With strict: true, TypeScript enforces:\n// - strictNullChecks: null and undefined are distinct types\n// - noImplicitAny: must annotate types that can't be inferred\n// - strictFunctionTypes: checks function parameter types correctly\n\nfunction getLength(value: string | null): number {\n  // With strictNullChecks, you must handle null\n  if (value === null) {\n    return 0;\n  }\n  return value.length;\n}\n\nconsole.log(getLength(\"hello\"));\nconsole.log(getLength(null));",
+          "output": "5\n0",
+          "explanation": "Strict mode catches potential null/undefined errors and requires explicit type handling. Always enable strict mode in new projects — it prevents entire categories of bugs."
+        }
+      ],
+      "notes": [
+        "Always use `strict: true` in new projects — it enables the most useful type checks including strictNullChecks and noImplicitAny.",
+        "The `tsc --noEmit` flag checks types without producing output files — useful when another tool handles the actual compilation.",
+        "Use `npx tsc --init` to generate a tsconfig.json with all options documented as comments."
+      ],
+      "commonPitfalls": [
+        "Forgetting to add `tsconfig.json` — without it, tsc uses default settings that are much less strict and may not match your project needs.",
+        "Setting `strict: false` to avoid type errors — this hides bugs rather than fixing them. Fix the types instead."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "setup-ts-ex1",
+        "title": "Strict null handling",
+        "description": "Write a function `safeParseInt` that takes a `value` of type `string | null` and returns the parsed integer or `0` if the value is null or not a valid number.",
+        "starterCode": "// Write safeParseInt with proper types\n\n\nconsole.log(safeParseInt(\"42\"));\nconsole.log(safeParseInt(null));\nconsole.log(safeParseInt(\"abc\"));",
+        "solution": "function safeParseInt(value: string | null): number {\n  if (value === null) {\n    return 0;\n  }\n  const parsed = parseInt(value, 10);\n  return isNaN(parsed) ? 0 : parsed;\n}\n\nconsole.log(safeParseInt(\"42\"));\nconsole.log(safeParseInt(null));\nconsole.log(safeParseInt(\"abc\"));",
+        "expectedOutput": "42\n0\n0",
+        "hints": [
+          "Use a union type `string | null` for the parameter. Check for null first before parsing.",
+          "parseInt can return NaN — use isNaN() to check and return 0 as the fallback."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "setup-ts-ex2",
+        "title": "Configuration awareness",
+        "description": "Create a function `describeConfig` that takes a config object with `target` (string), `strict` (boolean), and optional `outDir` (string) properties, and returns a description string.",
+        "starterCode": "// Define the function with proper types for the config parameter\n\n\nconsole.log(describeConfig({ target: \"ES2020\", strict: true, outDir: \"./dist\" }));\nconsole.log(describeConfig({ target: \"ES5\", strict: false }));",
+        "solution": "function describeConfig(config: { target: string; strict: boolean; outDir?: string }): string {\n  const outDir = config.outDir ? config.outDir : \"(default)\";\n  return `Target: ${config.target}, Strict: ${config.strict}, OutDir: ${outDir}`;\n}\n\nconsole.log(describeConfig({ target: \"ES2020\", strict: true, outDir: \"./dist\" }));\nconsole.log(describeConfig({ target: \"ES5\", strict: false }));",
+        "expectedOutput": "Target: ES2020, Strict: true, OutDir: ./dist\nTarget: ES5, Strict: false, OutDir: (default)",
+        "hints": [
+          "Use an inline object type with an optional property marked with `?` for outDir.",
+          "Check if outDir exists before using it, and provide a default string if it does not."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "primitive-types",
+    "sectionId": "ts-basics",
+    "orderIndex": 2,
+    "title": "Primitive Types",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["string", "number", "boolean", "null", "undefined", "bigint", "symbol"],
+    "content": {
+      "explanation": "TypeScript builds on JavaScript's primitive types by allowing you to explicitly declare which type a variable holds. The seven primitive types in TypeScript mirror JavaScript: `string`, `number`, `boolean`, `null`, `undefined`, `bigint`, and `symbol`. When you annotate a variable with a primitive type, TypeScript ensures that only values of that type can be assigned to it throughout its lifecycle.\n\nThe `string` type covers all text values, whether created with single quotes, double quotes, or template literals. The `number` type encompasses all numeric values — integers, floats, `Infinity`, and `NaN` (yes, NaN is of type number). The `boolean` type is limited to `true` and `false`. These three are the most commonly used primitives in day-to-day TypeScript development.\n\nThe `null` and `undefined` types are special. With `strictNullChecks` enabled (which is the default under `strict: true`), `null` and `undefined` are their own distinct types and cannot be assigned to other types without an explicit union. This is one of TypeScript's most valuable features: it forces you to handle cases where a value might not exist, preventing the infamous \"Cannot read property of null\" errors.\n\nThe `bigint` type represents arbitrarily large integers (created with the `BigInt()` function or the `n` suffix like `100n`). The `symbol` type represents unique identifiers created with `Symbol()`. Both are less commonly used but important in specific contexts — `bigint` for large number arithmetic and `symbol` for creating unique object property keys that won't collide with other properties.",
+      "codeExamples": [
+        {
+          "title": "Basic primitive type annotations",
+          "code": "const name: string = \"TypeScript\";\nconst version: number = 5.3;\nconst isTyped: boolean = true;\nconst nothing: null = null;\nconst notDefined: undefined = undefined;\n\nconsole.log(`${name} ${version}, typed: ${isTyped}`);\nconsole.log(`null is: ${nothing}, undefined is: ${notDefined}`);",
+          "output": "TypeScript 5.3, typed: true\nnull is: null, undefined is: undefined",
+          "explanation": "Each variable is annotated with its primitive type. TypeScript will prevent you from reassigning a value of a different type to any of these variables."
+        },
+        {
+          "title": "Number edge cases and bigint",
+          "code": "const integer: number = 42;\nconst float: number = 3.14;\nconst negative: number = -10;\nconst notANumber: number = NaN; // NaN is still type 'number'\nconst infinite: number = Infinity;\n\nconsole.log(typeof notANumber); // \"number\"\nconsole.log(Number.isNaN(notANumber)); // true\n\nconst bigValue: bigint = 9007199254740993n;\nconsole.log(bigValue.toString());",
+          "output": "number\ntrue\n9007199254740993",
+          "explanation": "NaN and Infinity are both valid number values in TypeScript. BigInt handles integers larger than Number.MAX_SAFE_INTEGER accurately."
+        },
+        {
+          "title": "Strict null checks in action",
+          "code": "function findUser(id: number): string | null {\n  if (id === 1) return \"Alice\";\n  return null;\n}\n\nconst user = findUser(1);\nconst missing = findUser(99);\n\n// Must check for null before using string methods\nif (user !== null) {\n  console.log(user.toUpperCase());\n}\nconsole.log(missing === null ? \"No user found\" : missing);",
+          "output": "ALICE\nNo user found",
+          "explanation": "With strictNullChecks, the return type `string | null` forces callers to handle the null case. This prevents runtime null reference errors."
+        }
+      ],
+      "notes": [
+        "Always use lowercase primitive types (`string`, `number`, `boolean`) in annotations — not the uppercase wrapper objects (`String`, `Number`, `Boolean`).",
+        "With strict null checks enabled, `null` and `undefined` are not assignable to other types. Use union types like `string | null` when a value can be absent.",
+        "The `typeof` operator works at runtime in JavaScript. TypeScript also uses it in type positions: `type T = typeof myVariable`."
+      ],
+      "commonPitfalls": [
+        "Using `String` instead of `string` — the uppercase versions are wrapper objects and almost never what you want in type annotations.",
+        "Forgetting that NaN has type `number` — checking `typeof NaN === 'number'` returns true, which can be surprising."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "primitives-ex1",
+        "title": "Type the variables",
+        "description": "Add correct type annotations to all the variables below. Each variable should have the most specific primitive type.",
+        "starterCode": "let username = \"Bob\";\nlet score = 95.5;\nlet isPassing = true;\nlet nickname = null;\n\nconsole.log(`${username}: ${score}, passing: ${isPassing}, nick: ${nickname}`);",
+        "solution": "let username: string = \"Bob\";\nlet score: number = 95.5;\nlet isPassing: boolean = true;\nlet nickname: null = null;\n\nconsole.log(`${username}: ${score}, passing: ${isPassing}, nick: ${nickname}`);",
+        "expectedOutput": "Bob: 95.5, passing: true, nick: null",
+        "hints": [
+          "Each variable maps directly to a TypeScript primitive: string, number, boolean, or null.",
+          "Add `: type` after each variable name but before the `=` sign."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "primitives-ex2",
+        "title": "Nullable return type",
+        "description": "Write a function `parseAge` that takes a `value` of type `string` and returns a `number` if the string is a valid positive integer, or `null` otherwise.",
+        "starterCode": "// Write the parseAge function\n\n\nconsole.log(parseAge(\"25\"));\nconsole.log(parseAge(\"-5\"));\nconsole.log(parseAge(\"abc\"));\nconsole.log(parseAge(\"0\"));",
+        "solution": "function parseAge(value: string): number | null {\n  const parsed = parseInt(value, 10);\n  if (isNaN(parsed) || parsed <= 0) {\n    return null;\n  }\n  return parsed;\n}\n\nconsole.log(parseAge(\"25\"));\nconsole.log(parseAge(\"-5\"));\nconsole.log(parseAge(\"abc\"));\nconsole.log(parseAge(\"0\"));",
+        "expectedOutput": "25\nnull\nnull\nnull",
+        "hints": [
+          "The return type should be `number | null` since the function can return either.",
+          "Use parseInt to convert, isNaN to check validity, and check that the number is positive (greater than 0)."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "type-inference",
+    "sectionId": "ts-basics",
+    "orderIndex": 3,
+    "title": "Type Inference",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Type inference", "Implicit typing", "Contextual typing", "When to annotate"],
+    "content": {
+      "explanation": "TypeScript has a powerful type inference engine that can automatically determine the type of a variable based on its initial value or the context in which it's used. When you write `const name = \"Alice\"`, TypeScript infers that `name` is of type `string` without you needing to write `: string`. This inference works for all primitive types, arrays, objects, function return types, and more.\n\nThe inference system distinguishes between `let` and `const` declarations. When you use `const`, TypeScript infers a literal type: `const x = 5` gives `x` the type `5` (not just `number`), and `const s = \"hello\"` gives `s` the type `\"hello\"` (not just `string`). This is because const variables cannot be reassigned, so TypeScript can be more specific. With `let`, the type is widened: `let x = 5` infers type `number` because `x` could later be assigned any number.\n\nContextual typing is another form of inference where TypeScript determines types from the surrounding context. For example, when you pass a callback to `array.map()`, TypeScript already knows the array's element type, so it infers the callback parameter type automatically. Similarly, event handlers in frameworks receive properly typed event objects without manual annotation. This contextual inference is one of the reasons TypeScript feels so natural to use.\n\nThe general guideline is: let TypeScript infer types when it can, and add explicit annotations when inference isn't sufficient or when you want to document your intent. Function parameters almost always need explicit annotations since TypeScript can't infer them from the function definition alone. Return types can usually be inferred, but adding them to public API functions improves documentation and catches accidental return type changes.",
+      "codeExamples": [
+        {
+          "title": "Basic type inference",
+          "code": "// TypeScript infers all of these types\nconst name = \"Alice\";       // type: \"Alice\" (literal)\nlet age = 30;               // type: number (widened)\nconst isActive = true;      // type: true (literal)\nlet scores = [90, 85, 92];  // type: number[]\n\n// No annotations needed — TypeScript knows the types\nconst total = scores.reduce((sum, score) => sum + score, 0);\nconsole.log(`${name}, age ${age}, total: ${total}`);",
+          "output": "Alice, age 30, total: 267",
+          "explanation": "TypeScript infers types from initial values. const declarations get literal types while let declarations get widened types. Array methods like reduce also have their return types inferred."
+        },
+        {
+          "title": "Contextual typing with callbacks",
+          "code": "const numbers = [1, 2, 3, 4, 5];\n\n// TypeScript infers 'n' is number from the array type\nconst doubled = numbers.map(n => n * 2);\nconst evens = numbers.filter(n => n % 2 === 0);\nconst found = numbers.find(n => n > 3);\n\nconsole.log(\"Doubled:\", doubled.join(\", \"));\nconsole.log(\"Evens:\", evens.join(\", \"));\nconsole.log(\"Found:\", found);",
+          "output": "Doubled: 2, 4, 6, 8, 10\nEvens: 2, 4\nFound: 4",
+          "explanation": "In callbacks passed to array methods, TypeScript infers the parameter type from the array's element type. You don't need to write `(n: number) => ...` because TypeScript knows."
+        },
+        {
+          "title": "When to add explicit annotations",
+          "code": "// Good: annotate function parameters (can't be inferred)\nfunction calculateArea(width: number, height: number): number {\n  return width * height;\n}\n\n// Good: annotate when the inferred type is too wide\nlet status: \"loading\" | \"success\" | \"error\" = \"loading\";\n\n// Good: annotate complex return types for clarity\nfunction getUser(id: number): { name: string; age: number } | null {\n  if (id === 1) return { name: \"Alice\", age: 30 };\n  return null;\n}\n\nconsole.log(calculateArea(5, 3));\nconsole.log(status);\nconsole.log(getUser(1));",
+          "output": "15\nloading\n{ name: 'Alice', age: 30 }",
+          "explanation": "Function parameters need annotations since TypeScript can't infer them. Use explicit annotations when you want a more specific type than what would be inferred, or for complex return types."
+        }
+      ],
+      "notes": [
+        "Let TypeScript infer types when it's obvious — adding redundant annotations like `const x: number = 5` adds noise without benefit.",
+        "Always annotate function parameters explicitly — TypeScript cannot infer parameter types from the function definition alone.",
+        "The `const` vs `let` distinction matters for inference: const narrows to literal types, let widens to the general type."
+      ],
+      "commonPitfalls": [
+        "Over-annotating everything — writing `const name: string = \"Alice\"` is redundant since TypeScript already infers the type.",
+        "Expecting TypeScript to infer function parameter types — unlike return types, parameters must be explicitly annotated."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "inference-ex1",
+        "title": "Predict the inferred types",
+        "description": "Without adding annotations, predict what TypeScript infers for each variable. Then write a function that prints each variable's typeof and value.",
+        "starterCode": "const language = \"TypeScript\";\nlet count = 0;\nconst items = [\"a\", \"b\", \"c\"];\nconst mixed = [1, \"two\", true];\n\n// Print typeof and value for each\nconsole.log(typeof language, language);\nconsole.log(typeof count, count);\nconsole.log(typeof items, items.length);\nconsole.log(typeof mixed, mixed.length);",
+        "solution": "const language = \"TypeScript\";\nlet count = 0;\nconst items = [\"a\", \"b\", \"c\"];\nconst mixed = [1, \"two\", true];\n\nconsole.log(typeof language, language);\nconsole.log(typeof count, count);\nconsole.log(typeof items, items.length);\nconsole.log(typeof mixed, mixed.length);",
+        "expectedOutput": "string TypeScript\nnumber 0\nobject 3\nobject 3",
+        "hints": [
+          "The typeof operator returns the runtime JavaScript type as a string. Arrays return 'object'.",
+          "TypeScript infers `mixed` as `(string | number | boolean)[]` — a union array type."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "inference-ex2",
+        "title": "Add annotations only where needed",
+        "description": "This function has missing type annotations on its parameters. Add only the annotations that TypeScript cannot infer. Do not add redundant annotations on variables inside the function.",
+        "starterCode": "function summarize(items, separator) {\n  const count = items.length;\n  const joined = items.join(separator);\n  return `${count} items: ${joined}`;\n}\n\nconsole.log(summarize([\"apple\", \"banana\", \"cherry\"], \", \"));\nconsole.log(summarize([\"x\"], \" | \"));",
+        "solution": "function summarize(items: string[], separator: string): string {\n  const count = items.length;\n  const joined = items.join(separator);\n  return `${count} items: ${joined}`;\n}\n\nconsole.log(summarize([\"apple\", \"banana\", \"cherry\"], \", \"));\nconsole.log(summarize([\"x\"], \" | \"));",
+        "expectedOutput": "3 items: apple, banana, cherry\n1 items: x",
+        "hints": [
+          "Function parameters always need annotations. The first parameter is an array of strings, the second is a string.",
+          "The return type can be inferred but adding it is good practice for documentation. Variables inside the function don't need annotations."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "arrays-and-tuples",
+    "sectionId": "ts-basics",
+    "orderIndex": 4,
+    "title": "Arrays and Tuples",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Typed arrays", "Tuples", "Readonly arrays", "Array methods with types"],
+    "content": {
+      "explanation": "TypeScript provides two syntaxes for typed arrays: `type[]` and `Array<type>`. Both are equivalent — `number[]` and `Array<number>` describe the same type. The bracket syntax is more common and concise, while the generic syntax is useful in certain contexts like when the element type itself is complex. A typed array ensures that every element conforms to the specified type, and all array methods (push, map, filter, etc.) respect the element type.\n\nTuples are a distinct concept from arrays. While an array has a variable length and a single element type (or union type), a tuple has a fixed length where each position has its own specific type. You define a tuple type as `[string, number, boolean]`, which means exactly three elements of those exact types in that exact order. Tuples are useful for representing structured data like coordinate pairs `[number, number]`, key-value pairs `[string, unknown]`, or function return values that carry multiple pieces of information.\n\nTypeScript also supports readonly arrays and tuples via the `readonly` modifier or `ReadonlyArray<T>` generic. A `readonly number[]` prevents any mutations — you cannot push, pop, splice, or reassign elements. This is valuable for functional programming patterns where immutability is desired. Note that readonly arrays are a supertype of mutable arrays, so you can pass a mutable array where a readonly one is expected, but not vice versa.\n\nArray types interact well with TypeScript's type inference. When you write `const nums = [1, 2, 3]`, TypeScript infers `number[]`. For tuples, you typically need explicit annotation since TypeScript defaults to inferring an array type: `const pair = [1, \"hello\"]` is inferred as `(string | number)[]`, not `[number, string]`. Use `as const` or an explicit tuple annotation to get the tuple type.",
+      "codeExamples": [
+        {
+          "title": "Typed arrays and array methods",
+          "code": "const numbers: number[] = [10, 20, 30, 40, 50];\nconst names: Array<string> = [\"Alice\", \"Bob\", \"Charlie\"];\n\n// Array methods preserve type information\nconst doubled = numbers.map(n => n * 2);        // number[]\nconst long = names.filter(n => n.length > 3);    // string[]\nconst total = numbers.reduce((a, b) => a + b, 0); // number\n\nconsole.log(doubled.join(\", \"));\nconsole.log(long.join(\", \"));\nconsole.log(total);",
+          "output": "20, 40, 60, 80, 100\nAlice, Charlie\n150",
+          "explanation": "Both `type[]` and `Array<type>` syntax work identically. Array methods like map, filter, and reduce are fully typed — TypeScript knows the return types automatically."
+        },
+        {
+          "title": "Tuple types",
+          "code": "// A tuple with specific types at each position\nconst userEntry: [string, number, boolean] = [\"Alice\", 30, true];\n\n// Destructuring tuples gives typed variables\nconst [name, age, active] = userEntry;\nconsole.log(`${name} is ${age}, active: ${active}`);\n\n// Tuples as function return types\nfunction divide(a: number, b: number): [number, number] {\n  return [Math.floor(a / b), a % b]; // [quotient, remainder]\n}\n\nconst [quotient, remainder] = divide(17, 5);\nconsole.log(`17 / 5 = ${quotient} remainder ${remainder}`);",
+          "output": "Alice is 30, active: true\n17 / 5 = 3 remainder 2",
+          "explanation": "Tuples enforce fixed length and per-position types. Destructuring a tuple gives each variable its correct type. Functions can return tuples to provide multiple typed return values."
+        },
+        {
+          "title": "Readonly arrays and tuples",
+          "code": "const readonlyNums: readonly number[] = [1, 2, 3, 4, 5];\n// readonlyNums.push(6);  // Error: Property 'push' does not exist on readonly number[]\n// readonlyNums[0] = 99;  // Error: Index signature in type 'readonly number[]' only permits reading\n\n// Readonly still allows non-mutating methods\nconst filtered = readonlyNums.filter(n => n > 2);\nconst mapped = readonlyNums.map(n => n * 10);\n\nconsole.log(\"Filtered:\", filtered.join(\", \"));\nconsole.log(\"Mapped:\", mapped.join(\", \"));\nconsole.log(\"Original:\", readonlyNums.join(\", \"));",
+          "output": "Filtered: 3, 4, 5\nMapped: 10, 20, 30, 40, 50\nOriginal: 1, 2, 3, 4, 5",
+          "explanation": "Readonly arrays prevent mutations like push, pop, and direct index assignment. Non-mutating methods like filter and map still work and return new (mutable) arrays."
+        }
+      ],
+      "notes": [
+        "Prefer `type[]` syntax for simple arrays and `Array<type>` when the element type is complex, like `Array<{ id: number; name: string }>`.",
+        "Tuples need explicit type annotations — TypeScript infers `[1, \"hi\"]` as `(string | number)[]` by default, not `[number, string]`.",
+        "Use `readonly` arrays in function parameters to signal that the function won't modify the array."
+      ],
+      "commonPitfalls": [
+        "Assuming TypeScript infers tuple types — `const pair = [1, \"hello\"]` is inferred as `(string | number)[]`, not `[number, string]`. Add an explicit annotation or use `as const`.",
+        "Confusing readonly arrays with frozen objects — `readonly` is a compile-time check only. At runtime, the array is still mutable in JavaScript."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "arrays-ex1",
+        "title": "Array operations with types",
+        "description": "Create a typed array of numbers, then use map and filter to produce a new array containing only the even numbers doubled. Print the result.",
+        "starterCode": "// Create a number array and process it\nconst numbers = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];\n\n// Filter even numbers and double them\n\n\nconsole.log(result.join(\", \"));",
+        "solution": "const numbers: number[] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];\n\nconst result: number[] = numbers.filter(n => n % 2 === 0).map(n => n * 2);\n\nconsole.log(result.join(\", \"));",
+        "expectedOutput": "4, 8, 12, 16, 20",
+        "hints": [
+          "Chain `.filter()` to keep even numbers (n % 2 === 0) then `.map()` to double them.",
+          "The result type is `number[]` — TypeScript infers this from the chain of array methods."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "arrays-ex2",
+        "title": "Tuple return type",
+        "description": "Write a function `minMax` that takes a `readonly number[]` and returns a tuple `[number, number]` containing the minimum and maximum values.",
+        "starterCode": "// Write the minMax function\n\n\nconsole.log(minMax([3, 1, 4, 1, 5, 9, 2, 6]));\nconsole.log(minMax([42]));",
+        "solution": "function minMax(nums: readonly number[]): [number, number] {\n  let min = nums[0];\n  let max = nums[0];\n  for (const n of nums) {\n    if (n < min) min = n;\n    if (n > max) max = n;\n  }\n  return [min, max];\n}\n\nconsole.log(minMax([3, 1, 4, 1, 5, 9, 2, 6]));\nconsole.log(minMax([42]));",
+        "expectedOutput": "[ 1, 9 ]\n[ 42, 42 ]",
+        "hints": [
+          "The parameter type should be `readonly number[]` and the return type should be `[number, number]`.",
+          "Use Math.min/Math.max with spread, or iterate through the array tracking min and max values."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

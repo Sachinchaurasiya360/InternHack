@@ -1,0 +1,351 @@
+[
+  {
+    "id": "union-and-intersection",
+    "sectionId": "advanced-types",
+    "orderIndex": 0,
+    "title": "Union & Intersection Types",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["union types", "intersection types", "type narrowing", "type composition"],
+    "content": {
+      "explanation": "Union types in TypeScript allow a value to be one of several types. You create a union using the pipe operator `|`. For example, `string | number` means the value can be either a string or a number. Unions are incredibly useful for modeling values that can legitimately take different forms, such as function parameters that accept multiple input types or API responses that might return different shapes.\n\nWhen working with union types, TypeScript only allows you to access members that are common to all types in the union. To access type-specific members, you must narrow the type using type guards like `typeof`, `instanceof`, or custom checks. This narrowing is one of TypeScript's most powerful features — it gives you type safety while still allowing flexible inputs.\n\nIntersection types are the complement of unions. Created with the `&` operator, an intersection type combines multiple types into one. A value of type `A & B` must satisfy both `A` and `B` simultaneously. This is commonly used to merge object types, creating a type that has all properties from each constituent type. Think of intersection as \"AND\" and union as \"OR\".\n\nIntersections are particularly powerful for composing types from reusable pieces. Instead of defining one large interface, you can define small, focused interfaces and combine them with `&`. This approach aligns with the Interface Segregation Principle and makes your type definitions more modular and reusable across different parts of your application.",
+      "codeExamples": [
+        {
+          "title": "Union Types with Narrowing",
+          "code": "function formatValue(value: string | number | boolean): string {\n  if (typeof value === \"string\") {\n    return value.toUpperCase();\n  } else if (typeof value === \"number\") {\n    return value.toFixed(2);\n  } else {\n    return value ? \"YES\" : \"NO\";\n  }\n}\n\nconsole.log(formatValue(\"hello\"));\nconsole.log(formatValue(3.14159));\nconsole.log(formatValue(true));",
+          "output": "HELLO\n3.14\nYES",
+          "explanation": "The function accepts a union of three types. Inside each `typeof` branch, TypeScript narrows the type so you can safely call type-specific methods."
+        },
+        {
+          "title": "Intersection Types for Composing Objects",
+          "code": "type HasName = { name: string };\ntype HasAge = { age: number };\ntype HasEmail = { email: string };\n\ntype Person = HasName & HasAge;\ntype ContactablePerson = Person & HasEmail;\n\nfunction describe(person: ContactablePerson): string {\n  return `${person.name}, age ${person.age}, email: ${person.email}`;\n}\n\nconst user: ContactablePerson = {\n  name: \"Alice\",\n  age: 30,\n  email: \"alice@example.com\"\n};\n\nconsole.log(describe(user));",
+          "output": "Alice, age 30, email: alice@example.com",
+          "explanation": "Each small type defines one concern. Intersections combine them so ContactablePerson has all three properties. This modular approach keeps types reusable."
+        },
+        {
+          "title": "Union with Common Property",
+          "code": "type Success = { status: \"ok\"; data: string };\ntype Failure = { status: \"error\"; message: string };\ntype Result = Success | Failure;\n\nfunction handleResult(result: Result): string {\n  if (result.status === \"ok\") {\n    return `Data: ${result.data}`;\n  } else {\n    return `Error: ${result.message}`;\n  }\n}\n\nconsole.log(handleResult({ status: \"ok\", data: \"loaded\" }));\nconsole.log(handleResult({ status: \"error\", message: \"not found\" }));",
+          "output": "Data: loaded\nError: not found",
+          "explanation": "The `status` property acts as a discriminant, allowing TypeScript to narrow the union based on its literal value. This is the foundation of discriminated unions."
+        }
+      ],
+      "notes": [
+        "Union types are narrowed automatically in conditional branches using `typeof`, `instanceof`, `in`, or equality checks.",
+        "Intersection of incompatible types produces `never` — for example, `string & number` is `never` because no value can be both.",
+        "Union types are covariant for function parameters — you must handle all possible types in the union."
+      ],
+      "commonPitfalls": [
+        "Trying to access a property that exists on only one member of a union without narrowing first leads to a compile error.",
+        "Intersecting two object types with the same property name but different types produces a property with an intersected (often `never`) type, which can be confusing."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "union-intersection-ex1",
+        "title": "Flexible Input Parser",
+        "description": "Write a function `parseInput(input: string | number | string[])` that returns a string. If it's a string, return it trimmed. If it's a number, return it as a string. If it's a string array, return the elements joined by ', '. Log the results as shown.",
+        "starterCode": "// Write the parseInput function here\n\nconsole.log(parseInput(\"  hello  \"));\nconsole.log(parseInput(42));\nconsole.log(parseInput([\"a\", \"b\", \"c\"]));",
+        "solution": "function parseInput(input: string | number | string[]): string {\n  if (typeof input === \"string\") {\n    return input.trim();\n  } else if (typeof input === \"number\") {\n    return String(input);\n  } else {\n    return input.join(\", \");\n  }\n}\n\nconsole.log(parseInput(\"  hello  \"));\nconsole.log(parseInput(42));\nconsole.log(parseInput([\"a\", \"b\", \"c\"]));",
+        "expectedOutput": "hello\n42\na, b, c",
+        "hints": [
+          "Use `typeof` to check for string and number. The remaining case (else) will be the string array.",
+          "Use `String(input)` or `input.toString()` to convert a number to a string."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "union-intersection-ex2",
+        "title": "Compose Types with Intersection",
+        "description": "Define types `Timestamped` (with `createdAt: string`), `Authored` (with `author: string`), and `Post` as an intersection of both plus `{ title: string; body: string }`. Create a function `summarize(post: Post): string` that returns `\"<title> by <author> on <createdAt>\"`. Log the result.",
+        "starterCode": "// Define types and summarize function here\n\nconst post: Post = {\n  title: \"TypeScript Tips\",\n  body: \"Use intersection types!\",\n  author: \"Alice\",\n  createdAt: \"2025-01-15\"\n};\n\nconsole.log(summarize(post));",
+        "solution": "type Timestamped = { createdAt: string };\ntype Authored = { author: string };\ntype Post = Timestamped & Authored & { title: string; body: string };\n\nfunction summarize(post: Post): string {\n  return `${post.title} by ${post.author} on ${post.createdAt}`;\n}\n\nconst post: Post = {\n  title: \"TypeScript Tips\",\n  body: \"Use intersection types!\",\n  author: \"Alice\",\n  createdAt: \"2025-01-15\"\n};\n\nconsole.log(summarize(post));",
+        "expectedOutput": "TypeScript Tips by Alice on 2025-01-15",
+        "hints": [
+          "Use `&` to combine three types: `Timestamped & Authored & { title: string; body: string }`.",
+          "The resulting `Post` type has all four properties from the intersection."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "discriminated-unions",
+    "sectionId": "advanced-types",
+    "orderIndex": 1,
+    "title": "Discriminated Unions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["tagged unions", "discriminant property", "type narrowing", "exhaustive checking", "pattern matching"],
+    "content": {
+      "explanation": "Discriminated unions (also called tagged unions or algebraic data types) are a pattern where each member of a union type has a common property with a unique literal value. This common property is called the discriminant or tag. TypeScript's control flow analysis can use this discriminant to narrow the union to a specific member, giving you access to that member's unique properties.\n\nThe pattern requires three ingredients: a set of types that each have a common property, literal types for that property (string or number literals), and a union of those types. When you check the discriminant in a conditional, TypeScript automatically narrows the type within that branch. This makes discriminated unions exceptionally safe — you get compile-time guarantees that you are handling each variant correctly.\n\nDiscriminated unions shine when modeling state machines, API responses, action types in reducers, or any scenario where a value can be one of several well-defined variants. They replace brittle patterns like checking for the existence of optional properties or using type assertions. The compiler ensures every variant is accounted for.\n\nFor exhaustive checking, you can use the `never` type in a default case. If you add a new variant to the union but forget to handle it in a switch statement, assigning the unhandled case to a `never` variable will produce a compile error. This technique ensures your code stays in sync with your types as the codebase evolves, which is why interviewers frequently ask about it.",
+      "codeExamples": [
+        {
+          "title": "Basic Discriminated Union",
+          "code": "type Circle = { kind: \"circle\"; radius: number };\ntype Square = { kind: \"square\"; side: number };\ntype Triangle = { kind: \"triangle\"; base: number; height: number };\n\ntype Shape = Circle | Square | Triangle;\n\nfunction area(shape: Shape): number {\n  switch (shape.kind) {\n    case \"circle\":\n      return Math.round(Math.PI * shape.radius ** 2 * 100) / 100;\n    case \"square\":\n      return shape.side ** 2;\n    case \"triangle\":\n      return (shape.base * shape.height) / 2;\n  }\n}\n\nconsole.log(area({ kind: \"circle\", radius: 5 }));\nconsole.log(area({ kind: \"square\", side: 4 }));\nconsole.log(area({ kind: \"triangle\", base: 6, height: 3 }));",
+          "output": "78.54\n16\n9",
+          "explanation": "The `kind` property is the discriminant. In each case branch, TypeScript knows exactly which shape variant it is and provides access to its specific properties."
+        },
+        {
+          "title": "Discriminated Union for API Responses",
+          "code": "type Loading = { state: \"loading\" };\ntype Success = { state: \"success\"; data: string[] };\ntype ErrorState = { state: \"error\"; message: string };\n\ntype ApiState = Loading | Success | ErrorState;\n\nfunction render(state: ApiState): string {\n  switch (state.state) {\n    case \"loading\":\n      return \"Loading...\";\n    case \"success\":\n      return `Items: ${state.data.join(\", \")}`;\n    case \"error\":\n      return `Error: ${state.message}`;\n  }\n}\n\nconsole.log(render({ state: \"loading\" }));\nconsole.log(render({ state: \"success\", data: [\"a\", \"b\", \"c\"] }));\nconsole.log(render({ state: \"error\", message: \"Network failure\" }));",
+          "output": "Loading...\nItems: a, b, c\nError: Network failure",
+          "explanation": "This pattern is extremely common in frontend applications for modeling async data loading states. Each state variant has its own specific shape."
+        },
+        {
+          "title": "Exhaustive Checking with never",
+          "code": "type Action =\n  | { type: \"INCREMENT\"; amount: number }\n  | { type: \"DECREMENT\"; amount: number }\n  | { type: \"RESET\" };\n\nfunction reducer(state: number, action: Action): number {\n  switch (action.type) {\n    case \"INCREMENT\":\n      return state + action.amount;\n    case \"DECREMENT\":\n      return state - action.amount;\n    case \"RESET\":\n      return 0;\n    default:\n      const _exhaustive: never = action;\n      return state;\n  }\n}\n\nlet state = 0;\nstate = reducer(state, { type: \"INCREMENT\", amount: 5 });\nconsole.log(state);\nstate = reducer(state, { type: \"DECREMENT\", amount: 2 });\nconsole.log(state);\nstate = reducer(state, { type: \"RESET\" });\nconsole.log(state);",
+          "output": "5\n3\n0",
+          "explanation": "The `never` assignment in the default case ensures all action types are handled. If a new action type were added to the union, this would produce a compile error until handled."
+        }
+      ],
+      "notes": [
+        "The discriminant property must use literal types (string literals, number literals, or boolean literals) for narrowing to work.",
+        "Discriminated unions work with `switch`, `if/else`, and ternary expressions — anywhere TypeScript can perform control flow analysis.",
+        "You can have multiple discriminant properties, though a single one is the most common pattern."
+      ],
+      "commonPitfalls": [
+        "Using a non-literal type (like plain `string`) as the discriminant defeats the purpose — TypeScript cannot narrow based on a general string type.",
+        "Forgetting the exhaustive check means adding a new variant to the union will not produce a compile error, allowing bugs to slip through silently."
+      ],
+      "interviewTips": [
+        "Be ready to explain why discriminated unions are safer than checking optional properties. The compiler guarantees exhaustive handling, whereas optional checks are easy to forget.",
+        "A common interview question is to model a state machine (e.g., fetch states: idle, loading, success, error) using discriminated unions and explain how the never type catches missing cases."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "discriminated-unions-ex1",
+        "title": "Payment Method Handler",
+        "description": "Define discriminated union types for payment methods: `CreditCard` (kind: 'credit', cardNumber: string), `PayPal` (kind: 'paypal', email: string), and `BankTransfer` (kind: 'bank', accountNumber: string). Create a `processPayment` function that returns a different message for each. Log the results.",
+        "starterCode": "// Define types and processPayment function here\n\nconsole.log(processPayment({ kind: \"credit\", cardNumber: \"4111-1111\" }));\nconsole.log(processPayment({ kind: \"paypal\", email: \"user@test.com\" }));\nconsole.log(processPayment({ kind: \"bank\", accountNumber: \"ACC-9876\" }));",
+        "solution": "type CreditCard = { kind: \"credit\"; cardNumber: string };\ntype PayPal = { kind: \"paypal\"; email: string };\ntype BankTransfer = { kind: \"bank\"; accountNumber: string };\n\ntype PaymentMethod = CreditCard | PayPal | BankTransfer;\n\nfunction processPayment(method: PaymentMethod): string {\n  switch (method.kind) {\n    case \"credit\":\n      return `Charging credit card ${method.cardNumber}`;\n    case \"paypal\":\n      return `Charging PayPal ${method.email}`;\n    case \"bank\":\n      return `Transferring from bank ${method.accountNumber}`;\n  }\n}\n\nconsole.log(processPayment({ kind: \"credit\", cardNumber: \"4111-1111\" }));\nconsole.log(processPayment({ kind: \"paypal\", email: \"user@test.com\" }));\nconsole.log(processPayment({ kind: \"bank\", accountNumber: \"ACC-9876\" }));",
+        "expectedOutput": "Charging credit card 4111-1111\nCharging PayPal user@test.com\nTransferring from bank ACC-9876",
+        "hints": [
+          "Use `kind` as the discriminant property with string literal types for each variant.",
+          "In each switch case, TypeScript narrows the type so you can access the variant-specific property."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "discriminated-unions-ex2",
+        "title": "Expression Evaluator",
+        "description": "Create a discriminated union `Expr` with variants: `NumLit` (type: 'num', value: number), `Add` (type: 'add', left: Expr, right: Expr), and `Mul` (type: 'mul', left: Expr, right: Expr). Write a recursive `evaluate(expr: Expr): number` function. Evaluate `(2 + 3) * 4` and log the result.",
+        "starterCode": "// Define Expr types and evaluate function here\n\n// Represents (2 + 3) * 4\nconst expr: Expr = {\n  type: \"mul\",\n  left: {\n    type: \"add\",\n    left: { type: \"num\", value: 2 },\n    right: { type: \"num\", value: 3 }\n  },\n  right: { type: \"num\", value: 4 }\n};\n\nconsole.log(evaluate(expr));",
+        "solution": "type NumLit = { type: \"num\"; value: number };\ntype Add = { type: \"add\"; left: Expr; right: Expr };\ntype Mul = { type: \"mul\"; left: Expr; right: Expr };\ntype Expr = NumLit | Add | Mul;\n\nfunction evaluate(expr: Expr): number {\n  switch (expr.type) {\n    case \"num\":\n      return expr.value;\n    case \"add\":\n      return evaluate(expr.left) + evaluate(expr.right);\n    case \"mul\":\n      return evaluate(expr.left) * evaluate(expr.right);\n  }\n}\n\nconst expr: Expr = {\n  type: \"mul\",\n  left: {\n    type: \"add\",\n    left: { type: \"num\", value: 2 },\n    right: { type: \"num\", value: 3 }\n  },\n  right: { type: \"num\", value: 4 }\n};\n\nconsole.log(evaluate(expr));",
+        "expectedOutput": "20",
+        "hints": [
+          "The `Expr` type is recursive: `Add` and `Mul` contain `left` and `right` which are themselves `Expr` values.",
+          "The `evaluate` function should recursively call itself for `left` and `right` in the `add` and `mul` cases."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "mapped-types",
+    "sectionId": "advanced-types",
+    "orderIndex": 2,
+    "title": "Mapped Types",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["keyof", "in operator", "mapped type modifiers", "property remapping", "generic mapped types"],
+    "content": {
+      "explanation": "Mapped types in TypeScript allow you to create new types by transforming each property of an existing type. The syntax `{ [K in keyof T]: NewType }` iterates over every key `K` in type `T` and produces a new type with potentially different value types, modifiers, or names. This is the mechanism behind many of TypeScript's built-in utility types like `Partial`, `Readonly`, and `Required`.\n\nThe `keyof` operator extracts the union of all property names from a type as string literal types. For example, `keyof { name: string; age: number }` produces `\"name\" | \"age\"`. Combined with the `in` operator in a mapped type, you can iterate over these keys and apply transformations. This is the foundation for creating generic type transformations.\n\nMapped type modifiers let you add or remove `readonly` and `?` (optional) markers. Prefixing with `+` adds the modifier and `-` removes it. For instance, `{ [K in keyof T]-?: T[K] }` removes the optional modifier from all properties, making them required. Similarly, `{ [K in keyof T]+readonly: T[K] }` makes all properties readonly. The `+` prefix is optional and implied when no sign is present.\n\nProperty remapping with `as` clauses lets you transform key names during mapping. The syntax `{ [K in keyof T as NewKey]: T[K] }` allows filtering, renaming, or creating entirely new key patterns. Combined with template literal types, you can produce powerful transformations like generating getter/setter method names from property names.",
+      "codeExamples": [
+        {
+          "title": "Basic Mapped Type with keyof",
+          "code": "type User = {\n  name: string;\n  age: number;\n  email: string;\n};\n\n// Make all properties optional\ntype OptionalUser = { [K in keyof User]?: User[K] };\n\n// Make all properties readonly\ntype ReadonlyUser = { readonly [K in keyof User]: User[K] };\n\n// Make all properties string\ntype StringifiedUser = { [K in keyof User]: string };\n\nconst partial: OptionalUser = { name: \"Alice\" };\nconst frozen: ReadonlyUser = { name: \"Bob\", age: 25, email: \"bob@test.com\" };\nconst stringed: StringifiedUser = { name: \"Carol\", age: \"30\", email: \"carol@test.com\" };\n\nconsole.log(partial.name);\nconsole.log(frozen.age);\nconsole.log(stringed.age);",
+          "output": "Alice\n25\n30",
+          "explanation": "Three mapped types transform User differently: OptionalUser makes all properties optional, ReadonlyUser makes them readonly, and StringifiedUser changes all value types to string."
+        },
+        {
+          "title": "Generic Mapped Type",
+          "code": "type Nullable<T> = { [K in keyof T]: T[K] | null };\ntype Getters<T> = {\n  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];\n};\n\ninterface Config {\n  host: string;\n  port: number;\n}\n\nconst nullable: Nullable<Config> = { host: null, port: 8080 };\nconsole.log(nullable.host);\nconsole.log(nullable.port);\n\n// Getters<Config> produces:\n// { getHost: () => string; getPort: () => number }\nconst getters: Getters<Config> = {\n  getHost: () => \"localhost\",\n  getPort: () => 3000\n};\nconsole.log(getters.getHost());\nconsole.log(getters.getPort());",
+          "output": "null\n8080\nlocalhost\n3000",
+          "explanation": "Nullable<T> adds null to every property type. Getters<T> uses key remapping with `as` and template literals to generate getter method names from property names."
+        },
+        {
+          "title": "Filtering Properties with Mapped Types",
+          "code": "type OnlyStrings<T> = {\n  [K in keyof T as T[K] extends string ? K : never]: T[K];\n};\n\ninterface Mixed {\n  name: string;\n  age: number;\n  email: string;\n  active: boolean;\n}\n\n// OnlyStrings<Mixed> = { name: string; email: string }\nconst stringsOnly: OnlyStrings<Mixed> = {\n  name: \"Alice\",\n  email: \"alice@test.com\"\n};\n\nconsole.log(stringsOnly.name);\nconsole.log(stringsOnly.email);",
+          "output": "Alice\nalice@test.com",
+          "explanation": "The `as` clause uses a conditional type to filter out non-string properties by mapping them to `never`, which removes them from the resulting type."
+        }
+      ],
+      "notes": [
+        "`keyof` produces a union of string literal types representing all property names of a type.",
+        "Mapped types preserve the structure of the source type — if the original has 3 properties, the mapped type will also have 3 (unless filtered).",
+        "The `as` clause in mapped types enables key remapping and filtering, introduced in TypeScript 4.1."
+      ],
+      "commonPitfalls": [
+        "Forgetting that `keyof` returns `string | number | symbol` — when using it with template literals, you may need to intersect with `string` (e.g., `string & K`).",
+        "Accidentally creating recursive mapped types that cause infinite type instantiation errors. Keep mapped types shallow unless recursion is intentional."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "mapped-types-ex1",
+        "title": "Create a Freezable Type",
+        "description": "Create a generic mapped type `Freezable<T>` that makes all properties `readonly` and adds a `frozen: true` literal type. Then create a `freeze` function that takes any object and returns it typed as `Freezable`. Test with an object and log results.",
+        "starterCode": "// Define Freezable<T> and freeze function here\n\nconst original = { name: \"Alice\", age: 30 };\nconst frozen = freeze(original);\nconsole.log(frozen.name);\nconsole.log(frozen.age);\nconsole.log(frozen.frozen);",
+        "solution": "type Freezable<T> = { readonly [K in keyof T]: T[K] } & { readonly frozen: true };\n\nfunction freeze<T extends object>(obj: T): Freezable<T> {\n  return Object.freeze({ ...obj, frozen: true }) as Freezable<T>;\n}\n\nconst original = { name: \"Alice\", age: 30 };\nconst frozen = freeze(original);\nconsole.log(frozen.name);\nconsole.log(frozen.age);\nconsole.log(frozen.frozen);",
+        "expectedOutput": "Alice\n30\ntrue",
+        "hints": [
+          "Use a mapped type with `readonly` for all properties of T, then intersect with `{ readonly frozen: true }`.",
+          "The `freeze` function should spread the object and add the `frozen` property, then cast to `Freezable<T>`."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "mapped-types-ex2",
+        "title": "Event Handler Mapped Type",
+        "description": "Create a mapped type `EventHandlers<T>` that transforms each property key `K` of `T` into `on${Capitalize<K>}` with value type `(value: T[K]) => void`. Create an object matching `EventHandlers<{ click: number; hover: string }>` and call each handler. Log results.",
+        "starterCode": "// Define EventHandlers<T> type here\n\ntype Events = { click: number; hover: string };\n\nconst handlers: EventHandlers<Events> = {\n  onClick: (value) => console.log(`Clicked ${value} times`),\n  onHover: (value) => console.log(`Hovered on ${value}`)\n};\n\nhandlers.onClick(3);\nhandlers.onHover(\"button\");",
+        "solution": "type EventHandlers<T> = {\n  [K in keyof T as `on${Capitalize<string & K>}`]: (value: T[K]) => void;\n};\n\ntype Events = { click: number; hover: string };\n\nconst handlers: EventHandlers<Events> = {\n  onClick: (value) => console.log(`Clicked ${value} times`),\n  onHover: (value) => console.log(`Hovered on ${value}`)\n};\n\nhandlers.onClick(3);\nhandlers.onHover(\"button\");",
+        "expectedOutput": "Clicked 3 times\nHovered on button",
+        "hints": [
+          "Use the `as` clause with template literal types: `[K in keyof T as \\`on${Capitalize<string & K>}\\`]`.",
+          "The value type for each property is a function that takes the original property's value type as a parameter."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "conditional-types",
+    "sectionId": "advanced-types",
+    "orderIndex": 3,
+    "title": "Conditional Types",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["extends keyword in types", "infer keyword", "distributive conditional types", "type-level programming"],
+    "content": {
+      "explanation": "Conditional types in TypeScript let you express type-level if/else logic. The syntax `T extends U ? X : Y` reads as: if type `T` is assignable to type `U`, resolve to type `X`; otherwise resolve to type `Y`. This is not a runtime check — it happens entirely in the type system at compile time, allowing you to create types that adapt based on their inputs.\n\nThe `infer` keyword is used within conditional types to introduce a type variable that TypeScript will try to infer from the pattern. For example, `T extends Promise<infer R> ? R : T` extracts the resolved type from a Promise. If `T` is `Promise<string>`, then `R` is inferred as `string` and the result is `string`. If `T` is `number`, the condition is false and the result is `number`. This pattern is the foundation of utility types like `ReturnType<T>` and `Parameters<T>`.\n\nDistributive conditional types are a subtle but important behavior. When a conditional type is applied to a naked type parameter that is a union, TypeScript distributes the conditional over each member of the union independently. So `IsString<string | number>` where `IsString<T> = T extends string ? true : false` evaluates to `true | false` (which is `boolean`), not to just `false`. This distribution happens automatically for bare type parameters but not for wrapped ones.\n\nConditional types are the most powerful feature in TypeScript's type system and enable sophisticated type-level computations. However, they can be difficult to read and debug when deeply nested. Use them judiciously: prefer simpler types when possible, and extract complex conditional types into well-named type aliases with clear documentation.",
+      "codeExamples": [
+        {
+          "title": "Basic Conditional Type",
+          "code": "type IsString<T> = T extends string ? \"yes\" : \"no\";\n\ntype A = IsString<string>;      // \"yes\"\ntype B = IsString<number>;      // \"no\"\ntype C = IsString<\"hello\">;     // \"yes\"\n\nfunction check<T>(value: T): IsString<T> {\n  return (typeof value === \"string\" ? \"yes\" : \"no\") as IsString<T>;\n}\n\nconsole.log(check(\"hello\"));\nconsole.log(check(42));",
+          "output": "yes\nno",
+          "explanation": "IsString conditionally resolves to 'yes' or 'no' based on whether T extends string. The function uses a runtime typeof check that mirrors the type-level logic."
+        },
+        {
+          "title": "Using infer to Extract Types",
+          "code": "type UnwrapPromise<T> = T extends Promise<infer R> ? R : T;\ntype ElementType<T> = T extends (infer E)[] ? E : T;\ntype ReturnOf<T> = T extends (...args: any[]) => infer R ? R : never;\n\n// Type-level demonstrations at runtime\nfunction unwrap<T>(value: T): string {\n  if (value instanceof Promise) return \"Promise unwrapped\";\n  if (Array.isArray(value)) return `Array of ${value.length} elements`;\n  return String(value);\n}\n\nconsole.log(unwrap(\"hello\"));\nconsole.log(unwrap([1, 2, 3]));\n\n// Practical use of ReturnOf\nfunction greet(name: string): string {\n  return `Hello, ${name}!`;\n}\n\ntype GreetReturn = ReturnOf<typeof greet>; // string\nconst result: GreetReturn = greet(\"World\");\nconsole.log(result);",
+          "output": "hello\nArray of 3 elements\nHello, World!",
+          "explanation": "The `infer` keyword captures type variables from patterns: R from Promise<R>, E from E[], and R from (...) => R. These are the building blocks of advanced type extraction."
+        },
+        {
+          "title": "Distributive Conditional Types",
+          "code": "type NonNullableCustom<T> = T extends null | undefined ? never : T;\n\ntype A = NonNullableCustom<string | null | undefined>;\n// Distributes: NonNullableCustom<string> | NonNullableCustom<null> | NonNullableCustom<undefined>\n// = string | never | never\n// = string\n\nfunction filterNullish<T>(values: T[]): NonNullableCustom<T>[] {\n  return values.filter(v => v !== null && v !== undefined) as NonNullableCustom<T>[];\n}\n\nconst mixed = [\"a\", null, \"b\", undefined, \"c\"];\nconst clean = filterNullish(mixed);\nconsole.log(clean.join(\", \"));",
+          "output": "a, b, c",
+          "explanation": "The conditional type distributes over the union, removing null and undefined from each member independently. The result type contains only the non-nullish members."
+        }
+      ],
+      "notes": [
+        "Conditional types only distribute over naked type parameters. Wrapping in a tuple `[T] extends [U]` prevents distribution.",
+        "The `infer` keyword can only be used in the `extends` clause of a conditional type, and introduces a new type variable scoped to the true branch.",
+        "Deeply nested conditional types can cause performance issues in the TypeScript compiler. Keep nesting to 2-3 levels maximum."
+      ],
+      "commonPitfalls": [
+        "Forgetting about distributive behavior when the input is a union type. `IsString<string | number>` gives `'yes' | 'no'` (boolean), not `'no'`.",
+        "Using `infer` outside of a conditional type's `extends` clause will cause a compiler error."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "conditional-types-ex1",
+        "title": "Flatten Type",
+        "description": "Create a conditional type `Flatten<T>` that unwraps arrays one level: if T is an array of E, return E, otherwise return T. Write a `flatten` function that takes an array and returns its flat version. Log results.",
+        "starterCode": "// Define Flatten<T> type and flatten function here\n\nconst nums = [[1, 2], [3, 4], [5]];\nconst result = flatten(nums);\nconsole.log(result.join(\", \"));",
+        "solution": "type Flatten<T> = T extends (infer E)[] ? E : T;\n\nfunction flatten<T>(arr: T[]): Flatten<T>[] {\n  return ([] as any[]).concat(...arr) as Flatten<T>[];\n}\n\nconst nums = [[1, 2], [3, 4], [5]];\nconst result = flatten(nums);\nconsole.log(result.join(\", \"));",
+        "expectedOutput": "1, 2, 3, 4, 5",
+        "hints": [
+          "Use `T extends (infer E)[] ? E : T` to extract the element type from an array type.",
+          "For the runtime implementation, use `[].concat(...arr)` to flatten one level."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "conditional-types-ex2",
+        "title": "Type-Safe Event Emitter Types",
+        "description": "Create a type `HandlerType<T>` that resolves to `(data: T) => void` if T is an object, `() => void` if T is void, and `(data: T) => void` otherwise. Demonstrate with a simple event system. Log the results as shown.",
+        "starterCode": "// Define HandlerType<T> type here\n\ntype Events = {\n  click: { x: number; y: number };\n  close: void;\n  message: string;\n};\n\ntype ClickHandler = HandlerType<Events[\"click\"]>;\ntype CloseHandler = HandlerType<Events[\"close\"]>;\ntype MessageHandler = HandlerType<Events[\"message\"]>;\n\nconst onClick: ClickHandler = (data) => console.log(`Click at ${data.x},${data.y}`);\nconst onClose: CloseHandler = () => console.log(\"Closed\");\nconst onMessage: MessageHandler = (data) => console.log(`Message: ${data}`);\n\nonClick({ x: 10, y: 20 });\nonClose();\nonMessage(\"hello\");",
+        "solution": "type HandlerType<T> = T extends void ? () => void : (data: T) => void;\n\ntype Events = {\n  click: { x: number; y: number };\n  close: void;\n  message: string;\n};\n\ntype ClickHandler = HandlerType<Events[\"click\"]>;\ntype CloseHandler = HandlerType<Events[\"close\"]>;\ntype MessageHandler = HandlerType<Events[\"message\"]>;\n\nconst onClick: ClickHandler = (data) => console.log(`Click at ${data.x},${data.y}`);\nconst onClose: CloseHandler = () => console.log(\"Closed\");\nconst onMessage: MessageHandler = (data) => console.log(`Message: ${data}`);\n\nonClick({ x: 10, y: 20 });\nonClose();\nonMessage(\"hello\");",
+        "expectedOutput": "Click at 10,20\nClosed\nMessage: hello",
+        "hints": [
+          "Use `T extends void ? () => void : (data: T) => void` to conditionally create a no-arg handler for void events.",
+          "Index into the Events type using bracket notation to get the type for each event."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "template-literal-types",
+    "sectionId": "advanced-types",
+    "orderIndex": 4,
+    "title": "Template Literal Types",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["template literal types", "string manipulation types", "Uppercase", "Lowercase", "Capitalize", "Uncapitalize"],
+    "content": {
+      "explanation": "Template literal types in TypeScript bring template string syntax into the type system. Just as JavaScript template literals let you embed expressions in strings at runtime, template literal types let you embed type expressions in string literal types at compile time. The syntax uses backticks with `${}` placeholders containing other types, producing new string literal types.\n\nWhen template literal types contain union types in their placeholders, TypeScript distributes over all possible combinations. For example, `` `on${'Click' | 'Hover'}` `` produces `'onClick' | 'onHover'`. With multiple placeholders, you get the cartesian product: `` `${'get' | 'set'}${'Name' | 'Age'}` `` produces `'getName' | 'getAge' | 'setName' | 'setAge'`. This combinatorial power lets you express complex string patterns concisely.\n\nTypeScript provides four intrinsic string manipulation types: `Uppercase<T>`, `Lowercase<T>`, `Capitalize<T>`, and `Uncapitalize<T>`. These transform string literal types at the type level. Combined with template literal types and mapped types, they enable patterns like generating getter/setter names, event handler names, or CSS property types from a set of base names.\n\nTemplate literal types are commonly used in library typings to provide precise string-based APIs. For instance, you can type a CSS-in-JS library to only accept valid CSS property names, or type a routing library to extract parameter names from URL patterns like `/users/:id/posts/:postId`. These types make previously stringly-typed APIs fully type-safe.",
+      "codeExamples": [
+        {
+          "title": "Basic Template Literal Types",
+          "code": "type Color = \"red\" | \"blue\" | \"green\";\ntype Size = \"sm\" | \"md\" | \"lg\";\n\ntype ClassName = `${Size}-${Color}`;\n// \"sm-red\" | \"sm-blue\" | \"sm-green\" | \"md-red\" | ...\n\nfunction applyClass(cls: ClassName): string {\n  return `Applied class: ${cls}`;\n}\n\nconsole.log(applyClass(\"sm-red\"));\nconsole.log(applyClass(\"lg-blue\"));",
+          "output": "Applied class: sm-red\nApplied class: lg-blue",
+          "explanation": "TypeScript computes the cartesian product of Size and Color unions, producing all 9 valid combinations as the ClassName type."
+        },
+        {
+          "title": "String Manipulation Types",
+          "code": "type EventName = \"click\" | \"focus\" | \"blur\";\n\ntype Handler = `on${Capitalize<EventName>}`;\n// \"onClick\" | \"onFocus\" | \"onBlur\"\n\ntype UpperEvents = Uppercase<EventName>;\n// \"CLICK\" | \"FOCUS\" | \"BLUR\"\n\nconst handlers: Record<Handler, () => void> = {\n  onClick: () => console.log(\"clicked\"),\n  onFocus: () => console.log(\"focused\"),\n  onBlur: () => console.log(\"blurred\")\n};\n\nhandlers.onClick();\nhandlers.onFocus();",
+          "output": "clicked\nfocused",
+          "explanation": "Capitalize transforms each member of the EventName union, and the template literal prepends 'on'. The result is a precise type for event handler names."
+        },
+        {
+          "title": "Extracting Parameters from String Patterns",
+          "code": "type ExtractParam<T extends string> =\n  T extends `${string}:${infer Param}/${infer Rest}`\n    ? Param | ExtractParam<`/${Rest}`>\n    : T extends `${string}:${infer Param}`\n      ? Param\n      : never;\n\ntype Route = \"/users/:userId/posts/:postId\";\ntype Params = ExtractParam<Route>; // \"userId\" | \"postId\"\n\nfunction buildUrl(route: string, params: Record<string, string>): string {\n  return route.replace(/:([a-zA-Z]+)/g, (_, key) => params[key] || `:${key}`);\n}\n\nconsole.log(buildUrl(\"/users/:userId/posts/:postId\", { userId: \"42\", postId: \"7\" }));",
+          "output": "/users/42/posts/7",
+          "explanation": "The ExtractParam type recursively extracts parameter names from a URL pattern. The runtime buildUrl function replaces :param placeholders with actual values."
+        }
+      ],
+      "notes": [
+        "Template literal types distribute over unions in each placeholder, producing the cartesian product of all possible combinations.",
+        "The four intrinsic string manipulation types (Uppercase, Lowercase, Capitalize, Uncapitalize) work only on string literal types, not general strings.",
+        "Template literal types can be combined with conditional types and `infer` for powerful string parsing at the type level."
+      ],
+      "commonPitfalls": [
+        "Creating template literal types with too many union members in placeholders causes combinatorial explosion and may slow down the compiler significantly.",
+        "Forgetting to intersect with `string` when using keyof in template literals: `keyof T` includes `number | symbol`, but template literals only work with strings."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "template-literal-ex1",
+        "title": "CSS Property Types",
+        "description": "Create a type `CSSProperty` that generates valid CSS custom property names from a base set. Given type `Theme = 'primary' | 'secondary' | 'accent'` and `Variant = 'light' | 'dark'`, create a type for strings like `'--color-primary-light'`. Write a function that creates a CSS variable reference and log results.",
+        "starterCode": "// Define types and function here\n\ntype Theme = \"primary\" | \"secondary\" | \"accent\";\ntype Variant = \"light\" | \"dark\";\n\n// CSSProperty should produce strings like \"--color-primary-light\"\n\nconsole.log(cssVar(\"--color-primary-light\"));\nconsole.log(cssVar(\"--color-accent-dark\"));",
+        "solution": "type Theme = \"primary\" | \"secondary\" | \"accent\";\ntype Variant = \"light\" | \"dark\";\ntype CSSProperty = `--color-${Theme}-${Variant}`;\n\nfunction cssVar(prop: CSSProperty): string {\n  return `var(${prop})`;\n}\n\nconsole.log(cssVar(\"--color-primary-light\"));\nconsole.log(cssVar(\"--color-accent-dark\"));",
+        "expectedOutput": "var(--color-primary-light)\nvar(--color-accent-dark)",
+        "hints": [
+          "Use template literal types with the format: `--color-${Theme}-${Variant}` to generate all valid combinations.",
+          "The function simply wraps the property name in `var(...)` for CSS usage."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "template-literal-ex2",
+        "title": "Getter/Setter Type Generator",
+        "description": "Create a mapped type `GettersAndSetters<T>` that produces getter and setter method types for each property of T. For a property `name: string`, it should produce `getName: () => string` and `setName: (value: string) => void`. Implement a simple object that matches the type and log results.",
+        "starterCode": "// Define GettersAndSetters<T> type here\n\ninterface Person {\n  name: string;\n  age: number;\n}\n\nconst personAccessors: GettersAndSetters<Person> = {\n  getName: () => \"Alice\",\n  setName: (value) => console.log(`Setting name to ${value}`),\n  getAge: () => 30,\n  setAge: (value) => console.log(`Setting age to ${value}`)\n};\n\nconsole.log(personAccessors.getName());\npersonAccessors.setName(\"Bob\");\nconsole.log(personAccessors.getAge());\npersonAccessors.setAge(25);",
+        "solution": "type Getters<T> = {\n  [K in keyof T as `get${Capitalize<string & K>}`]: () => T[K];\n};\n\ntype Setters<T> = {\n  [K in keyof T as `set${Capitalize<string & K>}`]: (value: T[K]) => void;\n};\n\ntype GettersAndSetters<T> = Getters<T> & Setters<T>;\n\ninterface Person {\n  name: string;\n  age: number;\n}\n\nconst personAccessors: GettersAndSetters<Person> = {\n  getName: () => \"Alice\",\n  setName: (value) => console.log(`Setting name to ${value}`),\n  getAge: () => 30,\n  setAge: (value) => console.log(`Setting age to ${value}`)\n};\n\nconsole.log(personAccessors.getName());\npersonAccessors.setName(\"Bob\");\nconsole.log(personAccessors.getAge());\npersonAccessors.setAge(25);",
+        "expectedOutput": "Alice\nSetting name to Bob\n30\nSetting age to 25",
+        "hints": [
+          "Create separate Getters<T> and Setters<T> mapped types, then intersect them for GettersAndSetters<T>.",
+          "Use key remapping with `as` and `Capitalize` to transform property names: `get${Capitalize<string & K>}` and `set${Capitalize<string & K>}`."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

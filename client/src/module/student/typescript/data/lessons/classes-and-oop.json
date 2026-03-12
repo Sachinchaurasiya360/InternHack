@@ -1,0 +1,346 @@
+[
+  {
+    "id": "class-basics",
+    "sectionId": "classes-and-oop",
+    "orderIndex": 0,
+    "title": "Class Basics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["class declaration", "constructor", "methods", "properties", "instances"],
+    "content": {
+      "explanation": "Classes in TypeScript provide a blueprint for creating objects with predefined properties and methods. They bring traditional object-oriented programming patterns to JavaScript while adding type safety through TypeScript's type system. A class encapsulates data (properties) and behavior (methods) into a single unit.\n\nThe constructor is a special method that runs when you create a new instance of a class using the `new` keyword. Inside the constructor, you typically initialize the object's properties. TypeScript requires you to declare property types either in the class body or via parameter properties, ensuring every instance has a well-defined shape.\n\nMethods are functions defined inside a class that operate on the instance's data. They have access to `this`, which refers to the current instance. Unlike plain objects, classes let you define a reusable template: create as many instances as you need, and each one carries its own copy of the property values while sharing the same method definitions through the prototype chain.\n\nTypeScript classes also support type annotations on properties, method parameters, and return types. This means the compiler can catch errors like assigning a string to a numeric property or calling a method with the wrong arguments, all at compile time rather than runtime.",
+      "codeExamples": [
+        {
+          "title": "Basic Class with Constructor and Methods",
+          "code": "class Person {\n  name: string;\n  age: number;\n\n  constructor(name: string, age: number) {\n    this.name = name;\n    this.age = age;\n  }\n\n  greet(): string {\n    return `Hi, I'm ${this.name} and I'm ${this.age} years old.`;\n  }\n}\n\nconst alice = new Person(\"Alice\", 30);\nconsole.log(alice.greet());\nconsole.log(alice.name);",
+          "output": "Hi, I'm Alice and I'm 30 years old.\nAlice",
+          "explanation": "The Person class declares two properties with types, initializes them in the constructor, and exposes a greet method that returns a formatted string."
+        },
+        {
+          "title": "Class with Multiple Methods",
+          "code": "class Calculator {\n  private result: number;\n\n  constructor(initial: number = 0) {\n    this.result = initial;\n  }\n\n  add(value: number): Calculator {\n    this.result += value;\n    return this;\n  }\n\n  subtract(value: number): Calculator {\n    this.result -= value;\n    return this;\n  }\n\n  getResult(): number {\n    return this.result;\n  }\n}\n\nconst calc = new Calculator(10);\nconsole.log(calc.add(5).subtract(3).getResult());",
+          "output": "12",
+          "explanation": "This Calculator class demonstrates method chaining by returning `this` from each operation method, enabling a fluent API style."
+        },
+        {
+          "title": "Class with Default and Optional Properties",
+          "code": "class Config {\n  host: string;\n  port: number;\n  debug: boolean;\n\n  constructor(host: string, port: number = 3000, debug: boolean = false) {\n    this.host = host;\n    this.port = port;\n    this.debug = debug;\n  }\n\n  summary(): string {\n    return `${this.host}:${this.port} (debug=${this.debug})`;\n  }\n}\n\nconst dev = new Config(\"localhost\", 8080, true);\nconst prod = new Config(\"api.example.com\");\nconsole.log(dev.summary());\nconsole.log(prod.summary());",
+          "output": "localhost:8080 (debug=true)\napi.example.com:3000 (debug=false)",
+          "explanation": "Default parameter values in the constructor let you create instances without supplying every argument, while TypeScript still enforces types."
+        }
+      ],
+      "notes": [
+        "TypeScript requires all properties to be initialized either in the constructor or with a default value, unless marked optional with `?`.",
+        "The `this` keyword inside a method always refers to the instance the method was called on.",
+        "Classes are compiled to JavaScript constructor functions and prototypes under the hood, so they work in any JS runtime."
+      ],
+      "commonPitfalls": [
+        "Forgetting to declare a property type in the class body before assigning it in the constructor leads to a compile error.",
+        "Using arrow functions as class methods changes how `this` binding works — arrow methods capture `this` from the enclosing scope, not the instance."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "class-basics-ex1",
+        "title": "Create a BankAccount Class",
+        "description": "Create a class `BankAccount` with properties `owner` (string) and `balance` (number). Add a constructor that accepts both values, a `deposit(amount: number)` method that adds to the balance, a `withdraw(amount: number)` method that subtracts from the balance only if sufficient funds exist, and a `getBalance()` method that returns the current balance. Log the results as shown in the expected output.",
+        "starterCode": "// Create the BankAccount class here\n\nconst account = new BankAccount(\"Alice\", 100);\naccount.deposit(50);\nconsole.log(account.getBalance());\naccount.withdraw(30);\nconsole.log(account.getBalance());\naccount.withdraw(200);\nconsole.log(account.getBalance());",
+        "solution": "class BankAccount {\n  owner: string;\n  balance: number;\n\n  constructor(owner: string, balance: number) {\n    this.owner = owner;\n    this.balance = balance;\n  }\n\n  deposit(amount: number): void {\n    this.balance += amount;\n  }\n\n  withdraw(amount: number): void {\n    if (amount <= this.balance) {\n      this.balance -= amount;\n    }\n  }\n\n  getBalance(): number {\n    return this.balance;\n  }\n}\n\nconst account = new BankAccount(\"Alice\", 100);\naccount.deposit(50);\nconsole.log(account.getBalance());\naccount.withdraw(30);\nconsole.log(account.getBalance());\naccount.withdraw(200);\nconsole.log(account.getBalance());",
+        "expectedOutput": "150\n120\n120",
+        "hints": [
+          "The withdraw method should check if the amount is less than or equal to the balance before subtracting.",
+          "Remember to declare both properties with their types in the class body before using them in the constructor."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "class-basics-ex2",
+        "title": "Create a TodoList Class",
+        "description": "Create a `TodoList` class that manages a list of tasks. It should have an `items` property (array of `{ task: string; done: boolean }`), an `add(task: string)` method, a `complete(task: string)` method that marks a task as done, and a `summary()` method that returns `\"X/Y completed\"`. Log the output as shown.",
+        "starterCode": "// Create the TodoList class here\n\nconst todos = new TodoList();\ntodos.add(\"Learn TS\");\ntodos.add(\"Build app\");\ntodos.add(\"Deploy\");\ntodos.complete(\"Learn TS\");\nconsole.log(todos.summary());",
+        "solution": "class TodoList {\n  items: { task: string; done: boolean }[];\n\n  constructor() {\n    this.items = [];\n  }\n\n  add(task: string): void {\n    this.items.push({ task, done: false });\n  }\n\n  complete(task: string): void {\n    const item = this.items.find(i => i.task === task);\n    if (item) {\n      item.done = true;\n    }\n  }\n\n  summary(): string {\n    const doneCount = this.items.filter(i => i.done).length;\n    return `${doneCount}/${this.items.length} completed`;\n  }\n}\n\nconst todos = new TodoList();\ntodos.add(\"Learn TS\");\ntodos.add(\"Build app\");\ntodos.add(\"Deploy\");\ntodos.complete(\"Learn TS\");\nconsole.log(todos.summary());",
+        "expectedOutput": "1/3 completed",
+        "hints": [
+          "Use an array of objects with `task` and `done` properties. Initialize it as an empty array in the constructor.",
+          "Use `Array.find()` to locate the task by name in the `complete` method, then set its `done` property to true."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "access-modifiers",
+    "sectionId": "classes-and-oop",
+    "orderIndex": 1,
+    "title": "Access Modifiers",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["public", "private", "protected", "readonly", "encapsulation"],
+    "content": {
+      "explanation": "Access modifiers in TypeScript control the visibility and mutability of class members. They are a core part of encapsulation, one of the fundamental principles of object-oriented programming. By restricting access to certain properties and methods, you create a clear boundary between a class's internal implementation and its public API.\n\nThe `public` modifier is the default in TypeScript — every member without an explicit modifier is public. Public members can be accessed from anywhere: inside the class, in subclasses, and from external code. The `private` modifier restricts access to the class itself. Private members cannot be accessed from outside the class or from subclasses. TypeScript also supports the JavaScript native `#` private field syntax, which provides true runtime privacy.\n\nThe `protected` modifier sits between public and private. Protected members are accessible within the class and in subclasses, but not from external code. This is useful when you want to share implementation details with child classes while still hiding them from the rest of the application.\n\nThe `readonly` modifier prevents a property from being reassigned after initialization. You can set a readonly property in the constructor or at the declaration site, but any subsequent assignment will cause a compile error. Combining `readonly` with other access modifiers (e.g., `private readonly`) gives you fine-grained control over who can read a value and ensures it never changes after construction.",
+      "codeExamples": [
+        {
+          "title": "Public, Private, and Protected",
+          "code": "class Employee {\n  public name: string;\n  private salary: number;\n  protected department: string;\n\n  constructor(name: string, salary: number, department: string) {\n    this.name = name;\n    this.salary = salary;\n    this.department = department;\n  }\n\n  public describe(): string {\n    return `${this.name} works in ${this.department}`;\n  }\n\n  private getSalary(): number {\n    return this.salary;\n  }\n}\n\nclass Manager extends Employee {\n  showDepartment(): string {\n    // Can access protected member\n    return `Managing ${this.department}`;\n  }\n}\n\nconst emp = new Employee(\"Bob\", 50000, \"Engineering\");\nconsole.log(emp.name);\nconsole.log(emp.describe());\n// emp.salary; // Error: private\n// emp.department; // Error: protected\n\nconst mgr = new Manager(\"Carol\", 80000, \"Design\");\nconsole.log(mgr.showDepartment());",
+          "output": "Bob\nBob works in Engineering\nManaging Design",
+          "explanation": "The `name` is public and accessible everywhere, `salary` is private and only accessible inside Employee, and `department` is protected so Manager can access it but external code cannot."
+        },
+        {
+          "title": "Readonly Properties",
+          "code": "class Point {\n  readonly x: number;\n  readonly y: number;\n\n  constructor(x: number, y: number) {\n    this.x = x;\n    this.y = y;\n  }\n\n  toString(): string {\n    return `(${this.x}, ${this.y})`;\n  }\n}\n\nconst p = new Point(10, 20);\nconsole.log(p.toString());\nconsole.log(p.x);\n// p.x = 99; // Error: Cannot assign to 'x' because it is a read-only property",
+          "output": "(10, 20)\n10",
+          "explanation": "The readonly modifier ensures x and y can only be set in the constructor. Any attempt to reassign them later causes a compile-time error."
+        },
+        {
+          "title": "Combining Modifiers",
+          "code": "class AppConfig {\n  private readonly apiUrl: string;\n  private readonly maxRetries: number;\n\n  constructor(apiUrl: string, maxRetries: number = 3) {\n    this.apiUrl = apiUrl;\n    this.maxRetries = maxRetries;\n  }\n\n  getApiUrl(): string {\n    return this.apiUrl;\n  }\n\n  getMaxRetries(): number {\n    return this.maxRetries;\n  }\n}\n\nconst config = new AppConfig(\"https://api.example.com\", 5);\nconsole.log(config.getApiUrl());\nconsole.log(config.getMaxRetries());",
+          "output": "https://api.example.com\n5",
+          "explanation": "Using `private readonly` ensures the values are neither accessible from outside nor changeable after construction, a common pattern for configuration objects."
+        }
+      ],
+      "notes": [
+        "TypeScript access modifiers are compile-time only — they do not exist at runtime in the emitted JavaScript. Use `#` private fields for true runtime privacy.",
+        "The `readonly` modifier only prevents reassignment of the property itself. If the property is an object or array, its internal contents can still be mutated.",
+        "You can combine access modifiers freely: `private readonly`, `protected readonly`, etc."
+      ],
+      "commonPitfalls": [
+        "Assuming `private` gives runtime protection — it is only enforced by the TypeScript compiler. At runtime, the property is still accessible.",
+        "Trying to access a `protected` member from outside the class hierarchy. Protected means accessible in the class and subclasses, not anywhere else."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "access-modifiers-ex1",
+        "title": "Encapsulated Counter",
+        "description": "Create a `Counter` class with a `private` property `count` initialized to 0. Add a `public` `increment()` method, a `public` `decrement()` method (that doesn't go below 0), and a `public` `getCount()` method. Log the results as shown.",
+        "starterCode": "// Create the Counter class here\n\nconst counter = new Counter();\ncounter.increment();\ncounter.increment();\ncounter.increment();\ncounter.decrement();\nconsole.log(counter.getCount());\ncounter.decrement();\ncounter.decrement();\ncounter.decrement();\nconsole.log(counter.getCount());",
+        "solution": "class Counter {\n  private count: number;\n\n  constructor() {\n    this.count = 0;\n  }\n\n  public increment(): void {\n    this.count++;\n  }\n\n  public decrement(): void {\n    if (this.count > 0) {\n      this.count--;\n    }\n  }\n\n  public getCount(): number {\n    return this.count;\n  }\n}\n\nconst counter = new Counter();\ncounter.increment();\ncounter.increment();\ncounter.increment();\ncounter.decrement();\nconsole.log(counter.getCount());\ncounter.decrement();\ncounter.decrement();\ncounter.decrement();\nconsole.log(counter.getCount());",
+        "expectedOutput": "2\n0",
+        "hints": [
+          "The `decrement` method should check if `count` is greater than 0 before subtracting.",
+          "Initialize `count` to 0 in the constructor and mark it `private` so it cannot be accessed directly from outside."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "access-modifiers-ex2",
+        "title": "User Profile with Readonly ID",
+        "description": "Create a `UserProfile` class with `readonly id` (string), `public name` (string), and `private email` (string). Add a `getEmail()` method that returns the email, and an `updateEmail(newEmail: string)` method that updates it. Log the results as shown.",
+        "starterCode": "// Create the UserProfile class here\n\nconst user = new UserProfile(\"u-001\", \"Alice\", \"alice@example.com\");\nconsole.log(user.id);\nconsole.log(user.name);\nconsole.log(user.getEmail());\nuser.updateEmail(\"newalice@example.com\");\nconsole.log(user.getEmail());",
+        "solution": "class UserProfile {\n  readonly id: string;\n  public name: string;\n  private email: string;\n\n  constructor(id: string, name: string, email: string) {\n    this.id = id;\n    this.name = name;\n    this.email = email;\n  }\n\n  getEmail(): string {\n    return this.email;\n  }\n\n  updateEmail(newEmail: string): void {\n    this.email = newEmail;\n  }\n}\n\nconst user = new UserProfile(\"u-001\", \"Alice\", \"alice@example.com\");\nconsole.log(user.id);\nconsole.log(user.name);\nconsole.log(user.getEmail());\nuser.updateEmail(\"newalice@example.com\");\nconsole.log(user.getEmail());",
+        "expectedOutput": "u-001\nAlice\nalice@example.com\nnewalice@example.com",
+        "hints": [
+          "Mark `id` as `readonly` so it can be set in the constructor but never reassigned.",
+          "The `email` property is `private`, so provide `getEmail` and `updateEmail` as the public interface."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "abstract-classes",
+    "sectionId": "classes-and-oop",
+    "orderIndex": 2,
+    "title": "Abstract Classes",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["abstract class", "abstract method", "inheritance", "polymorphism", "template method pattern"],
+    "content": {
+      "explanation": "Abstract classes in TypeScript serve as base classes that cannot be instantiated directly. They provide a way to define a common structure and shared behavior that subclasses must follow. You declare an abstract class using the `abstract` keyword before the class definition, and any class that extends it must implement all of its abstract methods.\n\nAbstract methods are method signatures declared with the `abstract` keyword but without an implementation body. They define a contract: every concrete (non-abstract) subclass must provide its own implementation. This is powerful for defining families of related classes that share common behavior but differ in specific details.\n\nUnlike interfaces, abstract classes can include fully implemented methods alongside abstract ones. This means you can put shared logic in the base class and only require subclasses to fill in the parts that vary. This pattern is known as the Template Method pattern in design patterns terminology and is extremely common in real-world applications.\n\nAbstract classes also support constructors, properties with access modifiers, and everything else a regular class supports. The key difference is simply that you cannot do `new AbstractClass()` directly — you must create a concrete subclass. This makes abstract classes ideal for defining frameworks or base layers where the specific behavior is determined by subclasses.",
+      "codeExamples": [
+        {
+          "title": "Basic Abstract Class",
+          "code": "abstract class Shape {\n  abstract area(): number;\n  abstract perimeter(): number;\n\n  describe(): string {\n    return `Area: ${this.area()}, Perimeter: ${this.perimeter()}`;\n  }\n}\n\nclass Circle extends Shape {\n  constructor(private radius: number) {\n    super();\n  }\n\n  area(): number {\n    return Math.round(Math.PI * this.radius ** 2 * 100) / 100;\n  }\n\n  perimeter(): number {\n    return Math.round(2 * Math.PI * this.radius * 100) / 100;\n  }\n}\n\nclass Rectangle extends Shape {\n  constructor(private width: number, private height: number) {\n    super();\n  }\n\n  area(): number {\n    return this.width * this.height;\n  }\n\n  perimeter(): number {\n    return 2 * (this.width + this.height);\n  }\n}\n\nconst shapes: Shape[] = [new Circle(5), new Rectangle(4, 6)];\nshapes.forEach(s => console.log(s.describe()));",
+          "output": "Area: 78.54, Perimeter: 31.42\nArea: 24, Perimeter: 20",
+          "explanation": "Shape defines two abstract methods (area and perimeter) and one concrete method (describe) that uses them. Circle and Rectangle each provide their own implementations."
+        },
+        {
+          "title": "Abstract Class with Constructor and Properties",
+          "code": "abstract class Vehicle {\n  constructor(protected brand: string, protected year: number) {}\n\n  abstract fuelType(): string;\n\n  info(): string {\n    return `${this.year} ${this.brand} (${this.fuelType()})`;\n  }\n}\n\nclass ElectricCar extends Vehicle {\n  fuelType(): string {\n    return \"Electric\";\n  }\n}\n\nclass GasCar extends Vehicle {\n  fuelType(): string {\n    return \"Gasoline\";\n  }\n}\n\nconst cars: Vehicle[] = [\n  new ElectricCar(\"Tesla\", 2024),\n  new GasCar(\"Toyota\", 2023)\n];\ncars.forEach(c => console.log(c.info()));",
+          "output": "2024 Tesla (Electric)\n2023 Toyota (Gasoline)",
+          "explanation": "The Vehicle abstract class has a constructor with protected properties and a concrete info() method. Each subclass only needs to implement the abstract fuelType() method."
+        }
+      ],
+      "notes": [
+        "You cannot create an instance of an abstract class directly — `new Shape()` would be a compile error.",
+        "Abstract classes can have a mix of abstract methods (no body) and concrete methods (with body).",
+        "A class extending an abstract class must implement all abstract members, or it must also be declared abstract."
+      ],
+      "commonPitfalls": [
+        "Forgetting to call `super()` in the subclass constructor when the abstract class has its own constructor.",
+        "Confusing abstract classes with interfaces — abstract classes can have implementation code and state, interfaces cannot."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "abstract-classes-ex1",
+        "title": "Abstract Animal Class",
+        "description": "Create an abstract class `Animal` with a `name` property (set via constructor), an abstract method `speak(): string`, and a concrete method `present(): string` that returns `\"<name> says <speak()>\"`. Then create `Dog` and `Cat` subclasses where Dog's speak returns `\"Woof!\"` and Cat's speak returns `\"Meow!\"`. Log the output as shown.",
+        "starterCode": "// Create the abstract Animal class and Dog/Cat subclasses here\n\nconst animals: Animal[] = [new Dog(\"Rex\"), new Cat(\"Whiskers\")];\nanimals.forEach(a => console.log(a.present()));",
+        "solution": "abstract class Animal {\n  constructor(protected name: string) {}\n\n  abstract speak(): string;\n\n  present(): string {\n    return `${this.name} says ${this.speak()}`;\n  }\n}\n\nclass Dog extends Animal {\n  speak(): string {\n    return \"Woof!\";\n  }\n}\n\nclass Cat extends Animal {\n  speak(): string {\n    return \"Meow!\";\n  }\n}\n\nconst animals: Animal[] = [new Dog(\"Rex\"), new Cat(\"Whiskers\")];\nanimals.forEach(a => console.log(a.present()));",
+        "expectedOutput": "Rex says Woof!\nWhiskers says Meow!",
+        "hints": [
+          "Use `protected name: string` as a parameter property in the Animal constructor so subclasses inherit it.",
+          "Each subclass must implement the `speak()` method, returning the appropriate sound string."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "abstract-classes-ex2",
+        "title": "Abstract Formatter",
+        "description": "Create an abstract class `Formatter` with an abstract method `format(data: string[]): string` and a concrete method `output(data: string[]): void` that logs the result of `format(data)`. Create `CsvFormatter` (joins with commas) and `JsonFormatter` (outputs a JSON array string). Log the output as shown.",
+        "starterCode": "// Create the abstract Formatter class and subclasses here\n\nconst data = [\"apple\", \"banana\", \"cherry\"];\nconst csv = new CsvFormatter();\nconst json = new JsonFormatter();\ncsv.output(data);\njson.output(data);",
+        "solution": "abstract class Formatter {\n  abstract format(data: string[]): string;\n\n  output(data: string[]): void {\n    console.log(this.format(data));\n  }\n}\n\nclass CsvFormatter extends Formatter {\n  format(data: string[]): string {\n    return data.join(\",\");\n  }\n}\n\nclass JsonFormatter extends Formatter {\n  format(data: string[]): string {\n    return JSON.stringify(data);\n  }\n}\n\nconst data = [\"apple\", \"banana\", \"cherry\"];\nconst csv = new CsvFormatter();\nconst json = new JsonFormatter();\ncsv.output(data);\njson.output(data);",
+        "expectedOutput": "apple,banana,cherry\n[\"apple\",\"banana\",\"cherry\"]",
+        "hints": [
+          "CsvFormatter's format method should use `data.join(\",\")` to produce comma-separated output.",
+          "JsonFormatter's format method should use `JSON.stringify(data)` to produce a JSON array string."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "implements-keyword",
+    "sectionId": "classes-and-oop",
+    "orderIndex": 3,
+    "title": "Implementing Interfaces",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["implements", "interface", "contract", "multiple interfaces", "structural typing"],
+    "content": {
+      "explanation": "The `implements` keyword in TypeScript allows a class to declare that it satisfies the contract defined by one or more interfaces. When a class implements an interface, TypeScript checks that the class provides all the properties and methods the interface requires. If anything is missing or has the wrong type, you get a compile-time error.\n\nImplementing interfaces is a form of contract enforcement. An interface says \"any class implementing me must have these members\" without dictating how they should be implemented. This is different from abstract classes, which can provide partial implementations. Interfaces are purely structural — they define shape, not behavior.\n\nA class can implement multiple interfaces by separating them with commas: `class Foo implements Bar, Baz`. This is TypeScript's answer to multiple inheritance. Since interfaces have no implementation, there is no ambiguity about which parent's code to use — the class must provide all implementations itself. This makes multiple interface implementation safe and straightforward.\n\nIt is important to understand that TypeScript uses structural typing. Even without the `implements` keyword, if an object has the right shape, it is compatible with the interface. The `implements` clause does not change the type of the class — it only serves as a compile-time check that the class satisfies the interface contract. This is a common source of confusion for developers coming from nominally-typed languages like Java or C#.",
+      "codeExamples": [
+        {
+          "title": "Basic Interface Implementation",
+          "code": "interface Printable {\n  toString(): string;\n}\n\ninterface Loggable {\n  log(): void;\n}\n\nclass Message implements Printable, Loggable {\n  constructor(private text: string) {}\n\n  toString(): string {\n    return `Message: ${this.text}`;\n  }\n\n  log(): void {\n    console.log(this.toString());\n  }\n}\n\nconst msg = new Message(\"Hello, TypeScript!\");\nmsg.log();\nconsole.log(msg.toString());",
+          "output": "Message: Hello, TypeScript!\nMessage: Hello, TypeScript!",
+          "explanation": "The Message class implements both Printable and Loggable interfaces, providing concrete implementations for toString() and log()."
+        },
+        {
+          "title": "Interface with Properties and Methods",
+          "code": "interface Serializable {\n  serialize(): string;\n}\n\ninterface Identifiable {\n  id: string;\n  getName(): string;\n}\n\nclass Product implements Identifiable, Serializable {\n  constructor(public id: string, private name: string, private price: number) {}\n\n  getName(): string {\n    return this.name;\n  }\n\n  serialize(): string {\n    return JSON.stringify({ id: this.id, name: this.name, price: this.price });\n  }\n}\n\nconst p = new Product(\"p-1\", \"Laptop\", 999);\nconsole.log(p.getName());\nconsole.log(p.serialize());",
+          "output": "Laptop\n{\"id\":\"p-1\",\"name\":\"Laptop\",\"price\":999}",
+          "explanation": "Product implements two interfaces, providing the required `id` property, `getName` method, and `serialize` method."
+        },
+        {
+          "title": "Polymorphism via Interfaces",
+          "code": "interface Renderable {\n  render(): string;\n}\n\nclass Button implements Renderable {\n  constructor(private label: string) {}\n  render(): string {\n    return `<button>${this.label}</button>`;\n  }\n}\n\nclass TextInput implements Renderable {\n  constructor(private placeholder: string) {}\n  render(): string {\n    return `<input placeholder=\"${this.placeholder}\" />`;\n  }\n}\n\nfunction renderAll(items: Renderable[]): void {\n  items.forEach(item => console.log(item.render()));\n}\n\nrenderAll([new Button(\"Submit\"), new TextInput(\"Enter name\")]);",
+          "output": "<button>Submit</button>\n<input placeholder=\"Enter name\" />",
+          "explanation": "Both Button and TextInput implement Renderable, so they can be stored in the same array and rendered polymorphically."
+        }
+      ],
+      "notes": [
+        "A class can implement multiple interfaces, but can only extend one class.",
+        "The `implements` keyword is a compile-time check only — it does not affect the emitted JavaScript.",
+        "Interfaces can extend other interfaces to compose larger contracts from smaller ones."
+      ],
+      "commonPitfalls": [
+        "Thinking that `implements` adds the interface's members to the class automatically. You must manually implement every member.",
+        "Assuming `implements` changes the class type. It only verifies the class satisfies the interface — the class type is still determined by its own members."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "implements-keyword-ex1",
+        "title": "Implement a Sortable Interface",
+        "description": "Define an interface `Sortable` with a method `compareTo(other: Sortable): number`. Create a class `Temperature` that implements `Sortable`, stores a `value` (number), and compares temperatures. Sort an array of temperatures and log the sorted values.",
+        "starterCode": "// Define Sortable interface and Temperature class here\n\nconst temps = [new Temperature(30), new Temperature(10), new Temperature(20)];\ntemps.sort((a, b) => a.compareTo(b));\ntemps.forEach(t => console.log(t.value));",
+        "solution": "interface Sortable {\n  compareTo(other: Sortable): number;\n}\n\nclass Temperature implements Sortable {\n  constructor(public value: number) {}\n\n  compareTo(other: Sortable): number {\n    if (other instanceof Temperature) {\n      return this.value - other.value;\n    }\n    return 0;\n  }\n}\n\nconst temps = [new Temperature(30), new Temperature(10), new Temperature(20)];\ntemps.sort((a, b) => a.compareTo(b));\ntemps.forEach(t => console.log(t.value));",
+        "expectedOutput": "10\n20\n30",
+        "hints": [
+          "The `compareTo` method should return a negative number if `this` is less, positive if greater, and 0 if equal.",
+          "Use `instanceof` to check the type of the `other` parameter before accessing its `value` property."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "implements-keyword-ex2",
+        "title": "Implement Stringifiable and Hashable",
+        "description": "Create two interfaces: `Stringifiable` with `stringify(): string` and `Hashable` with `hash(): number`. Create a `User` class that implements both. `stringify` returns `\"User(<name>)\"` and `hash` returns the sum of character codes of the name. Log the results.",
+        "starterCode": "// Define interfaces and User class here\n\nconst user = new User(\"Alice\");\nconsole.log(user.stringify());\nconsole.log(user.hash());",
+        "solution": "interface Stringifiable {\n  stringify(): string;\n}\n\ninterface Hashable {\n  hash(): number;\n}\n\nclass User implements Stringifiable, Hashable {\n  constructor(private name: string) {}\n\n  stringify(): string {\n    return `User(${this.name})`;\n  }\n\n  hash(): number {\n    let sum = 0;\n    for (let i = 0; i < this.name.length; i++) {\n      sum += this.name.charCodeAt(i);\n    }\n    return sum;\n  }\n}\n\nconst user = new User(\"Alice\");\nconsole.log(user.stringify());\nconsole.log(user.hash());",
+        "expectedOutput": "User(Alice)\n401",
+        "hints": [
+          "Use `charCodeAt(i)` in a loop to get the character code of each character in the name and sum them.",
+          "The class must implement all methods from both interfaces — `stringify()` from Stringifiable and `hash()` from Hashable."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "static-and-parameter-properties",
+    "sectionId": "classes-and-oop",
+    "orderIndex": 4,
+    "title": "Static Members & Parameter Properties",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["static properties", "static methods", "parameter properties", "shorthand constructor", "singleton pattern"],
+    "content": {
+      "explanation": "Static members in TypeScript belong to the class itself rather than to any specific instance. You access them using the class name, not through an instance. Static properties are shared across all instances and are commonly used for counters, configuration values, factory methods, and utility functions that are logically related to the class but don't depend on instance data.\n\nStatic methods are useful for creating factory functions, utility operations, and implementing patterns like the Singleton. A factory method is a static method that creates and returns instances of the class, often with some logic to determine which subclass or configuration to use. The Singleton pattern uses a private constructor combined with a static method to ensure only one instance of a class exists.\n\nParameter properties are a TypeScript shorthand that lets you declare and initialize class properties directly in the constructor parameter list. By adding an access modifier (`public`, `private`, `protected`) or `readonly` before a constructor parameter, TypeScript automatically creates a property with that name and assigns the parameter value to it. This eliminates the repetitive pattern of declaring a property, then assigning it in the constructor body.\n\nParameter properties are purely a TypeScript convenience feature. They produce the same JavaScript output as manual property declaration and assignment, but with much less boilerplate. They are especially valuable when a class has many properties that are simply passed through the constructor without any transformation. Interviewers often ask about this feature because it tests understanding of TypeScript-specific syntax and how it relates to the generated JavaScript.",
+      "codeExamples": [
+        {
+          "title": "Static Properties and Methods",
+          "code": "class IdGenerator {\n  private static nextId: number = 1;\n\n  static generate(): string {\n    return `id-${IdGenerator.nextId++}`;\n  }\n\n  static reset(): void {\n    IdGenerator.nextId = 1;\n  }\n}\n\nconsole.log(IdGenerator.generate());\nconsole.log(IdGenerator.generate());\nconsole.log(IdGenerator.generate());\nIdGenerator.reset();\nconsole.log(IdGenerator.generate());",
+          "output": "id-1\nid-2\nid-3\nid-1",
+          "explanation": "The static `nextId` property is shared across the class. Each call to `generate()` increments it. `reset()` restores it to 1. No instance is needed."
+        },
+        {
+          "title": "Parameter Properties Shorthand",
+          "code": "// Without parameter properties (verbose)\nclass UserVerbose {\n  public name: string;\n  private email: string;\n  readonly id: number;\n\n  constructor(name: string, email: string, id: number) {\n    this.name = name;\n    this.email = email;\n    this.id = id;\n  }\n}\n\n// With parameter properties (concise)\nclass User {\n  constructor(\n    public name: string,\n    private email: string,\n    readonly id: number\n  ) {}\n\n  getEmail(): string {\n    return this.email;\n  }\n}\n\nconst user = new User(\"Alice\", \"alice@test.com\", 1);\nconsole.log(user.name);\nconsole.log(user.getEmail());\nconsole.log(user.id);",
+          "output": "Alice\nalice@test.com\n1",
+          "explanation": "Both classes produce identical JavaScript. Parameter properties eliminate the boilerplate of declaring and assigning each property manually."
+        },
+        {
+          "title": "Static Factory Method",
+          "code": "class Connection {\n  private static instance: Connection | null = null;\n\n  private constructor(private host: string, private port: number) {}\n\n  static create(host: string, port: number): Connection {\n    if (!Connection.instance) {\n      Connection.instance = new Connection(host, port);\n    }\n    return Connection.instance;\n  }\n\n  describe(): string {\n    return `${this.host}:${this.port}`;\n  }\n}\n\nconst conn1 = Connection.create(\"localhost\", 5432);\nconst conn2 = Connection.create(\"remote\", 3306);\nconsole.log(conn1.describe());\nconsole.log(conn1 === conn2);",
+          "output": "localhost:5432\ntrue",
+          "explanation": "This Singleton pattern uses a private constructor and a static factory method. The second call returns the same instance, so conn1 === conn2 is true."
+        }
+      ],
+      "notes": [
+        "Static members are accessed via the class name, not `this`. Inside a static method, `this` refers to the class constructor, not an instance.",
+        "Parameter properties require an access modifier or `readonly` in the constructor — a plain parameter without a modifier is NOT a parameter property.",
+        "Static properties are useful for maintaining state that is shared across all instances, like counters or caches."
+      ],
+      "commonPitfalls": [
+        "Trying to access a static member through an instance (e.g., `instance.staticMethod()`) instead of the class name.",
+        "Forgetting that parameter properties require an explicit access modifier — simply writing `constructor(name: string)` without `public`/`private`/`protected`/`readonly` does not create a property."
+      ],
+      "interviewTips": [
+        "Be prepared to explain the difference between static and instance members, and when each is appropriate. Static members belong to the class, instance members belong to each object.",
+        "Interviewers may ask you to rewrite verbose constructor patterns using parameter properties, or vice versa. Know that they compile to identical JavaScript.",
+        "The Singleton pattern using a private constructor with a static factory method is a common interview topic. Understand its trade-offs: it limits flexibility and can make testing harder."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "static-param-ex1",
+        "title": "Instance Counter with Static",
+        "description": "Create a class `Tracker` with a static property `count` starting at 0. Each time an instance is created, increment the count. Add a static method `getCount()` that returns the current count. The constructor should accept a `name` parameter property (public). Log the results as shown.",
+        "starterCode": "// Create the Tracker class here\n\nnew Tracker(\"A\");\nnew Tracker(\"B\");\nnew Tracker(\"C\");\nconsole.log(Tracker.getCount());\nnew Tracker(\"D\");\nconsole.log(Tracker.getCount());",
+        "solution": "class Tracker {\n  static count: number = 0;\n\n  constructor(public name: string) {\n    Tracker.count++;\n  }\n\n  static getCount(): number {\n    return Tracker.count;\n  }\n}\n\nnew Tracker(\"A\");\nnew Tracker(\"B\");\nnew Tracker(\"C\");\nconsole.log(Tracker.getCount());\nnew Tracker(\"D\");\nconsole.log(Tracker.getCount());",
+        "expectedOutput": "3\n4",
+        "hints": [
+          "Increment the static `count` inside the constructor using `Tracker.count++`.",
+          "Use `public name: string` as a parameter property to avoid manual assignment."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "static-param-ex2",
+        "title": "Builder Pattern with Static",
+        "description": "Create a class `QueryBuilder` with private properties `table` (string) and `conditions` (string array). Use a static `from(table: string)` method that returns a new instance. Add a `where(condition: string)` method that pushes to conditions and returns `this`, and a `build()` method that returns the query string. Log the result.",
+        "starterCode": "// Create the QueryBuilder class here\n\nconst query = QueryBuilder\n  .from(\"users\")\n  .where(\"age > 18\")\n  .where(\"active = true\")\n  .build();\n\nconsole.log(query);",
+        "solution": "class QueryBuilder {\n  private table: string;\n  private conditions: string[];\n\n  private constructor(table: string) {\n    this.table = table;\n    this.conditions = [];\n  }\n\n  static from(table: string): QueryBuilder {\n    return new QueryBuilder(table);\n  }\n\n  where(condition: string): QueryBuilder {\n    this.conditions.push(condition);\n    return this;\n  }\n\n  build(): string {\n    let query = `SELECT * FROM ${this.table}`;\n    if (this.conditions.length > 0) {\n      query += \" WHERE \" + this.conditions.join(\" AND \");\n    }\n    return query;\n  }\n}\n\nconst query = QueryBuilder\n  .from(\"users\")\n  .where(\"age > 18\")\n  .where(\"active = true\")\n  .build();\n\nconsole.log(query);",
+        "expectedOutput": "SELECT * FROM users WHERE age > 18 AND active = true",
+        "hints": [
+          "The `from` static method should create and return a new instance with the table name set.",
+          "The `where` method should push the condition string and return `this` for chaining. The `build` method joins conditions with ' AND '."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

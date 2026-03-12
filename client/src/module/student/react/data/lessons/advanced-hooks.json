@@ -1,0 +1,352 @@
+[
+  {
+    "id": "usememo-hook",
+    "sectionId": "advanced-hooks",
+    "orderIndex": 0,
+    "title": "useMemo Hook",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["useMemo", "memoization", "expensive computations", "referential equality", "performance optimization"],
+    "content": {
+      "explanation": "useMemo is a React hook that memoizes the result of an expensive computation. It takes a function and a dependency array, and only recomputes the value when one of the dependencies changes. Between re-renders where the dependencies haven't changed, useMemo returns the previously cached result. This is a performance optimization tool, not a semantic guarantee.\n\nThe primary use case for useMemo is avoiding expensive recalculations on every render. If a component renders frequently (due to parent re-renders, context changes, or state updates) and contains a computation that processes large datasets, sorts arrays, or performs complex transformations, wrapping that computation in useMemo ensures it only runs when its inputs actually change.\n\nThe second important use case is maintaining referential equality. In JavaScript, objects and arrays are compared by reference, not by value. If you create a new object in the render body, it gets a new reference every render. This matters when that object is passed as a prop to a memoized child component (React.memo) or used as a dependency in useEffect or useCallback. useMemo ensures the same reference is returned when the underlying data hasn't changed.\n\nHowever, useMemo itself has a cost — it uses memory to store the cached value and adds complexity to your code. React's documentation advises using it only when you can measurably demonstrate a performance benefit. Don't wrap every computation in useMemo preemptively. Profile first, then optimize. A good rule of thumb: if the computation takes less than a millisecond, the overhead of useMemo may outweigh its benefit.\n\nReact reserves the right to discard cached values under memory pressure or other internal heuristics. Your code should work correctly without useMemo — it should be a performance optimization, not a correctness requirement. If removing useMemo would break your logic, something else in your design needs to change.",
+      "codeExamples": [
+        {
+          "title": "Memoizing an expensive computation",
+          "code": "function ExpensiveList({ items, filter }) {\n  const filteredItems = React.useMemo(() => {\n    console.log('Computing filtered items...');\n    return items.filter(item => item.includes(filter));\n  }, [items, filter]);\n\n  console.log('Filtered count:', filteredItems.length);\n  return null;\n}\n\nconst items = ['apple', 'banana', 'avocado', 'blueberry', 'apricot'];\nExpensiveList({ items, filter: 'a' });",
+          "output": "Computing filtered items...\nFiltered count: 3",
+          "explanation": "The filtering only runs when items or filter changes. On re-renders where neither dependency changes, useMemo returns the cached result without running the filter again."
+        },
+        {
+          "title": "Referential equality for child props",
+          "code": "function Dashboard({ userId }) {\n  const config = React.useMemo(() => {\n    console.log('Creating config object');\n    return {\n      userId: userId,\n      theme: 'dark',\n      pageSize: 20\n    };\n  }, [userId]);\n\n  console.log('Config userId:', config.userId);\n  console.log('Config theme:', config.theme);\n  // In real code: <MemoizedChild config={config} />\n  // Without useMemo, config would be a new object every render\n  // causing MemoizedChild to re-render unnecessarily\n  return null;\n}\n\nDashboard({ userId: 5 });",
+          "output": "Creating config object\nConfig userId: 5\nConfig theme: dark",
+          "explanation": "useMemo ensures the config object keeps the same reference between renders when userId hasn't changed. This prevents unnecessary re-renders of memoized child components that receive config as a prop."
+        },
+        {
+          "title": "When NOT to use useMemo",
+          "code": "function SimpleComponent({ name }) {\n  // DON'T: Trivial computation, useMemo adds overhead\n  // const upper = React.useMemo(() => name.toUpperCase(), [name]);\n\n  // DO: Just compute directly\n  const upper = name.toUpperCase();\n  console.log('Name:', upper);\n\n  // DON'T: Primitive values don't need referential stability\n  // const doubled = React.useMemo(() => count * 2, [count]);\n\n  // DO: Compute directly for cheap operations\n  const length = name.length;\n  console.log('Length:', length);\n\n  console.log('Simple computations do not need useMemo');\n  return null;\n}\n\nSimpleComponent({ name: 'react' });",
+          "output": "Name: REACT\nLength: 5\nSimple computations do not need useMemo",
+          "explanation": "For trivial operations like string methods, arithmetic, or accessing properties, useMemo's overhead exceeds its benefit. Reserve it for genuinely expensive computations or when referential equality matters."
+        }
+      ],
+      "notes": [
+        "useMemo runs during rendering. Do not put side effects inside useMemo — use useEffect for that. useMemo should be a pure computation.",
+        "React may discard cached values to free memory. Write your code so it works correctly even if useMemo recomputes on every render — treat it as a performance hint, not a guarantee.",
+        "Profile before you memoize. Use React DevTools Profiler or console.time to verify that a computation is actually expensive before adding useMemo."
+      ],
+      "commonPitfalls": [
+        "Overusing useMemo on trivial computations. The cost of comparing dependencies and caching can exceed the cost of just recomputing a simple value.",
+        "Passing an inline object or array as a dependency. Since these create new references each render, useMemo will always recompute. Extract the dependency to a stable reference or use primitive values."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "usememo-hook-ex1",
+        "title": "Memoized Filtering",
+        "description": "Use useMemo to memoize a filtering operation on a list of numbers. Only even numbers should be included.",
+        "starterCode": "function EvenNumbers({ numbers }) {\n  // TODO: Use useMemo to filter even numbers\n  // Log \"Filtering...\" inside the useMemo callback\n  // Then log \"Even numbers: <count>\"\n  // Depend on [numbers]\n\n  return null;\n}\n\nEvenNumbers({ numbers: [1, 2, 3, 4, 5, 6, 7, 8] });",
+        "solution": "function EvenNumbers({ numbers }) {\n  const evens = React.useMemo(() => {\n    console.log('Filtering...');\n    return numbers.filter(n => n % 2 === 0);\n  }, [numbers]);\n\n  console.log('Even numbers: ' + evens.length);\n  return null;\n}\n\nEvenNumbers({ numbers: [1, 2, 3, 4, 5, 6, 7, 8] });",
+        "expectedOutput": "Filtering...\nEven numbers: 4",
+        "hints": [
+          "React.useMemo takes a function that returns the computed value and a dependency array.",
+          "Use Array.filter with a modulo check (n % 2 === 0) to keep even numbers."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "usememo-hook-ex2",
+        "title": "Memoized Derived Data",
+        "description": "Use useMemo to compute summary statistics (total and average) from a list of scores. Log the computation and results.",
+        "starterCode": "function ScoreSummary({ scores }) {\n  // TODO: Use useMemo to compute { total, average } from scores\n  // Log \"Computing summary...\" inside useMemo\n  // Then log \"Total: <total>\"\n  // Then log \"Average: <average>\"\n  // Depend on [scores]\n\n  return null;\n}\n\nScoreSummary({ scores: [80, 90, 70, 100] });",
+        "solution": "function ScoreSummary({ scores }) {\n  const summary = React.useMemo(() => {\n    console.log('Computing summary...');\n    const total = scores.reduce((sum, s) => sum + s, 0);\n    const average = total / scores.length;\n    return { total, average };\n  }, [scores]);\n\n  console.log('Total: ' + summary.total);\n  console.log('Average: ' + summary.average);\n  return null;\n}\n\nScoreSummary({ scores: [80, 90, 70, 100] });",
+        "expectedOutput": "Computing summary...\nTotal: 340\nAverage: 85",
+        "hints": [
+          "Use Array.reduce to sum all scores, then divide by scores.length for the average.",
+          "Return an object { total, average } from the useMemo callback."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "usecallback-hook",
+    "sectionId": "advanced-hooks",
+    "orderIndex": 1,
+    "title": "useCallback Hook",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["useCallback", "function memoization", "preventing re-renders", "React.memo", "referential equality"],
+    "content": {
+      "explanation": "useCallback is a React hook that memoizes a function definition. It returns the same function reference between re-renders as long as its dependencies haven't changed. This is essentially useMemo for functions — in fact, useCallback(fn, deps) is equivalent to useMemo(() => fn, deps). The primary purpose is to maintain referential stability for functions passed as props or used as dependencies.\n\nThe main use case for useCallback is preventing unnecessary re-renders of child components that are wrapped in React.memo. When a parent component re-renders, it creates new function instances for all inline functions. If an onClick handler or callback is passed to a React.memo child, the new function reference causes the memo comparison to fail, triggering a re-render. useCallback solves this by returning the same function reference when dependencies haven't changed.\n\nuseCallback is also important when functions are used as dependencies in other hooks. If you pass a function to useEffect's dependency array, the effect re-runs whenever the function reference changes. Without useCallback, the function is recreated every render, causing the effect to run every render — defeating the purpose of the dependency array. useCallback stabilizes the reference so the effect only runs when the function's dependencies actually change.\n\nLike useMemo, useCallback should be used judiciously. Every useCallback adds memory overhead (storing the function and dependencies) and cognitive complexity. If a component doesn't pass callbacks to memoized children and doesn't use functions as effect dependencies, useCallback provides no benefit. Profile and measure before adding useCallback throughout your codebase.\n\nA common pattern is pairing useCallback with React.memo on child components. The parent uses useCallback for handlers, and the child is wrapped in React.memo. This combination ensures the child only re-renders when its props genuinely change. Without both pieces, the optimization doesn't work — useCallback alone doesn't prevent re-renders, and React.memo alone doesn't help if functions are recreated each render.",
+      "codeExamples": [
+        {
+          "title": "useCallback prevents reference changes",
+          "code": "function Parent() {\n  const [count, setCount] = React.useState(0);\n\n  // Without useCallback: new function every render\n  const unstableHandler = () => {\n    console.log('clicked');\n  };\n\n  // With useCallback: same function reference\n  const stableHandler = React.useCallback(() => {\n    console.log('clicked');\n  }, []);\n\n  console.log('Unstable creates new ref each render: true');\n  console.log('Stable keeps same ref between renders: true');\n  console.log('useCallback returns a function:', typeof stableHandler === 'function');\n\n  return null;\n}\n\nParent();",
+          "output": "Unstable creates new ref each render: true\nStable keeps same ref between renders: true\nuseCallback returns a function: true",
+          "explanation": "useCallback returns the same function reference between renders when dependencies haven't changed. The unstable version creates a new function on every render."
+        },
+        {
+          "title": "useCallback with React.memo child",
+          "code": "// Simulating React.memo behavior\nfunction MemoizedChild(props) {\n  console.log('Child rendered with handler type:', typeof props.onClick);\n  return null;\n}\n\nfunction Parent() {\n  const [count, setCount] = React.useState(0);\n\n  const handleClick = React.useCallback(() => {\n    console.log('Button clicked, count:', count);\n  }, [count]);\n\n  console.log('Parent rendered, count:', count);\n  MemoizedChild({ onClick: handleClick });\n  return null;\n}\n\nParent();",
+          "output": "Parent rendered, count: 0\nChild rendered with handler type: function",
+          "explanation": "The handleClick function is memoized with [count] as dependency. It only gets a new reference when count changes. A React.memo-wrapped child receiving this callback would skip re-renders when only other parent state changes."
+        },
+        {
+          "title": "useCallback as effect dependency",
+          "code": "function SearchComponent({ query }) {\n  const fetchResults = React.useCallback(() => {\n    console.log('Fetching results for:', query);\n    return ['result1', 'result2'];\n  }, [query]);\n\n  React.useEffect(() => {\n    const results = fetchResults();\n    console.log('Got results:', results.length);\n  }, [fetchResults]); // Stable reference prevents infinite loop\n\n  console.log('SearchComponent rendered');\n  return null;\n}\n\nSearchComponent({ query: 'hooks' });",
+          "output": "SearchComponent rendered\nFetching results for: hooks\nGot results: 2",
+          "explanation": "Without useCallback, fetchResults would be a new function every render, causing the useEffect to run every render. useCallback ensures the effect only re-runs when query changes."
+        }
+      ],
+      "notes": [
+        "useCallback(fn, deps) is syntactic sugar for useMemo(() => fn, deps). They achieve the same goal — useCallback is just more convenient for functions.",
+        "useCallback alone does not prevent re-renders. It must be paired with React.memo on the child component that receives the memoized callback.",
+        "When the dependency array includes rapidly changing values, useCallback provides little benefit since it recreates the function on each change anyway."
+      ],
+      "commonPitfalls": [
+        "Using useCallback without React.memo on the child component. If the child isn't memoized, it re-renders whenever the parent re-renders regardless of prop references.",
+        "Including unnecessary values in the dependency array. Every dependency change creates a new function reference, reducing the effectiveness of memoization. Only include values actually used inside the callback."
+      ],
+      "interviewTips": [
+        "Explain that useCallback memoizes the function itself, while useMemo memoizes the return value. useCallback(fn, deps) === useMemo(() => fn, deps).",
+        "Describe the common pattern: parent uses useCallback for handlers, child is wrapped in React.memo. Both pieces are required for the optimization to work.",
+        "Mention that premature use of useCallback everywhere is an anti-pattern. It should be applied based on measured performance needs, not as a default."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "usecallback-hook-ex1",
+        "title": "Stable Callback Reference",
+        "description": "Create a useCallback-memoized function and demonstrate that it returns a function. Log the type and a message when invoked.",
+        "starterCode": "function ButtonHandler() {\n  // TODO:\n  // 1. Create a useCallback that logs \"Button pressed\"\n  //    with empty dependency array\n  // 2. Log \"Handler type: function\"\n  // 3. Call the handler\n\n  return null;\n}\n\nButtonHandler();",
+        "solution": "function ButtonHandler() {\n  const handleClick = React.useCallback(() => {\n    console.log('Button pressed');\n  }, []);\n\n  console.log('Handler type: ' + typeof handleClick);\n  handleClick();\n  return null;\n}\n\nButtonHandler();",
+        "expectedOutput": "Handler type: function\nButton pressed",
+        "hints": [
+          "React.useCallback takes a function and a dependency array, just like useMemo but for functions.",
+          "The returned value is a function you can call directly or pass as a prop."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "usecallback-hook-ex2",
+        "title": "Callback with Dependencies",
+        "description": "Create a useCallback that depends on a multiplier value. Show that the callback uses the dependency correctly.",
+        "starterCode": "function Multiplier({ factor }) {\n  // TODO:\n  // 1. Create a useCallback called 'multiply' that takes a number\n  //    and returns number * factor. Depend on [factor].\n  // 2. Log \"Factor: <factor>\"\n  // 3. Log \"5 x <factor> = <result>\" using multiply(5)\n  // 4. Log \"10 x <factor> = <result>\" using multiply(10)\n\n  return null;\n}\n\nMultiplier({ factor: 3 });",
+        "solution": "function Multiplier({ factor }) {\n  const multiply = React.useCallback((num) => {\n    return num * factor;\n  }, [factor]);\n\n  console.log('Factor: ' + factor);\n  console.log('5 x ' + factor + ' = ' + multiply(5));\n  console.log('10 x ' + factor + ' = ' + multiply(10));\n  return null;\n}\n\nMultiplier({ factor: 3 });",
+        "expectedOutput": "Factor: 3\n5 x 3 = 15\n10 x 3 = 30",
+        "hints": [
+          "The callback function takes a parameter (num) and uses the factor from the outer scope.",
+          "Include [factor] in the dependency array so the callback updates when factor changes."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "usereducer-hook",
+    "sectionId": "advanced-hooks",
+    "orderIndex": 2,
+    "title": "useReducer Hook",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["useReducer", "reducer pattern", "dispatch", "actions", "complex state logic"],
+    "content": {
+      "explanation": "useReducer is a React hook for managing complex state logic. It follows the reducer pattern popularized by Redux: state transitions are described by action objects and processed by a pure reducer function. useReducer is an alternative to useState that is preferable when state logic involves multiple sub-values, when the next state depends on the previous state, or when you need to pass dispatch down through many levels.\n\nuseReducer accepts three arguments: a reducer function, an initial state, and an optional initializer function. It returns the current state and a dispatch function. The reducer takes the current state and an action, and returns the new state. Actions are plain objects, conventionally with a 'type' property that identifies the action and optional payload data. The dispatch function is stable across renders (like setState from useState), so it can safely be passed through context without causing re-renders.\n\nThe reducer function must be pure — given the same state and action, it must always return the same new state. It should not mutate the existing state, perform side effects, or call other hooks. Instead, it returns a new state object. This purity makes reducers easy to test in isolation: just call the function with a state and action and assert the return value.\n\nA major advantage of useReducer is centralizing state transitions. With useState, state update logic is scattered across event handlers throughout the component. With useReducer, all state transitions are defined in one place — the reducer function. This makes it easier to understand how state can change, debug incorrect states, and add new state transitions without hunting through the component for every setState call.\n\nuseReducer combined with useContext creates a powerful state management pattern. The dispatch function is stable and can be passed through context without memoization concerns. Child components dispatch actions to update global state, and the reducer processes these actions deterministically. This pattern handles moderate-complexity state management needs without requiring external libraries.",
+      "codeExamples": [
+        {
+          "title": "Basic useReducer for a counter",
+          "code": "function counterReducer(state, action) {\n  switch (action.type) {\n    case 'increment':\n      return { count: state.count + 1 };\n    case 'decrement':\n      return { count: state.count - 1 };\n    case 'reset':\n      return { count: 0 };\n    default:\n      return state;\n  }\n}\n\nfunction Counter() {\n  const [state, dispatch] = React.useReducer(counterReducer, { count: 0 });\n\n  console.log('Count:', state.count);\n\n  dispatch({ type: 'increment' });\n  console.log('After increment:', state.count);\n  // Note: state doesn't update synchronously in the same render\n  // The new value appears on the next render\n\n  return null;\n}\n\n// Demonstrating the reducer directly\nconsole.log('Reducer test:');\nlet state = { count: 0 };\nstate = counterReducer(state, { type: 'increment' });\nconsole.log('After increment:', state.count);\nstate = counterReducer(state, { type: 'increment' });\nconsole.log('After increment:', state.count);\nstate = counterReducer(state, { type: 'reset' });\nconsole.log('After reset:', state.count);",
+          "output": "Reducer test:\nAfter increment: 1\nAfter increment: 2\nAfter reset: 0",
+          "explanation": "The reducer is a pure function that computes the next state from the current state and an action. Each action type maps to a specific state transition. The reducer can be tested independently of React."
+        },
+        {
+          "title": "useReducer with complex state",
+          "code": "function formReducer(state, action) {\n  switch (action.type) {\n    case 'SET_FIELD':\n      return { ...state, [action.field]: action.value };\n    case 'SET_ERROR':\n      return { ...state, errors: { ...state.errors, [action.field]: action.message } };\n    case 'CLEAR_ERRORS':\n      return { ...state, errors: {} };\n    case 'SUBMIT':\n      return { ...state, isSubmitting: true };\n    default:\n      return state;\n  }\n}\n\nconst initialState = {\n  name: '',\n  email: '',\n  errors: {},\n  isSubmitting: false\n};\n\n// Test the reducer\nlet state = initialState;\nconsole.log('Initial:', JSON.stringify(state));\n\nstate = formReducer(state, { type: 'SET_FIELD', field: 'name', value: 'Alice' });\nconsole.log('Name set:', state.name);\n\nstate = formReducer(state, { type: 'SET_FIELD', field: 'email', value: 'alice@test.com' });\nconsole.log('Email set:', state.email);\n\nstate = formReducer(state, { type: 'SET_ERROR', field: 'email', message: 'Invalid email' });\nconsole.log('Error:', state.errors.email);\n\nstate = formReducer(state, { type: 'SUBMIT' });\nconsole.log('Submitting:', state.isSubmitting);",
+          "output": "Initial: {\"name\":\"\",\"email\":\"\",\"errors\":{},\"isSubmitting\":false}\nName set: Alice\nEmail set: alice@test.com\nError: Invalid email\nSubmitting: true",
+          "explanation": "Complex forms benefit from useReducer because multiple related values change together. Each action clearly describes what happened, and the reducer centralizes all state transitions."
+        },
+        {
+          "title": "Reducer with payload actions",
+          "code": "function todoReducer(state, action) {\n  switch (action.type) {\n    case 'ADD':\n      return [...state, { id: action.id, text: action.text, done: false }];\n    case 'TOGGLE':\n      return state.map(todo =>\n        todo.id === action.id ? { ...todo, done: !todo.done } : todo\n      );\n    case 'REMOVE':\n      return state.filter(todo => todo.id !== action.id);\n    default:\n      return state;\n  }\n}\n\nlet todos = [];\n\ntodos = todoReducer(todos, { type: 'ADD', id: 1, text: 'Learn React' });\ntodos = todoReducer(todos, { type: 'ADD', id: 2, text: 'Learn hooks' });\nconsole.log('Todo count:', todos.length);\n\ntodos = todoReducer(todos, { type: 'TOGGLE', id: 1 });\nconsole.log('Todo 1 done:', todos[0].done);\nconsole.log('Todo 2 done:', todos[1].done);\n\ntodos = todoReducer(todos, { type: 'REMOVE', id: 2 });\nconsole.log('After remove, count:', todos.length);\nconsole.log('Remaining:', todos[0].text);",
+          "output": "Todo count: 2\nTodo 1 done: true\nTodo 2 done: false\nAfter remove, count: 1\nRemaining: Learn React",
+          "explanation": "The todo reducer handles add, toggle, and remove operations. Each action carries the necessary payload (id, text) to perform the state transition. The reducer never mutates the existing state — it creates new arrays and objects."
+        }
+      ],
+      "notes": [
+        "The dispatch function returned by useReducer is stable across renders — its identity never changes. This makes it safe to pass through context or as a prop without memoization.",
+        "Reducers must be pure functions. They should not make API calls, modify external variables, or call other hooks. Side effects belong in useEffect.",
+        "useReducer is particularly valuable when the next state depends on the previous state, or when multiple state values are updated together in response to a single event."
+      ],
+      "commonPitfalls": [
+        "Mutating state directly inside the reducer instead of returning a new object. Always spread the existing state (...state) and override only the changed properties.",
+        "Putting side effects (API calls, localStorage writes) inside the reducer. Reducers must be pure. Use useEffect to perform side effects in response to state changes."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "usereducer-hook-ex1",
+        "title": "Counter Reducer",
+        "description": "Create a reducer for a counter with increment, decrement, and reset actions. Test it by calling the reducer directly.",
+        "starterCode": "// TODO:\n// 1. Create a counterReducer(state, action) that handles:\n//    'INCREMENT' -> { count: state.count + 1 }\n//    'DECREMENT' -> { count: state.count - 1 }\n//    'RESET' -> { count: 0 }\n// 2. Start with { count: 0 }\n// 3. Apply INCREMENT twice, log count after each\n// 4. Apply DECREMENT once, log count\n// 5. Apply RESET, log count\n",
+        "solution": "function counterReducer(state, action) {\n  switch (action.type) {\n    case 'INCREMENT':\n      return { count: state.count + 1 };\n    case 'DECREMENT':\n      return { count: state.count - 1 };\n    case 'RESET':\n      return { count: 0 };\n    default:\n      return state;\n  }\n}\n\nlet state = { count: 0 };\nstate = counterReducer(state, { type: 'INCREMENT' });\nconsole.log('Count: ' + state.count);\nstate = counterReducer(state, { type: 'INCREMENT' });\nconsole.log('Count: ' + state.count);\nstate = counterReducer(state, { type: 'DECREMENT' });\nconsole.log('Count: ' + state.count);\nstate = counterReducer(state, { type: 'RESET' });\nconsole.log('Count: ' + state.count);",
+        "expectedOutput": "Count: 1\nCount: 2\nCount: 1\nCount: 0",
+        "hints": [
+          "Use a switch statement on action.type to handle each action differently.",
+          "Always return a new state object — never mutate the existing one."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "usereducer-hook-ex2",
+        "title": "Todo List Reducer",
+        "description": "Create a reducer that manages a todo list with ADD and TOGGLE actions.",
+        "starterCode": "// TODO:\n// 1. Create a todoReducer(state, action) that handles:\n//    'ADD' -> append { id: action.id, text: action.text, done: false }\n//    'TOGGLE' -> flip the done property of the todo with matching id\n// 2. Start with an empty array []\n// 3. ADD { id: 1, text: 'Write code' }\n// 4. ADD { id: 2, text: 'Test code' }\n// 5. Log \"Todos: <length>\"\n// 6. TOGGLE id 1\n// 7. Log \"Todo 1 done: <done>\"\n// 8. Log \"Todo 2 done: <done>\"\n",
+        "solution": "function todoReducer(state, action) {\n  switch (action.type) {\n    case 'ADD':\n      return [...state, { id: action.id, text: action.text, done: false }];\n    case 'TOGGLE':\n      return state.map(todo =>\n        todo.id === action.id ? { ...todo, done: !todo.done } : todo\n      );\n    default:\n      return state;\n  }\n}\n\nlet state = [];\nstate = todoReducer(state, { type: 'ADD', id: 1, text: 'Write code' });\nstate = todoReducer(state, { type: 'ADD', id: 2, text: 'Test code' });\nconsole.log('Todos: ' + state.length);\nstate = todoReducer(state, { type: 'TOGGLE', id: 1 });\nconsole.log('Todo 1 done: ' + state[0].done);\nconsole.log('Todo 2 done: ' + state[1].done);",
+        "expectedOutput": "Todos: 2\nTodo 1 done: true\nTodo 2 done: false",
+        "hints": [
+          "For ADD, use the spread operator to create a new array: [...state, newTodo].",
+          "For TOGGLE, use state.map to create a new array where the matching todo has its done property flipped."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "custom-hooks",
+    "sectionId": "advanced-hooks",
+    "orderIndex": 3,
+    "title": "Custom Hooks",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["custom hooks", "hook extraction", "code reuse", "naming conventions", "stateful logic sharing"],
+    "content": {
+      "explanation": "Custom hooks are JavaScript functions whose names start with 'use' and that call other hooks internally. They are the primary mechanism for extracting and reusing stateful logic across multiple components. Unlike render props or higher-order components, custom hooks don't add extra nodes to the component tree — they compose naturally and share logic without changing component structure.\n\nThe naming convention is essential: a custom hook must start with 'use' (e.g., useAuth, useFetch, useLocalStorage). This convention serves two purposes. First, it tells React's linter that the function follows hook rules, enabling the ESLint plugin to verify correct hook usage inside it. Second, it communicates to developers that the function contains stateful logic and follows hook semantics — it can't be called conditionally and must be used at the top level of a component.\n\nEach call to a custom hook gets its own isolated state. If two components call useCounter(), they each get independent count values. Custom hooks share logic (the code), not state (the data). This is fundamentally different from global state solutions. The hook is essentially a template for creating independent state instances.\n\nThe return value of a custom hook is entirely up to you. Common patterns include returning a single value, an array (like useState returns [value, setter]), or an object with named properties. Objects are preferred when returning many values because consumers can destructure only what they need. Arrays are preferred when there are exactly two values (following the useState convention) because consumers can name them freely.\n\nCustom hooks can call any combination of built-in hooks and other custom hooks. This composability is one of their greatest strengths. A useAuth hook might use useState, useEffect, and useContext internally. A usePaginatedFetch hook might compose useReducer with a useFetch hook. There is no limit to how deeply hooks can compose, as long as the rules of hooks are respected at every level.",
+      "codeExamples": [
+        {
+          "title": "Basic custom hook: useCounter",
+          "code": "function useCounter(initialValue) {\n  const [count, setCount] = React.useState(initialValue);\n\n  const increment = React.useCallback(() => setCount(c => c + 1), []);\n  const decrement = React.useCallback(() => setCount(c => c - 1), []);\n  const reset = React.useCallback(() => setCount(initialValue), [initialValue]);\n\n  return { count, increment, decrement, reset };\n}\n\n// Two components using the same hook get INDEPENDENT state\nfunction ComponentA() {\n  const { count, increment } = useCounter(0);\n  increment();\n  console.log('A count:', count);\n  return null;\n}\n\nfunction ComponentB() {\n  const { count, increment } = useCounter(10);\n  increment();\n  console.log('B count:', count);\n  return null;\n}\n\nComponentA();\nComponentB();",
+          "output": "A count: 0\nB count: 10",
+          "explanation": "Each component gets its own independent counter state. The custom hook encapsulates the logic (state + operations) while each call creates a separate state instance."
+        },
+        {
+          "title": "Custom hook: useToggle",
+          "code": "function useToggle(initialValue) {\n  const [value, setValue] = React.useState(initialValue);\n\n  const toggle = React.useCallback(() => {\n    setValue(v => !v);\n  }, []);\n\n  const setTrue = React.useCallback(() => setValue(true), []);\n  const setFalse = React.useCallback(() => setValue(false), []);\n\n  return { value, toggle, setTrue, setFalse };\n}\n\nfunction Modal() {\n  const { value: isOpen, toggle, setTrue, setFalse } = useToggle(false);\n\n  console.log('Modal is open:', isOpen);\n  console.log('toggle is a function:', typeof toggle === 'function');\n  console.log('setTrue is a function:', typeof setTrue === 'function');\n  console.log('setFalse is a function:', typeof setFalse === 'function');\n  return null;\n}\n\nModal();",
+          "output": "Modal is open: false\ntoggle is a function: true\nsetTrue is a function: true\nsetFalse is a function: true",
+          "explanation": "useToggle encapsulates boolean state management. The returned object provides multiple ways to update the value. Renaming during destructuring (value: isOpen) keeps the consumer's code clear."
+        },
+        {
+          "title": "Custom hook composing other hooks",
+          "code": "function usePrevious(value) {\n  const ref = React.useRef(undefined);\n  React.useEffect(() => {\n    ref.current = value;\n  }, [value]);\n  return ref.current;\n}\n\nfunction useCounterWithPrevious(initial) {\n  const [count, setCount] = React.useState(initial);\n  const previousCount = usePrevious(count);\n\n  return { count, previousCount, setCount };\n}\n\nfunction Display() {\n  const { count, previousCount } = useCounterWithPrevious(5);\n  console.log('Current:', count);\n  console.log('Previous:', previousCount);\n  console.log('Custom hooks can compose other custom hooks: true');\n  return null;\n}\n\nDisplay();",
+          "output": "Current: 5\nPrevious: undefined\nCustom hooks can compose other custom hooks: true",
+          "explanation": "useCounterWithPrevious composes useState with the usePrevious custom hook. This demonstrates the composability of hooks — building complex behavior from simpler pieces."
+        }
+      ],
+      "notes": [
+        "Custom hooks must start with 'use' — this is required for the ESLint plugin to enforce hook rules and for React to treat them as hooks.",
+        "Each call to a custom hook creates independent state. Two components using useCounter get separate counters. Custom hooks share logic, not state.",
+        "Custom hooks can return anything: a value, an array, an object, or even nothing (for side-effect-only hooks like useDocumentTitle)."
+      ],
+      "commonPitfalls": [
+        "Forgetting the 'use' prefix. Without it, the ESLint plugin won't check hook rules inside the function, and other developers won't know it contains stateful logic.",
+        "Expecting shared state between components using the same custom hook. Each hook call creates independent state. For shared state, combine custom hooks with context."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "custom-hooks-ex1",
+        "title": "useToggle Hook",
+        "description": "Create a custom useToggle hook that manages a boolean state with a toggle function.",
+        "starterCode": "// TODO:\n// 1. Create a useToggle(initialValue) custom hook\n//    - Uses useState internally\n//    - Returns { value, toggle }\n//    - toggle flips the boolean\n// 2. Use it in a component that:\n//    - Initializes toggle to false\n//    - Logs \"Value: false\"\n//    - Logs \"Is function: true\" for toggle\n\nfunction TestToggle() {\n  // Use the hook here\n\n  return null;\n}\n\nTestToggle();",
+        "solution": "function useToggle(initialValue) {\n  const [value, setValue] = React.useState(initialValue);\n  const toggle = React.useCallback(() => setValue(v => !v), []);\n  return { value, toggle };\n}\n\nfunction TestToggle() {\n  const { value, toggle } = useToggle(false);\n  console.log('Value: ' + value);\n  console.log('Is function: ' + (typeof toggle === 'function'));\n  return null;\n}\n\nTestToggle();",
+        "expectedOutput": "Value: false\nIs function: true",
+        "hints": [
+          "A custom hook is just a function starting with 'use' that calls other hooks inside it.",
+          "Use useState(initialValue) for the boolean state and return an object with the value and a toggle function."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "custom-hooks-ex2",
+        "title": "useArray Hook",
+        "description": "Create a custom useArray hook that provides push, remove, and clear operations on an array state.",
+        "starterCode": "// TODO:\n// 1. Create useArray(initialValue) that returns:\n//    { items, push, remove, clear }\n//    - push(item) adds item to the end\n//    - remove(index) removes item at index\n//    - clear() empties the array\n// 2. Test it:\n//    - Initialize with ['a', 'b']\n//    - Log \"Items: <length>\"\n//    - Log \"Has push: true\"\n//    - Log \"Has remove: true\"\n//    - Log \"Has clear: true\"\n",
+        "solution": "function useArray(initialValue) {\n  const [items, setItems] = React.useState(initialValue);\n\n  const push = React.useCallback((item) => {\n    setItems(prev => [...prev, item]);\n  }, []);\n\n  const remove = React.useCallback((index) => {\n    setItems(prev => prev.filter((_, i) => i !== index));\n  }, []);\n\n  const clear = React.useCallback(() => {\n    setItems([]);\n  }, []);\n\n  return { items, push, remove, clear };\n}\n\nfunction TestArray() {\n  const { items, push, remove, clear } = useArray(['a', 'b']);\n  console.log('Items: ' + items.length);\n  console.log('Has push: ' + (typeof push === 'function'));\n  console.log('Has remove: ' + (typeof remove === 'function'));\n  console.log('Has clear: ' + (typeof clear === 'function'));\n  return null;\n}\n\nTestArray();",
+        "expectedOutput": "Items: 2\nHas push: true\nHas remove: true\nHas clear: true",
+        "hints": [
+          "Each operation should use the functional form of setState to work with the latest state: setItems(prev => ...).",
+          "For remove, use Array.filter to exclude the item at the given index: prev.filter((_, i) => i !== index)."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "hook-composition",
+    "sectionId": "advanced-hooks",
+    "orderIndex": 4,
+    "title": "Hook Composition Patterns",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["hook composition", "useDebounce", "useLocalStorage", "combining hooks", "advanced patterns"],
+    "content": {
+      "explanation": "Hook composition is the practice of building complex hooks by combining simpler hooks together. This is one of the most powerful patterns in React because it allows you to create layers of abstraction that are easy to test, reuse, and understand. Each hook in the composition chain handles one concern, and they combine to solve complex problems elegantly.\n\nThe useDebounce hook is a classic composition pattern. It combines useState with useEffect to delay updating a value until a period of inactivity. This is essential for search-as-you-type features, window resize handlers, and any scenario where you want to wait until the user stops performing an action before reacting. The hook takes a value and a delay, and returns a debounced version that only updates after the delay elapses without the input changing.\n\nuseLocalStorage is another foundational composed hook. It wraps useState with useEffect to synchronize state with localStorage. On initial load, it reads from localStorage (with a fallback to the provided default). On every state change, it writes the new value to localStorage. This pattern is reusable for any piece of state that should persist across page reloads — user preferences, form drafts, theme settings, and more.\n\nMore advanced composition patterns include hooks that combine useReducer with useContext for state management, hooks that wrap useRef and useEffect for intersection observation or resize detection, and hooks that compose multiple custom hooks together. For example, a usePaginatedSearch hook might compose useDebounce (for the search input), useFetch (for the API call), and useReducer (for pagination state).\n\nThe key principle of hook composition is separation of concerns. Each hook should do one thing well. A useDebounce hook knows nothing about search — it just debounces values. A useFetch hook knows nothing about pagination — it just fetches data. By composing them, you get debounced paginated search without any single hook being overly complex. This modularity makes each piece independently testable and reusable in different contexts.",
+      "codeExamples": [
+        {
+          "title": "useDebounce hook",
+          "code": "function useDebounce(value, delay) {\n  const [debouncedValue, setDebouncedValue] = React.useState(value);\n\n  React.useEffect(() => {\n    const timer = setTimeout(() => {\n      setDebouncedValue(value);\n    }, delay);\n\n    return () => clearTimeout(timer);\n  }, [value, delay]);\n\n  return debouncedValue;\n}\n\n// Demonstration\nfunction SearchInput() {\n  const [query, setQuery] = React.useState('react hooks');\n  const debouncedQuery = useDebounce(query, 300);\n\n  console.log('Input value:', query);\n  console.log('Debounced value:', debouncedQuery);\n  console.log('Debounce delays updates by 300ms');\n  return null;\n}\n\nSearchInput();",
+          "output": "Input value: react hooks\nDebounced value: react hooks\nDebounce delays updates by 300ms",
+          "explanation": "useDebounce combines useState and useEffect. The effect sets a timeout that updates the debounced value. If the value changes before the timeout fires, the cleanup clears it and a new timeout starts. Only after the specified delay of inactivity does the debounced value update."
+        },
+        {
+          "title": "useLocalStorage hook",
+          "code": "function useLocalStorage(key, initialValue) {\n  const [storedValue, setStoredValue] = React.useState(() => {\n    try {\n      // In a browser: const item = window.localStorage.getItem(key);\n      // return item ? JSON.parse(item) : initialValue;\n      return initialValue; // Simplified for exercise environment\n    } catch (error) {\n      return initialValue;\n    }\n  });\n\n  const setValue = React.useCallback((value) => {\n    const valueToStore = value instanceof Function ? value(storedValue) : value;\n    setStoredValue(valueToStore);\n    // In a browser: window.localStorage.setItem(key, JSON.stringify(valueToStore));\n    console.log('Saved to localStorage[' + key + ']:', JSON.stringify(valueToStore));\n  }, [key, storedValue]);\n\n  return [storedValue, setValue];\n}\n\nfunction Settings() {\n  const [theme, setTheme] = useLocalStorage('theme', 'light');\n  const [fontSize, setFontSize] = useLocalStorage('fontSize', 14);\n\n  console.log('Theme:', theme);\n  console.log('Font size:', fontSize);\n\n  setTheme('dark');\n  setFontSize(16);\n  return null;\n}\n\nSettings();",
+          "output": "Theme: light\nFont size: 14\nSaved to localStorage[theme]: \"dark\"\nSaved to localStorage[fontSize]: 16",
+          "explanation": "useLocalStorage wraps useState with localStorage synchronization. It reads from localStorage on mount and writes on every update. The lazy initializer in useState ensures localStorage is only read once."
+        },
+        {
+          "title": "Composing multiple custom hooks",
+          "code": "function useCounter(initial) {\n  const [count, setCount] = React.useState(initial);\n  const increment = () => setCount(c => c + 1);\n  return { count, increment };\n}\n\nfunction useLogger(label, value) {\n  React.useEffect(() => {\n    console.log('[' + label + '] value changed to:', value);\n  }, [label, value]);\n}\n\nfunction useLoggedCounter(initial, label) {\n  const counter = useCounter(initial);\n  useLogger(label, counter.count);\n  return counter;\n}\n\nfunction App() {\n  const { count } = useLoggedCounter(0, 'PageViews');\n  console.log('Page views:', count);\n  return null;\n}\n\nApp();",
+          "output": "Page views: 0\n[PageViews] value changed to: 0",
+          "explanation": "useLoggedCounter composes useCounter and useLogger. Each hook handles one concern: useCounter manages the count state, useLogger handles logging, and useLoggedCounter combines them. This is the power of hook composition."
+        }
+      ],
+      "notes": [
+        "Hook composition follows the single responsibility principle — each hook does one thing well, and they combine to solve complex problems.",
+        "When composing hooks, think about the dependency chain: which hooks depend on values from other hooks, and how do changes propagate through the chain.",
+        "Custom hooks can be composed to any depth. A hook can use other custom hooks which use other custom hooks. The rules of hooks apply at every level."
+      ],
+      "commonPitfalls": [
+        "Creating hooks that do too much. If a hook manages state, handles side effects, and performs data transformation, it should probably be split into multiple smaller hooks that compose together.",
+        "Not considering the re-render implications of hook composition. Each useState in the chain can trigger a re-render, so deeply composed hooks may cause more renders than expected. Profile if performance is a concern."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "hook-composition-ex1",
+        "title": "useDebounce Implementation",
+        "description": "Implement a useDebounce hook that combines useState and useEffect to debounce a value.",
+        "starterCode": "// TODO:\n// 1. Create useDebounce(value, delay) that:\n//    - Uses useState to store the debounced value\n//    - Uses useEffect with setTimeout to update after delay\n//    - Cleans up the timeout on value change\n//    - Returns the debounced value\n// 2. Test it:\n//    - Call useDebounce('hello', 500)\n//    - Log \"Input: hello\"\n//    - Log \"Debounced: <debouncedValue>\"\n\nfunction TestDebounce() {\n  // Use the hook here\n\n  return null;\n}\n\nTestDebounce();",
+        "solution": "function useDebounce(value, delay) {\n  const [debouncedValue, setDebouncedValue] = React.useState(value);\n\n  React.useEffect(() => {\n    const timer = setTimeout(() => {\n      setDebouncedValue(value);\n    }, delay);\n    return () => clearTimeout(timer);\n  }, [value, delay]);\n\n  return debouncedValue;\n}\n\nfunction TestDebounce() {\n  const debounced = useDebounce('hello', 500);\n  console.log('Input: hello');\n  console.log('Debounced: ' + debounced);\n  return null;\n}\n\nTestDebounce();",
+        "expectedOutput": "Input: hello\nDebounced: hello",
+        "hints": [
+          "Initialize the debounced state with the same value passed in: useState(value).",
+          "In useEffect, set a timeout to update the state. Return a cleanup that calls clearTimeout. Depend on [value, delay]."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "hook-composition-ex2",
+        "title": "Composing useCounter with useLogger",
+        "description": "Create two hooks: useCounter and useLogger. Then compose them into useLoggedCounter.",
+        "starterCode": "// TODO:\n// 1. Create useCounter(initial) -> { count, increment }\n// 2. Create useLogger(label, value) that logs \"[<label>]: <value>\"\n//    when it runs\n// 3. Create useLoggedCounter(initial, label) that composes both\n// 4. Test: call useLoggedCounter(0, 'clicks')\n//    Log \"Count: <count>\"\n\nfunction TestComposition() {\n  // Use the composed hook here\n\n  return null;\n}\n\nTestComposition();",
+        "solution": "function useCounter(initial) {\n  const [count, setCount] = React.useState(initial);\n  const increment = React.useCallback(() => setCount(c => c + 1), []);\n  return { count, increment };\n}\n\nfunction useLogger(label, value) {\n  console.log('[' + label + ']: ' + value);\n}\n\nfunction useLoggedCounter(initial, label) {\n  const counter = useCounter(initial);\n  useLogger(label, counter.count);\n  return counter;\n}\n\nfunction TestComposition() {\n  const { count } = useLoggedCounter(0, 'clicks');\n  console.log('Count: ' + count);\n  return null;\n}\n\nTestComposition();",
+        "expectedOutput": "[clicks]: 0\nCount: 0",
+        "hints": [
+          "useCounter uses useState and returns an object with count and increment.",
+          "useLoggedCounter calls useCounter, passes the count to useLogger, and returns the counter object."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

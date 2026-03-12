@@ -1,0 +1,88 @@
+import type { PythonSection } from "./types";
+
+export const pythonSections: PythonSection[] = [
+  {
+    id: "python-fundamentals",
+    title: "Python Fundamentals",
+    description: "Variables, data types, print, input, type casting, and basic operators.",
+    orderIndex: 0,
+    level: "Beginner",
+  },
+  {
+    id: "control-flow",
+    title: "Control Flow",
+    description: "if/elif/else, for and while loops, break, continue, pass, and range.",
+    orderIndex: 1,
+    level: "Beginner",
+  },
+  {
+    id: "strings-and-string-methods",
+    title: "Strings & String Methods",
+    description: "String slicing, formatting, common methods, regex basics, and f-strings.",
+    orderIndex: 2,
+    level: "Beginner",
+  },
+  {
+    id: "lists-and-tuples",
+    title: "Lists & Tuples",
+    description: "Indexing, slicing, list methods, list comprehensions, tuples, and unpacking.",
+    orderIndex: 3,
+    level: "Intermediate",
+  },
+  {
+    id: "dictionaries-and-sets",
+    title: "Dictionaries & Sets",
+    description: "Dict CRUD, comprehensions, defaultdict, set operations, and frozenset.",
+    orderIndex: 4,
+    level: "Intermediate",
+  },
+  {
+    id: "functions",
+    title: "Functions",
+    description: "def, return, default args, *args, **kwargs, lambda, scope, and closures.",
+    orderIndex: 5,
+    level: "Intermediate",
+  },
+  {
+    id: "oop",
+    title: "Object-Oriented Programming",
+    description: "Classes, inheritance, polymorphism, magic methods, properties, and ABCs.",
+    orderIndex: 6,
+    level: "Intermediate",
+  },
+  {
+    id: "file-handling-and-modules",
+    title: "File Handling & Modules",
+    description: "File I/O, context managers, imports, packages, and the standard library.",
+    orderIndex: 7,
+    level: "Intermediate",
+  },
+  {
+    id: "error-handling",
+    title: "Error Handling",
+    description: "try/except/finally, raising exceptions, custom exceptions, and assertions.",
+    orderIndex: 8,
+    level: "Intermediate",
+  },
+  {
+    id: "advanced-python",
+    title: "Advanced Python",
+    description: "Decorators, generators, iterators, context managers, and metaclasses.",
+    orderIndex: 9,
+    level: "Advanced",
+  },
+  {
+    id: "data-structures-algorithms",
+    title: "Data Structures & Algorithms",
+    description: "Searching, sorting, recursion, stacks, queues, and time complexity.",
+    orderIndex: 10,
+    level: "Advanced",
+  },
+  {
+    id: "python-interview-essentials",
+    title: "Interview Essentials",
+    description: "Common patterns, gotchas, one-liners, and frequently asked interview questions.",
+    orderIndex: 11,
+    level: "Advanced",
+  },
+];

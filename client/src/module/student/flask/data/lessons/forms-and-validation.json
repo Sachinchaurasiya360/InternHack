@@ -1,0 +1,294 @@
+[
+  {
+    "id": "flask-wtf-basics",
+    "sectionId": "forms-and-validation",
+    "orderIndex": 0,
+    "title": "Flask-WTF Basics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Flask-WTF", "WTForms", "FlaskForm", "validate_on_submit", "Form Rendering"],
+    "content": {
+      "explanation": "Flask-WTF integrates the WTForms library with Flask, providing form handling, validation, and CSRF protection. Forms are one of the primary ways users interact with web applications, and handling them securely and correctly is essential.\n\nWTForms is a flexible form rendering and validation library for Python. Flask-WTF wraps it with Flask-specific features: CSRF protection (enabled by default), file upload handling, reCAPTCHA support, and integration with Flask's request context. Together, they make form handling clean and secure.\n\nForms are defined as Python classes that inherit from FlaskForm. Each form field is a class attribute using WTForms field types: StringField, PasswordField, BooleanField, TextAreaField, SelectField, IntegerField, etc. Each field accepts validators that check the submitted data.\n\nIn a view function, you instantiate the form and call validate_on_submit(). This method returns True only if the request is POST (or PUT/PATCH) AND all validators pass. If it returns True, you can safely access the submitted data via form.field_name.data. If it returns False on a POST, the form's field.errors contain validation error messages.\n\nRendering forms in Jinja2 templates is straightforward. Each field renders as an HTML input when called: {{ form.username() }}. You can pass HTML attributes as keyword arguments: {{ form.username(class='form-control', placeholder='Enter username') }}. The {{ form.username.label }} renders the label tag. The {{ form.hidden_tag() }} renders CSRF token and any other hidden fields.\n\nFlask-WTF requires a SECRET_KEY to generate CSRF tokens. Without it, form submissions will fail with a CSRF error. The CSRF token is embedded in the form as a hidden field and validated on submission, protecting against Cross-Site Request Forgery attacks.\n\nFor API endpoints that receive JSON instead of form data, you typically do not use WTForms. Flask-WTF forms are designed for HTML form submissions. For JSON APIs, use manual validation or a library like marshmallow or pydantic.",
+      "codeExamples": [
+        {
+          "title": "Defining and Using a Form",
+          "code": "from flask import Flask, render_template, redirect, url_for, flash\nfrom flask_wtf import FlaskForm\nfrom wtforms import StringField, PasswordField, BooleanField, SubmitField\nfrom wtforms.validators import DataRequired, Email, Length\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'your-secret-key'\n\nclass LoginForm(FlaskForm):\n    email = StringField('Email', validators=[DataRequired(), Email()])\n    password = PasswordField('Password', validators=[DataRequired()])\n    remember = BooleanField('Remember Me')\n    submit = SubmitField('Log In')\n\n@app.route('/login', methods=['GET', 'POST'])\ndef login():\n    form = LoginForm()\n    if form.validate_on_submit():\n        email = form.email.data\n        password = form.password.data\n        remember = form.remember.data\n        # Authenticate user...\n        flash('Logged in successfully!', 'success')\n        return redirect(url_for('index'))\n    return render_template('login.html', form=form)",
+          "explanation": "Forms are classes with field attributes. validate_on_submit() returns True only on POST with valid data. Access submitted data with form.field.data. Validators like DataRequired and Email check the input."
+        },
+        {
+          "title": "Rendering Forms in Templates",
+          "code": "<!-- templates/login.html -->\n{% extends 'base.html' %}\n\n{% block content %}\n<form method=\"POST\">\n    {{ form.hidden_tag() }}\n\n    <div class=\"form-group\">\n        {{ form.email.label }}\n        {{ form.email(class='form-control', placeholder='your@email.com') }}\n        {% for error in form.email.errors %}\n            <span class=\"text-danger\">{{ error }}</span>\n        {% endfor %}\n    </div>\n\n    <div class=\"form-group\">\n        {{ form.password.label }}\n        {{ form.password(class='form-control') }}\n        {% for error in form.password.errors %}\n            <span class=\"text-danger\">{{ error }}</span>\n        {% endfor %}\n    </div>\n\n    <div class=\"form-check\">\n        {{ form.remember(class='form-check-input') }}\n        {{ form.remember.label }}\n    </div>\n\n    {{ form.submit(class='btn btn-primary') }}\n</form>\n{% endblock %}",
+          "explanation": "{{ form.hidden_tag() }} renders the CSRF token. Fields are called with HTML attributes as kwargs. form.field.errors contains validation error messages to display to the user."
+        },
+        {
+          "title": "Registration Form with Validators",
+          "code": "from flask_wtf import FlaskForm\nfrom wtforms import StringField, PasswordField, SubmitField\nfrom wtforms.validators import DataRequired, Email, Length, EqualTo\n\nclass RegistrationForm(FlaskForm):\n    username = StringField('Username', validators=[\n        DataRequired(),\n        Length(min=3, max=20, message='Username must be 3-20 characters')\n    ])\n    email = StringField('Email', validators=[\n        DataRequired(),\n        Email(message='Invalid email address')\n    ])\n    password = PasswordField('Password', validators=[\n        DataRequired(),\n        Length(min=8, message='Password must be at least 8 characters')\n    ])\n    confirm_password = PasswordField('Confirm Password', validators=[\n        DataRequired(),\n        EqualTo('password', message='Passwords must match')\n    ])\n    submit = SubmitField('Register')",
+          "explanation": "Validators are chained in a list. Length checks string bounds. EqualTo compares two fields (for password confirmation). Each validator can have a custom error message."
+        },
+        {
+          "title": "SelectField and Multiple Choice",
+          "code": "from flask_wtf import FlaskForm\nfrom wtforms import StringField, SelectField, SelectMultipleField, RadioField\nfrom wtforms.validators import DataRequired\n\nclass ProfileForm(FlaskForm):\n    name = StringField('Name', validators=[DataRequired()])\n\n    country = SelectField('Country', choices=[\n        ('us', 'United States'),\n        ('uk', 'United Kingdom'),\n        ('ca', 'Canada'),\n        ('au', 'Australia')\n    ])\n\n    role = RadioField('Role', choices=[\n        ('developer', 'Developer'),\n        ('designer', 'Designer'),\n        ('manager', 'Manager')\n    ])\n\n    skills = SelectMultipleField('Skills', choices=[\n        ('python', 'Python'),\n        ('javascript', 'JavaScript'),\n        ('sql', 'SQL')\n    ])",
+          "explanation": "SelectField renders a dropdown, RadioField renders radio buttons, and SelectMultipleField allows multiple selections. Choices are tuples of (value, label). The submitted data is the value part."
+        }
+      ],
+      "notes": [
+        "Flask-WTF provides CSRF protection by default. Always include {{ form.hidden_tag() }} in your templates.",
+        "validate_on_submit() checks both the HTTP method (POST/PUT/PATCH) and that all validators pass.",
+        "Form fields render as HTML inputs when called. Pass HTML attributes as keyword arguments.",
+        "Always set SECRET_KEY in your app config for CSRF tokens to work."
+      ],
+      "commonPitfalls": [
+        "Forgetting {{ form.hidden_tag() }} in the template, causing CSRF validation to fail on submission.",
+        "Not setting SECRET_KEY, which is required for CSRF token generation.",
+        "Using request.form instead of form.field.data, bypassing validation entirely."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "wtf-basics-ex1",
+        "title": "Create a Contact Form",
+        "description": "Define a ContactForm with name (required, 2-50 chars), email (required, valid email), and message (required, TextAreaField). Include a submit button.",
+        "starterCode": "from flask_wtf import FlaskForm\nfrom wtforms import StringField, TextAreaField, SubmitField\nfrom wtforms.validators import DataRequired, Email, Length\n\n# Define ContactForm\n",
+        "solution": "from flask_wtf import FlaskForm\nfrom wtforms import StringField, TextAreaField, SubmitField\nfrom wtforms.validators import DataRequired, Email, Length\n\nclass ContactForm(FlaskForm):\n    name = StringField('Name', validators=[DataRequired(), Length(min=2, max=50)])\n    email = StringField('Email', validators=[DataRequired(), Email()])\n    message = TextAreaField('Message', validators=[DataRequired()])\n    submit = SubmitField('Send')",
+        "hints": [
+          "Use TextAreaField for multi-line text input",
+          "Chain validators in a list",
+          "Each field's first argument is the label text"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "wtf-basics-ex2",
+        "title": "Handle Form Submission",
+        "description": "Write a view function for '/contact' that handles GET (render form) and POST (validate and return submitted data as JSON). Use the ContactForm from the previous exercise.",
+        "starterCode": "from flask import Flask, render_template, request\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'dev'\n\n# Assume ContactForm is defined\n# Create the view function\n",
+        "solution": "from flask import Flask, render_template, jsonify\nfrom flask_wtf import FlaskForm\nfrom wtforms import StringField, TextAreaField, SubmitField\nfrom wtforms.validators import DataRequired, Email\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'dev'\n\nclass ContactForm(FlaskForm):\n    name = StringField('Name', validators=[DataRequired()])\n    email = StringField('Email', validators=[DataRequired(), Email()])\n    message = TextAreaField('Message', validators=[DataRequired()])\n    submit = SubmitField('Send')\n\n@app.route('/contact', methods=['GET', 'POST'])\ndef contact():\n    form = ContactForm()\n    if form.validate_on_submit():\n        return jsonify({\n            'name': form.name.data,\n            'email': form.email.data,\n            'message': form.message.data\n        })\n    return render_template('contact.html', form=form)",
+        "hints": [
+          "Instantiate the form: form = ContactForm()",
+          "form.validate_on_submit() returns True on valid POST",
+          "Access data with form.field.data"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "form-fields-validators",
+    "sectionId": "forms-and-validation",
+    "orderIndex": 1,
+    "title": "Form Fields & Validators",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Field Types", "Built-in Validators", "Validator Chaining", "Custom Messages", "Optional Fields"],
+    "content": {
+      "explanation": "WTForms provides a rich set of field types and validators that cover most form handling needs. Understanding the available fields and validators lets you build complex forms with robust validation quickly.\n\nField types determine how data is rendered and parsed. StringField creates a text input and returns a string. IntegerField creates a number input and converts to int. FloatField handles decimals. BooleanField creates a checkbox and returns True/False. DateField parses date strings. DateTimeField handles datetime. FileField and MultipleFileField handle file uploads.\n\nText fields include StringField (single line), TextAreaField (multi-line), and PasswordField (masked input). HiddenField stores hidden values. URLField and EmailField are like StringField but with semantic meaning for HTML5 validation.\n\nChoice fields include SelectField (dropdown), RadioField (radio buttons), and SelectMultipleField (multi-select). Their choices parameter accepts a list of (value, label) tuples. The coerce parameter converts the submitted value to the specified type (default is string).\n\nValidators ensure submitted data meets your requirements. Built-in validators include DataRequired (field must not be empty), Length(min, max) (string length bounds), Email (valid email format), URL (valid URL format), NumberRange(min, max) (number bounds), EqualTo(field) (must match another field), Regexp(pattern) (must match a regex), AnyOf(values) (must be one of), NoneOf(values) (must not be one of), and Optional (field can be empty).\n\nThe Optional validator is important for fields that can be left blank. Without it, empty fields still trigger other validators. With Optional(), the field is only validated if it has data. InputRequired is stricter than DataRequired: DataRequired checks the Python value is truthy, while InputRequired checks that raw data was submitted.\n\nValidators can have custom error messages. Pass message='Your custom message' to any validator. This lets you provide user-friendly, context-specific error messages instead of generic defaults.\n\nYou can chain multiple validators on a single field. They are checked in order, and all errors are collected. If DataRequired fails, subsequent validators are still checked (unless the field has the StopValidation flag). Use the stop_on_first_error flag on individual validators to short-circuit.",
+      "codeExamples": [
+        {
+          "title": "Common Field Types",
+          "code": "from flask_wtf import FlaskForm\nfrom wtforms import (\n    StringField, PasswordField, IntegerField, FloatField,\n    BooleanField, TextAreaField, DateField, SelectField,\n    HiddenField, URLField, SubmitField\n)\nfrom wtforms.validators import DataRequired, Optional\n\nclass ProductForm(FlaskForm):\n    name = StringField('Product Name', validators=[DataRequired()])\n    description = TextAreaField('Description')\n    price = FloatField('Price', validators=[DataRequired()])\n    quantity = IntegerField('Quantity', default=0)\n    category = SelectField('Category', choices=[\n        ('electronics', 'Electronics'),\n        ('clothing', 'Clothing'),\n        ('books', 'Books')\n    ])\n    on_sale = BooleanField('On Sale')\n    sale_price = FloatField('Sale Price', validators=[Optional()])\n    website = URLField('Product URL', validators=[Optional()])\n    release_date = DateField('Release Date', format='%Y-%m-%d',\n                             validators=[Optional()])\n    submit = SubmitField('Save Product')",
+          "explanation": "Different field types handle different data types. FloatField auto-converts to float, IntegerField to int. SelectField renders a dropdown. Optional() allows fields to be left empty without triggering validation."
+        },
+        {
+          "title": "Built-in Validators",
+          "code": "from flask_wtf import FlaskForm\nfrom wtforms import StringField, IntegerField, PasswordField\nfrom wtforms.validators import (\n    DataRequired, Length, Email, URL, NumberRange,\n    EqualTo, Regexp, AnyOf, NoneOf, Optional, InputRequired\n)\n\nclass AdvancedForm(FlaskForm):\n    # Required with custom message\n    username = StringField('Username', validators=[\n        DataRequired(message='Username is required'),\n        Length(min=3, max=20),\n        Regexp(r'^[a-zA-Z0-9_]+$',\n               message='Only letters, numbers, and underscores')\n    ])\n\n    # Number range\n    age = IntegerField('Age', validators=[\n        DataRequired(),\n        NumberRange(min=13, max=120, message='Must be 13-120')\n    ])\n\n    # Password with confirmation\n    password = PasswordField('Password', validators=[\n        InputRequired(),\n        Length(min=8)\n    ])\n    confirm = PasswordField('Confirm', validators=[\n        InputRequired(),\n        EqualTo('password', message='Passwords must match')\n    ])\n\n    # Must be from a set\n    role = StringField('Role', validators=[\n        AnyOf(['admin', 'user', 'moderator'])\n    ])",
+          "explanation": "Validators are composable and each can have custom messages. Regexp validates against regex patterns. NumberRange checks numeric bounds. EqualTo compares two fields. AnyOf restricts to a set of values."
+        },
+        {
+          "title": "Dynamic Choices",
+          "code": "from flask_wtf import FlaskForm\nfrom wtforms import SelectField, StringField\nfrom wtforms.validators import DataRequired\n\nclass AssignTaskForm(FlaskForm):\n    title = StringField('Task Title', validators=[DataRequired()])\n    assignee = SelectField('Assign To', coerce=int)\n\n# In the view, set choices dynamically from database\n@app.route('/tasks/new', methods=['GET', 'POST'])\ndef new_task():\n    form = AssignTaskForm()\n    # Load choices from database\n    users = User.query.all()\n    form.assignee.choices = [(u.id, u.name) for u in users]\n\n    if form.validate_on_submit():\n        task = Task(\n            title=form.title.data,\n            assignee_id=form.assignee.data  # Already an int due to coerce\n        )\n        db.session.add(task)\n        db.session.commit()\n        return redirect(url_for('tasks'))\n    return render_template('new_task.html', form=form)",
+          "explanation": "Set choices dynamically in the view function, not in the form class. The coerce=int parameter converts the submitted string value to an integer. This is essential when choice values are database IDs."
+        },
+        {
+          "title": "Field Rendering with HTML Attributes",
+          "code": "<!-- Template rendering with attributes -->\n\n<!-- Basic rendering -->\n{{ form.username() }}\n<!-- <input id=\"username\" name=\"username\" type=\"text\" value=\"\"> -->\n\n<!-- With CSS classes and attributes -->\n{{ form.username(class='form-control', placeholder='Enter username',\n                 autofocus=true, maxlength=20) }}\n<!-- <input class=\"form-control\" id=\"username\" maxlength=\"20\"\n         name=\"username\" placeholder=\"Enter username\"\n         type=\"text\" autofocus value=\"\"> -->\n\n<!-- With data attributes -->\n{{ form.email(class='form-control',\n              **{'data-validate': 'email', 'aria-label': 'Email'}) }}\n\n<!-- Rendering errors -->\n{% if form.username.errors %}\n    <div class=\"invalid-feedback\">\n        {{ form.username.errors[0] }}\n    </div>\n{% endif %}",
+          "explanation": "Fields accept HTML attributes as keyword arguments. Use double-star unpacking for attributes with hyphens (like data-*). Access validation errors through form.field.errors to display them next to the input."
+        }
+      ],
+      "notes": [
+        "Optional() must be first in the validators list if a field can be left empty.",
+        "Use coerce=int on SelectField when choice values are integers (like database IDs).",
+        "DataRequired checks the Python value is truthy. InputRequired checks raw form data was submitted.",
+        "Dynamic choices should be set in the view function, not in the form class definition."
+      ],
+      "commonPitfalls": [
+        "Not using coerce on SelectField with integer values, causing comparison failures.",
+        "Forgetting Optional() on non-required fields, causing empty submissions to fail validation.",
+        "Setting choices on the form class instead of the instance, preventing dynamic choices from databases."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "fields-validators-ex1",
+        "title": "Build a User Settings Form",
+        "description": "Create a SettingsForm with: display_name (required, 2-30 chars), bio (TextAreaField, optional, max 500), age (IntegerField, optional, 13-120 range), and theme (SelectField with choices 'light', 'dark', 'auto').",
+        "starterCode": "from flask_wtf import FlaskForm\nfrom wtforms import StringField, TextAreaField, IntegerField, SelectField, SubmitField\nfrom wtforms.validators import DataRequired, Length, NumberRange, Optional\n\n# Define SettingsForm\n",
+        "solution": "from flask_wtf import FlaskForm\nfrom wtforms import StringField, TextAreaField, IntegerField, SelectField, SubmitField\nfrom wtforms.validators import DataRequired, Length, NumberRange, Optional\n\nclass SettingsForm(FlaskForm):\n    display_name = StringField('Display Name', validators=[\n        DataRequired(), Length(min=2, max=30)\n    ])\n    bio = TextAreaField('Bio', validators=[Optional(), Length(max=500)])\n    age = IntegerField('Age', validators=[Optional(), NumberRange(min=13, max=120)])\n    theme = SelectField('Theme', choices=[\n        ('light', 'Light'),\n        ('dark', 'Dark'),\n        ('auto', 'Auto')\n    ])\n    submit = SubmitField('Save Settings')",
+        "hints": [
+          "Put Optional() before other validators for non-required fields",
+          "Use Length(max=500) for maximum text length",
+          "SelectField choices are (value, label) tuples"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "fields-validators-ex2",
+        "title": "Password Change Form",
+        "description": "Create a ChangePasswordForm with current_password (required), new_password (required, min 8 chars, must match confirm), and confirm_password (required, EqualTo new_password).",
+        "starterCode": "from flask_wtf import FlaskForm\nfrom wtforms import PasswordField, SubmitField\nfrom wtforms.validators import DataRequired, Length, EqualTo\n\n# Define ChangePasswordForm\n",
+        "solution": "from flask_wtf import FlaskForm\nfrom wtforms import PasswordField, SubmitField\nfrom wtforms.validators import DataRequired, Length, EqualTo\n\nclass ChangePasswordForm(FlaskForm):\n    current_password = PasswordField('Current Password', validators=[DataRequired()])\n    new_password = PasswordField('New Password', validators=[\n        DataRequired(),\n        Length(min=8, message='Password must be at least 8 characters')\n    ])\n    confirm_password = PasswordField('Confirm New Password', validators=[\n        DataRequired(),\n        EqualTo('new_password', message='Passwords must match')\n    ])\n    submit = SubmitField('Change Password')",
+        "hints": [
+          "EqualTo takes the field name as a string, not the field object",
+          "Use PasswordField for masked input",
+          "Custom messages make errors user-friendly"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "csrf-protection",
+    "sectionId": "forms-and-validation",
+    "orderIndex": 2,
+    "title": "CSRF Protection",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["CSRF", "CSRF Token", "hidden_tag", "CSRFProtect", "Exempt Routes", "AJAX CSRF"],
+    "content": {
+      "explanation": "Cross-Site Request Forgery (CSRF) is an attack where a malicious website tricks a user's browser into making unwanted requests to your site. Because the browser automatically sends cookies (including session cookies), the request appears legitimate. CSRF protection ensures that form submissions originate from your own site.\n\nFlask-WTF provides CSRF protection by default for all forms. When you render a form with {{ form.hidden_tag() }}, Flask-WTF embeds a unique CSRF token as a hidden input field. When the form is submitted, Flask-WTF validates this token. If the token is missing, expired, or invalid, the submission is rejected with a 400 error.\n\nThe CSRF token is generated using the app's SECRET_KEY and is unique to each session. It is included in the form as a hidden field named 'csrf_token'. The token is also set in a cookie for AJAX requests to read. This double-submit pattern (token in form and cookie) provides strong CSRF protection.\n\nFor applications that also serve APIs, you may need to exempt certain routes from CSRF protection. JSON API endpoints that use authentication tokens (like JWT) do not need CSRF protection because they do not rely on cookies. Use @csrf.exempt on specific views or the CSRFProtect.exempt() method on blueprints.\n\nFor AJAX requests, you cannot include the CSRF token in a form field. Instead, read the token from a meta tag or cookie and include it in the X-CSRFToken request header. Flask-WTF checks this header as an alternative to the form field. Set the meta tag with {{ csrf_token() }} and configure your AJAX library to include it.\n\nCSRFProtect can be initialized as a standalone extension (without FlaskForm) to protect all POST/PUT/DELETE requests globally. This is useful when you have views that process form data without using WTForms.\n\nThe CSRF token has a configurable expiration time (WTF_CSRF_TIME_LIMIT, default 3600 seconds). Long forms or slow users may encounter expired tokens. Consider increasing the timeout or showing a user-friendly message when the token expires.",
+      "codeExamples": [
+        {
+          "title": "Basic CSRF Protection",
+          "code": "from flask import Flask, render_template, request\nfrom flask_wtf import FlaskForm, CSRFProtect\nfrom wtforms import StringField, SubmitField\nfrom wtforms.validators import DataRequired\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'your-secret-key'\napp.config['WTF_CSRF_TIME_LIMIT'] = 3600  # Token expiry in seconds\n\n# Global CSRF protection (even for non-WTForms views)\ncsrf = CSRFProtect(app)\n\nclass PostForm(FlaskForm):\n    title = StringField('Title', validators=[DataRequired()])\n    submit = SubmitField('Post')\n\n@app.route('/post', methods=['GET', 'POST'])\ndef create_post():\n    form = PostForm()\n    if form.validate_on_submit():  # Includes CSRF check\n        return f'Created: {form.title.data}'\n    return render_template('post.html', form=form)\n\n# Template must include:\n# <form method=\"POST\">\n#     {{ form.hidden_tag() }}  <!-- Includes CSRF token -->\n#     ...\n# </form>",
+          "explanation": "CSRF protection is automatic with FlaskForm. The hidden_tag() renders the CSRF token. CSRFProtect adds global protection for non-WTForms views. The token is validated on every POST submission."
+        },
+        {
+          "title": "CSRF with AJAX Requests",
+          "code": "<!-- In your base template -->\n<meta name=\"csrf-token\" content=\"{{ csrf_token() }}\">\n\n<script>\n// Read the CSRF token from the meta tag\nconst csrfToken = document.querySelector('meta[name=\"csrf-token\"]').content;\n\n// Include in fetch requests\nfetch('/api/data', {\n    method: 'POST',\n    headers: {\n        'Content-Type': 'application/json',\n        'X-CSRFToken': csrfToken\n    },\n    body: JSON.stringify({ key: 'value' })\n});\n\n// Or configure globally with Axios\n// axios.defaults.headers.common['X-CSRFToken'] = csrfToken;\n</script>",
+          "explanation": "For AJAX, embed the CSRF token in a meta tag using {{ csrf_token() }}. JavaScript reads it and includes it in the X-CSRFToken header. Flask-WTF checks this header for non-form requests."
+        },
+        {
+          "title": "Exempting Routes from CSRF",
+          "code": "from flask import Flask, Blueprint\nfrom flask_wtf import CSRFProtect\n\napp = Flask(__name__)\ncsrf = CSRFProtect(app)\n\n# Exempt a specific view\n@app.route('/webhook', methods=['POST'])\n@csrf.exempt\ndef webhook():\n    \"\"\"External services cannot provide CSRF tokens.\"\"\"\n    return 'OK'\n\n# Exempt an entire blueprint\napi_bp = Blueprint('api', __name__)\ncsrf.exempt(api_bp)\n\n@api_bp.route('/data', methods=['POST'])\ndef api_data():\n    \"\"\"API uses JWT auth, not cookies, so CSRF is unnecessary.\"\"\"\n    return {'data': 'value'}",
+          "explanation": "Use @csrf.exempt for routes that cannot provide CSRF tokens (webhooks, external callbacks). Exempt entire blueprints for API routes that use token-based authentication instead of cookies."
+        },
+        {
+          "title": "Custom CSRF Error Handler",
+          "code": "from flask import Flask, jsonify\nfrom flask_wtf import CSRFProtect\nfrom flask_wtf.csrf import CSRFError\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'secret'\ncsrf = CSRFProtect(app)\n\n@app.errorhandler(CSRFError)\ndef handle_csrf_error(e):\n    \"\"\"Return JSON error instead of default 400 HTML page.\"\"\"\n    return jsonify({\n        'error': 'CSRF validation failed',\n        'message': e.description\n    }), 400",
+          "explanation": "Custom error handlers for CSRFError provide user-friendly messages. The default is a plain 400 error page. For APIs, return JSON. For web apps, show a flash message and re-render the form."
+        }
+      ],
+      "notes": [
+        "CSRF protection requires SECRET_KEY. Without it, tokens cannot be generated.",
+        "{{ form.hidden_tag() }} or {{ csrf_token() }} must be in every form template.",
+        "AJAX requests include the CSRF token via the X-CSRFToken header.",
+        "Exempt webhook and API routes that use non-cookie authentication."
+      ],
+      "interviewTips": [
+        "Explain CSRF: a malicious site makes a request to your app using the user's cookies, performing unintended actions.",
+        "Describe the token-based defense: server generates a token, embeds it in the form, validates on submission. The attacker cannot access the token.",
+        "Mention the double-submit pattern used by Flask-WTF."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "csrf-ex1",
+        "title": "Setup Global CSRF Protection",
+        "description": "Create a Flask app with CSRFProtect initialized. Add a route '/submit' that handles POST. Add an error handler for CSRFError that returns JSON.",
+        "starterCode": "from flask import Flask, jsonify\nfrom flask_wtf import CSRFProtect\nfrom flask_wtf.csrf import CSRFError\n\n# Setup CSRF and error handler\n",
+        "solution": "from flask import Flask, jsonify, request\nfrom flask_wtf import CSRFProtect\nfrom flask_wtf.csrf import CSRFError\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'dev-secret'\n\ncsrf = CSRFProtect(app)\n\n@app.errorhandler(CSRFError)\ndef handle_csrf_error(e):\n    return jsonify({'error': 'CSRF validation failed'}), 400\n\n@app.route('/submit', methods=['POST'])\ndef submit():\n    return jsonify({'message': 'Submitted successfully'})\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Initialize CSRFProtect with the app",
+          "Use @app.errorhandler(CSRFError) for custom error handling",
+          "SECRET_KEY is required for CSRF token generation"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "csrf-ex2",
+        "title": "AJAX CSRF Meta Tag",
+        "description": "Write a Jinja2 template snippet that includes a CSRF meta tag and JavaScript code to extract the token and configure it for fetch() POST requests.",
+        "starterCode": "<!-- Write the meta tag and JS code -->\n",
+        "solution": "<meta name=\"csrf-token\" content=\"{{ csrf_token() }}\">\n\n<script>\nconst csrfToken = document.querySelector('meta[name=\"csrf-token\"]').content;\n\nfunction postData(url, data) {\n    return fetch(url, {\n        method: 'POST',\n        headers: {\n            'Content-Type': 'application/json',\n            'X-CSRFToken': csrfToken\n        },\n        body: JSON.stringify(data)\n    });\n}\n</script>",
+        "hints": [
+          "Use {{ csrf_token() }} in the meta tag content",
+          "Read the meta tag with document.querySelector",
+          "Set the X-CSRFToken header in fetch requests"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "custom-validators-file-uploads",
+    "sectionId": "forms-and-validation",
+    "orderIndex": 3,
+    "title": "Custom Validators & File Uploads",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Custom Validators", "validate_ Methods", "FileField", "FileAllowed", "FileRequired", "FileSize"],
+    "content": {
+      "explanation": "While WTForms provides many built-in validators, real applications often need custom validation logic. Custom validators let you enforce business rules like checking if a username is already taken, validating password complexity, or ensuring uploaded files meet your requirements.\n\nThere are two ways to create custom validators in WTForms. Inline validators are methods on the form class named validate_<fieldname>. They are called automatically after the field's built-in validators pass. Standalone validators are reusable functions or classes that can be used across multiple forms.\n\nInline validators follow the naming convention validate_fieldname(self, field). They receive the form instance and the field being validated. To signal a validation error, raise a ValidationError with the error message. This method is convenient for one-off validations specific to a single form.\n\nStandalone validators are functions that take a form and field argument, or classes that implement __call__(self, form, field). They can be parameterized by accepting arguments in the constructor. Standalone validators are reusable across multiple forms and fields.\n\nFlask-WTF extends WTForms with FileField and MultipleFileField for file uploads. Flask-WTF also provides validators: FileRequired (file must be uploaded), FileAllowed (restrict file extensions), and FileSize (limit file size). These validators integrate with Flask's request.files.\n\nFile upload forms must use enctype='multipart/form-data'. In the template, render the file input with {{ form.file() }} and ensure the form tag has the correct enctype. The submitted file is a Werkzeug FileStorage object accessible via form.file.data.\n\nFor complex file validation (checking image dimensions, validating PDF content, scanning for malware), you may need custom validators. These can read the file stream, check headers, or use external libraries. Remember to seek back to the beginning of the file stream after reading it, or the save() call will write an empty file.",
+      "codeExamples": [
+        {
+          "title": "Inline Custom Validators",
+          "code": "from flask_wtf import FlaskForm\nfrom wtforms import StringField, PasswordField\nfrom wtforms.validators import DataRequired, Length, ValidationError\nfrom app.models import User\n\nclass RegistrationForm(FlaskForm):\n    username = StringField('Username', validators=[DataRequired(), Length(min=3)])\n    email = StringField('Email', validators=[DataRequired()])\n    password = PasswordField('Password', validators=[DataRequired(), Length(min=8)])\n\n    def validate_username(self, field):\n        \"\"\"Check if username is already taken.\"\"\"\n        user = User.query.filter_by(username=field.data).first()\n        if user:\n            raise ValidationError('Username already taken.')\n\n    def validate_email(self, field):\n        \"\"\"Check if email is already registered.\"\"\"\n        user = User.query.filter_by(email=field.data).first()\n        if user:\n            raise ValidationError('Email already registered.')\n\n    def validate_password(self, field):\n        \"\"\"Enforce password complexity.\"\"\"\n        password = field.data\n        if not any(c.isupper() for c in password):\n            raise ValidationError('Password must contain an uppercase letter.')\n        if not any(c.isdigit() for c in password):\n            raise ValidationError('Password must contain a digit.')",
+          "explanation": "Methods named validate_<fieldname> run automatically after built-in validators. They receive the field and raise ValidationError on failure. This is ideal for database uniqueness checks and custom business rules."
+        },
+        {
+          "title": "Reusable Standalone Validators",
+          "code": "from wtforms.validators import ValidationError\nimport re\n\n# Function-based validator\ndef no_special_chars(form, field):\n    if not re.match(r'^[a-zA-Z0-9_]+$', field.data):\n        raise ValidationError('Only letters, numbers, and underscores allowed.')\n\n# Class-based validator (parameterized)\nclass Unique:\n    def __init__(self, model, field, message='Already exists.'):\n        self.model = model\n        self.field = field\n        self.message = message\n\n    def __call__(self, form, field):\n        exists = self.model.query.filter(\n            getattr(self.model, self.field) == field.data\n        ).first()\n        if exists:\n            raise ValidationError(self.message)\n\n# Usage in form\nclass UserForm(FlaskForm):\n    username = StringField('Username', validators=[\n        DataRequired(),\n        no_special_chars,  # Function validator\n        Unique(User, 'username', 'Username taken.')  # Class validator\n    ])",
+          "explanation": "Function validators take (form, field) and raise ValidationError. Class validators use __init__ for configuration and __call__ for validation. Both can be reused across multiple forms."
+        },
+        {
+          "title": "File Upload with Flask-WTF",
+          "code": "from flask import Flask, render_template\nfrom flask_wtf import FlaskForm\nfrom flask_wtf.file import FileField, FileRequired, FileAllowed, FileSize\nfrom wtforms import StringField, SubmitField\nfrom werkzeug.utils import secure_filename\nimport os\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'secret'\napp.config['UPLOAD_FOLDER'] = 'uploads'\n\nclass UploadForm(FlaskForm):\n    title = StringField('Title')\n    photo = FileField('Photo', validators=[\n        FileRequired('Please upload a file.'),\n        FileAllowed(['jpg', 'jpeg', 'png', 'gif'], 'Images only!'),\n        FileSize(max_size=5 * 1024 * 1024, message='Max 5 MB')\n    ])\n    submit = SubmitField('Upload')\n\n@app.route('/upload', methods=['GET', 'POST'])\ndef upload():\n    form = UploadForm()\n    if form.validate_on_submit():\n        file = form.photo.data\n        filename = secure_filename(file.filename)\n        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))\n        return f'Uploaded: {filename}'\n    return render_template('upload.html', form=form)\n\n# upload.html must have:\n# <form method=\"POST\" enctype=\"multipart/form-data\">\n#     {{ form.hidden_tag() }}\n#     {{ form.photo() }}\n#     {{ form.submit() }}\n# </form>",
+          "explanation": "FileField handles file uploads. FileRequired ensures a file is uploaded. FileAllowed restricts extensions. FileSize limits file size. The form template must use enctype='multipart/form-data'."
+        },
+        {
+          "title": "Custom File Validator",
+          "code": "from wtforms.validators import ValidationError\nfrom PIL import Image\nimport io\n\nclass ImageDimensions:\n    \"\"\"Validate image dimensions.\"\"\"\n    def __init__(self, min_width=0, min_height=0, max_width=4000, max_height=4000):\n        self.min_width = min_width\n        self.min_height = min_height\n        self.max_width = max_width\n        self.max_height = max_height\n\n    def __call__(self, form, field):\n        if not field.data:\n            return\n\n        file = field.data\n        try:\n            image = Image.open(file.stream)\n            width, height = image.size\n            file.stream.seek(0)  # Reset stream for later save()\n\n            if width < self.min_width or height < self.min_height:\n                raise ValidationError(\n                    f'Image must be at least {self.min_width}x{self.min_height}px'\n                )\n            if width > self.max_width or height > self.max_height:\n                raise ValidationError(\n                    f'Image must be at most {self.max_width}x{self.max_height}px'\n                )\n        except Exception as e:\n            raise ValidationError(f'Invalid image: {e}')\n\n# Usage:\n# photo = FileField('Photo', validators=[\n#     FileRequired(),\n#     ImageDimensions(min_width=200, min_height=200)\n# ])",
+          "explanation": "Custom file validators can inspect file content. This one checks image dimensions using Pillow. Important: seek(0) resets the file stream after reading, otherwise save() writes an empty file."
+        }
+      ],
+      "notes": [
+        "Inline validators (validate_<fieldname>) are auto-called after built-in validators.",
+        "Standalone validators can be functions or classes, and are reusable across forms.",
+        "File upload forms must use enctype='multipart/form-data' in the HTML.",
+        "Always seek(0) on file streams after reading in custom validators."
+      ],
+      "commonPitfalls": [
+        "Naming an inline validator validate_field instead of validate_fieldname (the exact field name).",
+        "Reading a file stream in a validator without seeking back, causing empty file saves.",
+        "Forgetting enctype='multipart/form-data' on the form tag, causing file uploads to be empty."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "custom-validators-ex1",
+        "title": "Create a Unique Validator",
+        "description": "Write an inline validator on a RegistrationForm that checks if the email is already in the database (assume a User model with query capabilities). Raise ValidationError if found.",
+        "starterCode": "from flask_wtf import FlaskForm\nfrom wtforms import StringField\nfrom wtforms.validators import DataRequired, ValidationError\n\n# Assume User model exists\n\nclass RegistrationForm(FlaskForm):\n    email = StringField('Email', validators=[DataRequired()])\n\n    # Add inline validator\n",
+        "solution": "from flask_wtf import FlaskForm\nfrom wtforms import StringField\nfrom wtforms.validators import DataRequired, ValidationError\n\nclass RegistrationForm(FlaskForm):\n    email = StringField('Email', validators=[DataRequired()])\n\n    def validate_email(self, field):\n        from app.models import User\n        user = User.query.filter_by(email=field.data).first()\n        if user:\n            raise ValidationError('This email is already registered.')",
+        "hints": [
+          "Name the method validate_email (validate_ + field name)",
+          "Query the database for existing records",
+          "Raise ValidationError with a descriptive message"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "custom-validators-ex2",
+        "title": "File Upload Form",
+        "description": "Create an AvatarForm with a FileField called 'avatar' that requires a file, only allows jpg/png extensions, and limits size to 2 MB. Write the view function to save the file.",
+        "starterCode": "from flask_wtf import FlaskForm\nfrom flask_wtf.file import FileField, FileRequired, FileAllowed, FileSize\nfrom wtforms import SubmitField\n\n# Define AvatarForm and upload view\n",
+        "solution": "from flask import Flask\nfrom flask_wtf import FlaskForm\nfrom flask_wtf.file import FileField, FileRequired, FileAllowed, FileSize\nfrom wtforms import SubmitField\nfrom werkzeug.utils import secure_filename\nimport os\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'dev'\napp.config['UPLOAD_FOLDER'] = 'uploads'\n\nclass AvatarForm(FlaskForm):\n    avatar = FileField('Avatar', validators=[\n        FileRequired('Please upload an image.'),\n        FileAllowed(['jpg', 'png'], 'JPG and PNG only!'),\n        FileSize(max_size=2 * 1024 * 1024, message='Max 2 MB')\n    ])\n    submit = SubmitField('Upload')\n\n@app.route('/avatar', methods=['GET', 'POST'])\ndef upload_avatar():\n    form = AvatarForm()\n    if form.validate_on_submit():\n        file = form.avatar.data\n        filename = secure_filename(file.filename)\n        file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))\n        return {'filename': filename}\n    return {'errors': form.errors}, 400",
+        "hints": [
+          "FileSize max_size is in bytes: 2 MB = 2 * 1024 * 1024",
+          "FileAllowed takes a list of extensions without dots",
+          "Use secure_filename() before saving"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

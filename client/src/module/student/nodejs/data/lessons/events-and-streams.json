@@ -1,0 +1,325 @@
+[
+  {
+    "id": "event-emitter",
+    "sectionId": "events-and-streams",
+    "orderIndex": 0,
+    "title": "EventEmitter",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["on", "emit", "once", "removeListener", "error Event", "Custom Emitters"],
+    "content": {
+      "explanation": "The EventEmitter class is at the core of Node.js's event-driven architecture. Many built-in Node.js modules like HTTP servers, streams, and the process object are instances of EventEmitter. Understanding EventEmitter is fundamental because it is the pattern used throughout the Node.js ecosystem for handling asynchronous events. You import it from the 'events' module: const { EventEmitter } = require('events').\n\nAn EventEmitter instance has methods for registering listener functions (callbacks) for named events and for triggering those events. The on(eventName, listener) method registers a listener that runs every time the named event is emitted. The once(eventName, listener) method registers a listener that runs only the first time the event is emitted, then automatically removes itself. The emit(eventName, ...args) method triggers the event, calling all registered listeners synchronously in the order they were registered, passing any additional arguments to each listener.\n\nEvent listeners are called synchronously in the order they were added. This is an important detail: emit() does not schedule callbacks for later execution like setTimeout. The listeners run immediately, blocking the emit call until all listeners complete. If a listener performs heavy synchronous work, it delays all subsequent listeners and the code after emit(). For long-running operations, listeners should delegate to asynchronous APIs or use setImmediate to yield control.\n\nThe 'error' event has special behavior in Node.js. If an EventEmitter emits an 'error' event and there are no registered listeners for it, Node.js throws the error as an uncaught exception and the process crashes. This is a safety mechanism to prevent silent failures. Always register an 'error' listener on any EventEmitter, or use a try-catch around emit calls. In production code, you should also listen for 'uncaughtException' and 'unhandledRejection' on the process object as a last resort.\n\nCreating your own event-driven classes is straightforward: extend EventEmitter. This pattern is used extensively in Node.js libraries. For example, you might create a FileWatcher class that emits 'change' events, a JobQueue that emits 'job:complete' events, or a DataStream that emits 'data' and 'end' events. The removeListener(eventName, listener) or off(eventName, listener) method removes a specific listener, and removeAllListeners(eventName) removes all listeners for an event. Use listenerCount(eventName) to check how many listeners are registered.",
+      "codeExamples": [
+        {
+          "title": "Basic EventEmitter Usage",
+          "code": "const { EventEmitter } = require('events');\n\nconst emitter = new EventEmitter();\n\n// Register listeners with on()\nemitter.on('greet', (name) => {\n  console.log(`Hello, ${name}!`);\n});\n\nemitter.on('greet', (name) => {\n  console.log(`Welcome aboard, ${name}!`);\n});\n\n// Register a one-time listener with once()\nemitter.once('connect', () => {\n  console.log('Connected (fires only once)');\n});\n\n// Emit events\nemitter.emit('greet', 'Alice');\nconsole.log('---');\nemitter.emit('connect');\nemitter.emit('connect'); // No output, listener was removed\nconsole.log('---');\n\n// Check listener count\nconsole.log('greet listeners:', emitter.listenerCount('greet'));\nconsole.log('connect listeners:', emitter.listenerCount('connect'));",
+          "output": "Hello, Alice!\nWelcome aboard, Alice!\n---\nConnected (fires only once)\n---\ngreet listeners: 2\nconnect listeners: 0",
+          "explanation": "Multiple listeners can be registered for the same event and run in order. The 'once' listener is automatically removed after the first call, so the second 'connect' emit produces no output. listenerCount shows how many active listeners exist for an event."
+        },
+        {
+          "title": "Error Handling and Removing Listeners",
+          "code": "const { EventEmitter } = require('events');\n\nconst emitter = new EventEmitter();\n\n// The 'error' event is special: if unhandled, it crashes the process\nemitter.on('error', (err) => {\n  console.log('Caught error:', err.message);\n});\n\nemitter.emit('error', new Error('Something went wrong'));\n\n// Removing specific listeners\nfunction onData(data) {\n  console.log('Received:', data);\n}\n\nemitter.on('data', onData);\nemitter.emit('data', 'first message');\n\n// Remove the listener\nemitter.removeListener('data', onData);\n// or: emitter.off('data', onData);\nemitter.emit('data', 'second message'); // No output\n\nconsole.log('data listeners after removal:', emitter.listenerCount('data'));\n\n// Remove all listeners for an event\nemitter.on('tick', () => console.log('tick 1'));\nemitter.on('tick', () => console.log('tick 2'));\nconsole.log('tick listeners:', emitter.listenerCount('tick'));\nemitter.removeAllListeners('tick');\nconsole.log('tick listeners after removeAll:', emitter.listenerCount('tick'));",
+          "output": "Caught error: Something went wrong\nReceived: first message\ndata listeners after removal: 0\ntick listeners: 2\ntick listeners after removeAll: 0",
+          "explanation": "Always handle the 'error' event to prevent crashes. removeListener/off requires a reference to the exact function that was registered (arrow functions cannot be removed unless stored). removeAllListeners clears all listeners for a given event."
+        },
+        {
+          "title": "Custom EventEmitter Class",
+          "code": "const { EventEmitter } = require('events');\n\nclass JobQueue extends EventEmitter {\n  constructor() {\n    super();\n    this.jobs = [];\n  }\n\n  addJob(job) {\n    this.jobs.push(job);\n    this.emit('job:added', job);\n  }\n\n  processAll() {\n    while (this.jobs.length > 0) {\n      const job = this.jobs.shift();\n      this.emit('job:start', job);\n\n      // Simulate processing\n      const result = `Processed: ${job.name}`;\n      this.emit('job:complete', job, result);\n    }\n    this.emit('queue:empty');\n  }\n}\n\nconst queue = new JobQueue();\n\nqueue.on('job:added', (job) => console.log(`Added: ${job.name}`));\nqueue.on('job:start', (job) => console.log(`Starting: ${job.name}`));\nqueue.on('job:complete', (job, result) => console.log(`Done: ${result}`));\nqueue.once('queue:empty', () => console.log('All jobs complete!'));\n\nqueue.addJob({ name: 'Send emails' });\nqueue.addJob({ name: 'Generate report' });\nconsole.log('---');\nqueue.processAll();",
+          "output": "Added: Send emails\nAdded: Generate report\n---\nStarting: Send emails\nDone: Processed: Send emails\nStarting: Generate report\nDone: Processed: Generate report\nAll jobs complete!",
+          "explanation": "Extending EventEmitter lets you create event-driven classes. The JobQueue emits events for each stage of processing, allowing external code to react without tight coupling. This pattern is used by libraries like Express (request/response events) and Mongoose (connection events)."
+        }
+      ],
+      "notes": [
+        "EventEmitter listeners are called synchronously. If a listener takes a long time, it blocks subsequent listeners and the code after emit().",
+        "By default, Node.js warns if more than 10 listeners are registered for a single event (possible memory leak). Change the limit with emitter.setMaxListeners(n).",
+        "The 'newListener' and 'removeListener' events are emitted by EventEmitter itself when listeners are added or removed, useful for debugging."
+      ],
+      "commonPitfalls": [
+        "Not handling the 'error' event on an EventEmitter. Unhandled 'error' events crash the Node.js process.",
+        "Trying to remove an anonymous arrow function listener. You must store a reference to the function to remove it later.",
+        "Assuming emit is asynchronous. Listeners run synchronously and in order. If you need async behavior, use setImmediate or process.nextTick inside the listener."
+      ],
+      "interviewTips": [
+        "Explain how EventEmitter is the backbone of Node.js: HTTP servers, streams, process, and most built-in modules extend it.",
+        "Know the difference between on() and once(), and explain the special behavior of the 'error' event."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "event-emitter-ex1",
+        "title": "Custom Event Logger",
+        "description": "Create an EventEmitter instance. Register a listener for the 'log' event that takes a level ('info', 'warn', 'error') and a message, and prints them as '[LEVEL] message'. Emit three events: 'log' with ('info', 'Server started'), ('warn', 'High memory'), and ('error', 'Connection lost').",
+        "starterCode": "const { EventEmitter } = require('events');\n\n// Create emitter\n// Register 'log' listener\n// Emit three log events\n",
+        "solution": "const { EventEmitter } = require('events');\n\nconst emitter = new EventEmitter();\n\nemitter.on('log', (level, message) => {\n  console.log(`[${level.toUpperCase()}] ${message}`);\n});\n\nemitter.emit('log', 'info', 'Server started');\nemitter.emit('log', 'warn', 'High memory');\nemitter.emit('log', 'error', 'Connection lost');",
+        "expectedOutput": "[INFO] Server started\n[WARN] High memory\n[ERROR] Connection lost",
+        "hints": [
+          "emit passes all arguments after the event name to the listener",
+          "Use toUpperCase() on the level parameter for consistent formatting"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "event-emitter-ex2",
+        "title": "Countdown Emitter",
+        "description": "Create a class called 'Countdown' that extends EventEmitter. It should have a 'start' method that takes a number n and emits a 'tick' event with the current count for each number from n down to 1 (using a loop), then emits a 'done' event. Create an instance, register listeners for 'tick' and 'done', and call start(3).",
+        "starterCode": "const { EventEmitter } = require('events');\n\n// Create Countdown class extending EventEmitter\n// Add start(n) method that emits 'tick' and 'done'\n// Create instance and test\n",
+        "solution": "const { EventEmitter } = require('events');\n\nclass Countdown extends EventEmitter {\n  start(n) {\n    for (let i = n; i >= 1; i--) {\n      this.emit('tick', i);\n    }\n    this.emit('done');\n  }\n}\n\nconst cd = new Countdown();\ncd.on('tick', (num) => console.log(`Tick: ${num}`));\ncd.on('done', () => console.log('Done!'));\ncd.start(3);",
+        "expectedOutput": "Tick: 3\nTick: 2\nTick: 1\nDone!",
+        "hints": [
+          "Use super() in the constructor to call EventEmitter's constructor",
+          "Loop from n down to 1, emitting 'tick' with each value"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "readable-streams",
+    "sectionId": "events-and-streams",
+    "orderIndex": 1,
+    "title": "Readable Streams",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["createReadStream", "data Event", "end Event", "Flowing vs Paused Mode", "Highwater Mark"],
+    "content": {
+      "explanation": "Streams are one of the most powerful concepts in Node.js. A stream is an abstract interface for working with data that arrives (or is sent) piece by piece, rather than loading everything into memory at once. This is critical for performance when dealing with large files, network responses, or any data source that produces data over time. Readable streams represent a source of data that you can consume.\n\nThe most common way to create a readable stream is fs.createReadStream(path, options). Instead of loading an entire file into memory like readFile, createReadStream reads the file in chunks (the default chunk size is 64KB, controlled by the highWaterMark option). Each chunk triggers a 'data' event. When all data has been read, the 'end' event fires. If an error occurs (e.g., file not found), the 'error' event fires. This chunk-based approach means you can process a 10GB file without using more than 64KB of memory.\n\nReadable streams operate in two modes: flowing and paused. In flowing mode, data is read from the source automatically and provided as fast as possible via 'data' events. You enter flowing mode by attaching a 'data' listener, calling stream.resume(), or piping to a writable stream. In paused mode (the default), you must explicitly call stream.read() to pull chunks of data. You can switch between modes: calling stream.pause() switches from flowing to paused, and attaching a 'data' listener or calling stream.resume() switches back to flowing.\n\nReadable streams also support the async iterator protocol, which is the cleanest way to consume them in modern Node.js. You can use for-await-of to iterate over chunks: 'for await (const chunk of stream) { ... }'. This is syntactic sugar over the paused mode read protocol and automatically handles backpressure. The stream is paused between iterations, so the consumer controls the pace. Combined with async/await, this makes stream code as readable as synchronous code.\n\nThe highWaterMark option controls the internal buffer size. For file streams, it defaults to 65536 bytes (64KB). A higher value means fewer reads but more memory usage. A lower value means more frequent reads with less memory. For most applications, the default is fine. You can also specify an encoding option (e.g., 'utf8') to receive string chunks instead of Buffer chunks, which is convenient for text files.",
+      "codeExamples": [
+        {
+          "title": "Reading a File with createReadStream",
+          "code": "const fs = require('fs');\n\n// Create a test file first\nfs.writeFileSync('stream-test.txt', 'Hello from streams!\\nLine 2\\nLine 3');\n\n// Create a readable stream\nconst stream = fs.createReadStream('stream-test.txt', {\n  encoding: 'utf8',\n  highWaterMark: 16 // Small buffer to demonstrate chunking\n});\n\nlet chunkCount = 0;\n\nstream.on('data', (chunk) => {\n  chunkCount++;\n  console.log(`Chunk ${chunkCount} (${chunk.length} chars): \"${chunk}\"`);\n});\n\nstream.on('end', () => {\n  console.log(`\\nStream ended. Total chunks: ${chunkCount}`);\n  fs.unlinkSync('stream-test.txt');\n});\n\nstream.on('error', (err) => {\n  console.error('Stream error:', err.message);\n});",
+          "output": "Chunk 1 (16 chars): \"Hello from strea\"\nChunk 2 (16 chars): \"ms!\\nLine 2\\nLine\"\nChunk 3 (3 chars): \" 3\"\n\nStream ended. Total chunks: 3",
+          "explanation": "With a 16-byte highWaterMark, the 35-character file is read in three chunks. In real applications with the default 64KB buffer, most small files arrive in a single chunk. The key benefit is that even multi-gigabyte files use only highWaterMark bytes of memory."
+        },
+        {
+          "title": "Async Iteration Over Streams",
+          "code": "const fs = require('fs');\nconst { Readable } = require('stream');\n\n// Create a custom readable stream for demo\nfunction createNumberStream(max) {\n  let current = 1;\n  return new Readable({\n    objectMode: true,\n    read() {\n      if (current <= max) {\n        this.push({ number: current, squared: current * current });\n        current++;\n      } else {\n        this.push(null); // Signal end of stream\n      }\n    }\n  });\n}\n\nasync function main() {\n  const stream = createNumberStream(5);\n\n  // Modern approach: for-await-of\n  const results = [];\n  for await (const item of stream) {\n    results.push(`${item.number}^2 = ${item.squared}`);\n  }\n\n  console.log('Results:');\n  results.forEach(r => console.log(r));\n}\n\nmain();",
+          "output": "Results:\n1^2 = 1\n2^2 = 4\n3^2 = 9\n4^2 = 16\n5^2 = 25",
+          "explanation": "for-await-of is the cleanest way to consume streams. The custom readable stream pushes objects (objectMode:true) until pushing null to signal completion. This pattern works with any readable stream including file streams and HTTP responses."
+        },
+        {
+          "title": "Flowing vs Paused Mode",
+          "code": "const { Readable } = require('stream');\n\n// Create a stream that produces letters\nconst letters = ['A', 'B', 'C', 'D', 'E'];\nlet index = 0;\n\nconst stream = new Readable({\n  read() {\n    if (index < letters.length) {\n      this.push(letters[index++]);\n    } else {\n      this.push(null);\n    }\n  }\n});\n\n// Initially paused. Attaching 'data' switches to flowing mode.\nstream.on('data', (chunk) => {\n  console.log('Received:', chunk.toString());\n\n  // Pause after 'C'\n  if (chunk.toString() === 'C') {\n    stream.pause();\n    console.log('Paused stream');\n\n    // Resume after a delay\n    setTimeout(() => {\n      console.log('Resuming...');\n      stream.resume();\n    }, 100);\n  }\n});\n\nstream.on('end', () => {\n  console.log('Stream ended');\n});",
+          "output": "Received: A\nReceived: B\nReceived: C\nPaused stream\nResuming...\nReceived: D\nReceived: E\nStream ended",
+          "explanation": "Attaching a 'data' listener puts the stream in flowing mode. Calling pause() stops data emission, and resume() restarts it. This is manual backpressure control. In practice, pipe() handles this automatically."
+        }
+      ],
+      "notes": [
+        "Streams are memory-efficient. A 10GB file read with createReadStream uses only ~64KB of memory at a time, while readFile would need 10GB.",
+        "Always attach an 'error' listener on streams. Like EventEmitter, unhandled stream errors crash the process.",
+        "Pushing null to a readable stream signals the end of data. After pushing null, no more data can be pushed."
+      ],
+      "commonPitfalls": [
+        "Using readFile for large files. This loads the entire file into memory. Use createReadStream for files larger than a few megabytes.",
+        "Forgetting to handle the 'error' event on streams. File not found, permission errors, and network failures emit 'error' events that crash the process if unhandled.",
+        "Not understanding that attaching a 'data' listener switches the stream to flowing mode and data starts being consumed immediately."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "readable-streams-ex1",
+        "title": "Custom Number Stream",
+        "description": "Create a Readable stream that pushes the numbers 1 through 5 as strings, one at a time, then pushes null to end. Use for-await-of to consume the stream and log each number.",
+        "starterCode": "const { Readable } = require('stream');\n\n// Create a readable stream that pushes '1' through '5'\n// Use for-await-of to consume and log each chunk\n",
+        "solution": "const { Readable } = require('stream');\n\nlet n = 1;\nconst stream = new Readable({\n  read() {\n    if (n <= 5) {\n      this.push(String(n++));\n    } else {\n      this.push(null);\n    }\n  }\n});\n\n(async () => {\n  for await (const chunk of stream) {\n    console.log(chunk.toString());\n  }\n})();",
+        "expectedOutput": "1\n2\n3\n4\n5",
+        "hints": [
+          "Implement the read() method in the Readable constructor options",
+          "Push null to signal the end of the stream"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "writable-streams",
+    "sectionId": "events-and-streams",
+    "orderIndex": 2,
+    "title": "Writable Streams",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["createWriteStream", "write", "end", "drain Event", "Backpressure"],
+    "content": {
+      "explanation": "Writable streams are the counterpart to readable streams: they represent a destination to which data can be written. Common writable streams include fs.createWriteStream for writing to files, HTTP response objects (res), process.stdout and process.stderr, and TCP sockets. Understanding writable streams and backpressure is essential for building efficient data processing pipelines.\n\nfs.createWriteStream(path, options) creates a writable stream to a file. You write data using the stream.write(chunk) method, which returns a boolean indicating whether the internal buffer is full. When the buffer is full (write returns false), you should stop writing and wait for the 'drain' event before continuing. When you are done writing, call stream.end() to flush remaining data and close the stream. The 'finish' event fires after end() is called and all data has been flushed.\n\nBackpressure is a flow control mechanism that prevents a fast producer from overwhelming a slow consumer. When you write faster than the stream can flush data to its destination (disk, network, etc.), the internal buffer fills up. The write() method returns false when this happens, signaling you to pause. When the buffer is drained and ready for more data, the 'drain' event fires. Ignoring backpressure (continuing to write when write() returns false) causes the buffer to grow without bound, potentially consuming all available memory and crashing the process.\n\nHandling backpressure manually requires checking the return value of write() and pausing on false. A correct implementation looks like: if (!stream.write(data)) { await new Promise(resolve => stream.once('drain', resolve)); }. This pattern is tedious but important. The pipe() and pipeline() methods handle backpressure automatically, which is why piping is always preferred over manual read/write loops.\n\nprocess.stdout and process.stderr are writable streams that output to the terminal. console.log() is essentially process.stdout.write(data + '\\n'). In some environments (like piping output to a file), stdout can exert backpressure. HTTP response objects (res) in Express/Node HTTP servers are also writable streams, which means you can pipe readable streams directly to them for efficient file serving or data streaming.",
+      "codeExamples": [
+        {
+          "title": "Writing to Files with createWriteStream",
+          "code": "const fs = require('fs');\n\nconst stream = fs.createWriteStream('output.txt', { encoding: 'utf8' });\n\n// Write some data\nstream.write('Line 1: Hello\\n');\nstream.write('Line 2: World\\n');\nstream.write('Line 3: Done\\n');\n\n// End the stream (flushes buffer and closes file)\nstream.end('Final line\\n');\n\nstream.on('finish', () => {\n  console.log('All data written');\n\n  // Verify\n  const content = fs.readFileSync('output.txt', 'utf8');\n  console.log('File contents:');\n  console.log(content);\n\n  fs.unlinkSync('output.txt');\n});\n\nstream.on('error', (err) => {\n  console.error('Write error:', err.message);\n});",
+          "output": "All data written\nFile contents:\nLine 1: Hello\nLine 2: World\nLine 3: Done\nFinal line",
+          "explanation": "write() adds data to the internal buffer. end() optionally writes final data, then flushes and closes. The 'finish' event confirms everything was written to disk. Always listen for 'error' in case of write failures."
+        },
+        {
+          "title": "Handling Backpressure Correctly",
+          "code": "const fs = require('fs');\n\nasync function writeWithBackpressure() {\n  const stream = fs.createWriteStream('big-file.txt');\n  let linesWritten = 0;\n\n  for (let i = 0; i < 100; i++) {\n    const data = `Line ${i}: ${'x'.repeat(100)}\\n`;\n    const canContinue = stream.write(data);\n    linesWritten++;\n\n    if (!canContinue) {\n      // Buffer is full, wait for drain\n      await new Promise(resolve => stream.once('drain', resolve));\n    }\n  }\n\n  stream.end();\n\n  await new Promise(resolve => stream.on('finish', resolve));\n  console.log(`Wrote ${linesWritten} lines with backpressure handling`);\n\n  const stats = fs.statSync('big-file.txt');\n  console.log(`File size: ${stats.size} bytes`);\n  fs.unlinkSync('big-file.txt');\n}\n\nwriteWithBackpressure();",
+          "output": "Wrote 100 lines with backpressure handling\nFile size: 10700 bytes",
+          "explanation": "Checking write()'s return value and awaiting 'drain' prevents memory exhaustion. Without this, writing millions of lines could buffer everything in memory before any data reaches disk. This pattern is essential for writing large amounts of data."
+        },
+        {
+          "title": "process.stdout as a Writable Stream",
+          "code": "// process.stdout is a writable stream\n// console.log() is shorthand for process.stdout.write() + '\\n'\n\nprocess.stdout.write('Hello ');\nprocess.stdout.write('World');\nprocess.stdout.write('\\n'); // Must add newline manually\n\n// Writing formatted output\nconst items = ['Node.js', 'Express', 'Streams'];\nitems.forEach((item, i) => {\n  process.stdout.write(`${i + 1}. ${item}\\n`);\n});\n\n// Difference from console.log:\n// console.log(obj) -> util.inspect(obj) + '\\n' -> stdout\n// process.stdout.write() -> raw output, no formatting\n\nconst data = { name: 'test', count: 42 };\nprocess.stdout.write('Raw: ' + JSON.stringify(data) + '\\n');\nconsole.log('Formatted:', data);",
+          "output": "Hello World\n1. Node.js\n2. Express\n3. Streams\nRaw: {\"name\":\"test\",\"count\":42}\nFormatted: { name: 'test', count: 42 }",
+          "explanation": "process.stdout.write gives you raw control over output without automatic newlines or object formatting. console.log adds a newline and uses util.inspect for objects. For progress bars, spinners, and custom formatters, use stdout.write directly."
+        }
+      ],
+      "notes": [
+        "Always handle the return value of write(). When it returns false, the internal buffer is full and you should wait for the 'drain' event before writing more.",
+        "stream.end() can optionally accept a final chunk of data to write before closing. After end() is called, no more writes are allowed.",
+        "The 'close' event fires after the stream and its underlying resources (file descriptor) are fully released. 'finish' fires when data is flushed but resources may still be held."
+      ],
+      "commonPitfalls": [
+        "Ignoring backpressure by not checking write()'s return value. This can cause unbounded memory growth when writing faster than the destination can accept data.",
+        "Calling write() after end(). This throws an error. Once end() is called, the stream is closed for writing.",
+        "Not waiting for 'finish' before reading the file. Data may not be fully flushed to disk until the 'finish' event fires."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "writable-streams-ex1",
+        "title": "Numbered Line Writer",
+        "description": "Use process.stdout.write (not console.log) to output lines numbered 1 through 5 in the format 'Line N: Hello'. Each line should end with a newline character. Do not use console.log.",
+        "starterCode": "// Use process.stdout.write to print 5 numbered lines\n// Format: 'Line N: Hello\\n'\n",
+        "solution": "for (let i = 1; i <= 5; i++) {\n  process.stdout.write(`Line ${i}: Hello\\n`);\n}",
+        "expectedOutput": "Line 1: Hello\nLine 2: Hello\nLine 3: Hello\nLine 4: Hello\nLine 5: Hello",
+        "hints": [
+          "process.stdout.write does not add a newline automatically",
+          "Include \\n at the end of each string"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "piping-and-transform-streams",
+    "sectionId": "events-and-streams",
+    "orderIndex": 3,
+    "title": "Piping & Transform Streams",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["pipe", "pipeline", "Transform Class", "Stream Chaining", "Error Handling"],
+    "content": {
+      "explanation": "Piping is the mechanism that connects a readable stream to a writable stream, automatically handling data flow and backpressure. It is the preferred way to move data between streams because it handles all the complexity of read/write coordination, pausing, and resuming. The pipe method was one of the earliest features that made Node.js streams elegant and powerful.\n\nThe stream.pipe(destination) method takes a writable stream as its argument and returns the destination stream, allowing you to chain multiple pipes. For example: readStream.pipe(transformStream).pipe(writeStream). When you pipe, the readable stream automatically pauses when the writable stream's buffer is full (backpressure) and resumes when it drains. This prevents memory exhaustion without any manual intervention.\n\nHowever, pipe has a significant limitation: it does not propagate errors. If the source stream errors, the destination stream is not automatically closed, leading to resource leaks. The stream.pipeline() function (from 'stream' or 'stream/promises') solves this. It connects multiple streams together and properly handles cleanup when any stream in the chain errors or ends. Always use pipeline instead of pipe in production code. The promise-based version (from 'stream/promises') returns a Promise that resolves when the pipeline completes.\n\nTransform streams are duplex streams (both readable and writable) that modify data as it passes through. They sit in the middle of a pipeline, receiving chunks from a readable stream, processing them, and pushing the results to a writable stream. Common use cases include compression (zlib.createGzip()), encryption, data parsing, format conversion, and filtering. You create a custom Transform by extending the Transform class and implementing the _transform(chunk, encoding, callback) method.\n\nThe _transform method receives each chunk, processes it, and calls this.push() to send the transformed data downstream. Call callback() when you are done processing the chunk (or callback(error) if an error occurred). You can push zero, one, or multiple chunks for each input chunk. The _flush(callback) method is called when the stream ends and gives you a chance to push any remaining buffered data. Transform streams are the building blocks of stream processing pipelines, enabling composable data transformations.",
+      "codeExamples": [
+        {
+          "title": "Piping Streams Together",
+          "code": "const fs = require('fs');\nconst { pipeline } = require('stream/promises');\nconst { Transform } = require('stream');\n\n// Create a test file\nfs.writeFileSync('input.txt', 'hello world\\nnode streams\\nare powerful');\n\n// Transform: uppercase each line\nconst toUpperCase = new Transform({\n  transform(chunk, encoding, callback) {\n    callback(null, chunk.toString().toUpperCase());\n  }\n});\n\n// Using pipe (simple but no error propagation)\nconst readStream = fs.createReadStream('input.txt', 'utf8');\nconst writeStream = fs.createWriteStream('output.txt');\n\nreadStream.pipe(toUpperCase).pipe(writeStream);\n\nwriteStream.on('finish', () => {\n  const result = fs.readFileSync('output.txt', 'utf8');\n  console.log('Piped result:');\n  console.log(result);\n\n  fs.unlinkSync('input.txt');\n  fs.unlinkSync('output.txt');\n});",
+          "output": "Piped result:\nHELLO WORLD\nNODE STREAMS\nARE POWERFUL",
+          "explanation": "The readable stream pipes through the transform (uppercase) and into the writable stream. pipe() handles backpressure automatically. The chain reads like Unix pipes: input | transform | output."
+        },
+        {
+          "title": "pipeline() with Proper Error Handling",
+          "code": "const { pipeline } = require('stream/promises');\nconst { Transform, Readable, Writable } = require('stream');\n\n// Create a number-generating readable stream\nfunction numberSource(max) {\n  let n = 1;\n  return new Readable({\n    objectMode: true,\n    read() {\n      this.push(n <= max ? { value: n++ } : null);\n    }\n  });\n}\n\n// Transform: double the value\nconst doubler = new Transform({\n  objectMode: true,\n  transform(chunk, enc, cb) {\n    cb(null, { ...chunk, value: chunk.value * 2 });\n  }\n});\n\n// Transform: format as string\nconst formatter = new Transform({\n  objectMode: true,\n  transform(chunk, enc, cb) {\n    cb(null, `Value: ${chunk.value}\\n`);\n  }\n});\n\n// Collect output\nlet output = '';\nconst collector = new Writable({\n  write(chunk, enc, cb) {\n    output += chunk.toString();\n    cb();\n  }\n});\n\nasync function main() {\n  await pipeline(\n    numberSource(5),\n    doubler,\n    formatter,\n    collector\n  );\n  console.log(output.trim());\n}\n\nmain().catch(console.error);",
+          "output": "Value: 2\nValue: 4\nValue: 6\nValue: 8\nValue: 10",
+          "explanation": "pipeline connects four streams: source -> doubler -> formatter -> collector. If any stream errors, pipeline cleans up all streams and rejects the promise. This is much safer than chaining pipe() calls which do not handle errors."
+        },
+        {
+          "title": "Custom Transform Stream: Line Counter",
+          "code": "const { Transform } = require('stream');\nconst { Readable } = require('stream');\n\nclass LineCounter extends Transform {\n  constructor(options) {\n    super(options);\n    this.lineNumber = 0;\n    this.buffer = '';\n  }\n\n  _transform(chunk, encoding, callback) {\n    this.buffer += chunk.toString();\n    const lines = this.buffer.split('\\n');\n\n    // Keep last partial line in buffer\n    this.buffer = lines.pop();\n\n    // Number complete lines\n    for (const line of lines) {\n      this.lineNumber++;\n      this.push(`${this.lineNumber}: ${line}\\n`);\n    }\n    callback();\n  }\n\n  _flush(callback) {\n    // Process remaining buffer\n    if (this.buffer.length > 0) {\n      this.lineNumber++;\n      this.push(`${this.lineNumber}: ${this.buffer}\\n`);\n    }\n    callback();\n  }\n}\n\n// Test it\nconst input = Readable.from(['Hello\\nWorld\\n', 'Node.js\\nStreams']);\nconst counter = new LineCounter();\nlet result = '';\n\ncounter.on('data', (chunk) => { result += chunk; });\ncounter.on('end', () => { console.log(result.trim()); });\n\ninput.pipe(counter);",
+          "output": "1: Hello\n2: World\n3: Node.js\n4: Streams",
+          "explanation": "This Transform stream adds line numbers. _transform handles each chunk, splitting into lines and buffering partial lines. _flush processes any remaining data when the stream ends. This demonstrates the common pattern of accumulating a buffer across chunks."
+        }
+      ],
+      "notes": [
+        "Always use pipeline() instead of pipe() in production. pipe does not propagate errors or clean up streams properly.",
+        "Transform streams can push zero or multiple chunks for each input chunk. For example, a decompressor might produce more output than input.",
+        "Readable.from() creates a readable stream from an iterable (array, string, generator), which is convenient for testing."
+      ],
+      "commonPitfalls": [
+        "Using pipe() without error handling. If the source errors, the destination stream leaks. Use pipeline() which handles cleanup automatically.",
+        "Forgetting _flush() in Transform streams. Any data buffered in _transform is lost if _flush does not push it.",
+        "Not calling the callback in _transform. The stream will hang forever waiting for the signal that the chunk has been processed."
+      ],
+      "interviewTips": [
+        "Explain the difference between pipe() and pipeline(): pipe does not handle errors; pipeline properly cleans up all streams on error.",
+        "Be able to describe a real-world pipeline: file read -> decompress -> parse -> transform -> write."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "piping-and-transform-streams-ex1",
+        "title": "Uppercase Transform",
+        "description": "Create a Transform stream that converts all input text to uppercase. Use Readable.from() to create a stream from the array ['hello ', 'world ', 'streams']. Pipe it through your transform and collect the output. Log the final result.",
+        "starterCode": "const { Transform, Readable } = require('stream');\n\n// Create an uppercase Transform stream\n// Create a readable from ['hello ', 'world ', 'streams']\n// Pipe and collect the output\n// Log the result\n",
+        "solution": "const { Transform, Readable } = require('stream');\n\nconst upper = new Transform({\n  transform(chunk, enc, cb) {\n    cb(null, chunk.toString().toUpperCase());\n  }\n});\n\nconst input = Readable.from(['hello ', 'world ', 'streams']);\nlet result = '';\n\nupper.on('data', (chunk) => { result += chunk; });\nupper.on('end', () => { console.log(result); });\n\ninput.pipe(upper);",
+        "expectedOutput": "HELLO WORLD STREAMS",
+        "hints": [
+          "In _transform, call callback(null, transformedData) to push the result",
+          "Readable.from() accepts an array of strings and creates a stream"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "buffers",
+    "sectionId": "events-and-streams",
+    "orderIndex": 4,
+    "title": "Buffers",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Buffer.from", "Buffer.alloc", "toString", "Buffer.concat", "Encoding", "TypedArrays"],
+    "content": {
+      "explanation": "Buffers are Node.js's way of handling raw binary data. JavaScript strings are UTF-16 encoded and are not ideal for working with binary data like files, network packets, images, or cryptographic operations. The Buffer class provides a fixed-size chunk of memory allocated outside the V8 heap, giving you direct access to raw bytes. Buffers are one of the global objects in Node.js and do not require an import.\n\nThere are several ways to create Buffers. Buffer.from(string, encoding) creates a Buffer from a string with the specified encoding (default 'utf8'). Buffer.from(array) creates a Buffer from an array of byte values. Buffer.alloc(size) creates a zero-filled Buffer of the specified size in bytes, which is the safe way to allocate Buffers. Buffer.allocUnsafe(size) is faster but the memory may contain old data from previous allocations, so you must fill it before reading. In most cases, use Buffer.alloc for new buffers and Buffer.from for converting data.\n\nConverting between Buffers and strings is done with buffer.toString(encoding). Common encodings include 'utf8' (default, for text), 'ascii' (7-bit ASCII), 'base64' (for encoding binary data as text), 'hex' (hexadecimal representation), 'latin1' (ISO 8859-1), and 'utf16le' (little-endian UTF-16). The encoding parameter is important because the same bytes can represent completely different strings in different encodings. Always be explicit about encoding when converting.\n\nBuffer.concat(bufferArray) merges multiple Buffers into a single Buffer. This is commonly used when collecting chunks from a stream. Buffers are fixed-size once created — you cannot resize them. To combine data, you must create a new Buffer with concat. Buffer.byteLength(string, encoding) returns how many bytes a string will occupy in a given encoding, which differs from string.length for multi-byte characters.\n\nBuffers support array-like operations. You can access individual bytes with bracket notation (buf[0]), iterate with for-of, use slice() to create a view of a portion (shares memory), and use copy() to copy bytes between buffers. The Buffer class is a subclass of Uint8Array, so it is compatible with TypedArray methods. In modern code, you may also encounter ArrayBuffer and typed arrays (Uint8Array, Int32Array, Float64Array), which are the standard JavaScript binary data types. Buffers and TypedArrays can be converted between each other.",
+      "codeExamples": [
+        {
+          "title": "Creating and Converting Buffers",
+          "code": "// Create from string\nconst buf1 = Buffer.from('Hello, Node.js!');\nconsole.log('Buffer:', buf1);\nconsole.log('Length:', buf1.length, 'bytes');\nconsole.log('UTF-8:', buf1.toString('utf8'));\nconsole.log('Base64:', buf1.toString('base64'));\nconsole.log('Hex:', buf1.toString('hex'));\n\n// Create from array of bytes\nconst buf2 = Buffer.from([72, 101, 108, 108, 111]); // ASCII codes\nconsole.log('\\nFrom bytes:', buf2.toString());\n\n// Allocate zeroed buffer\nconst buf3 = Buffer.alloc(8);\nconsole.log('Zeroed:', buf3);\nbuf3.write('Node');\nconsole.log('After write:', buf3.toString().trim());\n\n// Multi-byte characters\nconst emoji = Buffer.from('Hello 🌍');\nconsole.log('\\nString length:', 'Hello 🌍'.length);\nconsole.log('Buffer length:', emoji.length, 'bytes');\nconsole.log('Byte length:', Buffer.byteLength('Hello 🌍', 'utf8'));",
+          "output": "Buffer: <Buffer 48 65 6c 6c 6f 2c 20 4e 6f 64 65 2e 6a 73 21>\nLength: 15 bytes\nUTF-8: Hello, Node.js!\nBase64: SGVsbG8sIE5vZGUuanMh\nHex: 48656c6c6f2c204e6f64652e6a7321\n\nFrom bytes: Hello\n\nZeroed: <Buffer 00 00 00 00 00 00 00 00>\nAfter write: Node\n\nString length: 8\nBuffer length: 10 bytes\nByte length: 10",
+          "explanation": "Buffer.from creates a buffer from a string or byte array. toString converts back with the specified encoding. Multi-byte characters like emojis take more bytes than their string length suggests (4 bytes for the globe emoji in UTF-8)."
+        },
+        {
+          "title": "Concatenating Buffers (Stream Pattern)",
+          "code": "// Common pattern: collecting chunks from a stream\nconst chunks = [];\n\n// Simulating stream chunks\nchunks.push(Buffer.from('First chunk. '));\nchunks.push(Buffer.from('Second chunk. '));\nchunks.push(Buffer.from('Third chunk.'));\n\n// Concatenate all chunks into one buffer\nconst combined = Buffer.concat(chunks);\nconsole.log('Combined:', combined.toString());\nconsole.log('Total bytes:', combined.length);\n\n// Slicing (creates a view, shares memory)\nconst slice = combined.slice(0, 12);\nconsole.log('Slice:', slice.toString());\n\n// Copy (does not share memory)\nconst copy = Buffer.alloc(12);\ncombined.copy(copy, 0, 0, 12);\nconsole.log('Copy:', copy.toString());\n\n// Compare buffers\nconst a = Buffer.from('abc');\nconst b = Buffer.from('abc');\nconst c = Buffer.from('def');\nconsole.log('\\na equals b:', a.equals(b));\nconsole.log('a equals c:', a.equals(c));\nconsole.log('a compare c:', a.compare(c)); // -1 (a < c)",
+          "output": "Combined: First chunk. Second chunk. Third chunk.\nTotal bytes: 40\nSlice: First chunk.\nCopy: First chunk.\n\na equals b: true\na equals c: false\na compare c: -1",
+          "explanation": "Buffer.concat is the standard way to assemble chunks from streams. slice() creates a view sharing the same memory (modifying one affects the other). copy() creates an independent copy. equals() and compare() enable Buffer comparison."
+        },
+        {
+          "title": "Base64 Encoding and Practical Uses",
+          "code": "// Base64 encoding: convert binary data to text-safe string\nconst original = 'Node.js Buffers are powerful!';\n\n// Encode to base64\nconst encoded = Buffer.from(original).toString('base64');\nconsole.log('Original:', original);\nconsole.log('Base64:', encoded);\n\n// Decode from base64\nconst decoded = Buffer.from(encoded, 'base64').toString('utf8');\nconsole.log('Decoded:', decoded);\n\n// Practical: Creating a basic auth header\nconst username = 'admin';\nconst password = 'secret123';\nconst credentials = Buffer.from(`${username}:${password}`).toString('base64');\nconsole.log('\\nAuth header:', `Basic ${credentials}`);\n\n// Decode it back\nconst [user, pass] = Buffer.from(credentials, 'base64')\n  .toString('utf8')\n  .split(':');\nconsole.log('Username:', user);\nconsole.log('Password:', pass);\n\n// Hex encoding: useful for hashes and tokens\nconst hexData = Buffer.from('secret').toString('hex');\nconsole.log('\\nHex:', hexData);\nconsole.log('Back:', Buffer.from(hexData, 'hex').toString());",
+          "output": "Original: Node.js Buffers are powerful!\nBase64: Tm9kZS5qcyBCdWZmZXJzIGFyZSBwb3dlcmZ1bCE=\nDecoded: Node.js Buffers are powerful!\n\nAuth header: Basic YWRtaW46c2VjcmV0MTIz\nUsername: admin\nPassword: secret123\n\nHex: 736563726574\nBack: secret",
+          "explanation": "Base64 encoding converts binary data into text-safe characters, commonly used for HTTP Basic auth headers, embedding images in HTML/CSS, and API tokens. Hex encoding is used for hashes, cryptographic keys, and debugging binary data."
+        }
+      ],
+      "notes": [
+        "Buffer.alloc(size) creates a safe, zero-filled buffer. Buffer.allocUnsafe(size) is faster but may contain garbage data from old memory.",
+        "Buffer.slice() shares memory with the original buffer. Use Buffer.from(buf.slice()) to create an independent copy.",
+        "String.length counts characters while Buffer.length counts bytes. For ASCII text they are equal, but for multi-byte characters (emojis, CJK) they differ."
+      ],
+      "commonPitfalls": [
+        "Using the deprecated new Buffer() constructor. Always use Buffer.from(), Buffer.alloc(), or Buffer.allocUnsafe() instead.",
+        "Assuming string length equals byte length. 'Hello 🌍' has 8 characters but 10 bytes in UTF-8 because the emoji is 4 bytes.",
+        "Using Buffer.allocUnsafe without filling the buffer before reading. It may contain sensitive data from previous memory allocations."
+      ],
+      "interviewTips": [
+        "Explain why Buffers exist: JavaScript strings are UTF-16 and not suitable for raw binary operations like file I/O, networking, and cryptography.",
+        "Know the common encodings: utf8 (text), base64 (binary-to-text), hex (debugging/hashes), and when to use each."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "buffers-ex1",
+        "title": "Base64 Encode and Decode",
+        "description": "Create a string 'Hello, Buffers!'. Encode it to base64 using Buffer.from and toString. Then decode the base64 string back to UTF-8. Log both the encoded and decoded strings.",
+        "starterCode": "// Encode 'Hello, Buffers!' to base64\n// Decode it back to UTF-8\n// Log both results\n",
+        "solution": "const original = 'Hello, Buffers!';\nconst encoded = Buffer.from(original).toString('base64');\nconst decoded = Buffer.from(encoded, 'base64').toString('utf8');\nconsole.log('Encoded:', encoded);\nconsole.log('Decoded:', decoded);",
+        "expectedOutput": "Encoded: SGVsbG8sIEJ1ZmZlcnMh\nDecoded: Hello, Buffers!",
+        "hints": [
+          "Buffer.from(string).toString('base64') encodes to base64",
+          "Buffer.from(base64String, 'base64').toString('utf8') decodes back"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "buffers-ex2",
+        "title": "Chunk Collector",
+        "description": "Simulate receiving three stream chunks: Buffer.from('Node'), Buffer.from('.js '), and Buffer.from('Rocks!'). Push each into an array, then use Buffer.concat to combine them into a single Buffer. Log the result as a UTF-8 string and its total byte length.",
+        "starterCode": "// Create three buffers simulating stream chunks\n// Collect them in an array\n// Concatenate into a single buffer\n// Log the string and total bytes\n",
+        "solution": "const chunks = [];\nchunks.push(Buffer.from('Node'));\nchunks.push(Buffer.from('.js '));\nchunks.push(Buffer.from('Rocks!'));\n\nconst combined = Buffer.concat(chunks);\nconsole.log(combined.toString());\nconsole.log('Bytes:', combined.length);",
+        "expectedOutput": "Node.js Rocks!\nBytes: 14",
+        "hints": [
+          "Buffer.concat takes an array of Buffers and returns one combined Buffer",
+          "The length property gives the total byte count"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

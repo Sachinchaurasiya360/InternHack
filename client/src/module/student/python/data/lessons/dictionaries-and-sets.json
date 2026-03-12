@@ -1,0 +1,472 @@
+[
+  {
+    "id": "dict-basics",
+    "sectionId": "dictionaries-and-sets",
+    "orderIndex": 0,
+    "title": "Dictionary Basics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["dict creation", "key access", "get()", "keys()", "values()", "items()"],
+    "content": {
+      "explanation": "A dictionary in Python is a mutable, unordered (as of Python 3.6, insertion-ordered in CPython, guaranteed from 3.7+) collection of key-value pairs. Dictionaries are one of the most versatile and commonly used data structures in Python, offering O(1) average-case time complexity for lookups, insertions, and deletions. They are implemented using hash tables under the hood.\n\nYou can create a dictionary using curly braces {} with key: value pairs, using the dict() constructor, or by passing keyword arguments to dict(). Keys must be immutable (hashable) types such as strings, numbers, or tuples of immutables. Values can be any Python object. Duplicate keys are not allowed; assigning to an existing key overwrites the previous value.\n\nAccessing values can be done using square bracket notation dict[key], which raises a KeyError if the key is missing, or using the get() method, which returns None (or a specified default) when the key is not found. The get() method is the safer choice when you are unsure whether a key exists.\n\nThe keys(), values(), and items() methods return view objects that reflect changes to the dictionary in real time. keys() returns all keys, values() returns all values, and items() returns tuples of (key, value) pairs. These views are iterable and support membership testing with the in operator. In Python 3, these return view objects rather than lists, so wrap them in list() if you need an actual list.\n\nChecking for key existence is done with the in operator on the dictionary itself (key in dict), which is an O(1) operation. You can also use len() to get the number of key-value pairs, and bool() or a simple truthiness check to see if a dictionary is empty.",
+      "codeExamples": [
+        {
+          "title": "Creating dictionaries",
+          "code": "# Literal syntax\nstudent = {'name': 'Alice', 'age': 22, 'grade': 'A'}\nprint(student)\n\n# dict() constructor with keyword arguments\nconfig = dict(host='localhost', port=3000, debug=True)\nprint(config)\n\n# From list of tuples\npairs = [('x', 10), ('y', 20), ('z', 30)]\ncoords = dict(pairs)\nprint(coords)\n\n# Empty dict\nempty = {}\nprint(type(empty), len(empty))",
+          "output": "{'name': 'Alice', 'age': 22, 'grade': 'A'}\n{'host': 'localhost', 'port': 3000, 'debug': True}\n{'x': 10, 'y': 20, 'z': 30}\n<class 'dict'> 0",
+          "explanation": "Dictionaries can be created using literal curly brace syntax, the dict() constructor with keyword arguments, or by passing an iterable of key-value pairs. Python preserves insertion order (guaranteed from 3.7+)."
+        },
+        {
+          "title": "Accessing values with [] and get()",
+          "code": "person = {'name': 'Bob', 'age': 30, 'city': 'Mumbai'}\n\n# Square bracket access\nprint(person['name'])\nprint(person['age'])\n\n# get() with default\nprint(person.get('city'))\nprint(person.get('email', 'Not provided'))\nprint(person.get('phone'))",
+          "output": "Bob\n30\nMumbai\nNot provided\nNone",
+          "explanation": "Square brackets raise KeyError for missing keys. The get() method returns None by default for missing keys, or a custom default value if specified as the second argument. Use get() when a key might not exist."
+        },
+        {
+          "title": "keys(), values(), and items()",
+          "code": "scores = {'math': 95, 'science': 88, 'english': 92}\n\nprint('Keys:', list(scores.keys()))\nprint('Values:', list(scores.values()))\nprint('Items:', list(scores.items()))\n\n# Iterating with items()\nfor subject, score in scores.items():\n    print(f'{subject}: {score}')\n\n# Membership test\nprint('math' in scores)\nprint('history' in scores)",
+          "output": "Keys: ['math', 'science', 'english']\nValues: [95, 88, 92]\nItems: [('math', 95), ('science', 88), ('english', 92)]\nmath: 95\nscience: 88\nenglish: 92\nTrue\nFalse",
+          "explanation": "keys(), values(), and items() return view objects that reflect the current state of the dict. Unpacking in for loops with items() is the Pythonic way to iterate over both keys and values. The in operator checks for key membership in O(1) time."
+        },
+        {
+          "title": "Dictionary length and truthiness",
+          "code": "inventory = {'apples': 5, 'bananas': 3, 'oranges': 8}\nprint('Length:', len(inventory))\nprint('Is non-empty:', bool(inventory))\n\nempty_dict = {}\nprint('Empty length:', len(empty_dict))\nprint('Is non-empty:', bool(empty_dict))\n\n# Common pattern: check before access\ndata = {'results': [1, 2, 3]}\nif data:\n    print('Data has', len(data), 'key(s)')\nif 'results' in data:\n    print('Results:', data['results'])",
+          "output": "Length: 3\nIs non-empty: True\nEmpty length: 0\nIs non-empty: False\nData has 1 key(s)\nResults: [1, 2, 3]",
+          "explanation": "len() returns the number of key-value pairs. An empty dictionary is falsy, and a non-empty dictionary is truthy. This allows clean if dict: checks before processing."
+        }
+      ],
+      "notes": [
+        "Dictionary keys must be hashable (immutable). Strings, numbers, and tuples of immutables work; lists and dicts do not.",
+        "As of Python 3.7, dictionaries maintain insertion order as part of the language specification.",
+        "The in operator checks for keys, not values. Use 'value in dict.values()' to check values.",
+        "View objects from keys(), values(), and items() reflect live changes to the dictionary."
+      ],
+      "commonPitfalls": [
+        "Using dict[key] on a missing key raises KeyError. Use get() or check with 'in' first.",
+        "Trying to use a mutable type (list, dict) as a dictionary key raises TypeError since they are not hashable."
+      ],
+      "interviewTips": [
+        "Know that dict lookups are O(1) average case due to hash table implementation.",
+        "Be prepared to explain the difference between dict[key] and dict.get(key) and when to use each."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "dict-basics-ex1",
+        "title": "Student Record Lookup",
+        "description": "Create a dictionary representing a student with keys 'name', 'age', 'course', and 'gpa'. Print each value using get() with a descriptive label. Then check if the key 'email' exists and print the result.",
+        "starterCode": "# TODO: Create a student dictionary with name='Priya', age=21, course='CS', gpa=8.5\n\n# TODO: Print each value using get(): \"Name: ...\", \"Age: ...\", \"Course: ...\", \"GPA: ...\"\n\n# TODO: Try to get 'email' with default 'N/A' and print \"Email: ...\"\n\n# TODO: Print whether 'email' is in the dictionary (True/False)\n",
+        "solution": "student = {'name': 'Priya', 'age': 21, 'course': 'CS', 'gpa': 8.5}\n\nprint('Name:', student.get('name'))\nprint('Age:', student.get('age'))\nprint('Course:', student.get('course'))\nprint('GPA:', student.get('gpa'))\nprint('Email:', student.get('email', 'N/A'))\nprint('email' in student)",
+        "expectedOutput": "Name: Priya\nAge: 21\nCourse: CS\nGPA: 8.5\nEmail: N/A\nFalse",
+        "hints": [
+          "Use curly brace syntax: {'key': value, ...} to create the dictionary.",
+          "get() accepts an optional second argument as the default value for missing keys."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "dict-basics-ex2",
+        "title": "Iterate and Summarize",
+        "description": "Given a dictionary of product prices, iterate over it using items() to print each product and its price. Then print the total number of products and the sum of all prices.",
+        "starterCode": "prices = {'laptop': 75000, 'phone': 25000, 'tablet': 30000, 'watch': 15000}\n\n# TODO: Loop through items() and print \"product: price\" for each\n\n# TODO: Print \"Total products: <count>\"\n\n# TODO: Print \"Total value: <sum of all prices>\"\n",
+        "solution": "prices = {'laptop': 75000, 'phone': 25000, 'tablet': 30000, 'watch': 15000}\n\nfor product, price in prices.items():\n    print(f'{product}: {price}')\n\nprint('Total products:', len(prices))\nprint('Total value:', sum(prices.values()))",
+        "expectedOutput": "laptop: 75000\nphone: 25000\ntablet: 30000\nwatch: 15000\nTotal products: 4\nTotal value: 145000",
+        "hints": [
+          "Use for key, value in dict.items(): to unpack both the key and value.",
+          "sum(dict.values()) adds up all the values in the dictionary."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "dict-basics-ex3",
+        "title": "Safe Key Access",
+        "description": "Given a config dictionary, use get() to safely access keys that may or may not exist. Print the value of each key with its default if missing.",
+        "starterCode": "config = {'host': '127.0.0.1', 'port': 8080}\n\n# TODO: Get 'host' (default 'localhost') and print \"Host: <value>\"\n# TODO: Get 'port' (default 3000) and print \"Port: <value>\"\n# TODO: Get 'debug' (default False) and print \"Debug: <value>\"\n# TODO: Get 'timeout' (default 30) and print \"Timeout: <value>\"\n# TODO: Print the list of existing keys using list(config.keys())\n",
+        "solution": "config = {'host': '127.0.0.1', 'port': 8080}\n\nprint('Host:', config.get('host', 'localhost'))\nprint('Port:', config.get('port', 3000))\nprint('Debug:', config.get('debug', False))\nprint('Timeout:', config.get('timeout', 30))\nprint(list(config.keys()))",
+        "expectedOutput": "Host: 127.0.0.1\nPort: 8080\nDebug: False\nTimeout: 30\n['host', 'port']",
+        "hints": [
+          "get() returns the actual value when the key exists, ignoring the default.",
+          "list(dict.keys()) converts the key view into a plain list for printing."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "dict-manipulation",
+    "sectionId": "dictionaries-and-sets",
+    "orderIndex": 1,
+    "title": "Dictionary Manipulation",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["adding keys", "updating values", "del statement", "pop()", "update()", "setdefault()", "nested dicts"],
+    "content": {
+      "explanation": "Beyond basic lookups, Python dictionaries support a rich set of operations for modifying their contents. You can add new key-value pairs by simply assigning to a new key with dict[key] = value. If the key already exists, this overwrites the previous value. This dual behavior makes assignment both an insert and an update operation.\n\nRemoving entries can be done with the del statement (del dict[key]), which raises KeyError if the key does not exist, or with pop(key), which removes and returns the value. pop() accepts an optional default argument that is returned instead of raising KeyError when the key is missing. The popitem() method removes and returns the last inserted key-value pair (in Python 3.7+), which is useful for processing dictionaries as LIFO structures. The clear() method removes all entries.\n\nThe update() method merges another dictionary (or iterable of key-value pairs) into the current dictionary. Existing keys are overwritten by the incoming values. This is commonly used to apply defaults or merge configuration objects. In Python 3.9+, the | operator provides a more concise syntax for merging, and |= for in-place updates.\n\nThe setdefault() method is a powerful one-liner that returns the value for a key if it exists, or inserts the key with a given default value and returns that default. It is particularly useful for building dictionaries of lists, where you want to ensure a list exists before appending. This avoids the common pattern of checking for existence before insertion.\n\nNested dictionaries contain dictionaries as values, creating hierarchical data structures. Accessing nested values requires chaining square bracket lookups or get() calls. When modifying deeply nested structures, be careful about creating intermediate dictionaries. A common pattern is to use setdefault() to build nested structures incrementally.",
+      "codeExamples": [
+        {
+          "title": "Adding, updating, and deleting keys",
+          "code": "profile = {'name': 'Rahul', 'age': 25}\n\n# Add new keys\nprofile['city'] = 'Delhi'\nprofile['skills'] = ['Python', 'SQL']\nprint('After adding:', profile)\n\n# Update existing key\nprofile['age'] = 26\nprint('After update:', profile)\n\n# Delete with del\ndel profile['skills']\nprint('After del:', profile)\n\n# pop() returns the removed value\nage = profile.pop('age')\nprint('Popped age:', age)\nprint('After pop:', profile)\n\n# pop() with default for missing key\nmissing = profile.pop('email', 'not found')\nprint('Missing pop:', missing)",
+          "output": "After adding: {'name': 'Rahul', 'age': 25, 'city': 'Delhi', 'skills': ['Python', 'SQL']}\nAfter update: {'name': 'Rahul', 'age': 26, 'city': 'Delhi', 'skills': ['Python', 'SQL']}\nAfter del: {'name': 'Rahul', 'age': 26, 'city': 'Delhi'}\nPopped age: 26\nAfter pop: {'name': 'Rahul', 'city': 'Delhi'}\nMissing pop: not found",
+          "explanation": "Assignment to a new key adds it; assignment to an existing key updates it. del raises KeyError for missing keys, while pop() can accept a default to avoid that. pop() also returns the removed value, which is useful when you need the value after removal."
+        },
+        {
+          "title": "update() for merging dictionaries",
+          "code": "defaults = {'color': 'blue', 'size': 'medium', 'quantity': 1}\nuser_prefs = {'color': 'red', 'quantity': 5}\n\n# update() modifies in place\nconfig = defaults.copy()\nconfig.update(user_prefs)\nprint('Merged:', config)\n\n# update() with keyword arguments\nconfig.update(size='large', weight=2.5)\nprint('After kwargs update:', config)\n\n# Python 3.9+ merge operator\nresult = defaults | user_prefs\nprint('Merge operator:', result)",
+          "output": "Merged: {'color': 'red', 'size': 'medium', 'quantity': 5}\nAfter kwargs update: {'color': 'red', 'size': 'large', 'quantity': 5, 'weight': 2.5}\nMerge operator: {'color': 'red', 'size': 'medium', 'quantity': 5}",
+          "explanation": "update() overwrites existing keys with new values and adds any new keys. It accepts another dict, an iterable of pairs, or keyword arguments. The | operator (Python 3.9+) creates a new merged dict without modifying either original."
+        },
+        {
+          "title": "setdefault() for safe initialization",
+          "code": "# Group words by their first letter\nwords = ['apple', 'banana', 'avocado', 'blueberry', 'cherry', 'apricot']\n\ngrouped = {}\nfor word in words:\n    first_letter = word[0]\n    grouped.setdefault(first_letter, []).append(word)\n\nfor letter, group in grouped.items():\n    print(f'{letter}: {group}')\n\n# setdefault returns existing value if key exists\nd = {'x': 10}\nresult = d.setdefault('x', 99)\nprint(f'\\nExisting key: {result}')\nresult = d.setdefault('y', 99)\nprint(f'New key: {result}')\nprint(f'Dict: {d}')",
+          "output": "a: ['apple', 'avocado', 'apricot']\nb: ['banana', 'blueberry']\nc: ['cherry']\n\nExisting key: 10\nNew key: 99\nDict: {'x': 10, 'y': 99}",
+          "explanation": "setdefault() is a one-liner that checks if a key exists, inserts a default if not, and returns the value. It is ideal for building dicts of lists since it ensures the list is created before appending."
+        },
+        {
+          "title": "Nested dictionaries",
+          "code": "# Nested dict structure\ncompany = {\n    'name': 'TechCorp',\n    'departments': {\n        'engineering': {\n            'head': 'Alice',\n            'team_size': 15\n        },\n        'marketing': {\n            'head': 'Bob',\n            'team_size': 8\n        }\n    }\n}\n\n# Accessing nested values\nprint('Company:', company['name'])\nprint('Eng head:', company['departments']['engineering']['head'])\nprint('Mkt size:', company['departments']['marketing']['team_size'])\n\n# Safe nested access with get()\nhr_head = company.get('departments', {}).get('hr', {}).get('head', 'Not assigned')\nprint('HR head:', hr_head)\n\n# Modifying nested dicts\ncompany['departments']['engineering']['team_size'] = 18\ncompany['departments']['hr'] = {'head': 'Carol', 'team_size': 5}\nprint('Updated eng size:', company['departments']['engineering']['team_size'])\nprint('New HR dept:', company['departments']['hr'])",
+          "output": "Company: TechCorp\nEng head: Alice\nMkt size: 8\nHR head: Not assigned\nUpdated eng size: 18\nNew HR dept: {'head': 'Carol', 'team_size': 5}",
+          "explanation": "Nested dicts model hierarchical data. Chain [] or get() calls to access deep values. Chaining get() with empty dict defaults prevents KeyError at every level. You can add new nested dicts by assigning a dict to a new key."
+        }
+      ],
+      "notes": [
+        "dict.copy() creates a shallow copy. For nested dicts, use copy.deepcopy() to avoid shared references.",
+        "popitem() removes and returns the last inserted key-value pair (Python 3.7+). In older versions, it removes an arbitrary pair.",
+        "The | merge operator (Python 3.9+) creates a new dict; |= updates in place. Both overwrite left keys with right values.",
+        "setdefault() is often preferred over defaultdict when you only need the behavior in a few places."
+      ],
+      "commonPitfalls": [
+        "Using del on a missing key raises KeyError. Use pop(key, default) for safe deletion.",
+        "Forgetting that update() modifies the dictionary in place. If you need a new dict, use copy() first or the | operator.",
+        "Shallow copying a nested dict means inner dicts are shared references. Modifying a nested value in the copy changes the original too."
+      ],
+      "interviewTips": [
+        "Be able to explain the difference between pop() and del, and when to use each.",
+        "Know how to safely build a dict of lists using setdefault() or defaultdict, as this is a very common interview pattern."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "dict-manip-ex1",
+        "title": "Inventory Manager",
+        "description": "Start with an inventory dictionary. Add two new items, update the quantity of an existing item, remove one item with pop(), and print the final inventory and the removed item's quantity.",
+        "starterCode": "inventory = {'apples': 50, 'bananas': 30, 'oranges': 20}\n\n# TODO: Add 'grapes': 40 and 'mangoes': 25\n# TODO: Update 'bananas' to 45\n# TODO: Remove 'oranges' using pop() and store the value\n# TODO: Print \"Removed oranges: <quantity>\"\n# TODO: Print the final inventory\n",
+        "solution": "inventory = {'apples': 50, 'bananas': 30, 'oranges': 20}\n\ninventory['grapes'] = 40\ninventory['mangoes'] = 25\ninventory['bananas'] = 45\nremoved = inventory.pop('oranges')\nprint('Removed oranges:', removed)\nprint(inventory)",
+        "expectedOutput": "Removed oranges: 20\n{'apples': 50, 'bananas': 45, 'grapes': 40, 'mangoes': 25}",
+        "hints": [
+          "Assign to a new key to add: dict['new_key'] = value.",
+          "pop() removes the key and returns its value."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "dict-manip-ex2",
+        "title": "Group Students by Grade",
+        "description": "Given a list of (name, grade) tuples, use setdefault() to group students by their grade into a dictionary of lists. Print each grade and its list of students.",
+        "starterCode": "students = [('Alice', 'A'), ('Bob', 'B'), ('Charlie', 'A'), ('Diana', 'C'), ('Eve', 'B'), ('Frank', 'A')]\n\n# TODO: Create an empty dict called 'grade_groups'\n# TODO: Loop through students and use setdefault() to group by grade\n# TODO: Print each grade and its student list\n",
+        "solution": "students = [('Alice', 'A'), ('Bob', 'B'), ('Charlie', 'A'), ('Diana', 'C'), ('Eve', 'B'), ('Frank', 'A')]\n\ngrade_groups = {}\nfor name, grade in students:\n    grade_groups.setdefault(grade, []).append(name)\n\nfor grade, names in grade_groups.items():\n    print(f'{grade}: {names}')",
+        "expectedOutput": "A: ['Alice', 'Charlie', 'Frank']\nB: ['Bob', 'Eve']\nC: ['Diana']",
+        "hints": [
+          "setdefault(key, []) returns the existing list or creates a new empty one.",
+          "After setdefault returns the list, you can immediately call .append() on it."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "dict-manip-ex3",
+        "title": "Merge Config with Defaults",
+        "description": "Given a defaults dictionary and a user overrides dictionary, create a final config by merging them (user values take precedence). Then add one more key using update() with keyword arguments. Print the final config.",
+        "starterCode": "defaults = {'theme': 'light', 'language': 'en', 'notifications': True, 'font_size': 14}\noverrides = {'theme': 'dark', 'font_size': 18}\n\n# TODO: Create 'config' as a copy of defaults\n# TODO: Use update() to apply overrides\n# TODO: Use update() with keyword arg to add auto_save=True\n# TODO: Print the final config\n",
+        "solution": "defaults = {'theme': 'light', 'language': 'en', 'notifications': True, 'font_size': 14}\noverrides = {'theme': 'dark', 'font_size': 18}\n\nconfig = defaults.copy()\nconfig.update(overrides)\nconfig.update(auto_save=True)\nprint(config)",
+        "expectedOutput": "{'theme': 'dark', 'language': 'en', 'notifications': True, 'font_size': 18, 'auto_save': True}",
+        "hints": [
+          "Use defaults.copy() to avoid modifying the original defaults dict.",
+          "update() accepts both another dict and keyword arguments."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "dict-comprehensions",
+    "sectionId": "dictionaries-and-sets",
+    "orderIndex": 2,
+    "title": "Dictionary Comprehensions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["dict comprehension", "filtering dicts", "transforming values", "zip to dict", "conditional comprehension"],
+    "content": {
+      "explanation": "Dictionary comprehensions provide a concise way to create dictionaries from iterables, similar to how list comprehensions create lists. The syntax is {key_expr: value_expr for item in iterable}, which evaluates the key and value expressions for each item and collects the results into a new dictionary. This is both more readable and more performant than building dictionaries with explicit loops.\n\nFiltering is done by adding an if clause at the end: {k: v for k, v in dict.items() if condition}. This creates a new dictionary containing only the key-value pairs that satisfy the condition. You can filter on keys, values, or both. This pattern is extremely common for extracting subsets of data from larger dictionaries.\n\nTransforming dictionaries involves applying functions to keys, values, or both. For example, {k: v * 2 for k, v in prices.items()} doubles all values, while {k.upper(): v for k, v in data.items()} uppercases all keys. You can combine filtering and transformation in a single comprehension for powerful one-liner data processing.\n\nThe zip() function paired with dict comprehensions is a common pattern for creating dictionaries from two parallel sequences. dict(zip(keys, values)) or {k: v for k, v in zip(keys, values)} pairs up elements from two iterables into key-value pairs. This is frequently used when you have column headers and row data, or when merging related lists.\n\nNested dictionary comprehensions are possible but should be used sparingly for readability. A comprehension like {outer_k: {inner_k: inner_v for ...} for ...} creates a dictionary of dictionaries. When the logic becomes complex, it is usually better to use a regular for loop for clarity.",
+      "codeExamples": [
+        {
+          "title": "Basic dict comprehension",
+          "code": "# Squares of numbers\nsquares = {n: n ** 2 for n in range(1, 6)}\nprint('Squares:', squares)\n\n# From a string: character -> ASCII code\nword = 'hello'\nascii_map = {ch: ord(ch) for ch in word}\nprint('ASCII:', ascii_map)\n\n# Swapping keys and values\noriginal = {'a': 1, 'b': 2, 'c': 3}\nswapped = {v: k for k, v in original.items()}\nprint('Swapped:', swapped)",
+          "output": "Squares: {1: 1, 2: 4, 3: 9, 4: 16, 5: 25}\nASCII: {'h': 104, 'e': 101, 'l': 108, 'o': 111}\nSwapped: {1: 'a', 2: 'b', 3: 'c'}",
+          "explanation": "Dict comprehensions use {key: value for item in iterable} syntax. Note that 'hello' has two l's but the dict keeps only one since keys must be unique. Swapping keys and values only works when all values are unique and hashable."
+        },
+        {
+          "title": "Filtering with conditions",
+          "code": "scores = {'Alice': 85, 'Bob': 62, 'Charlie': 91, 'Diana': 55, 'Eve': 78}\n\n# Filter students who passed (>= 70)\npassed = {name: score for name, score in scores.items() if score >= 70}\nprint('Passed:', passed)\n\n# Filter students who failed\nfailed = {name: score for name, score in scores.items() if score < 70}\nprint('Failed:', failed)\n\n# Filter and transform: grade labels\ngraded = {name: ('Distinction' if score >= 85 else 'Pass') \n          for name, score in scores.items() if score >= 70}\nprint('Graded:', graded)",
+          "output": "Passed: {'Alice': 85, 'Charlie': 91, 'Eve': 78}\nFailed: {'Bob': 62, 'Diana': 55}\nGraded: {'Alice': 'Distinction', 'Charlie': 'Distinction', 'Eve': 'Pass'}",
+          "explanation": "Add an if clause after the for clause to filter. You can combine filtering (if) with value transformation (ternary expression) in a single comprehension. The filtering happens first, then the transformation is applied to the remaining items."
+        },
+        {
+          "title": "Using zip() to create dicts",
+          "code": "# Two parallel lists\ncities = ['Mumbai', 'Delhi', 'Bangalore', 'Chennai']\npopulations = [20.4, 16.8, 12.3, 10.9]\n\ncity_pop = dict(zip(cities, populations))\nprint('Populations:', city_pop)\n\n# With comprehension for transformation\ncity_pop_m = {city: f'{pop}M' for city, pop in zip(cities, populations)}\nprint('Formatted:', city_pop_m)\n\n# Enumerate to create index mapping\nfruits = ['apple', 'banana', 'cherry']\nindex_map = {fruit: idx for idx, fruit in enumerate(fruits)}\nprint('Index map:', index_map)",
+          "output": "Populations: {'Mumbai': 20.4, 'Delhi': 16.8, 'Bangalore': 12.3, 'Chennai': 10.9}\nFormatted: {'Mumbai': '20.4M', 'Delhi': '16.8M', 'Bangalore': '12.3M', 'Chennai': '10.9M'}\nIndex map: {'apple': 0, 'banana': 1, 'cherry': 2}",
+          "explanation": "zip() pairs up elements from two sequences. dict(zip(...)) is the fastest way to create a dict from two lists. Using a comprehension with zip lets you transform values during creation. enumerate() provides indices alongside values."
+        },
+        {
+          "title": "Transforming existing dicts",
+          "code": "prices = {'apple': 120, 'banana': 40, 'mango': 200, 'grape': 80}\n\n# Apply 10% discount\ndiscounted = {item: round(price * 0.9) for item, price in prices.items()}\nprint('Discounted:', discounted)\n\n# Uppercase keys\nupper_prices = {item.upper(): price for item, price in prices.items()}\nprint('Upper keys:', upper_prices)\n\n# Categorize by price range\ncategorized = {item: ('premium' if price > 100 else 'regular')\n               for item, price in prices.items()}\nprint('Categories:', categorized)",
+          "output": "Discounted: {'apple': 108, 'banana': 36, 'mango': 180, 'grape': 72}\nUpper keys: {'APPLE': 120, 'BANANA': 40, 'MANGO': 200, 'GRAPE': 80}\nCategories: {'apple': 'premium', 'banana': 'regular', 'mango': 'premium', 'grape': 'regular'}",
+          "explanation": "Dict comprehensions can transform keys, values, or both. round() ensures clean numeric output. Ternary expressions in the value position let you categorize or label data on the fly."
+        }
+      ],
+      "notes": [
+        "Dict comprehensions are generally faster than building dicts with explicit loops because they are optimized at the bytecode level.",
+        "If duplicate keys are produced, the last value wins (just like regular dict assignment).",
+        "zip() stops at the shorter iterable. Use itertools.zip_longest() if you need to handle unequal lengths.",
+        "Complex comprehensions with nested logic should be refactored into regular loops for readability."
+      ],
+      "commonPitfalls": [
+        "Swapping keys and values fails silently when multiple keys share the same value, since only the last one survives.",
+        "Using a mutable default (like a list) as the value expression creates the same list object for all keys. Use a new list expression inside the comprehension."
+      ],
+      "interviewTips": [
+        "Dict comprehensions are a frequent interview topic. Practice inverting dicts, grouping data, and filtering by conditions.",
+        "Know how to combine zip() with dict comprehension to merge two lists into a dictionary efficiently.",
+        "Be ready to explain when a dict comprehension is preferred over a loop (simple transforms) and when a loop is clearer (complex logic)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "dict-comp-ex1",
+        "title": "Fahrenheit to Celsius Converter",
+        "description": "Given a dictionary of city temperatures in Fahrenheit, use a dict comprehension to create a new dictionary with temperatures converted to Celsius (rounded to 1 decimal). Formula: C = (F - 32) * 5/9.",
+        "starterCode": "temps_f = {'New York': 77, 'London': 59, 'Tokyo': 86, 'Sydney': 68}\n\n# TODO: Create temps_c using a dict comprehension\n# Formula: celsius = round((fahrenheit - 32) * 5/9, 1)\n\n# TODO: Print the result\n",
+        "solution": "temps_f = {'New York': 77, 'London': 59, 'Tokyo': 86, 'Sydney': 68}\n\ntemps_c = {city: round((f - 32) * 5/9, 1) for city, f in temps_f.items()}\nprint(temps_c)",
+        "expectedOutput": "{'New York': 25.0, 'London': 15.0, 'Tokyo': 30.0, 'Sydney': 20.0}",
+        "hints": [
+          "Use {key: expression for key, value in dict.items()} syntax.",
+          "round(value, 1) rounds to one decimal place."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "dict-comp-ex2",
+        "title": "Filter and Transform Scores",
+        "description": "Given student scores, create a new dict containing only students who scored 70 or above, with their scores converted to letter grades: 90+ = 'A', 80-89 = 'B', 70-79 = 'C'.",
+        "starterCode": "scores = {'Alice': 92, 'Bob': 65, 'Charlie': 78, 'Diana': 88, 'Eve': 55, 'Frank': 71}\n\n# TODO: Create 'results' dict with only passing students (>= 70)\n# Map scores to grades: 90+ -> 'A', 80-89 -> 'B', 70-79 -> 'C'\n\n# TODO: Print the results\n",
+        "solution": "scores = {'Alice': 92, 'Bob': 65, 'Charlie': 78, 'Diana': 88, 'Eve': 55, 'Frank': 71}\n\nresults = {name: ('A' if score >= 90 else 'B' if score >= 80 else 'C')\n           for name, score in scores.items() if score >= 70}\nprint(results)",
+        "expectedOutput": "{'Alice': 'A', 'Charlie': 'C', 'Diana': 'B', 'Frank': 'C'}",
+        "hints": [
+          "The if clause at the end filters; the ternary expression in the value position transforms.",
+          "Chain ternary expressions: 'A' if x >= 90 else 'B' if x >= 80 else 'C'."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "dict-comp-ex3",
+        "title": "Zip Lists into a Dict",
+        "description": "Given two lists (subjects and marks), use zip() with a dict comprehension to create a dictionary. Then create a second dict containing only subjects where marks are above 80.",
+        "starterCode": "subjects = ['Math', 'Physics', 'Chemistry', 'Biology', 'English']\nmarks = [95, 72, 88, 65, 91]\n\n# TODO: Create 'report' dict using zip\n# TODO: Create 'high_scores' dict with only marks > 80\n# TODO: Print both dicts\n",
+        "solution": "subjects = ['Math', 'Physics', 'Chemistry', 'Biology', 'English']\nmarks = [95, 72, 88, 65, 91]\n\nreport = {sub: mark for sub, mark in zip(subjects, marks)}\nhigh_scores = {sub: mark for sub, mark in report.items() if mark > 80}\nprint(report)\nprint(high_scores)",
+        "expectedOutput": "{'Math': 95, 'Physics': 72, 'Chemistry': 88, 'Biology': 65, 'English': 91}\n{'Math': 95, 'Chemistry': 88, 'English': 91}",
+        "hints": [
+          "zip(list1, list2) pairs elements from both lists by index.",
+          "Filter the created dict using another comprehension with an if clause."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "set-basics",
+    "sectionId": "dictionaries-and-sets",
+    "orderIndex": 3,
+    "title": "Set Operations",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["set creation", "add()", "remove()", "discard()", "union", "intersection", "difference", "symmetric_difference"],
+    "content": {
+      "explanation": "A set in Python is an unordered collection of unique, hashable elements. Sets are mutable (you can add and remove elements), but the elements themselves must be immutable (strings, numbers, tuples). Sets are implemented using hash tables, providing O(1) average-case time complexity for membership testing, insertion, and deletion. This makes sets ideal for tasks like deduplication, membership checks, and mathematical set operations.\n\nYou can create a set using curly braces with values {1, 2, 3}, or using the set() constructor from any iterable. Note that {} creates an empty dictionary, not an empty set; use set() for an empty set. Duplicate values are automatically removed during creation. The set() constructor is also commonly used to deduplicate lists: list(set(my_list)).\n\nThe add() method inserts a single element (no effect if it already exists). remove() deletes an element and raises KeyError if not found. discard() also deletes but silently does nothing if the element is missing, making it the safer choice. pop() removes and returns an arbitrary element (since sets are unordered, you cannot predict which one). clear() empties the entire set.\n\nPython sets support all standard mathematical set operations. Union (a | b or a.union(b)) returns all elements from both sets. Intersection (a & b or a.intersection(b)) returns elements common to both. Difference (a - b or a.difference(b)) returns elements in a but not in b. Symmetric difference (a ^ b or a.symmetric_difference(b)) returns elements in either set but not both. These operations return new sets and do not modify the originals.\n\nEach operation also has an in-place variant using augmented assignment operators: |=, &=, -=, ^= or the methods update(), intersection_update(), difference_update(), symmetric_difference_update(). The issubset(), issuperset(), and isdisjoint() methods test relationships between sets. These are commonly used in permission systems, tag filtering, and data analysis.",
+      "codeExamples": [
+        {
+          "title": "Creating sets and basic operations",
+          "code": "# Creating sets\nfruits = {'apple', 'banana', 'cherry', 'apple'}  # duplicate removed\nprint('Fruits:', sorted(fruits))\nprint('Count:', len(fruits))\n\n# From a list (deduplication)\nnumbers = [3, 1, 4, 1, 5, 9, 2, 6, 5, 3]\nunique = set(numbers)\nprint('Unique:', sorted(unique))\n\n# Empty set (not {})\nempty = set()\nprint('Empty set:', empty, 'Type:', type(empty))\n\n# Set from string (unique characters)\nchars = set('mississippi')\nprint('Unique chars:', sorted(chars))",
+          "output": "Fruits: ['apple', 'banana', 'cherry']\nCount: 3\nUnique: [1, 2, 3, 4, 5, 6, 9]\nEmpty set: set() Type: <class 'set'>\nUnique chars: ['i', 'm', 'p', 's']",
+          "explanation": "Sets automatically remove duplicates. Note that {} creates a dict, not a set; use set() for empty sets. Sets created from strings contain unique characters. Since sets are unordered, we use sorted() for deterministic output."
+        },
+        {
+          "title": "add(), remove(), and discard()",
+          "code": "colors = {'red', 'green', 'blue'}\n\n# add() - no effect if already exists\ncolors.add('yellow')\ncolors.add('red')  # already exists, no error\nprint('After add:', sorted(colors))\n\n# remove() - raises KeyError if missing\ncolors.remove('green')\nprint('After remove:', sorted(colors))\n\n# discard() - safe, no error if missing\ncolors.discard('purple')  # no error\ncolors.discard('blue')\nprint('After discard:', sorted(colors))\n\n# pop() - removes arbitrary element\npopped = colors.pop()\nprint('Popped:', popped)\nprint('Remaining:', sorted(colors))",
+          "output": "After add: ['blue', 'green', 'red', 'yellow']\nAfter remove: ['blue', 'red', 'yellow']\nAfter discard: ['red', 'yellow']\nPopped: red\nRemaining: ['yellow']",
+          "explanation": "add() is idempotent. remove() raises KeyError for missing elements while discard() silently ignores them. pop() removes and returns an arbitrary element since sets have no defined order. Note: pop() output may vary across runs."
+        },
+        {
+          "title": "Set operations: union, intersection, difference",
+          "code": "python_devs = {'Alice', 'Bob', 'Charlie', 'Diana'}\njava_devs = {'Charlie', 'Diana', 'Eve', 'Frank'}\n\n# Union: all developers\nall_devs = python_devs | java_devs\nprint('All devs:', sorted(all_devs))\n\n# Intersection: know both languages\nboth = python_devs & java_devs\nprint('Both:', sorted(both))\n\n# Difference: Python only\npython_only = python_devs - java_devs\nprint('Python only:', sorted(python_only))\n\n# Symmetric difference: exactly one language\none_lang = python_devs ^ java_devs\nprint('One language:', sorted(one_lang))\n\n# Method syntax (same results)\nprint('Union method:', sorted(python_devs.union(java_devs)))\nprint('Intersection method:', sorted(python_devs.intersection(java_devs)))",
+          "output": "All devs: ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank']\nBoth: ['Charlie', 'Diana']\nPython only: ['Alice', 'Bob']\nOne language: ['Alice', 'Bob', 'Eve', 'Frank']\nUnion method: ['Alice', 'Bob', 'Charlie', 'Diana', 'Eve', 'Frank']\nIntersection method: ['Charlie', 'Diana']",
+          "explanation": "Operators (|, &, -, ^) and methods (union, intersection, difference, symmetric_difference) produce the same results. Operators require both operands to be sets, while methods accept any iterable as the argument."
+        },
+        {
+          "title": "Set relationships and frozenset",
+          "code": "a = {1, 2, 3}\nb = {1, 2, 3, 4, 5}\nc = {6, 7}\n\nprint('a subset of b:', a.issubset(b))\nprint('b superset of a:', b.issuperset(a))\nprint('a disjoint from c:', a.isdisjoint(c))\nprint('a disjoint from b:', a.isdisjoint(b))\n\n# frozenset: immutable set (can be used as dict key or set element)\nfs = frozenset([1, 2, 3])\nprint('\\nFrozenset:', sorted(fs))\nprint('Type:', type(fs))\n\n# frozenset as dict key\ncache = {frozenset(['read', 'write']): 'editor', frozenset(['read']): 'viewer'}\nuser_perms = frozenset(['read', 'write'])\nprint('Role:', cache[user_perms])",
+          "output": "a subset of b: True\nb superset of a: True\na disjoint from c: True\na disjoint from b: False\n\nFrozenset: [1, 2, 3]\nType: <class 'frozenset'>\nRole: editor",
+          "explanation": "issubset(), issuperset(), and isdisjoint() test set relationships. frozenset is the immutable counterpart of set, which means it is hashable and can be used as a dictionary key or as an element of another set."
+        }
+      ],
+      "notes": [
+        "Sets are unordered, so iteration order is not guaranteed. Always use sorted() when deterministic output is needed.",
+        "{} creates an empty dict, not a set. Use set() for an empty set.",
+        "Set elements must be hashable (immutable). You cannot put lists or dicts inside a set.",
+        "Operator syntax (|, &, -, ^) requires both operands to be sets. Method syntax (union, intersection, etc.) accepts any iterable."
+      ],
+      "commonPitfalls": [
+        "Using remove() on a missing element raises KeyError. Prefer discard() when unsure if the element exists.",
+        "Expecting sets to maintain insertion order. Sets are unordered; use sorted() or a list if order matters.",
+        "Trying to add a list to a set. Lists are unhashable. Convert to a tuple first if needed."
+      ],
+      "interviewTips": [
+        "Set membership testing (x in my_set) is O(1) vs O(n) for lists. This is a common optimization question.",
+        "Know how to use set operations to solve problems like finding common elements, unique elements, or missing elements between collections.",
+        "Be able to explain the difference between set and frozenset, and when frozenset is required (as dict keys or set elements)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "set-basics-ex1",
+        "title": "Deduplicate and Sort",
+        "description": "Given a list with duplicates, convert it to a set to remove duplicates, then print the sorted result. Also print the number of duplicates that were removed.",
+        "starterCode": "numbers = [5, 3, 8, 1, 3, 7, 8, 2, 5, 1, 9, 3]\n\n# TODO: Create a set from numbers\n# TODO: Print the sorted unique numbers\n# TODO: Print how many duplicates were removed\n",
+        "solution": "numbers = [5, 3, 8, 1, 3, 7, 8, 2, 5, 1, 9, 3]\n\nunique = set(numbers)\nprint(sorted(unique))\nprint('Duplicates removed:', len(numbers) - len(unique))",
+        "expectedOutput": "[1, 2, 3, 5, 7, 8, 9]\nDuplicates removed: 5",
+        "hints": [
+          "set(list) removes all duplicates automatically.",
+          "The number of duplicates is len(original_list) - len(unique_set)."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "set-basics-ex2",
+        "title": "Common and Unique Skills",
+        "description": "Given two sets of skills for two developers, find their common skills (intersection), skills unique to each (difference), and all skills combined (union). Print each result sorted.",
+        "starterCode": "dev1_skills = {'Python', 'JavaScript', 'SQL', 'Docker', 'Git'}\ndev2_skills = {'Java', 'JavaScript', 'SQL', 'Kubernetes', 'Git'}\n\n# TODO: Find and print common skills (sorted)\n# TODO: Find and print skills only dev1 has (sorted)\n# TODO: Find and print skills only dev2 has (sorted)\n# TODO: Find and print all unique skills combined (sorted)\n",
+        "solution": "dev1_skills = {'Python', 'JavaScript', 'SQL', 'Docker', 'Git'}\ndev2_skills = {'Java', 'JavaScript', 'SQL', 'Kubernetes', 'Git'}\n\nprint('Common:', sorted(dev1_skills & dev2_skills))\nprint('Dev1 only:', sorted(dev1_skills - dev2_skills))\nprint('Dev2 only:', sorted(dev2_skills - dev1_skills))\nprint('All skills:', sorted(dev1_skills | dev2_skills))",
+        "expectedOutput": "Common: ['Git', 'JavaScript', 'SQL']\nDev1 only: ['Docker', 'Python']\nDev2 only: ['Java', 'Kubernetes']\nAll skills: ['Docker', 'Git', 'Java', 'JavaScript', 'Kubernetes', 'Python', 'SQL']",
+        "hints": [
+          "Use & for intersection, - for difference, | for union.",
+          "Wrap set results in sorted() for deterministic alphabetical output."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "set-basics-ex3",
+        "title": "Permission Checker",
+        "description": "Given a set of required permissions and a user's permissions, check if the user has all required permissions (issubset), what permissions they are missing (difference), and whether they have any extra permissions beyond what is required.",
+        "starterCode": "required = {'read', 'write', 'delete'}\nuser_perms = {'read', 'write', 'admin', 'export'}\n\n# TODO: Check if user has all required permissions and print result\n# TODO: Find and print missing permissions (sorted)\n# TODO: Find and print extra permissions (sorted)\n",
+        "solution": "required = {'read', 'write', 'delete'}\nuser_perms = {'read', 'write', 'admin', 'export'}\n\nprint('Has all required:', required.issubset(user_perms))\nprint('Missing:', sorted(required - user_perms))\nprint('Extra:', sorted(user_perms - required))",
+        "expectedOutput": "Has all required: False\nMissing: ['delete']\nExtra: ['admin', 'export']",
+        "hints": [
+          "required.issubset(user_perms) checks if all required perms are in the user's set.",
+          "required - user_perms gives what the user is missing; user_perms - required gives extra ones."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "collections-module",
+    "sectionId": "dictionaries-and-sets",
+    "orderIndex": 4,
+    "title": "Collections Module",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["defaultdict", "Counter", "OrderedDict", "ChainMap", "collections module"],
+    "content": {
+      "explanation": "The collections module in Python's standard library provides specialized container data types that extend the functionality of built-in dicts, lists, and tuples. These are purpose-built for common programming patterns and can make your code more concise, readable, and efficient. The most commonly used classes are defaultdict, Counter, OrderedDict, and ChainMap.\n\ndefaultdict is a subclass of dict that calls a factory function to supply missing values. Instead of raising KeyError when you access a missing key, it automatically creates the key with a default value produced by the factory. Common factories include int (defaults to 0, perfect for counting), list (defaults to empty list, perfect for grouping), and set (defaults to empty set, perfect for unique grouping). This eliminates the need for setdefault() or explicit key existence checks.\n\nCounter is a specialized dict subclass for counting hashable objects. Pass it any iterable, and it creates a dictionary where keys are elements and values are their counts. Counter provides useful methods like most_common(n) to get the n most frequent elements, and supports arithmetic operations (+, -, &, |) between Counters. It is the go-to tool for frequency analysis, histogram building, and vote counting.\n\nOrderedDict was historically important because regular dicts did not preserve insertion order before Python 3.7. While regular dicts now maintain insertion order, OrderedDict still has unique features: it supports move_to_end() to reposition keys, its equality comparison considers order (unlike regular dicts), and it provides a pop(last=True/False) method for LIFO/FIFO operations. It remains relevant in specific use cases like LRU cache implementations.\n\nChainMap groups multiple dictionaries into a single view. Lookups search through the maps in order, returning the first match found. This is ideal for implementing scoped configurations, layered settings (defaults -> user -> environment), or template variable resolution. Changes to a ChainMap write to the first map only, leaving the others untouched. The maps attribute provides access to the underlying list of dicts.",
+      "codeExamples": [
+        {
+          "title": "defaultdict for counting and grouping",
+          "code": "from collections import defaultdict\n\n# Counting with defaultdict(int)\nword_count = defaultdict(int)\nfor word in 'the cat sat on the mat the cat'.split():\n    word_count[word] += 1\nprint('Word counts:', dict(word_count))\n\n# Grouping with defaultdict(list)\nstudents = [('A', 'Alice'), ('B', 'Bob'), ('A', 'Charlie'), ('C', 'Diana'), ('B', 'Eve')]\ngrade_groups = defaultdict(list)\nfor grade, name in students:\n    grade_groups[grade].append(name)\nprint('Groups:', dict(grade_groups))\n\n# Unique grouping with defaultdict(set)\ntags = [('python', 'tutorial'), ('python', 'guide'), ('java', 'tutorial'), ('python', 'tutorial')]\ntag_types = defaultdict(set)\nfor lang, content_type in tags:\n    tag_types[lang].add(content_type)\nprint('Tags:', {k: sorted(v) for k, v in tag_types.items()})",
+          "output": "Word counts: {'the': 3, 'cat': 2, 'sat': 1, 'on': 1, 'mat': 1}\nGroups: {'A': ['Alice', 'Charlie'], 'B': ['Bob', 'Eve'], 'C': ['Diana']}\nTags: {'python': ['guide', 'tutorial'], 'java': ['tutorial']}",
+          "explanation": "defaultdict(int) starts missing keys at 0, perfect for counting. defaultdict(list) starts with empty lists for grouping. defaultdict(set) starts with empty sets for unique grouping. Convert to dict() for clean printing."
+        },
+        {
+          "title": "Counter for frequency analysis",
+          "code": "from collections import Counter\n\n# Count from a string\nletters = Counter('abracadabra')\nprint('Letter counts:', letters)\nprint('Most common 3:', letters.most_common(3))\n\n# Count from a list\ncolors = ['red', 'blue', 'red', 'green', 'blue', 'red']\ncolor_count = Counter(colors)\nprint('\\nColor counts:', color_count)\nprint('Red count:', color_count['red'])\nprint('Missing key:', color_count['yellow'])  # returns 0, not KeyError\n\n# Arithmetic with Counters\nshop1 = Counter(apple=3, banana=2)\nshop2 = Counter(apple=1, banana=4, cherry=5)\ncombined = shop1 + shop2\nprint('\\nCombined:', combined)\n\ndiff = shop2 - shop1\nprint('Difference:', diff)",
+          "output": "Letter counts: Counter({'a': 5, 'b': 2, 'r': 2, 'c': 1, 'd': 1})\nMost common 3: [('a', 5), ('b', 2), ('r', 2)]\n\nColor counts: Counter({'red': 3, 'blue': 2, 'green': 1})\nRed count: 3\nMissing key: 0\n\nCombined: Counter({'banana': 6, 'cherry': 5, 'apple': 4})\nDifference: Counter({'cherry': 5, 'banana': 2})",
+          "explanation": "Counter counts hashable objects from any iterable. most_common(n) returns the n most frequent as (element, count) tuples. Accessing a missing key returns 0 instead of raising KeyError. Counter arithmetic (+, -) combines or subtracts counts; negative counts are dropped by subtraction."
+        },
+        {
+          "title": "OrderedDict features",
+          "code": "from collections import OrderedDict\n\n# OrderedDict preserves insertion order (like regular dict in 3.7+)\nod = OrderedDict()\nod['banana'] = 3\nod['apple'] = 1\nod['cherry'] = 2\nprint('OrderedDict:', od)\n\n# move_to_end()\nod.move_to_end('banana')\nprint('After move banana to end:', od)\nod.move_to_end('cherry', last=False)  # move to beginning\nprint('After move cherry to start:', od)\n\n# OrderedDict equality cares about order\nod1 = OrderedDict([('a', 1), ('b', 2)])\nod2 = OrderedDict([('b', 2), ('a', 1)])\nprint('\\nOrderedDicts equal:', od1 == od2)\n\n# Regular dicts ignore order in equality\nd1 = {'a': 1, 'b': 2}\nd2 = {'b': 2, 'a': 1}\nprint('Regular dicts equal:', d1 == d2)",
+          "output": "OrderedDict: OrderedDict([('banana', 3), ('apple', 1), ('cherry', 2)])\nAfter move banana to end: OrderedDict([('apple', 1), ('cherry', 2), ('banana', 3)])\nAfter move cherry to start: OrderedDict([('cherry', 2), ('apple', 1), ('banana', 3)])\n\nOrderedDicts equal: False\nRegular dicts equal: True",
+          "explanation": "OrderedDict's key advantage over regular dicts is move_to_end() for reordering, and order-sensitive equality comparison. Regular dict equality ignores order. OrderedDict is useful for LRU caches and ordered configurations."
+        },
+        {
+          "title": "ChainMap for layered lookups",
+          "code": "from collections import ChainMap\n\n# Layered configuration\ndefaults = {'color': 'blue', 'size': 'medium', 'debug': False}\nuser_settings = {'color': 'red', 'font': 'Arial'}\nenv_overrides = {'debug': True}\n\nconfig = ChainMap(env_overrides, user_settings, defaults)\nprint('color:', config['color'])       # from user_settings\nprint('size:', config['size'])         # from defaults\nprint('debug:', config['debug'])       # from env_overrides\nprint('font:', config['font'])         # from user_settings\n\n# Keys from all maps\nprint('\\nAll keys:', sorted(config.keys()))\n\n# New child scope\nlocal = config.new_child({'color': 'green', 'temp': True})\nprint('\\nLocal color:', local['color'])\nprint('Local debug:', local['debug'])\nprint('Maps count:', len(local.maps))",
+          "output": "color: red\nsize: medium\ndebug: True\nfont: Arial\n\nAll keys: ['color', 'debug', 'font', 'size']\n\nLocal color: green\nLocal debug: True\nMaps count: 4",
+          "explanation": "ChainMap searches maps in order, returning the first match. This creates a layered lookup: env_overrides -> user_settings -> defaults. new_child() adds a new scope on top. Writes only affect the first map, preserving the rest."
+        }
+      ],
+      "notes": [
+        "defaultdict's factory function is called with no arguments. Use lambda: custom_value for arbitrary defaults.",
+        "Counter.most_common() without an argument returns all elements sorted by count.",
+        "ChainMap does not merge dicts; it creates a view over them. Changes to underlying dicts are reflected immediately.",
+        "All collections classes are importable from the collections module: from collections import defaultdict, Counter, etc."
+      ],
+      "commonPitfalls": [
+        "Forgetting that defaultdict auto-creates keys on access. Checking 'key in defaultdict' does not create the key, but defaultdict[missing_key] does.",
+        "Assuming Counter subtraction can produce negative counts. Subtraction drops zero and negative counts. Use subtract() method if you need to keep them."
+      ],
+      "interviewTips": [
+        "Counter is a frequent interview tool. Know most_common(), arithmetic operations, and that missing keys return 0.",
+        "defaultdict vs setdefault(): defaultdict is cleaner when the pattern is used throughout; setdefault() is better for occasional use.",
+        "Be able to explain a real use case for ChainMap, such as layered configuration or variable scoping in template engines."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "collections-ex1",
+        "title": "Character Frequency with Counter",
+        "description": "Use Counter to count the frequency of each character in a string (ignoring spaces). Print the Counter object and the 3 most common characters.",
+        "starterCode": "from collections import Counter\n\ntext = 'hello world hello python'\n\n# TODO: Remove spaces and create a Counter of characters\n# TODO: Print the Counter\n# TODO: Print the 3 most common characters\n",
+        "solution": "from collections import Counter\n\ntext = 'hello world hello python'\n\nchar_count = Counter(text.replace(' ', ''))\nprint(char_count)\nprint(char_count.most_common(3))",
+        "expectedOutput": "Counter({'l': 5, 'o': 4, 'h': 3, 'e': 2, 'w': 1, 'r': 1, 'd': 1, 'p': 1, 'y': 1, 't': 1, 'n': 1})\n[('l', 5), ('o', 4), ('h', 3)]",
+        "hints": [
+          "Use text.replace(' ', '') to remove spaces before counting.",
+          "most_common(3) returns a list of the 3 most frequent (element, count) tuples."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "collections-ex2",
+        "title": "Group Words by Length with defaultdict",
+        "description": "Use defaultdict(list) to group a list of words by their length. Print each length group sorted alphabetically.",
+        "starterCode": "from collections import defaultdict\n\nwords = ['cat', 'hi', 'dog', 'an', 'bird', 'fish', 'ox', 'lion', 'bee']\n\n# TODO: Create a defaultdict(list) to group words by length\n# TODO: Loop through words and append each to the group matching its length\n# TODO: Print each group as \"length <n>: [sorted words]\"\n# Print groups in order of length (2, 3, 4)\n",
+        "solution": "from collections import defaultdict\n\nwords = ['cat', 'hi', 'dog', 'an', 'bird', 'fish', 'ox', 'lion', 'bee']\n\ngroups = defaultdict(list)\nfor word in words:\n    groups[len(word)].append(word)\n\nfor length in sorted(groups.keys()):\n    print(f'length {length}: {sorted(groups[length])}')",
+        "expectedOutput": "length 2: ['an', 'hi', 'ox']\nlength 3: ['bee', 'cat', 'dog']\nlength 4: ['bird', 'fish', 'lion']",
+        "hints": [
+          "len(word) gives the length to use as the grouping key.",
+          "defaultdict(list) auto-creates an empty list for new keys, so you can directly append."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "collections-ex3",
+        "title": "Layered Config with ChainMap",
+        "description": "Create a ChainMap with three layers: environment overrides, user preferences, and defaults. Look up several config values and print them, showing which layer they come from based on priority.",
+        "starterCode": "from collections import ChainMap\n\ndefaults = {'theme': 'light', 'lang': 'en', 'timeout': 30, 'retries': 3}\nuser_prefs = {'theme': 'dark', 'lang': 'fr'}\nenv_vars = {'timeout': 10}\n\n# TODO: Create a ChainMap with env_vars highest priority, then user_prefs, then defaults\n# TODO: Print \"theme: <value>\"\n# TODO: Print \"lang: <value>\"\n# TODO: Print \"timeout: <value>\"\n# TODO: Print \"retries: <value>\"\n# TODO: Print the total number of unique keys\n",
+        "solution": "from collections import ChainMap\n\ndefaults = {'theme': 'light', 'lang': 'en', 'timeout': 30, 'retries': 3}\nuser_prefs = {'theme': 'dark', 'lang': 'fr'}\nenv_vars = {'timeout': 10}\n\nconfig = ChainMap(env_vars, user_prefs, defaults)\nprint('theme:', config['theme'])\nprint('lang:', config['lang'])\nprint('timeout:', config['timeout'])\nprint('retries:', config['retries'])\nprint('total keys:', len(config))",
+        "expectedOutput": "theme: dark\nlang: fr\ntimeout: 10\nretries: 3\ntotal keys: 4",
+        "hints": [
+          "ChainMap searches maps in the order they are provided. Put highest priority first.",
+          "len(ChainMap(...)) counts the total unique keys across all maps."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

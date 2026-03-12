@@ -1,4 +1,7 @@
 import { prisma } from "../../database/db.js";
+import { BadgeService } from "../badge/badge.service.js";
+
+const badgeService = new BadgeService();
 
 export class CareerService {
   async listCareers() {
@@ -198,12 +201,16 @@ export class CareerService {
         where: { id: existing.id },
         data: { completed: !existing.completed },
       });
+      if (updated.completed) {
+        badgeService.checkAndAwardBadges(studentId, "career_complete", { careerId: skill.phase.careerId }).catch(() => {});
+      }
       return { skillId, completed: updated.completed };
     }
 
     const created = await prisma.studentSkillProgress.create({
       data: { studentId, skillId, completed: true },
     });
+    badgeService.checkAndAwardBadges(studentId, "career_complete", { careerId: skill.phase.careerId }).catch(() => {});
     return { skillId, completed: created.completed };
   }
 

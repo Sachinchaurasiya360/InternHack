@@ -1,0 +1,262 @@
+[
+  {
+    "id": "mongodb-with-mongoose",
+    "sectionId": "databases",
+    "orderIndex": 0,
+    "title": "MongoDB with Mongoose",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["MongoDB", "Mongoose", "schemas", "models", "CRUD", "validation", "virtuals", "middleware"],
+    "content": {
+      "explanation": "MongoDB is a document-oriented NoSQL database that stores data as flexible JSON-like documents (BSON). Unlike relational databases with rigid table schemas, MongoDB collections can hold documents with varying structures. This flexibility makes it popular for rapid prototyping, content management systems, and applications where data structures evolve frequently. However, this flexibility can also lead to inconsistent data if not managed carefully.\n\nMongoose is the most popular ODM (Object Document Mapper) for MongoDB in Node.js. It provides a schema-based solution that adds structure, validation, and convenience methods on top of MongoDB's native driver. With Mongoose, you define a schema that specifies the fields, types, defaults, and validation rules for your documents. The schema is then compiled into a model — a constructor function that creates and queries documents in a specific collection.\n\nConnecting to MongoDB with Mongoose is straightforward. You call `mongoose.connect()` with a connection string, and Mongoose handles connection pooling, reconnection, and buffering commands until the connection is ready. In production, you should handle connection errors, use environment variables for the connection string, and configure options like connection timeouts and replica sets.\n\nCRUD operations in Mongoose are intuitive. You create documents with `Model.create()` or `new Model().save()`, read with `Model.find()`, `Model.findOne()`, or `Model.findById()`, update with `Model.findByIdAndUpdate()` or `Model.updateMany()`, and delete with `Model.findByIdAndDelete()` or `Model.deleteMany()`. Mongoose also supports powerful query builders with chaining: `User.find({ age: { $gte: 18 } }).sort('-createdAt').limit(10).select('name email')`.\n\nMongoose validation runs automatically before saving a document. Built-in validators include `required`, `min/max` (for numbers), `minlength/maxlength` (for strings), and `enum` (for allowed values). You can also define custom validators with functions. Schema middleware (pre/post hooks) lets you run logic before or after certain operations — the most common being a pre-save hook to hash passwords before storing them.",
+      "codeExamples": [
+        {
+          "title": "Defining Schemas and Models",
+          "code": "const mongoose = require('mongoose');\n\n// Define a schema\nconst userSchema = new mongoose.Schema({\n  name: {\n    type: String,\n    required: [true, 'Name is required'],\n    trim: true,\n    minlength: [2, 'Name must be at least 2 characters']\n  },\n  email: {\n    type: String,\n    required: true,\n    unique: true,\n    lowercase: true,\n    match: [/^\\S+@\\S+\\.\\S+$/, 'Invalid email format']\n  },\n  age: {\n    type: Number,\n    min: [0, 'Age cannot be negative'],\n    max: 150\n  },\n  role: {\n    type: String,\n    enum: ['student', 'recruiter', 'admin'],\n    default: 'student'\n  },\n  skills: [String],\n  isActive: { type: Boolean, default: true }\n}, {\n  timestamps: true // adds createdAt and updatedAt\n});\n\n// Add a virtual (computed property, not stored in DB)\nuserSchema.virtual('displayName').get(function() {\n  return `${this.name} (${this.role})`;\n});\n\n// Compile schema into a model\nconst User = mongoose.model('User', userSchema);\n\nconsole.log('Schema fields:', Object.keys(userSchema.paths));\nconsole.log('Model name:', User.modelName);",
+          "output": "Schema fields: [ 'name', 'email', 'age', 'role', 'skills', 'isActive', '_id', 'createdAt', 'updatedAt', '__v' ]\nModel name: User",
+          "explanation": "The schema defines each field's type, validation rules, and defaults. The timestamps option automatically manages createdAt/updatedAt fields. Virtuals are computed properties that exist on documents but are not persisted to the database."
+        },
+        {
+          "title": "CRUD Operations with Mongoose",
+          "code": "const mongoose = require('mongoose');\n\n// Assuming User model from previous example\n\nasync function crudExample() {\n  // Connect\n  await mongoose.connect('mongodb://localhost:27017/myapp');\n  console.log('Connected to MongoDB');\n\n  // CREATE\n  const user = await User.create({\n    name: 'Alice',\n    email: 'alice@example.com',\n    age: 25,\n    skills: ['JavaScript', 'Node.js']\n  });\n  console.log('Created:', user.name, user._id);\n\n  // READ\n  const found = await User.findById(user._id);\n  console.log('Found:', found.name);\n\n  const students = await User.find({ role: 'student' })\n    .sort('-createdAt')\n    .limit(10)\n    .select('name email');\n  console.log('Students:', students.length);\n\n  // UPDATE\n  const updated = await User.findByIdAndUpdate(\n    user._id,\n    { $push: { skills: 'Express' }, age: 26 },\n    { new: true, runValidators: true }\n  );\n  console.log('Updated skills:', updated.skills);\n\n  // DELETE\n  await User.findByIdAndDelete(user._id);\n  console.log('User deleted');\n\n  await mongoose.disconnect();\n}\n\nconsole.log('CRUD example function defined');\n// crudExample().catch(console.error);",
+          "output": "CRUD example function defined",
+          "explanation": "This shows all four CRUD operations. Note the options in findByIdAndUpdate: { new: true } returns the updated document instead of the original, and { runValidators: true } applies schema validation on updates (Mongoose skips validation on updates by default)."
+        },
+        {
+          "title": "Schema Middleware (Hooks)",
+          "code": "const mongoose = require('mongoose');\nconst bcrypt = require('bcryptjs');\n\nconst userSchema = new mongoose.Schema({\n  email: { type: String, required: true },\n  password: { type: String, required: true, minlength: 8 }\n});\n\n// Pre-save hook: hash password before storing\nuserSchema.pre('save', async function(next) {\n  // Only hash if password was modified\n  if (!this.isModified('password')) return next();\n\n  this.password = await bcrypt.hash(this.password, 10);\n  console.log('Password hashed before save');\n  next();\n});\n\n// Instance method: compare passwords\nuserSchema.methods.comparePassword = async function(candidatePassword) {\n  return bcrypt.compare(candidatePassword, this.password);\n};\n\n// Static method: find by email\nuserSchema.statics.findByEmail = function(email) {\n  return this.findOne({ email: email.toLowerCase() });\n};\n\n// Post-save hook: log after successful save\nuserSchema.post('save', function(doc) {\n  console.log('User saved:', doc.email);\n});\n\nconst User = mongoose.model('User', userSchema);\n\nconsole.log('Schema with hooks and methods defined');\nconsole.log('Instance methods:', Object.keys(userSchema.methods));\nconsole.log('Static methods:', Object.keys(userSchema.statics));",
+          "output": "Schema with hooks and methods defined\nInstance methods: [ 'comparePassword' ]\nStatic methods: [ 'findByEmail' ]",
+          "explanation": "Pre-save middleware runs before each save, perfect for password hashing. Instance methods (schema.methods) are available on document instances. Static methods (schema.statics) are available on the model itself. The isModified check prevents re-hashing an already hashed password on updates."
+        }
+      ],
+      "notes": [
+        "Always use { new: true, runValidators: true } with findByIdAndUpdate to get the updated document and enforce validation.",
+        "Mongoose buffers operations until connected — you can define models and queries before calling mongoose.connect().",
+        "Use .lean() on queries when you only need plain objects (not Mongoose documents) for better performance.",
+        "Indexes should be defined in the schema for frequently queried fields: `email: { type: String, index: true }`."
+      ],
+      "commonPitfalls": [
+        "Forgetting { runValidators: true } on update operations — Mongoose does not validate updates by default.",
+        "Not handling the unique constraint error (code 11000) when inserting duplicate values for unique fields.",
+        "Using arrow functions for schema middleware and methods — they do not have their own 'this' context, which Mongoose relies on.",
+        "Not calling next() in pre-hooks — this causes the operation to hang indefinitely."
+      ],
+      "interviewTips": [
+        "Explain the difference between SQL (relational, tables, strict schema) and NoSQL (document-based, flexible schema).",
+        "Know when MongoDB is a good fit (flexible data, rapid prototyping) vs when it is not (complex joins, strict consistency).",
+        "Be able to describe Mongoose middleware and why pre-save hooks are commonly used for password hashing.",
+        "Understand MongoDB operators like $push, $pull, $inc, $set and when to use them."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "mongodb-with-mongoose-ex1",
+        "title": "Define a Blog Post Schema",
+        "description": "Create a Mongoose schema for a blog post with: title (required string, min 5 chars), content (required string), author (required string), tags (array of strings), isPublished (boolean, default false), views (number, default 0, min 0). Add the timestamps option. Compile it into a model called 'Post'.",
+        "starterCode": "const mongoose = require('mongoose');\n\n// Define postSchema with the fields described above\n// Compile into a Post model\n\n// Your code here\n\n// Test:\n// console.log('Model:', Post.modelName);\n// console.log('Fields:', Object.keys(postSchema.paths));",
+        "solution": "const mongoose = require('mongoose');\n\nconst postSchema = new mongoose.Schema({\n  title: { type: String, required: true, minlength: 5 },\n  content: { type: String, required: true },\n  author: { type: String, required: true },\n  tags: [String],\n  isPublished: { type: Boolean, default: false },\n  views: { type: Number, default: 0, min: 0 }\n}, { timestamps: true });\n\nconst Post = mongoose.model('Post', postSchema);\n\nconsole.log('Model:', Post.modelName);\nconsole.log('Fields:', Object.keys(postSchema.paths).filter(p => !p.startsWith('_')));",
+        "expectedOutput": "Model: Post\nFields: [ 'title', 'content', 'author', 'tags', 'isPublished', 'views', 'createdAt', 'updatedAt' ]",
+        "hints": [
+          "Use [String] for an array of strings field",
+          "Pass { timestamps: true } as the second argument to mongoose.Schema"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "postgresql-with-pg",
+    "sectionId": "databases",
+    "orderIndex": 1,
+    "title": "PostgreSQL with pg",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["PostgreSQL", "pg", "connection pool", "parameterized queries", "transactions", "SQL injection prevention"],
+    "content": {
+      "explanation": "PostgreSQL is one of the most powerful and reliable open-source relational databases. It supports advanced features like JSONB columns, full-text search, window functions, and Common Table Expressions (CTEs). For Node.js applications, the `pg` package (node-postgres) provides a low-level, high-performance client for interacting with PostgreSQL directly using SQL queries.\n\nConnection pooling is essential for production applications. Instead of opening a new database connection for every request (which is slow and resource-intensive), a connection pool maintains a set of reusable connections. The `pg.Pool` class manages this automatically — when you call pool.query(), it checks out a connection from the pool, executes the query, and returns the connection for reuse. A typical pool has 10-20 connections, which can handle hundreds of concurrent requests.\n\nParameterized queries are the single most important security practice when working with SQL databases. Instead of concatenating user input into SQL strings (which opens the door to SQL injection), you use placeholders ($1, $2, etc.) and pass values separately. The pg library handles escaping and type conversion, making SQL injection impossible when parameterized queries are used consistently.\n\nTransactions are crucial when multiple database operations must succeed or fail as a unit. For example, transferring money between accounts requires debiting one account and crediting another — if one fails, both must be rolled back. With the pg library, you acquire a client from the pool, run BEGIN, execute your queries, and then either COMMIT (if all succeed) or ROLLBACK (if any fail). The try/catch/finally pattern ensures proper cleanup.\n\nWhile ORMs like Prisma and Sequelize are popular for their convenience, using the pg library directly gives you full control over your SQL. This is valuable for complex queries with joins, subqueries, aggregations, and database-specific features that ORMs may not support or may generate inefficiently. Many production applications use an ORM for simple CRUD and raw SQL for complex reporting queries.",
+      "codeExamples": [
+        {
+          "title": "Connection Pool and Basic Queries",
+          "code": "const { Pool } = require('pg');\n\n// Create a connection pool\nconst pool = new Pool({\n  host: 'localhost',\n  port: 5432,\n  database: 'myapp',\n  user: 'postgres',\n  password: 'secret',\n  max: 20, // Maximum pool size\n  idleTimeoutMillis: 30000, // Close idle connections after 30s\n  connectionTimeoutMillis: 2000 // Fail if no connection in 2s\n});\n\n// Simple query using the pool\nasync function getUsers() {\n  const result = await pool.query('SELECT id, name, email FROM users LIMIT 5');\n  console.log('Rows:', result.rows);\n  console.log('Row count:', result.rowCount);\n  return result.rows;\n}\n\n// Parameterized query (prevents SQL injection)\nasync function getUserByEmail(email) {\n  const result = await pool.query(\n    'SELECT id, name, email FROM users WHERE email = $1',\n    [email]\n  );\n  return result.rows[0] || null;\n}\n\n// Insert with RETURNING\nasync function createUser(name, email) {\n  const result = await pool.query(\n    'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id, name, email',\n    [name, email]\n  );\n  console.log('Created user:', result.rows[0]);\n  return result.rows[0];\n}\n\nconsole.log('Pool created with max', pool.options.max, 'connections');\nconsole.log('Query functions defined');",
+          "output": "Pool created with max 20 connections\nQuery functions defined",
+          "explanation": "The Pool manages connections automatically. Parameterized queries use $1, $2 placeholders with values in an array. The RETURNING clause in INSERT returns the newly created row, eliminating the need for a separate SELECT query."
+        },
+        {
+          "title": "Transactions with Error Handling",
+          "code": "const { Pool } = require('pg');\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\n\nasync function transferFunds(fromId, toId, amount) {\n  // Get a dedicated client from the pool\n  const client = await pool.connect();\n\n  try {\n    await client.query('BEGIN');\n\n    // Debit from sender\n    const debitResult = await client.query(\n      'UPDATE accounts SET balance = balance - $1 WHERE id = $2 AND balance >= $1 RETURNING balance',\n      [amount, fromId]\n    );\n\n    if (debitResult.rowCount === 0) {\n      throw new Error('Insufficient funds or account not found');\n    }\n\n    // Credit to receiver\n    const creditResult = await client.query(\n      'UPDATE accounts SET balance = balance + $1 WHERE id = $2 RETURNING balance',\n      [amount, toId]\n    );\n\n    if (creditResult.rowCount === 0) {\n      throw new Error('Recipient account not found');\n    }\n\n    // Record the transaction\n    await client.query(\n      'INSERT INTO transfers (from_id, to_id, amount) VALUES ($1, $2, $3)',\n      [fromId, toId, amount]\n    );\n\n    await client.query('COMMIT');\n    console.log('Transfer successful:', amount, 'from', fromId, 'to', toId);\n    return { success: true };\n\n  } catch (error) {\n    await client.query('ROLLBACK');\n    console.log('Transfer rolled back:', error.message);\n    return { success: false, error: error.message };\n\n  } finally {\n    client.release(); // Return client to pool\n  }\n}\n\nconsole.log('transferFunds function defined');\nconsole.log('Uses BEGIN/COMMIT/ROLLBACK pattern');",
+          "output": "transferFunds function defined\nUses BEGIN/COMMIT/ROLLBACK pattern",
+          "explanation": "Transactions use a dedicated client (not the pool directly) to ensure all queries run on the same connection. BEGIN starts the transaction, COMMIT saves all changes, ROLLBACK undoes everything if any step fails. The finally block always releases the client back to the pool."
+        },
+        {
+          "title": "Using pg in Express Routes",
+          "code": "const express = require('express');\nconst { Pool } = require('pg');\n\nconst pool = new Pool({ connectionString: process.env.DATABASE_URL });\nconst app = express();\napp.use(express.json());\n\n// GET all users with optional search\napp.get('/api/users', async (req, res) => {\n  try {\n    const { search, limit = 20, offset = 0 } = req.query;\n    let query = 'SELECT id, name, email, created_at FROM users';\n    const params = [];\n\n    if (search) {\n      query += ' WHERE name ILIKE $1 OR email ILIKE $1';\n      params.push(`%${search}%`);\n    }\n\n    query += ` ORDER BY created_at DESC LIMIT $${params.length + 1} OFFSET $${params.length + 2}`;\n    params.push(limit, offset);\n\n    const result = await pool.query(query, params);\n    res.json({ users: result.rows, count: result.rowCount });\n  } catch (error) {\n    console.error('Query error:', error.message);\n    res.status(500).json({ error: 'Database query failed' });\n  }\n});\n\n// POST create user\napp.post('/api/users', async (req, res) => {\n  try {\n    const { name, email } = req.body;\n    const result = await pool.query(\n      'INSERT INTO users (name, email) VALUES ($1, $2) RETURNING *',\n      [name, email]\n    );\n    res.status(201).json(result.rows[0]);\n  } catch (error) {\n    if (error.code === '23505') { // Unique violation\n      return res.status(409).json({ error: 'Email already exists' });\n    }\n    res.status(500).json({ error: 'Failed to create user' });\n  }\n});\n\nconsole.log('Express routes with pg configured');",
+          "output": "Express routes with pg configured",
+          "explanation": "This shows realistic Express routes using pg. The GET route demonstrates dynamic query building with parameterized values for search, pagination. The POST route handles the PostgreSQL unique constraint violation error (code 23505) specifically."
+        }
+      ],
+      "notes": [
+        "Always use parameterized queries ($1, $2) — never concatenate user input into SQL strings.",
+        "Use pool.query() for single queries and pool.connect() for transactions that need multiple queries on the same connection.",
+        "PostgreSQL error code '23505' indicates a unique constraint violation — handle it to give users meaningful error messages.",
+        "Use RETURNING * in INSERT/UPDATE/DELETE to get the affected rows without a separate SELECT query."
+      ],
+      "commonPitfalls": [
+        "Forgetting client.release() after pool.connect() — leaked connections exhaust the pool and freeze the app.",
+        "String-concatenating user input into SQL queries — this is the number one cause of SQL injection attacks.",
+        "Using pool.query() for transactions — each call might use a different connection, breaking transaction isolation.",
+        "Not handling connection errors on pool creation — the pool does not throw until you first try to query."
+      ],
+      "interviewTips": [
+        "Explain SQL injection and how parameterized queries prevent it — show the difference between string concatenation and $1 placeholders.",
+        "Know what ACID means (Atomicity, Consistency, Isolation, Durability) and how transactions provide it.",
+        "Understand connection pooling: why it exists, how it works, and the consequences of pool exhaustion.",
+        "Be able to compare PostgreSQL (relational, ACID, complex queries) vs MongoDB (document, flexible schema, horizontal scaling)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "postgresql-with-pg-ex1",
+        "title": "Safe Query Builder",
+        "description": "Write a function `findUsers(pool, filters)` where filters is an object with optional properties: name (string), minAge (number), role (string). Build a parameterized SELECT query dynamically — only add WHERE conditions for properties that exist. Return the query result rows. Never concatenate values into the SQL string.",
+        "starterCode": "// Write findUsers(pool, filters) that builds a parameterized query\n// filters can have: { name, minAge, role }\n// Only include WHERE conditions for provided filters\n// Return result.rows\n\n// Your code here\n\n// Example:\n// findUsers(pool, { name: 'Alice', minAge: 18 })\n// Should generate: SELECT * FROM users WHERE name ILIKE $1 AND age >= $2\n// With params: ['%Alice%', 18]",
+        "solution": "async function findUsers(pool, filters = {}) {\n  const conditions = [];\n  const params = [];\n\n  if (filters.name) {\n    params.push(`%${filters.name}%`);\n    conditions.push(`name ILIKE $${params.length}`);\n  }\n  if (filters.minAge !== undefined) {\n    params.push(filters.minAge);\n    conditions.push(`age >= $${params.length}`);\n  }\n  if (filters.role) {\n    params.push(filters.role);\n    conditions.push(`role = $${params.length}`);\n  }\n\n  let query = 'SELECT * FROM users';\n  if (conditions.length > 0) {\n    query += ' WHERE ' + conditions.join(' AND ');\n  }\n\n  console.log('Query:', query);\n  console.log('Params:', params);\n  // In real code: return (await pool.query(query, params)).rows;\n  return { query, params };\n}\n\nfindUsers(null, { name: 'Alice', minAge: 18 });\nfindUsers(null, { role: 'admin' });\nfindUsers(null, {});",
+        "expectedOutput": "Query: SELECT * FROM users WHERE name ILIKE $1 AND age >= $2\nParams: [ '%Alice%', 18 ]\nQuery: SELECT * FROM users WHERE role = $1\nParams: [ 'admin' ]\nQuery: SELECT * FROM users\nParams: []",
+        "hints": [
+          "Track the parameter index using the params array length: $${params.length}",
+          "Build conditions in an array and join with ' AND ' to construct the WHERE clause"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "prisma-orm",
+    "sectionId": "databases",
+    "orderIndex": 2,
+    "title": "Prisma ORM",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Prisma", "schema", "migrations", "Prisma Client", "CRUD", "relations", "type safety"],
+    "content": {
+      "explanation": "Prisma is a modern, type-safe ORM (Object-Relational Mapper) for Node.js and TypeScript. Unlike traditional ORMs that map classes to tables, Prisma uses a declarative schema language to define your database models, and it generates a fully typed client that provides auto-completion and compile-time error checking. This 'schema-first' approach means your database structure is defined in one place (the schema.prisma file), and everything else — types, client, and migrations — is generated from it.\n\nThe Prisma schema file (schema.prisma) is the single source of truth for your database. It defines the data source (which database to connect to), the generator (which client to produce), and your models (which correspond to database tables). Each model lists its fields with types, attributes like @id, @unique, @default, and @relation. When you change the schema, you create a migration with `prisma migrate dev`, which generates SQL migration files and applies them to your database.\n\nPrisma Client is an auto-generated, type-safe query builder. After running `prisma generate`, you import PrismaClient and use it to perform CRUD operations. Every query is fully typed — your IDE knows exactly which fields exist on each model, what types they are, and which relations are available. This catches errors at compile time instead of runtime, which is a massive productivity and reliability boost compared to raw SQL or loosely typed ORMs.\n\nRelations in Prisma are defined using the @relation attribute. A one-to-many relation (e.g., a user has many posts) is defined by adding a field on both models: the 'many' side gets an array field and the 'one' side gets a scalar field with a foreign key. Many-to-many relations can be implicit (Prisma creates the join table) or explicit (you define it). When querying, you use the `include` option to eagerly load related data or `select` to pick specific fields.\n\nPrisma's migration system tracks changes to your schema over time. Each migration is a timestamped SQL file stored in the `prisma/migrations` directory. In development, `prisma migrate dev` creates and applies migrations interactively. In production, `prisma migrate deploy` applies pending migrations without prompting. This ensures your database schema evolves safely and reproducibly across all environments.",
+      "codeExamples": [
+        {
+          "title": "Prisma Schema Definition",
+          "code": "// prisma/schema.prisma\n\n// datasource db {\n//   provider = \"postgresql\"\n//   url      = env(\"DATABASE_URL\")\n// }\n\n// generator client {\n//   provider = \"prisma-client-js\"\n// }\n\n// model User {\n//   id        Int       @id @default(autoincrement())\n//   email     String    @unique\n//   name      String\n//   role      Role      @default(STUDENT)\n//   posts     Post[]\n//   createdAt DateTime  @default(now())\n//   updatedAt DateTime  @updatedAt\n// }\n\n// model Post {\n//   id        Int      @id @default(autoincrement())\n//   title     String\n//   content   String?\n//   published Boolean  @default(false)\n//   author    User     @relation(fields: [authorId], references: [id])\n//   authorId  Int\n//   tags      String[]\n//   createdAt DateTime @default(now())\n// }\n\n// enum Role {\n//   STUDENT\n//   RECRUITER\n//   ADMIN\n// }\n\nconsole.log('Prisma schema defines:');\nconsole.log('- Data source (PostgreSQL)');\nconsole.log('- Models with typed fields and relations');\nconsole.log('- Enums for constrained values');\nconsole.log('- Automatic timestamps with @default(now()) and @updatedAt');",
+          "output": "Prisma schema defines:\n- Data source (PostgreSQL)\n- Models with typed fields and relations\n- Enums for constrained values\n- Automatic timestamps with @default(now()) and @updatedAt",
+          "explanation": "The schema defines two models with a one-to-many relation (User has many Posts). Each field has a type and optional attributes. The ? after String makes it nullable. String[] is a PostgreSQL array type. The @relation attribute defines the foreign key relationship."
+        },
+        {
+          "title": "CRUD Operations with Prisma Client",
+          "code": "const { PrismaClient } = require('@prisma/client');\nconst prisma = new PrismaClient();\n\nasync function crudExample() {\n  // CREATE\n  const user = await prisma.user.create({\n    data: {\n      email: 'alice@example.com',\n      name: 'Alice',\n      role: 'STUDENT'\n    }\n  });\n  console.log('Created:', user.name, user.id);\n\n  // CREATE with nested relation\n  const userWithPost = await prisma.user.create({\n    data: {\n      email: 'bob@example.com',\n      name: 'Bob',\n      posts: {\n        create: [\n          { title: 'First Post', content: 'Hello world' },\n          { title: 'Second Post', content: 'Prisma is great', published: true }\n        ]\n      }\n    },\n    include: { posts: true }\n  });\n  console.log('Bob has', userWithPost.posts.length, 'posts');\n\n  // READ with filtering and pagination\n  const users = await prisma.user.findMany({\n    where: { role: 'STUDENT' },\n    orderBy: { createdAt: 'desc' },\n    take: 10,\n    skip: 0,\n    select: { id: true, name: true, email: true }\n  });\n  console.log('Found', users.length, 'students');\n\n  // UPDATE\n  const updated = await prisma.user.update({\n    where: { email: 'alice@example.com' },\n    data: { name: 'Alice Smith', role: 'RECRUITER' }\n  });\n  console.log('Updated:', updated.name, updated.role);\n\n  // DELETE\n  await prisma.user.delete({ where: { email: 'alice@example.com' } });\n  console.log('User deleted');\n}\n\nconsole.log('Prisma CRUD functions defined');\n// crudExample().catch(console.error).finally(() => prisma.$disconnect());",
+          "output": "Prisma CRUD functions defined",
+          "explanation": "Prisma Client provides intuitive methods for every operation. The nested create inside user.create automatically sets the foreign key. The include option eagerly loads relations. The select option returns only specified fields. All operations are fully type-safe."
+        },
+        {
+          "title": "Advanced Queries and Transactions",
+          "code": "const { PrismaClient } = require('@prisma/client');\nconst prisma = new PrismaClient();\n\n// Complex filtering\nasync function searchPosts(query) {\n  return prisma.post.findMany({\n    where: {\n      OR: [\n        { title: { contains: query, mode: 'insensitive' } },\n        { content: { contains: query, mode: 'insensitive' } }\n      ],\n      published: true\n    },\n    include: {\n      author: { select: { name: true, email: true } }\n    },\n    orderBy: { createdAt: 'desc' }\n  });\n}\n\n// Aggregation\nasync function getUserStats() {\n  const stats = await prisma.user.groupBy({\n    by: ['role'],\n    _count: { id: true },\n    _max: { createdAt: true }\n  });\n  console.log('Stats by role:', stats);\n  return stats;\n}\n\n// Transaction - multiple operations that must all succeed\nasync function transferPost(postId, fromUserId, toUserId) {\n  return prisma.$transaction(async (tx) => {\n    const post = await tx.post.findUnique({ where: { id: postId } });\n\n    if (!post || post.authorId !== fromUserId) {\n      throw new Error('Post not found or not owned by sender');\n    }\n\n    const updatedPost = await tx.post.update({\n      where: { id: postId },\n      data: { authorId: toUserId }\n    });\n\n    await tx.user.update({\n      where: { id: fromUserId },\n      data: { updatedAt: new Date() }\n    });\n\n    return updatedPost;\n  });\n}\n\nconsole.log('Advanced Prisma queries defined');\nconsole.log('Features: OR filters, insensitive search, groupBy, transactions');",
+          "output": "Advanced Prisma queries defined\nFeatures: OR filters, insensitive search, groupBy, transactions",
+          "explanation": "Prisma supports complex WHERE conditions with OR/AND/NOT, case-insensitive search with mode: 'insensitive', aggregation with groupBy, and interactive transactions with $transaction. The transaction callback receives a tx client — if any operation fails or you throw, all changes are rolled back."
+        }
+      ],
+      "notes": [
+        "Run `npx prisma generate` after every schema change to regenerate the client with updated types.",
+        "Use `npx prisma migrate dev` in development and `npx prisma migrate deploy` in production.",
+        "Prisma Client is a singleton — create one instance and reuse it across your application.",
+        "Use prisma.$disconnect() in serverless functions and script cleanup to properly close connections."
+      ],
+      "commonPitfalls": [
+        "Forgetting to run `prisma generate` after schema changes — the client will have stale types.",
+        "Creating multiple PrismaClient instances — each opens its own connection pool, leading to pool exhaustion.",
+        "Using include to load deeply nested relations without limits — this can fetch enormous amounts of data.",
+        "Not handling unique constraint violations (Prisma error code P2002) in create/update operations."
+      ],
+      "interviewTips": [
+        "Explain the Prisma workflow: define schema, generate client, create migrations, use type-safe queries.",
+        "Know the difference between include (eager loading) and select (field picking) and when to use each.",
+        "Understand Prisma migrations vs Mongoose's schemaless approach — tradeoffs of strict vs flexible schemas.",
+        "Be able to describe how Prisma achieves type safety and how that improves developer experience."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "prisma-orm-ex1",
+        "title": "Prisma Query Builder",
+        "description": "Write a function `getFilteredPosts(prisma, options)` that queries the Post model. Options has: published (boolean), authorId (number), search (string), page (number, default 1), pageSize (number, default 10). Build the where clause dynamically, include the author name, sort by createdAt descending, and apply pagination with skip/take.",
+        "starterCode": "// Write getFilteredPosts(prisma, options)\n// options: { published?, authorId?, search?, page?, pageSize? }\n// Return prisma.post.findMany with:\n// - Dynamic where conditions\n// - include author name\n// - orderBy createdAt desc\n// - Pagination with skip/take\n\n// Your code here",
+        "solution": "async function getFilteredPosts(prisma, options = {}) {\n  const { published, authorId, search, page = 1, pageSize = 10 } = options;\n  const where = {};\n\n  if (published !== undefined) where.published = published;\n  if (authorId !== undefined) where.authorId = authorId;\n  if (search) {\n    where.OR = [\n      { title: { contains: search, mode: 'insensitive' } },\n      { content: { contains: search, mode: 'insensitive' } }\n    ];\n  }\n\n  const posts = await prisma.post.findMany({\n    where,\n    include: { author: { select: { name: true } } },\n    orderBy: { createdAt: 'desc' },\n    skip: (page - 1) * pageSize,\n    take: pageSize\n  });\n\n  console.log('Query where:', JSON.stringify(where));\n  console.log('Page:', page, 'Size:', pageSize);\n  return posts;\n}\n\n// Demo (without actual DB)\nconsole.log('Function defined: getFilteredPosts');\nconsole.log('Supports: published, authorId, search, pagination');",
+        "expectedOutput": "Function defined: getFilteredPosts\nSupports: published, authorId, search, pagination",
+        "hints": [
+          "Build the where object conditionally — only add keys for provided options",
+          "Calculate skip as (page - 1) * pageSize for offset-based pagination"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "database-design-patterns",
+    "sectionId": "databases",
+    "orderIndex": 3,
+    "title": "Database Design Patterns",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["connection pooling", "migrations", "seeders", "environment config", "repository pattern", "soft deletes"],
+    "content": {
+      "explanation": "Good database design patterns are essential for building maintainable, scalable Node.js applications. These patterns address common challenges like managing connections efficiently, evolving your schema safely, populating initial data, and organizing your data access code. Understanding these patterns helps you build applications that are easy to develop, deploy, and maintain across different environments.\n\nConnection pooling is a fundamental pattern for database performance. Every database connection consumes server resources (memory, file descriptors), and creating connections is slow (TCP handshake, authentication). A connection pool maintains a fixed number of pre-established connections and lends them out to incoming requests. When a request finishes, the connection is returned to the pool for reuse. The pool size should match your expected concurrency — too few connections create bottlenecks, too many overwhelm the database server. A typical starting point is 5-20 connections per application instance.\n\nDatabase migrations provide version control for your schema. Instead of manually altering tables in production, you write migration files that describe each change (add column, create table, add index). Migrations run in order and are tracked by the migration tool, so each change is applied exactly once. This ensures every environment (development, staging, production) has the same schema. Both Prisma (prisma migrate) and standalone tools like knex migrations follow this approach. Always review generated migration SQL before applying to production.\n\nSeeders populate your database with initial or test data. They are separate from migrations because they handle data, not schema. Common use cases include creating admin accounts, populating lookup tables (countries, categories), and generating fake data for development. Good seeders are idempotent — running them multiple times does not create duplicates. Use upsert operations (insert or update) and check for existing records before creating new ones.\n\nEnvironment-based configuration ensures your application connects to the right database in each environment. Development, testing, staging, and production each have their own database with different connection strings, pool sizes, and logging levels. The `dotenv` package loads environment variables from .env files, while libraries like `config` or simple conditional logic select the appropriate settings. Never commit database credentials to source control — use .env files (git-ignored) and environment variables in deployment platforms.",
+      "codeExamples": [
+        {
+          "title": "Database Configuration by Environment",
+          "code": "require('dotenv').config();\n\nconst dbConfig = {\n  development: {\n    connectionString: process.env.DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/myapp_dev',\n    pool: { min: 2, max: 10 },\n    logging: true\n  },\n  test: {\n    connectionString: process.env.TEST_DATABASE_URL || 'postgresql://postgres:postgres@localhost:5432/myapp_test',\n    pool: { min: 1, max: 5 },\n    logging: false\n  },\n  production: {\n    connectionString: process.env.DATABASE_URL,\n    pool: { min: 5, max: 20 },\n    logging: false,\n    ssl: { rejectUnauthorized: false }\n  }\n};\n\nconst env = process.env.NODE_ENV || 'development';\nconst config = dbConfig[env];\n\nconsole.log('Environment:', env);\nconsole.log('Pool size:', config.pool);\nconsole.log('Logging:', config.logging);\nconsole.log('Has SSL:', !!config.ssl);",
+          "output": "Environment: development\nPool size: { min: 2, max: 10 }\nLogging: true\nHas SSL: false",
+          "explanation": "Each environment has different settings. Development uses a local database with logging enabled. Tests use a separate database with minimal connections. Production uses SSL, more connections, and reads the URL from environment variables only (no fallback)."
+        },
+        {
+          "title": "Idempotent Database Seeder",
+          "code": "const { PrismaClient } = require('@prisma/client');\nconst bcrypt = require('bcryptjs');\n\nasync function seedAdmin(prisma) {\n  const adminEmail = 'admin@myapp.com';\n\n  // Upsert: create if not exists, update if exists\n  const admin = await prisma.user.upsert({\n    where: { email: adminEmail },\n    update: { name: 'System Admin' }, // Update existing\n    create: {\n      email: adminEmail,\n      name: 'System Admin',\n      password: await bcrypt.hash('admin123', 10),\n      role: 'ADMIN'\n    }\n  });\n  console.log('Admin seeded:', admin.email, '(id:', admin.id + ')');\n}\n\nasync function seedCategories(prisma) {\n  const categories = ['Engineering', 'Design', 'Marketing', 'Sales', 'Support'];\n\n  for (const name of categories) {\n    await prisma.category.upsert({\n      where: { name },\n      update: {},\n      create: { name }\n    });\n  }\n  console.log('Categories seeded:', categories.length);\n}\n\nasync function main() {\n  const prisma = new PrismaClient();\n  try {\n    await seedAdmin(prisma);\n    await seedCategories(prisma);\n    console.log('Seeding complete');\n  } catch (error) {\n    console.error('Seeding failed:', error.message);\n  } finally {\n    await prisma.$disconnect();\n  }\n}\n\nconsole.log('Seeder functions defined');\nconsole.log('Uses upsert for idempotency');",
+          "output": "Seeder functions defined\nUses upsert for idempotency",
+          "explanation": "Upsert ensures seeders are idempotent — they can run multiple times without creating duplicates. The where clause checks for existing records, update modifies them if found, and create inserts them if not. The main function handles the connection lifecycle."
+        },
+        {
+          "title": "Repository Pattern for Data Access",
+          "code": "// Encapsulate data access logic in repository classes\nclass UserRepository {\n  constructor(prisma) {\n    this.prisma = prisma;\n  }\n\n  async findById(id) {\n    return this.prisma.user.findUnique({ where: { id } });\n  }\n\n  async findByEmail(email) {\n    return this.prisma.user.findUnique({ where: { email } });\n  }\n\n  async findAll({ page = 1, pageSize = 20, role } = {}) {\n    const where = role ? { role } : {};\n    const [users, total] = await Promise.all([\n      this.prisma.user.findMany({\n        where,\n        skip: (page - 1) * pageSize,\n        take: pageSize,\n        orderBy: { createdAt: 'desc' },\n        select: { id: true, name: true, email: true, role: true }\n      }),\n      this.prisma.user.count({ where })\n    ]);\n    return { users, total, pages: Math.ceil(total / pageSize) };\n  }\n\n  async create(data) {\n    return this.prisma.user.create({ data });\n  }\n\n  async update(id, data) {\n    return this.prisma.user.update({ where: { id }, data });\n  }\n\n  async softDelete(id) {\n    return this.prisma.user.update({\n      where: { id },\n      data: { isActive: false, deletedAt: new Date() }\n    });\n  }\n}\n\n// Usage in a service:\n// const userRepo = new UserRepository(prisma);\n// const { users, total } = await userRepo.findAll({ page: 2, role: 'STUDENT' });\n\nconsole.log('UserRepository methods:', Object.getOwnPropertyNames(UserRepository.prototype).filter(m => m !== 'constructor'));",
+          "output": "UserRepository methods: [ 'findById', 'findByEmail', 'findAll', 'create', 'update', 'softDelete' ]",
+          "explanation": "The repository pattern encapsulates all database queries for a model in one class. This keeps controllers thin, makes queries reusable, and makes it easy to switch databases or add caching. The softDelete method marks records as inactive instead of removing them — useful for data retention and audit trails."
+        }
+      ],
+      "notes": [
+        "Connection pool size should be tuned based on your server's resources and expected concurrency. Start with max: 10 and adjust.",
+        "Always make seeders idempotent using upsert or 'find-or-create' patterns.",
+        "Keep migration files in version control — they are the history of your database schema evolution.",
+        "The repository pattern is especially valuable in larger projects where the same queries are used across multiple services."
+      ],
+      "commonPitfalls": [
+        "Hardcoding database URLs in source code instead of using environment variables — credentials end up in git history.",
+        "Running migrations against production without testing them on staging first — bad migrations can cause downtime.",
+        "Creating seeders that fail when run twice due to unique constraint violations — always use upsert.",
+        "Not closing database connections in scripts and serverless functions — leads to connection pool exhaustion."
+      ],
+      "interviewTips": [
+        "Explain what database migrations are and why they are better than manually altering schemas.",
+        "Describe the repository pattern and its benefits: separation of concerns, testability, reusability.",
+        "Know how connection pooling works and why it matters for performance under load.",
+        "Discuss soft deletes vs hard deletes and when each approach is appropriate."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "database-design-patterns-ex1",
+        "title": "Build a Simple Repository",
+        "description": "Create a class `ProductRepository` with a constructor that takes a db object. Add methods: findAll() returns db.products, findById(id) returns the product with matching id, create(product) pushes to db.products with an auto-incremented id and returns it, deleteById(id) filters it out. Use an in-memory db object { products: [] } for testing.",
+        "starterCode": "// Create ProductRepository class with:\n// constructor(db) - accepts a db object\n// findAll() - returns all products\n// findById(id) - returns product by id or null\n// create(product) - adds with auto-id, returns created product\n// deleteById(id) - removes and returns true/false\n\n// Your code here\n\n// Test:\n// const db = { products: [], nextId: 1 };\n// const repo = new ProductRepository(db);\n// console.log(repo.create({ name: 'Laptop', price: 999 }));\n// console.log(repo.create({ name: 'Mouse', price: 29 }));\n// console.log(repo.findAll().length);\n// console.log(repo.findById(1).name);\n// console.log(repo.deleteById(2));",
+        "solution": "class ProductRepository {\n  constructor(db) {\n    this.db = db;\n  }\n\n  findAll() {\n    return this.db.products;\n  }\n\n  findById(id) {\n    return this.db.products.find(p => p.id === id) || null;\n  }\n\n  create(product) {\n    const newProduct = { id: this.db.nextId++, ...product };\n    this.db.products.push(newProduct);\n    return newProduct;\n  }\n\n  deleteById(id) {\n    const index = this.db.products.findIndex(p => p.id === id);\n    if (index === -1) return false;\n    this.db.products.splice(index, 1);\n    return true;\n  }\n}\n\nconst db = { products: [], nextId: 1 };\nconst repo = new ProductRepository(db);\nconsole.log(repo.create({ name: 'Laptop', price: 999 }));\nconsole.log(repo.create({ name: 'Mouse', price: 29 }));\nconsole.log('Count:', repo.findAll().length);\nconsole.log('Find:', repo.findById(1).name);\nconsole.log('Delete:', repo.deleteById(2));\nconsole.log('Count after delete:', repo.findAll().length);",
+        "expectedOutput": "{ id: 1, name: 'Laptop', price: 999 }\n{ id: 2, name: 'Mouse', price: 29 }\nCount: 2\nFind: Laptop\nDelete: true\nCount after delete: 1",
+        "hints": [
+          "Use this.db.nextId++ to auto-increment the id on each create call",
+          "Array.findIndex returns -1 if the element is not found — use splice to remove by index"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

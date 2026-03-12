@@ -1,0 +1,295 @@
+[
+  {
+    "id": "test-client-basics",
+    "sectionId": "testing-and-deployment",
+    "orderIndex": 0,
+    "title": "Test Client Basics",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Test Client", "app.test_client", "Test Requests", "Response Assertions", "Test Context"],
+    "content": {
+      "explanation": "Flask provides a built-in test client that lets you make HTTP requests to your application without running a real server. This is the foundation of testing Flask applications. The test client simulates requests, and you assert on the responses to verify your application behaves correctly.\n\nYou create a test client from your Flask application with app.test_client(). The client provides methods for every HTTP verb: client.get(), client.post(), client.put(), client.delete(), client.patch(). These methods accept the URL path, data (for form data), json (for JSON body), headers, and other parameters.\n\nThe response object from the test client contains status_code, data (raw bytes), json (parsed JSON), headers, and other properties. You use Python assertions to verify the response matches your expectations.\n\nWith the application factory pattern, you create a fresh app with test configuration for each test or test session. Test configuration typically uses an in-memory SQLite database, disables CSRF protection, and sets TESTING=True. The TESTING flag disables error catching, so exceptions propagate to the test instead of returning 500.\n\nFlask's test client does not send actual HTTP requests over the network. It calls the WSGI application directly, making tests fast and reliable. There is no need to start a server, deal with port conflicts, or handle network issues.\n\nThe test client maintains cookies between requests within the same client instance, simulating a real browser session. This lets you test login flows: POST to /login, then GET a protected page and verify access.\n\nFor testing with application context, use app.test_request_context() to push a fake request context. Inside this context, you can use request, current_app, and other context-dependent objects. Use app.app_context() when you only need the application context (for database operations without a request).",
+      "codeExamples": [
+        {
+          "title": "Basic Test Client Usage",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/')\ndef index():\n    return 'Hello, World!'\n\n@app.route('/api/status')\ndef status():\n    return {'status': 'ok', 'version': '1.0'}\n\n# Testing\ndef test_index():\n    client = app.test_client()\n    response = client.get('/')\n    assert response.status_code == 200\n    assert b'Hello, World!' in response.data\n\ndef test_status():\n    client = app.test_client()\n    response = client.get('/api/status')\n    assert response.status_code == 200\n    data = response.get_json()\n    assert data['status'] == 'ok'\n    assert data['version'] == '1.0'\n\ndef test_not_found():\n    client = app.test_client()\n    response = client.get('/nonexistent')\n    assert response.status_code == 404",
+          "explanation": "Create a test client with app.test_client(). Make requests with client.get(), client.post(), etc. Assert on status_code, data (bytes), and get_json() (parsed JSON)."
+        },
+        {
+          "title": "Testing POST Requests",
+          "code": "from flask import Flask, request, jsonify\n\napp = Flask(__name__)\n\n@app.post('/api/users')\ndef create_user():\n    data = request.get_json()\n    if not data or 'name' not in data:\n        return jsonify({'error': 'Name required'}), 400\n    return jsonify({'id': 1, 'name': data['name']}), 201\n\n# Testing\ndef test_create_user_success():\n    client = app.test_client()\n    response = client.post('/api/users',\n        json={'name': 'Alice'},\n        content_type='application/json'\n    )\n    assert response.status_code == 201\n    assert response.get_json()['name'] == 'Alice'\n\ndef test_create_user_missing_name():\n    client = app.test_client()\n    response = client.post('/api/users',\n        json={},\n        content_type='application/json'\n    )\n    assert response.status_code == 400\n    assert 'error' in response.get_json()\n\ndef test_create_user_form_data():\n    client = app.test_client()\n    response = client.post('/api/users',\n        data={'name': 'Bob'}  # Form data instead of JSON\n    )\n    # This would fail because the view expects JSON\n    assert response.status_code == 400",
+          "explanation": "Use json= parameter for JSON requests and data= for form data. Test both success and error cases. Verify status codes and response body content."
+        },
+        {
+          "title": "Testing with Authentication",
+          "code": "from flask import Flask, session, jsonify\n\napp = Flask(__name__)\napp.config['SECRET_KEY'] = 'test-secret'\n\n@app.post('/login')\ndef login():\n    data = request.get_json()\n    if data.get('password') == 'secret':\n        session['user'] = data['username']\n        return jsonify({'message': 'Logged in'})\n    return jsonify({'error': 'Invalid'}), 401\n\n@app.get('/protected')\ndef protected():\n    if 'user' not in session:\n        return jsonify({'error': 'Unauthorized'}), 401\n    return jsonify({'message': f'Hello, {session[\"user\"]}'})\n\n# Testing\ndef test_login_and_access():\n    client = app.test_client()\n\n    # Login\n    response = client.post('/login', json={\n        'username': 'alice', 'password': 'secret'\n    })\n    assert response.status_code == 200\n\n    # Access protected route (session cookie is maintained)\n    response = client.get('/protected')\n    assert response.status_code == 200\n    assert response.get_json()['message'] == 'Hello, alice'\n\ndef test_protected_without_login():\n    client = app.test_client()\n    response = client.get('/protected')\n    assert response.status_code == 401",
+          "explanation": "The test client maintains cookies between requests. After logging in, subsequent requests include the session cookie. Create a new client instance for a fresh session."
+        },
+        {
+          "title": "Testing with Custom Headers",
+          "code": "from flask import Flask, request, jsonify\n\napp = Flask(__name__)\n\n@app.get('/api/data')\ndef get_data():\n    auth = request.headers.get('Authorization', '')\n    if not auth.startswith('Bearer '):\n        return jsonify({'error': 'Unauthorized'}), 401\n\n    token = auth[7:]\n    if token != 'valid-token':\n        return jsonify({'error': 'Invalid token'}), 401\n\n    return jsonify({'data': 'secret info'})\n\n# Testing\ndef test_with_valid_token():\n    client = app.test_client()\n    response = client.get('/api/data',\n        headers={'Authorization': 'Bearer valid-token'}\n    )\n    assert response.status_code == 200\n    assert response.get_json()['data'] == 'secret info'\n\ndef test_without_token():\n    client = app.test_client()\n    response = client.get('/api/data')\n    assert response.status_code == 401\n\ndef test_with_invalid_token():\n    client = app.test_client()\n    response = client.get('/api/data',\n        headers={'Authorization': 'Bearer wrong-token'}\n    )\n    assert response.status_code == 401",
+          "explanation": "Pass custom headers via the headers dict. Test all authentication scenarios: valid token, missing token, and invalid token. This pattern works for Bearer tokens, API keys, and other header-based auth."
+        }
+      ],
+      "notes": [
+        "The test client calls the WSGI application directly without a network server.",
+        "Cookies persist between requests within the same client instance.",
+        "Use json= for JSON bodies and data= for form data in test requests.",
+        "Set TESTING=True in your test config to let exceptions propagate."
+      ],
+      "commonPitfalls": [
+        "Forgetting that response.data is bytes, not a string. Use response.get_json() for JSON.",
+        "Not creating a fresh test client for each test, causing session data to leak between tests.",
+        "Using data= for JSON requests instead of json=, sending form-encoded data."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "test-client-ex1",
+        "title": "Write API Tests",
+        "description": "Given a Flask app with GET /api/items that returns a JSON list and POST /api/items that creates an item, write test functions for both routes. Test success cases and a missing-field error.",
+        "starterCode": "from flask import Flask, request, jsonify\n\napp = Flask(__name__)\nitems = []\n\n@app.get('/api/items')\ndef list_items():\n    return jsonify(items)\n\n@app.post('/api/items')\ndef create_item():\n    data = request.get_json()\n    if not data or 'name' not in data:\n        return jsonify({'error': 'Name required'}), 400\n    item = {'id': len(items) + 1, 'name': data['name']}\n    items.append(item)\n    return jsonify(item), 201\n\n# Write your tests\n",
+        "solution": "def test_list_items_empty():\n    client = app.test_client()\n    response = client.get('/api/items')\n    assert response.status_code == 200\n    assert response.get_json() == []\n\ndef test_create_item():\n    client = app.test_client()\n    response = client.post('/api/items', json={'name': 'Widget'})\n    assert response.status_code == 201\n    data = response.get_json()\n    assert data['name'] == 'Widget'\n    assert 'id' in data\n\ndef test_create_item_missing_name():\n    client = app.test_client()\n    response = client.post('/api/items', json={})\n    assert response.status_code == 400\n    assert 'error' in response.get_json()",
+        "hints": [
+          "Use client.get() for GET requests and client.post() for POST",
+          "Pass json= for JSON request bodies",
+          "Assert on status_code and response.get_json()"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "test-client-ex2",
+        "title": "Test Authentication Flow",
+        "description": "Write tests for a login flow: POST /login with valid credentials should return 200. After login, GET /profile should return the user's name. Without login, /profile should return 401.",
+        "starterCode": "# Assume the app has /login (POST) and /profile (GET) routes\n# Write the test functions\n",
+        "solution": "def test_login_success():\n    client = app.test_client()\n    response = client.post('/login', json={\n        'username': 'alice', 'password': 'secret'\n    })\n    assert response.status_code == 200\n\ndef test_profile_after_login():\n    client = app.test_client()\n    client.post('/login', json={'username': 'alice', 'password': 'secret'})\n    response = client.get('/profile')\n    assert response.status_code == 200\n    assert 'alice' in response.get_json().get('name', '')\n\ndef test_profile_without_login():\n    client = app.test_client()\n    response = client.get('/profile')\n    assert response.status_code == 401",
+        "hints": [
+          "The test client maintains session cookies between requests",
+          "Login first, then access the protected route with the same client",
+          "Use a fresh client for the unauthorized test"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "pytest-with-flask",
+    "sectionId": "testing-and-deployment",
+    "orderIndex": 1,
+    "title": "Pytest with Flask",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["pytest", "Fixtures", "conftest", "Test Isolation", "Factory Fixtures", "Coverage"],
+    "content": {
+      "explanation": "pytest is the de facto standard testing framework for Python. Combined with Flask's test client, it provides a powerful and ergonomic testing experience. pytest fixtures handle test setup and teardown, conftest.py shares fixtures across test files, and parametrize lets you run the same test with different inputs.\n\nThe key fixtures for Flask testing are app (creates a configured application), client (creates a test client), and optionally runner (for CLI command testing). With the factory pattern, the app fixture calls create_app with a test configuration.\n\npytest fixtures use dependency injection: you declare a fixture name as a function parameter, and pytest automatically provides the fixture's value. Fixtures can have different scopes: function (default, runs for each test), class, module, or session. For Flask, function scope ensures each test gets a clean state.\n\nThe conftest.py file is where you define shared fixtures. Place it in the tests/ directory and all test files in that directory (and subdirectories) can use its fixtures without importing. This is where you put your app, client, and database fixtures.\n\nTest isolation is critical. Each test should start with a clean state and not affect other tests. For database tests, create tables before each test and drop them after. Or use transactions: start a transaction before the test, let the test run, then roll back the transaction.\n\npytest.mark.parametrize lets you run the same test with different inputs. This is useful for testing multiple validation scenarios, edge cases, or input combinations. You decorate the test function with @pytest.mark.parametrize and provide the argument names and values.\n\nCode coverage measures which lines of your code are executed during tests. Use pytest-cov to generate coverage reports. Aim for high coverage (80%+) but remember that 100% coverage does not mean no bugs. Focus on testing business logic, edge cases, and error handling.",
+      "codeExamples": [
+        {
+          "title": "conftest.py Fixtures",
+          "code": "# tests/conftest.py\nimport pytest\nfrom app import create_app\nfrom app.extensions import db as _db\n\n@pytest.fixture\ndef app():\n    \"\"\"Create a fresh app for each test.\"\"\"\n    app = create_app('testing')\n    with app.app_context():\n        _db.create_all()\n        yield app\n        _db.session.remove()\n        _db.drop_all()\n\n@pytest.fixture\ndef client(app):\n    \"\"\"Test client for making requests.\"\"\"\n    return app.test_client()\n\n@pytest.fixture\ndef db(app):\n    \"\"\"Database session for creating test data.\"\"\"\n    return _db\n\n@pytest.fixture\ndef sample_user(db):\n    \"\"\"Create a sample user for tests.\"\"\"\n    from app.models import User\n    user = User(username='testuser', email='test@example.com')\n    user.set_password('password123')\n    db.session.add(user)\n    db.session.commit()\n    return user",
+          "explanation": "Fixtures provide test dependencies via injection. The app fixture creates a fresh app with test config. Client depends on app. sample_user depends on db. Each test gets a clean database."
+        },
+        {
+          "title": "Writing Tests with Fixtures",
+          "code": "# tests/test_api.py\n\ndef test_list_users_empty(client):\n    response = client.get('/api/users')\n    assert response.status_code == 200\n    assert response.get_json() == []\n\ndef test_list_users_with_data(client, sample_user):\n    response = client.get('/api/users')\n    assert response.status_code == 200\n    users = response.get_json()\n    assert len(users) == 1\n    assert users[0]['username'] == 'testuser'\n\ndef test_create_user(client):\n    response = client.post('/api/users', json={\n        'username': 'newuser',\n        'email': 'new@example.com',\n        'password': 'securepass'\n    })\n    assert response.status_code == 201\n    data = response.get_json()\n    assert data['username'] == 'newuser'\n\ndef test_create_user_duplicate_email(client, sample_user):\n    response = client.post('/api/users', json={\n        'username': 'other',\n        'email': 'test@example.com',  # Same as sample_user\n        'password': 'securepass'\n    })\n    assert response.status_code == 400",
+          "explanation": "Tests receive fixtures as parameters. sample_user populates the database before the test. Each test function gets a fresh database state thanks to the app fixture."
+        },
+        {
+          "title": "Parametrized Tests",
+          "code": "import pytest\n\n@pytest.mark.parametrize('email,expected_status', [\n    ('valid@example.com', 201),\n    ('', 400),\n    ('invalid-email', 400),\n    ('a@b', 400),\n    ('user@domain.com', 201),\n])\ndef test_email_validation(client, email, expected_status):\n    response = client.post('/api/users', json={\n        'username': 'testuser',\n        'email': email,\n        'password': 'password123'\n    })\n    assert response.status_code == expected_status\n\n@pytest.mark.parametrize('method,path,expected', [\n    ('GET', '/api/users', 200),\n    ('GET', '/api/users/999', 404),\n    ('DELETE', '/api/users/999', 404),\n    ('GET', '/nonexistent', 404),\n])\ndef test_status_codes(client, method, path, expected):\n    response = getattr(client, method.lower())(path)\n    assert response.status_code == expected",
+          "explanation": "parametrize runs the test once for each set of arguments. This is much cleaner than writing separate test functions for each case. The test name includes the parameter values in the output."
+        },
+        {
+          "title": "Running Tests with Coverage",
+          "code": "# Install\n# pip install pytest pytest-cov\n\n# Run all tests\n# pytest\n\n# Run with verbose output\n# pytest -v\n\n# Run specific test file\n# pytest tests/test_api.py\n\n# Run specific test function\n# pytest tests/test_api.py::test_create_user\n\n# Run with coverage\n# pytest --cov=app --cov-report=html\n\n# Run with coverage and show missing lines\n# pytest --cov=app --cov-report=term-missing\n\n# Example output:\n# ---------- coverage: ----------\n# Name                  Stmts   Miss  Cover   Missing\n# app/__init__.py          15      0   100%\n# app/models.py            32      2    94%   45-46\n# app/views/api.py         48      5    90%   67-72\n# TOTAL                    95      7    93%\n\n# pyproject.toml or pytest.ini\n# [tool.pytest.ini_options]\n# testpaths = [\"tests\"]\n# python_files = [\"test_*.py\"]\n# python_functions = [\"test_*\"]",
+          "explanation": "pytest discovers and runs test files/functions by naming convention. --cov generates coverage reports showing which lines are tested. Configure pytest in pyproject.toml for consistent settings."
+        }
+      ],
+      "notes": [
+        "Use conftest.py for shared fixtures. pytest auto-discovers them without imports.",
+        "Function-scoped fixtures (default) ensure test isolation with fresh state per test.",
+        "parametrize reduces test duplication for similar test cases with different inputs.",
+        "Set TESTING=True in test config to disable error catching and WTF_CSRF_ENABLED=False for easier form testing."
+      ],
+      "commonPitfalls": [
+        "Not using function-scoped database fixtures, causing test data to leak between tests.",
+        "Importing the app fixture instead of letting pytest inject it via parameter name.",
+        "Not setting WTF_CSRF_ENABLED=False in test config, causing form POST tests to fail."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "pytest-ex1",
+        "title": "Write a conftest.py",
+        "description": "Write a conftest.py with an app fixture (using create_app('testing')), a client fixture (from app), and a db fixture that creates/drops tables around each test.",
+        "starterCode": "import pytest\n\n# Write your fixtures\n",
+        "solution": "import pytest\nfrom app import create_app\nfrom app.extensions import db as _db\n\n@pytest.fixture\ndef app():\n    app = create_app('testing')\n    with app.app_context():\n        _db.create_all()\n        yield app\n        _db.session.remove()\n        _db.drop_all()\n\n@pytest.fixture\ndef client(app):\n    return app.test_client()\n\n@pytest.fixture\ndef db(app):\n    return _db",
+        "hints": [
+          "Use yield in the app fixture for setup/teardown",
+          "Create tables before yield, drop after yield",
+          "Client fixture takes app as a parameter (dependency injection)"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "pytest-ex2",
+        "title": "Parametrized Validation Tests",
+        "description": "Write a parametrized test that checks POST /api/items with different inputs: valid (returns 201), missing name (returns 400), empty name (returns 400).",
+        "starterCode": "import pytest\n\n# Write parametrized tests\n",
+        "solution": "import pytest\n\n@pytest.mark.parametrize('payload,expected_status', [\n    ({'name': 'Widget'}, 201),\n    ({}, 400),\n    ({'name': ''}, 400),\n])\ndef test_create_item_validation(client, payload, expected_status):\n    response = client.post('/api/items', json=payload)\n    assert response.status_code == expected_status",
+        "hints": [
+          "Use @pytest.mark.parametrize with tuples of (input, expected)",
+          "Each tuple becomes a separate test run",
+          "The client fixture is injected automatically"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "gunicorn-configuration",
+    "sectionId": "testing-and-deployment",
+    "orderIndex": 2,
+    "title": "Gunicorn Configuration",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Gunicorn", "Workers", "Threads", "Binding", "Production Server", "Reverse Proxy"],
+    "content": {
+      "explanation": "Gunicorn (Green Unicorn) is the most popular WSGI HTTP server for running Flask applications in production. Flask's built-in development server is single-threaded, not optimized for concurrent requests, and has the debug mode security vulnerability. Gunicorn provides multiple worker processes, proper signal handling, and production-grade performance.\n\nGunicorn uses a pre-fork worker model. The master process manages worker processes, and each worker handles requests independently. If a worker crashes, the master restarts it. This provides fault tolerance and process isolation.\n\nThe number of workers determines how many concurrent requests your application can handle. The common formula is workers = 2 * CPU_cores + 1. More workers handle more concurrent requests but use more memory. Each worker is an independent process with its own memory space.\n\nGunicorn supports different worker types. The default sync worker handles one request at a time per worker. The gthread worker uses threads within each worker for concurrent request handling. The gevent and eventlet workers use green threads for high concurrency with low memory. Use gthread for I/O-bound apps and the default sync for CPU-bound apps.\n\nThe bind option sets the address and port Gunicorn listens on. For direct access, use 0.0.0.0:8000. Behind a reverse proxy (Nginx, Caddy), bind to a Unix socket (unix:/tmp/gunicorn.sock) or localhost (127.0.0.1:8000) for security.\n\nGunicorn's timeout setting kills workers that do not respond within the specified seconds. The default is 30 seconds. Increase it for long-running requests. The graceful_timeout is how long to wait for workers to finish existing requests during a restart.\n\nIn production, Gunicorn typically runs behind a reverse proxy like Nginx. Nginx handles static files, SSL termination, request buffering, and load balancing. Gunicorn handles only the Python application. This separation improves security and performance.",
+      "codeExamples": [
+        {
+          "title": "Basic Gunicorn Commands",
+          "code": "# Install Gunicorn\n# pip install gunicorn\n\n# Run with default settings (1 worker)\n# gunicorn app:app\n\n# Run with factory pattern\n# gunicorn 'app:create_app()'\n\n# Specify workers and bind address\n# gunicorn -w 4 -b 0.0.0.0:8000 app:app\n\n# With threads\n# gunicorn -w 4 --threads 2 -b 0.0.0.0:8000 app:app\n\n# With Unix socket (behind Nginx)\n# gunicorn -w 4 -b unix:/tmp/gunicorn.sock app:app\n\n# With timeout and graceful timeout\n# gunicorn -w 4 --timeout 120 --graceful-timeout 30 app:app\n\n# With access logging\n# gunicorn -w 4 --access-logfile access.log --error-logfile error.log app:app",
+          "explanation": "Gunicorn takes the module:app format. Use -w for workers (2 * CPUs + 1). Use -b for binding. For the factory pattern, wrap the call in quotes. Unix sockets are preferred behind a reverse proxy."
+        },
+        {
+          "title": "Gunicorn Configuration File",
+          "code": "# gunicorn.conf.py\nimport multiprocessing\n\n# Server socket\nbind = '0.0.0.0:8000'\nbacklog = 2048\n\n# Workers\nworkers = multiprocessing.cpu_count() * 2 + 1\nworker_class = 'sync'  # or 'gthread', 'gevent'\nthreads = 1\nworker_connections = 1000\ntimeout = 120\nkeepalive = 5\n\n# Restart workers after this many requests (prevent memory leaks)\nmax_requests = 1000\nmax_requests_jitter = 50\n\n# Logging\naccesslog = '-'  # stdout\nerrorlog = '-'   # stderr\nloglevel = 'info'\naccess_log_format = '%(h)s %(l)s %(u)s %(t)s \"%(r)s\" %(s)s %(b)s \"%(f)s\" \"%(a)s\"'\n\n# Process naming\nproc_name = 'my_flask_app'\n\n# Run with: gunicorn -c gunicorn.conf.py app:app",
+          "explanation": "A config file keeps Gunicorn settings organized. workers scales with CPU count. max_requests restarts workers periodically to prevent memory leaks. Logging to stdout is standard for Docker."
+        },
+        {
+          "title": "Nginx as Reverse Proxy",
+          "code": "# /etc/nginx/sites-available/myapp\nserver {\n    listen 80;\n    server_name example.com;\n\n    # Redirect HTTP to HTTPS\n    return 301 https://$server_name$request_uri;\n}\n\nserver {\n    listen 443 ssl;\n    server_name example.com;\n\n    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;\n    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;\n\n    # Serve static files directly\n    location /static/ {\n        alias /var/www/myapp/static/;\n        expires 30d;\n    }\n\n    # Proxy to Gunicorn\n    location / {\n        proxy_pass http://unix:/tmp/gunicorn.sock;\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n}",
+          "explanation": "Nginx handles SSL, static files, and proxies dynamic requests to Gunicorn. proxy_set_header forwards the real client IP and protocol. Static files are served directly by Nginx (much faster than Flask)."
+        },
+        {
+          "title": "ProxyFix Middleware",
+          "code": "from flask import Flask\nfrom werkzeug.middleware.proxy_fix import ProxyFix\n\ndef create_app():\n    app = Flask(__name__)\n\n    # Tell Flask it's behind a reverse proxy\n    app.wsgi_app = ProxyFix(\n        app.wsgi_app,\n        x_for=1,        # Trust X-Forwarded-For\n        x_proto=1,      # Trust X-Forwarded-Proto\n        x_host=1,       # Trust X-Forwarded-Host\n        x_prefix=1      # Trust X-Forwarded-Prefix\n    )\n\n    @app.route('/')\n    def index():\n        # Now request.remote_addr gives the real client IP\n        # request.is_secure is True for HTTPS\n        # url_for generates HTTPS URLs\n        return 'OK'\n\n    return app",
+          "explanation": "Behind a reverse proxy, Flask sees the proxy's IP, not the client's. ProxyFix reads the X-Forwarded-* headers to restore the real client information. Set x_for=1 for one proxy hop."
+        }
+      ],
+      "notes": [
+        "Never use Flask's development server in production. Use Gunicorn, uWSGI, or Waitress.",
+        "Workers formula: 2 * CPU_cores + 1. More workers = more memory but more concurrency.",
+        "Use max_requests to restart workers periodically, preventing memory leaks.",
+        "Behind Nginx, use ProxyFix to get the real client IP and protocol."
+      ],
+      "interviewTips": [
+        "Explain the pre-fork worker model: master process manages workers, each handles requests independently.",
+        "Describe the Nginx + Gunicorn architecture: Nginx for static files, SSL, buffering; Gunicorn for Python app.",
+        "Mention worker types: sync (simple), gthread (threaded), gevent (async) and when to use each."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "gunicorn-ex1",
+        "title": "Write a Gunicorn Config",
+        "description": "Write a gunicorn.conf.py that configures: 4 workers, bind to 0.0.0.0:8000, 60-second timeout, max 500 requests per worker, and logs to stdout.",
+        "starterCode": "# gunicorn.conf.py\n",
+        "solution": "# gunicorn.conf.py\nbind = '0.0.0.0:8000'\nworkers = 4\ntimeout = 60\nmax_requests = 500\nmax_requests_jitter = 50\naccesslog = '-'\nerrorlog = '-'\nloglevel = 'info'",
+        "hints": [
+          "Use '-' for stdout/stderr logging",
+          "max_requests_jitter prevents all workers from restarting simultaneously",
+          "bind format is 'host:port' or 'unix:/path/to/socket'"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "gunicorn-ex2",
+        "title": "Add ProxyFix Middleware",
+        "description": "Modify a create_app factory to add ProxyFix middleware that trusts one proxy hop for X-Forwarded-For and X-Forwarded-Proto headers.",
+        "starterCode": "from flask import Flask\n\ndef create_app():\n    app = Flask(__name__)\n    # Add ProxyFix\n    return app\n",
+        "solution": "from flask import Flask\nfrom werkzeug.middleware.proxy_fix import ProxyFix\n\ndef create_app():\n    app = Flask(__name__)\n    app.wsgi_app = ProxyFix(app.wsgi_app, x_for=1, x_proto=1)\n    return app",
+        "hints": [
+          "Import ProxyFix from werkzeug.middleware.proxy_fix",
+          "Wrap app.wsgi_app, not app itself",
+          "x_for=1 means trust one proxy hop for X-Forwarded-For"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "docker-deployment",
+    "sectionId": "testing-and-deployment",
+    "orderIndex": 3,
+    "title": "Docker Deployment",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Docker", "Dockerfile", "Docker Compose", "Container", "Multi-stage Build", "Environment Variables"],
+    "content": {
+      "explanation": "Docker containers package your Flask application with all its dependencies into a portable, reproducible unit. Whether deploying to AWS, Google Cloud, or your own servers, Docker ensures your application runs the same way everywhere. Containers isolate your app from the host system and other containers.\n\nA Dockerfile defines how to build your application image. It starts from a base Python image, copies your code, installs dependencies, and specifies how to run the application. Each instruction creates a layer in the image. Layers are cached, so unchanged layers are not rebuilt.\n\nMulti-stage builds keep your production image small. The first stage installs all build dependencies and your Python packages. The second stage copies only the installed packages and your application code, leaving behind build tools. This can reduce your image size by 50% or more.\n\nDocker Compose orchestrates multiple containers. A typical Flask deployment needs at least the web application and a database. Docker Compose defines both services, their configuration, networking, and volumes in a single docker-compose.yml file.\n\nEnvironment variables are the standard way to configure containerized applications. Never bake secrets into Docker images. Instead, pass them at runtime via environment variables or Docker secrets. The Dockerfile should only define non-sensitive defaults.\n\nHealth checks ensure your container is actually serving traffic, not just running. Docker can periodically check an endpoint and restart the container if it fails. Define a simple /health endpoint in your Flask app and configure it in the Dockerfile or docker-compose.yml.\n\nFor production, always use a non-root user in your container, pin your base image version (not 'latest'), use .dockerignore to exclude unnecessary files, and keep images as small as possible by using slim or alpine base images.",
+      "codeExamples": [
+        {
+          "title": "Production Dockerfile",
+          "code": "# Dockerfile\nFROM python:3.12-slim AS builder\n\nWORKDIR /app\n\n# Install system dependencies\nRUN apt-get update && apt-get install -y --no-install-recommends \\\n    gcc libpq-dev && rm -rf /var/lib/apt/lists/*\n\n# Install Python dependencies\nCOPY requirements.txt .\nRUN pip install --no-cache-dir --prefix=/install -r requirements.txt\n\n# Production stage\nFROM python:3.12-slim\n\nWORKDIR /app\n\n# Install runtime dependencies only\nRUN apt-get update && apt-get install -y --no-install-recommends \\\n    libpq5 && rm -rf /var/lib/apt/lists/*\n\n# Copy installed packages from builder\nCOPY --from=builder /install /usr/local\n\n# Create non-root user\nRUN useradd -m appuser\nUSER appuser\n\n# Copy application code\nCOPY . .\n\nEXPOSE 8000\n\nHEALTHCHECK --interval=30s --timeout=5s --retries=3 \\\n    CMD python -c \"import urllib.request; urllib.request.urlopen('http://localhost:8000/health')\"\n\nCMD [\"gunicorn\", \"-c\", \"gunicorn.conf.py\", \"app:create_app()\"]",
+          "explanation": "Multi-stage build: the builder installs dependencies, the production image copies them. Non-root user for security. Health check monitors the app. The CMD runs Gunicorn with the factory pattern."
+        },
+        {
+          "title": "Docker Compose with PostgreSQL",
+          "code": "# docker-compose.yml\nversion: '3.8'\n\nservices:\n  web:\n    build: .\n    ports:\n      - '8000:8000'\n    environment:\n      - DATABASE_URL=postgresql://user:password@db:5432/myapp\n      - SECRET_KEY=${SECRET_KEY}\n      - FLASK_CONFIG=production\n    depends_on:\n      db:\n        condition: service_healthy\n    restart: unless-stopped\n\n  db:\n    image: postgres:16-alpine\n    environment:\n      - POSTGRES_USER=user\n      - POSTGRES_PASSWORD=password\n      - POSTGRES_DB=myapp\n    volumes:\n      - postgres_data:/var/lib/postgresql/data\n    healthcheck:\n      test: ['CMD-SHELL', 'pg_isready -U user -d myapp']\n      interval: 10s\n      timeout: 5s\n      retries: 5\n\nvolumes:\n  postgres_data:",
+          "explanation": "Docker Compose runs the Flask app and PostgreSQL together. The web service depends on db and waits for its health check. Volumes persist database data. Environment variables configure the app."
+        },
+        {
+          "title": ".dockerignore File",
+          "code": "# .dockerignore\nvenv/\n__pycache__/\n*.pyc\n*.pyo\n.git/\n.gitignore\n.env\n.env.*\ninstance/\ntests/\n*.md\n.pytest_cache/\nhtmlcov/\n.coverage\ndocker-compose*.yml\nDockerfile\n.dockerignore\nnode_modules/",
+          "explanation": ".dockerignore works like .gitignore for Docker builds. It prevents unnecessary files from being copied into the image, reducing build time and image size. Exclude tests, docs, venv, and sensitive files."
+        },
+        {
+          "title": "Health Check Endpoint",
+          "code": "from flask import Flask, jsonify\nfrom app.extensions import db\n\n@app.route('/health')\ndef health_check():\n    \"\"\"Health check endpoint for Docker/load balancers.\"\"\"\n    try:\n        # Check database connectivity\n        db.session.execute(db.text('SELECT 1'))\n        return jsonify({\n            'status': 'healthy',\n            'database': 'connected'\n        })\n    except Exception as e:\n        return jsonify({\n            'status': 'unhealthy',\n            'database': str(e)\n        }), 503\n\n# Docker HEALTHCHECK calls this endpoint\n# Load balancers use it to route traffic only to healthy instances",
+          "explanation": "A health check endpoint verifies the app can connect to its dependencies. Return 200 for healthy, 503 for unhealthy. Docker restarts unhealthy containers. Load balancers route traffic away from unhealthy instances."
+        }
+      ],
+      "notes": [
+        "Use multi-stage builds to keep production images small.",
+        "Never bake secrets into Docker images. Pass them as environment variables at runtime.",
+        "Run as a non-root user for security.",
+        "Use .dockerignore to exclude unnecessary files from the build context."
+      ],
+      "commonPitfalls": [
+        "Using the 'latest' tag for base images. Pin versions for reproducible builds.",
+        "Copying .env files or secrets into the Docker image.",
+        "Running as root inside the container, which is a security risk.",
+        "Not using .dockerignore, causing the entire .git directory and venv to be copied."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "docker-ex1",
+        "title": "Write a Dockerfile",
+        "description": "Write a Dockerfile for a Flask app that: uses python:3.12-slim, installs from requirements.txt, exposes port 8000, and runs with gunicorn.",
+        "starterCode": "# Write your Dockerfile\n",
+        "solution": "FROM python:3.12-slim\n\nWORKDIR /app\n\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\n\nCOPY . .\n\nEXPOSE 8000\n\nCMD [\"gunicorn\", \"-w\", \"4\", \"-b\", \"0.0.0.0:8000\", \"app:create_app()\"]",
+        "hints": [
+          "Use WORKDIR to set the working directory",
+          "Copy requirements.txt first for better caching",
+          "Use CMD with JSON array format for the command"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "docker-ex2",
+        "title": "Docker Compose Service",
+        "description": "Write a docker-compose.yml with a web service (builds from Dockerfile, port 8000, DATABASE_URL environment variable) and a PostgreSQL service with a named volume.",
+        "starterCode": "# Write docker-compose.yml\n",
+        "solution": "version: '3.8'\n\nservices:\n  web:\n    build: .\n    ports:\n      - '8000:8000'\n    environment:\n      - DATABASE_URL=postgresql://user:pass@db:5432/myapp\n      - SECRET_KEY=change-me\n    depends_on:\n      - db\n\n  db:\n    image: postgres:16-alpine\n    environment:\n      - POSTGRES_USER=user\n      - POSTGRES_PASSWORD=pass\n      - POSTGRES_DB=myapp\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n\nvolumes:\n  pgdata:",
+        "hints": [
+          "Use depends_on so web starts after db",
+          "Named volumes persist data across container restarts",
+          "The db hostname in DATABASE_URL matches the service name"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

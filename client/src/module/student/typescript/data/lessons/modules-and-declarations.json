@@ -1,0 +1,272 @@
+[
+  {
+    "id": "es-modules-in-ts",
+    "sectionId": "modules-and-declarations",
+    "orderIndex": 0,
+    "title": "ES Modules in TypeScript",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["import", "export", "re-exports", "type-only imports", "default exports", "named exports", "barrel files"],
+    "content": {
+      "explanation": "TypeScript fully embraces the ES module system, providing first-class support for import and export syntax with additional type-aware features. Every file containing a top-level import or export is treated as a module, while files without these statements are treated as scripts whose declarations are available in the global scope. Understanding how modules work in TypeScript is fundamental to building well-structured, maintainable applications.\n\nNamed exports allow you to export multiple values from a module, each accessible by its exact name. Default exports provide a single primary export per module. You can also combine both in the same file. Re-exports let you aggregate and re-expose exports from other modules, which is the foundation of the barrel file pattern commonly used to simplify import paths.\n\nTypeScript 3.8 introduced type-only imports and exports using the `import type` and `export type` syntax. These are completely erased at compile time and generate no JavaScript output. This is crucial for avoiding circular dependency issues and ensuring that imports used only for type checking do not bloat your runtime bundle. When importing interfaces, type aliases, or other purely type-level constructs, prefer type-only imports.\n\nThe barrel file pattern involves creating an index.ts file that re-exports from multiple modules in a directory. This allows consumers to import everything from a single entry point rather than reaching into individual files. While convenient, barrel files can cause issues with tree-shaking and circular dependencies if not managed carefully. Use them judiciously, especially in large codebases.",
+      "codeExamples": [
+        {
+          "title": "Named and Default Exports",
+          "code": "// math.ts\nexport function add(a: number, b: number): number {\n  return a + b;\n}\n\nexport function subtract(a: number, b: number): number {\n  return a - b;\n}\n\nexport default function multiply(a: number, b: number): number {\n  return a * b;\n}\n\n// app.ts\nimport multiply, { add, subtract } from './math';\n\nconsole.log(add(5, 3));\nconsole.log(subtract(10, 4));\nconsole.log(multiply(3, 7));",
+          "output": "8\n6\n21",
+          "explanation": "Named exports are imported with curly braces, while the default export can be imported with any name without braces. You can import both in the same statement."
+        },
+        {
+          "title": "Type-Only Imports and Re-exports",
+          "code": "// types.ts\nexport interface User {\n  id: number;\n  name: string;\n  email: string;\n}\n\nexport type Role = 'admin' | 'user' | 'guest';\n\n// service.ts\nimport type { User, Role } from './types';\n\nfunction greetUser(user: User, role: Role): string {\n  return `Hello ${user.name}, you are a ${role}`;\n}\n\nconst user: User = { id: 1, name: 'Alice', email: 'alice@example.com' };\nconsole.log(greetUser(user, 'admin'));",
+          "output": "Hello Alice, you are a admin",
+          "explanation": "The 'import type' syntax ensures these imports are erased at compile time. They produce no runtime code, which helps avoid circular dependencies and reduces bundle size."
+        },
+        {
+          "title": "Barrel Files and Re-exports",
+          "code": "// models/user.ts\nexport interface User { id: number; name: string; }\n\n// models/product.ts\nexport interface Product { id: number; title: string; price: number; }\n\n// models/index.ts (barrel file)\nexport { User } from './user';\nexport { Product } from './product';\nexport type { User as UserType } from './user';\n\n// app.ts — single clean import\n// import { User, Product } from './models';\n\nconst user: User = { id: 1, name: 'Bob' };\nconst product: Product = { id: 101, title: 'Keyboard', price: 79.99 };\nconsole.log(user.name);\nconsole.log(product.title);",
+          "output": "Bob\nKeyboard",
+          "explanation": "The barrel file (index.ts) re-exports from individual modules, letting consumers use a single import path. You can also rename exports during re-export."
+        }
+      ],
+      "notes": [
+        "Files without any import or export are treated as global scripts, not modules. Add 'export {}' to force module treatment.",
+        "Use 'import type' whenever you import something used only in type positions to keep runtime bundles clean.",
+        "Barrel files re-export from an index.ts. They simplify imports but can hurt tree-shaking in large projects."
+      ],
+      "commonPitfalls": [
+        "Forgetting that 'import type' imports are erased at runtime — you cannot use them as values, in instanceof checks, or as constructor arguments.",
+        "Creating circular dependencies through barrel files — if module A re-exports from B which imports from A, you can get undefined values at runtime."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "es-modules-exercise-1",
+        "title": "Named and Default Exports",
+        "description": "Create a module with a default export function 'greet' that takes a name and returns a greeting, and a named export constant 'VERSION'. Then import and use both.",
+        "starterCode": "// Define a default export function 'greet' that takes a name (string)\n// and returns \"Hello, <name>!\"\n// Also export a named constant VERSION set to \"1.0.0\"\n\n// Your code here\n\n// Test\n// console.log(greet('TypeScript'));\n// console.log(VERSION);",
+        "solution": "function greet(name: string): string {\n  return `Hello, ${name}!`;\n}\n\nconst VERSION = '1.0.0';\n\n// Simulating module usage in single file\nconsole.log(greet('TypeScript'));\nconsole.log(VERSION);",
+        "expectedOutput": "Hello, TypeScript!\n1.0.0",
+        "hints": [
+          "A default export uses 'export default' before the function declaration.",
+          "Named exports use 'export' before const, let, function, or class declarations."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "es-modules-exercise-2",
+        "title": "Re-export Aggregation",
+        "description": "Given separate shape calculation functions, create a barrel-style aggregation and use them. Simulate the barrel pattern in a single file.",
+        "starterCode": "// Simulate three modules with shape area functions:\n// circleArea(radius: number): number\n// rectangleArea(width: number, height: number): number\n// triangleArea(base: number, height: number): number\n\n// Define all three functions, then use them\n// Print the area of a circle with radius 5 (use Math.PI, round to 2 decimals)\n// Print the area of a 4x6 rectangle\n// Print the area of a triangle with base 3 and height 8",
+        "solution": "function circleArea(radius: number): number {\n  return Math.PI * radius * radius;\n}\n\nfunction rectangleArea(width: number, height: number): number {\n  return width * height;\n}\n\nfunction triangleArea(base: number, height: number): number {\n  return (base * height) / 2;\n}\n\nconsole.log(Number(circleArea(5).toFixed(2)));\nconsole.log(rectangleArea(4, 6));\nconsole.log(triangleArea(3, 8));",
+        "expectedOutput": "78.54\n24\n12",
+        "hints": [
+          "Circle area = Math.PI * radius * radius. Use .toFixed(2) to round and Number() to remove trailing zeros.",
+          "Triangle area = (base * height) / 2."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "module-resolution",
+    "sectionId": "modules-and-declarations",
+    "orderIndex": 1,
+    "title": "Module Resolution",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["module resolution", "Node resolution", "bundler resolution", "paths", "baseUrl", "moduleResolution"],
+    "content": {
+      "explanation": "Module resolution is the process TypeScript uses to figure out what a given import statement refers to. When you write `import { something } from './utils'`, TypeScript needs to determine which file contains that export. The resolution strategy varies depending on the `moduleResolution` setting in your tsconfig.json, and understanding these strategies is critical for configuring projects correctly.\n\nThe classic resolution strategy mimics how the original TypeScript compiler resolved modules — it searches for .ts, .tsx, and .d.ts files by walking up the directory tree. This is rarely used in modern projects. The node resolution strategy (moduleResolution: 'node') follows Node.js's CommonJS resolution algorithm: it checks for the file directly, then looks for an index file in a directory, and for node_modules packages it reads the 'main' field in package.json.\n\nModern TypeScript (5.0+) introduced 'node16', 'nodenext', and 'bundler' resolution modes. The 'node16' and 'nodenext' modes support Node.js's native ESM resolution, which requires explicit file extensions in relative imports. The 'bundler' mode is designed for projects using a bundler like Webpack, Vite, or esbuild — it allows extensionless imports while supporting the 'exports' field in package.json, giving you the best of both worlds.\n\nThe `baseUrl` and `paths` options in tsconfig.json let you define custom module path aliases. Setting `baseUrl` to '.' or 'src' allows non-relative imports to resolve from that directory. The `paths` option maps patterns to file locations, enabling shortcuts like '@components/*' mapping to 'src/components/*'. Note that `paths` only affects TypeScript's type checking — your bundler or runtime needs equivalent configuration (like Vite's resolve.alias) to actually resolve these paths.",
+      "codeExamples": [
+        {
+          "title": "Module Resolution Strategies",
+          "code": "// tsconfig.json examples for different resolution modes\n\n// For Node.js CommonJS projects:\n// { \"compilerOptions\": { \"moduleResolution\": \"node\" } }\n// import { helper } from './utils';  // resolves ./utils.ts or ./utils/index.ts\n\n// For Node.js ESM projects:\n// { \"compilerOptions\": { \"moduleResolution\": \"nodenext\" } }\n// import { helper } from './utils.js';  // must include .js extension\n\n// For bundler-based projects (Vite, Webpack):\n// { \"compilerOptions\": { \"moduleResolution\": \"bundler\" } }\n// import { helper } from './utils';  // extensionless, supports \"exports\" field\n\n// Demonstration of resolution concept\nfunction resolveModule(specifier: string, strategy: string): string {\n  if (strategy === 'node') {\n    return `${specifier}.ts -> ${specifier}/index.ts -> node_modules/${specifier}`;\n  }\n  if (strategy === 'nodenext') {\n    return `${specifier} (must have explicit .js extension)`;\n  }\n  return `${specifier} (extensionless, checks exports field)`;\n}\n\nconsole.log(resolveModule('./utils', 'node'));\nconsole.log(resolveModule('./utils.js', 'nodenext'));\nconsole.log(resolveModule('./utils', 'bundler'));",
+          "output": "./utils.ts -> ./utils/index.ts -> node_modules/./utils\n./utils.js (must have explicit .js extension)\n./utils (extensionless, checks exports field)",
+          "explanation": "Different module resolution strategies determine how TypeScript locates the file for a given import specifier. Choose the strategy that matches your runtime environment."
+        },
+        {
+          "title": "Path Aliases with baseUrl and paths",
+          "code": "// tsconfig.json\n// {\n//   \"compilerOptions\": {\n//     \"baseUrl\": \".\",\n//     \"paths\": {\n//       \"@models/*\": [\"src/models/*\"],\n//       \"@utils/*\": [\"src/utils/*\"],\n//       \"@config\": [\"src/config/index\"]\n//     }\n//   }\n// }\n\n// With the above config, these imports resolve correctly:\n// import { User } from '@models/user';   -> src/models/user.ts\n// import { formatDate } from '@utils/date'; -> src/utils/date.ts\n// import config from '@config';           -> src/config/index.ts\n\n// Simulating alias resolution\nconst aliases: Record<string, string> = {\n  '@models/*': 'src/models/*',\n  '@utils/*': 'src/utils/*',\n  '@config': 'src/config/index'\n};\n\nfunction resolveAlias(importPath: string): string {\n  for (const [pattern, target] of Object.entries(aliases)) {\n    const prefix = pattern.replace('/*', '');\n    if (importPath.startsWith(prefix)) {\n      return importPath.replace(prefix, target.replace('/*', ''));\n    }\n  }\n  return importPath;\n}\n\nconsole.log(resolveAlias('@models/user'));\nconsole.log(resolveAlias('@utils/date'));\nconsole.log(resolveAlias('@config'));",
+          "output": "src/models/user\nsrc/utils/date\nsrc/config/index",
+          "explanation": "Path aliases defined in tsconfig.json map short import specifiers to actual file paths. The wildcard (*) in paths captures the rest of the path. Remember that your bundler needs matching configuration."
+        }
+      ],
+      "notes": [
+        "For Vite projects, use 'moduleResolution': 'bundler' — it supports extensionless imports and the package.json 'exports' field.",
+        "Path aliases in tsconfig.json only affect TypeScript's type checker. You must also configure your bundler (e.g., Vite's resolve.alias) for runtime resolution.",
+        "With 'nodenext' resolution, relative imports must include the .js extension even when the source file is .ts — TypeScript resolves .js to .ts automatically."
+      ],
+      "commonPitfalls": [
+        "Setting paths without baseUrl — in TypeScript 4.1+, paths can work without baseUrl, but older versions require it.",
+        "Using 'moduleResolution': 'node' with ESM projects — this does not support the 'exports' field in package.json, leading to resolution failures with modern packages."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "module-resolution-exercise-1",
+        "title": "Simulate Module Resolution",
+        "description": "Write a function that simulates how Node.js module resolution works. Given a module specifier, return the list of paths it would check.",
+        "starterCode": "// Write a function resolveSteps(specifier: string): string[]\n// If specifier starts with './' (relative):\n//   return [specifier + '.ts', specifier + '/index.ts']\n// If specifier is a package name (no './'):\n//   return ['node_modules/' + specifier + '/index.ts', 'node_modules/' + specifier + '/package.json \"main\"']\n\n// Your code here\n\n// console.log(resolveSteps('./utils').join(', '));\n// console.log(resolveSteps('lodash').join(', '));",
+        "solution": "function resolveSteps(specifier: string): string[] {\n  if (specifier.startsWith('./')) {\n    return [specifier + '.ts', specifier + '/index.ts'];\n  }\n  return [\n    'node_modules/' + specifier + '/index.ts',\n    'node_modules/' + specifier + '/package.json \"main\"'\n  ];\n}\n\nconsole.log(resolveSteps('./utils').join(', '));\nconsole.log(resolveSteps('lodash').join(', '));",
+        "expectedOutput": "./utils.ts, ./utils/index.ts\nnode_modules/lodash/index.ts, node_modules/lodash/package.json \"main\"",
+        "hints": [
+          "Check if the specifier starts with './' using the startsWith method.",
+          "For relative imports, TypeScript checks the file directly first, then looks for an index file in a directory."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "module-resolution-exercise-2",
+        "title": "Path Alias Resolver",
+        "description": "Build a function that resolves path aliases based on a given alias map configuration, similar to how tsconfig.json paths work.",
+        "starterCode": "// Write a function resolveAlias(importPath: string, aliasMap: Record<string, string>): string\n// The aliasMap keys use '@alias/*' pattern (with wildcard)\n// Replace the alias prefix with the mapped path\n// If no alias matches, return the original importPath\n\n// Example aliasMap:\n// { '@components/*': 'src/components/*', '@hooks/*': 'src/hooks/*' }\n\n// Your code here\n\n// const aliases = { '@components/*': 'src/components/*', '@hooks/*': 'src/hooks/*' };\n// console.log(resolveAlias('@components/Button', aliases));\n// console.log(resolveAlias('@hooks/useAuth', aliases));\n// console.log(resolveAlias('./local', aliases));",
+        "solution": "function resolveAlias(importPath: string, aliasMap: Record<string, string>): string {\n  for (const [pattern, target] of Object.entries(aliasMap)) {\n    const prefix = pattern.replace('/*', '');\n    const targetBase = target.replace('/*', '');\n    if (importPath.startsWith(prefix)) {\n      return importPath.replace(prefix, targetBase);\n    }\n  }\n  return importPath;\n}\n\nconst aliases = { '@components/*': 'src/components/*', '@hooks/*': 'src/hooks/*' };\nconsole.log(resolveAlias('@components/Button', aliases));\nconsole.log(resolveAlias('@hooks/useAuth', aliases));\nconsole.log(resolveAlias('./local', aliases));",
+        "expectedOutput": "src/components/Button\nsrc/hooks/useAuth\n./local",
+        "hints": [
+          "Strip the '/*' from both the pattern key and the target value to get the prefix and replacement base.",
+          "Use String.startsWith to check if the import path matches an alias prefix."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "declaration-files",
+    "sectionId": "modules-and-declarations",
+    "orderIndex": 2,
+    "title": "Declaration Files",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["declaration files", ".d.ts", "declare keyword", "ambient modules", "ambient declarations", "global augmentation"],
+    "content": {
+      "explanation": "Declaration files (.d.ts) are TypeScript files that contain only type information and no runtime code. They serve as a bridge between TypeScript's type system and JavaScript libraries that were not written in TypeScript. When TypeScript encounters a .d.ts file, it uses the type information for type checking but does not emit any JavaScript from it. Declaration files are the backbone of TypeScript's interoperability with the vast JavaScript ecosystem.\n\nThe `declare` keyword is used to tell TypeScript about the shape of code that exists elsewhere — in a JavaScript library, a global variable injected by a script tag, or a runtime environment API. When you write `declare function jQuery(selector: string): any`, you are not creating a function; you are telling TypeScript that this function exists at runtime and describing its type signature. The `declare` keyword can be applied to variables, functions, classes, enums, namespaces, and modules.\n\nAmbient module declarations allow you to type non-TypeScript modules such as CSS files, JSON files, images, or any other asset that your bundler can import. By writing `declare module '*.css'`, you tell TypeScript that any CSS import will resolve to a specific type. This is commonly used in projects with Webpack or Vite loaders that allow importing non-JavaScript assets.\n\nTo create declaration files for your own code, you can either write them manually or let the TypeScript compiler generate them using the `declaration: true` option in tsconfig.json. When publishing a library, you should include .d.ts files alongside your compiled JavaScript so that TypeScript consumers get full type checking. The `types` or `typings` field in package.json points to your entry declaration file.",
+      "codeExamples": [
+        {
+          "title": "Using the declare Keyword",
+          "code": "// globals.d.ts — declaring global variables and functions\n// declare const API_URL: string;\n// declare function fetchData(endpoint: string): Promise<any>;\n// declare class EventBus {\n//   on(event: string, callback: Function): void;\n//   emit(event: string, data?: any): void;\n// }\n\n// Simulating declared globals\nconst API_URL: string = 'https://api.example.com';\n\nfunction fetchData(endpoint: string): Promise<any> {\n  return Promise.resolve({ url: `${API_URL}${endpoint}` });\n}\n\nclass EventBus {\n  on(event: string, callback: Function): void {\n    console.log(`Listener added for: ${event}`);\n  }\n  emit(event: string, data?: any): void {\n    console.log(`Event emitted: ${event}`);\n  }\n}\n\nconsole.log(API_URL);\nconst bus = new EventBus();\nbus.on('click', () => {});\nbus.emit('click');",
+          "output": "https://api.example.com\nListener added for: click\nEvent emitted: click",
+          "explanation": "The declare keyword tells TypeScript about values that exist at runtime but are defined elsewhere. In a .d.ts file, all declarations are implicitly ambient."
+        },
+        {
+          "title": "Ambient Module Declarations",
+          "code": "// In a .d.ts file, you would write:\n// declare module '*.css' {\n//   const classes: Record<string, string>;\n//   export default classes;\n// }\n// declare module '*.svg' {\n//   const src: string;\n//   export default src;\n// }\n// declare module '*.png' {\n//   const src: string;\n//   export default src;\n// }\n\n// Simulating what these declarations enable:\ninterface CSSModule {\n  [className: string]: string;\n}\n\nconst styles: CSSModule = {\n  container: 'container_x7k2',\n  header: 'header_a3b1',\n  button: 'button_m9p4'\n};\n\nconsole.log(styles.container);\nconsole.log(styles.header);\nconsole.log(Object.keys(styles).length + ' CSS classes');",
+          "output": "container_x7k2\nheader_a3b1\n3 CSS classes",
+          "explanation": "Ambient module declarations tell TypeScript what type to assign to imports that match a given pattern. This is essential for bundlers that support importing non-JS assets."
+        },
+        {
+          "title": "Generating Declaration Files",
+          "code": "// When you compile with { declaration: true }, TypeScript generates .d.ts files\n// Source: math-lib.ts\n// export function add(a: number, b: number): number { return a + b; }\n// export interface MathResult { value: number; operation: string; }\n\n// Generated: math-lib.d.ts\n// export declare function add(a: number, b: number): number;\n// export interface MathResult { value: number; operation: string; }\n\n// The .d.ts file strips implementation, keeping only type signatures\n\nfunction add(a: number, b: number): number { return a + b; }\n\ninterface MathResult {\n  value: number;\n  operation: string;\n}\n\nconst result: MathResult = { value: add(3, 4), operation: 'addition' };\nconsole.log(result.value);\nconsole.log(result.operation);",
+          "output": "7\naddition",
+          "explanation": "The TypeScript compiler can auto-generate .d.ts files that strip out implementations, leaving only type signatures for consumers of your library."
+        }
+      ],
+      "notes": [
+        "Declaration files (.d.ts) contain no runtime code — they are purely for type information and are never emitted as JavaScript.",
+        "Use 'declare module' to provide types for non-TypeScript imports like CSS modules, SVG files, or untyped npm packages.",
+        "Set 'declaration: true' in tsconfig.json to auto-generate .d.ts files when compiling your TypeScript library."
+      ],
+      "commonPitfalls": [
+        "Putting runtime code in .d.ts files — declaration files must only contain type declarations, not implementations.",
+        "Forgetting to include .d.ts files when publishing a library — without them, TypeScript consumers get implicit 'any' types for all imports."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "declaration-files-exercise-1",
+        "title": "Write Ambient Declarations",
+        "description": "Simulate what ambient declarations do by creating interfaces that describe the shape of an external analytics library with track(), identify(), and page() methods.",
+        "starterCode": "// Create an interface 'AnalyticsLib' with these methods:\n// track(event: string, properties?: Record<string, any>): void\n// identify(userId: string): void\n// page(name: string): void\n\n// Then create an object that implements this interface\n// Call track with 'click' and { button: 'signup' }\n// Call identify with 'user-123'\n// Call page with 'home'\n\n// Your code here",
+        "solution": "interface AnalyticsLib {\n  track(event: string, properties?: Record<string, any>): void;\n  identify(userId: string): void;\n  page(name: string): void;\n}\n\nconst analytics: AnalyticsLib = {\n  track(event: string, properties?: Record<string, any>): void {\n    console.log(`Track: ${event} ${JSON.stringify(properties)}`);\n  },\n  identify(userId: string): void {\n    console.log(`Identify: ${userId}`);\n  },\n  page(name: string): void {\n    console.log(`Page: ${name}`);\n  }\n};\n\nanalytics.track('click', { button: 'signup' });\nanalytics.identify('user-123');\nanalytics.page('home');",
+        "expectedOutput": "Track: click {\"button\":\"signup\"}\nIdentify: user-123\nPage: home",
+        "hints": [
+          "Define an interface with the three method signatures, using void as the return type for each.",
+          "Create an object literal that matches the interface shape, with each method logging its arguments."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "declaration-files-exercise-2",
+        "title": "Module Shape Descriptor",
+        "description": "Create a type that describes the shape of a configuration module, then create an object matching that shape. This simulates what a .d.ts file does for an external config.",
+        "starterCode": "// Create an interface 'AppConfig' with:\n// apiUrl: string\n// port: number\n// features: { darkMode: boolean; notifications: boolean }\n// getFullUrl(path: string): string\n\n// Create a config object matching AppConfig\n// apiUrl should be 'https://api.example.com'\n// port should be 3000\n// darkMode true, notifications false\n// getFullUrl should concatenate apiUrl + path\n\n// Print config.getFullUrl('/users')\n// Print config.features.darkMode\n// Print config.port\n\n// Your code here",
+        "solution": "interface AppConfig {\n  apiUrl: string;\n  port: number;\n  features: { darkMode: boolean; notifications: boolean };\n  getFullUrl(path: string): string;\n}\n\nconst config: AppConfig = {\n  apiUrl: 'https://api.example.com',\n  port: 3000,\n  features: { darkMode: true, notifications: false },\n  getFullUrl(path: string): string {\n    return this.apiUrl + path;\n  }\n};\n\nconsole.log(config.getFullUrl('/users'));\nconsole.log(config.features.darkMode);\nconsole.log(config.port);",
+        "expectedOutput": "https://api.example.com/users\ntrue\n3000",
+        "hints": [
+          "The interface should have a nested object type for 'features' with boolean fields.",
+          "In the getFullUrl implementation, use 'this.apiUrl' to reference the object's own apiUrl property."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "definitelytyped",
+    "sectionId": "modules-and-declarations",
+    "orderIndex": 3,
+    "title": "DefinitelyTyped and @types Packages",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["DefinitelyTyped", "@types packages", "custom declarations", "type acquisition", "typeRoots"],
+    "content": {
+      "explanation": "DefinitelyTyped is the largest repository of TypeScript type definitions in the world, hosted on GitHub as a community-driven project. It provides .d.ts declaration files for thousands of JavaScript libraries that were not originally written in TypeScript. These type definitions are published to npm under the @types scope — for example, type definitions for the 'lodash' library are available as '@types/lodash'. When you install an @types package, TypeScript automatically picks up the declarations.\n\nTypeScript resolves @types packages through the `typeRoots` configuration. By default, TypeScript looks in `node_modules/@types` for type definitions. You can customize this by setting `typeRoots` in your tsconfig.json to point to additional directories. The `types` option lets you whitelist which @types packages are included — if specified, only the listed packages are loaded, which can speed up compilation in large projects.\n\nSometimes you need to write custom declarations for libraries that have no @types package, for internal packages, or for augmenting existing types. You can create a .d.ts file in your project (commonly in a `types/` or `@types/` directory) and declare the module shape. For global augmentations — like adding a property to the Window interface — you use `declare global` inside a module file. This is a powerful technique for extending existing type definitions.\n\nWhen deciding between bundled types and @types packages, know that many modern libraries ship their own .d.ts files alongside their JavaScript. TypeScript checks for a `types` or `typings` field in the library's package.json first. If that exists, no @types package is needed. Libraries like Axios, Zod, and date-fns include built-in TypeScript support. You only need @types when the library itself does not include type declarations.",
+      "codeExamples": [
+        {
+          "title": "Using @types Packages",
+          "code": "// Install types for a JS library:\n// npm install lodash\n// npm install -D @types/lodash\n\n// TypeScript now knows the types:\n// import _ from 'lodash';\n// _.chunk([1, 2, 3, 4], 2);  // TypeScript knows this returns number[][]\n\n// Simulating what @types provides\ninterface LodashStatic {\n  chunk<T>(array: T[], size: number): T[][];\n  uniq<T>(array: T[]): T[];\n  flatten<T>(array: T[][]): T[];\n}\n\nconst _: LodashStatic = {\n  chunk<T>(array: T[], size: number): T[][] {\n    const result: T[][] = [];\n    for (let i = 0; i < array.length; i += size) {\n      result.push(array.slice(i, i + size));\n    }\n    return result;\n  },\n  uniq<T>(array: T[]): T[] {\n    return [...new Set(array)];\n  },\n  flatten<T>(array: T[][]): T[] {\n    return array.reduce((acc, val) => acc.concat(val), []);\n  }\n};\n\nconsole.log(JSON.stringify(_.chunk([1, 2, 3, 4, 5, 6], 2)));\nconsole.log(JSON.stringify(_.uniq([1, 2, 2, 3, 3, 3])));\nconsole.log(JSON.stringify(_.flatten([[1, 2], [3, 4], [5]])));",
+          "output": "[[1,2],[3,4],[5,6]]\n[1,2,3]\n[1,2,3,4,5]",
+          "explanation": "The @types/lodash package provides TypeScript with type information for the lodash library. This gives you autocomplete, type checking, and documentation without lodash itself being written in TypeScript."
+        },
+        {
+          "title": "Writing Custom Type Declarations",
+          "code": "// custom-lib.d.ts — declaring types for an untyped library\n// declare module 'my-analytics' {\n//   export function init(apiKey: string): void;\n//   export function track(event: string, data?: object): void;\n//   export interface Config {\n//     debug: boolean;\n//     endpoint: string;\n//   }\n//   export function configure(config: Partial<Config>): void;\n// }\n\n// Simulating the custom declaration\ninterface Config {\n  debug: boolean;\n  endpoint: string;\n}\n\nconst myAnalytics = {\n  init(apiKey: string): void {\n    console.log(`Initialized with key: ${apiKey.slice(0, 4)}...`);\n  },\n  track(event: string, data?: object): void {\n    console.log(`Tracked: ${event}`);\n  },\n  configure(config: Partial<Config>): void {\n    console.log(`Configured: debug=${config.debug}`);\n  }\n};\n\nmyAnalytics.init('sk_live_abc123');\nmyAnalytics.track('page_view');\nmyAnalytics.configure({ debug: true });",
+          "output": "Initialized with key: sk_l...\nTracked: page_view\nConfigured: debug=true",
+          "explanation": "When no @types package exists, you write your own .d.ts file using 'declare module' to describe the library's API shape."
+        },
+        {
+          "title": "Global Augmentation",
+          "code": "// Augmenting the global Window interface (in a .d.ts file):\n// declare global {\n//   interface Window {\n//     analytics: { track: (event: string) => void };\n//   }\n// }\n\n// Simulating global augmentation\ninterface CustomGlobal {\n  appName: string;\n  version: string;\n  features: string[];\n}\n\nconst globals: CustomGlobal = {\n  appName: 'MyApp',\n  version: '2.1.0',\n  features: ['auth', 'dashboard', 'reports']\n};\n\nconsole.log(`${globals.appName} v${globals.version}`);\nconsole.log(`Features: ${globals.features.join(', ')}`);\nconsole.log(`Feature count: ${globals.features.length}`);",
+          "output": "MyApp v2.1.0\nFeatures: auth, dashboard, reports\nFeature count: 3",
+          "explanation": "Global augmentation lets you extend existing global interfaces like Window, NodeJS.ProcessEnv, or any other ambient type."
+        }
+      ],
+      "notes": [
+        "Install @types packages as devDependencies — they are only needed at compile time, not at runtime.",
+        "Many modern libraries (Axios, Zod, date-fns) ship their own types — check the library's package.json for a 'types' field before installing an @types package.",
+        "Use the 'types' array in tsconfig.json to explicitly whitelist which @types packages are included, improving compile time in large projects."
+      ],
+      "commonPitfalls": [
+        "Installing @types packages for libraries that already bundle their own types — this can cause duplicate declaration errors.",
+        "Forgetting to add your custom .d.ts files directory to 'include' in tsconfig.json — TypeScript will not see declarations outside the included paths."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "definitelytyped-exercise-1",
+        "title": "Simulate @types Package",
+        "description": "Write type declarations (as interfaces) for a fictional 'string-utils' library that has capitalize, reverse, and truncate functions. Then implement and test them.",
+        "starterCode": "// Define an interface 'StringUtils' with:\n// capitalize(str: string): string — capitalizes first letter\n// reverse(str: string): string — reverses the string\n// truncate(str: string, maxLen: number): string — truncates with '...' if longer than maxLen\n\n// Implement the object and test it:\n// capitalize('hello world')\n// reverse('TypeScript')\n// truncate('This is a long sentence', 10)\n\n// Your code here",
+        "solution": "interface StringUtils {\n  capitalize(str: string): string;\n  reverse(str: string): string;\n  truncate(str: string, maxLen: number): string;\n}\n\nconst stringUtils: StringUtils = {\n  capitalize(str: string): string {\n    return str.charAt(0).toUpperCase() + str.slice(1);\n  },\n  reverse(str: string): string {\n    return str.split('').reverse().join('');\n  },\n  truncate(str: string, maxLen: number): string {\n    if (str.length <= maxLen) return str;\n    return str.slice(0, maxLen) + '...';\n  }\n};\n\nconsole.log(stringUtils.capitalize('hello world'));\nconsole.log(stringUtils.reverse('TypeScript'));\nconsole.log(stringUtils.truncate('This is a long sentence', 10));",
+        "expectedOutput": "Hello world\ntpircSepyT\nThis is a ...",
+        "hints": [
+          "Use charAt(0).toUpperCase() + str.slice(1) for capitalize.",
+          "For truncate, check if the string length exceeds maxLen; if so, slice to maxLen and append '...'."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "definitelytyped-exercise-2",
+        "title": "Global Type Augmentation Simulation",
+        "description": "Create a type-safe configuration registry that simulates how you might augment a global type to register plugin configurations.",
+        "starterCode": "// Create a PluginRegistry interface with:\n// register(name: string, config: Record<string, any>): void\n// get(name: string): Record<string, any> | undefined\n// list(): string[]\n\n// Implement it using a Map internally\n// Register 'auth' with { provider: 'oauth', timeout: 5000 }\n// Register 'cache' with { ttl: 3600, maxSize: 100 }\n// Print list of registered plugins\n// Print the auth plugin config's provider\n// Print the cache plugin config's ttl\n\n// Your code here",
+        "solution": "interface PluginRegistry {\n  register(name: string, config: Record<string, any>): void;\n  get(name: string): Record<string, any> | undefined;\n  list(): string[];\n}\n\nconst registry: PluginRegistry = (() => {\n  const plugins = new Map<string, Record<string, any>>();\n  return {\n    register(name: string, config: Record<string, any>): void {\n      plugins.set(name, config);\n    },\n    get(name: string): Record<string, any> | undefined {\n      return plugins.get(name);\n    },\n    list(): string[] {\n      return Array.from(plugins.keys());\n    }\n  };\n})();\n\nregistry.register('auth', { provider: 'oauth', timeout: 5000 });\nregistry.register('cache', { ttl: 3600, maxSize: 100 });\nconsole.log(registry.list().join(', '));\nconsole.log(registry.get('auth')!.provider);\nconsole.log(registry.get('cache')!.ttl);",
+        "expectedOutput": "auth, cache\noauth\n3600",
+        "hints": [
+          "Use a Map<string, Record<string, any>> to store plugin configurations internally.",
+          "Use Array.from(map.keys()) to convert the Map's keys into an array for the list() method."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

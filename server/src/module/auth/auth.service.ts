@@ -3,6 +3,11 @@ import { OAuth2Client } from "google-auth-library";
 import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
+import { BadgeService } from "../badge/badge.service.js";
+
+const badgeService = new BadgeService();
+import { sendEmail } from "../../utils/email.utils.js";
+import { welcomeEmailHtml, otpEmailHtml, resetPasswordEmailHtml } from "../../utils/email-templates.js";
 import type { UserRole } from "@prisma/client";
 
 interface RegisterInput {
@@ -75,12 +80,30 @@ export class AuthService {
         role: true,
         company: true,
         designation: true,
+        isVerified: true,
         createdAt: true,
         subscriptionPlan: true,
         subscriptionStatus: true,
         subscriptionEndDate: true,
       },
     });
+
+    // Generate 6-digit OTP, hash it, and store it
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedOtp = await hashPassword(otp);
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000); // 10 minutes
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { verificationOtp: hashedOtp, otpExpiresAt },
+    });
+
+    // Send OTP email (fire-and-forget, don't block registration)
+    sendEmail({
+      to: user.email,
+      subject: "Verify your InternHack account",
+      html: otpEmailHtml(user.name, otp),
+    }).catch((err) => console.error("Failed to send OTP email:", err));
 
     const token = generateToken({ id: user.id, email: user.email, role: user.role });
 
@@ -117,7 +140,7 @@ export class AuthService {
         });
       }
     } else {
-      // New user - create account
+      // New user - create account with isVerified true (Google-verified email)
       const randomPassword = crypto.randomBytes(32).toString("hex");
       const hashedPassword = await hashPassword(randomPassword);
 
@@ -128,8 +151,16 @@ export class AuthService {
           password: hashedPassword,
           role: data.role ?? "STUDENT",
           profilePic: picture ?? null,
+          isVerified: true,
         },
       });
+
+      // Send welcome email (fire-and-forget)
+      sendEmail({
+        to: user.email,
+        subject: "Welcome to InternHack!",
+        html: welcomeEmailHtml(user.name),
+      }).catch((err) => console.error("Failed to send welcome email:", err));
     }
 
     const token = generateToken({ id: user.id, email: user.email, role: user.role });
@@ -143,6 +174,7 @@ export class AuthService {
         company: user.company,
         designation: user.designation,
         profilePic: user.profilePic,
+        isVerified: user.isVerified,
         createdAt: user.createdAt,
         subscriptionPlan: user.subscriptionPlan,
         subscriptionStatus: user.subscriptionStatus,
@@ -178,6 +210,7 @@ export class AuthService {
         role: user.role,
         company: user.company,
         designation: user.designation,
+        isVerified: user.isVerified,
         createdAt: user.createdAt,
         subscriptionPlan: user.subscriptionPlan,
         subscriptionStatus: user.subscriptionStatus,
@@ -192,6 +225,7 @@ export class AuthService {
     name: true,
     email: true,
     role: true,
+    isVerified: true,
     contactNo: true,
     profilePic: true,
     coverImage: true,
@@ -257,6 +291,9 @@ export class AuthService {
       select: this.profileSelect,
     });
 
+    // Check profile_complete badge (fire-and-forget)
+    badgeService.checkAndAwardBadges(userId, "profile_complete").catch(() => {});
+
     return user;
   }
 
@@ -284,6 +321,201 @@ export class AuthService {
     return {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
+    };
+  }
+
+  async verifyEmail(email: string, otp: string) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (user.isVerified) {
+      throw new Error("Email is already verified");
+    }
+
+    if (!user.verificationOtp || !user.otpExpiresAt) {
+      throw new Error("No verification code found. Please request a new one");
+    }
+
+    if (new Date() > user.otpExpiresAt) {
+      throw new Error("Verification code has expired. Please request a new one");
+    }
+
+    const isValid = await comparePassword(otp, user.verificationOtp);
+    if (!isValid) {
+      throw new Error("Invalid verification code");
+    }
+
+    const updated = await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        isVerified: true,
+        verificationOtp: null,
+        otpExpiresAt: null,
+      },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        role: true,
+        isVerified: true,
+      },
+    });
+
+    // Send welcome email (fire-and-forget)
+    sendEmail({
+      to: user.email,
+      subject: "Welcome to InternHack!",
+      html: welcomeEmailHtml(user.name),
+    }).catch((err) => console.error("Failed to send welcome email:", err));
+
+    return updated;
+  }
+
+  async resendOtp(email: string) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new Error("User not found");
+    }
+
+    if (user.isVerified) {
+      throw new Error("Email is already verified");
+    }
+
+    // Cooldown check: if otpExpiresAt exists and (otpExpiresAt - 8 minutes) > now,
+    // that means the OTP was sent less than 2 minutes ago
+    if (user.otpExpiresAt) {
+      const cooldownEnd = new Date(user.otpExpiresAt.getTime() - 8 * 60 * 1000);
+      if (cooldownEnd > new Date()) {
+        throw new Error("Please wait before requesting again");
+      }
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedOtp = await hashPassword(otp);
+    const otpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { verificationOtp: hashedOtp, otpExpiresAt },
+    });
+
+    await sendEmail({
+      to: user.email,
+      subject: "Verify your InternHack account",
+      html: otpEmailHtml(user.name, otp),
+    });
+  }
+
+  async forgotPassword(email: string) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      // Don't reveal whether the email exists
+      return;
+    }
+
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const hashedOtp = await hashPassword(otp);
+    const resetOtpExpiresAt = new Date(Date.now() + 10 * 60 * 1000);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: { resetPasswordOtp: hashedOtp, resetOtpExpiresAt },
+    });
+
+    await sendEmail({
+      to: user.email,
+      subject: "Reset your InternHack password",
+      html: resetPasswordEmailHtml(user.name, otp),
+    });
+  }
+
+  async resetPassword(email: string, otp: string, newPassword: string) {
+    const user = await prisma.user.findUnique({ where: { email } });
+    if (!user) {
+      throw new Error("Invalid or expired reset code");
+    }
+
+    if (!user.resetPasswordOtp || !user.resetOtpExpiresAt) {
+      throw new Error("No reset code found. Please request a new one");
+    }
+
+    if (new Date() > user.resetOtpExpiresAt) {
+      throw new Error("Reset code has expired. Please request a new one");
+    }
+
+    const isValid = await comparePassword(otp, user.resetPasswordOtp);
+    if (!isValid) {
+      throw new Error("Invalid or expired reset code");
+    }
+
+    const hashedPassword = await hashPassword(newPassword);
+
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetPasswordOtp: null,
+        resetOtpExpiresAt: null,
+      },
+    });
+  }
+
+  async importGitHub(username: string) {
+    const headers = { "User-Agent": "InternHack-App" };
+
+    const [userRes, reposRes] = await Promise.all([
+      fetch(`https://api.github.com/users/${encodeURIComponent(username)}`, { headers }),
+      fetch(`https://api.github.com/users/${encodeURIComponent(username)}/repos?sort=stars&per_page=10&type=owner`, { headers }),
+    ]);
+
+    if (!userRes.ok) {
+      if (userRes.status === 404) throw new Error("GitHub user not found");
+      throw new Error(`GitHub API error: ${userRes.status}`);
+    }
+
+    const profile = (await userRes.json()) as {
+      name: string | null;
+      bio: string | null;
+      avatar_url: string | null;
+      blog: string | null;
+      location: string | null;
+    };
+
+    if (!reposRes.ok) {
+      throw new Error(`GitHub API error: ${reposRes.status}`);
+    }
+
+    const repos = (await reposRes.json()) as {
+      name: string;
+      description: string | null;
+      language: string | null;
+      html_url: string;
+      homepage: string | null;
+      fork: boolean;
+    }[];
+
+    const ownRepos = repos.filter((r) => !r.fork);
+
+    const languages = [...new Set(ownRepos.map((r) => r.language).filter(Boolean))] as string[];
+
+    const projects = ownRepos.map((repo) => ({
+      title: repo.name,
+      description: repo.description ?? "",
+      techStack: repo.language ? [repo.language] : [],
+      repoUrl: repo.html_url,
+      liveUrl: repo.homepage ?? "",
+    }));
+
+    return {
+      name: profile.name ?? username,
+      bio: profile.bio ?? "",
+      avatar: profile.avatar_url ?? "",
+      portfolioUrl: profile.blog ?? "",
+      location: profile.location ?? "",
+      languages,
+      projects,
     };
   }
 }

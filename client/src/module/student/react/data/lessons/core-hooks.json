@@ -1,0 +1,357 @@
+[
+  {
+    "id": "useeffect-basics",
+    "sectionId": "core-hooks",
+    "orderIndex": 0,
+    "title": "useEffect Basics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["useEffect", "side effects", "cleanup functions", "dependency array", "component lifecycle"],
+    "content": {
+      "explanation": "The useEffect hook is React's primary mechanism for performing side effects in function components. Side effects are operations that reach outside the component's rendering logic — things like fetching data, subscribing to events, manually changing the DOM, or setting up timers. Before hooks, these operations were split across componentDidMount, componentDidUpdate, and componentWillUnmount in class components. useEffect unifies all three into a single API.\n\nuseEffect accepts two arguments: a setup function and an optional dependency array. The setup function runs after React commits changes to the DOM. If you return a function from the setup function, React treats it as a cleanup function and calls it before the effect runs again and when the component unmounts. This cleanup mechanism prevents memory leaks from subscriptions, timers, and other persistent resources.\n\nThe dependency array controls when the effect re-runs. If you pass an empty array [], the effect runs only once after the initial render — similar to componentDidMount. If you pass specific values [a, b], the effect re-runs only when those values change between renders. If you omit the array entirely, the effect runs after every render. Getting the dependency array right is one of the most important skills in React development.\n\nReact compares dependency values using Object.is (similar to ===). This means objects and arrays create new references on every render, which can cause effects to run more often than expected. Understanding reference equality is critical when working with useEffect dependencies.\n\nIn React 18's Strict Mode during development, effects are intentionally run twice (mount, unmount, mount) to help you find bugs related to missing cleanup functions. This does not happen in production builds.",
+      "codeExamples": [
+        {
+          "title": "Basic useEffect with dependency array",
+          "code": "function UserProfile({ userId }) {\n  const [user, setUser] = React.useState(null);\n\n  React.useEffect(() => {\n    console.log('Effect running for userId:', userId);\n\n    // Simulate fetching user data\n    const userData = { id: userId, name: 'User ' + userId };\n    setUser(userData);\n\n    // Cleanup function\n    return () => {\n      console.log('Cleanup for userId:', userId);\n    };\n  }, [userId]); // Only re-run when userId changes\n\n  console.log('Rendered user:', user ? user.name : 'loading');\n  return null;\n}",
+          "output": "Effect running for userId: 1\nRendered user: User 1",
+          "explanation": "The effect runs after the component renders. The cleanup function runs before the next effect execution or when the component unmounts. The dependency array [userId] ensures the effect only re-runs when userId changes."
+        },
+        {
+          "title": "Empty dependency array vs no dependency array",
+          "code": "function Counter() {\n  const [count, setCount] = React.useState(0);\n\n  // Runs only once after initial render\n  React.useEffect(() => {\n    console.log('Mount effect: runs once');\n    return () => console.log('Unmount cleanup');\n  }, []);\n\n  // Runs after every render\n  React.useEffect(() => {\n    console.log('Render effect: count is', count);\n  });\n\n  // Runs only when count changes\n  React.useEffect(() => {\n    console.log('Count effect: count changed to', count);\n  }, [count]);\n\n  return null;\n}",
+          "output": "Mount effect: runs once\nRender effect: count is 0\nCount effect: count changed to 0",
+          "explanation": "Three different dependency patterns: empty array for mount-only, no array for every render, and specific dependencies for selective re-runs."
+        },
+        {
+          "title": "Cleanup function for timers",
+          "code": "function Timer() {\n  const [seconds, setSeconds] = React.useState(0);\n\n  React.useEffect(() => {\n    console.log('Setting up interval');\n    const id = setInterval(() => {\n      setSeconds(s => s + 1);\n    }, 1000);\n\n    return () => {\n      console.log('Clearing interval');\n      clearInterval(id);\n    };\n  }, []); // Empty array: set up once, clean up on unmount\n\n  console.log('Current seconds:', seconds);\n  return null;\n}",
+          "output": "Setting up interval\nCurrent seconds: 0",
+          "explanation": "The cleanup function clears the interval when the component unmounts, preventing memory leaks. Using the functional updater form (s => s + 1) avoids needing seconds in the dependency array."
+        }
+      ],
+      "notes": [
+        "Effects run after the browser paints, not before. If you need to measure DOM layout before paint, use useLayoutEffect instead.",
+        "React's Strict Mode in development intentionally double-invokes effects to surface bugs with missing cleanup. This helps catch issues like duplicate subscriptions.",
+        "Always include all values from the component scope that change over time and are used inside the effect in the dependency array."
+      ],
+      "commonPitfalls": [
+        "Forgetting to include dependencies in the array causes stale closures — the effect captures old values and never updates. The eslint-plugin-react-hooks 'exhaustive-deps' rule catches this.",
+        "Omitting the dependency array entirely causes the effect to run after every single render, which can lead to performance issues or infinite loops when the effect updates state."
+      ],
+      "interviewTips": [
+        "Explain that useEffect replaces three class lifecycle methods: componentDidMount (empty deps), componentDidUpdate (with deps), and componentWillUnmount (cleanup return).",
+        "Mention that effects are asynchronous — they run after paint. This is different from useLayoutEffect which runs synchronously before paint.",
+        "Be ready to explain stale closures: when a dependency is missing, the effect closes over the initial value and never sees updates."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "useeffect-basics-ex1",
+        "title": "Document Title Effect",
+        "description": "Create a useEffect that updates the document title whenever the count changes. Log the title being set.",
+        "starterCode": "function TitleUpdater() {\n  const [count, setCount] = React.useState(0);\n\n  // TODO: Add a useEffect that logs\n  // \"Setting title to: Count is X\" whenever count changes\n  // (where X is the current count)\n\n  console.log('Rendered with count:', count);\n  return null;\n}\n\nTitleUpdater();",
+        "solution": "function TitleUpdater() {\n  const [count, setCount] = React.useState(0);\n\n  React.useEffect(() => {\n    console.log('Setting title to: Count is ' + count);\n  }, [count]);\n\n  console.log('Rendered with count:', count);\n  return null;\n}\n\nTitleUpdater();",
+        "expectedOutput": "Rendered with count: 0\nSetting title to: Count is 0",
+        "hints": [
+          "useEffect takes a function as its first argument and a dependency array as its second argument.",
+          "Include [count] as the dependency array so the effect re-runs when count changes."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "useeffect-basics-ex2",
+        "title": "Effect with Cleanup",
+        "description": "Create a useEffect that logs subscribing on mount and unsubscribing on cleanup. The effect should only run once (on mount).",
+        "starterCode": "function Subscriber() {\n  // TODO: Add a useEffect that:\n  // 1. Logs \"Subscribed to updates\"\n  // 2. Returns a cleanup function that logs \"Unsubscribed from updates\"\n  // The effect should only run once on mount\n\n  console.log('Subscriber rendered');\n  return null;\n}\n\nSubscriber();",
+        "solution": "function Subscriber() {\n  React.useEffect(() => {\n    console.log('Subscribed to updates');\n    return () => {\n      console.log('Unsubscribed from updates');\n    };\n  }, []);\n\n  console.log('Subscriber rendered');\n  return null;\n}\n\nSubscriber();",
+        "expectedOutput": "Subscriber rendered\nSubscribed to updates",
+        "hints": [
+          "Pass an empty dependency array [] to make the effect run only once on mount.",
+          "Return a function from the effect — React will call it when the component unmounts."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "useeffect-patterns",
+    "sectionId": "core-hooks",
+    "orderIndex": 1,
+    "title": "useEffect Patterns",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["data fetching", "subscriptions", "timers", "abort controller", "race conditions"],
+    "content": {
+      "explanation": "useEffect becomes truly powerful when applied to real-world patterns like data fetching, event subscriptions, and timers. Each pattern has its own set of best practices and pitfalls. Understanding these patterns is essential for building robust React applications that handle asynchronous operations correctly.\n\nData fetching is the most common useEffect pattern. When fetching data based on props or state, you need to handle race conditions — situations where an older request completes after a newer one. The standard approach uses a boolean flag (often called 'ignore' or 'cancelled') that the cleanup function sets to true. When the fetch completes, it checks this flag before updating state. Modern applications can also use AbortController to actually cancel the HTTP request.\n\nEvent subscriptions follow a consistent pattern: subscribe in the effect body and unsubscribe in the cleanup function. This applies to DOM events (window resize, scroll), WebSocket connections, browser APIs (IntersectionObserver, ResizeObserver), and custom event emitters. The key rule is that every subscription must have a matching unsubscription in the cleanup.\n\nTimers (setTimeout, setInterval) are another frequent pattern. setTimeout is straightforward — set it in the effect, clear it in cleanup. setInterval requires more care because the callback closes over state values. Using the functional updater form of setState (e.g., setCount(c => c + 1)) avoids stale closure issues with intervals.\n\nA common advanced pattern is debouncing or throttling effects. For example, when implementing search-as-you-type, you want to delay the API call until the user stops typing. This combines setTimeout with cleanup: each keystroke clears the previous timeout and sets a new one.",
+      "codeExamples": [
+        {
+          "title": "Data fetching with race condition handling",
+          "code": "function UserData({ userId }) {\n  const [data, setData] = React.useState(null);\n  const [loading, setLoading] = React.useState(true);\n\n  React.useEffect(() => {\n    let cancelled = false;\n    setLoading(true);\n\n    console.log('Fetching data for user:', userId);\n\n    // Simulate async fetch\n    const fetchData = () => {\n      const result = { id: userId, name: 'User ' + userId };\n      if (!cancelled) {\n        setData(result);\n        setLoading(false);\n        console.log('Data loaded:', result.name);\n      } else {\n        console.log('Fetch cancelled for user:', userId);\n      }\n    };\n\n    fetchData();\n\n    return () => {\n      cancelled = true;\n    };\n  }, [userId]);\n\n  console.log('Render - loading:', loading, 'data:', data ? data.name : 'null');\n  return null;\n}\n\nUserData({ userId: 1 });",
+          "output": "Render - loading: true data: null\nFetching data for user: 1\nData loaded: User 1\nRender - loading: false data: User 1",
+          "explanation": "The cancelled flag prevents state updates if the component unmounts or the userId changes before the fetch completes. This prevents the 'Can't perform a React state update on an unmounted component' warning."
+        },
+        {
+          "title": "Window event subscription",
+          "code": "function WindowSize() {\n  const [width, setWidth] = React.useState(1024);\n\n  React.useEffect(() => {\n    const handleResize = () => {\n      console.log('Window resized');\n      setWidth(window.innerWidth || 1024);\n    };\n\n    console.log('Adding resize listener');\n    window.addEventListener('resize', handleResize);\n\n    return () => {\n      console.log('Removing resize listener');\n      window.removeEventListener('resize', handleResize);\n    };\n  }, []);\n\n  console.log('Current width:', width);\n  return null;\n}\n\nWindowSize();",
+          "output": "Current width: 1024\nAdding resize listener",
+          "explanation": "The effect subscribes to window resize events on mount and cleans up the listener on unmount. The empty dependency array ensures this runs only once."
+        },
+        {
+          "title": "Debounced search effect",
+          "code": "function Search({ query }) {\n  const [results, setResults] = React.useState([]);\n\n  React.useEffect(() => {\n    if (!query) {\n      setResults([]);\n      return;\n    }\n\n    console.log('Setting debounce timer for:', query);\n\n    const timeoutId = setTimeout(() => {\n      console.log('Searching for:', query);\n      setResults(['Result for ' + query]);\n    }, 300);\n\n    return () => {\n      console.log('Clearing timer for:', query);\n      clearTimeout(timeoutId);\n    };\n  }, [query]);\n\n  console.log('Results:', results.length);\n  return null;\n}\n\nSearch({ query: 'react' });",
+          "output": "Results: 0\nSetting debounce timer for: react\nSearching for: react\nResults: 1",
+          "explanation": "Each time query changes, the previous timeout is cleared and a new one is set. Only the last query after 300ms of inactivity triggers the actual search."
+        }
+      ],
+      "notes": [
+        "Always handle cleanup for subscriptions and timers. Leaked subscriptions cause memory leaks and can update state on unmounted components.",
+        "For data fetching, consider using libraries like React Query or SWR which handle caching, race conditions, and loading states automatically.",
+        "The functional updater form of setState (e.g., setCount(c => c + 1)) avoids the need to include the current state value in the dependency array."
+      ],
+      "commonPitfalls": [
+        "Not handling race conditions in data fetching — if a user quickly switches between items, an older fetch might resolve after a newer one, showing stale data.",
+        "Using setInterval without the functional updater for setState causes stale closures. The callback captures the initial state value and never sees updates."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "useeffect-patterns-ex1",
+        "title": "Fetch with Cancellation",
+        "description": "Implement a useEffect that simulates fetching user data. Use a cancelled flag to prevent state updates after cleanup.",
+        "starterCode": "function FetchUser({ userId }) {\n  const [user, setUser] = React.useState(null);\n\n  // TODO: Add a useEffect that:\n  // 1. Logs \"Fetching user: X\" (where X is userId)\n  // 2. Sets user to { id: userId, name: 'User ' + userId }\n  // 3. Logs \"User loaded: User X\"\n  // 4. Uses a cancelled flag in cleanup to prevent stale updates\n  // Depend on [userId]\n\n  console.log('User:', user ? user.name : 'none');\n  return null;\n}\n\nFetchUser({ userId: 42 });",
+        "solution": "function FetchUser({ userId }) {\n  const [user, setUser] = React.useState(null);\n\n  React.useEffect(() => {\n    let cancelled = false;\n    console.log('Fetching user: ' + userId);\n\n    const userData = { id: userId, name: 'User ' + userId };\n    if (!cancelled) {\n      setUser(userData);\n      console.log('User loaded: User ' + userId);\n    }\n\n    return () => {\n      cancelled = true;\n    };\n  }, [userId]);\n\n  console.log('User:', user ? user.name : 'none');\n  return null;\n}\n\nFetchUser({ userId: 42 });",
+        "expectedOutput": "User: none\nFetching user: 42\nUser loaded: User 42\nUser: User 42",
+        "hints": [
+          "Declare 'let cancelled = false' at the top of the effect. In the cleanup, set it to true.",
+          "Check 'if (!cancelled)' before calling setUser to prevent updates after unmount."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "useeffect-patterns-ex2",
+        "title": "Timer with Cleanup",
+        "description": "Create a useEffect that sets up a setTimeout to log a message after a delay. Clean up the timer properly.",
+        "starterCode": "function DelayedMessage({ message, delay }) {\n  // TODO: Add a useEffect that:\n  // 1. Logs \"Timer set for: <message>\"\n  // 2. Sets a timeout that logs \"Delayed: <message>\" after delay ms\n  // 3. Cleans up the timeout\n  // Depend on [message, delay]\n\n  console.log('Rendered with message:', message);\n  return null;\n}\n\nDelayedMessage({ message: 'Hello', delay: 1000 });",
+        "solution": "function DelayedMessage({ message, delay }) {\n  React.useEffect(() => {\n    console.log('Timer set for: ' + message);\n    const id = setTimeout(() => {\n      console.log('Delayed: ' + message);\n    }, delay);\n\n    return () => {\n      clearTimeout(id);\n    };\n  }, [message, delay]);\n\n  console.log('Rendered with message:', message);\n  return null;\n}\n\nDelayedMessage({ message: 'Hello', delay: 1000 });",
+        "expectedOutput": "Rendered with message: Hello\nTimer set for: Hello",
+        "hints": [
+          "Use setTimeout to schedule the delayed log and store the returned ID.",
+          "In the cleanup function, call clearTimeout with the stored ID to prevent the callback from firing after unmount."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "useref-hook",
+    "sectionId": "core-hooks",
+    "orderIndex": 2,
+    "title": "useRef Hook",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["useRef", "DOM refs", "mutable refs", "ref vs state", "ref callback"],
+    "content": {
+      "explanation": "useRef returns a mutable ref object whose .current property is initialized to the passed argument. The returned object persists for the full lifetime of the component. Unlike state, mutating a ref does not cause a re-render. This makes useRef ideal for two distinct purposes: accessing DOM elements and storing mutable values that don't affect the visual output.\n\nThe most common use of useRef is to access DOM elements. By passing a ref object as the ref attribute on a JSX element, React sets ref.current to the corresponding DOM node after the component mounts. This lets you imperatively focus inputs, measure element dimensions, scroll to positions, or integrate with third-party DOM libraries. The ref is set to null when the element unmounts.\n\nThe second important use is storing mutable instance variables — values that persist across renders but whose changes don't need to trigger re-renders. Common examples include timer IDs, previous prop/state values, flags for tracking mount status, and counters for tracking renders. Think of useRef as a box that can hold any mutable value, similar to instance variables on a class.\n\nA key distinction between useRef and useState is that updating ref.current does not cause a re-render. This is both a feature and a source of bugs. If you need the UI to reflect a value, use state. If you need to track a value without causing re-renders (like a timer ID or a cancelled flag), use a ref. Mixing these up is a common mistake.\n\nRefs are also useful for capturing the previous value of a prop or state variable. By updating the ref in a useEffect, you can compare the current value with the previous one. This pattern is common enough that many codebases extract it into a usePrevious custom hook.",
+      "codeExamples": [
+        {
+          "title": "DOM ref for input focus",
+          "code": "function FocusInput() {\n  const inputRef = React.useRef(null);\n\n  React.useEffect(() => {\n    console.log('inputRef.current:', inputRef.current ? 'HTMLInputElement' : 'null');\n    // In a real app: inputRef.current.focus();\n  }, []);\n\n  console.log('Rendering FocusInput');\n  // In real JSX: <input ref={inputRef} />\n  return null;\n}\n\nFocusInput();",
+          "output": "Rendering FocusInput\ninputRef.current: null",
+          "explanation": "useRef(null) creates a ref that will hold a DOM element. The ref is attached via the ref attribute in JSX. In an effect, you can access the DOM node through ref.current."
+        },
+        {
+          "title": "Mutable ref for render counting",
+          "code": "function RenderCounter() {\n  const renderCount = React.useRef(0);\n\n  // This runs on every render but does NOT cause re-render\n  renderCount.current += 1;\n\n  console.log('Render count:', renderCount.current);\n  console.log('Type of renderCount:', typeof renderCount);\n  console.log('Has .current:', 'current' in renderCount);\n\n  return null;\n}\n\nRenderCounter();",
+          "output": "Render count: 1\nType of renderCount: object\nHas .current: true",
+          "explanation": "Mutating renderCount.current does not trigger a re-render. The ref persists across renders, making it perfect for tracking values without causing update cycles."
+        },
+        {
+          "title": "useRef vs useState comparison",
+          "code": "function RefVsState() {\n  const [stateVal, setStateVal] = React.useState(0);\n  const refVal = React.useRef(0);\n\n  // Updating ref does NOT cause re-render\n  refVal.current = 42;\n  console.log('refVal.current:', refVal.current);\n  console.log('stateVal:', stateVal);\n\n  // Updating state DOES cause re-render\n  // setStateVal(42) would trigger a re-render\n\n  console.log('Ref update triggers re-render: no');\n  console.log('State update triggers re-render: yes');\n\n  return null;\n}\n\nRefVsState();",
+          "output": "refVal.current: 42\nstateVal: 0\nRef update triggers re-render: no\nState update triggers re-render: yes",
+          "explanation": "This highlights the key difference: ref mutations are silent (no re-render), while state updates trigger re-renders. Choose based on whether the UI needs to reflect the value."
+        }
+      ],
+      "notes": [
+        "useRef returns the same object on every render. It is a plain JavaScript object with a .current property — there is nothing special about it beyond React preserving it between renders.",
+        "Do not read or write ref.current during rendering (except for initialization). Reading refs during render makes your component's behavior unpredictable.",
+        "For callback refs (functions passed as the ref attribute), React calls the function with the DOM node on mount and null on unmount. This is useful when you need to know exactly when a ref is attached."
+      ],
+      "commonPitfalls": [
+        "Using useRef when useState is needed — if the value change should be reflected in the UI, use state. Ref mutations won't trigger a re-render to show the new value.",
+        "Accessing ref.current in the render body for DOM refs before the ref is attached. DOM refs are null during the first render and only populated after React updates the DOM."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "useref-hook-ex1",
+        "title": "Persistent Counter with Ref",
+        "description": "Use useRef to track how many times a function component has been called (rendered) without causing additional re-renders.",
+        "starterCode": "function PersistentCounter() {\n  // TODO: Create a ref to track render count\n  // Increment it on each render\n  // Log \"Render #X\" where X is the count\n  // Also log \"Ref is persistent: true\"\n\n  return null;\n}\n\nPersistentCounter();\nPersistentCounter();",
+        "solution": "function PersistentCounter() {\n  const count = React.useRef(0);\n  count.current += 1;\n  console.log('Render #' + count.current);\n  console.log('Ref is persistent: true');\n\n  return null;\n}\n\nPersistentCounter();\nPersistentCounter();",
+        "expectedOutput": "Render #1\nRef is persistent: true\nRender #2\nRef is persistent: true",
+        "hints": [
+          "Use React.useRef(0) to create a ref initialized to 0.",
+          "Increment ref.current directly — this does not cause a re-render."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "useref-hook-ex2",
+        "title": "Previous Value Tracker",
+        "description": "Use useRef combined with useEffect to track the previous value of a prop and log both current and previous values.",
+        "starterCode": "function ValueTracker({ value }) {\n  // TODO:\n  // 1. Create a ref to store the previous value (initialize to undefined)\n  // 2. Log \"Current: <value>, Previous: <prevRef.current>\"\n  // 3. In a useEffect, update the ref to the current value\n\n  return null;\n}\n\nValueTracker({ value: 'hello' });",
+        "solution": "function ValueTracker({ value }) {\n  const prevRef = React.useRef(undefined);\n\n  console.log('Current: ' + value + ', Previous: ' + prevRef.current);\n\n  React.useEffect(() => {\n    prevRef.current = value;\n  }, [value]);\n\n  return null;\n}\n\nValueTracker({ value: 'hello' });",
+        "expectedOutput": "Current: hello, Previous: undefined",
+        "hints": [
+          "Initialize the ref with useRef(undefined) so the first render shows no previous value.",
+          "Update the ref inside useEffect so it always lags one render behind the current value."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "usecontext-hook",
+    "sectionId": "core-hooks",
+    "orderIndex": 3,
+    "title": "useContext Hook",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["useContext", "createContext", "Provider", "context consumers", "prop drilling"],
+    "content": {
+      "explanation": "The useContext hook provides a way to pass data through the component tree without manually threading props through every level. It solves the problem known as 'prop drilling' — where intermediate components receive and forward props they don't actually use, just so deeply nested components can access them. Context is ideal for global or semi-global data like themes, authentication state, locale preferences, and UI settings.\n\nTo use context, you first create one with React.createContext(defaultValue). This returns an object with two components: Provider and Consumer (though the Consumer is rarely used now that useContext exists). The Provider wraps a portion of the component tree and accepts a value prop. Any component inside that Provider subtree can read the context value using useContext(MyContext).\n\nThe defaultValue passed to createContext is only used when a component calls useContext but there is no matching Provider above it in the tree. This is useful for testing or for standalone component usage. In most applications, the Provider always exists, so the default value acts as a fallback or type hint.\n\nWhen the Provider's value changes, all components consuming that context re-render. This is an important performance consideration. If the value is an object created inline in the Provider's render (e.g., value={{ user, theme }}), a new object is created every render, causing all consumers to re-render even if the data hasn't changed. The solution is to memoize the value with useMemo.\n\nContext is not a replacement for all state management. It works best for data that changes infrequently (theme, auth, locale). For frequently changing data or complex state logic, dedicated state management libraries or useReducer combined with context may be more appropriate. Context + useReducer is often called 'poor man's Redux' and is sufficient for many applications.",
+      "codeExamples": [
+        {
+          "title": "Creating and consuming context",
+          "code": "const ThemeContext = React.createContext('light');\n\nfunction ThemedButton() {\n  const theme = React.useContext(ThemeContext);\n  console.log('Button theme:', theme);\n  return null;\n}\n\nfunction App() {\n  console.log('App rendering');\n  // Provider passes 'dark' to all descendants\n  // In real JSX: <ThemeContext.Provider value=\"dark\"><ThemedButton /></ThemeContext.Provider>\n  return null;\n}\n\n// Without Provider, useContext returns the default value\nThemedButton();",
+          "output": "Button theme: light",
+          "explanation": "Without a Provider, useContext returns the defaultValue passed to createContext. When wrapped in a Provider, it returns the Provider's value prop instead."
+        },
+        {
+          "title": "Context with state management",
+          "code": "const UserContext = React.createContext(null);\n\nfunction createUserProvider() {\n  const user = { name: 'Alice', role: 'admin' };\n  console.log('UserProvider created with:', user.name);\n  return user;\n}\n\nfunction ProfileHeader(user) {\n  console.log('ProfileHeader - name:', user.name);\n  console.log('ProfileHeader - role:', user.role);\n  return null;\n}\n\nconst user = createUserProvider();\nProfileHeader(user);",
+          "output": "UserProvider created with: Alice\nProfileHeader - name: Alice\nProfileHeader - role: admin",
+          "explanation": "In a real app, the Provider would wrap the tree and useContext would read the value. Here we simulate the data flow to show how context values are consumed by deeply nested components."
+        },
+        {
+          "title": "Multiple contexts",
+          "code": "const ThemeContext = React.createContext('light');\nconst LanguageContext = React.createContext('en');\n\nfunction StatusBar() {\n  const theme = React.useContext(ThemeContext);\n  const language = React.useContext(LanguageContext);\n  console.log('Theme:', theme);\n  console.log('Language:', language);\n  console.log('Contexts are independent: true');\n  return null;\n}\n\nStatusBar();",
+          "output": "Theme: light\nLanguage: en\nContexts are independent: true",
+          "explanation": "Components can consume multiple contexts. Each useContext call subscribes to one specific context. Contexts are independent — updating one does not affect consumers of another."
+        }
+      ],
+      "notes": [
+        "useContext always reads the value from the nearest Provider above the calling component. If no Provider is found, it uses the defaultValue from createContext.",
+        "Context consumers re-render whenever the Provider's value changes. Use useMemo on the value object to prevent unnecessary re-renders.",
+        "Context is best for low-frequency updates (theme, auth, locale). For high-frequency updates (mouse position, animations), consider other approaches to avoid excessive re-renders."
+      ],
+      "commonPitfalls": [
+        "Creating a new object for the Provider value on every render (e.g., value={{ user, setUser }}) causes all consumers to re-render. Wrap the value in useMemo to maintain referential equality.",
+        "Using context for every piece of shared state. Context re-renders all consumers when the value changes, so putting fast-changing values (like input text) in context can cause performance problems."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "usecontext-hook-ex1",
+        "title": "Theme Context",
+        "description": "Create a ThemeContext with a default value and a component that reads from it using useContext.",
+        "starterCode": "// TODO:\n// 1. Create a ThemeContext with default value 'light'\n// 2. Create a ThemedComponent that reads the context\n//    and logs \"Current theme: <theme>\"\n// 3. Call ThemedComponent()\n",
+        "solution": "const ThemeContext = React.createContext('light');\n\nfunction ThemedComponent() {\n  const theme = React.useContext(ThemeContext);\n  console.log('Current theme: ' + theme);\n  return null;\n}\n\nThemedComponent();",
+        "expectedOutput": "Current theme: light",
+        "hints": [
+          "React.createContext('light') creates a context with 'light' as the default value.",
+          "React.useContext(ThemeContext) reads the current value from the nearest ThemeContext.Provider, or the default if no Provider exists."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "usecontext-hook-ex2",
+        "title": "Auth Context Pattern",
+        "description": "Simulate an auth context pattern by creating a context, a function that provides user data, and a consumer component.",
+        "starterCode": "// TODO:\n// 1. Create AuthContext with default value { user: null, isLoggedIn: false }\n// 2. Create a function getAuthValue() that returns\n//    { user: 'Alice', isLoggedIn: true }\n//    and logs \"Auth provider initialized\"\n// 3. Create UserGreeting(auth) that receives auth data and logs:\n//    \"Logged in: <isLoggedIn>\"\n//    \"User: <user>\"\n// 4. Call getAuthValue() and pass result to UserGreeting()\n",
+        "solution": "const AuthContext = React.createContext({ user: null, isLoggedIn: false });\n\nfunction getAuthValue() {\n  console.log('Auth provider initialized');\n  return { user: 'Alice', isLoggedIn: true };\n}\n\nfunction UserGreeting(auth) {\n  console.log('Logged in: ' + auth.isLoggedIn);\n  console.log('User: ' + auth.user);\n  return null;\n}\n\nconst auth = getAuthValue();\nUserGreeting(auth);",
+        "expectedOutput": "Auth provider initialized\nLogged in: true\nUser: Alice",
+        "hints": [
+          "The default value for createContext should match the shape of the data you plan to provide.",
+          "In a real app, useContext(AuthContext) replaces the manual parameter passing shown here."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "rules-of-hooks",
+    "sectionId": "core-hooks",
+    "orderIndex": 4,
+    "title": "Rules of Hooks",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["rules of hooks", "hook call order", "eslint-plugin-react-hooks", "conditional hooks", "hook internals"],
+    "content": {
+      "explanation": "React hooks follow two fundamental rules that must never be broken: (1) Only call hooks at the top level — never inside loops, conditions, or nested functions; and (2) Only call hooks from React function components or custom hooks — never from regular JavaScript functions. These rules exist because of how React internally tracks hook state using a linked list tied to call order.\n\nThe first rule — calling hooks at the top level — is the most critical. React does not identify hooks by name. Instead, it relies on the order in which hooks are called during each render. On the first render, React creates a linked list of hook states. On subsequent renders, React walks through this list in the same order, matching each hook call to its stored state. If you put a hook inside a conditional, the order of hook calls might change between renders, causing React to match the wrong state to the wrong hook.\n\nConsider what happens when a useState hook is inside an if statement. On the first render, the condition might be true, so React records: [useState, useEffect]. On the next render, the condition might be false, skipping the useState. React now sees: [useEffect], but it tries to match the first call to the first stored state (which was useState's state). This mismatch corrupts the entire hook state for that component, leading to unpredictable bugs.\n\nThe second rule — only calling hooks from React functions — ensures that hooks have access to the component's fiber node (React's internal representation). Regular functions don't have a fiber context, so hooks can't store or retrieve their state. Custom hooks work because they are ultimately called from within a component's render, which has the fiber context.\n\nThe eslint-plugin-react-hooks package provides two rules: 'rules-of-hooks' (enforces the two rules above) and 'exhaustive-deps' (warns about missing dependencies in useEffect, useMemo, and useCallback). These rules are essential for catching hook-related bugs at development time. The rules-of-hooks ESLint rule is considered so important that it should always be set to 'error', not 'warn'.",
+      "codeExamples": [
+        {
+          "title": "Correct vs incorrect hook usage",
+          "code": "// CORRECT: Hooks at the top level\nfunction GoodComponent({ showExtra }) {\n  const [name, setName] = React.useState('Alice');\n  const [age, setAge] = React.useState(25);\n\n  // Conditional logic AFTER hooks\n  const displayAge = showExtra ? age : 'hidden';\n\n  console.log('Name:', name);\n  console.log('Age:', displayAge);\n  return null;\n}\n\nGoodComponent({ showExtra: true });\n\n// BAD: Hook inside condition (DO NOT DO THIS)\n// function BadComponent({ showExtra }) {\n//   const [name] = React.useState('Alice');\n//   if (showExtra) {\n//     const [age] = React.useState(25); // BREAKS RULES\n//   }\n// }",
+          "output": "Name: Alice\nAge: 25",
+          "explanation": "Always call all hooks at the top of your component, then use conditional logic afterward. Never skip hook calls based on conditions."
+        },
+        {
+          "title": "Hook call order demonstration",
+          "code": "function HookOrderDemo() {\n  // React internally tracks: slot 0 = useState('first')\n  const [first] = React.useState('first');\n  // slot 1 = useState('second')\n  const [second] = React.useState('second');\n  // slot 2 = useRef(0)\n  const counter = React.useRef(0);\n\n  counter.current += 1;\n\n  console.log('Hook slot 0:', first);\n  console.log('Hook slot 1:', second);\n  console.log('Hook slot 2 (ref):', counter.current);\n  console.log('Total hooks called: 3');\n\n  return null;\n}\n\nHookOrderDemo();",
+          "output": "Hook slot 0: first\nHook slot 1: second\nHook slot 2 (ref): 1\nTotal hooks called: 3",
+          "explanation": "React tracks hooks by their call order (0, 1, 2...). The same hooks must be called in the same order on every render for React to correctly match each call to its stored state."
+        },
+        {
+          "title": "Valid hook contexts",
+          "code": "// Custom hook (valid - starts with 'use')\nfunction useCounter(initial) {\n  const [count, setCount] = React.useState(initial);\n  console.log('useCounter hook called, count:', count);\n  return count;\n}\n\n// Function component (valid)\nfunction MyComponent() {\n  const count = useCounter(10);\n  console.log('MyComponent rendered, count:', count);\n  return null;\n}\n\n// Regular function (INVALID - do not call hooks here)\n// function helper() {\n//   const [val] = React.useState(0); // BREAKS RULES\n// }\n\nMyComponent();",
+          "output": "useCounter hook called, count: 10\nMyComponent rendered, count: 10",
+          "explanation": "Hooks can be called from function components and custom hooks (functions starting with 'use'). They cannot be called from regular functions, class components, or outside of React's render cycle."
+        }
+      ],
+      "notes": [
+        "The eslint-plugin-react-hooks package should be installed in every React project. The 'rules-of-hooks' rule should be set to 'error' to catch violations at compile time.",
+        "Custom hooks must start with 'use' (e.g., useAuth, useFetch). This naming convention allows the ESLint plugin to verify that hooks are called correctly inside them.",
+        "If you need conditional behavior, call the hook unconditionally and use the condition inside the hook's logic or after the hook call."
+      ],
+      "commonPitfalls": [
+        "Calling hooks inside loops or conditions. If you need conditional effects, call useEffect unconditionally and put the condition inside the effect body: useEffect(() => { if (condition) { ... } }, [condition]).",
+        "Calling hooks from event handlers or callbacks. Hooks must be called during the component's render phase, not in response to events. Event handlers should call state setters, not hooks."
+      ],
+      "interviewTips": [
+        "Explain that React uses a linked list indexed by call order, not by hook name. This is why call order must be stable across renders.",
+        "Mention the two rules explicitly: (1) only at the top level, (2) only from React functions or custom hooks. Then explain the WHY — React's internal linked list implementation.",
+        "Be ready to give an example of what goes wrong when hooks are called conditionally — state values get mismatched with the wrong hooks, leading to corrupted component state."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "rules-of-hooks-ex1",
+        "title": "Fix Conditional Hook",
+        "description": "Refactor a component that incorrectly uses a hook inside a condition. Move the hook to the top level and use the condition after the hook call.",
+        "starterCode": "// This code violates the rules of hooks.\n// Fix it so all hooks are called at the top level.\n\nfunction UserProfile({ isLoggedIn }) {\n  // BAD: Hook inside condition\n  // if (isLoggedIn) {\n  //   const [name] = React.useState('Alice');\n  // }\n\n  // TODO: Fix this by calling useState unconditionally\n  // Then use isLoggedIn to decide what to log\n  // If logged in, log \"Welcome, Alice\"\n  // If not logged in, log \"Please log in\"\n\n  return null;\n}\n\nUserProfile({ isLoggedIn: true });",
+        "solution": "function UserProfile({ isLoggedIn }) {\n  const [name] = React.useState('Alice');\n\n  if (isLoggedIn) {\n    console.log('Welcome, ' + name);\n  } else {\n    console.log('Please log in');\n  }\n\n  return null;\n}\n\nUserProfile({ isLoggedIn: true });",
+        "expectedOutput": "Welcome, Alice",
+        "hints": [
+          "Move the useState call to the top of the function, before any conditions.",
+          "Use the isLoggedIn condition after the hook to decide what to log — the hook must always be called."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "rules-of-hooks-ex2",
+        "title": "Hook Order Verification",
+        "description": "Create a component that demonstrates consistent hook ordering by calling multiple hooks and logging their slot positions.",
+        "starterCode": "function MultiHookComponent() {\n  // TODO:\n  // 1. Create useState for 'name' initialized to 'React'\n  // 2. Create useState for 'version' initialized to 18\n  // 3. Create a useRef initialized to 'stable'\n  // Log each with its slot number:\n  //   \"Slot 0 (state): React\"\n  //   \"Slot 1 (state): 18\"\n  //   \"Slot 2 (ref): stable\"\n  //   \"Hook order is consistent: true\"\n\n  return null;\n}\n\nMultiHookComponent();",
+        "solution": "function MultiHookComponent() {\n  const [name] = React.useState('React');\n  const [version] = React.useState(18);\n  const refVal = React.useRef('stable');\n\n  console.log('Slot 0 (state): ' + name);\n  console.log('Slot 1 (state): ' + version);\n  console.log('Slot 2 (ref): ' + refVal.current);\n  console.log('Hook order is consistent: true');\n\n  return null;\n}\n\nMultiHookComponent();",
+        "expectedOutput": "Slot 0 (state): React\nSlot 1 (state): 18\nSlot 2 (ref): stable\nHook order is consistent: true",
+        "hints": [
+          "Call useState twice and useRef once, all at the top level before any logic.",
+          "The slot numbers correspond to the order in which hooks are called — first hook is slot 0, second is slot 1, etc."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

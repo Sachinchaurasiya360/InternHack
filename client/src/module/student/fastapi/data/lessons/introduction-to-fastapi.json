@@ -1,0 +1,283 @@
+[
+  {
+    "id": "what-is-fastapi",
+    "sectionId": "introduction-to-fastapi",
+    "orderIndex": 0,
+    "title": "What is FastAPI?",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["FastAPI", "Python", "Web Framework", "Type Hints", "Automatic Docs"],
+    "content": {
+      "explanation": "FastAPI is a modern, high-performance web framework for building APIs with Python 3.7+ based on standard Python type hints. Created by Sebastian Ramirez and first released in December 2018, FastAPI has rapidly become one of the most popular Python web frameworks alongside Django and Flask. Its key selling points are speed, developer experience, and automatic documentation generation.\n\nFastAPI is built on top of two foundational Python libraries: Starlette for the web framework internals (routing, middleware, WebSocket support) and Pydantic for data validation and serialization. Starlette provides the ASGI (Asynchronous Server Gateway Interface) foundation, which means FastAPI can handle asynchronous requests natively using Python's async/await syntax. Pydantic leverages Python type annotations to validate incoming data, serialize outgoing data, and generate JSON Schema definitions automatically.\n\nOne of FastAPI's most celebrated features is its automatic interactive API documentation. When you create an API with FastAPI, it automatically generates two documentation interfaces: Swagger UI (available at /docs) and ReDoc (available at /redoc). These are not static pages — they are fully interactive, allowing developers to test API endpoints directly from the browser. This documentation is generated from your Python type hints and Pydantic models, so it is always in sync with your actual code.\n\nPerformance is another major differentiator. FastAPI is one of the fastest Python web frameworks available, with performance comparable to Node.js and Go frameworks. This speed comes from Starlette's ASGI implementation and the use of Uvicorn as the ASGI server (which is built on uvloop and httptools). In benchmarks, FastAPI consistently outperforms Flask and Django REST Framework by significant margins.\n\nFastAPI embraces Python's type hint system extensively. Every parameter, request body, and response is annotated with types. This serves multiple purposes: the framework uses types for automatic request validation and parsing, the documentation generator uses them to describe the API, and your IDE can provide autocomplete and type checking. This means you write the type once and get validation, documentation, and editor support for free.\n\nCompared to Flask, FastAPI offers built-in data validation (Flask requires extensions like Marshmallow or WTForms), async support (Flask is synchronous by default), and automatic docs (Flask needs Flask-RESTX or similar). Compared to Django REST Framework, FastAPI is lighter weight, faster, and more focused on API development specifically. However, Django offers a full-featured ORM, admin panel, authentication system, and template engine out of the box, making it better suited for full-stack web applications.",
+      "codeExamples": [
+        {
+          "title": "Minimal FastAPI Application",
+          "code": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/\")\ndef read_root():\n    return {\"message\": \"Hello, World!\"}",
+          "output": "{\"message\": \"Hello, World!\"}",
+          "explanation": "This is the simplest possible FastAPI application. We import FastAPI, create an instance, and define a single route using the @app.get decorator. The function returns a dictionary which FastAPI automatically serializes to JSON."
+        },
+        {
+          "title": "FastAPI with Type Hints",
+          "code": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/items/{item_id}\")\ndef read_item(item_id: int, q: str | None = None):\n    return {\"item_id\": item_id, \"query\": q}\n\n# GET /items/42?q=search\n# Response: {\"item_id\": 42, \"query\": \"search\"}\n\n# GET /items/abc\n# Response: 422 Validation Error (item_id must be int)",
+          "output": "{\"item_id\": 42, \"query\": \"search\"}",
+          "explanation": "Type hints serve double duty: item_id: int tells FastAPI to parse the path parameter as an integer and return a 422 error if it cannot. The optional query parameter q uses str | None = None to indicate it is not required."
+        },
+        {
+          "title": "Automatic Documentation",
+          "code": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI(\n    title=\"My API\",\n    description=\"A sample API with automatic docs\",\n    version=\"1.0.0\",\n)\n\nclass Item(BaseModel):\n    name: str\n    price: float\n    is_offer: bool = False\n\n@app.post(\"/items/\")\ndef create_item(item: Item):\n    return {\"item_name\": item.name, \"item_price\": item.price}\n\n# Visit http://localhost:8000/docs for Swagger UI\n# Visit http://localhost:8000/redoc for ReDoc",
+          "explanation": "FastAPI reads the Pydantic model and function signatures to generate OpenAPI schema automatically. The /docs endpoint provides Swagger UI where you can try out endpoints interactively. The /redoc endpoint provides an alternative documentation layout."
+        },
+        {
+          "title": "FastAPI vs Flask Comparison",
+          "code": "# Flask approach (requires extra libraries for validation)\nfrom flask import Flask, request, jsonify\n\nflask_app = Flask(__name__)\n\n@flask_app.route(\"/items\", methods=[\"POST\"])\ndef create_item_flask():\n    data = request.get_json()\n    # Manual validation needed\n    if \"name\" not in data or \"price\" not in data:\n        return jsonify({\"error\": \"Missing fields\"}), 400\n    return jsonify({\"item_name\": data[\"name\"]})\n\n# -------------------------------------------\n# FastAPI approach (validation is built-in)\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\nfastapi_app = FastAPI()\n\nclass Item(BaseModel):\n    name: str\n    price: float\n\n@fastapi_app.post(\"/items\")\ndef create_item_fastapi(item: Item):\n    # Validation happens automatically\n    return {\"item_name\": item.name}",
+          "explanation": "In Flask you must manually parse JSON, validate fields, and handle errors. FastAPI handles all of this automatically through Pydantic models. Invalid requests receive detailed 422 error responses without any manual validation code."
+        }
+      ],
+      "notes": [
+        "FastAPI requires Python 3.7 or higher because it relies on standard Python type hints introduced in Python 3.5 and enhanced in 3.7+.",
+        "The automatic documentation at /docs (Swagger UI) and /redoc (ReDoc) is generated from your code's type hints and Pydantic models.",
+        "FastAPI is built on Starlette (web framework) and Pydantic (data validation). Understanding these two libraries helps you understand FastAPI at a deeper level."
+      ],
+      "interviewTips": [
+        "When asked about FastAPI, emphasize three things: performance (comparable to Node.js/Go), automatic validation via Pydantic, and auto-generated OpenAPI documentation.",
+        "A common interview question is comparing FastAPI to Flask or Django REST Framework. Key differences are async support, built-in validation, and automatic docs.",
+        "Be prepared to explain the role of Starlette and Pydantic in FastAPI's architecture."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "what-is-fastapi-ex1",
+        "title": "Create a Basic FastAPI App",
+        "description": "Create a FastAPI application with a single GET endpoint at the root path (/) that returns a JSON object with a 'status' key set to 'ok' and a 'framework' key set to 'FastAPI'.",
+        "starterCode": "from fastapi import FastAPI\n\n# Create the FastAPI app instance\n\n# Define a GET endpoint at \"/\"\n",
+        "solution": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/\")\ndef root():\n    return {\"status\": \"ok\", \"framework\": \"FastAPI\"}",
+        "hints": [
+          "Create an app instance with FastAPI()",
+          "Use the @app.get(\"/\") decorator to define a GET endpoint at the root path"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "what-is-fastapi-ex2",
+        "title": "Add Metadata to the App",
+        "description": "Create a FastAPI app with the following metadata: title='My Learning API', description='An API for learning FastAPI', version='0.1.0'. Add a GET endpoint at /info that returns the app title and version.",
+        "starterCode": "from fastapi import FastAPI\n\n# Create the app with metadata\n\n# Define a GET endpoint at \"/info\"\n",
+        "solution": "from fastapi import FastAPI\n\napp = FastAPI(\n    title=\"My Learning API\",\n    description=\"An API for learning FastAPI\",\n    version=\"0.1.0\",\n)\n\n@app.get(\"/info\")\ndef info():\n    return {\"title\": \"My Learning API\", \"version\": \"0.1.0\"}",
+        "hints": [
+          "Pass title, description, and version as keyword arguments to FastAPI()",
+          "The endpoint function should return a dictionary with the relevant metadata"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "installation-and-setup",
+    "sectionId": "introduction-to-fastapi",
+    "orderIndex": 1,
+    "title": "Installation & Setup",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["pip", "Virtual Environments", "Uvicorn", "Project Structure", "Requirements"],
+    "content": {
+      "explanation": "Setting up a FastAPI project properly from the start is essential for maintainable development. FastAPI itself is a Python package installed via pip, but a complete development environment requires a few additional tools: an ASGI server to run the application, a virtual environment to isolate dependencies, and a well-organized project structure.\n\nThe first step is creating a virtual environment. Python virtual environments create an isolated space for your project's dependencies, preventing conflicts between different projects. You create one with python -m venv venv (the second 'venv' is the directory name — you can choose any name). Activate it with source venv/bin/activate on macOS/Linux or venv\\Scripts\\activate on Windows. Once activated, your terminal prompt changes to show the environment name, and any pip install commands will install packages only within this environment.\n\nFastAPI requires two main packages: fastapi itself and an ASGI server. The recommended server is Uvicorn, which is a lightning-fast ASGI server built on uvloop (a fast event loop) and httptools (a fast HTTP parser). Install both with pip install fastapi uvicorn. For development, you might also want pip install fastapi[standard] which includes additional useful dependencies like python-multipart for form data, email-validator for email validation, and httpx for testing.\n\nA well-structured FastAPI project typically separates concerns into multiple files and directories. A common layout includes a main.py or app.py as the entry point, a routers/ directory for route modules, a models/ directory for Pydantic models, a database/ directory for database configuration, and a tests/ directory for test files. For small projects, a single main.py file is perfectly fine, but as the project grows, breaking it into modules keeps the code manageable.\n\nTo run your FastAPI application during development, use the command uvicorn main:app --reload. Here, 'main' refers to the Python file name (main.py), 'app' refers to the FastAPI instance variable name, and --reload enables auto-reload so the server restarts whenever you change a file. By default, Uvicorn runs on http://127.0.0.1:8000. You can change the host with --host 0.0.0.0 (to accept external connections) and the port with --port 3000.\n\nDependency management is crucial for reproducible deployments. Always maintain a requirements.txt file listing all your project's dependencies with pinned versions. Generate it with pip freeze > requirements.txt after installing packages. For more sophisticated dependency management, consider using tools like Poetry or pip-tools, which provide dependency resolution and lock files similar to npm's package-lock.json.",
+      "codeExamples": [
+        {
+          "title": "Project Setup Commands",
+          "code": "# Create project directory\nmkdir my-fastapi-project\ncd my-fastapi-project\n\n# Create and activate virtual environment\npython -m venv venv\nsource venv/bin/activate  # macOS/Linux\n# venv\\Scripts\\activate   # Windows\n\n# Install FastAPI and Uvicorn\npip install fastapi uvicorn\n\n# Or install with all optional dependencies\npip install fastapi[standard]\n\n# Save dependencies\npip freeze > requirements.txt",
+          "explanation": "These shell commands set up a complete FastAPI development environment. The virtual environment ensures dependencies are isolated. The [standard] extra includes commonly used optional dependencies."
+        },
+        {
+          "title": "Recommended Project Structure",
+          "code": "# Small project structure\nmy-fastapi-project/\n  main.py\n  requirements.txt\n  venv/\n\n# Medium/large project structure\nmy-fastapi-project/\n  app/\n    __init__.py\n    main.py          # FastAPI app instance\n    config.py        # Settings and configuration\n    routers/\n      __init__.py\n      users.py       # User-related endpoints\n      items.py       # Item-related endpoints\n    models/\n      __init__.py\n      user.py        # User Pydantic models\n      item.py        # Item Pydantic models\n    database/\n      __init__.py\n      connection.py  # DB session setup\n      models.py      # SQLAlchemy models\n    utils/\n      __init__.py\n      auth.py        # Authentication helpers\n  tests/\n    __init__.py\n    test_users.py\n    test_items.py\n  requirements.txt\n  .env\n  venv/",
+          "explanation": "Small projects can use a single main.py file. As the project grows, separate concerns into routers (endpoints), models (Pydantic schemas), database (ORM models and sessions), and utils (helper functions)."
+        },
+        {
+          "title": "Running the Development Server",
+          "code": "# Basic run command\nuvicorn main:app --reload\n\n# With custom host and port\nuvicorn main:app --reload --host 0.0.0.0 --port 3000\n\n# With logging level\nuvicorn main:app --reload --log-level debug\n\n# For a nested app (app/main.py)\nuvicorn app.main:app --reload\n\n# Output:\n# INFO:     Uvicorn running on http://127.0.0.1:8000\n# INFO:     Started reloader process\n# INFO:     Started server process\n# INFO:     Waiting for application startup.\n# INFO:     Application startup complete.",
+          "output": "INFO:     Uvicorn running on http://127.0.0.1:8000",
+          "explanation": "The uvicorn command takes 'module:variable' format. 'main:app' means the 'app' variable in main.py. The --reload flag watches for file changes and restarts automatically, which is essential during development but should not be used in production."
+        }
+      ],
+      "notes": [
+        "Always use a virtual environment to isolate project dependencies. Never install packages globally for a project.",
+        "The --reload flag in uvicorn is for development only. In production, run without --reload for better performance.",
+        "Pin your dependency versions in requirements.txt (e.g., fastapi==0.110.0) to ensure reproducible builds across different environments."
+      ],
+      "commonPitfalls": [
+        "Forgetting to activate the virtual environment before installing packages, which installs them globally.",
+        "Using python instead of python3 on systems where Python 2 is the default. Always verify with python --version.",
+        "Running uvicorn with the wrong module path. If your app is in app/main.py, the command is uvicorn app.main:app, not uvicorn main:app."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "installation-and-setup-ex1",
+        "title": "Write a Requirements File",
+        "description": "Write the contents of a requirements.txt file that includes fastapi, uvicorn with the standard extras, pydantic, and python-dotenv. Pin each to a specific version.",
+        "starterCode": "# requirements.txt\n# Add the required packages with pinned versions\n",
+        "solution": "# requirements.txt\nfastapi==0.115.0\nuvicorn[standard]==0.32.0\npydantic==2.10.0\npython-dotenv==1.0.1",
+        "hints": [
+          "Use == to pin exact versions in requirements.txt",
+          "Uvicorn standard extras are specified with uvicorn[standard]"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "installation-and-setup-ex2",
+        "title": "Create an App Entry Point",
+        "description": "Create a main.py that imports FastAPI, creates an app instance with title 'Todo API', and defines a health check endpoint at /health that returns {'status': 'healthy'}. Also add a startup event that prints 'Application started' to the console.",
+        "starterCode": "from fastapi import FastAPI\n\n# Create the app with a title\n\n# Add a startup event\n\n# Define a health check endpoint\n",
+        "solution": "from fastapi import FastAPI\nfrom contextlib import asynccontextmanager\n\n@asynccontextmanager\nasync def lifespan(app: FastAPI):\n    print(\"Application started\")\n    yield\n\napp = FastAPI(title=\"Todo API\", lifespan=lifespan)\n\n@app.get(\"/health\")\ndef health_check():\n    return {\"status\": \"healthy\"}",
+        "hints": [
+          "Use the lifespan context manager for startup and shutdown events in modern FastAPI",
+          "The health check endpoint is a simple GET that returns a status dictionary"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "your-first-fastapi-app",
+    "sectionId": "introduction-to-fastapi",
+    "orderIndex": 2,
+    "title": "Your First FastAPI App",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Decorators", "Route Handlers", "JSON Responses", "Path Operations", "Request-Response Cycle"],
+    "content": {
+      "explanation": "Building your first FastAPI application is straightforward once you understand the core concepts: the application instance, path operation decorators, and handler functions. Let us walk through building a simple but complete API step by step.\n\nThe foundation of every FastAPI app is the application instance, created with app = FastAPI(). This object is the main entry point that Uvicorn uses to serve your API. You can pass configuration options to it like title, description, version, and more. The app instance has methods corresponding to HTTP methods: app.get(), app.post(), app.put(), app.delete(), app.patch(), etc. These are used as decorators on your handler functions.\n\nPath operation decorators like @app.get(\"/\") define two things: the HTTP method (GET, POST, etc.) and the URL path. The decorated function is called a 'path operation function' or 'route handler.' When a request matches the HTTP method and path, FastAPI calls this function and returns its result as a JSON response. The function can be either synchronous (def) or asynchronous (async def) — FastAPI handles both correctly.\n\nFastAPI automatically converts the return value of your handler function to JSON. You can return Python dictionaries, lists, Pydantic models, or any JSON-serializable object. If you return a dictionary like {\"name\": \"Alice\", \"age\": 30}, FastAPI serializes it to a JSON response with the appropriate Content-Type header. For more control over the response, you can use FastAPI's Response classes directly.\n\nThe request-response cycle in FastAPI follows a clear path: a client sends an HTTP request, Uvicorn receives it and passes it to FastAPI, FastAPI matches the request to a route based on the method and path, the route handler executes and returns a value, FastAPI serializes the return value to JSON, and the response is sent back to the client. If any step fails (like validation), FastAPI returns an appropriate error response.\n\nFastAPI supports all standard HTTP methods. GET is used for retrieving data, POST for creating new resources, PUT for replacing existing resources entirely, PATCH for partial updates, and DELETE for removing resources. Each method has a corresponding decorator: @app.get(), @app.post(), @app.put(), @app.patch(), @app.delete(). You can also use @app.api_route() to handle multiple methods with a single function, though this is less common.\n\nA practical first application might be a simple in-memory todo list API. This demonstrates CRUD (Create, Read, Update, Delete) operations without needing a database. You store items in a Python list or dictionary, define endpoints for each operation, and use Pydantic models for request validation.",
+      "codeExamples": [
+        {
+          "title": "A Complete CRUD API",
+          "code": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass TodoCreate(BaseModel):\n    title: str\n    completed: bool = False\n\nclass TodoResponse(BaseModel):\n    id: int\n    title: str\n    completed: bool\n\ntodos: dict[int, dict] = {}\nnext_id = 1\n\n@app.get(\"/todos\", response_model=list[TodoResponse])\ndef list_todos():\n    return list(todos.values())\n\n@app.post(\"/todos\", response_model=TodoResponse, status_code=201)\ndef create_todo(todo: TodoCreate):\n    global next_id\n    new_todo = {\"id\": next_id, \"title\": todo.title, \"completed\": todo.completed}\n    todos[next_id] = new_todo\n    next_id += 1\n    return new_todo\n\n@app.get(\"/todos/{todo_id}\", response_model=TodoResponse)\ndef get_todo(todo_id: int):\n    if todo_id not in todos:\n        raise HTTPException(status_code=404, detail=\"Todo not found\")\n    return todos[todo_id]\n\n@app.delete(\"/todos/{todo_id}\")\ndef delete_todo(todo_id: int):\n    if todo_id not in todos:\n        raise HTTPException(status_code=404, detail=\"Todo not found\")\n    del todos[todo_id]\n    return {\"message\": \"Todo deleted\"}",
+          "explanation": "This demonstrates a full CRUD API with in-memory storage. POST creates items, GET retrieves them, and DELETE removes them. HTTPException is used to return 404 errors when items are not found. The response_model parameter ensures consistent response structure."
+        },
+        {
+          "title": "Sync vs Async Handlers",
+          "code": "from fastapi import FastAPI\nimport asyncio\n\napp = FastAPI()\n\n# Synchronous handler - runs in a thread pool\n@app.get(\"/sync\")\ndef sync_endpoint():\n    # Blocking operations are fine here\n    # FastAPI runs this in a thread pool automatically\n    return {\"type\": \"synchronous\"}\n\n# Asynchronous handler - runs on the event loop\n@app.get(\"/async\")\nasync def async_endpoint():\n    # Use await for async operations\n    await asyncio.sleep(0.1)  # Simulating async I/O\n    return {\"type\": \"asynchronous\"}\n\n# Rule of thumb:\n# Use 'async def' when calling async libraries (httpx, asyncpg, aiofiles)\n# Use 'def' when calling sync libraries (requests, psycopg2, open())",
+          "explanation": "FastAPI handles both sync and async handlers. Sync handlers (def) are run in a thread pool so they do not block the event loop. Async handlers (async def) run directly on the event loop. Use async when working with async libraries for better performance."
+        },
+        {
+          "title": "Multiple Response Types",
+          "code": "from fastapi import FastAPI\nfrom fastapi.responses import (\n    JSONResponse,\n    PlainTextResponse,\n    HTMLResponse,\n    RedirectResponse,\n)\n\napp = FastAPI()\n\n@app.get(\"/json\")\ndef json_response():\n    # Default: returns JSON\n    return {\"format\": \"json\"}\n\n@app.get(\"/text\", response_class=PlainTextResponse)\ndef text_response():\n    return \"This is plain text\"\n\n@app.get(\"/html\", response_class=HTMLResponse)\ndef html_response():\n    return \"<h1>Hello from HTML</h1>\"\n\n@app.get(\"/redirect\")\ndef redirect_response():\n    return RedirectResponse(url=\"/json\")\n\n@app.get(\"/custom\")\ndef custom_response():\n    return JSONResponse(\n        content={\"custom\": True},\n        status_code=201,\n        headers={\"X-Custom-Header\": \"my-value\"},\n    )",
+          "explanation": "While JSON is the default, FastAPI supports many response types. Use response_class to change the default, or return Response objects directly for full control over status codes, headers, and content type."
+        }
+      ],
+      "notes": [
+        "FastAPI automatically serializes Python dicts, lists, and Pydantic models to JSON responses.",
+        "Use 'def' for synchronous handlers and 'async def' for asynchronous handlers. Do not use 'async def' if you are not actually awaiting anything.",
+        "HTTPException is the standard way to return error responses. It accepts a status_code and a detail message."
+      ],
+      "commonPitfalls": [
+        "Using 'async def' with blocking I/O operations (like the requests library or file I/O). This blocks the entire event loop. Either use 'def' or switch to async libraries like httpx.",
+        "Storing state in global variables (like the todos dict above) in production. This does not work with multiple workers. Use a database instead.",
+        "Forgetting to raise HTTPException for error cases. Without it, FastAPI returns a 200 status even when something went wrong logically."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "your-first-fastapi-app-ex1",
+        "title": "Build a Simple Calculator API",
+        "description": "Create a FastAPI app with a GET endpoint at /add that takes two query parameters 'a' and 'b' (both integers) and returns their sum in a JSON object with key 'result'.",
+        "starterCode": "from fastapi import FastAPI\n\napp = FastAPI()\n\n# Define a GET endpoint at /add with query parameters a and b\n",
+        "solution": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/add\")\ndef add(a: int, b: int):\n    return {\"result\": a + b}",
+        "hints": [
+          "Query parameters are defined as function parameters that are not part of the path",
+          "Type hint both parameters as int for automatic validation"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "your-first-fastapi-app-ex2",
+        "title": "Build a Greeting API",
+        "description": "Create a FastAPI app with:\n1. A GET endpoint at /greet/{name} that returns {'greeting': 'Hello, {name}!'}\n2. A POST endpoint at /greet that accepts a JSON body with 'name' (str) and 'language' (str, default 'en') and returns the greeting. If language is 'es', return 'Hola, {name}!'; if 'fr', return 'Bonjour, {name}!'; otherwise return 'Hello, {name}!'.",
+        "starterCode": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n# Define the Pydantic model for the POST body\n\n# Define GET /greet/{name}\n\n# Define POST /greet\n",
+        "solution": "from fastapi import FastAPI\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass GreetRequest(BaseModel):\n    name: str\n    language: str = \"en\"\n\n@app.get(\"/greet/{name}\")\ndef greet_simple(name: str):\n    return {\"greeting\": f\"Hello, {name}!\"}\n\n@app.post(\"/greet\")\ndef greet_multilingual(body: GreetRequest):\n    greetings = {\"en\": \"Hello\", \"es\": \"Hola\", \"fr\": \"Bonjour\"}\n    word = greetings.get(body.language, \"Hello\")\n    return {\"greeting\": f\"{word}, {body.name}!\"}",
+        "hints": [
+          "Use a Pydantic BaseModel to define the POST request body shape",
+          "Use a dictionary to map language codes to greeting words"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "your-first-fastapi-app-ex3",
+        "title": "Build an In-Memory Contacts API",
+        "description": "Create a FastAPI app that manages contacts in memory. Implement:\n1. GET /contacts - returns a list of all contacts\n2. POST /contacts - creates a new contact with 'name' (str) and 'email' (str), assigns an auto-incrementing 'id'\n3. GET /contacts/{contact_id} - returns a single contact or 404 if not found",
+        "starterCode": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n# Define the Pydantic model\n\n# In-memory storage\n\n# Define the three endpoints\n",
+        "solution": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass ContactCreate(BaseModel):\n    name: str\n    email: str\n\ncontacts: dict[int, dict] = {}\nnext_id = 1\n\n@app.get(\"/contacts\")\ndef list_contacts():\n    return list(contacts.values())\n\n@app.post(\"/contacts\", status_code=201)\ndef create_contact(contact: ContactCreate):\n    global next_id\n    new_contact = {\"id\": next_id, \"name\": contact.name, \"email\": contact.email}\n    contacts[next_id] = new_contact\n    next_id += 1\n    return new_contact\n\n@app.get(\"/contacts/{contact_id}\")\ndef get_contact(contact_id: int):\n    if contact_id not in contacts:\n        raise HTTPException(status_code=404, detail=\"Contact not found\")\n    return contacts[contact_id]",
+        "hints": [
+          "Use a dict with int keys for O(1) lookups by ID",
+          "Use HTTPException with status_code=404 for not found errors",
+          "Set status_code=201 on the POST decorator for created resources"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "understanding-asgi",
+    "sectionId": "introduction-to-fastapi",
+    "orderIndex": 3,
+    "title": "Understanding ASGI",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["ASGI", "WSGI", "Uvicorn", "Event Loop", "Concurrency"],
+    "content": {
+      "explanation": "ASGI (Asynchronous Server Gateway Interface) is the spiritual successor to WSGI (Web Server Gateway Interface), and understanding it is key to grasping why FastAPI performs so well. ASGI is a specification that defines how Python web applications communicate with web servers, with first-class support for asynchronous operations.\n\nWSGI was the original standard for Python web applications, created in 2003 via PEP 3333. It works well for synchronous applications — frameworks like Flask and Django are built on it. In the WSGI model, each request occupies one thread for its entire duration. If a request waits for a database query or external API call, that thread is blocked and cannot serve other requests. To handle many simultaneous requests, WSGI servers spawn many threads or processes, which consumes significant memory.\n\nASGI was introduced to solve these limitations. It supports asynchronous request handling, meaning a single thread can handle multiple requests concurrently. When one request is waiting for I/O (database, HTTP call, file read), the event loop can switch to processing another request. This makes ASGI applications much more efficient for I/O-bound workloads, which is exactly what most web APIs are. ASGI also natively supports WebSockets and HTTP/2, which WSGI cannot handle.\n\nUvicorn is the most popular ASGI server for Python. It is built on uvloop (a fast event loop implementation written in Cython, replacing the default asyncio event loop) and httptools (a fast HTTP parser written in C). This combination makes Uvicorn extremely fast. When you run uvicorn main:app, Uvicorn creates an event loop, loads your FastAPI application, and begins accepting HTTP connections. Each incoming request is dispatched to the appropriate route handler.\n\nThe event loop is the core of asynchronous programming. It continuously checks for events (incoming requests, completed I/O operations) and dispatches handlers. In Python, this is built on the asyncio module. When you write async def and use await, you are cooperating with the event loop: await tells the loop 'I am waiting for something, go handle other tasks.' This cooperative multitasking is much lighter than thread-based concurrency.\n\nFastAPI handles sync and async handlers differently. When you use async def, the handler runs directly on the event loop. When you use def (without async), FastAPI runs the handler in a thread pool (using run_in_executor) to prevent blocking the event loop. This means you can safely use blocking libraries in sync handlers, but for best performance with I/O-heavy operations, prefer async handlers with async libraries.\n\nFor production deployments, Uvicorn is often run behind Gunicorn using the UvicornWorker. This gives you Gunicorn's process management (automatic worker restarts, graceful shutdowns) combined with Uvicorn's ASGI performance. The command is: gunicorn main:app -w 4 -k uvicorn.workers.UvicornWorker, where -w 4 creates 4 worker processes.",
+      "codeExamples": [
+        {
+          "title": "ASGI vs WSGI Comparison",
+          "code": "# WSGI application (synchronous)\n# Each request blocks a thread while waiting for I/O\ndef wsgi_app(environ, start_response):\n    # This blocks the thread while waiting\n    data = fetch_from_database()  # Blocking call\n    start_response('200 OK', [('Content-Type', 'text/plain')])\n    return [data.encode()]\n\n# ASGI application (asynchronous)\n# Requests can yield control while waiting for I/O\nasync def asgi_app(scope, receive, send):\n    if scope['type'] == 'http':\n        # This yields to the event loop while waiting\n        data = await async_fetch_from_database()  # Non-blocking\n        await send({\n            'type': 'http.response.start',\n            'status': 200,\n            'headers': [[b'content-type', b'text/plain']],\n        })\n        await send({\n            'type': 'http.response.body',\n            'body': data.encode(),\n        })",
+          "explanation": "WSGI is a synchronous interface — each request blocks a thread. ASGI is asynchronous — the event loop can handle other requests while one waits for I/O. FastAPI abstracts this low-level ASGI protocol into the clean decorator-based API you use."
+        },
+        {
+          "title": "Concurrency Demonstration",
+          "code": "from fastapi import FastAPI\nimport asyncio\nimport time\n\napp = FastAPI()\n\n# Async endpoint: handles 10 concurrent requests in ~1 second\n@app.get(\"/async-slow\")\nasync def async_slow():\n    await asyncio.sleep(1)  # Non-blocking sleep\n    return {\"handler\": \"async\", \"waited\": \"1 second\"}\n\n# Sync endpoint: handles 10 concurrent requests in ~1 second\n# (because FastAPI runs sync handlers in a thread pool)\n@app.get(\"/sync-slow\")\ndef sync_slow():\n    time.sleep(1)  # Blocking sleep, but runs in thread pool\n    return {\"handler\": \"sync\", \"waited\": \"1 second\"}\n\n# WRONG: async handler with blocking sleep\n# This blocks the entire event loop!\n@app.get(\"/broken\")\nasync def broken_endpoint():\n    time.sleep(1)  # BLOCKS the event loop!\n    return {\"handler\": \"broken\"}",
+          "explanation": "The async endpoint uses asyncio.sleep which yields control to the event loop. The sync endpoint uses time.sleep but FastAPI runs it in a thread pool. The 'broken' endpoint uses time.sleep inside an async function, which blocks the event loop and prevents all other requests from being processed."
+        },
+        {
+          "title": "Production Server Configuration",
+          "code": "# Development: single worker with auto-reload\nuvicorn main:app --reload\n\n# Production: Uvicorn with multiple workers\nuvicorn main:app --host 0.0.0.0 --port 8000 --workers 4\n\n# Production: Gunicorn with Uvicorn workers (recommended)\ngunicorn main:app \\\n    --bind 0.0.0.0:8000 \\\n    --workers 4 \\\n    --worker-class uvicorn.workers.UvicornWorker \\\n    --access-logfile - \\\n    --error-logfile -\n\n# Number of workers rule of thumb:\n# workers = (2 * CPU_CORES) + 1\n# For a 4-core machine: 9 workers\n\n# Programmatic Uvicorn (in Python)\nimport uvicorn\n\nif __name__ == \"__main__\":\n    uvicorn.run(\n        \"main:app\",\n        host=\"0.0.0.0\",\n        port=8000,\n        reload=True,  # Development only\n    )",
+          "explanation": "Development uses --reload for convenience. Production uses multiple workers for concurrency. Gunicorn with UvicornWorker is the recommended production setup as it provides process management, graceful restarts, and signal handling on top of Uvicorn's ASGI performance."
+        }
+      ],
+      "notes": [
+        "ASGI is to async Python what WSGI is to sync Python. FastAPI requires an ASGI server like Uvicorn, not a WSGI server like Gunicorn alone.",
+        "Never use blocking operations (time.sleep, requests.get, open()) inside async def handlers. Either use def or switch to async equivalents.",
+        "The number of Uvicorn workers for production should generally be (2 * CPU cores) + 1."
+      ],
+      "interviewTips": [
+        "Be ready to explain the difference between ASGI and WSGI. WSGI is synchronous and thread-based; ASGI is asynchronous and event-loop-based.",
+        "A classic question is: 'What happens if you use time.sleep() in an async handler?' It blocks the event loop, preventing all other async handlers from running.",
+        "Know that FastAPI runs sync handlers in a thread pool automatically, which is why def handlers do not block the event loop."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "understanding-asgi-ex1",
+        "title": "Identify Blocking Issues",
+        "description": "The following FastAPI code has a critical performance issue. Identify and fix it. The endpoint should fetch data from an external URL asynchronously instead of using the blocking requests library.",
+        "starterCode": "from fastapi import FastAPI\nimport requests  # This is a blocking library\n\napp = FastAPI()\n\n@app.get(\"/fetch-data\")\nasync def fetch_data():\n    # BUG: blocking call in async handler\n    response = requests.get(\"https://api.example.com/data\")\n    return response.json()\n",
+        "solution": "from fastapi import FastAPI\nimport httpx\n\napp = FastAPI()\n\n@app.get(\"/fetch-data\")\nasync def fetch_data():\n    async with httpx.AsyncClient() as client:\n        response = await client.get(\"https://api.example.com/data\")\n    return response.json()",
+        "hints": [
+          "The requests library is synchronous and blocks the event loop when used in async handlers",
+          "Use httpx.AsyncClient() as an async-compatible HTTP client"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "understanding-asgi-ex2",
+        "title": "Write a Concurrent Endpoint",
+        "description": "Create a FastAPI endpoint at GET /parallel that makes two simulated async operations concurrently (each taking 1 second) and returns both results. Use asyncio.gather to run them in parallel so the total time is ~1 second, not ~2 seconds.",
+        "starterCode": "from fastapi import FastAPI\nimport asyncio\n\napp = FastAPI()\n\nasync def fetch_users():\n    await asyncio.sleep(1)\n    return [{\"id\": 1, \"name\": \"Alice\"}]\n\nasync def fetch_orders():\n    await asyncio.sleep(1)\n    return [{\"id\": 1, \"total\": 99.99}]\n\n# Define GET /parallel that runs both functions concurrently\n",
+        "solution": "from fastapi import FastAPI\nimport asyncio\n\napp = FastAPI()\n\nasync def fetch_users():\n    await asyncio.sleep(1)\n    return [{\"id\": 1, \"name\": \"Alice\"}]\n\nasync def fetch_orders():\n    await asyncio.sleep(1)\n    return [{\"id\": 1, \"total\": 99.99}]\n\n@app.get(\"/parallel\")\nasync def parallel():\n    users, orders = await asyncio.gather(fetch_users(), fetch_orders())\n    return {\"users\": users, \"orders\": orders}",
+        "hints": [
+          "asyncio.gather() runs multiple coroutines concurrently on the event loop",
+          "Unpack the results from gather into separate variables"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -1,0 +1,346 @@
+[
+  {
+    "id": "password-hashing-bcrypt",
+    "sectionId": "authentication",
+    "orderIndex": 0,
+    "title": "Password Hashing with bcrypt",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["hashing", "salting", "bcrypt", "bcryptjs", "password security", "compareSync"],
+    "content": {
+      "explanation": "Storing passwords in plain text is one of the most dangerous security mistakes a developer can make. If an attacker gains access to your database, every user's credentials are instantly compromised. Password hashing solves this by transforming passwords into irreversible fixed-length strings using a one-way cryptographic function. Even if the hash is stolen, the original password cannot be recovered from it.\n\nbcrypt is the industry-standard algorithm for password hashing in Node.js applications. Unlike simple hashing algorithms like MD5 or SHA-256, bcrypt is specifically designed for passwords. It incorporates a salt (a random string added to the password before hashing) automatically, which means two users with the same password will have different hashes. This prevents rainbow table attacks where precomputed hashes are used to reverse common passwords.\n\nThe 'cost factor' or 'salt rounds' parameter in bcrypt controls how computationally expensive the hashing process is. A salt rounds value of 10 means the hashing function runs 2^10 (1024) iterations. Higher values make brute-force attacks slower but also make your login process slower. A value of 10-12 is considered a good balance for most applications. As hardware gets faster, you can increase this value.\n\nIn the Node.js ecosystem, you have two main choices: the native `bcrypt` package (which uses C++ bindings) and `bcryptjs` (a pure JavaScript implementation). The native bcrypt is faster but requires compilation during installation, which can cause issues on some systems. bcryptjs is slower but works everywhere without any native dependencies, making it ideal for serverless deployments and Docker containers.\n\nThe typical workflow is: when a user registers, hash their password with bcrypt.hash() and store only the hash. When they log in, use bcrypt.compare() to check their provided password against the stored hash. Never try to decrypt the hash — bcrypt.compare() handles the comparison internally by hashing the input with the same salt and comparing the results.",
+      "codeExamples": [
+        {
+          "title": "Hashing and Comparing Passwords with bcryptjs",
+          "code": "const bcrypt = require('bcryptjs');\n\nasync function registerUser(password) {\n  const saltRounds = 10;\n  const hashedPassword = await bcrypt.hash(password, saltRounds);\n  console.log('Original:', password);\n  console.log('Hashed:', hashedPassword);\n  console.log('Hash length:', hashedPassword.length);\n  return hashedPassword;\n}\n\nasync function loginUser(password, storedHash) {\n  const isMatch = await bcrypt.compare(password, storedHash);\n  console.log('Password match:', isMatch);\n  return isMatch;\n}\n\nasync function main() {\n  const hash = await registerUser('mySecurePass123');\n  await loginUser('mySecurePass123', hash);\n  await loginUser('wrongPassword', hash);\n}\n\nmain();",
+          "output": "Original: mySecurePass123\nHashed: $2a$10$N9qo8uLOickgx2ZMRZoMye...(60 chars total)\nHash length: 60\nPassword match: true\nPassword match: false",
+          "explanation": "bcrypt.hash() generates a salt and hashes the password in one step. The resulting hash string contains the algorithm identifier ($2a$), the cost factor (10), the salt, and the hash itself. bcrypt.compare() extracts the salt from the stored hash and uses it to hash the input password for comparison."
+        },
+        {
+          "title": "Synchronous vs Asynchronous bcrypt",
+          "code": "const bcrypt = require('bcryptjs');\n\n// Synchronous (blocks the event loop - avoid in production)\nconst salt = bcrypt.genSaltSync(10);\nconst hashSync = bcrypt.hashSync('password123', salt);\nconst matchSync = bcrypt.compareSync('password123', hashSync);\nconsole.log('Sync hash:', hashSync.substring(0, 30) + '...');\nconsole.log('Sync match:', matchSync);\n\n// Asynchronous (preferred - non-blocking)\nasync function asyncExample() {\n  const salt = await bcrypt.genSalt(12);\n  console.log('Generated salt:', salt);\n  const hash = await bcrypt.hash('password123', salt);\n  console.log('Async hash:', hash.substring(0, 30) + '...');\n  const match = await bcrypt.compare('password123', hash);\n  console.log('Async match:', match);\n}\n\nasyncExample();",
+          "output": "Sync hash: $2a$10$N9qo8uLOickgx2ZMRZoMye...\nSync match: true\nGenerated salt: $2a$12$WApznUPhDubN0oeveSXHpu\nAsync hash: $2a$12$WApznUPhDubN0oeveSXHpu...\nAsync match: true",
+          "explanation": "The synchronous methods (genSaltSync, hashSync, compareSync) block the event loop and should only be used in scripts or during startup. In request handlers, always use the async versions to keep your server responsive."
+        },
+        {
+          "title": "Password Hashing in an Express Registration Route",
+          "code": "const express = require('express');\nconst bcrypt = require('bcryptjs');\nconst app = express();\napp.use(express.json());\n\n// Simulated database\nconst users = [];\n\napp.post('/register', async (req, res) => {\n  try {\n    const { email, password } = req.body;\n\n    // Check if user exists\n    if (users.find(u => u.email === email)) {\n      return res.status(400).json({ error: 'Email already registered' });\n    }\n\n    // Hash password with cost factor 10\n    const hashedPassword = await bcrypt.hash(password, 10);\n\n    // Store user with hashed password\n    const user = { id: users.length + 1, email, password: hashedPassword };\n    users.push(user);\n\n    res.status(201).json({ message: 'User registered', userId: user.id });\n  } catch (error) {\n    res.status(500).json({ error: 'Registration failed' });\n  }\n});\n\napp.post('/login', async (req, res) => {\n  try {\n    const { email, password } = req.body;\n    const user = users.find(u => u.email === email);\n\n    if (!user || !(await bcrypt.compare(password, user.password))) {\n      return res.status(401).json({ error: 'Invalid credentials' });\n    }\n\n    res.json({ message: 'Login successful', userId: user.id });\n  } catch (error) {\n    res.status(500).json({ error: 'Login failed' });\n  }\n});\n\nconsole.log('Auth routes configured');",
+          "output": "Auth routes configured",
+          "explanation": "This shows a realistic Express registration and login flow. The register route hashes the password before storage. The login route uses bcrypt.compare() to verify credentials. Notice the generic error message for invalid credentials — never reveal whether the email or password was wrong."
+        }
+      ],
+      "notes": [
+        "bcrypt automatically generates and embeds the salt in the hash string, so you do not need to store the salt separately.",
+        "The cost factor (salt rounds) of 10 takes roughly 100ms on modern hardware. Each increment doubles the time.",
+        "bcryptjs is a drop-in replacement for bcrypt with the same API — just change the import.",
+        "Never log or expose password hashes in API responses, even though they are one-way."
+      ],
+      "commonPitfalls": [
+        "Using a cost factor that is too low (less than 10) — this makes brute-force attacks feasible.",
+        "Using synchronous bcrypt methods in request handlers — this blocks the entire event loop.",
+        "Trying to decrypt a bcrypt hash — hashing is one-way by design. Use bcrypt.compare() instead.",
+        "Storing passwords with simple hashing (MD5, SHA-256) without salting — these are vulnerable to rainbow table attacks."
+      ],
+      "interviewTips": [
+        "Explain why bcrypt is preferred over SHA-256 for passwords: bcrypt is intentionally slow and includes automatic salting.",
+        "Know the difference between hashing (one-way) and encryption (two-way) — passwords should be hashed, not encrypted.",
+        "Be able to explain what a salt is and why two identical passwords produce different bcrypt hashes."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "password-hashing-bcrypt-ex1",
+        "title": "Build a Password Strength Checker and Hasher",
+        "description": "Write an async function `hashIfStrong(password)` that checks if a password is at least 8 characters long and contains at least one number. If it passes, hash it with bcrypt (salt rounds 10) and return the hash. If it fails, throw an Error with 'Weak password'. Then write a `verifyPassword(input, hash)` function that uses bcrypt.compare to return true/false.",
+        "starterCode": "const bcrypt = require('bcryptjs');\n\n// Write hashIfStrong(password) - async\n// - Check length >= 8 and contains a digit\n// - If weak: throw new Error('Weak password')\n// - If strong: return the bcrypt hash\n\n// Write verifyPassword(input, hash) - async\n// - Return result of bcrypt.compare\n\n// Your code here\n\n// Test:\n// async function test() {\n//   try {\n//     const hash = await hashIfStrong('secure99');\n//     console.log('Hash created:', hash.length === 60);\n//     console.log('Verify correct:', await verifyPassword('secure99', hash));\n//     console.log('Verify wrong:', await verifyPassword('wrong', hash));\n//   } catch (e) { console.log(e.message); }\n//   try {\n//     await hashIfStrong('short');\n//   } catch (e) { console.log(e.message); }\n// }\n// test();",
+        "solution": "const bcrypt = require('bcryptjs');\n\nasync function hashIfStrong(password) {\n  if (password.length < 8 || !/\\d/.test(password)) {\n    throw new Error('Weak password');\n  }\n  return await bcrypt.hash(password, 10);\n}\n\nasync function verifyPassword(input, hash) {\n  return await bcrypt.compare(input, hash);\n}\n\nasync function test() {\n  try {\n    const hash = await hashIfStrong('secure99');\n    console.log('Hash created:', hash.length === 60);\n    console.log('Verify correct:', await verifyPassword('secure99', hash));\n    console.log('Verify wrong:', await verifyPassword('wrong', hash));\n  } catch (e) { console.log(e.message); }\n  try {\n    await hashIfStrong('short');\n  } catch (e) { console.log(e.message); }\n}\ntest();",
+        "expectedOutput": "Hash created: true\nVerify correct: true\nVerify wrong: false\nWeak password",
+        "hints": [
+          "Use a regex like /\\d/ to test if a string contains at least one digit",
+          "bcrypt.hash() returns a promise that resolves to a 60-character string"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "json-web-tokens",
+    "sectionId": "authentication",
+    "orderIndex": 1,
+    "title": "JSON Web Tokens (JWT)",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["jwt.sign", "jwt.verify", "payload", "token expiry", "refresh tokens", "Bearer token"],
+    "content": {
+      "explanation": "JSON Web Tokens (JWT) are the most popular method for implementing stateless authentication in modern web APIs. A JWT is a compact, URL-safe string that encodes a JSON payload and is cryptographically signed by the server. When a user logs in, the server creates a JWT containing the user's identity information and sends it back. The client stores this token and includes it in subsequent requests, allowing the server to verify the user's identity without querying a database on every request.\n\nA JWT consists of three parts separated by dots: the header, the payload, and the signature. The header specifies the algorithm used for signing (typically HS256 or RS256). The payload contains claims — key-value pairs with user data like user ID, email, and role, plus standard claims like `iat` (issued at) and `exp` (expiration time). The signature is created by signing the encoded header and payload with a secret key. Anyone can decode the header and payload (they are just Base64-encoded), but only the server with the secret key can create a valid signature.\n\nIn Node.js, the `jsonwebtoken` package provides `jwt.sign()` to create tokens and `jwt.verify()` to validate them. When signing, you pass the payload, a secret key, and options like expiration time. When verifying, the library checks the signature integrity and expiration. If the token has been tampered with or has expired, jwt.verify() throws an error.\n\nToken expiration is critical for security. Access tokens should be short-lived (15 minutes to 1 hour) to minimize damage if stolen. Refresh tokens are long-lived tokens (days to weeks) used solely to obtain new access tokens without requiring the user to log in again. The refresh token is stored securely (often in an httpOnly cookie) and is exchanged for a fresh access token when the current one expires.\n\nThe standard way to send JWTs is in the Authorization header using the Bearer scheme: `Authorization: Bearer <token>`. The server extracts the token from this header in middleware, verifies it, and attaches the decoded user information to the request object for downstream route handlers to use.",
+      "codeExamples": [
+        {
+          "title": "Creating and Verifying JWTs",
+          "code": "const jwt = require('jsonwebtoken');\n\nconst SECRET = 'my-secret-key-change-in-production';\n\n// Create a token\nconst payload = { userId: 42, email: 'alice@example.com', role: 'student' };\nconst token = jwt.sign(payload, SECRET, { expiresIn: '1h' });\nconsole.log('Token:', token.substring(0, 50) + '...');\n\n// Decode without verifying (anyone can do this)\nconst decoded = jwt.decode(token);\nconsole.log('Decoded payload:', decoded);\n\n// Verify the token (checks signature + expiry)\ntry {\n  const verified = jwt.verify(token, SECRET);\n  console.log('Verified:', verified.userId, verified.email);\n} catch (err) {\n  console.log('Invalid token:', err.message);\n}\n\n// Verify with wrong secret\ntry {\n  jwt.verify(token, 'wrong-secret');\n} catch (err) {\n  console.log('Wrong secret:', err.message);\n}",
+          "output": "Token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2...\nDecoded payload: { userId: 42, email: 'alice@example.com', role: 'student', iat: 1710000000, exp: 1710003600 }\nVerified: 42 alice@example.com\nWrong secret: invalid signature",
+          "explanation": "jwt.sign() creates a signed token with the payload and expiration. jwt.decode() reads the payload without verification (useful for debugging only). jwt.verify() both decodes and validates the signature and expiration, throwing if anything is wrong."
+        },
+        {
+          "title": "JWT Authentication Middleware in Express",
+          "code": "const jwt = require('jsonwebtoken');\nconst SECRET = process.env.JWT_SECRET || 'dev-secret';\n\nfunction authMiddleware(req, res, next) {\n  const authHeader = req.headers.authorization;\n\n  if (!authHeader || !authHeader.startsWith('Bearer ')) {\n    return res.status(401).json({ error: 'No token provided' });\n  }\n\n  const token = authHeader.split(' ')[1];\n\n  try {\n    const decoded = jwt.verify(token, SECRET);\n    req.user = { id: decoded.userId, email: decoded.email, role: decoded.role };\n    next();\n  } catch (error) {\n    if (error.name === 'TokenExpiredError') {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n    return res.status(401).json({ error: 'Invalid token' });\n  }\n}\n\n// Usage in routes\n// app.get('/profile', authMiddleware, (req, res) => {\n//   res.json({ user: req.user });\n// });\n\nconsole.log('Auth middleware defined');",
+          "output": "Auth middleware defined",
+          "explanation": "The middleware extracts the Bearer token from the Authorization header, verifies it, and attaches the decoded user data to req.user. If verification fails, it returns 401. This pattern is the standard for protecting API routes."
+        },
+        {
+          "title": "Access Token and Refresh Token Flow",
+          "code": "const jwt = require('jsonwebtoken');\n\nconst ACCESS_SECRET = 'access-secret';\nconst REFRESH_SECRET = 'refresh-secret';\n\nfunction generateTokens(userId) {\n  const accessToken = jwt.sign(\n    { userId },\n    ACCESS_SECRET,\n    { expiresIn: '15m' }\n  );\n  const refreshToken = jwt.sign(\n    { userId },\n    REFRESH_SECRET,\n    { expiresIn: '7d' }\n  );\n  return { accessToken, refreshToken };\n}\n\nfunction refreshAccessToken(refreshToken) {\n  try {\n    const decoded = jwt.verify(refreshToken, REFRESH_SECRET);\n    const newAccessToken = jwt.sign(\n      { userId: decoded.userId },\n      ACCESS_SECRET,\n      { expiresIn: '15m' }\n    );\n    console.log('New access token issued for user:', decoded.userId);\n    return newAccessToken;\n  } catch (error) {\n    console.log('Refresh failed:', error.message);\n    return null;\n  }\n}\n\nconst tokens = generateTokens(42);\nconsole.log('Access token expires in 15m');\nconsole.log('Refresh token expires in 7d');\n\nconst newAccess = refreshAccessToken(tokens.refreshToken);\nconsole.log('New token created:', !!newAccess);",
+          "output": "Access token expires in 15m\nRefresh token expires in 7d\nNew access token issued for user: 42\nNew token created: true",
+          "explanation": "This demonstrates the dual-token strategy. Short-lived access tokens protect API routes. When an access token expires, the client sends the refresh token to get a new access token without re-entering credentials. The refresh token uses a different secret for additional security."
+        }
+      ],
+      "notes": [
+        "JWTs are not encrypted by default — anyone can decode the payload. Never put sensitive data like passwords in a JWT.",
+        "The secret key should come from an environment variable, never hardcoded in source code.",
+        "HS256 uses a shared secret (symmetric). RS256 uses a public/private key pair (asymmetric) and is better for microservices.",
+        "Store refresh tokens in httpOnly cookies to prevent XSS attacks from stealing them."
+      ],
+      "commonPitfalls": [
+        "Storing JWTs in localStorage makes them vulnerable to XSS attacks — prefer httpOnly cookies for sensitive tokens.",
+        "Using a weak or short secret key — use at least 256 bits of entropy for HS256.",
+        "Not handling TokenExpiredError separately — the client needs to know when to use a refresh token.",
+        "Putting too much data in the JWT payload — it increases the size of every request header."
+      ],
+      "interviewTips": [
+        "Be able to explain the three parts of a JWT (header, payload, signature) and what each contains.",
+        "Know the difference between jwt.decode() (no verification) and jwt.verify() (checks signature and expiry).",
+        "Explain why JWTs are stateless and how that differs from session-based auth — no server-side storage needed.",
+        "Understand the access token + refresh token pattern and why access tokens should be short-lived."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "json-web-tokens-ex1",
+        "title": "Token Generator and Validator",
+        "description": "Write a function `createToken(user)` that takes a user object with id and role, and returns a JWT signed with the secret 'test-secret' that expires in '1h'. Write a function `validateToken(token)` that verifies the token and returns the decoded payload, or null if invalid. Test with a valid token and a tampered token.",
+        "starterCode": "const jwt = require('jsonwebtoken');\nconst SECRET = 'test-secret';\n\n// Write createToken(user) that signs { userId: user.id, role: user.role }\n// Write validateToken(token) that returns decoded payload or null\n\n// Your code here\n\n// Test:\n// const token = createToken({ id: 1, role: 'admin' });\n// console.log('Valid:', validateToken(token));\n// console.log('Tampered:', validateToken(token + 'x'));",
+        "solution": "const jwt = require('jsonwebtoken');\nconst SECRET = 'test-secret';\n\nfunction createToken(user) {\n  return jwt.sign({ userId: user.id, role: user.role }, SECRET, { expiresIn: '1h' });\n}\n\nfunction validateToken(token) {\n  try {\n    return jwt.verify(token, SECRET);\n  } catch (err) {\n    return null;\n  }\n}\n\nconst token = createToken({ id: 1, role: 'admin' });\nconst valid = validateToken(token);\nconsole.log('Valid:', valid.userId, valid.role);\nconsole.log('Tampered:', validateToken(token + 'x'));",
+        "expectedOutput": "Valid: 1 admin\nTampered: null",
+        "hints": [
+          "jwt.sign takes the payload, secret, and options object with expiresIn",
+          "Wrap jwt.verify in a try/catch and return null in the catch block"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "json-web-tokens-ex2",
+        "title": "Express Auth Middleware",
+        "description": "Write an Express middleware function `authenticate` that extracts the Bearer token from the Authorization header, verifies it with jwt.verify using the secret 'app-secret', and attaches the decoded user to req.user. If no token is present, respond with 401 and { error: 'Token required' }. If the token is invalid or expired, respond with 401 and { error: 'Invalid token' }.",
+        "starterCode": "const jwt = require('jsonwebtoken');\nconst SECRET = 'app-secret';\n\n// Write authenticate(req, res, next) middleware\n// 1. Get Authorization header\n// 2. Check it starts with 'Bearer '\n// 3. Extract and verify the token\n// 4. Set req.user = decoded payload\n// 5. Call next()\n\n// Your code here",
+        "solution": "const jwt = require('jsonwebtoken');\nconst SECRET = 'app-secret';\n\nfunction authenticate(req, res, next) {\n  const authHeader = req.headers.authorization;\n  if (!authHeader || !authHeader.startsWith('Bearer ')) {\n    return res.status(401).json({ error: 'Token required' });\n  }\n  const token = authHeader.split(' ')[1];\n  try {\n    const decoded = jwt.verify(token, SECRET);\n    req.user = decoded;\n    next();\n  } catch (err) {\n    return res.status(401).json({ error: 'Invalid token' });\n  }\n}\n\nconsole.log('authenticate middleware created');\nconsole.log('Type:', typeof authenticate);",
+        "expectedOutput": "authenticate middleware created\nType: function",
+        "hints": [
+          "Use req.headers.authorization to get the header value",
+          "Split on space and take index [1] to extract the token after 'Bearer '"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "session-based-authentication",
+    "sectionId": "authentication",
+    "orderIndex": 2,
+    "title": "Session-based Authentication",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["express-session", "session stores", "cookies", "session ID", "session vs JWT", "connect-redis"],
+    "content": {
+      "explanation": "Session-based authentication is the traditional approach to managing user login state in web applications. When a user logs in, the server creates a session — a server-side data store associated with that user — and sends a session ID to the client as a cookie. On subsequent requests, the browser automatically includes this cookie, allowing the server to look up the session and identify the user.\n\nThe `express-session` middleware handles the complexity of session management in Express applications. It generates a unique session ID, creates a session object on the server, sets a cookie on the client, and deserializes the session on each request. The session object (req.session) acts like a per-user key-value store where you can save any data — user ID, role, preferences, shopping cart contents, and more.\n\nBy default, express-session stores sessions in memory (MemoryStore), which is fine for development but completely unsuitable for production. Memory stores do not scale across multiple server instances, leak memory over time, and lose all sessions when the server restarts. In production, you should use a dedicated session store like connect-redis (Redis), connect-mongo (MongoDB), or connect-pg-simple (PostgreSQL). Redis is the most popular choice due to its speed and built-in expiration support.\n\nThe session cookie contains only the session ID, not the actual session data. This is fundamentally different from JWTs, where the client holds all the data. Because the server holds the session data, the server can invalidate sessions instantly (e.g., on logout or password change) — something that is much harder with JWTs. However, this server-side storage means sessions require database lookups on every request and are harder to scale across multiple servers.\n\nChoosing between sessions and JWTs depends on your architecture. Sessions are better when you need immediate revocation (security-critical apps), when you store large amounts of user state, or when you have a monolithic server. JWTs are better for stateless APIs, microservices architectures, and mobile applications where cookies are less convenient. Many production systems use a hybrid: JWTs for API authentication with short expiry, backed by server-side session tracking for refresh token management.",
+      "codeExamples": [
+        {
+          "title": "Basic Session Authentication with express-session",
+          "code": "const express = require('express');\nconst session = require('express-session');\n\nconst app = express();\napp.use(express.json());\n\napp.use(session({\n  secret: 'my-session-secret',\n  resave: false,\n  saveUninitialized: false,\n  cookie: {\n    maxAge: 24 * 60 * 60 * 1000, // 24 hours\n    httpOnly: true,\n    secure: false // set true in production with HTTPS\n  }\n}));\n\nconst users = [{ id: 1, email: 'alice@test.com', password: 'hashed_pw' }];\n\napp.post('/login', (req, res) => {\n  const { email } = req.body;\n  const user = users.find(u => u.email === email);\n  if (!user) return res.status(401).json({ error: 'Invalid credentials' });\n\n  req.session.userId = user.id;\n  req.session.role = 'student';\n  console.log('Session created:', req.sessionID);\n  res.json({ message: 'Logged in' });\n});\n\napp.get('/profile', (req, res) => {\n  if (!req.session.userId) {\n    return res.status(401).json({ error: 'Not authenticated' });\n  }\n  res.json({ userId: req.session.userId, role: req.session.role });\n});\n\napp.post('/logout', (req, res) => {\n  req.session.destroy((err) => {\n    if (err) return res.status(500).json({ error: 'Logout failed' });\n    res.clearCookie('connect.sid');\n    res.json({ message: 'Logged out' });\n  });\n});\n\nconsole.log('Session auth routes configured');",
+          "output": "Session auth routes configured",
+          "explanation": "On login, user data is saved in req.session. The session ID is sent as a cookie. On subsequent requests, express-session deserializes the session using the cookie. On logout, the session is destroyed and the cookie is cleared."
+        },
+        {
+          "title": "Using Redis as a Session Store",
+          "code": "const express = require('express');\nconst session = require('express-session');\nconst RedisStore = require('connect-redis').default;\nconst { createClient } = require('redis');\n\nasync function setupApp() {\n  const redisClient = createClient({ url: 'redis://localhost:6379' });\n  await redisClient.connect();\n  console.log('Redis connected for sessions');\n\n  const app = express();\n  app.use(express.json());\n\n  app.use(session({\n    store: new RedisStore({ client: redisClient }),\n    secret: process.env.SESSION_SECRET || 'fallback-secret',\n    resave: false,\n    saveUninitialized: false,\n    cookie: {\n      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days\n      httpOnly: true,\n      secure: process.env.NODE_ENV === 'production',\n      sameSite: 'lax'\n    }\n  }));\n\n  // Session data now persists in Redis\n  // Survives server restarts\n  // Shared across multiple server instances\n  console.log('Redis session store configured');\n  return app;\n}\n\nconsole.log('Redis store setup function defined');",
+          "output": "Redis store setup function defined",
+          "explanation": "connect-redis stores session data in Redis instead of memory. This is production-ready: sessions persist across server restarts, can be shared across multiple app instances behind a load balancer, and Redis automatically handles expiration."
+        }
+      ],
+      "notes": [
+        "The default MemoryStore is only for development — it leaks memory and does not scale across processes.",
+        "Set `httpOnly: true` on session cookies to prevent JavaScript access (XSS protection).",
+        "Set `secure: true` in production to ensure cookies are only sent over HTTPS.",
+        "The `resave: false` option prevents saving the session if it was not modified during the request."
+      ],
+      "commonPitfalls": [
+        "Using MemoryStore in production — it leaks memory and loses all sessions on restart.",
+        "Forgetting to set httpOnly and secure flags on session cookies in production.",
+        "Not calling req.session.destroy() on logout — just deleting req.session.userId is not enough.",
+        "Setting saveUninitialized to true without understanding it creates empty sessions for every visitor."
+      ],
+      "interviewTips": [
+        "Explain the key difference: sessions store data server-side (client gets only an ID), JWTs store data client-side (client holds everything).",
+        "Know when to choose sessions over JWTs: need instant revocation, large user state, single-server apps.",
+        "Understand that sessions require sticky sessions or shared storage (Redis) when using multiple servers.",
+        "Be ready to discuss the security tradeoffs: sessions are vulnerable to CSRF, JWTs to XSS."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "session-based-authentication-ex1",
+        "title": "Session Login/Logout Flow",
+        "description": "Write an Express app with session middleware and three routes: POST /login that sets req.session.user to { id, name } from the request body; GET /me that returns the session user or 401; POST /logout that destroys the session. Use the secret 'session-test' and a maxAge of 3600000 (1 hour).",
+        "starterCode": "const express = require('express');\nconst session = require('express-session');\n\nconst app = express();\napp.use(express.json());\n\n// Configure session middleware\n// Add POST /login, GET /me, POST /logout routes\n\n// Your code here",
+        "solution": "const express = require('express');\nconst session = require('express-session');\n\nconst app = express();\napp.use(express.json());\n\napp.use(session({\n  secret: 'session-test',\n  resave: false,\n  saveUninitialized: false,\n  cookie: { maxAge: 3600000 }\n}));\n\napp.post('/login', (req, res) => {\n  const { id, name } = req.body;\n  req.session.user = { id, name };\n  res.json({ message: 'Logged in', user: req.session.user });\n});\n\napp.get('/me', (req, res) => {\n  if (!req.session.user) {\n    return res.status(401).json({ error: 'Not authenticated' });\n  }\n  res.json({ user: req.session.user });\n});\n\napp.post('/logout', (req, res) => {\n  req.session.destroy(() => {\n    res.json({ message: 'Logged out' });\n  });\n});\n\nconsole.log('Session app configured');\nconsole.log('Routes: POST /login, GET /me, POST /logout');",
+        "expectedOutput": "Session app configured\nRoutes: POST /login, GET /me, POST /logout",
+        "hints": [
+          "Use req.session.user = { id, name } to store user data in the session",
+          "req.session.destroy() takes a callback that runs after the session is removed"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "protecting-routes",
+    "sectionId": "authentication",
+    "orderIndex": 3,
+    "title": "Protecting Routes with Middleware",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["auth middleware", "role-based access", "requireRole", "route guards", "middleware chaining"],
+    "content": {
+      "explanation": "Once you have authentication in place (whether JWT or sessions), the next step is protecting your routes so that only authorized users can access them. In Express, this is done through middleware functions that run before your route handler. An auth middleware verifies the user's identity, and a role middleware checks if the authenticated user has the right permissions.\n\nThe auth middleware pattern is straightforward: extract credentials (token or session), verify them, attach user info to the request object, and call next(). If verification fails, return a 401 Unauthorized response without calling next(). This pattern keeps your route handlers clean — they can assume req.user exists and focus on business logic.\n\nRole-based access control (RBAC) adds a second layer. After authentication confirms who the user is, authorization determines what they can do. The `requireRole` pattern is a middleware factory — a function that takes allowed roles as arguments and returns a middleware function. This returned middleware checks if req.user.role matches one of the allowed roles and either calls next() or returns 403 Forbidden.\n\nMiddleware chaining is what makes this system elegant. Express lets you pass multiple middleware functions to a route definition: `app.get('/admin', auth, requireRole('ADMIN'), handler)`. Each middleware runs in order, and if any one stops the chain (by sending a response without calling next), the subsequent ones do not execute. This composition pattern allows fine-grained access control without code duplication.\n\nFor real-world applications, you often need more nuanced authorization. A recruiter should only edit their own job postings, not other recruiters' postings. A student should only see their own applications. This resource-level authorization is typically handled in the route handler or service layer, where you check if the authenticated user owns the requested resource. The middleware layer handles identity and role verification; the handler layer handles ownership checks.",
+      "codeExamples": [
+        {
+          "title": "Auth Middleware and Role-Based Access Control",
+          "code": "const jwt = require('jsonwebtoken');\nconst SECRET = process.env.JWT_SECRET || 'dev-secret';\n\n// Authentication middleware\nfunction authMiddleware(req, res, next) {\n  const authHeader = req.headers.authorization;\n  if (!authHeader || !authHeader.startsWith('Bearer ')) {\n    return res.status(401).json({ error: 'Authentication required' });\n  }\n\n  try {\n    const token = authHeader.split(' ')[1];\n    const decoded = jwt.verify(token, SECRET);\n    req.user = { id: decoded.userId, email: decoded.email, role: decoded.role };\n    next();\n  } catch (error) {\n    return res.status(401).json({ error: 'Invalid or expired token' });\n  }\n}\n\n// Role authorization middleware factory\nfunction requireRole(...allowedRoles) {\n  return (req, res, next) => {\n    if (!req.user) {\n      return res.status(401).json({ error: 'Authentication required' });\n    }\n    if (!allowedRoles.includes(req.user.role)) {\n      return res.status(403).json({\n        error: 'Insufficient permissions',\n        required: allowedRoles,\n        current: req.user.role\n      });\n    }\n    next();\n  };\n}\n\nconsole.log('authMiddleware type:', typeof authMiddleware);\nconsole.log('requireRole type:', typeof requireRole);\nconsole.log('requireRole(\"ADMIN\") type:', typeof requireRole('ADMIN'));",
+          "output": "authMiddleware type: function\nrequireRole type: function\nrequireRole(\"ADMIN\") type: function",
+          "explanation": "authMiddleware verifies the JWT and sets req.user. requireRole is a factory that returns a middleware checking if the user's role is in the allowed list. Using rest parameters (...allowedRoles) lets you specify multiple roles like requireRole('ADMIN', 'RECRUITER')."
+        },
+        {
+          "title": "Applying Middleware to Routes",
+          "code": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\n// Assume authMiddleware and requireRole from previous example\n\n// Public route - no middleware\napp.get('/api/jobs', (req, res) => {\n  res.json({ jobs: ['Frontend Dev', 'Backend Dev'] });\n});\n\n// Authenticated route - any logged-in user\napp.get('/api/profile', authMiddleware, (req, res) => {\n  res.json({ user: req.user });\n});\n\n// Role-specific routes\napp.post('/api/jobs',\n  authMiddleware,\n  requireRole('RECRUITER', 'ADMIN'),\n  (req, res) => {\n    res.json({ message: 'Job created', by: req.user.email });\n  }\n);\n\napp.delete('/api/users/:id',\n  authMiddleware,\n  requireRole('ADMIN'),\n  (req, res) => {\n    res.json({ message: `User ${req.params.id} deleted` });\n  }\n);\n\n// Apply auth to all routes in a router\nconst adminRouter = express.Router();\nadminRouter.use(authMiddleware);\nadminRouter.use(requireRole('ADMIN'));\n\nadminRouter.get('/dashboard', (req, res) => {\n  res.json({ stats: { users: 100, jobs: 50 } });\n});\n\nadminRouter.get('/logs', (req, res) => {\n  res.json({ logs: ['action1', 'action2'] });\n});\n\napp.use('/api/admin', adminRouter);\n\nconsole.log('Routes configured with middleware chains');",
+          "output": "Routes configured with middleware chains",
+          "explanation": "This shows three patterns: per-route middleware (authMiddleware on individual routes), middleware chaining (auth + role on the same route), and router-level middleware (all admin routes get auth + admin role check automatically)."
+        },
+        {
+          "title": "Optional Auth and Resource Ownership",
+          "code": "const jwt = require('jsonwebtoken');\nconst SECRET = 'dev-secret';\n\n// Optional auth - attaches user if token present, but does not reject\nfunction optionalAuth(req, res, next) {\n  const authHeader = req.headers.authorization;\n  if (authHeader && authHeader.startsWith('Bearer ')) {\n    try {\n      const token = authHeader.split(' ')[1];\n      req.user = jwt.verify(token, SECRET);\n    } catch (err) {\n      // Token invalid, but that is okay - continue without user\n    }\n  }\n  next();\n}\n\n// Resource ownership check\nfunction requireOwnership(resourceUserIdFn) {\n  return (req, res, next) => {\n    const resourceUserId = resourceUserIdFn(req);\n    if (req.user.role === 'ADMIN' || req.user.id === resourceUserId) {\n      return next();\n    }\n    return res.status(403).json({ error: 'You can only access your own resources' });\n  };\n}\n\n// Usage:\n// app.get('/api/jobs', optionalAuth, handler);\n//   - Shows public data, plus user-specific data if logged in\n//\n// app.put('/api/applications/:id',\n//   authMiddleware,\n//   requireOwnership(req => getApplication(req.params.id).studentId),\n//   handler\n// );\n\nconsole.log('Optional auth and ownership middleware defined');",
+          "output": "Optional auth and ownership middleware defined",
+          "explanation": "optionalAuth allows public access while enriching the request with user data when available. requireOwnership is a factory that takes a function to extract the resource owner's ID and compares it with the authenticated user, with an admin override."
+        }
+      ],
+      "notes": [
+        "Always put authMiddleware before requireRole in the middleware chain — you cannot check roles without knowing who the user is.",
+        "Use router-level middleware (router.use()) when all routes in a group need the same protection.",
+        "The 401 status means 'not authenticated' (who are you?), while 403 means 'not authorized' (you do not have permission).",
+        "Optional auth middleware is useful for routes that show different content to logged-in vs anonymous users."
+      ],
+      "commonPitfalls": [
+        "Returning a response without calling return — forgetting 'return' before res.status(401).json() causes the middleware to continue executing.",
+        "Applying role middleware without auth middleware first — req.user will be undefined, causing a crash.",
+        "Hardcoding role checks in route handlers instead of using middleware — leads to duplication and missed checks.",
+        "Not handling the case where req.user might be undefined in requireRole (defensive programming)."
+      ],
+      "interviewTips": [
+        "Explain the middleware chain pattern: authenticate first, authorize second, handle third.",
+        "Know the difference between 401 (unauthenticated) and 403 (unauthorized/forbidden).",
+        "Be able to describe a middleware factory pattern — a function that returns a middleware function.",
+        "Discuss resource-level authorization: why role checks alone are not enough (a recruiter should only edit their own jobs)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "protecting-routes-ex1",
+        "title": "Role-Based Middleware Factory",
+        "description": "Write a function `requireRole(...roles)` that returns an Express middleware. The middleware should check if req.user.role is included in the roles array. If yes, call next(). If req.user is missing, return 401 with { error: 'Auth required' }. If the role does not match, return 403 with { error: 'Forbidden' }. Test by creating mock req/res objects.",
+        "starterCode": "// Write requireRole(...roles) middleware factory\n\n// Your code here\n\n// Test:\n// const middleware = requireRole('ADMIN', 'RECRUITER');\n// const mockReq = { user: { role: 'ADMIN' } };\n// const mockRes = { status: (code) => ({ json: (data) => console.log(code, data) }) };\n// middleware(mockReq, mockRes, () => console.log('Access granted'));",
+        "solution": "function requireRole(...roles) {\n  return (req, res, next) => {\n    if (!req.user) {\n      return res.status(401).json({ error: 'Auth required' });\n    }\n    if (!roles.includes(req.user.role)) {\n      return res.status(403).json({ error: 'Forbidden' });\n    }\n    next();\n  };\n}\n\n// Test with ADMIN role\nconst middleware = requireRole('ADMIN', 'RECRUITER');\nconst mockRes = { status: (code) => ({ json: (data) => console.log(code, data) }) };\n\nmiddleware({ user: { role: 'ADMIN' } }, mockRes, () => console.log('Access granted'));\nmiddleware({ user: { role: 'STUDENT' } }, mockRes, () => console.log('Access granted'));\nmiddleware({}, mockRes, () => console.log('Access granted'));",
+        "expectedOutput": "Access granted\n403 { error: 'Forbidden' }\n401 { error: 'Auth required' }",
+        "hints": [
+          "Use rest parameters (...roles) to accept any number of role strings",
+          "Array.includes() checks if a value exists in an array"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "security-best-practices",
+    "sectionId": "authentication",
+    "orderIndex": 4,
+    "title": "Security Best Practices",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["helmet", "CORS", "rate limiting", "input sanitization", "HTTPS", "express-rate-limit", "XSS", "CSRF"],
+    "content": {
+      "explanation": "Building a secure Node.js application goes far beyond just authentication. Security is a multi-layered discipline, and Express applications face numerous attack vectors including cross-site scripting (XSS), cross-site request forgery (CSRF), injection attacks, brute-force attempts, and information leakage through headers. A defense-in-depth approach uses multiple security layers so that if one fails, others still protect the application.\n\nHelmet is an essential security middleware that sets various HTTP headers to protect against common web vulnerabilities. It disables the X-Powered-By header (which tells attackers you use Express), sets Content-Security-Policy to prevent XSS, enables X-Content-Type-Options to stop MIME sniffing, and configures Strict-Transport-Security to enforce HTTPS. A single `app.use(helmet())` call applies sensible defaults that address over a dozen security headers.\n\nCross-Origin Resource Sharing (CORS) controls which domains can make requests to your API. By default, browsers block cross-origin requests for security. The `cors` middleware lets you configure allowed origins, methods, and headers. In development, you might allow all origins, but in production, you should whitelist only your frontend domain. Misconfigured CORS is a common vulnerability — setting `origin: '*'` with `credentials: true` is dangerous because it allows any site to make authenticated requests to your API.\n\nRate limiting protects against brute-force attacks and denial-of-service attempts. The `express-rate-limit` middleware restricts how many requests a client can make within a time window. For authentication endpoints like login and password reset, use aggressive limits (e.g., 5 attempts per 15 minutes). For general API endpoints, use more lenient limits (e.g., 100 requests per minute). This prevents attackers from guessing passwords or overwhelming your server.\n\nInput sanitization prevents injection attacks by cleaning user input before processing it. Never trust data from the client — validate and sanitize everything. Use libraries like `express-validator` or `joi` for request validation, and `xss-clean` or `DOMPurify` (server-side) to strip HTML/script tags from user input. For database queries, always use parameterized queries or ORM methods instead of string concatenation to prevent SQL injection. With Prisma or Mongoose, the ORM handles parameterization automatically, but raw queries need explicit parameter binding.",
+      "codeExamples": [
+        {
+          "title": "Helmet and CORS Configuration",
+          "code": "const express = require('express');\nconst helmet = require('helmet');\nconst cors = require('cors');\n\nconst app = express();\n\n// Security headers\napp.use(helmet());\n\n// CORS configuration\nconst corsOptions = {\n  origin: process.env.NODE_ENV === 'production'\n    ? ['https://myapp.com', 'https://www.myapp.com']\n    : ['http://localhost:5173'],\n  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],\n  allowedHeaders: ['Content-Type', 'Authorization'],\n  credentials: true,\n  maxAge: 86400 // Cache preflight for 24 hours\n};\napp.use(cors(corsOptions));\n\nconsole.log('Helmet headers applied');\nconsole.log('CORS origin:', corsOptions.origin);\nconsole.log('Credentials allowed:', corsOptions.credentials);",
+          "output": "Helmet headers applied\nCORS origin: [ 'http://localhost:5173' ]\nCredentials allowed: true",
+          "explanation": "Helmet sets security headers with one line. CORS is configured differently for development and production — in dev, the Vite dev server origin is allowed; in production, only the real domain. Credentials: true allows cookies/auth headers to be sent cross-origin."
+        },
+        {
+          "title": "Rate Limiting for API Protection",
+          "code": "const rateLimit = require('express-rate-limit');\n\n// General API rate limit\nconst apiLimiter = rateLimit({\n  windowMs: 15 * 60 * 1000, // 15 minutes\n  max: 100, // 100 requests per window\n  standardHeaders: true, // Return rate limit info in headers\n  legacyHeaders: false,\n  message: { error: 'Too many requests, please try again later' }\n});\n\n// Strict limit for auth endpoints\nconst authLimiter = rateLimit({\n  windowMs: 15 * 60 * 1000, // 15 minutes\n  max: 5, // Only 5 attempts\n  message: { error: 'Too many login attempts, try again in 15 minutes' },\n  skipSuccessfulRequests: true // Do not count successful logins\n});\n\n// Apply to routes\n// app.use('/api', apiLimiter);\n// app.use('/api/auth/login', authLimiter);\n// app.use('/api/auth/register', authLimiter);\n\nconsole.log('API limiter: 100 req / 15 min');\nconsole.log('Auth limiter: 5 req / 15 min');\nconsole.log('Successful requests skipped:', true);",
+          "output": "API limiter: 100 req / 15 min\nAuth limiter: 5 req / 15 min\nSuccessful requests skipped: true",
+          "explanation": "Two rate limiters are created with different thresholds. The auth limiter is much stricter and uses skipSuccessfulRequests to only count failed attempts. The standardHeaders option adds RateLimit-* headers to responses so clients know their remaining quota."
+        },
+        {
+          "title": "Input Validation and Sanitization",
+          "code": "const { body, validationResult } = require('express-validator');\n\n// Validation middleware chain\nconst registerValidation = [\n  body('email')\n    .isEmail().withMessage('Invalid email')\n    .normalizeEmail(),\n  body('password')\n    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')\n    .matches(/\\d/).withMessage('Password must contain a number')\n    .matches(/[A-Z]/).withMessage('Password must contain an uppercase letter'),\n  body('name')\n    .trim()\n    .isLength({ min: 2, max: 50 }).withMessage('Name must be 2-50 characters')\n    .escape() // Prevent XSS by escaping HTML entities\n];\n\n// Validation error handler\nfunction handleValidationErrors(req, res, next) {\n  const errors = validationResult(req);\n  if (!errors.isEmpty()) {\n    return res.status(400).json({\n      error: 'Validation failed',\n      details: errors.array().map(e => ({ field: e.path, message: e.msg }))\n    });\n  }\n  next();\n}\n\n// Usage:\n// app.post('/register', registerValidation, handleValidationErrors, registerHandler);\n\nconsole.log('Validation rules:', registerValidation.length, 'fields');\nconsole.log('Each field has chained validators and sanitizers');",
+          "output": "Validation rules: 3 fields\nEach field has chained validators and sanitizers",
+          "explanation": "express-validator chains validation and sanitization rules. normalizeEmail() standardizes email format, trim() removes whitespace, escape() converts HTML characters to entities (preventing XSS). The handleValidationErrors middleware collects all errors and returns them in a structured format."
+        }
+      ],
+      "notes": [
+        "Always use HTTPS in production — use `app.set('trust proxy', 1)` behind a reverse proxy like Nginx or a cloud load balancer.",
+        "Set environment-specific CORS origins — never use `origin: '*'` with `credentials: true` in production.",
+        "Rate limiting by IP can be bypassed with proxies — consider also limiting by user ID for authenticated routes.",
+        "The `helmet()` defaults are good for most apps, but you may need to customize Content-Security-Policy for SPAs."
+      ],
+      "commonPitfalls": [
+        "Using `cors({ origin: '*', credentials: true })` — this is a security vulnerability that browsers actually block.",
+        "Applying rate limiting only to the login route but not to password reset or email verification endpoints.",
+        "Trusting client-side validation alone — always validate on the server because client checks can be bypassed.",
+        "Forgetting to sanitize data used in database queries when using raw SQL — use parameterized queries."
+      ],
+      "interviewTips": [
+        "List the OWASP Top 10 risks and explain how Node.js/Express addresses each (injection, broken auth, XSS, etc.).",
+        "Explain what helmet does and why it matters — security headers prevent entire classes of attacks.",
+        "Describe the difference between authentication (who are you) and authorization (what can you do).",
+        "Know what CORS is and why misconfiguration is dangerous — it controls cross-origin browser requests."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "security-best-practices-ex1",
+        "title": "Secure Express App Setup",
+        "description": "Write an Express app setup function that applies: helmet middleware, CORS configured for 'http://localhost:5173' with credentials enabled, a rate limiter of 50 requests per 10 minutes, and JSON body parsing with a 10kb limit. Return the configured app.",
+        "starterCode": "const express = require('express');\nconst helmet = require('helmet');\nconst cors = require('cors');\nconst rateLimit = require('express-rate-limit');\n\n// Write createSecureApp() that returns a configured Express app\n\n// Your code here\n\n// Test:\n// const app = createSecureApp();\n// console.log('App created with security middleware');",
+        "solution": "const express = require('express');\nconst helmet = require('helmet');\nconst cors = require('cors');\nconst rateLimit = require('express-rate-limit');\n\nfunction createSecureApp() {\n  const app = express();\n\n  app.use(helmet());\n\n  app.use(cors({\n    origin: 'http://localhost:5173',\n    credentials: true\n  }));\n\n  app.use(rateLimit({\n    windowMs: 10 * 60 * 1000,\n    max: 50,\n    message: { error: 'Rate limit exceeded' }\n  }));\n\n  app.use(express.json({ limit: '10kb' }));\n\n  return app;\n}\n\nconst app = createSecureApp();\nconsole.log('Secure app created');\nconsole.log('Middleware stack length:', app._router ? 'configured' : 'pending');",
+        "expectedOutput": "Secure app created\nMiddleware stack length: pending",
+        "hints": [
+          "Call app.use() for each middleware in order: helmet, cors, rateLimit, express.json",
+          "express.json({ limit: '10kb' }) restricts request body size to prevent large payload attacks"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "security-best-practices-ex2",
+        "title": "Input Validation Middleware",
+        "description": "Write a validation middleware function `validateRegistration(req, res, next)` that checks: email exists and contains '@', password is at least 8 characters, name is at least 2 characters. If validation fails, return 400 with { error: 'Validation failed', fields: [...] } listing the invalid field names. If valid, call next().",
+        "starterCode": "// Write validateRegistration(req, res, next) that checks:\n// - req.body.email exists and includes '@'\n// - req.body.password length >= 8\n// - req.body.name length >= 2\n// Return 400 with invalid field names array, or call next()\n\n// Your code here\n\n// Test:\n// const mockRes = { status: (c) => ({ json: (d) => console.log(c, d) }) };\n// validateRegistration(\n//   { body: { email: 'bad', password: '123', name: 'A' } },\n//   mockRes,\n//   () => console.log('Valid!')\n// );",
+        "solution": "function validateRegistration(req, res, next) {\n  const { email, password, name } = req.body;\n  const invalidFields = [];\n\n  if (!email || !email.includes('@')) invalidFields.push('email');\n  if (!password || password.length < 8) invalidFields.push('password');\n  if (!name || name.length < 2) invalidFields.push('name');\n\n  if (invalidFields.length > 0) {\n    return res.status(400).json({ error: 'Validation failed', fields: invalidFields });\n  }\n  next();\n}\n\nconst mockRes = { status: (c) => ({ json: (d) => console.log(c, d) }) };\n\nvalidateRegistration(\n  { body: { email: 'bad', password: '123', name: 'A' } },\n  mockRes,\n  () => console.log('Valid!')\n);\n\nvalidateRegistration(\n  { body: { email: 'a@b.com', password: 'secure1234', name: 'Alice' } },\n  mockRes,\n  () => console.log('Valid!')\n);",
+        "expectedOutput": "400 { error: 'Validation failed', fields: [ 'email', 'password', 'name' ] }\nValid!",
+        "hints": [
+          "Use string.includes('@') as a simple email check",
+          "Collect all invalid fields in an array before deciding to reject or proceed"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

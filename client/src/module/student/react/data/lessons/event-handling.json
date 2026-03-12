@@ -1,0 +1,351 @@
+[
+  {
+    "id": "handling-events",
+    "sectionId": "event-handling",
+    "orderIndex": 0,
+    "title": "Handling Events in React",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["onClick", "onChange", "event handlers", "event handler functions", "inline handlers"],
+    "content": {
+      "explanation": "Event handling in React is similar to handling events in plain HTML/JavaScript, but with some syntactic differences. In HTML, you write `onclick=\"handleClick()\"` as a string attribute. In React JSX, you write `onClick={handleClick}` — the event name is camelCase, and you pass a function reference (not a string). This is a fundamental part of making React components interactive.\n\nThe most common events you will work with are `onClick` for buttons and clickable elements, `onChange` for input fields, selects, and textareas, and `onSubmit` for forms. React supports all standard DOM events with the same camelCase naming convention: `onMouseEnter`, `onKeyDown`, `onFocus`, `onBlur`, `onScroll`, and many more. Each event handler receives a SyntheticEvent object as its argument.\n\nThere are two common patterns for defining event handlers. The first is defining a named function and passing its reference: `function handleClick() { ... }` then `<button onClick={handleClick}>`. The second is using inline arrow functions: `<button onClick={() => console.log('clicked')}>`. Named functions are preferred for readability and because they can be reused. Inline functions are convenient for simple one-liners or when you need to pass arguments.\n\nA critical distinction is between passing a function reference and calling a function. `onClick={handleClick}` passes the function to be called later when the event occurs. `onClick={handleClick()}` calls the function immediately during rendering and passes its return value as the handler — this is almost always a bug. If you need to pass arguments, use an arrow function wrapper: `onClick={() => handleClick(id)}`.\n\nEvent handlers in React follow a naming convention: handler functions are typically named `handleX` where X describes the event (handleClick, handleChange, handleSubmit). When passed as props, they are named `onX` (onClick, onChange, onSubmit). This convention makes code easy to read: `<Button onClick={handleClick} />` clearly shows that clicking the Button triggers handleClick.",
+      "codeExamples": [
+        {
+          "title": "Basic Event Handler Patterns",
+          "code": "// Pattern 1: Named function handler\nfunction handleClick() {\n  console.log('Button clicked!');\n}\n\n// Pattern 2: Inline arrow function\nconst handleHover = () => {\n  console.log('Mouse entered!');\n};\n\n// Simulating event triggers\nhandleClick();  // Like clicking a button\nhandleHover();  // Like hovering over an element\n\n// Pattern 3: Handler with event object\nfunction handleChange(event) {\n  console.log('Value changed to: ' + event.target.value);\n}\n\n// Simulating an onChange event\nhandleChange({ target: { value: 'Hello React' } });",
+          "output": "Button clicked!\nMouse entered!\nValue changed to: Hello React",
+          "explanation": "Event handlers are plain functions. Named functions are preferred for readability. Each handler receives an event object with details about what triggered the event."
+        },
+        {
+          "title": "Function Reference vs Function Call",
+          "code": "function handleClick() {\n  console.log('Clicked!');\n  return 'done';\n}\n\n// CORRECT: Pass reference — function runs when event occurs\nconst correctHandler = handleClick;\nconsole.log('Type of correct handler: ' + typeof correctHandler);\n\n// WRONG: Calling immediately — runs during render!\nconst wrongHandler = handleClick();  // This runs NOW\nconsole.log('Type of wrong handler: ' + typeof wrongHandler);\n\n// CORRECT with arguments: Wrap in arrow function\nfunction handleDelete(id) {\n  console.log('Deleting item: ' + id);\n}\nconst deleteHandler = () => handleDelete(42);\ndeleteHandler();",
+          "output": "Type of correct handler: function\nClicked!\nType of wrong handler: string\nDeleting item: 42",
+          "explanation": "Pass `handleClick` (reference) not `handleClick()` (call). To pass arguments, wrap in an arrow function: `() => handleClick(arg)`."
+        },
+        {
+          "title": "Common Event Types",
+          "code": "// onClick — buttons, links, any clickable element\nfunction handleButtonClick() {\n  console.log('onClick: Button pressed');\n}\n\n// onChange — input, select, textarea\nfunction handleInputChange(event) {\n  console.log('onChange: ' + event.target.value);\n}\n\n// onSubmit — form submission\nfunction handleFormSubmit(event) {\n  event.preventDefault();\n  console.log('onSubmit: Form submitted');\n}\n\n// Simulate events\nhandleButtonClick();\nhandleInputChange({ target: { value: 'React' } });\nhandleFormSubmit({ preventDefault: () => {} });",
+          "output": "onClick: Button pressed\nonChange: React\nonSubmit: Form submitted",
+          "explanation": "onClick handles clicks, onChange handles input value changes, and onSubmit handles form submissions. Each receives a synthetic event object."
+        }
+      ],
+      "notes": [
+        "React event names use camelCase: `onClick`, `onChange`, `onSubmit` — not `onclick`, `onchange`, `onsubmit`.",
+        "Always pass a function reference to event handlers, not a function call. Use `onClick={handleClick}` not `onClick={handleClick()}`.",
+        "Follow the naming convention: handler functions use `handle` prefix (handleClick), and callback props use `on` prefix (onClick)."
+      ],
+      "commonPitfalls": [
+        "Writing `onClick={handleClick()}` instead of `onClick={handleClick}` — the parentheses cause the function to execute immediately during render, not on click.",
+        "Forgetting that `onChange` in React fires on every keystroke, not just when the input loses focus (which is the behavior of the native `change` event). This is actually React's `onInput` behavior mapped to the `onChange` name for consistency."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "events-basic-exercise",
+        "title": "Create Event Handlers",
+        "description": "Create an event handler system that simulates button clicks and input changes. Implement handleClick and handleChange functions that process mock events.",
+        "starterCode": "// 1. Create handleClick that logs 'Button: ' + the button's label\n// 2. Create handleChange that logs 'Input: ' + the new value\n\n// your code here\n\n// Simulate button click events\nhandleClick({ target: { label: 'Save' } });\nhandleClick({ target: { label: 'Cancel' } });\n\n// Simulate input change events\nhandleChange({ target: { value: 'React' } });\nhandleChange({ target: { value: 'React is great' } });",
+        "solution": "function handleClick(event) {\n  console.log('Button: ' + event.target.label);\n}\n\nfunction handleChange(event) {\n  console.log('Input: ' + event.target.value);\n}\n\nhandleClick({ target: { label: 'Save' } });\nhandleClick({ target: { label: 'Cancel' } });\n\nhandleChange({ target: { value: 'React' } });\nhandleChange({ target: { value: 'React is great' } });",
+        "expectedOutput": "Button: Save\nButton: Cancel\nInput: React\nInput: React is great",
+        "hints": [
+          "Event handlers receive an event object. Access the data through `event.target` which contains properties of the element that triggered the event.",
+          "For click events, read `event.target.label`. For change events, read `event.target.value`."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "events-arguments-exercise",
+        "title": "Event Handlers with Arguments",
+        "description": "Create a handler factory that generates event handlers for a list of items. Each handler should know which item it belongs to.",
+        "starterCode": "const items = ['Apple', 'Banana', 'Cherry'];\n\n// Create a function createHandler(itemName) that returns a handler function\n// The returned handler should log 'Selected: ' + itemName when called\n\n// your code here\n\n// Create handlers for each item\nconst handlers = items.map(item => createHandler(item));\n\n// Simulate clicking each item\nhandlers.forEach(handler => handler());",
+        "solution": "const items = ['Apple', 'Banana', 'Cherry'];\n\nfunction createHandler(itemName) {\n  return function() {\n    console.log('Selected: ' + itemName);\n  };\n}\n\nconst handlers = items.map(item => createHandler(item));\n\nhandlers.forEach(handler => handler());",
+        "expectedOutput": "Selected: Apple\nSelected: Banana\nSelected: Cherry",
+        "hints": [
+          "createHandler is a function that returns another function (a closure). The inner function captures itemName from the outer scope.",
+          "This is the same pattern as `onClick={() => handleSelect(item)}` in JSX — the arrow function closes over the item variable."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "synthetic-events",
+    "sectionId": "event-handling",
+    "orderIndex": 1,
+    "title": "Synthetic Events",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["SyntheticEvent", "event pooling", "native events", "event properties", "cross-browser compatibility"],
+    "content": {
+      "explanation": "React wraps the browser's native events in its own event system called SyntheticEvent. When you handle an event in React, you are not working with the browser's native event directly — you are working with a React-created wrapper object that has the same interface. SyntheticEvent normalizes event behavior across different browsers, ensuring your event handling code works consistently regardless of whether the user is on Chrome, Firefox, Safari, or Edge.\n\nA SyntheticEvent object has the same properties and methods you would find on a native event: `target`, `currentTarget`, `type`, `preventDefault()`, `stopPropagation()`, and more. The `target` property refers to the DOM element that triggered the event. The `currentTarget` refers to the element the handler is attached to (they differ when events bubble). You can call `event.preventDefault()` to prevent default browser behavior (like form submission) and `event.stopPropagation()` to prevent the event from bubbling up.\n\nHistorically, React used event pooling for performance — the SyntheticEvent object was reused across events, and all properties were nullified after the handler returned. This meant you could not access event properties asynchronously (like in a setTimeout). Starting with React 17, event pooling was removed, so this is no longer an issue. However, it is still a common interview topic because it was a significant gotcha in older React versions.\n\nIf you need access to the underlying native browser event, you can use `event.nativeEvent`. This is rarely necessary but can be useful when working with browser APIs that require native events, such as certain drag-and-drop implementations or when integrating with non-React libraries. In general, stick with the SyntheticEvent interface for consistency.\n\nReact uses event delegation under the hood. Instead of attaching event listeners to every individual DOM node, React attaches a single listener to the root of your app (the root DOM container since React 17, previously the document). When an event occurs, React determines which component it belongs to and calls the appropriate handler. This delegation system is more memory-efficient than attaching individual listeners and is transparent to the developer.",
+      "codeExamples": [
+        {
+          "title": "SyntheticEvent Properties",
+          "code": "// Simulating a SyntheticEvent\nfunction createSyntheticEvent(type, target, nativeEvent) {\n  return {\n    type,\n    target,\n    currentTarget: target,\n    nativeEvent,\n    defaultPrevented: false,\n    propagationStopped: false,\n    preventDefault() {\n      this.defaultPrevented = true;\n    },\n    stopPropagation() {\n      this.propagationStopped = true;\n    }\n  };\n}\n\nconst event = createSyntheticEvent(\n  'click',\n  { tagName: 'BUTTON', id: 'submit-btn' },\n  { /* native event */ }\n);\n\nconsole.log('Type: ' + event.type);\nconsole.log('Target tag: ' + event.target.tagName);\nconsole.log('Target id: ' + event.target.id);\n\nevent.preventDefault();\nconsole.log('Default prevented: ' + event.defaultPrevented);",
+          "output": "Type: click\nTarget tag: BUTTON\nTarget id: submit-btn\nDefault prevented: true",
+          "explanation": "SyntheticEvents wrap native events with a consistent interface. They provide target, type, preventDefault(), stopPropagation(), and all standard event properties."
+        },
+        {
+          "title": "Event Target vs CurrentTarget",
+          "code": "// target: the element that triggered the event\n// currentTarget: the element the handler is attached to\n\nfunction handleClick(event) {\n  console.log('Clicked on: ' + event.target.tagName);\n  console.log('Handler on: ' + event.currentTarget.tagName);\n  console.log('Same element: ' + (event.target === event.currentTarget));\n}\n\n// Case 1: Click directly on the button\nhandleClick({\n  target: { tagName: 'BUTTON' },\n  currentTarget: { tagName: 'BUTTON' }\n});\n\nconsole.log('---');\n\n// Case 2: Click on a span inside a div (event bubbles to div handler)\nhandleClick({\n  target: { tagName: 'SPAN' },\n  currentTarget: { tagName: 'DIV' }\n});",
+          "output": "Clicked on: BUTTON\nHandler on: BUTTON\nSame element: true\n---\nClicked on: SPAN\nHandler on: DIV\nSame element: false",
+          "explanation": "event.target is what the user actually clicked. event.currentTarget is the element with the event handler. They differ when events bubble from child to parent."
+        },
+        {
+          "title": "preventDefault and stopPropagation",
+          "code": "// preventDefault: stop the browser's default action\nfunction handleSubmit(event) {\n  event.preventDefault();\n  console.log('Form submit prevented, handling with JS');\n}\n\n// stopPropagation: stop event from bubbling to parent\nfunction handleInnerClick(event) {\n  event.stopPropagation();\n  console.log('Inner clicked, stopped propagation');\n}\n\nfunction handleOuterClick() {\n  console.log('Outer clicked');\n}\n\n// Simulate form submit\nconst formEvent = { defaultPrevented: false, preventDefault() { this.defaultPrevented = true; } };\nhandleSubmit(formEvent);\nconsole.log('Default prevented: ' + formEvent.defaultPrevented);\n\nconsole.log('---');\n\n// Simulate nested click without stopPropagation\nconsole.log('Without stopPropagation:');\nhandleOuterClick();\n\n// With stopPropagation, outer would not fire\nconsole.log('With stopPropagation:');\nhandleInnerClick({ stopPropagation() {} });",
+          "output": "Form submit prevented, handling with JS\nDefault prevented: true\n---\nWithout stopPropagation:\nOuter clicked\nWith stopPropagation:\nInner clicked, stopped propagation",
+          "explanation": "preventDefault() stops default browser behavior (form submission, link navigation). stopPropagation() prevents the event from reaching parent handlers."
+        }
+      ],
+      "notes": [
+        "SyntheticEvents provide a consistent API across all browsers. You do not need to worry about browser-specific event behavior.",
+        "Event pooling was removed in React 17. You can now safely access event properties asynchronously in modern React.",
+        "React uses event delegation — a single listener on the root container handles all events, making it more efficient than individual DOM listeners."
+      ],
+      "commonPitfalls": [
+        "Confusing `event.target` with `event.currentTarget` — target is the element that was actually clicked, while currentTarget is the element the handler is attached to. This matters when handling events on parent elements.",
+        "Calling `event.stopPropagation()` unnecessarily, which can prevent other parts of your application (or third-party libraries) from receiving events they depend on. Only stop propagation when you have a specific reason."
+      ],
+      "interviewTips": [
+        "Explain that SyntheticEvent is React's cross-browser wrapper around native events. Mention that React 17 changed event delegation from document to the root container and removed event pooling.",
+        "Be ready to explain the difference between event.target and event.currentTarget, and when to use preventDefault() vs stopPropagation()."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "synthetic-event-exercise",
+        "title": "Build a SyntheticEvent Simulator",
+        "description": "Create a function that simulates React's SyntheticEvent by wrapping a native event object with additional methods and normalized properties.",
+        "starterCode": "// Create a function wrapEvent(nativeEvent) that returns a SyntheticEvent-like object\n// It should have:\n// - type: from nativeEvent.type\n// - target: from nativeEvent.target\n// - nativeEvent: reference to the original\n// - defaultPrevented: false initially\n// - preventDefault(): sets defaultPrevented to true\n// - isPropagationStopped: false initially\n// - stopPropagation(): sets isPropagationStopped to true\n\n// your code here\n\nconst native = { type: 'click', target: { id: 'btn', tagName: 'BUTTON' } };\nconst synthetic = wrapEvent(native);\n\nconsole.log('Type: ' + synthetic.type);\nconsole.log('Target: ' + synthetic.target.tagName);\nconsole.log('Has native: ' + (synthetic.nativeEvent === native));\n\nsynthetic.preventDefault();\nconsole.log('Prevented: ' + synthetic.defaultPrevented);\n\nsynthetic.stopPropagation();\nconsole.log('Stopped: ' + synthetic.isPropagationStopped);",
+        "solution": "function wrapEvent(nativeEvent) {\n  return {\n    type: nativeEvent.type,\n    target: nativeEvent.target,\n    nativeEvent: nativeEvent,\n    defaultPrevented: false,\n    isPropagationStopped: false,\n    preventDefault() {\n      this.defaultPrevented = true;\n    },\n    stopPropagation() {\n      this.isPropagationStopped = true;\n    }\n  };\n}\n\nconst native = { type: 'click', target: { id: 'btn', tagName: 'BUTTON' } };\nconst synthetic = wrapEvent(native);\n\nconsole.log('Type: ' + synthetic.type);\nconsole.log('Target: ' + synthetic.target.tagName);\nconsole.log('Has native: ' + (synthetic.nativeEvent === native));\n\nsynthetic.preventDefault();\nconsole.log('Prevented: ' + synthetic.defaultPrevented);\n\nsynthetic.stopPropagation();\nconsole.log('Stopped: ' + synthetic.isPropagationStopped);",
+        "expectedOutput": "Type: click\nTarget: BUTTON\nHas native: true\nPrevented: true\nStopped: true",
+        "hints": [
+          "Return an object that copies type and target from nativeEvent and adds the methods preventDefault and stopPropagation.",
+          "Use `this` inside the methods to modify properties on the returned object. Store a reference to nativeEvent so it can be accessed later."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "event-delegation-exercise",
+        "title": "Event Delegation Simulation",
+        "description": "Simulate React's event delegation pattern. Create a root handler that dispatches events to the correct component handler based on the target element.",
+        "starterCode": "// Create an event delegation system\n// 1. Create a handlers registry (object mapping element IDs to handler functions)\n// 2. Create a rootHandler that looks up the target's id in the registry and calls the handler\n// 3. Register handlers for 'btn-save', 'btn-delete', 'btn-cancel'\n\n// your code here\n\n// Simulate events bubbling to root\nrootHandler({ target: { id: 'btn-save' } });\nrootHandler({ target: { id: 'btn-delete' } });\nrootHandler({ target: { id: 'btn-cancel' } });\nrootHandler({ target: { id: 'unknown' } });",
+        "solution": "const handlers = {\n  'btn-save': () => console.log('Saving...'),\n  'btn-delete': () => console.log('Deleting...'),\n  'btn-cancel': () => console.log('Cancelled')\n};\n\nfunction rootHandler(event) {\n  const id = event.target.id;\n  if (handlers[id]) {\n    handlers[id]();\n  } else {\n    console.log('No handler for: ' + id);\n  }\n}\n\nrootHandler({ target: { id: 'btn-save' } });\nrootHandler({ target: { id: 'btn-delete' } });\nrootHandler({ target: { id: 'btn-cancel' } });\nrootHandler({ target: { id: 'unknown' } });",
+        "expectedOutput": "Saving...\nDeleting...\nCancelled\nNo handler for: unknown",
+        "hints": [
+          "Create an object where keys are element IDs and values are handler functions. The rootHandler looks up the correct handler by event.target.id.",
+          "This simulates how React attaches a single listener to the root and dispatches to the correct component handler based on the event target."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "passing-arguments",
+    "sectionId": "event-handling",
+    "orderIndex": 2,
+    "title": "Passing Arguments to Event Handlers",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["passing arguments to handlers", "arrow functions in handlers", "bind method", "closures in handlers", "handler factories"],
+    "content": {
+      "explanation": "A very common need in React is passing extra data to an event handler. For example, when rendering a list of items, each item's delete button needs to know which item to delete. Since event handlers receive only the event object, you need a way to include additional information. There are several patterns to accomplish this, each with different tradeoffs.\n\nThe most common and recommended approach is wrapping the handler in an arrow function: `onClick={() => handleDelete(item.id)}`. The arrow function creates a closure that captures the `item.id` value. When the user clicks, the arrow function executes and calls `handleDelete` with the captured argument. This is clean, readable, and the pattern you will see in almost every React codebase.\n\nAnother approach is using `Function.prototype.bind`: `onClick={handleDelete.bind(null, item.id)}`. The `bind` method creates a new function with preset arguments. The first argument to bind is the `this` context (null for regular functions), and subsequent arguments are prepended to the handler's arguments. So `handleDelete.bind(null, 42)` creates a function that, when called, invokes `handleDelete(42, event)`. This approach was more common before arrow functions were standard.\n\nA third pattern is creating a handler factory — a function that returns a handler function. For example, `const createDeleteHandler = (id) => () => handleDelete(id)`. You use it as `onClick={createDeleteHandler(item.id)}`. This is useful when you want to define the handler logic outside of JSX or when the same handler pattern is used in multiple places. The factory creates a closure over the id parameter.\n\nA performance consideration: when using inline arrow functions in JSX, a new function is created on every render. In most cases, this has negligible performance impact. However, in performance-critical situations (like rendering thousands of list items), you might want to use `useCallback` or handler factories to avoid unnecessary re-creation. For beginners, do not worry about this optimization — use inline arrows freely and optimize only when profiling shows a bottleneck.",
+      "codeExamples": [
+        {
+          "title": "Arrow Function Pattern",
+          "code": "function handleDelete(id) {\n  console.log('Deleting item: ' + id);\n}\n\nfunction handleEdit(id, name) {\n  console.log('Editing ' + name + ' (id: ' + id + ')');\n}\n\n// Arrow functions capture arguments via closure\nconst items = [\n  { id: 1, name: 'Apple' },\n  { id: 2, name: 'Banana' },\n  { id: 3, name: 'Cherry' }\n];\n\n// Simulating what JSX would produce:\n// items.map(item => <button onClick={() => handleDelete(item.id)}>Delete</button>)\nitems.forEach(item => {\n  const handler = () => handleDelete(item.id);\n  handler();\n});\n\nconsole.log('---');\n\n// Multiple arguments\nconst editHandler = () => handleEdit(2, 'Banana');\neditHandler();",
+          "output": "Deleting item: 1\nDeleting item: 2\nDeleting item: 3\n---\nEditing Banana (id: 2)",
+          "explanation": "Arrow functions in JSX create closures that capture the current value of variables. Each iteration captures its own `item`, so each handler passes the correct ID."
+        },
+        {
+          "title": "Bind Method Pattern",
+          "code": "function handleAction(action, id, event) {\n  console.log(action + ' item ' + id + ' (event: ' + event + ')');\n}\n\n// bind prepends arguments to the handler\nconst deleteItem1 = handleAction.bind(null, 'Delete', 1);\nconst editItem2 = handleAction.bind(null, 'Edit', 2);\n\n// When called, 'click' simulates the event object being appended\ndeleteItem1('click');\neditItem2('click');\n\n// Comparing arrow vs bind\nconst arrowVersion = (event) => handleAction('Delete', 3, event);\narrowVersion('click');",
+          "output": "Delete item 1 (event: click)\nEdit item 2 (event: click)\nDelete item 3 (event: click)",
+          "explanation": "bind creates a new function with preset arguments. The event object is appended after the bound arguments. Arrow functions achieve the same result with clearer syntax."
+        },
+        {
+          "title": "Handler Factory Pattern",
+          "code": "// A factory function that creates specialized handlers\nfunction createItemHandler(action) {\n  return function(id) {\n    return function() {\n      console.log(action + ': ' + id);\n    };\n  };\n}\n\nconst onDelete = createItemHandler('DELETE');\nconst onArchive = createItemHandler('ARCHIVE');\n\n// Create specific handlers for specific items\nconst deleteItem1 = onDelete(1);\nconst deleteItem2 = onDelete(2);\nconst archiveItem1 = onArchive(1);\n\ndeleteItem1();\ndeleteItem2();\narchiveItem1();\n\n// Simpler factory with arrow functions\nconst makeHandler = (id) => () => console.log('Clicked item: ' + id);\n\n[10, 20, 30].forEach(id => {\n  const handler = makeHandler(id);\n  handler();\n});",
+          "output": "DELETE: 1\nDELETE: 2\nARCHIVE: 1\nClicked item: 10\nClicked item: 20\nClicked item: 30",
+          "explanation": "Handler factories return specialized functions through closures. This is useful for creating reusable handler patterns with curried arguments."
+        }
+      ],
+      "notes": [
+        "Arrow functions in event handlers are the most common pattern in React. They are clean, readable, and easy to understand.",
+        "The `bind` approach is functionally equivalent to arrow functions but less readable. It was more popular before ES6 arrow functions.",
+        "Creating a new function on every render (via arrow functions or bind) is rarely a performance issue. Only optimize with useCallback when profiling shows a real bottleneck."
+      ],
+      "commonPitfalls": [
+        "Calling the function immediately instead of wrapping it: `onClick={handleDelete(id)}` runs on render. Use `onClick={() => handleDelete(id)}` to defer execution until the click event.",
+        "Forgetting that arrow functions in JSX create a new function reference on every render. This can cause issues if the handler is passed to a memoized child component, because the new reference breaks memoization."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "passing-args-exercise",
+        "title": "List Item Handlers",
+        "description": "Create a system where each item in a list has its own click handler that logs the item's data. Use arrow functions to pass the item information.",
+        "starterCode": "const products = [\n  { id: 'p1', name: 'Laptop', price: 999 },\n  { id: 'p2', name: 'Phone', price: 699 },\n  { id: 'p3', name: 'Tablet', price: 499 }\n];\n\nfunction handleProductClick(id, name, price) {\n  console.log('Selected: ' + name + ' ($' + price + ') [' + id + ']');\n}\n\n// Create handlers for each product using arrow functions\n// Then call each handler to simulate clicks\n\n// your code here",
+        "solution": "const products = [\n  { id: 'p1', name: 'Laptop', price: 999 },\n  { id: 'p2', name: 'Phone', price: 699 },\n  { id: 'p3', name: 'Tablet', price: 499 }\n];\n\nfunction handleProductClick(id, name, price) {\n  console.log('Selected: ' + name + ' ($' + price + ') [' + id + ']');\n}\n\nproducts.forEach(product => {\n  const handler = () => handleProductClick(product.id, product.name, product.price);\n  handler();\n});",
+        "expectedOutput": "Selected: Laptop ($999) [p1]\nSelected: Phone ($699) [p2]\nSelected: Tablet ($499) [p3]",
+        "hints": [
+          "For each product, create an arrow function that calls handleProductClick with that product's specific data.",
+          "Use forEach to iterate over products. Inside the loop, create a handler with `() => handleProductClick(product.id, product.name, product.price)` and call it."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "handler-factory-exercise",
+        "title": "Create a Handler Factory",
+        "description": "Build a handler factory function that generates different types of action handlers (add, remove, update) for different resource types.",
+        "starterCode": "// Create createActionHandler(resourceType, action) that returns a function\n// The returned function takes an id and logs: '[ACTION] resourceType #id'\n\n// your code here\n\nconst addUser = createActionHandler('User', 'ADD');\nconst removeUser = createActionHandler('User', 'REMOVE');\nconst updateProduct = createActionHandler('Product', 'UPDATE');\n\naddUser(1);\naddUser(2);\nremoveUser(1);\nupdateProduct(42);",
+        "solution": "function createActionHandler(resourceType, action) {\n  return function(id) {\n    console.log('[' + action + '] ' + resourceType + ' #' + id);\n  };\n}\n\nconst addUser = createActionHandler('User', 'ADD');\nconst removeUser = createActionHandler('User', 'REMOVE');\nconst updateProduct = createActionHandler('Product', 'UPDATE');\n\naddUser(1);\naddUser(2);\nremoveUser(1);\nupdateProduct(42);",
+        "expectedOutput": "[ADD] User #1\n[ADD] User #2\n[REMOVE] User #1\n[UPDATE] Product #42",
+        "hints": [
+          "createActionHandler takes two arguments and returns a new function. The returned function takes an id and uses all three values in the log message.",
+          "The inner function forms a closure over resourceType and action, so it can access them even after createActionHandler has returned."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "form-events",
+    "sectionId": "event-handling",
+    "orderIndex": 3,
+    "title": "Form Events and Controlled Inputs",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["onSubmit", "preventDefault", "controlled inputs", "form state", "input validation"],
+    "content": {
+      "explanation": "Forms are a fundamental part of web applications, and React provides a powerful pattern for handling them called controlled components. In a controlled component, form input values are driven by React state rather than the DOM. The input's value is set by state, and every change to the input updates the state via an onChange handler. This gives React full control over the form data and enables real-time validation, dynamic formatting, and conditional form behavior.\n\nThe `onSubmit` event handler is attached to the `<form>` element and fires when the user presses Enter in an input or clicks a submit button. The first thing you should do in most onSubmit handlers is call `event.preventDefault()` — this prevents the browser's default form submission behavior, which would cause a full page reload. Instead, you handle the submission in JavaScript, typically sending the data to an API via fetch.\n\nA controlled input follows this pattern: the input's `value` attribute is bound to a state variable, and the `onChange` handler updates that state. For example: `<input value={name} onChange={(e) => setName(e.target.value)} />`. This means React is the single source of truth for the input's value. Without the onChange handler, the input would appear frozen because the user's keystrokes would not update the state that controls the value.\n\nFor forms with multiple fields, you can either use separate useState calls for each field or a single useState with an object. The object approach uses a single handler: `const handleChange = (e) => setForm({...form, [e.target.name]: e.target.value})`. The computed property name `[e.target.name]` dynamically updates the correct field based on the input's name attribute. This scales better than individual state variables for large forms.\n\nInput validation in controlled forms is straightforward because you have access to the current value at all times. You can validate on every keystroke (showing real-time errors), on blur (when the user leaves the field), or on submit (all at once). Controlled inputs also make it easy to implement features like character counting, auto-formatting (phone numbers, credit cards), and conditional field visibility based on other field values.",
+      "codeExamples": [
+        {
+          "title": "Controlled Input Pattern",
+          "code": "// Simulating a controlled input with state\nfunction useState(initial) {\n  let state = initial;\n  return [() => state, (v) => { state = typeof v === 'function' ? v(state) : v; }];\n}\n\nconst [getValue, setValue] = useState('');\n\n// onChange handler updates state\nfunction handleChange(event) {\n  setValue(event.target.value);\n}\n\n// Simulate user typing\nhandleChange({ target: { value: 'H' } });\nconsole.log('After H: ' + getValue());\n\nhandleChange({ target: { value: 'He' } });\nconsole.log('After He: ' + getValue());\n\nhandleChange({ target: { value: 'Hello' } });\nconsole.log('After Hello: ' + getValue());",
+          "output": "After H: H\nAfter He: He\nAfter Hello: Hello",
+          "explanation": "In a controlled input, every keystroke triggers onChange, which updates the state. The state drives the input's displayed value, creating a two-way sync."
+        },
+        {
+          "title": "Form Submission with preventDefault",
+          "code": "function handleSubmit(event) {\n  event.preventDefault();\n\n  const formData = {\n    email: event.formValues.email,\n    password: event.formValues.password\n  };\n\n  // Validate\n  const errors = [];\n  if (!formData.email.includes('@')) errors.push('Invalid email');\n  if (formData.password.length < 6) errors.push('Password too short');\n\n  if (errors.length > 0) {\n    console.log('Errors: ' + errors.join(', '));\n  } else {\n    console.log('Submitting: ' + formData.email);\n  }\n}\n\n// Simulate valid submission\nhandleSubmit({\n  preventDefault: () => {},\n  formValues: { email: 'alice@test.com', password: 'secret123' }\n});\n\n// Simulate invalid submission\nhandleSubmit({\n  preventDefault: () => {},\n  formValues: { email: 'invalid', password: '123' }\n});",
+          "output": "Submitting: alice@test.com\nErrors: Invalid email, Password too short",
+          "explanation": "Always call preventDefault() in form submit handlers to prevent page reload. Then validate the data and either show errors or submit to an API."
+        },
+        {
+          "title": "Multi-Field Form with Object State",
+          "code": "// Single state object for multiple form fields\nlet formState = {\n  name: '',\n  email: '',\n  role: 'user'\n};\n\n// Generic handler using computed property names\nfunction handleFieldChange(event) {\n  const { name, value } = event.target;\n  formState = { ...formState, [name]: value };\n}\n\n// Simulate filling out the form\nhandleFieldChange({ target: { name: 'name', value: 'Alice' } });\nhandleFieldChange({ target: { name: 'email', value: 'alice@test.com' } });\nhandleFieldChange({ target: { name: 'role', value: 'admin' } });\n\nconsole.log('Name: ' + formState.name);\nconsole.log('Email: ' + formState.email);\nconsole.log('Role: ' + formState.role);",
+          "output": "Name: Alice\nEmail: alice@test.com\nRole: admin",
+          "explanation": "Using `[event.target.name]` as a computed property key, one handler manages all form fields. Each input needs a `name` attribute matching the state key."
+        }
+      ],
+      "notes": [
+        "Always call `event.preventDefault()` in onSubmit handlers to prevent the browser from reloading the page.",
+        "Controlled inputs require both a `value` prop and an `onChange` handler. Without onChange, the input appears frozen to the user.",
+        "For forms with many fields, use a single state object and a generic handler with computed property names: `[e.target.name]: e.target.value`."
+      ],
+      "commonPitfalls": [
+        "Forgetting `event.preventDefault()` in the form submit handler — the page will reload and you will lose all React state and component state.",
+        "Setting a `value` prop on an input without an `onChange` handler — this makes the input read-only because React controls the value but nothing updates it on user input."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "form-controlled-exercise",
+        "title": "Build a Controlled Form",
+        "description": "Create a form state manager that handles multiple inputs. Implement handleChange for updating individual fields and handleSubmit for validating and logging the final data.",
+        "starterCode": "let form = { username: '', email: '', age: '' };\n\n// 1. Create handleChange(name, value) that updates the form field immutably\n// 2. Create handleSubmit() that validates:\n//    - username must be at least 3 characters\n//    - email must contain '@'\n//    - age must be a number > 0\n//    Log either 'Valid: username (email, age N)' or 'Invalid: error1, error2'\n\n// your code here\n\nhandleChange('username', 'Al');\nhandleChange('email', 'test');\nhandleChange('age', '-5');\nhandleSubmit();\n\nhandleChange('username', 'Alice');\nhandleChange('email', 'alice@mail.com');\nhandleChange('age', '25');\nhandleSubmit();",
+        "solution": "let form = { username: '', email: '', age: '' };\n\nfunction handleChange(name, value) {\n  form = { ...form, [name]: value };\n}\n\nfunction handleSubmit() {\n  const errors = [];\n  if (form.username.length < 3) errors.push('username too short');\n  if (!form.email.includes('@')) errors.push('invalid email');\n  if (!(Number(form.age) > 0)) errors.push('invalid age');\n\n  if (errors.length > 0) {\n    console.log('Invalid: ' + errors.join(', '));\n  } else {\n    console.log('Valid: ' + form.username + ' (' + form.email + ', age ' + form.age + ')');\n  }\n}\n\nhandleChange('username', 'Al');\nhandleChange('email', 'test');\nhandleChange('age', '-5');\nhandleSubmit();\n\nhandleChange('username', 'Alice');\nhandleChange('email', 'alice@mail.com');\nhandleChange('age', '25');\nhandleSubmit();",
+        "expectedOutput": "Invalid: username too short, invalid email, invalid age\nValid: Alice (alice@mail.com, age 25)",
+        "hints": [
+          "Use spread syntax with computed property names to update a specific field: `form = { ...form, [name]: value }`.",
+          "For validation, check each condition and push error messages to an array. If the array is empty, the form is valid."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "form-realtime-exercise",
+        "title": "Real-Time Validation",
+        "description": "Create a password validation system that checks multiple rules on every keystroke and reports which rules pass and fail.",
+        "starterCode": "const rules = [\n  { name: 'minLength', test: (v) => v.length >= 8, message: 'At least 8 characters' },\n  { name: 'hasUpper', test: (v) => /[A-Z]/.test(v), message: 'Contains uppercase letter' },\n  { name: 'hasNumber', test: (v) => /[0-9]/.test(v), message: 'Contains a number' }\n];\n\n// Create validatePassword(password) that:\n// - Tests the password against each rule\n// - Logs each rule's message with a pass/fail prefix\n// - Returns true if all rules pass\n\n// your code here\n\nconsole.log('--- Testing \"hello\" ---');\nconst r1 = validatePassword('hello');\nconsole.log('All passed: ' + r1);\n\nconsole.log('--- Testing \"Hello123!\" ---');\nconst r2 = validatePassword('Hello123!');\nconsole.log('All passed: ' + r2);",
+        "solution": "const rules = [\n  { name: 'minLength', test: (v) => v.length >= 8, message: 'At least 8 characters' },\n  { name: 'hasUpper', test: (v) => /[A-Z]/.test(v), message: 'Contains uppercase letter' },\n  { name: 'hasNumber', test: (v) => /[0-9]/.test(v), message: 'Contains a number' }\n];\n\nfunction validatePassword(password) {\n  let allPassed = true;\n  rules.forEach(rule => {\n    const passed = rule.test(password);\n    if (!passed) allPassed = false;\n    console.log((passed ? 'PASS' : 'FAIL') + ': ' + rule.message);\n  });\n  return allPassed;\n}\n\nconsole.log('--- Testing \"hello\" ---');\nconst r1 = validatePassword('hello');\nconsole.log('All passed: ' + r1);\n\nconsole.log('--- Testing \"Hello123!\" ---');\nconst r2 = validatePassword('Hello123!');\nconsole.log('All passed: ' + r2);",
+        "expectedOutput": "--- Testing \"hello\" ---\nFAIL: At least 8 characters\nFAIL: Contains uppercase letter\nFAIL: Contains a number\nAll passed: false\n--- Testing \"Hello123!\" ---\nPASS: At least 8 characters\nPASS: Contains uppercase letter\nPASS: Contains a number\nAll passed: true",
+        "hints": [
+          "Iterate over the rules array and call each rule's test function with the password. Log the result with PASS or FAIL prefix.",
+          "Track whether all rules pass using a boolean variable that starts as true and gets set to false when any rule fails."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "keyboard-and-mouse",
+    "sectionId": "event-handling",
+    "orderIndex": 4,
+    "title": "Keyboard and Mouse Events",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["onKeyDown", "onKeyUp", "onMouseEnter", "onMouseLeave", "event delegation in React", "keyboard accessibility"],
+    "content": {
+      "explanation": "Beyond click and change events, React provides handlers for a full range of keyboard and mouse interactions. Keyboard events are essential for building accessible interfaces, implementing shortcuts, and handling special keys. Mouse events enable hover effects, tooltips, drag interactions, and context menus. Understanding these events lets you build rich, interactive UIs.\n\nKeyboard events in React include `onKeyDown` (fires when a key is pressed), `onKeyUp` (fires when a key is released), and `onKeyPress` (deprecated, do not use). The event object for keyboard events includes `event.key` (the key value like 'Enter', 'Escape', 'a'), `event.code` (the physical key like 'KeyA', 'Enter'), and modifier properties `event.ctrlKey`, `event.shiftKey`, `event.altKey`, and `event.metaKey` (Cmd on Mac). Always use `event.key` for logical key detection and `event.code` for physical key position.\n\nCommon keyboard patterns include detecting Enter to submit, Escape to close modals, and keyboard shortcuts like Ctrl+S to save. When implementing keyboard shortcuts, check modifier keys alongside the main key: `if (event.ctrlKey && event.key === 's') { event.preventDefault(); handleSave(); }`. The `preventDefault()` is important here to stop the browser's default Ctrl+S save dialog from appearing.\n\nMouse events include `onMouseEnter` and `onMouseLeave` (for hover effects without event bubbling), `onMouseOver` and `onMouseOut` (with bubbling), `onMouseDown` and `onMouseUp` (for press and release), and `onMouseMove` (for tracking position). The mouse event object includes `event.clientX` and `event.clientY` (coordinates relative to viewport), `event.pageX` and `event.pageY` (relative to document), and `event.button` (which mouse button was used).\n\nReact's event delegation simplifies event handling across many elements. Instead of attaching listeners to each list item, you can attach one listener to the parent and use `event.target` to determine which child was interacted with. This is efficient and scales well. While React handles delegation internally (attaching to the root), you can also leverage this pattern explicitly for dynamic lists where items are added and removed frequently.",
+      "codeExamples": [
+        {
+          "title": "Keyboard Event Handling",
+          "code": "function handleKeyDown(event) {\n  const key = event.key;\n  const mods = [];\n  if (event.ctrlKey) mods.push('Ctrl');\n  if (event.shiftKey) mods.push('Shift');\n  if (event.altKey) mods.push('Alt');\n\n  const combo = mods.length > 0 ? mods.join('+') + '+' + key : key;\n  console.log('Key: ' + combo);\n}\n\n// Simulate keyboard events\nhandleKeyDown({ key: 'Enter', ctrlKey: false, shiftKey: false, altKey: false });\nhandleKeyDown({ key: 's', ctrlKey: true, shiftKey: false, altKey: false });\nhandleKeyDown({ key: 'Escape', ctrlKey: false, shiftKey: false, altKey: false });\nhandleKeyDown({ key: 'Z', ctrlKey: true, shiftKey: true, altKey: false });",
+          "output": "Key: Enter\nKey: Ctrl+s\nKey: Escape\nKey: Ctrl+Shift+Z",
+          "explanation": "Keyboard events provide the key name and modifier states. Use these to implement keyboard shortcuts and handle special keys like Enter and Escape."
+        },
+        {
+          "title": "Mouse Event Tracking",
+          "code": "function handleMouseEnter(event) {\n  console.log('Mouse entered: ' + event.target.id);\n}\n\nfunction handleMouseLeave(event) {\n  console.log('Mouse left: ' + event.target.id);\n}\n\nfunction handleMouseMove(event) {\n  console.log('Position: (' + event.clientX + ', ' + event.clientY + ')');\n}\n\n// Simulate mouse interactions\nhandleMouseEnter({ target: { id: 'card-1' } });\nhandleMouseMove({ clientX: 150, clientY: 200 });\nhandleMouseMove({ clientX: 155, clientY: 205 });\nhandleMouseLeave({ target: { id: 'card-1' } });",
+          "output": "Mouse entered: card-1\nPosition: (150, 200)\nPosition: (155, 205)\nMouse left: card-1",
+          "explanation": "onMouseEnter/Leave track hover state. onMouseMove provides real-time cursor coordinates for dynamic effects like tooltips or custom cursors."
+        },
+        {
+          "title": "Event Delegation for Lists",
+          "code": "// One handler on the parent handles clicks for all children\nfunction handleListClick(event) {\n  const target = event.target;\n  if (target.dataset && target.dataset.action) {\n    const action = target.dataset.action;\n    const id = target.dataset.id;\n    console.log(action + ' item #' + id);\n  } else {\n    console.log('Clicked outside action area');\n  }\n}\n\n// Simulate clicking different items in a list\nhandleListClick({ target: { dataset: { action: 'edit', id: '1' } } });\nhandleListClick({ target: { dataset: { action: 'delete', id: '2' } } });\nhandleListClick({ target: { dataset: { action: 'view', id: '3' } } });\nhandleListClick({ target: { dataset: {} } });",
+          "output": "edit item #1\ndelete item #2\nview item #3\nClicked outside action area",
+          "explanation": "Instead of attaching handlers to every item, one handler on the parent uses event.target data attributes to determine which item and action was triggered."
+        }
+      ],
+      "notes": [
+        "Use `onKeyDown` instead of the deprecated `onKeyPress`. Check `event.key` for the key value and modifier properties (ctrlKey, shiftKey, etc.) for combinations.",
+        "Use `onMouseEnter`/`onMouseLeave` (no bubbling) for hover effects. Use `onMouseOver`/`onMouseOut` only when you need bubbling behavior.",
+        "Event delegation on a parent element is an efficient pattern for handling interactions on dynamic lists with many children."
+      ],
+      "commonPitfalls": [
+        "Forgetting `event.preventDefault()` when handling keyboard shortcuts like Ctrl+S — the browser's default behavior (save dialog) will fire alongside your handler.",
+        "Using `onMouseOver` and `onMouseOut` for hover effects — these bubble, so moving between child elements triggers unwanted events. Use `onMouseEnter` and `onMouseLeave` instead, which do not bubble."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "keyboard-shortcuts-exercise",
+        "title": "Keyboard Shortcut Handler",
+        "description": "Create a keyboard shortcut system that maps key combinations to actions and executes the correct action when a key event is received.",
+        "starterCode": "const shortcuts = [\n  { key: 's', ctrl: true, action: 'save' },\n  { key: 'z', ctrl: true, action: 'undo' },\n  { key: 'z', ctrl: true, shift: true, action: 'redo' },\n  { key: 'Escape', ctrl: false, action: 'close' }\n];\n\n// Create handleKeyboard(event) that:\n// 1. Finds a matching shortcut from the array\n// 2. Logs 'Action: <action>' if found, 'No shortcut' if not\n// Match on: key, ctrlKey, and shiftKey (default shift to false if not specified)\n\n// your code here\n\nhandleKeyboard({ key: 's', ctrlKey: true, shiftKey: false });\nhandleKeyboard({ key: 'z', ctrlKey: true, shiftKey: false });\nhandleKeyboard({ key: 'z', ctrlKey: true, shiftKey: true });\nhandleKeyboard({ key: 'Escape', ctrlKey: false, shiftKey: false });\nhandleKeyboard({ key: 'a', ctrlKey: false, shiftKey: false });",
+        "solution": "const shortcuts = [\n  { key: 's', ctrl: true, action: 'save' },\n  { key: 'z', ctrl: true, action: 'undo' },\n  { key: 'z', ctrl: true, shift: true, action: 'redo' },\n  { key: 'Escape', ctrl: false, action: 'close' }\n];\n\nfunction handleKeyboard(event) {\n  const match = shortcuts.find(s =>\n    s.key === event.key &&\n    s.ctrl === event.ctrlKey &&\n    (s.shift || false) === event.shiftKey\n  );\n\n  if (match) {\n    console.log('Action: ' + match.action);\n  } else {\n    console.log('No shortcut');\n  }\n}\n\nhandleKeyboard({ key: 's', ctrlKey: true, shiftKey: false });\nhandleKeyboard({ key: 'z', ctrlKey: true, shiftKey: false });\nhandleKeyboard({ key: 'z', ctrlKey: true, shiftKey: true });\nhandleKeyboard({ key: 'Escape', ctrlKey: false, shiftKey: false });\nhandleKeyboard({ key: 'a', ctrlKey: false, shiftKey: false });",
+        "expectedOutput": "Action: save\nAction: undo\nAction: redo\nAction: close\nNo shortcut",
+        "hints": [
+          "Use Array.find() to search for a shortcut matching the event's key, ctrlKey, and shiftKey properties.",
+          "Handle the optional shift property with a default: `(s.shift || false)` ensures undefined becomes false for comparison."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "hover-tracker-exercise",
+        "title": "Hover State Tracker",
+        "description": "Build a hover tracking system that maintains which element is currently hovered and logs enter/leave transitions.",
+        "starterCode": "let hoveredElement = null;\n\n// Create handleEnter(id) that sets hoveredElement and logs 'Enter: <id>'\n// Create handleLeave(id) that clears hoveredElement and logs 'Leave: <id>'\n// Create getHovered() that returns the current hovered element\n\n// your code here\n\nhandleEnter('card-1');\nconsole.log('Hovered: ' + getHovered());\n\nhandleLeave('card-1');\nconsole.log('Hovered: ' + getHovered());\n\nhandleEnter('card-2');\nconsole.log('Hovered: ' + getHovered());\n\nhandleLeave('card-2');\nconsole.log('Hovered: ' + getHovered());",
+        "solution": "let hoveredElement = null;\n\nfunction handleEnter(id) {\n  hoveredElement = id;\n  console.log('Enter: ' + id);\n}\n\nfunction handleLeave(id) {\n  hoveredElement = null;\n  console.log('Leave: ' + id);\n}\n\nfunction getHovered() {\n  return hoveredElement;\n}\n\nhandleEnter('card-1');\nconsole.log('Hovered: ' + getHovered());\n\nhandleLeave('card-1');\nconsole.log('Hovered: ' + getHovered());\n\nhandleEnter('card-2');\nconsole.log('Hovered: ' + getHovered());\n\nhandleLeave('card-2');\nconsole.log('Hovered: ' + getHovered());",
+        "expectedOutput": "Enter: card-1\nHovered: card-1\nLeave: card-1\nHovered: null\nEnter: card-2\nHovered: card-2\nLeave: card-2\nHovered: null",
+        "hints": [
+          "handleEnter sets the hoveredElement variable to the given id and logs the entry. handleLeave sets it back to null.",
+          "This simulates how you would track hover state in React with onMouseEnter and onMouseLeave handlers updating a state variable."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

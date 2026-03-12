@@ -1,0 +1,352 @@
+[
+  {
+    "id": "basic-routing",
+    "sectionId": "react-router",
+    "orderIndex": 0,
+    "title": "Basic Routing",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["BrowserRouter", "Routes", "Route", "Link", "client-side routing"],
+    "content": {
+      "explanation": "React Router is the standard routing library for React applications. It enables client-side routing — navigating between different views without full page reloads. Instead of the browser requesting a new HTML page from the server, React Router intercepts navigation, updates the URL, and renders the appropriate component. This creates a fast, app-like experience while maintaining proper URL semantics.\n\nThe core components of React Router v6 are BrowserRouter, Routes, Route, and Link. BrowserRouter wraps your entire application and provides the routing context using the browser's History API. It must be placed at the top of your component tree (typically in App or index). Routes is a container that evaluates its child Route elements and renders the first one that matches the current URL. Route defines a mapping between a URL path and a component.\n\nThe Link component replaces HTML anchor tags (<a>) for internal navigation. While <a href=\"/about\"> would cause a full page reload, <Link to=\"/about\"> handles the navigation client-side — it updates the URL and triggers a re-render of the Routes, which then matches and renders the appropriate component. Link is essential for the single-page application experience.\n\nRoute elements use a path prop to specify the URL pattern and an element prop to specify the component to render. In React Router v6, the element prop takes a JSX element (not a component reference): <Route path=\"/about\" element={<About />} />. This change from v5 (which used component or render props) simplifies data passing because you can pass props directly to the element.\n\nReact Router v6 uses relative paths and automatic route ranking. Routes are automatically matched by specificity, so you don't need to worry about ordering. A path of \"/users/new\" is more specific than \"/users/:id\", so it matches first regardless of declaration order. The index route (no path or path=\"\") renders at the parent route's URL and serves as the default child.",
+      "codeExamples": [
+        {
+          "title": "Basic router setup",
+          "code": "// Simulating React Router components\nfunction BrowserRouter({ children }) {\n  console.log('BrowserRouter: providing routing context');\n  return children;\n}\n\nfunction Routes({ children }) {\n  console.log('Routes: evaluating route matches');\n  return children;\n}\n\nfunction Route({ path, element }) {\n  console.log('Route defined: path=' + path);\n  return null;\n}\n\nfunction Link({ to, children }) {\n  console.log('Link: navigates to ' + to + ' (' + children + ')');\n  return null;\n}\n\n// Usage pattern\nfunction App() {\n  console.log('App with routing:');\n  BrowserRouter({\n    children: Routes({\n      children: [\n        Route({ path: '/', element: 'Home' }),\n        Route({ path: '/about', element: 'About' }),\n        Route({ path: '/contact', element: 'Contact' })\n      ]\n    })\n  });\n\n  Link({ to: '/', children: 'Home' });\n  Link({ to: '/about', children: 'About' });\n  return null;\n}\n\nApp();",
+          "output": "App with routing:\nBrowserRouter: providing routing context\nRoutes: evaluating route matches\nRoute defined: path=/\nRoute defined: path=/about\nRoute defined: path=/contact\nLink: navigates to / (Home)\nLink: navigates to /about (About)",
+          "explanation": "BrowserRouter wraps the app, Routes contains all route definitions, each Route maps a path to a component, and Link creates navigation links without page reloads."
+        },
+        {
+          "title": "Route matching behavior",
+          "code": "function matchRoute(currentPath, routes) {\n  console.log('Current URL:', currentPath);\n\n  for (const route of routes) {\n    if (currentPath === route.path) {\n      console.log('Matched route:', route.path, '-> Renders:', route.component);\n      return route.component;\n    }\n  }\n\n  console.log('No match -> Renders: 404 Not Found');\n  return '404';\n}\n\nconst routes = [\n  { path: '/', component: 'HomePage' },\n  { path: '/about', component: 'AboutPage' },\n  { path: '/contact', component: 'ContactPage' }\n];\n\nmatchRoute('/', routes);\nmatchRoute('/about', routes);\nmatchRoute('/unknown', routes);",
+          "output": "Current URL: /\nMatched route: / -> Renders: HomePage\nCurrent URL: /about\nMatched route: /about -> Renders: AboutPage\nCurrent URL: /unknown\nNo match -> Renders: 404 Not Found",
+          "explanation": "React Router evaluates routes and renders the matching component. When no route matches, you can define a catch-all route with path='*' to show a 404 page."
+        },
+        {
+          "title": "Link vs anchor tag",
+          "code": "function NavigationComparison() {\n  console.log('--- HTML anchor <a> ---');\n  console.log('Causes full page reload: true');\n  console.log('Fetches new HTML from server: true');\n  console.log('Loses React state: true');\n\n  console.log('--- React Router <Link> ---');\n  console.log('Causes full page reload: false');\n  console.log('Fetches new HTML from server: false');\n  console.log('Loses React state: false');\n  console.log('Updates URL via History API: true');\n  console.log('Triggers route re-evaluation: true');\n\n  return null;\n}\n\nNavigationComparison();",
+          "output": "--- HTML anchor <a> ---\nCauses full page reload: true\nFetches new HTML from server: true\nLoses React state: true\n--- React Router <Link> ---\nCauses full page reload: false\nFetches new HTML from server: false\nLoses React state: false\nUpdates URL via History API: true\nTriggers route re-evaluation: true",
+          "explanation": "Link enables client-side navigation without page reloads. The browser URL updates, but only the matched route's component re-renders. Application state is preserved across navigations."
+        }
+      ],
+      "notes": [
+        "BrowserRouter uses the HTML5 History API (pushState, replaceState) to manage the URL. It requires server configuration to serve index.html for all routes in production.",
+        "In React Router v6, Routes replaces Switch from v5. Routes automatically picks the best match using route ranking, removing the need for exact props.",
+        "Always use Link or NavLink for internal navigation. Using <a href> for internal routes causes a full page reload, losing all React state."
+      ],
+      "commonPitfalls": [
+        "Forgetting to wrap the app in BrowserRouter. Routes and Link only work inside a router context. Place BrowserRouter at the top level, typically in index.jsx or App.jsx.",
+        "Using <a href> instead of <Link to> for internal navigation. This causes a full page reload, defeating the purpose of a single-page application."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "basic-routing-ex1",
+        "title": "Route Matching Simulation",
+        "description": "Create a simple route matching function that maps URL paths to component names.",
+        "starterCode": "// TODO:\n// 1. Create a routes array with objects { path, component }:\n//    '/' -> 'Home'\n//    '/about' -> 'About'\n//    '/contact' -> 'Contact'\n// 2. Create matchRoute(path, routes) that finds the matching route\n//    and logs \"Path <path> renders: <component>\"\n//    If no match, log \"Path <path> renders: NotFound\"\n// 3. Test with '/', '/about', '/blog'\n",
+        "solution": "const routes = [\n  { path: '/', component: 'Home' },\n  { path: '/about', component: 'About' },\n  { path: '/contact', component: 'Contact' }\n];\n\nfunction matchRoute(path, routes) {\n  const match = routes.find(r => r.path === path);\n  if (match) {\n    console.log('Path ' + path + ' renders: ' + match.component);\n  } else {\n    console.log('Path ' + path + ' renders: NotFound');\n  }\n}\n\nmatchRoute('/', routes);\nmatchRoute('/about', routes);\nmatchRoute('/blog', routes);",
+        "expectedOutput": "Path / renders: Home\nPath /about renders: About\nPath /blog renders: NotFound",
+        "hints": [
+          "Use Array.find to search for a route whose path matches the given URL.",
+          "If find returns undefined (no match), render a fallback like 'NotFound'."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "basic-routing-ex2",
+        "title": "Navigation Simulator",
+        "description": "Simulate client-side navigation by tracking the current path and rendering the matching component.",
+        "starterCode": "// TODO:\n// 1. Create a routes config:\n//    '/' -> 'HomePage'\n//    '/dashboard' -> 'Dashboard'\n//    '/settings' -> 'Settings'\n// 2. Create navigate(path) that:\n//    - Logs \"Navigating to: <path>\"\n//    - Finds the matching component\n//    - Logs \"Rendered: <component>\"\n//    - If no match: \"Rendered: 404\"\n// 3. Simulate: navigate('/'), navigate('/dashboard'),\n//    navigate('/unknown')\n",
+        "solution": "const routes = [\n  { path: '/', component: 'HomePage' },\n  { path: '/dashboard', component: 'Dashboard' },\n  { path: '/settings', component: 'Settings' }\n];\n\nfunction navigate(path) {\n  console.log('Navigating to: ' + path);\n  const match = routes.find(r => r.path === path);\n  console.log('Rendered: ' + (match ? match.component : '404'));\n}\n\nnavigate('/');\nnavigate('/dashboard');\nnavigate('/unknown');",
+        "expectedOutput": "Navigating to: /\nRendered: HomePage\nNavigating to: /dashboard\nRendered: Dashboard\nNavigating to: /unknown\nRendered: 404",
+        "hints": [
+          "Use Array.find to match the path to a route configuration.",
+          "Use a ternary operator to handle the case where no route matches: match ? match.component : '404'."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "dynamic-routes",
+    "sectionId": "react-router",
+    "orderIndex": 1,
+    "title": "Dynamic Routes",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["URL parameters", "useParams", "dynamic segments", "parameterized routes"],
+    "content": {
+      "explanation": "Dynamic routes allow you to define URL patterns with variable segments. Instead of creating a separate route for every user (/user/1, /user/2, /user/3), you define a single route with a parameter: /user/:id. The colon prefix (:) marks a segment as dynamic — it matches any value in that position and captures it as a named parameter. This is essential for resource-based URLs like user profiles, product pages, blog posts, and any content identified by an ID or slug.\n\nIn React Router v6, you access URL parameters using the useParams hook. This hook returns an object where keys are the parameter names from the route definition and values are the actual strings from the current URL. For the route /user/:id visited at /user/42, useParams returns { id: '42' }. Note that all parameter values are strings — if you need a number, you must parse it.\n\nMultiple parameters can be used in a single route: /posts/:category/:postId matches /posts/react/42 and returns { category: 'react', postId: '42' }. This is useful for hierarchical URLs. Optional parameters are supported in v6 using a ? suffix: /posts/:category? matches both /posts and /posts/react.\n\nA common pattern is fetching data based on URL parameters. The component reads the parameter with useParams, then uses it in a useEffect to fetch the corresponding data. When the URL changes (user navigates from /user/1 to /user/2), the parameter updates, the effect re-runs with the new ID, and the component shows the new data. This creates a clean separation between URL-driven state and component behavior.\n\nDynamic routes are matched with lower priority than static routes. React Router v6 automatically ranks routes so that /users/new (static) takes priority over /users/:id (dynamic). This means you can safely define both without worrying about order — /users/new will never accidentally match the :id parameter.",
+      "codeExamples": [
+        {
+          "title": "Dynamic route parameter extraction",
+          "code": "function extractParams(pattern, url) {\n  const patternParts = pattern.split('/');\n  const urlParts = url.split('/');\n  const params = {};\n\n  patternParts.forEach((part, i) => {\n    if (part.startsWith(':')) {\n      const paramName = part.slice(1);\n      params[paramName] = urlParts[i];\n    }\n  });\n\n  return params;\n}\n\n// Single parameter\nlet params = extractParams('/users/:id', '/users/42');\nconsole.log('Route: /users/:id');\nconsole.log('URL: /users/42');\nconsole.log('Params:', JSON.stringify(params));\n\n// Multiple parameters\nparams = extractParams('/posts/:category/:postId', '/posts/react/15');\nconsole.log('Route: /posts/:category/:postId');\nconsole.log('URL: /posts/react/15');\nconsole.log('Params:', JSON.stringify(params));",
+          "output": "Route: /users/:id\nURL: /users/42\nParams: {\"id\":\"42\"}\nRoute: /posts/:category/:postId\nURL: /posts/react/15\nParams: {\"category\":\"react\",\"postId\":\"15\"}",
+          "explanation": "React Router matches each segment of the URL against the route pattern. Segments prefixed with : are captured as named parameters. All parameter values are strings."
+        },
+        {
+          "title": "useParams in a component",
+          "code": "// Simulating useParams behavior\nfunction useParams() {\n  // In real React Router, this reads from the router context\n  return { userId: '42', tab: 'settings' };\n}\n\nfunction UserProfile() {\n  const params = useParams();\n\n  console.log('User ID:', params.userId);\n  console.log('Active tab:', params.tab);\n  console.log('Param type:', typeof params.userId);\n  console.log('Need to parse for number:', typeof parseInt(params.userId));\n\n  // Common pattern: fetch data based on params\n  const numericId = parseInt(params.userId, 10);\n  console.log('Parsed ID:', numericId);\n  console.log('Would fetch user #' + numericId + ' from API');\n\n  return null;\n}\n\nUserProfile();",
+          "output": "User ID: 42\nActive tab: settings\nParam type: string\nNeed to parse for number: number\nParsed ID: 42\nWould fetch user #42 from API",
+          "explanation": "useParams returns all URL parameters as strings. For numeric operations, you must parse them with parseInt or Number. The component uses these parameters to determine what data to fetch and display."
+        },
+        {
+          "title": "Data fetching based on URL params",
+          "code": "// Simulating a component that fetches data based on URL params\nfunction ProductPage(params) {\n  const { productId } = params;\n\n  console.log('ProductPage mounted with id:', productId);\n\n  // Simulate useEffect for data fetching\n  console.log('Fetching product:', productId);\n  const product = { id: productId, name: 'Product ' + productId, price: productId * 10 };\n  console.log('Product name:', product.name);\n  console.log('Product price: $' + product.price);\n\n  return null;\n}\n\n// Simulating navigation between products\nProductPage({ productId: '5' });\nconsole.log('---');\nProductPage({ productId: '12' });",
+          "output": "ProductPage mounted with id: 5\nFetching product: 5\nProduct name: Product 5\nProduct price: $50\n---\nProductPage mounted with id: 12\nFetching product: 12\nProduct name: Product 12\nProduct price: $120",
+          "explanation": "When the URL changes from /product/5 to /product/12, useParams returns the new ID. A useEffect depending on the ID re-fetches data for the new product. The same component handles any product."
+        }
+      ],
+      "notes": [
+        "All URL parameters from useParams are strings. Always parse them to numbers with parseInt or Number when needed for numeric operations.",
+        "React Router v6 ranks static routes higher than dynamic routes automatically. /users/new matches before /users/:id regardless of declaration order.",
+        "A catch-all route uses path='*' and matches any URL that hasn't been matched by more specific routes. This is useful for 404 pages."
+      ],
+      "commonPitfalls": [
+        "Treating URL parameters as numbers without parsing them. useParams always returns strings. Comparing params.id === 42 will always be false because '42' !== 42.",
+        "Not re-fetching data when the URL parameter changes. If a component using useParams has a useEffect for data fetching, the parameter must be in the dependency array to trigger a re-fetch on navigation."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "dynamic-routes-ex1",
+        "title": "Parameter Extraction",
+        "description": "Create a function that extracts named parameters from a URL pattern and an actual URL.",
+        "starterCode": "// TODO:\n// 1. Create extractParams(pattern, url) that:\n//    - Splits both by '/'\n//    - Finds segments starting with ':'\n//    - Captures the corresponding URL value\n//    - Returns an object of params\n// 2. Test with:\n//    '/users/:id' and '/users/99'\n//    -> Log \"Params: {\"id\":\"99\"}\"\n//    '/posts/:year/:slug' and '/posts/2024/hello-world'\n//    -> Log \"Params: {\"year\":\"2024\",\"slug\":\"hello-world\"}\"\n",
+        "solution": "function extractParams(pattern, url) {\n  const patternParts = pattern.split('/');\n  const urlParts = url.split('/');\n  const params = {};\n\n  patternParts.forEach((part, i) => {\n    if (part.startsWith(':')) {\n      params[part.slice(1)] = urlParts[i];\n    }\n  });\n\n  return params;\n}\n\nlet result = extractParams('/users/:id', '/users/99');\nconsole.log('Params: ' + JSON.stringify(result));\n\nresult = extractParams('/posts/:year/:slug', '/posts/2024/hello-world');\nconsole.log('Params: ' + JSON.stringify(result));",
+        "expectedOutput": "Params: {\"id\":\"99\"}\nParams: {\"year\":\"2024\",\"slug\":\"hello-world\"}",
+        "hints": [
+          "Split both the pattern and URL by '/' to get arrays of segments.",
+          "Loop through the pattern segments. If a segment starts with ':', capture the corresponding URL segment as a parameter."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "dynamic-routes-ex2",
+        "title": "Dynamic Route Matching",
+        "description": "Create a router that supports both static and dynamic routes, with dynamic parameter extraction.",
+        "starterCode": "// TODO:\n// 1. Create a matchDynamicRoute(path, routes) function\n//    Each route has { pattern, component }\n//    Return { component, params } or null\n// 2. Routes:\n//    '/home' -> 'HomePage'\n//    '/users/:id' -> 'UserPage'\n// 3. Test:\n//    '/home' -> Log \"Component: HomePage, Params: {}\"\n//    '/users/5' -> Log \"Component: UserPage, Params: {\"id\":\"5\"}\"\n//    '/other' -> Log \"No match\"\n",
+        "solution": "function matchDynamicRoute(path, routes) {\n  for (const route of routes) {\n    const patternParts = route.pattern.split('/');\n    const pathParts = path.split('/');\n\n    if (patternParts.length !== pathParts.length) continue;\n\n    const params = {};\n    let matched = true;\n\n    for (let i = 0; i < patternParts.length; i++) {\n      if (patternParts[i].startsWith(':')) {\n        params[patternParts[i].slice(1)] = pathParts[i];\n      } else if (patternParts[i] !== pathParts[i]) {\n        matched = false;\n        break;\n      }\n    }\n\n    if (matched) return { component: route.component, params };\n  }\n  return null;\n}\n\nconst routes = [\n  { pattern: '/home', component: 'HomePage' },\n  { pattern: '/users/:id', component: 'UserPage' }\n];\n\nlet result = matchDynamicRoute('/home', routes);\nconsole.log('Component: ' + result.component + ', Params: ' + JSON.stringify(result.params));\n\nresult = matchDynamicRoute('/users/5', routes);\nconsole.log('Component: ' + result.component + ', Params: ' + JSON.stringify(result.params));\n\nresult = matchDynamicRoute('/other', routes);\nconsole.log(result ? 'Match' : 'No match');",
+        "expectedOutput": "Component: HomePage, Params: {}\nComponent: UserPage, Params: {\"id\":\"5\"}\nNo match",
+        "hints": [
+          "Compare segment counts first — if the pattern and path have different numbers of segments, they can't match.",
+          "For each segment, if the pattern starts with ':', capture it as a parameter. Otherwise, check for exact equality."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "nested-routes",
+    "sectionId": "react-router",
+    "orderIndex": 2,
+    "title": "Nested Routes",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["nested routes", "Outlet", "layout routes", "parent-child routing", "route hierarchy"],
+    "content": {
+      "explanation": "Nested routes allow you to define routes inside other routes, creating a hierarchical structure where parent routes render shared layout (like navigation bars, sidebars, or headers) and child routes render their specific content within that layout. This mirrors the natural structure of most web applications, where pages share common UI elements.\n\nIn React Router v6, you nest Route elements inside parent Route elements. The parent route's component renders an Outlet component that acts as a placeholder for where the matched child route's component will appear. When the URL matches a child route, React Router renders both the parent layout and the child content inside the Outlet.\n\nFor example, a dashboard layout with a sidebar might have routes like: /dashboard (overview), /dashboard/analytics, and /dashboard/settings. The parent route at /dashboard renders the sidebar and an Outlet. Each child route renders its specific content inside that Outlet. The sidebar stays on screen across all dashboard pages without re-mounting.\n\nLayout routes are a special case of nested routes where the parent route has no path. They exist purely to wrap child routes in shared UI. For instance, you might have a layout route that provides a header and footer around all pages, without adding any segment to the URL. The children inherit the layout but define their own paths.\n\nIndex routes (using the index prop instead of path) serve as the default child when the parent route's URL is matched exactly. For /dashboard, the index route renders the overview component. When the user navigates to /dashboard/analytics, the index route is replaced by the analytics component. This ensures there's always content in the Outlet, even at the parent URL.",
+      "codeExamples": [
+        {
+          "title": "Nested route structure",
+          "code": "// Simulating nested route rendering\nfunction DashboardLayout(activeChild) {\n  console.log('--- Dashboard Layout ---');\n  console.log('Sidebar: [Overview] [Analytics] [Settings]');\n  console.log('Content area (Outlet):');\n  console.log('  ' + activeChild);\n  console.log('--- End Layout ---');\n}\n\n// Simulating route matching\nfunction renderRoute(path) {\n  console.log('URL: ' + path);\n\n  if (path === '/dashboard') {\n    DashboardLayout('DashboardOverview (index route)');\n  } else if (path === '/dashboard/analytics') {\n    DashboardLayout('AnalyticsPage');\n  } else if (path === '/dashboard/settings') {\n    DashboardLayout('SettingsPage');\n  }\n  console.log('');\n}\n\nrenderRoute('/dashboard');\nrenderRoute('/dashboard/analytics');\nrenderRoute('/dashboard/settings');",
+          "output": "URL: /dashboard\n--- Dashboard Layout ---\nSidebar: [Overview] [Analytics] [Settings]\nContent area (Outlet):\n  DashboardOverview (index route)\n--- End Layout ---\n\nURL: /dashboard/analytics\n--- Dashboard Layout ---\nSidebar: [Overview] [Analytics] [Settings]\nContent area (Outlet):\n  AnalyticsPage\n--- End Layout ---\n\nURL: /dashboard/settings\n--- Dashboard Layout ---\nSidebar: [Overview] [Analytics] [Settings]\nContent area (Outlet):\n  SettingsPage\n--- End Layout ---\n",
+          "explanation": "The Dashboard Layout (sidebar) persists across all child routes. Only the content inside the Outlet changes. This is the power of nested routes — shared UI stays mounted while child content swaps."
+        },
+        {
+          "title": "Outlet as a placeholder",
+          "code": "function Outlet(childContent) {\n  console.log('Outlet renders: ' + childContent);\n}\n\nfunction AppLayout(child) {\n  console.log('Header: My App');\n  Outlet(child);\n  console.log('Footer: Copyright 2024');\n}\n\n// Different pages rendered through the layout\nconsole.log('--- Home Page ---');\nAppLayout('Welcome to the home page');\nconsole.log('');\nconsole.log('--- About Page ---');\nAppLayout('About our company');\nconsole.log('');\nconsole.log('--- Contact Page ---');\nAppLayout('Get in touch with us');",
+          "output": "--- Home Page ---\nHeader: My App\nOutlet renders: Welcome to the home page\nFooter: Copyright 2024\n\n--- About Page ---\nHeader: My App\nOutlet renders: About our company\nFooter: Copyright 2024\n\n--- Contact Page ---\nHeader: My App\nOutlet renders: Get in touch with us\nFooter: Copyright 2024",
+          "explanation": "Outlet is where child route content appears inside the parent layout. The Header and Footer are rendered by the parent and persist across all child routes. Only the Outlet content changes."
+        },
+        {
+          "title": "Index routes",
+          "code": "function resolveRoute(path, routes) {\n  // Check for exact match first\n  const exact = routes.find(r => r.path === path && !r.index);\n  if (exact) {\n    console.log('Matched: ' + exact.path + ' -> ' + exact.component);\n    return;\n  }\n\n  // Check for index route (default child)\n  const parent = routes.find(r => path.startsWith(r.path) && r.children);\n  if (parent) {\n    const indexRoute = parent.children.find(r => r.index);\n    const childRoute = parent.children.find(r => r.path && path === parent.path + '/' + r.path);\n\n    if (childRoute) {\n      console.log('Parent: ' + parent.component);\n      console.log('Child: ' + childRoute.component);\n    } else if (indexRoute) {\n      console.log('Parent: ' + parent.component);\n      console.log('Index (default): ' + indexRoute.component);\n    }\n  }\n}\n\nconst routes = [\n  {\n    path: '/dashboard',\n    component: 'DashboardLayout',\n    children: [\n      { index: true, component: 'Overview' },\n      { path: 'stats', component: 'Stats' },\n      { path: 'reports', component: 'Reports' }\n    ]\n  }\n];\n\nconsole.log('URL: /dashboard');\nresolveRoute('/dashboard', routes);\nconsole.log('');\nconsole.log('URL: /dashboard/stats');\nresolveRoute('/dashboard/stats', routes);",
+          "output": "URL: /dashboard\nParent: DashboardLayout\nIndex (default): Overview\n\nURL: /dashboard/stats\nParent: DashboardLayout\nChild: Stats",
+          "explanation": "The index route renders at the parent URL (/dashboard) as the default content. When a child path matches (/dashboard/stats), that child replaces the index route in the Outlet."
+        }
+      ],
+      "notes": [
+        "Outlet is imported from react-router-dom and placed in the parent component where child route content should appear. It requires no props.",
+        "Child route paths are relative to their parent. In a parent route with path '/dashboard', a child with path 'stats' matches '/dashboard/stats'.",
+        "Index routes use the index prop instead of path. They render at the parent's exact URL and serve as the default child content."
+      ],
+      "commonPitfalls": [
+        "Forgetting to render <Outlet /> in the parent layout component. Without it, child routes match but their components are never rendered — the parent layout appears but with no child content.",
+        "Using absolute paths for child routes inside nested route definitions. Child paths should be relative (e.g., 'stats' not '/dashboard/stats'). React Router automatically prepends the parent path."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "nested-routes-ex1",
+        "title": "Layout with Outlet Simulation",
+        "description": "Simulate a parent layout that renders different child content based on the active route.",
+        "starterCode": "// TODO:\n// 1. Create renderLayout(child) that logs:\n//    \"[Nav] Home | About | Profile\"\n//    \"Content: <child>\"\n//    \"[Footer]\"\n// 2. Simulate three routes:\n//    renderLayout('Welcome Home!')\n//    renderLayout('About Us Page')\n//    renderLayout('User Profile')\n",
+        "solution": "function renderLayout(child) {\n  console.log('[Nav] Home | About | Profile');\n  console.log('Content: ' + child);\n  console.log('[Footer]');\n}\n\nrenderLayout('Welcome Home!');\nrenderLayout('About Us Page');\nrenderLayout('User Profile');",
+        "expectedOutput": "[Nav] Home | About | Profile\nContent: Welcome Home!\n[Footer]\n[Nav] Home | About | Profile\nContent: About Us Page\n[Footer]\n[Nav] Home | About | Profile\nContent: User Profile\n[Footer]",
+        "hints": [
+          "The layout function represents the parent route component. The child parameter represents what the Outlet would render.",
+          "The nav and footer stay the same for every route — only the child content changes."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "nested-routes-ex2",
+        "title": "Nested Route Resolver",
+        "description": "Create a function that resolves nested routes and identifies which parent layout and child component to render.",
+        "starterCode": "// TODO:\n// 1. Define a nested route config:\n//    parent: '/app' -> 'AppLayout'\n//    children:\n//      index -> 'Dashboard'\n//      'users' -> 'UserList'\n//      'settings' -> 'Settings'\n// 2. Create resolve(path) that:\n//    Logs \"Layout: <parent>\" and \"Page: <child>\"\n// 3. Test: '/app', '/app/users', '/app/settings'\n",
+        "solution": "const config = {\n  path: '/app',\n  layout: 'AppLayout',\n  children: [\n    { index: true, component: 'Dashboard' },\n    { path: 'users', component: 'UserList' },\n    { path: 'settings', component: 'Settings' }\n  ]\n};\n\nfunction resolve(path) {\n  if (!path.startsWith(config.path)) {\n    console.log('No match');\n    return;\n  }\n\n  console.log('Layout: ' + config.layout);\n\n  const childPath = path.slice(config.path.length + 1);\n\n  if (!childPath) {\n    const index = config.children.find(c => c.index);\n    console.log('Page: ' + index.component);\n  } else {\n    const child = config.children.find(c => c.path === childPath);\n    console.log('Page: ' + (child ? child.component : 'NotFound'));\n  }\n}\n\nresolve('/app');\nresolve('/app/users');\nresolve('/app/settings');",
+        "expectedOutput": "Layout: AppLayout\nPage: Dashboard\nLayout: AppLayout\nPage: UserList\nLayout: AppLayout\nPage: Settings",
+        "hints": [
+          "Extract the child path by removing the parent prefix from the URL.",
+          "If the child path is empty, use the index route. Otherwise, find the child route matching the remaining path."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "navigation",
+    "sectionId": "react-router",
+    "orderIndex": 3,
+    "title": "Programmatic Navigation",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["useNavigate", "Navigate component", "redirects", "programmatic navigation", "navigation state"],
+    "content": {
+      "explanation": "While Link handles navigation triggered by user clicks, many scenarios require programmatic navigation — redirecting after a form submission, navigating after an API call, or redirecting based on authentication status. React Router v6 provides two mechanisms for this: the useNavigate hook for imperative navigation in event handlers and effects, and the Navigate component for declarative redirects in JSX.\n\nuseNavigate returns a navigate function that you can call to change the URL programmatically. Call navigate('/dashboard') to go to the dashboard, navigate(-1) to go back (like the browser's back button), or navigate(1) to go forward. The function also accepts an options object: navigate('/login', { replace: true }) replaces the current entry in the history stack instead of pushing a new one, and navigate('/dashboard', { state: { from: '/login' } }) passes state data to the destination route.\n\nThe Navigate component is the declarative counterpart of the navigate function. It redirects immediately when rendered. This is useful in JSX where imperative code would be awkward — for example, inside a route definition to redirect from an old URL to a new one, or inside a conditional render to redirect when a user is not authenticated. <Navigate to=\"/login\" replace /> renders nothing visible but immediately redirects.\n\nThe replace option is important for the user experience. By default, navigation pushes a new entry onto the history stack, so the back button returns to the previous page. With replace: true, the current entry is replaced, so the back button skips the replaced page. This is appropriate for redirects (you don't want the back button to return to the redirect source) and post-login redirects (you don't want the back button to return to the login page).\n\nNavigation state (the state option) allows passing data between routes without putting it in the URL. This is useful for passing context like 'where the user came from' so you can redirect back after login, or passing temporary data like a success message. The destination reads this state using the useLocation hook: location.state. Navigation state is stored in the browser's session history and survives page refreshes within the session.",
+      "codeExamples": [
+        {
+          "title": "useNavigate for programmatic navigation",
+          "code": "// Simulating useNavigate\nfunction createNavigate() {\n  const history = ['/home'];\n  let currentIndex = 0;\n\n  return function navigate(to, options) {\n    if (typeof to === 'number') {\n      currentIndex += to;\n      console.log('Navigate back/forward to:', history[currentIndex]);\n    } else if (options && options.replace) {\n      history[currentIndex] = to;\n      console.log('Replace current with:', to);\n    } else {\n      currentIndex++;\n      history.splice(currentIndex, 0, to);\n      console.log('Push:', to);\n    }\n    console.log('History:', JSON.stringify(history.slice(0, currentIndex + 1)));\n  };\n}\n\nconst navigate = createNavigate();\nnavigate('/dashboard');\nnavigate('/settings');\nnavigate(-1);  // Go back\nnavigate('/login', { replace: true });  // Replace current",
+          "output": "Push: /dashboard\nHistory: [\"/home\",\"/dashboard\"]\nPush: /settings\nHistory: [\"/home\",\"/dashboard\",\"/settings\"]\nNavigate back/forward to: /dashboard\nHistory: [\"/home\",\"/dashboard\"]\nReplace current with: /login\nHistory: [\"/home\",\"/login\"]",
+          "explanation": "navigate(path) pushes a new entry. navigate(-1) goes back. navigate(path, { replace: true }) replaces the current entry. This matches the browser's History API behavior."
+        },
+        {
+          "title": "Redirect after form submission",
+          "code": "function LoginForm() {\n  const handleSubmit = (credentials) => {\n    console.log('Submitting login for:', credentials.email);\n\n    // Simulate API call\n    const success = credentials.email === 'admin@test.com';\n\n    if (success) {\n      console.log('Login successful');\n      console.log('Navigate to: /dashboard (replace: true)');\n      // In real code: navigate('/dashboard', { replace: true })\n    } else {\n      console.log('Login failed');\n      console.log('Stay on: /login');\n    }\n  };\n\n  handleSubmit({ email: 'admin@test.com', password: 'pass' });\n  console.log('---');\n  handleSubmit({ email: 'wrong@test.com', password: 'pass' });\n\n  return null;\n}\n\nLoginForm();",
+          "output": "Submitting login for: admin@test.com\nLogin successful\nNavigate to: /dashboard (replace: true)\n---\nSubmitting login for: wrong@test.com\nLogin failed\nStay on: /login",
+          "explanation": "After a successful login, navigate with replace: true so the back button doesn't return to the login page. On failure, stay on the login page to let the user retry."
+        },
+        {
+          "title": "Navigate component for declarative redirects",
+          "code": "function NavigateComponent(props) {\n  const destination = props.to;\n  const replace = props.replace || false;\n  console.log('Redirect to: ' + destination + ' (replace: ' + replace + ')');\n}\n\n// Simulating conditional rendering with Navigate\nfunction ProtectedContent({ isAuthenticated }) {\n  if (!isAuthenticated) {\n    console.log('Not authenticated!');\n    NavigateComponent({ to: '/login', replace: true });\n    return null;\n  }\n\n  console.log('Showing protected content');\n  return null;\n}\n\n// Old URL redirect\nfunction OldRoute() {\n  console.log('Old route /old-page visited');\n  NavigateComponent({ to: '/new-page', replace: true });\n}\n\nProtectedContent({ isAuthenticated: false });\nconsole.log('---');\nProtectedContent({ isAuthenticated: true });\nconsole.log('---');\nOldRoute();",
+          "output": "Not authenticated!\nRedirect to: /login (replace: true)\n---\nShowing protected content\n---\nOld route /old-page visited\nRedirect to: /new-page (replace: true)",
+          "explanation": "The Navigate component triggers a redirect when rendered. It's useful for conditional redirects in JSX (authentication checks) and permanent redirects (old URLs to new ones)."
+        }
+      ],
+      "notes": [
+        "useNavigate returns a stable function that can be safely used in event handlers and effects without adding it to dependency arrays.",
+        "The replace option prevents the redirected-from page from appearing in the browser's back button history. Use it for login redirects and URL migrations.",
+        "Navigation state (navigate(path, { state: data })) is accessible via useLocation().state at the destination. It persists through the session but not across browser restarts."
+      ],
+      "commonPitfalls": [
+        "Calling navigate inside the render body (outside event handlers or effects). This causes a navigation on every render, potentially creating an infinite loop. Use Navigate component for render-time redirects.",
+        "Forgetting to use replace: true for post-authentication redirects. Without it, the back button returns to the login page, which may redirect back to the dashboard, creating a confusing loop."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "navigation-ex1",
+        "title": "Navigation History Simulation",
+        "description": "Create a simple navigation history that supports push, replace, and back operations.",
+        "starterCode": "// TODO:\n// 1. Create a history array starting with ['/home'] and index 0\n// 2. Create push(path) that adds to history and logs \"Pushed: <path>\"\n// 3. Create replace(path) that replaces current and logs \"Replaced with: <path>\"\n// 4. Create back() that goes back and logs \"Back to: <path>\"\n// 5. Test:\n//    push('/about')\n//    push('/contact')\n//    back()\n//    replace('/faq')\n//    Log final history\n",
+        "solution": "const history = ['/home'];\nlet index = 0;\n\nfunction push(path) {\n  index++;\n  history.length = index;\n  history.push(path);\n  console.log('Pushed: ' + path);\n}\n\nfunction replace(path) {\n  history[index] = path;\n  console.log('Replaced with: ' + path);\n}\n\nfunction back() {\n  if (index > 0) {\n    index--;\n    console.log('Back to: ' + history[index]);\n  }\n}\n\npush('/about');\npush('/contact');\nback();\nreplace('/faq');\nconsole.log('History: ' + JSON.stringify(history));",
+        "expectedOutput": "Pushed: /about\nPushed: /contact\nBack to: /about\nReplaced with: /faq\nHistory: [\"/home\",\"/faq\"]",
+        "hints": [
+          "Push adds a new entry after the current index. Truncate any forward history first.",
+          "Replace modifies the entry at the current index without changing the index. Back decrements the index."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "navigation-ex2",
+        "title": "Post-Login Redirect",
+        "description": "Simulate a login flow that redirects to the originally requested page after successful authentication.",
+        "starterCode": "// TODO:\n// 1. Create attemptAccess(page, isLoggedIn) that:\n//    If not logged in:\n//      Log \"Access denied: <page>\"\n//      Log \"Redirect to: /login (state: { from: <page> })\"\n//    If logged in:\n//      Log \"Access granted: <page>\"\n// 2. Create handleLogin(from) that:\n//    Log \"Login successful\"\n//    Log \"Redirect to: <from> (replace: true)\"\n// 3. Test:\n//    attemptAccess('/dashboard', false)\n//    handleLogin('/dashboard')\n//    attemptAccess('/dashboard', true)\n",
+        "solution": "function attemptAccess(page, isLoggedIn) {\n  if (!isLoggedIn) {\n    console.log('Access denied: ' + page);\n    console.log('Redirect to: /login (state: { from: ' + page + ' })');\n  } else {\n    console.log('Access granted: ' + page);\n  }\n}\n\nfunction handleLogin(from) {\n  console.log('Login successful');\n  console.log('Redirect to: ' + from + ' (replace: true)');\n}\n\nattemptAccess('/dashboard', false);\nhandleLogin('/dashboard');\nattemptAccess('/dashboard', true);",
+        "expectedOutput": "Access denied: /dashboard\nRedirect to: /login (state: { from: /dashboard })\nLogin successful\nRedirect to: /dashboard (replace: true)\nAccess granted: /dashboard",
+        "hints": [
+          "When access is denied, save the attempted page in navigation state so the login page knows where to redirect after success.",
+          "After login, use replace: true to remove the login page from history — the back button should not return to login."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "route-protection",
+    "sectionId": "react-router",
+    "orderIndex": 4,
+    "title": "Route Protection",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["protected routes", "auth guards", "redirect on login", "route wrappers", "authentication flow"],
+    "content": {
+      "explanation": "Route protection is a fundamental pattern in React applications that restricts access to certain routes based on authentication status, user roles, or other conditions. The most common implementation is a ProtectedRoute (or RequireAuth) wrapper component that checks if the user is authenticated and either renders the child content or redirects to the login page.\n\nThe standard ProtectedRoute pattern is a component that wraps protected content. It checks an authentication condition (typically from a context or global state store). If the user is authenticated, it renders its children (or an Outlet for nested routes). If not, it renders a Navigate component that redirects to the login page. The redirect typically includes the current location in the state so the login page can redirect back after successful authentication.\n\nFor role-based access control, the ProtectedRoute can accept additional props like requiredRole or permissions. The component then checks not just if the user is logged in, but if they have the appropriate role or permissions. Unauthorized but authenticated users might be redirected to an 'access denied' page rather than the login page.\n\nThe login redirect flow works as follows: (1) User visits /dashboard without being logged in. (2) ProtectedRoute detects no auth and redirects to /login with state: { from: '/dashboard' }. (3) User logs in successfully. (4) Login handler reads location.state.from and navigates to '/dashboard' with replace: true. The replace option ensures the login page doesn't stay in the history stack.\n\nProtectedRoute can be used in two ways: wrapping individual routes or wrapping groups of routes using layout routes. The layout route approach is cleaner for protecting many routes: define a parent route with ProtectedRoute as the element, and nest all protected routes inside it. This avoids wrapping every single route individually.",
+      "codeExamples": [
+        {
+          "title": "ProtectedRoute component pattern",
+          "code": "// Simulating the ProtectedRoute pattern\nfunction ProtectedRoute({ isAuthenticated, children, redirectTo }) {\n  if (!isAuthenticated) {\n    console.log('ProtectedRoute: Not authenticated');\n    console.log('Redirecting to: ' + redirectTo);\n    return null; // In real code: return <Navigate to={redirectTo} replace />\n  }\n\n  console.log('ProtectedRoute: Access granted');\n  return children;\n}\n\n// Unauthenticated user\nconsole.log('--- Guest visits /dashboard ---');\nProtectedRoute({\n  isAuthenticated: false,\n  children: 'Dashboard Content',\n  redirectTo: '/login'\n});\n\n// Authenticated user\nconsole.log('');\nconsole.log('--- Logged in user visits /dashboard ---');\nconst content = ProtectedRoute({\n  isAuthenticated: true,\n  children: 'Dashboard Content',\n  redirectTo: '/login'\n});\nconsole.log('Rendered:', content);",
+          "output": "--- Guest visits /dashboard ---\nProtectedRoute: Not authenticated\nRedirecting to: /login\n\n--- Logged in user visits /dashboard ---\nProtectedRoute: Access granted\nRendered: Dashboard Content",
+          "explanation": "ProtectedRoute checks authentication and either renders children or redirects. This single component can protect any route by wrapping its content."
+        },
+        {
+          "title": "Role-based access control",
+          "code": "function RoleGuard({ user, requiredRole, children }) {\n  if (!user) {\n    console.log('RoleGuard: No user -> redirect to /login');\n    return null;\n  }\n\n  if (user.role !== requiredRole) {\n    console.log('RoleGuard: User role \"' + user.role + '\" != required \"' + requiredRole + '\"');\n    console.log('RoleGuard: Redirect to /unauthorized');\n    return null;\n  }\n\n  console.log('RoleGuard: Access granted for ' + user.name + ' (' + user.role + ')');\n  return children;\n}\n\n// No user\nRoleGuard({ user: null, requiredRole: 'admin', children: 'Admin Panel' });\nconsole.log('');\n\n// Wrong role\nRoleGuard({ user: { name: 'Bob', role: 'viewer' }, requiredRole: 'admin', children: 'Admin Panel' });\nconsole.log('');\n\n// Correct role\nconst result = RoleGuard({ user: { name: 'Alice', role: 'admin' }, requiredRole: 'admin', children: 'Admin Panel' });\nconsole.log('Content:', result);",
+          "output": "RoleGuard: No user -> redirect to /login\n\nRoleGuard: User role \"viewer\" != required \"admin\"\nRoleGuard: Redirect to /unauthorized\n\nRoleGuard: Access granted for Alice (admin)\nContent: Admin Panel",
+          "explanation": "Role-based guards extend authentication checks with authorization. Unauthenticated users go to login, authenticated users without the right role go to an unauthorized page, and authorized users see the content."
+        },
+        {
+          "title": "Complete login redirect flow",
+          "code": "function simulateAuthFlow() {\n  let isLoggedIn = false;\n  let savedLocation = null;\n\n  function visitProtectedPage(page) {\n    console.log('Visiting: ' + page);\n    if (!isLoggedIn) {\n      savedLocation = page;\n      console.log('Not logged in -> redirect to /login');\n      console.log('Saved return location: ' + page);\n    } else {\n      console.log('Authenticated -> showing ' + page);\n    }\n  }\n\n  function login(email) {\n    console.log('Logging in as: ' + email);\n    isLoggedIn = true;\n    if (savedLocation) {\n      console.log('Redirect back to: ' + savedLocation + ' (replace: true)');\n      const destination = savedLocation;\n      savedLocation = null;\n      return destination;\n    }\n    console.log('No saved location -> redirect to /home');\n    return '/home';\n  }\n\n  // Step 1: Visit protected page\n  visitProtectedPage('/dashboard/reports');\n  console.log('');\n\n  // Step 2: Login\n  const redirect = login('alice@test.com');\n  console.log('');\n\n  // Step 3: Access granted\n  visitProtectedPage(redirect);\n}\n\nsimulateAuthFlow();",
+          "output": "Visiting: /dashboard/reports\nNot logged in -> redirect to /login\nSaved return location: /dashboard/reports\n\nLogging in as: alice@test.com\nRedirect back to: /dashboard/reports (replace: true)\n\nVisiting: /dashboard/reports\nAuthenticated -> showing /dashboard/reports",
+          "explanation": "The full auth flow: (1) user tries to access protected page, (2) gets redirected to login with the original location saved, (3) logs in, (4) gets redirected back to the originally requested page."
+        }
+      ],
+      "notes": [
+        "The ProtectedRoute component should be stateless — it reads auth status from context or a store, not from its own state. This ensures all protected routes share the same auth check.",
+        "Always use replace: true when redirecting from login to the target page. This prevents the login page from appearing in the back button history.",
+        "For layout-based protection, create a parent route with the ProtectedRoute as its element and an Outlet. Nest all protected routes inside it."
+      ],
+      "commonPitfalls": [
+        "Checking authentication on the client side only. Client-side route protection is a UX improvement, not a security measure. The server must also validate authentication on every API request. A determined user can bypass client-side checks.",
+        "Not preserving the original URL during the login redirect flow. Without saving where the user was trying to go, they get dumped on a generic home page after login instead of their intended destination."
+      ],
+      "interviewTips": [
+        "Explain the ProtectedRoute pattern clearly: it's a component that checks auth and either renders children/Outlet or redirects via Navigate. Emphasize that it uses composition, not inheritance.",
+        "Mention the complete redirect flow: protected route saves the attempted URL in location state, login page reads it, and after successful auth, navigates back with replace: true.",
+        "Clarify that client-side route protection is for UX, not security. The real security boundary is the server-side API authentication. A malicious user can always bypass React Router."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "route-protection-ex1",
+        "title": "ProtectedRoute Implementation",
+        "description": "Create a ProtectedRoute function that checks authentication and either grants access or redirects.",
+        "starterCode": "// TODO:\n// 1. Create ProtectedRoute({ isAuth, page }) that:\n//    If isAuth is true: logs \"Access granted: <page>\"\n//    If isAuth is false: logs \"Access denied: <page>\"\n//                        logs \"Redirect to: /login\"\n// 2. Test with:\n//    { isAuth: false, page: '/dashboard' }\n//    { isAuth: true, page: '/dashboard' }\n//    { isAuth: false, page: '/settings' }\n//    { isAuth: true, page: '/settings' }\n",
+        "solution": "function ProtectedRoute({ isAuth, page }) {\n  if (isAuth) {\n    console.log('Access granted: ' + page);\n  } else {\n    console.log('Access denied: ' + page);\n    console.log('Redirect to: /login');\n  }\n}\n\nProtectedRoute({ isAuth: false, page: '/dashboard' });\nProtectedRoute({ isAuth: true, page: '/dashboard' });\nProtectedRoute({ isAuth: false, page: '/settings' });\nProtectedRoute({ isAuth: true, page: '/settings' });",
+        "expectedOutput": "Access denied: /dashboard\nRedirect to: /login\nAccess granted: /dashboard\nAccess denied: /settings\nRedirect to: /login\nAccess granted: /settings",
+        "hints": [
+          "Check the isAuth boolean. If true, grant access. If false, deny and redirect.",
+          "This function simulates what a real ProtectedRoute component does: check auth, then render children or Navigate."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "route-protection-ex2",
+        "title": "Full Auth Redirect Flow",
+        "description": "Simulate the complete authentication redirect flow: attempt access, save location, login, redirect back.",
+        "starterCode": "// TODO:\n// 1. Create state: isLoggedIn = false, savedPath = null\n// 2. Create accessPage(path) that:\n//    If logged in: logs \"Showing: <path>\"\n//    If not: logs \"Blocked: <path>\", saves path,\n//            logs \"Saved path: <path>\", logs \"Redirect to: /login\"\n// 3. Create login() that:\n//    Sets isLoggedIn = true\n//    Logs \"Logged in\"\n//    If savedPath exists: logs \"Redirect to: <savedPath>\"\n//    Else: logs \"Redirect to: /home\"\n// 4. Test:\n//    accessPage('/profile')\n//    login()\n//    accessPage('/profile')\n",
+        "solution": "let isLoggedIn = false;\nlet savedPath = null;\n\nfunction accessPage(path) {\n  if (isLoggedIn) {\n    console.log('Showing: ' + path);\n  } else {\n    console.log('Blocked: ' + path);\n    savedPath = path;\n    console.log('Saved path: ' + path);\n    console.log('Redirect to: /login');\n  }\n}\n\nfunction login() {\n  isLoggedIn = true;\n  console.log('Logged in');\n  if (savedPath) {\n    console.log('Redirect to: ' + savedPath);\n    savedPath = null;\n  } else {\n    console.log('Redirect to: /home');\n  }\n}\n\naccessPage('/profile');\nlogin();\naccessPage('/profile');",
+        "expectedOutput": "Blocked: /profile\nSaved path: /profile\nRedirect to: /login\nLogged in\nRedirect to: /profile\nShowing: /profile",
+        "hints": [
+          "Use module-level variables to simulate the auth state and saved location.",
+          "The key flow: block and save the path, login and redirect to saved path, then access succeeds."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

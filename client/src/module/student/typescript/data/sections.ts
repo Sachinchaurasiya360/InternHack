@@ -1,0 +1,88 @@
+import type { TsSection } from "./types";
+
+export const tsSections: TsSection[] = [
+  {
+    id: "ts-basics",
+    title: "TypeScript Basics",
+    description: "What TypeScript is, why it exists, setting up, primitive types, and type inference.",
+    orderIndex: 0,
+    level: "Beginner",
+  },
+  {
+    id: "type-annotations",
+    title: "Type Annotations & Assertions",
+    description: "Explicit annotations, type assertions, literal types, const assertions, and any/unknown/never.",
+    orderIndex: 1,
+    level: "Beginner",
+  },
+  {
+    id: "functions-and-generics",
+    title: "Functions & Generics",
+    description: "Typed parameters, return types, overloads, rest params, generic functions, and constraints.",
+    orderIndex: 2,
+    level: "Beginner",
+  },
+  {
+    id: "interfaces-and-type-aliases",
+    title: "Interfaces & Type Aliases",
+    description: "Object types, optional/readonly properties, extending interfaces, and type vs interface.",
+    orderIndex: 3,
+    level: "Intermediate",
+  },
+  {
+    id: "classes-and-oop",
+    title: "Classes & OOP",
+    description: "Access modifiers, abstract classes, implements keyword, static members, and parameter properties.",
+    orderIndex: 4,
+    level: "Intermediate",
+  },
+  {
+    id: "advanced-types",
+    title: "Advanced Types",
+    description: "Union/intersection types, discriminated unions, mapped types, conditional types, and template literals.",
+    orderIndex: 5,
+    level: "Intermediate",
+  },
+  {
+    id: "type-guards-and-narrowing",
+    title: "Type Guards & Narrowing",
+    description: "typeof, instanceof, in operator, custom type guards, assertion functions, and control flow analysis.",
+    orderIndex: 6,
+    level: "Intermediate",
+  },
+  {
+    id: "utility-types",
+    title: "Utility Types",
+    description: "Partial, Required, Pick, Omit, Record, Exclude, Extract, ReturnType, and custom utilities.",
+    orderIndex: 7,
+    level: "Advanced",
+  },
+  {
+    id: "modules-and-declarations",
+    title: "Modules & Declaration Files",
+    description: "ES module syntax, module resolution, declaration files (.d.ts), ambient modules, and DefinitelyTyped.",
+    orderIndex: 8,
+    level: "Advanced",
+  },
+  {
+    id: "ts-with-react",
+    title: "TypeScript with React",
+    description: "Typing props, state, events, refs, context, hooks, and generic components.",
+    orderIndex: 9,
+    level: "Advanced",
+  },
+  {
+    id: "configuration-and-tooling",
+    title: "Configuration & Tooling",
+    description: "tsconfig.json deep dive, strict mode flags, path aliases, project references, and compiler options.",
+    orderIndex: 10,
+    level: "Advanced",
+  },
+  {
+    id: "ts-interview-essentials",
+    title: "Interview Essentials",
+    description: "Common TS interview questions, tricky type challenges, output-based questions, and design patterns.",
+    orderIndex: 11,
+    level: "Advanced",
+  },
+];

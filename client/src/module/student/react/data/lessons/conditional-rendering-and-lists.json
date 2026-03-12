@@ -1,0 +1,351 @@
+[
+  {
+    "id": "conditional-rendering",
+    "sectionId": "conditional-rendering-and-lists",
+    "orderIndex": 0,
+    "title": "Conditional Rendering",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["if/else rendering", "ternary operator", "logical AND short-circuit", "conditional components", "null rendering"],
+    "content": {
+      "explanation": "Conditional rendering in React means showing different UI based on some condition — just like how JavaScript uses if/else to execute different code paths. Since JSX is compiled to JavaScript, you can use all the conditional logic that JavaScript provides. The key is understanding which patterns work in which contexts, because JSX expressions only accept expressions, not statements.\n\nThe simplest approach is using an if/else statement before the return. Since the entire return value can be different based on a condition, you can have early returns: `if (isLoading) return <Spinner />;` followed by `if (error) return <Error />;` followed by `return <Content />;`. This is clear and readable, and works well when the entire component output changes based on a condition. Many developers prefer this pattern for its readability.\n\nInside JSX, you cannot use if/else statements, so you use expressions instead. The ternary operator `condition ? <A /> : <B />` is used when you want to toggle between two different outputs. The logical AND operator `condition && <A />` is used when you want to render something or nothing — if the condition is true, the right side is rendered; if false, nothing is shown (since false, null, and undefined produce no visible output in JSX).\n\nThe logical OR operator `||` provides fallback rendering: `{content || <Placeholder />}` renders the content if it is truthy, otherwise falls back to the Placeholder. You can also use the nullish coalescing operator `??` which only falls back for null or undefined (not for other falsy values like 0 or empty string): `{count ?? 'N/A'}` shows 0 if count is 0, but shows 'N/A' if count is null or undefined.\n\nA common pitfall is using `&&` with numeric values. The expression `{items.length && <List />}` will render the number 0 when the array is empty, because 0 is falsy but is a valid renderable value in React. Always use an explicit boolean comparison: `{items.length > 0 && <List />}`. This is one of the most frequent bugs in React applications, so always be explicit about your conditions when using the `&&` pattern.",
+      "codeExamples": [
+        {
+          "title": "If/Else and Early Returns",
+          "code": "function StatusMessage(props) {\n  // Early returns for different states\n  if (props.isLoading) {\n    return 'Loading...';\n  }\n\n  if (props.error) {\n    return 'Error: ' + props.error;\n  }\n\n  if (!props.data) {\n    return 'No data available';\n  }\n\n  return 'Data: ' + props.data;\n}\n\nconsole.log(StatusMessage({ isLoading: true }));\nconsole.log(StatusMessage({ isLoading: false, error: 'Not found' }));\nconsole.log(StatusMessage({ isLoading: false, error: null, data: null }));\nconsole.log(StatusMessage({ isLoading: false, error: null, data: 'Hello!' }));",
+          "output": "Loading...\nError: Not found\nNo data available\nData: Hello!",
+          "explanation": "Early returns handle each condition at the top of the function. The first matching condition returns immediately, making the logic easy to follow."
+        },
+        {
+          "title": "Ternary and Logical AND",
+          "code": "// Ternary: toggle between two outputs\nfunction AuthStatus(props) {\n  const status = props.isLoggedIn ? 'Welcome, ' + props.name : 'Please sign in';\n  return status;\n}\n\nconsole.log(AuthStatus({ isLoggedIn: true, name: 'Alice' }));\nconsole.log(AuthStatus({ isLoggedIn: false }));\n\n// Logical AND: show or hide\nfunction Notification(props) {\n  const badge = props.count > 0 && (' (' + props.count + ' new)');\n  return 'Inbox' + (badge || '');\n}\n\nconsole.log(Notification({ count: 5 }));\nconsole.log(Notification({ count: 0 }));\n\n// PITFALL: 0 renders in JSX!\nconst items = [];\nconst bad = items.length && 'Has items';   // 0 (renders!)\nconst good = items.length > 0 && 'Has items'; // false (hidden)\nconsole.log('Bad: ' + bad);\nconsole.log('Good: ' + good);",
+          "output": "Welcome, Alice\nPlease sign in\nInbox (5 new)\nInbox\nBad: 0\nGood: false",
+          "explanation": "Use ternary for A-or-B rendering, && for show-or-nothing. Always use explicit boolean comparisons with && to avoid rendering 0."
+        },
+        {
+          "title": "Conditional Element Variables",
+          "code": "// Store conditional elements in variables before JSX\nfunction UserDashboard(props) {\n  let greeting;\n  if (props.isAdmin) {\n    greeting = 'Admin Dashboard';\n  } else {\n    greeting = 'User Dashboard';\n  }\n\n  const notifications = props.notifications > 0\n    ? props.notifications + ' notifications'\n    : 'No notifications';\n\n  const premium = props.isPremium ? ' [PREMIUM]' : '';\n\n  return greeting + premium + ' | ' + notifications;\n}\n\nconsole.log(UserDashboard({ isAdmin: true, isPremium: true, notifications: 3 }));\nconsole.log(UserDashboard({ isAdmin: false, isPremium: false, notifications: 0 }));",
+          "output": "Admin Dashboard [PREMIUM] | 3 notifications\nUser Dashboard | No notifications",
+          "explanation": "Storing conditional values in variables before the return keeps JSX clean. Use if/else for complex conditions and ternary for simple ones."
+        }
+      ],
+      "notes": [
+        "Use early returns for loading/error/empty states — they are clear and prevent deeply nested ternaries.",
+        "Use ternary `? :` for A-or-B choices and `&&` for show-or-nothing patterns inside JSX.",
+        "false, null, undefined, and true render nothing in React. This is what makes conditional patterns work."
+      ],
+      "commonPitfalls": [
+        "Using `{count && <Component />}` when count could be 0 — React will render the number 0 on screen. Always use `{count > 0 && <Component />}` for explicit boolean logic.",
+        "Deeply nested ternaries like `a ? b ? c : d : e ? f : g` become unreadable quickly. Use if/else statements with early returns or extract conditions into variables instead."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "conditional-basic-exercise",
+        "title": "Multi-State Display",
+        "description": "Create a function that renders different messages based on multiple conditions. It should handle loading, error, empty, and success states.",
+        "starterCode": "// Create a renderStatus function that takes a state object:\n// { loading: boolean, error: string|null, data: array|null }\n// Return:\n// - If loading: 'Loading...'\n// - If error: 'Error: <error message>'\n// - If data is empty array: 'No results found'\n// - If data has items: 'Found <count> results'\n\n// your code here\n\nconsole.log(renderStatus({ loading: true, error: null, data: null }));\nconsole.log(renderStatus({ loading: false, error: 'Network error', data: null }));\nconsole.log(renderStatus({ loading: false, error: null, data: [] }));\nconsole.log(renderStatus({ loading: false, error: null, data: ['a', 'b', 'c'] }));",
+        "solution": "function renderStatus(state) {\n  if (state.loading) return 'Loading...';\n  if (state.error) return 'Error: ' + state.error;\n  if (!state.data || state.data.length === 0) return 'No results found';\n  return 'Found ' + state.data.length + ' results';\n}\n\nconsole.log(renderStatus({ loading: true, error: null, data: null }));\nconsole.log(renderStatus({ loading: false, error: 'Network error', data: null }));\nconsole.log(renderStatus({ loading: false, error: null, data: [] }));\nconsole.log(renderStatus({ loading: false, error: null, data: ['a', 'b', 'c'] }));",
+        "expectedOutput": "Loading...\nError: Network error\nNo results found\nFound 3 results",
+        "hints": [
+          "Use early returns for each condition — check loading first, then error, then empty data, with the success case as the final return.",
+          "Check for empty data with `!state.data || state.data.length === 0` to handle both null and empty array cases."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "conditional-inline-exercise",
+        "title": "Inline Conditional Patterns",
+        "description": "Build a user info display using inline conditional expressions (ternary and &&) to assemble a formatted string from user properties.",
+        "starterCode": "// Create a formatUserInfo function that takes a user object and returns a string\n// Use ternary and && operators (no if/else) to build the output:\n// - Name is always shown\n// - If verified, append ' (Verified)'\n// - Show role as 'Admin' or 'Member' based on isAdmin\n// - If bio exists and is non-empty, append ' | Bio: <bio>'\n// Format: 'Name (Verified) - Admin | Bio: text' or 'Name - Member'\n\n// your code here\n\nconsole.log(formatUserInfo({ name: 'Alice', verified: true, isAdmin: true, bio: 'React dev' }));\nconsole.log(formatUserInfo({ name: 'Bob', verified: false, isAdmin: false, bio: '' }));\nconsole.log(formatUserInfo({ name: 'Charlie', verified: true, isAdmin: false, bio: 'Designer' }));",
+        "solution": "function formatUserInfo(user) {\n  const verifiedTag = user.verified ? ' (Verified)' : '';\n  const role = user.isAdmin ? 'Admin' : 'Member';\n  const bio = user.bio ? ' | Bio: ' + user.bio : '';\n  return user.name + verifiedTag + ' - ' + role + bio;\n}\n\nconsole.log(formatUserInfo({ name: 'Alice', verified: true, isAdmin: true, bio: 'React dev' }));\nconsole.log(formatUserInfo({ name: 'Bob', verified: false, isAdmin: false, bio: '' }));\nconsole.log(formatUserInfo({ name: 'Charlie', verified: true, isAdmin: false, bio: 'Designer' }));",
+        "expectedOutput": "Alice (Verified) - Admin | Bio: React dev\nBob - Member\nCharlie (Verified) - Member | Bio: Designer",
+        "hints": [
+          "Use ternary operators to compute each part: `user.verified ? ' (Verified)' : ''` for the verified tag.",
+          "For bio, use a ternary to check if bio is truthy (non-empty string): `user.bio ? ' | Bio: ' + user.bio : ''`."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "rendering-lists",
+    "sectionId": "conditional-rendering-and-lists",
+    "orderIndex": 1,
+    "title": "Rendering Lists",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["Array.map()", "key prop", "why keys matter", "list rendering", "unique identifiers"],
+    "content": {
+      "explanation": "Rendering lists of data is one of the most common tasks in React. You take an array of data and transform it into an array of React elements using the `Array.map()` method. For example, `{users.map(user => <UserCard key={user.id} name={user.name} />)}` transforms each user object into a UserCard component. The map method returns a new array of elements that React knows how to render.\n\nThe `key` prop is a special attribute that React requires when rendering lists. Keys tell React which items in the list have changed, been added, or been removed. Without keys, React has to re-render every item in the list when the data changes. With keys, React can match items between the old and new list, only updating what actually changed. This makes list updates much more efficient.\n\nKeys must be unique among siblings — they do not need to be globally unique, just unique within the same list. The best key is a stable identifier from your data, such as a database ID. Keys should be stable (not change between renders), predictable (derived from the data, not random), and unique (no duplicates in the same list). Never use `Math.random()` as a key — it changes every render, defeating the entire purpose.\n\nUsing the array index as a key (`items.map((item, index) => <li key={index}>)`) is a common practice but is problematic in many cases. Index keys work fine if the list is static and never reordered. But if items can be added, removed, or reordered, index keys cause bugs: React will match elements by position rather than identity, leading to stale state, incorrect animations, and input values appearing in the wrong items. Always prefer stable IDs over indices.\n\nWhen you do not provide keys, React will warn you in the development console. While the list will still render, React cannot optimize updates and may produce incorrect results when the list changes. Keys are passed as a prop but are not accessible inside the component via `props.key` — React uses them internally and strips them from props. If you need the ID inside the component, pass it as a separate prop: `<Item key={id} id={id} />`.",
+      "codeExamples": [
+        {
+          "title": "Basic List Rendering with map()",
+          "code": "const fruits = ['Apple', 'Banana', 'Cherry', 'Date'];\n\n// Transform data into elements using map\nconst elements = fruits.map((fruit, index) => ({\n  key: 'fruit-' + index,\n  type: 'li',\n  props: { children: fruit }\n}));\n\nelements.forEach(el => {\n  console.log(el.key + ': ' + el.props.children);\n});\n\nconsole.log('Total items: ' + elements.length);",
+          "output": "fruit-0: Apple\nfruit-1: Banana\nfruit-2: Cherry\nfruit-3: Date\nTotal items: 4",
+          "explanation": "Array.map() transforms each data item into an element. Each element gets a key prop so React can track it efficiently."
+        },
+        {
+          "title": "Why Keys Matter",
+          "code": "// Without proper keys, React can't track items correctly\nconst before = [\n  { id: 'a', text: 'First' },\n  { id: 'b', text: 'Second' },\n  { id: 'c', text: 'Third' }\n];\n\n// After reorder: item 'b' moved to front\nconst after = [\n  { id: 'b', text: 'Second' },\n  { id: 'a', text: 'First' },\n  { id: 'c', text: 'Third' }\n];\n\n// With ID keys: React knows 'b' moved, only repositions it\nconsole.log('With ID keys:');\nafter.forEach(item => console.log('  key=' + item.id + ': ' + item.text));\n\n// With index keys: React thinks ALL items changed content\nconsole.log('With index keys:');\nconsole.log('  index 0: was First, now Second (wrong update!)');\nconsole.log('  index 1: was Second, now First (wrong update!)');\nconsole.log('  index 2: Third stays (ok)');",
+          "output": "With ID keys:\n  key=b: Second\n  key=a: First\n  key=c: Third\nWith index keys:\n  index 0: was First, now Second (wrong update!)\n  index 1: was Second, now First (wrong update!)\n  index 2: Third stays (ok)",
+          "explanation": "Stable ID keys let React track which item is which, even after reordering. Index keys cause React to see content changes instead of position changes."
+        },
+        {
+          "title": "Rendering Complex Lists",
+          "code": "const users = [\n  { id: 'u1', name: 'Alice', role: 'admin', active: true },\n  { id: 'u2', name: 'Bob', role: 'user', active: false },\n  { id: 'u3', name: 'Charlie', role: 'user', active: true }\n];\n\n// Render with filtering and transformation\nconst activeUsers = users\n  .filter(u => u.active)\n  .map(u => ({\n    key: u.id,\n    display: u.name + ' (' + u.role + ')'\n  }));\n\nconsole.log('Active users:');\nactiveUsers.forEach(u => console.log('  [' + u.key + '] ' + u.display));\n\n// Render all users with conditional styling\nconst allUsers = users.map(u => ({\n  key: u.id,\n  display: u.name + (u.active ? ' - Active' : ' - Inactive')\n}));\n\nconsole.log('All users:');\nallUsers.forEach(u => console.log('  ' + u.display));",
+          "output": "Active users:\n  [u1] Alice (admin)\n  [u3] Charlie (user)\nAll users:\n  Alice - Active\n  Bob - Inactive\n  Charlie - Active",
+          "explanation": "You can chain filter and map to render subsets of data. Always use stable IDs from your data as keys, not generated values."
+        }
+      ],
+      "notes": [
+        "Always provide a `key` prop when rendering lists with map(). Use a stable, unique identifier from your data — typically the database ID.",
+        "Keys only need to be unique among siblings, not globally. Two different lists in the same component can use the same key values.",
+        "The key prop is used internally by React and is not available as `props.key` inside the component. Pass the ID as a separate prop if needed."
+      ],
+      "commonPitfalls": [
+        "Using array index as key for dynamic lists — this causes bugs when items are added, removed, or reordered because React tracks elements by their index position, not their identity.",
+        "Using `Math.random()` or `Date.now()` as keys — these generate new values on every render, causing React to unmount and remount every item in the list, destroying state and killing performance."
+      ],
+      "interviewTips": [
+        "Explain that keys help React's reconciliation algorithm efficiently update lists by identifying which items changed. Without keys, React must re-render all list items. With keys, it only updates changed items.",
+        "Be ready to explain why index keys are problematic: when items are reordered, React matches by index, causing it to update the wrong items' content instead of just moving DOM nodes."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "list-basic-exercise",
+        "title": "Transform Data to Display Elements",
+        "description": "Use Array.map() to transform an array of product objects into formatted display strings with unique keys.",
+        "starterCode": "const products = [\n  { id: 'p1', name: 'Laptop', price: 999, category: 'Electronics' },\n  { id: 'p2', name: 'Book', price: 15, category: 'Education' },\n  { id: 'p3', name: 'Headphones', price: 79, category: 'Electronics' },\n  { id: 'p4', name: 'Pen', price: 2, category: 'Office' }\n];\n\n// Use map to create display objects with key and formatted text\n// Format: 'name - $price (category)'\n// Then log each item\n\n// your code here",
+        "solution": "const products = [\n  { id: 'p1', name: 'Laptop', price: 999, category: 'Electronics' },\n  { id: 'p2', name: 'Book', price: 15, category: 'Education' },\n  { id: 'p3', name: 'Headphones', price: 79, category: 'Electronics' },\n  { id: 'p4', name: 'Pen', price: 2, category: 'Office' }\n];\n\nconst elements = products.map(product => ({\n  key: product.id,\n  text: product.name + ' - $' + product.price + ' (' + product.category + ')'\n}));\n\nelements.forEach(el => console.log('[' + el.key + '] ' + el.text));",
+        "expectedOutput": "[p1] Laptop - $999 (Electronics)\n[p2] Book - $15 (Education)\n[p3] Headphones - $79 (Electronics)\n[p4] Pen - $2 (Office)",
+        "hints": [
+          "Use .map() to transform each product into an object with key (from product.id) and text (formatted string).",
+          "Use string concatenation to build the display format: `product.name + ' - $' + product.price + ' (' + product.category + ')'`."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "list-filter-map-exercise",
+        "title": "Filter and Render Lists",
+        "description": "Chain filter() and map() to render only items matching certain criteria. Implement multiple filtered views of the same data.",
+        "starterCode": "const tasks = [\n  { id: 1, title: 'Write tests', priority: 'high', done: false },\n  { id: 2, title: 'Fix bug', priority: 'high', done: true },\n  { id: 3, title: 'Update docs', priority: 'low', done: false },\n  { id: 4, title: 'Code review', priority: 'medium', done: false },\n  { id: 5, title: 'Deploy', priority: 'high', done: false }\n];\n\n// 1. Create highPriority: filter for priority 'high' AND not done, then map to 'title (priority)'\n// 2. Create completed: filter for done === true, then map to 'title - DONE'\n// 3. Create all: map all tasks to 'title [status]' where status is 'done' or 'pending'\n\n// your code here\n\nconsole.log('High Priority Pending:');\nhighPriority.forEach(t => console.log('  ' + t));\nconsole.log('Completed:');\ncompleted.forEach(t => console.log('  ' + t));\nconsole.log('All Tasks:');\nall.forEach(t => console.log('  ' + t));",
+        "solution": "const tasks = [\n  { id: 1, title: 'Write tests', priority: 'high', done: false },\n  { id: 2, title: 'Fix bug', priority: 'high', done: true },\n  { id: 3, title: 'Update docs', priority: 'low', done: false },\n  { id: 4, title: 'Code review', priority: 'medium', done: false },\n  { id: 5, title: 'Deploy', priority: 'high', done: false }\n];\n\nconst highPriority = tasks\n  .filter(t => t.priority === 'high' && !t.done)\n  .map(t => t.title + ' (' + t.priority + ')');\n\nconst completed = tasks\n  .filter(t => t.done)\n  .map(t => t.title + ' - DONE');\n\nconst all = tasks.map(t => t.title + ' [' + (t.done ? 'done' : 'pending') + ']');\n\nconsole.log('High Priority Pending:');\nhighPriority.forEach(t => console.log('  ' + t));\nconsole.log('Completed:');\ncompleted.forEach(t => console.log('  ' + t));\nconsole.log('All Tasks:');\nall.forEach(t => console.log('  ' + t));",
+        "expectedOutput": "High Priority Pending:\n  Write tests (high)\n  Deploy (high)\nCompleted:\n  Fix bug - DONE\nAll Tasks:\n  Write tests [pending]\n  Fix bug [done]\n  Update docs [pending]\n  Code review [pending]\n  Deploy [pending]",
+        "hints": [
+          "Chain .filter() then .map() for filtered lists. The filter condition for high priority pending is: `t.priority === 'high' && !t.done`.",
+          "For the all tasks list, use just .map() with a ternary inside: `t.done ? 'done' : 'pending'`."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "dynamic-rendering",
+    "sectionId": "conditional-rendering-and-lists",
+    "orderIndex": 2,
+    "title": "Dynamic Rendering",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["data-driven rendering", "empty states", "loading states", "error states", "skeleton patterns"],
+    "content": {
+      "explanation": "Dynamic rendering is the practice of building UI that adapts entirely to the data it receives. Instead of hardcoding specific elements, you write components that render whatever data is passed to them, handling every possible state: loading, error, empty, and success. This is how real-world React applications work — the UI is a function of data, and it must gracefully handle all data states.\n\nLoading states inform the user that data is being fetched. A good loading state prevents the UI from looking broken or empty while data is in transit. Common patterns include spinner icons, skeleton screens (placeholder shapes that mimic the final layout), and progress bars. In React, you typically track loading state with a boolean: `const [isLoading, setIsLoading] = useState(true)`, and conditionally render a loading indicator.\n\nEmpty states handle the case where data loaded successfully but there are zero results. Instead of showing a blank page, a good empty state tells the user what happened and what they can do. For example, a search with no results might show 'No results found for [query]. Try different keywords.' An empty todo list might show 'No tasks yet. Add your first task!' Empty states turn a potentially confusing blank screen into a helpful, guiding experience.\n\nError states handle failures like network errors, server errors, or unauthorized access. A good error state shows a human-readable message, possibly offers a retry action, and avoids exposing technical details to the user. In React, you store error information in state: `const [error, setError] = useState(null)`, and render an error UI when it is set. Error boundaries (class components with componentDidCatch) catch rendering errors in child components.\n\nThe typical pattern for dynamic rendering is a state machine with three possible states: loading, error, and success. Your component renders different UI for each state. This can be expressed cleanly with early returns: `if (loading) return <Loading />;` `if (error) return <Error />;` `return <Content data={data} />;`. This pattern ensures your component handles every scenario and never shows an unexpected blank or broken state.",
+      "codeExamples": [
+        {
+          "title": "Data-Driven Rendering",
+          "code": "function renderUserList(data) {\n  if (data.loading) {\n    return 'Loading users...';\n  }\n\n  if (data.error) {\n    return 'Failed to load: ' + data.error;\n  }\n\n  if (!data.users || data.users.length === 0) {\n    return 'No users found. Invite someone!';\n  }\n\n  return data.users.map(u => u.name).join(', ');\n}\n\nconsole.log(renderUserList({ loading: true }));\nconsole.log(renderUserList({ loading: false, error: 'Server down' }));\nconsole.log(renderUserList({ loading: false, users: [] }));\nconsole.log(renderUserList({ loading: false, users: [{ name: 'Alice' }, { name: 'Bob' }] }));",
+          "output": "Loading users...\nFailed to load: Server down\nNo users found. Invite someone!\nAlice, Bob",
+          "explanation": "The function handles all four states: loading, error, empty, and success. Each state produces meaningful output instead of a blank or broken UI."
+        },
+        {
+          "title": "Skeleton Loading Pattern",
+          "code": "function createSkeleton(count) {\n  return Array.from({ length: count }, (_, i) => ({\n    id: 'skeleton-' + i,\n    display: '[████████████ Loading... ████████████]'\n  }));\n}\n\nfunction renderCards(state) {\n  if (state.loading) {\n    const skeletons = createSkeleton(3);\n    console.log('Showing skeletons:');\n    skeletons.forEach(s => console.log('  ' + s.display));\n    return;\n  }\n\n  console.log('Showing real data:');\n  state.items.forEach(item => {\n    console.log('  ' + item.title + ' - ' + item.desc);\n  });\n}\n\nrenderCards({ loading: true });\nconsole.log('---');\nrenderCards({\n  loading: false,\n  items: [\n    { title: 'React', desc: 'UI library' },\n    { title: 'Vue', desc: 'Progressive framework' }\n  ]\n});",
+          "output": "Showing skeletons:\n  [████████████ Loading... ████████████]\n  [████████████ Loading... ████████████]\n  [████████████ Loading... ████████████]\n---\nShowing real data:\n  React - UI library\n  Vue - Progressive framework",
+          "explanation": "Skeleton patterns show placeholder content that mimics the layout of real data. This provides a smoother experience than a generic spinner."
+        },
+        {
+          "title": "Conditional Empty States",
+          "code": "function renderSearchResults(query, results) {\n  if (!query) {\n    return 'Enter a search term to get started';\n  }\n\n  if (results.length === 0) {\n    return 'No results for \"' + query + '\". Try different keywords.';\n  }\n\n  if (results.length === 1) {\n    return 'Found 1 result for \"' + query + '\": ' + results[0];\n  }\n\n  return 'Found ' + results.length + ' results for \"' + query + '\": ' + results.join(', ');\n}\n\nconsole.log(renderSearchResults('', []));\nconsole.log(renderSearchResults('xyz', []));\nconsole.log(renderSearchResults('React', ['React Docs']));\nconsole.log(renderSearchResults('JS', ['JavaScript', 'JSX', 'JSON']));",
+          "output": "Enter a search term to get started\nNo results for \"xyz\". Try different keywords.\nFound 1 result for \"React\": React Docs\nFound 3 results for \"JS\": JavaScript, JSX, JSON",
+          "explanation": "Different empty states for different contexts: no query vs no results. Each provides helpful guidance to the user."
+        }
+      ],
+      "notes": [
+        "Always handle loading, error, and empty states — not just the success case. Users should never see a blank or broken screen.",
+        "Skeleton loading patterns provide a better experience than spinners because they set layout expectations before data arrives.",
+        "Empty states are an opportunity to guide users. Instead of blank space, tell them what happened and what they can do next."
+      ],
+      "commonPitfalls": [
+        "Only handling the success case and forgetting loading, error, and empty states — this leads to blank screens or uncaught errors in production.",
+        "Showing a spinner for every loading state — consider skeleton screens for content that has a predictable layout, as they reduce perceived loading time."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "dynamic-state-machine-exercise",
+        "title": "State Machine Renderer",
+        "description": "Create a function that acts as a complete state machine renderer, handling loading, error, empty, and data states with appropriate messages.",
+        "starterCode": "// Create renderPage(state) that handles:\n// state.status can be: 'loading', 'error', 'success'\n// state.error: error message (when status is 'error')\n// state.data: array of items (when status is 'success')\n// \n// Return:\n// loading -> 'Loading content...'\n// error -> 'Something went wrong: <error>. Please retry.'\n// success + empty data -> 'Nothing here yet. Create your first item!'\n// success + data -> 'Showing <count> items: item1, item2, ...'\n\n// your code here\n\nconsole.log(renderPage({ status: 'loading' }));\nconsole.log(renderPage({ status: 'error', error: 'Timeout' }));\nconsole.log(renderPage({ status: 'success', data: [] }));\nconsole.log(renderPage({ status: 'success', data: ['Task 1', 'Task 2', 'Task 3'] }));",
+        "solution": "function renderPage(state) {\n  if (state.status === 'loading') {\n    return 'Loading content...';\n  }\n  if (state.status === 'error') {\n    return 'Something went wrong: ' + state.error + '. Please retry.';\n  }\n  if (state.data.length === 0) {\n    return 'Nothing here yet. Create your first item!';\n  }\n  return 'Showing ' + state.data.length + ' items: ' + state.data.join(', ');\n}\n\nconsole.log(renderPage({ status: 'loading' }));\nconsole.log(renderPage({ status: 'error', error: 'Timeout' }));\nconsole.log(renderPage({ status: 'success', data: [] }));\nconsole.log(renderPage({ status: 'success', data: ['Task 1', 'Task 2', 'Task 3'] }));",
+        "expectedOutput": "Loading content...\nSomething went wrong: Timeout. Please retry.\nNothing here yet. Create your first item!\nShowing 3 items: Task 1, Task 2, Task 3",
+        "hints": [
+          "Use early returns for each state: check status === 'loading' first, then 'error', then check data length for empty vs populated.",
+          "For the success case with data, use .join(', ') to create a comma-separated list of items."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "dynamic-dashboard-exercise",
+        "title": "Dynamic Dashboard Sections",
+        "description": "Build a dashboard renderer that displays different sections based on configuration data. Each section has its own data and states.",
+        "starterCode": "const sections = [\n  { id: 'stats', title: 'Statistics', visible: true, data: { views: 1500, likes: 230 } },\n  { id: 'chart', title: 'Chart', visible: false, data: null },\n  { id: 'recent', title: 'Recent Activity', visible: true, data: { items: ['Login', 'Post created', 'Comment'] } },\n  { id: 'alerts', title: 'Alerts', visible: true, data: { items: [] } }\n];\n\n// Create renderDashboard(sections) that:\n// 1. Filters to only visible sections\n// 2. For each visible section, renders:\n//    - stats: 'Views: <views>, Likes: <likes>'\n//    - recent with items: lists the items joined by ', '\n//    - alerts with empty items: 'No alerts'\n//    Format: '[title] content'\n\n// your code here\n\nrenderDashboard(sections);",
+        "solution": "const sections = [\n  { id: 'stats', title: 'Statistics', visible: true, data: { views: 1500, likes: 230 } },\n  { id: 'chart', title: 'Chart', visible: false, data: null },\n  { id: 'recent', title: 'Recent Activity', visible: true, data: { items: ['Login', 'Post created', 'Comment'] } },\n  { id: 'alerts', title: 'Alerts', visible: true, data: { items: [] } }\n];\n\nfunction renderDashboard(sections) {\n  const visible = sections.filter(s => s.visible);\n\n  visible.forEach(section => {\n    let content;\n    if (section.id === 'stats') {\n      content = 'Views: ' + section.data.views + ', Likes: ' + section.data.likes;\n    } else if (section.data && section.data.items) {\n      content = section.data.items.length > 0\n        ? section.data.items.join(', ')\n        : 'No ' + section.title.toLowerCase();\n    } else {\n      content = 'No data';\n    }\n    console.log('[' + section.title + '] ' + content);\n  });\n}\n\nrenderDashboard(sections);",
+        "expectedOutput": "[Statistics] Views: 1500, Likes: 230\n[Recent Activity] Login, Post created, Comment\n[Alerts] No alerts",
+        "hints": [
+          "First filter out sections where visible is false. Then handle each section type differently based on its id or data structure.",
+          "For sections with items arrays, check if the array is empty to show a 'No items' message vs the actual content."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "advanced-patterns",
+    "sectionId": "conditional-rendering-and-lists",
+    "orderIndex": 3,
+    "title": "Advanced Rendering Patterns",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["render props pattern", "early returns", "guard clauses", "component mapping", "dynamic component rendering"],
+    "content": {
+      "explanation": "As your React applications grow, you will encounter scenarios that need more sophisticated rendering patterns. Advanced patterns help you write DRY (Don't Repeat Yourself) code, handle complex conditional logic cleanly, and create flexible, reusable components. These patterns build on the basics of conditional rendering and list rendering.\n\nEarly returns and guard clauses make complex components much more readable. Instead of nesting conditions inside the return statement with ternaries, you check for special cases at the top of the function and return immediately. `if (!user) return <LoginPrompt />;` `if (user.banned) return <BannedMessage />;` `if (!user.verified) return <VerifyEmail />;` `return <Dashboard user={user} />;`. Each early return handles one edge case, and the final return handles the happy path. This flat structure is much easier to read than deeply nested ternaries.\n\nThe render props pattern is a technique where a component takes a function as a prop (or as children) and calls that function to determine what to render. For example, `<DataFetcher url=\"/api/users\" render={(data) => <UserList users={data} />} />`. The DataFetcher handles the fetching logic, and the render function controls the presentation. This separates concerns: data-fetching logic is reusable, and the rendering is customizable. While hooks have replaced many render props use cases, the pattern is still useful for specific scenarios.\n\nComponent mapping is a pattern where you map string identifiers to component functions, enabling dynamic component rendering. Instead of writing a long if/else chain like `if (type === 'text') return <TextInput />;` `if (type === 'select') return <Select />;`, you create a map: `const components = { text: TextInput, select: Select, checkbox: Checkbox };` and render with `const Component = components[type]; return <Component {...props} />;`. This scales much better as the number of component types grows.\n\nAnother powerful pattern is composition with specialized components. Instead of passing a type prop and switching inside one big component, you create multiple small components that handle specific cases. A Form component might render FormField components, each of which knows how to render its own type. This distributes complexity and makes each component simpler to understand, test, and modify independently.",
+      "codeExamples": [
+        {
+          "title": "Guard Clauses and Early Returns",
+          "code": "function processUser(user) {\n  // Guard clauses handle edge cases first\n  if (!user) {\n    console.log('No user provided');\n    return;\n  }\n\n  if (!user.active) {\n    console.log(user.name + ': Account inactive');\n    return;\n  }\n\n  if (user.role === 'banned') {\n    console.log(user.name + ': Account banned');\n    return;\n  }\n\n  // Happy path — all guards passed\n  console.log(user.name + ': Welcome to the dashboard!');\n}\n\nprocessUser(null);\nprocessUser({ name: 'Alice', active: false, role: 'user' });\nprocessUser({ name: 'Bob', active: true, role: 'banned' });\nprocessUser({ name: 'Charlie', active: true, role: 'admin' });",
+          "output": "No user provided\nAlice: Account inactive\nBob: Account banned\nCharlie: Welcome to the dashboard!",
+          "explanation": "Guard clauses check for edge cases at the top and return early. The happy path sits at the bottom, unindented and clear."
+        },
+        {
+          "title": "Render Props Pattern",
+          "code": "// A data provider that calls a render function with the data\nfunction DataProvider(props) {\n  // Simulate fetching data\n  const data = props.getData();\n\n  if (!data) {\n    return 'No data';\n  }\n\n  // Call the render function with the data\n  return props.render(data);\n}\n\n// Using the same DataProvider with different render functions\nconst result1 = DataProvider({\n  getData: () => ['Apple', 'Banana', 'Cherry'],\n  render: (items) => 'List: ' + items.join(', ')\n});\n\nconst result2 = DataProvider({\n  getData: () => ['Apple', 'Banana', 'Cherry'],\n  render: (items) => 'Count: ' + items.length\n});\n\nconst result3 = DataProvider({\n  getData: () => null,\n  render: (items) => 'Items: ' + items.join(', ')\n});\n\nconsole.log(result1);\nconsole.log(result2);\nconsole.log(result3);",
+          "output": "List: Apple, Banana, Cherry\nCount: 3\nNo data",
+          "explanation": "The render prop pattern separates data logic from presentation. The same DataProvider renders differently based on the render function passed to it."
+        },
+        {
+          "title": "Component Mapping Pattern",
+          "code": "// Map type strings to rendering functions\nconst renderers = {\n  text: (props) => 'Input[text]: ' + (props.value || ''),\n  select: (props) => 'Select: ' + props.options.join(' | '),\n  checkbox: (props) => 'Checkbox: ' + (props.checked ? 'checked' : 'unchecked'),\n  textarea: (props) => 'Textarea: ' + (props.value || '(empty)')\n};\n\nfunction renderField(config) {\n  const renderer = renderers[config.type];\n  if (!renderer) {\n    return 'Unknown field type: ' + config.type;\n  }\n  return config.label + ': ' + renderer(config);\n}\n\nconst fields = [\n  { type: 'text', label: 'Name', value: 'Alice' },\n  { type: 'select', label: 'Role', options: ['Admin', 'User', 'Guest'] },\n  { type: 'checkbox', label: 'Active', checked: true },\n  { type: 'unknown', label: 'Mystery' }\n];\n\nfields.forEach(field => console.log(renderField(field)));",
+          "output": "Name: Input[text]: Alice\nRole: Select: Admin | User | Guest\nActive: Checkbox: checked\nMystery: Unknown field type: unknown",
+          "explanation": "Component mapping replaces long if/else chains with a lookup object. It scales well and makes adding new types trivial — just add a new entry to the map."
+        }
+      ],
+      "notes": [
+        "Guard clauses and early returns keep code flat and readable. Check for error conditions first and return early, leaving the success path last.",
+        "The render props pattern is being replaced by hooks for many use cases, but it is still valuable for components that need to share behavior with flexible rendering.",
+        "Component mapping with an object lookup is cleaner than switch statements and easier to extend — adding a new type only requires adding one entry."
+      ],
+      "commonPitfalls": [
+        "Overusing render props when a simpler approach works — if you just need conditional rendering, ternary or early returns are simpler. Render props add a layer of indirection that is only worth it for truly reusable behavior sharing.",
+        "Forgetting to handle unknown types in component mapping — always include a fallback for unexpected values to avoid silent failures or crashes."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "guard-clauses-exercise",
+        "title": "Implement Guard Clauses",
+        "description": "Refactor a function that uses nested if/else into one that uses guard clauses with early returns. The function should process an order and validate multiple conditions.",
+        "starterCode": "// Create processOrder(order) with guard clauses:\n// 1. If order is null/undefined -> 'Error: No order provided'\n// 2. If order.items is empty -> 'Error: Order has no items'\n// 3. If order.total <= 0 -> 'Error: Invalid order total'\n// 4. If order.paymentMethod is not 'card' or 'cash' -> 'Error: Invalid payment method'\n// 5. Happy path -> 'Order confirmed: <itemCount> items, $<total> via <payment>'\n\n// your code here\n\nconsole.log(processOrder(null));\nconsole.log(processOrder({ items: [], total: 50, paymentMethod: 'card' }));\nconsole.log(processOrder({ items: ['A'], total: -10, paymentMethod: 'card' }));\nconsole.log(processOrder({ items: ['A'], total: 50, paymentMethod: 'bitcoin' }));\nconsole.log(processOrder({ items: ['A', 'B'], total: 75, paymentMethod: 'card' }));",
+        "solution": "function processOrder(order) {\n  if (!order) return 'Error: No order provided';\n  if (!order.items || order.items.length === 0) return 'Error: Order has no items';\n  if (order.total <= 0) return 'Error: Invalid order total';\n  if (order.paymentMethod !== 'card' && order.paymentMethod !== 'cash') return 'Error: Invalid payment method';\n\n  return 'Order confirmed: ' + order.items.length + ' items, $' + order.total + ' via ' + order.paymentMethod;\n}\n\nconsole.log(processOrder(null));\nconsole.log(processOrder({ items: [], total: 50, paymentMethod: 'card' }));\nconsole.log(processOrder({ items: ['A'], total: -10, paymentMethod: 'card' }));\nconsole.log(processOrder({ items: ['A'], total: 50, paymentMethod: 'bitcoin' }));\nconsole.log(processOrder({ items: ['A', 'B'], total: 75, paymentMethod: 'card' }));",
+        "expectedOutput": "Error: No order provided\nError: Order has no items\nError: Invalid order total\nError: Invalid payment method\nOrder confirmed: 2 items, $75 via card",
+        "hints": [
+          "Each guard clause checks one condition and returns early with an error message. Place them in order of priority at the top of the function.",
+          "After all guards pass, the final return statement handles the happy path where all data is valid."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "component-map-exercise",
+        "title": "Dynamic Renderer with Component Map",
+        "description": "Build a dynamic notification renderer that maps notification types to rendering functions and handles unknown types gracefully.",
+        "starterCode": "const notifications = [\n  { type: 'success', message: 'File saved' },\n  { type: 'error', message: 'Upload failed' },\n  { type: 'warning', message: 'Low disk space' },\n  { type: 'info', message: 'New update available' },\n  { type: 'custom', message: 'Something else' }\n];\n\n// Create a renderers map that formats each type differently:\n// success -> '[OK] message'\n// error -> '[!!] message'\n// warning -> '[!!] message'\n// info -> '[i] message'\n// Unknown types -> '[?] message'\n//\n// Create renderNotification(notification) that uses the map\n\n// your code here\n\nnotifications.forEach(n => console.log(renderNotification(n)));",
+        "solution": "const notifications = [\n  { type: 'success', message: 'File saved' },\n  { type: 'error', message: 'Upload failed' },\n  { type: 'warning', message: 'Low disk space' },\n  { type: 'info', message: 'New update available' },\n  { type: 'custom', message: 'Something else' }\n];\n\nconst renderers = {\n  success: (msg) => '[OK] ' + msg,\n  error: (msg) => '[!!] ' + msg,\n  warning: (msg) => '[!!] ' + msg,\n  info: (msg) => '[i] ' + msg\n};\n\nfunction renderNotification(notification) {\n  const renderer = renderers[notification.type];\n  if (renderer) {\n    return renderer(notification.message);\n  }\n  return '[?] ' + notification.message;\n}\n\nnotifications.forEach(n => console.log(renderNotification(n)));",
+        "expectedOutput": "[OK] File saved\n[!!] Upload failed\n[!!] Low disk space\n[i] New update available\n[?] Something else",
+        "hints": [
+          "Create an object where keys are notification types and values are functions that format the message with the appropriate prefix.",
+          "Look up the renderer by notification.type. If it exists, call it. If not, use a fallback format with '[?]'."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "list-performance",
+    "sectionId": "conditional-rendering-and-lists",
+    "orderIndex": 4,
+    "title": "List Performance and Key Strategy",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["reconciliation", "stable keys", "index as key", "key anti-patterns", "virtual DOM diffing"],
+    "content": {
+      "explanation": "When React needs to update a list, it uses a process called reconciliation to determine the minimum number of DOM operations required. React compares the old list of elements with the new list, matching elements by their keys. If two elements have the same key, React assumes they represent the same item and only updates changed props. If a key is new, React mounts a new element. If a key disappears, React unmounts that element. This is why keys are so critical — they drive the entire update algorithm.\n\nThe reconciliation algorithm works in linear time O(n) by making two assumptions: elements with different types are completely different trees, and keys tell React which elements are the same across renders. Without keys, React compares elements by position — the first element in the old list is compared with the first element in the new list. This positional comparison fails when items are inserted, removed, or reordered, because the positions no longer correspond to the same items.\n\nUsing array indices as keys is the most common performance and correctness pitfall. When an item is added to the beginning of a list, every subsequent item's index shifts by one. React sees that key 0 now has different content, key 1 has different content, and so on — it updates every single item instead of just inserting one. Even worse, if list items have internal state (like form inputs), the state gets attached to the wrong items because the key-to-element mapping is wrong.\n\nStable keys from your data (like database IDs) solve these problems. When an item is inserted, existing items keep their keys, so React knows they have not changed. When items are reordered, their keys move with them, so React simply repositions the DOM nodes. This is dramatically more efficient and correct. If your data does not have natural IDs, generate them when the data is created (not during rendering), using something like a UUID or an incrementing counter.\n\nFor performance-critical lists with hundreds or thousands of items, consider virtualization libraries like react-window or react-virtuoso. These libraries only render the items currently visible in the viewport, plus a small buffer. Instead of creating 10,000 DOM nodes, you might only render 30. This reduces memory usage, improves rendering speed, and makes scrolling smooth. Virtualization combined with stable keys gives you optimal list performance.",
+      "codeExamples": [
+        {
+          "title": "Reconciliation with Keys",
+          "code": "// Simulating React's reconciliation logic\nfunction reconcile(oldList, newList) {\n  const operations = [];\n  const oldMap = {};\n  oldList.forEach(item => { oldMap[item.key] = item; });\n\n  newList.forEach((newItem, index) => {\n    const oldItem = oldMap[newItem.key];\n    if (!oldItem) {\n      operations.push('INSERT: ' + newItem.key + ' (\"' + newItem.text + '\")');\n    } else if (oldItem.text !== newItem.text) {\n      operations.push('UPDATE: ' + newItem.key + ' (\"' + oldItem.text + '\" -> \"' + newItem.text + '\")');\n    }\n    delete oldMap[newItem.key];\n  });\n\n  Object.keys(oldMap).forEach(key => {\n    operations.push('REMOVE: ' + key);\n  });\n\n  return operations;\n}\n\nconst oldList = [\n  { key: 'a', text: 'Apple' },\n  { key: 'b', text: 'Banana' },\n  { key: 'c', text: 'Cherry' }\n];\n\nconst newList = [\n  { key: 'b', text: 'Banana' },\n  { key: 'a', text: 'Avocado' },\n  { key: 'd', text: 'Date' }\n];\n\nconst ops = reconcile(oldList, newList);\nconsole.log('Operations needed:');\nops.forEach(op => console.log('  ' + op));",
+          "output": "Operations needed:\n  UPDATE: a (\"Apple\" -> \"Avocado\")\n  INSERT: d (\"Date\")\n  REMOVE: c",
+          "explanation": "With stable keys, React can identify that 'b' is unchanged, 'a' was updated, 'd' is new, and 'c' was removed. Only 3 operations instead of rebuilding everything."
+        },
+        {
+          "title": "Index Keys vs Stable Keys",
+          "code": "// Demonstrate why index keys cause problems on insert\nfunction simulateWithIndexKeys(items) {\n  return items.map((item, index) => ({ key: index, text: item }));\n}\n\nfunction simulateWithIdKeys(items) {\n  return items.map(item => ({ key: item.id, text: item.text }));\n}\n\nconst original = [\n  { id: 'a', text: 'First' },\n  { id: 'b', text: 'Second' }\n];\n\n// Insert at beginning\nconst afterInsert = [\n  { id: 'c', text: 'New First' },\n  { id: 'a', text: 'First' },\n  { id: 'b', text: 'Second' }\n];\n\nconsole.log('Index keys before:');\nsimulateWithIndexKeys(original.map(i => i.text))\n  .forEach(i => console.log('  key=' + i.key + ': ' + i.text));\n\nconsole.log('Index keys after insert:');\nsimulateWithIndexKeys(afterInsert.map(i => i.text))\n  .forEach(i => console.log('  key=' + i.key + ': ' + i.text));\n\nconsole.log('Result: key 0 changed content, key 1 changed content (BAD)');\n\nconsole.log('---');\nconsole.log('ID keys before:');\nsimulateWithIdKeys(original)\n  .forEach(i => console.log('  key=' + i.key + ': ' + i.text));\n\nconsole.log('ID keys after insert:');\nsimulateWithIdKeys(afterInsert)\n  .forEach(i => console.log('  key=' + i.key + ': ' + i.text));\n\nconsole.log('Result: key c is new, keys a and b unchanged (GOOD)');",
+          "output": "Index keys before:\n  key=0: First\n  key=1: Second\nIndex keys after insert:\n  key=0: New First\n  key=1: First\n  key=2: Second\nResult: key 0 changed content, key 1 changed content (BAD)\n---\nID keys before:\n  key=a: First\n  key=b: Second\nID keys after insert:\n  key=c: New First\n  key=a: First\n  key=b: Second\nResult: key c is new, keys a and b unchanged (GOOD)",
+          "explanation": "Index keys shift when items are inserted, making React think existing items changed. ID keys remain stable, so React correctly identifies the new item."
+        },
+        {
+          "title": "Generating Stable Keys",
+          "code": "// Pattern 1: Use a counter for locally generated items\nlet nextId = 1;\nfunction createItem(text) {\n  return { id: 'item-' + (nextId++), text };\n}\n\nconst items = [];\nitems.push(createItem('Learn React'));\nitems.push(createItem('Build project'));\nitems.push(createItem('Deploy app'));\n\nconsole.log('Generated items:');\nitems.forEach(item => console.log('  ' + item.id + ': ' + item.text));\n\n// Pattern 2: Composite keys from data properties\nconst events = [\n  { date: '2026-01-15', type: 'meeting', title: 'Standup' },\n  { date: '2026-01-15', type: 'deadline', title: 'Sprint end' },\n  { date: '2026-01-16', type: 'meeting', title: 'Retro' }\n];\n\nconsole.log('Composite keys:');\nevents.forEach(e => {\n  const key = e.date + '-' + e.type + '-' + e.title;\n  console.log('  key=' + key);\n});",
+          "output": "Generated items:\n  item-1: Learn React\n  item-2: Build project\n  item-3: Deploy app\nComposite keys:\n  key=2026-01-15-meeting-Standup\n  key=2026-01-15-deadline-Sprint end\n  key=2026-01-16-meeting-Retro",
+          "explanation": "Generate IDs at creation time, not render time. Use incrementing counters for local data or composite keys from unique field combinations."
+        }
+      ],
+      "notes": [
+        "React's reconciliation uses keys to match elements between renders. Stable keys from your data let React minimize DOM operations.",
+        "Array indices as keys are only safe for static lists that never reorder, insert, or delete. For dynamic lists, always use stable IDs.",
+        "For very large lists (hundreds or thousands of items), consider virtualization to render only visible items."
+      ],
+      "commonPitfalls": [
+        "Generating keys during render with Math.random() or Date.now() — this creates new keys every render, causing React to unmount and remount every item, destroying all state and causing terrible performance.",
+        "Using index keys for lists where items can be added, removed, or reordered — this causes incorrect state matching, broken animations, and input values appearing on the wrong items."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "reconciliation-exercise",
+        "title": "Implement Simple Reconciliation",
+        "description": "Build a simplified reconciliation function that compares two lists by key and determines which items were added, removed, or changed.",
+        "starterCode": "// Create reconcile(oldList, newList) that returns an object:\n// { added: [...], removed: [...], updated: [...], unchanged: [...] }\n// Each entry should be the item's key\n// Items are matched by key. Updated means same key but different text.\n\n// your code here\n\nconst oldList = [\n  { key: 'a', text: 'Apple' },\n  { key: 'b', text: 'Banana' },\n  { key: 'c', text: 'Cherry' }\n];\n\nconst newList = [\n  { key: 'a', text: 'Avocado' },\n  { key: 'b', text: 'Banana' },\n  { key: 'd', text: 'Date' }\n];\n\nconst result = reconcile(oldList, newList);\nconsole.log('Added: ' + result.added.join(', '));\nconsole.log('Removed: ' + result.removed.join(', '));\nconsole.log('Updated: ' + result.updated.join(', '));\nconsole.log('Unchanged: ' + result.unchanged.join(', '));",
+        "solution": "function reconcile(oldList, newList) {\n  const result = { added: [], removed: [], updated: [], unchanged: [] };\n  const oldMap = {};\n  oldList.forEach(item => { oldMap[item.key] = item; });\n\n  const seenKeys = {};\n  newList.forEach(newItem => {\n    seenKeys[newItem.key] = true;\n    const oldItem = oldMap[newItem.key];\n    if (!oldItem) {\n      result.added.push(newItem.key);\n    } else if (oldItem.text !== newItem.text) {\n      result.updated.push(newItem.key);\n    } else {\n      result.unchanged.push(newItem.key);\n    }\n  });\n\n  oldList.forEach(oldItem => {\n    if (!seenKeys[oldItem.key]) {\n      result.removed.push(oldItem.key);\n    }\n  });\n\n  return result;\n}\n\nconst oldList = [\n  { key: 'a', text: 'Apple' },\n  { key: 'b', text: 'Banana' },\n  { key: 'c', text: 'Cherry' }\n];\n\nconst newList = [\n  { key: 'a', text: 'Avocado' },\n  { key: 'b', text: 'Banana' },\n  { key: 'd', text: 'Date' }\n];\n\nconst result = reconcile(oldList, newList);\nconsole.log('Added: ' + result.added.join(', '));\nconsole.log('Removed: ' + result.removed.join(', '));\nconsole.log('Updated: ' + result.updated.join(', '));\nconsole.log('Unchanged: ' + result.unchanged.join(', '));",
+        "expectedOutput": "Added: d\nRemoved: c\nUpdated: a\nUnchanged: b",
+        "hints": [
+          "Create a map of old items by key for O(1) lookups. Then iterate through the new list to classify each item as added, updated, or unchanged.",
+          "After processing the new list, check which old keys are not in the new list — those are removed items."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "stable-keys-exercise",
+        "title": "Key Generation Strategy",
+        "description": "Create an item manager that generates stable, unique keys when items are created (not during render) and demonstrates why this matters.",
+        "starterCode": "// Create an ItemManager with:\n// - addItem(text): adds an item with a stable unique id\n// - removeItem(id): removes the item with that id\n// - getItems(): returns the current items array\n// IDs should be generated at creation time using an incrementing counter\n\n// your code here\n\nconst manager = createItemManager();\n\nmanager.addItem('First');\nmanager.addItem('Second');\nmanager.addItem('Third');\n\nconsole.log('After adding 3 items:');\nmanager.getItems().forEach(i => console.log('  id=' + i.id + ': ' + i.text));\n\nmanager.removeItem(2);\nconsole.log('After removing id=2:');\nmanager.getItems().forEach(i => console.log('  id=' + i.id + ': ' + i.text));\n\nmanager.addItem('Fourth');\nconsole.log('After adding Fourth:');\nmanager.getItems().forEach(i => console.log('  id=' + i.id + ': ' + i.text));",
+        "solution": "function createItemManager() {\n  let items = [];\n  let nextId = 1;\n\n  return {\n    addItem(text) {\n      items = [...items, { id: nextId++, text }];\n    },\n    removeItem(id) {\n      items = items.filter(item => item.id !== id);\n    },\n    getItems() {\n      return items;\n    }\n  };\n}\n\nconst manager = createItemManager();\n\nmanager.addItem('First');\nmanager.addItem('Second');\nmanager.addItem('Third');\n\nconsole.log('After adding 3 items:');\nmanager.getItems().forEach(i => console.log('  id=' + i.id + ': ' + i.text));\n\nmanager.removeItem(2);\nconsole.log('After removing id=2:');\nmanager.getItems().forEach(i => console.log('  id=' + i.id + ': ' + i.text));\n\nmanager.addItem('Fourth');\nconsole.log('After adding Fourth:');\nmanager.getItems().forEach(i => console.log('  id=' + i.id + ': ' + i.text));",
+        "expectedOutput": "After adding 3 items:\n  id=1: First\n  id=2: Second\n  id=3: Third\nAfter removing id=2:\n  id=1: First\n  id=3: Third\nAfter adding Fourth:\n  id=1: First\n  id=3: Third\n  id=4: Fourth",
+        "hints": [
+          "Use a closure to encapsulate the items array and a nextId counter. The counter increments each time addItem is called, ensuring unique IDs.",
+          "Use immutable operations: spread to add items (`[...items, newItem]`) and filter to remove (`items.filter(i => i.id !== id)`)."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -1,0 +1,307 @@
+[
+  {
+    "id": "function-based-views",
+    "sectionId": "views-and-url-routing",
+    "orderIndex": 0,
+    "title": "Function-Based Views",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["FBV", "HttpRequest", "HttpResponse", "render", "redirect"],
+    "content": {
+      "explanation": "Function-based views (FBVs) are the simplest way to handle HTTP requests in Django. A view function takes an HttpRequest object as its first argument and returns an HttpResponse object. Everything that happens between receiving the request and returning the response — querying the database, processing forms, rendering templates — is your business logic.\n\nThe HttpRequest object contains all the information about the incoming request. request.method tells you if it is a GET, POST, PUT, DELETE, etc. request.GET is a dictionary-like object containing query string parameters. request.POST contains form data from POST requests. request.FILES contains uploaded files. request.user provides the currently authenticated user (or an AnonymousUser). request.session gives access to the session data.\n\nThe most common way to return a response is using the render() shortcut, which combines a template with context data and returns an HttpResponse. You pass the request, the template path, and a context dictionary. Django finds the template, renders it with the provided data, and wraps the result in an HttpResponse.\n\nFor redirects, use the redirect() shortcut, which returns an HttpResponseRedirect. You can pass it a URL string, a named URL pattern, or even a model instance (if the model has a get_absolute_url() method). After processing a form submission, you should always redirect to prevent duplicate form submissions on page refresh — this is known as the Post/Redirect/Get (PRG) pattern.\n\nThe get_object_or_404() and get_list_or_404() shortcuts are essential for views that display specific objects. They attempt to retrieve an object from the database and raise a 404 error if it does not exist, saving you from writing try/except blocks in every detail view.\n\nFBVs handle different HTTP methods by checking request.method inside the function. A common pattern is to handle GET requests (display a form or data) and POST requests (process form submission) in the same view function using an if/else block. This is straightforward but can lead to complex functions when handling many HTTP methods or complex logic.\n\nDjango provides several decorator-based tools for FBVs. The @login_required decorator restricts access to authenticated users. The @require_http_methods decorator limits which HTTP methods the view accepts. The @csrf_exempt decorator disables CSRF protection (useful for API endpoints that use other authentication methods). These decorators keep your view functions clean by handling cross-cutting concerns.",
+      "codeExamples": [
+        {
+          "title": "Basic View Functions",
+          "code": "from django.shortcuts import render, redirect, get_object_or_404\nfrom django.http import HttpResponse, JsonResponse\nfrom .models import Article\n\n# Simple text response\ndef hello(request):\n    return HttpResponse('Hello, World!')\n\n# JSON response\ndef api_hello(request):\n    return JsonResponse({'message': 'Hello, World!', 'status': 'ok'})\n\n# Render a template with context\ndef article_list(request):\n    articles = Article.objects.filter(is_published=True)\n    return render(request, 'blog/article_list.html', {\n        'articles': articles,\n        'total': articles.count(),\n    })\n\n# Detail view with 404 handling\ndef article_detail(request, pk):\n    article = get_object_or_404(Article, pk=pk, is_published=True)\n    return render(request, 'blog/article_detail.html', {\n        'article': article,\n    })",
+          "explanation": "HttpResponse returns raw text. JsonResponse returns JSON. render() combines a template with context data. get_object_or_404() returns the object or raises a 404 error if not found."
+        },
+        {
+          "title": "Handling GET and POST",
+          "code": "from django.shortcuts import render, redirect\nfrom .forms import ArticleForm\n\ndef article_create(request):\n    if request.method == 'POST':\n        form = ArticleForm(request.POST)\n        if form.is_valid():\n            article = form.save(commit=False)\n            article.author = request.user\n            article.save()\n            return redirect('blog:article-detail', pk=article.pk)\n    else:\n        form = ArticleForm()\n\n    return render(request, 'blog/article_form.html', {\n        'form': form,\n    })",
+          "explanation": "This follows the POST/Redirect/Get pattern. GET requests display an empty form. POST requests validate and save the form, then redirect on success. If validation fails, the form re-renders with error messages."
+        },
+        {
+          "title": "View Decorators",
+          "code": "from django.contrib.auth.decorators import login_required\nfrom django.views.decorators.http import require_http_methods\nfrom django.shortcuts import render, redirect, get_object_or_404\nfrom .models import Article\nfrom .forms import ArticleForm\n\n@login_required\n@require_http_methods(['GET', 'POST'])\ndef article_edit(request, pk):\n    article = get_object_or_404(Article, pk=pk, author=request.user)\n\n    if request.method == 'POST':\n        form = ArticleForm(request.POST, instance=article)\n        if form.is_valid():\n            form.save()\n            return redirect('blog:article-detail', pk=article.pk)\n    else:\n        form = ArticleForm(instance=article)\n\n    return render(request, 'blog/article_form.html', {\n        'form': form,\n        'article': article,\n    })",
+          "explanation": "@login_required redirects unauthenticated users to the login page. @require_http_methods limits the view to specific HTTP methods. Passing instance=article to the form pre-fills it with existing data for editing."
+        },
+        {
+          "title": "Request Object Properties",
+          "code": "def debug_request(request):\n    info = {\n        'method': request.method,\n        'path': request.path,\n        'full_path': request.get_full_path(),\n        'is_secure': request.is_secure(),\n        'is_ajax': request.headers.get('X-Requested-With') == 'XMLHttpRequest',\n        'user': str(request.user),\n        'is_authenticated': request.user.is_authenticated,\n        'content_type': request.content_type,\n        'GET_params': dict(request.GET),\n        'POST_data': dict(request.POST),\n        'cookies': dict(request.COOKIES),\n    }\n    return JsonResponse(info)",
+          "explanation": "The request object contains everything about the HTTP request. request.GET has query parameters, request.POST has form data, request.user has the current user, request.COOKIES has cookies, and request.headers has HTTP headers."
+        }
+      ],
+      "notes": [
+        "FBVs are plain Python functions that take an HttpRequest and return an HttpResponse.",
+        "Always use the Post/Redirect/Get pattern after form submissions to prevent duplicate submissions.",
+        "Use get_object_or_404() instead of try/except blocks for retrieving single objects.",
+        "Decorators like @login_required and @require_http_methods keep views clean."
+      ],
+      "commonPitfalls": [
+        "Forgetting to return a response in all code paths. Every execution path in a view must return an HttpResponse.",
+        "Not redirecting after a successful POST. Without redirect, refreshing the page re-submits the form.",
+        "Using request.POST for non-form data. For JSON API payloads, use json.loads(request.body) instead."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "fbv-ex1",
+        "title": "Create a Contact Form View",
+        "description": "Write a function-based view called 'contact' that handles both GET and POST requests. On GET, render 'contact.html' with an empty ContactForm. On POST, validate the form, and if valid, redirect to 'contact-success'. If invalid, re-render the form with errors.",
+        "starterCode": "from django.shortcuts import render, redirect\n\ndef contact(request):\n    # Handle GET and POST\n    pass\n",
+        "solution": "from django.shortcuts import render, redirect\nfrom .forms import ContactForm\n\ndef contact(request):\n    if request.method == 'POST':\n        form = ContactForm(request.POST)\n        if form.is_valid():\n            form.save()\n            return redirect('contact-success')\n    else:\n        form = ContactForm()\n\n    return render(request, 'contact.html', {'form': form})",
+        "hints": [
+          "Check request.method to distinguish GET from POST",
+          "Create the form with request.POST data on POST, empty on GET",
+          "Always redirect after successful form processing (PRG pattern)"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "fbv-ex2",
+        "title": "API View with JSON Response",
+        "description": "Write a view function called 'product_api' that accepts a product ID as a parameter, retrieves the product with get_object_or_404, and returns a JsonResponse with the product's name, price (as string), and stock count.",
+        "starterCode": "from django.http import JsonResponse\nfrom django.shortcuts import get_object_or_404\n\ndef product_api(request, pk):\n    # Return product data as JSON\n    pass\n",
+        "solution": "from django.http import JsonResponse\nfrom django.shortcuts import get_object_or_404\nfrom .models import Product\n\ndef product_api(request, pk):\n    product = get_object_or_404(Product, pk=pk)\n    return JsonResponse({\n        'name': product.name,\n        'price': str(product.price),\n        'stock': product.stock,\n    })",
+        "hints": [
+          "Use get_object_or_404 to retrieve the product or return 404",
+          "JsonResponse takes a dictionary and returns JSON",
+          "Convert Decimal fields to string to avoid serialization errors"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "fbv-ex3",
+        "title": "Protected Delete View",
+        "description": "Write a view function called 'article_delete' that is protected by @login_required and only accepts POST requests. It should get the article by pk (ensuring the author is request.user), delete it, and redirect to 'blog:article-list'.",
+        "starterCode": "from django.contrib.auth.decorators import login_required\nfrom django.views.decorators.http import require_POST\n\n# Write the delete view\n",
+        "solution": "from django.contrib.auth.decorators import login_required\nfrom django.views.decorators.http import require_POST\nfrom django.shortcuts import get_object_or_404, redirect\nfrom .models import Article\n\n@login_required\n@require_POST\ndef article_delete(request, pk):\n    article = get_object_or_404(Article, pk=pk, author=request.user)\n    article.delete()\n    return redirect('blog:article-list')",
+        "hints": [
+          "Stack decorators: @login_required on top, @require_POST below",
+          "Filter by author=request.user to ensure users can only delete their own articles",
+          "Call article.delete() to remove from database, then redirect"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "class-based-views",
+    "sectionId": "views-and-url-routing",
+    "orderIndex": 1,
+    "title": "Class-Based Views",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["CBV", "View", "as_view", "Method Dispatch", "Mixins"],
+    "content": {
+      "explanation": "Class-based views (CBVs) provide an alternative to function-based views by representing views as Python classes instead of functions. The key advantage of CBVs is reusability through inheritance and mixins. Instead of duplicating common patterns across multiple function views, you can define behavior once in a parent class and inherit it across many views.\n\nThe base class for all CBVs is django.views.View. It provides a dispatch() method that routes the incoming request to the appropriate handler method (get, post, put, delete, etc.) based on the HTTP method. You define handler methods with lowercase names matching HTTP methods. The as_view() class method converts the class into a callable view function that can be used in URL patterns.\n\nWhen a request arrives, Django calls as_view(), which creates an instance of the view class and calls its dispatch() method. dispatch() inspects request.method and calls self.get() for GET requests, self.post() for POST requests, and so on. If no handler exists for the HTTP method, Django returns a 405 Method Not Allowed response.\n\nCBVs shine when combined with mixins. A mixin is a class that provides specific functionality meant to be used with multiple inheritance. Django provides mixins like LoginRequiredMixin, PermissionRequiredMixin, and UserPassesTestMixin. Third-party packages add more. Mixins are listed before the main view class in the inheritance order (Python's Method Resolution Order, or MRO, processes them left to right).\n\nThe TemplateView is a simple CBV that renders a template. ListView and DetailView handle listing multiple objects and displaying a single object, respectively. CreateView, UpdateView, and DeleteView handle CRUD operations with forms. These generic views handle the boilerplate for you — fetching data, rendering templates, processing forms — so you only need to specify the model, template name, and any customizations.\n\nCBVs can access the same request attributes as FBVs through self.request. The URL parameters are available via self.kwargs (keyword arguments from the URL pattern) and self.args (positional arguments). You can override methods like get_queryset(), get_context_data(), and form_valid() to customize behavior.\n\nThe debate between FBVs and CBVs is ongoing in the Django community. FBVs are simpler, more explicit, and easier to understand. CBVs reduce code duplication and enable DRY patterns through inheritance. In practice, many Django developers use FBVs for simple or unique views and CBVs (especially generic views) for standard CRUD operations.",
+      "codeExamples": [
+        {
+          "title": "Basic Class-Based View",
+          "code": "from django.views import View\nfrom django.http import HttpResponse\nfrom django.shortcuts import render\n\nclass HelloView(View):\n    def get(self, request):\n        return HttpResponse('Hello from GET!')\n\n    def post(self, request):\n        return HttpResponse('Hello from POST!')\n\n# urls.py\nfrom django.urls import path\nfrom .views import HelloView\n\nurlpatterns = [\n    path('hello/', HelloView.as_view(), name='hello'),\n]",
+          "explanation": "CBVs define separate methods for each HTTP verb. The dispatch() method routes requests to the correct handler. as_view() converts the class into a callable for URL patterns."
+        },
+        {
+          "title": "CBV with Template and Context",
+          "code": "from django.views import View\nfrom django.shortcuts import render, redirect, get_object_or_404\nfrom .models import Article\nfrom .forms import ArticleForm\n\nclass ArticleCreateView(View):\n    template_name = 'blog/article_form.html'\n\n    def get(self, request):\n        form = ArticleForm()\n        return render(request, self.template_name, {'form': form})\n\n    def post(self, request):\n        form = ArticleForm(request.POST)\n        if form.is_valid():\n            article = form.save(commit=False)\n            article.author = request.user\n            article.save()\n            return redirect('blog:article-detail', pk=article.pk)\n        return render(request, self.template_name, {'form': form})",
+          "explanation": "This CBV separates GET (display form) and POST (process form) into clean, distinct methods. Class attributes like template_name can be set at the class level and overridden per-instance."
+        },
+        {
+          "title": "Using Mixins",
+          "code": "from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin\nfrom django.views import View\nfrom django.shortcuts import render, get_object_or_404\nfrom .models import Article\n\nclass ArticleEditView(LoginRequiredMixin, UserPassesTestMixin, View):\n    login_url = '/accounts/login/'\n    raise_exception = False\n\n    def test_func(self):\n        article = get_object_or_404(Article, pk=self.kwargs['pk'])\n        return article.author == self.request.user\n\n    def get(self, request, pk):\n        article = get_object_or_404(Article, pk=pk)\n        return render(request, 'blog/article_edit.html', {\n            'article': article,\n        })\n\n# Mixin order matters! Mixins go BEFORE the base view class.\n# LoginRequiredMixin -> UserPassesTestMixin -> View",
+          "explanation": "Mixins add functionality through multiple inheritance. LoginRequiredMixin checks authentication. UserPassesTestMixin runs a custom test via test_func(). Mixins must be listed BEFORE the base View class in the class definition."
+        },
+        {
+          "title": "FBV vs CBV Comparison",
+          "code": "# Function-Based View\nfrom django.contrib.auth.decorators import login_required\n\n@login_required\ndef article_list(request):\n    articles = Article.objects.filter(author=request.user)\n    return render(request, 'blog/article_list.html', {\n        'articles': articles,\n    })\n\n# Equivalent Class-Based View\nfrom django.contrib.auth.mixins import LoginRequiredMixin\nfrom django.views import View\n\nclass ArticleListView(LoginRequiredMixin, View):\n    def get(self, request):\n        articles = Article.objects.filter(author=request.user)\n        return render(request, 'blog/article_list.html', {\n            'articles': articles,\n        })\n\n# URLs\nurlpatterns = [\n    path('articles/', article_list, name='article-list'),\n    # OR\n    path('articles/', ArticleListView.as_view(), name='article-list'),\n]",
+          "explanation": "Both achieve the same result. FBV uses a decorator for authentication; CBV uses a mixin. For simple views, FBVs are often more readable. For views with shared behavior, CBVs enable code reuse through inheritance."
+        }
+      ],
+      "notes": [
+        "CBVs use method dispatch: get() for GET, post() for POST, etc.",
+        "Always call as_view() in URL patterns to convert a class into a callable view.",
+        "Mixin order matters — list mixins before the base View class (left to right in Python MRO).",
+        "CBVs are best for standard patterns; FBVs are better for unique, one-off logic."
+      ],
+      "interviewTips": [
+        "Explain the dispatch mechanism: as_view() creates an instance, dispatch() routes to the correct HTTP method handler.",
+        "Compare FBV vs CBV: FBVs are explicit and simple; CBVs enable reuse through inheritance and mixins.",
+        "Mention MRO (Method Resolution Order) when discussing mixin ordering."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "cbv-ex1",
+        "title": "Convert FBV to CBV",
+        "description": "Convert the following function-based view into a class-based view using django.views.View:\n\ndef product_detail(request, pk):\n    product = get_object_or_404(Product, pk=pk)\n    return render(request, 'products/detail.html', {'product': product})",
+        "starterCode": "from django.views import View\nfrom django.shortcuts import render, get_object_or_404\nfrom .models import Product\n\n# Convert to a CBV\n",
+        "solution": "from django.views import View\nfrom django.shortcuts import render, get_object_or_404\nfrom .models import Product\n\nclass ProductDetailView(View):\n    def get(self, request, pk):\n        product = get_object_or_404(Product, pk=pk)\n        return render(request, 'products/detail.html', {'product': product})",
+        "hints": [
+          "Create a class that inherits from View",
+          "Move the function body into a get() method",
+          "The first argument is self, then request, then URL parameters"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "cbv-ex2",
+        "title": "CBV with Mixin",
+        "description": "Create a class-based view called 'DashboardView' that requires login (using LoginRequiredMixin) and renders 'dashboard.html' with the user's orders from an Order model.",
+        "starterCode": "from django.contrib.auth.mixins import LoginRequiredMixin\nfrom django.views import View\n\n# Create the dashboard view\n",
+        "solution": "from django.contrib.auth.mixins import LoginRequiredMixin\nfrom django.views import View\nfrom django.shortcuts import render\nfrom .models import Order\n\nclass DashboardView(LoginRequiredMixin, View):\n    login_url = '/accounts/login/'\n\n    def get(self, request):\n        orders = Order.objects.filter(customer=request.user).order_by('-created_at')\n        return render(request, 'dashboard.html', {\n            'orders': orders,\n        })",
+        "hints": [
+          "LoginRequiredMixin goes before View in the class definition",
+          "Access the current user via request.user or self.request.user",
+          "Set login_url to redirect unauthenticated users"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "url-patterns-and-namespaces",
+    "sectionId": "views-and-url-routing",
+    "orderIndex": 2,
+    "title": "URL Patterns & Namespaces",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["path", "re_path", "include", "app_name", "reverse", "URL Parameters"],
+    "content": {
+      "explanation": "Django's URL dispatcher maps URL patterns to view functions or classes. The URL configuration is defined in Python modules conventionally named urls.py. Each Django project has a root URL configuration (specified by ROOT_URLCONF in settings.py), and each app can have its own urls.py that is included from the root.\n\nURL patterns are defined using the path() function, which takes a route string, a view, and an optional name. The route string uses angle brackets for URL parameters: <int:pk> captures an integer and passes it to the view as the 'pk' keyword argument. Path converters include 'int' (integer), 'str' (non-empty string excluding /), 'slug' (slug string), 'uuid' (UUID), and 'path' (non-empty string including /). You can also create custom path converters for specialized URL formats.\n\nThe include() function is used to reference other URL configurations, enabling modular URL routing. The root urls.py typically includes app-level URL files, creating a hierarchical URL structure. This keeps URL patterns organized and prevents the root configuration from becoming unwieldy.\n\nURL namespacing is critical for large projects. The app_name variable in an app's urls.py sets the application namespace. When you reverse a URL, you prefix it with the namespace: reverse('blog:article-detail', kwargs={'pk': 1}). In templates, you use the {% url %} tag: {% url 'blog:article-detail' pk=article.pk %}. Namespacing prevents name collisions when different apps use the same URL names (like 'detail' or 'list').\n\nThe reverse() function converts a URL name back to a URL string. This is the counterpart to the URL dispatcher — while the dispatcher maps URLs to views, reverse() maps view names to URLs. Use reverse() in views and get_absolute_url() model methods. Use the {% url %} template tag in templates. Never hardcode URLs in your code; always use named URLs and reverse them.\n\nFor complex URL patterns that cannot be expressed with path(), Django provides re_path() which accepts regular expressions. However, path() with converters handles the vast majority of cases, and regular expressions are only needed for unusual URL formats.\n\nThe order of URL patterns matters. Django processes them top to bottom and uses the first match. Place more specific patterns before more general ones. For example, put path('articles/create/', ...) before path('articles/<slug:slug>/', ...) to avoid 'create' being captured as a slug.",
+      "codeExamples": [
+        {
+          "title": "Root and App URL Configuration",
+          "code": "# project/urls.py (root)\nfrom django.contrib import admin\nfrom django.urls import path, include\n\nurlpatterns = [\n    path('admin/', admin.site.urls),\n    path('blog/', include('blog.urls')),\n    path('shop/', include('shop.urls')),\n    path('api/', include('api.urls')),\n]\n\n# blog/urls.py (app)\nfrom django.urls import path\nfrom . import views\n\napp_name = 'blog'\nurlpatterns = [\n    path('', views.post_list, name='post-list'),\n    path('<int:pk>/', views.post_detail, name='post-detail'),\n    path('<int:pk>/edit/', views.post_edit, name='post-edit'),\n    path('create/', views.post_create, name='post-create'),\n    path('category/<slug:slug>/', views.category_detail, name='category-detail'),\n]",
+          "explanation": "The root urls.py delegates to app-level URL files using include(). The app_name sets the namespace. URL parameters use angle brackets with type converters: <int:pk> captures integers, <slug:slug> captures slug strings."
+        },
+        {
+          "title": "URL Parameter Types",
+          "code": "from django.urls import path\nfrom . import views\n\nurlpatterns = [\n    # int: matches positive integers\n    path('articles/<int:pk>/', views.article_detail),\n\n    # str: matches any non-empty string (excluding /)\n    path('users/<str:username>/', views.user_profile),\n\n    # slug: matches slug strings (letters, numbers, hyphens, underscores)\n    path('categories/<slug:slug>/', views.category_detail),\n\n    # uuid: matches UUID strings\n    path('orders/<uuid:order_id>/', views.order_detail),\n\n    # path: matches any non-empty string (including /)\n    path('docs/<path:doc_path>/', views.doc_page),\n\n    # Multiple parameters\n    path('<int:year>/<int:month>/<slug:slug>/',\n         views.article_archive),\n]",
+          "explanation": "Path converters validate and convert URL segments. <int:pk> only matches digits and passes an integer to the view. <slug:slug> matches URL-safe strings. Multiple parameters can be combined in one pattern."
+        },
+        {
+          "title": "Reversing URLs",
+          "code": "from django.urls import reverse\nfrom django.shortcuts import redirect\n\n# In a view function\ndef some_view(request):\n    # Reverse a named URL\n    url = reverse('blog:post-list')\n    # '/blog/'\n\n    # Reverse with keyword arguments\n    url = reverse('blog:post-detail', kwargs={'pk': 42})\n    # '/blog/42/'\n\n    # Reverse with args (positional)\n    url = reverse('blog:post-detail', args=[42])\n    # '/blog/42/'\n\n    # Redirect using named URL\n    return redirect('blog:post-detail', pk=42)\n\n# In a model (get_absolute_url)\nclass Article(models.Model):\n    title = models.CharField(max_length=200)\n    slug = models.SlugField(unique=True)\n\n    def get_absolute_url(self):\n        return reverse('blog:post-detail', kwargs={'pk': self.pk})\n\n# In templates:\n# <a href=\"{% url 'blog:post-detail' pk=article.pk %}\">{{ article.title }}</a>\n# <a href=\"{{ article.get_absolute_url }}\">{{ article.title }}</a>",
+          "explanation": "reverse() converts a named URL to a URL string. redirect() can accept a named URL pattern directly. get_absolute_url() is a model convention that returns the canonical URL for an instance. Templates use the {% url %} tag."
+        },
+        {
+          "title": "URL Pattern Ordering",
+          "code": "from django.urls import path\nfrom . import views\n\napp_name = 'blog'\n\n# CORRECT ordering - specific patterns first\nurlpatterns = [\n    path('articles/create/', views.article_create, name='article-create'),\n    path('articles/featured/', views.featured_articles, name='featured'),\n    path('articles/<slug:slug>/', views.article_detail, name='article-detail'),\n    path('articles/', views.article_list, name='article-list'),\n]\n\n# WRONG ordering - 'create' would be captured by <slug:slug>\n# urlpatterns = [\n#     path('articles/<slug:slug>/', views.article_detail),  # 'create' matches <slug:slug>!\n#     path('articles/create/', views.article_create),        # Never reached\n# ]",
+          "explanation": "URL patterns are matched top to bottom. Place specific literal patterns (like 'create/' and 'featured/') before parameterized patterns (like '<slug:slug>/') to ensure correct routing."
+        }
+      ],
+      "notes": [
+        "Always name your URL patterns so you can reverse them instead of hardcoding URLs.",
+        "Use app_name in app urls.py to namespace URLs and prevent name collisions.",
+        "Place specific URL patterns before generic parameterized patterns in urlpatterns.",
+        "Use get_absolute_url() on models to centralize URL generation for model instances."
+      ],
+      "commonPitfalls": [
+        "Hardcoding URLs in templates or views. Always use reverse() or {% url %} to generate URLs from names.",
+        "Incorrect URL pattern ordering. A <slug:slug> pattern before a 'create/' pattern will capture 'create' as a slug.",
+        "Forgetting to set app_name when using include(). Without it, URL namespacing will not work."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "urls-ex1",
+        "title": "Design URL Patterns",
+        "description": "Create a complete urls.py for a 'shop' app with the following routes:\n- /shop/ -> product_list view\n- /shop/42/ -> product_detail view (integer pk)\n- /shop/category/electronics/ -> category_view (slug)\n- /shop/create/ -> product_create view\nSet the app namespace to 'shop' and name all patterns appropriately.",
+        "starterCode": "from django.urls import path\nfrom . import views\n\n# Define app_name and urlpatterns\n",
+        "solution": "from django.urls import path\nfrom . import views\n\napp_name = 'shop'\nurlpatterns = [\n    path('', views.product_list, name='product-list'),\n    path('create/', views.product_create, name='product-create'),\n    path('category/<slug:slug>/', views.category_view, name='category-detail'),\n    path('<int:pk>/', views.product_detail, name='product-detail'),\n]",
+        "hints": [
+          "Set app_name = 'shop' at the module level",
+          "Put 'create/' before '<int:pk>/' so 'create' is not captured as a parameter",
+          "Use <int:pk> for integer IDs and <slug:slug> for slug strings"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "urls-ex2",
+        "title": "Reverse URLs",
+        "description": "Write a function called 'get_urls' that returns a dictionary containing:\n- 'list_url': the reversed URL for 'shop:product-list'\n- 'detail_url': the reversed URL for 'shop:product-detail' with pk=5\n- 'category_url': the reversed URL for 'shop:category-detail' with slug='electronics'",
+        "starterCode": "from django.urls import reverse\n\ndef get_urls():\n    # Return a dictionary of reversed URLs\n    pass\n",
+        "solution": "from django.urls import reverse\n\ndef get_urls():\n    return {\n        'list_url': reverse('shop:product-list'),\n        'detail_url': reverse('shop:product-detail', kwargs={'pk': 5}),\n        'category_url': reverse('shop:category-detail', kwargs={'slug': 'electronics'}),\n    }",
+        "hints": [
+          "Use the 'namespace:name' format to reference namespaced URLs",
+          "Pass URL parameters using the kwargs argument",
+          "reverse() returns a URL string like '/shop/5/'"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "generic-views",
+    "sectionId": "views-and-url-routing",
+    "orderIndex": 3,
+    "title": "Generic Views",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["ListView", "DetailView", "CreateView", "UpdateView", "DeleteView", "TemplateView"],
+    "content": {
+      "explanation": "Django's generic views provide pre-built implementations for the most common view patterns. Instead of writing the same boilerplate code for listing objects, displaying details, creating forms, and deleting records, you can use generic views that handle all of this with minimal configuration.\n\nTemplateView is the simplest generic view — it renders a template. You just specify template_name and optionally override get_context_data() to pass extra context. It is ideal for static pages like home, about, and FAQ pages that do not require database queries.\n\nListView renders a list of objects from a model. You specify the model, and Django automatically fetches all objects, passes them to the template as 'object_list' (and 'modelname_list'), and renders the template. You can customize the queryset by overriding get_queryset(), add pagination by setting paginate_by, and add extra context by overriding get_context_data().\n\nDetailView displays a single object. It looks up the object using pk or slug from the URL parameters and passes it to the template as 'object' (and 'modelname'). It automatically returns a 404 if the object does not exist.\n\nCreateView and UpdateView handle form creation and editing. They work with ModelForms automatically — just specify the model and fields, and Django generates the form, handles validation, and saves the object. On success, they redirect to the object's get_absolute_url() or a custom success_url. The template receives the form as 'form' in the context.\n\nDeleteView displays a confirmation page on GET and deletes the object on POST. It requires a success_url to redirect to after deletion, since the object (and its get_absolute_url()) will no longer exist.\n\nAll generic views support customization through method overriding. get_queryset() customizes which objects to display. get_context_data() adds extra context to the template. form_valid() runs after form validation succeeds (useful for setting the author or sending notifications). get_success_url() determines where to redirect after a successful operation.\n\nGeneric views follow a predictable template naming convention. ListView looks for 'appname/modelname_list.html', DetailView looks for 'appname/modelname_detail.html', and form views look for 'appname/modelname_form.html'. You can override this with template_name. DeleteView looks for 'appname/modelname_confirm_delete.html'.\n\nThe power of generic views comes from combining them with mixins. LoginRequiredMixin + CreateView gives you an authenticated form view. UserPassesTestMixin + UpdateView restricts editing to the object owner. FormMessagesMixin + DeleteView adds success messages. This composability makes generic views extremely flexible without writing repetitive code.",
+      "codeExamples": [
+        {
+          "title": "ListView and DetailView",
+          "code": "from django.views.generic import ListView, DetailView\nfrom .models import Article\n\nclass ArticleListView(ListView):\n    model = Article\n    template_name = 'blog/article_list.html'\n    context_object_name = 'articles'   # default is 'object_list'\n    paginate_by = 10\n    ordering = ['-published_at']\n\n    def get_queryset(self):\n        return Article.objects.filter(is_published=True)\n\n    def get_context_data(self, **kwargs):\n        context = super().get_context_data(**kwargs)\n        context['total_count'] = Article.objects.filter(is_published=True).count()\n        return context\n\nclass ArticleDetailView(DetailView):\n    model = Article\n    template_name = 'blog/article_detail.html'\n    context_object_name = 'article'    # default is 'object'\n\n    def get_queryset(self):\n        return Article.objects.filter(is_published=True)",
+          "explanation": "ListView fetches and paginates a list of objects. DetailView fetches a single object by pk or slug. Both support get_queryset() to customize the query and get_context_data() to add extra template context."
+        },
+        {
+          "title": "CreateView and UpdateView",
+          "code": "from django.contrib.auth.mixins import LoginRequiredMixin\nfrom django.views.generic import CreateView, UpdateView\nfrom django.urls import reverse_lazy\nfrom .models import Article\n\nclass ArticleCreateView(LoginRequiredMixin, CreateView):\n    model = Article\n    fields = ['title', 'content', 'category']\n    template_name = 'blog/article_form.html'\n\n    def form_valid(self, form):\n        form.instance.author = self.request.user\n        return super().form_valid(form)\n\nclass ArticleUpdateView(LoginRequiredMixin, UpdateView):\n    model = Article\n    fields = ['title', 'content', 'category']\n    template_name = 'blog/article_form.html'\n\n    def get_queryset(self):\n        # Users can only edit their own articles\n        return Article.objects.filter(author=self.request.user)",
+          "explanation": "CreateView auto-generates a ModelForm from the model and fields list. form_valid() is called after validation — here we set the author before saving. UpdateView uses the same pattern but pre-fills the form with existing data."
+        },
+        {
+          "title": "DeleteView",
+          "code": "from django.contrib.auth.mixins import LoginRequiredMixin\nfrom django.views.generic import DeleteView\nfrom django.urls import reverse_lazy\nfrom .models import Article\n\nclass ArticleDeleteView(LoginRequiredMixin, DeleteView):\n    model = Article\n    template_name = 'blog/article_confirm_delete.html'\n    success_url = reverse_lazy('blog:article-list')\n\n    def get_queryset(self):\n        return Article.objects.filter(author=self.request.user)\n\n# Template: blog/article_confirm_delete.html\n# <form method=\"post\">\n#   {% csrf_token %}\n#   <p>Are you sure you want to delete \"{{ article.title }}\"?</p>\n#   <button type=\"submit\">Confirm Delete</button>\n#   <a href=\"{% url 'blog:article-list' %}\">Cancel</a>\n# </form>",
+          "explanation": "DeleteView shows a confirmation page on GET and deletes on POST. Use reverse_lazy() instead of reverse() for success_url because the URL needs to be evaluated at class definition time, not import time."
+        },
+        {
+          "title": "Complete CRUD URL Configuration",
+          "code": "# blog/urls.py\nfrom django.urls import path\nfrom . import views\n\napp_name = 'blog'\nurlpatterns = [\n    path('', views.ArticleListView.as_view(), name='article-list'),\n    path('create/', views.ArticleCreateView.as_view(), name='article-create'),\n    path('<int:pk>/', views.ArticleDetailView.as_view(), name='article-detail'),\n    path('<int:pk>/edit/', views.ArticleUpdateView.as_view(), name='article-update'),\n    path('<int:pk>/delete/', views.ArticleDeleteView.as_view(), name='article-delete'),\n]",
+          "explanation": "This is a complete CRUD URL configuration using generic views. Five URL patterns handle listing, creating, viewing, editing, and deleting articles. Remember to put 'create/' before '<int:pk>/' to avoid routing issues."
+        }
+      ],
+      "notes": [
+        "Generic views handle common patterns: listing (ListView), detail (DetailView), CRUD (Create/Update/DeleteView).",
+        "Use reverse_lazy() instead of reverse() for class-level attributes like success_url.",
+        "Override get_queryset() to filter objects, get_context_data() to add template context, form_valid() for post-save logic.",
+        "Default template names follow 'app/model_list.html', 'app/model_detail.html', 'app/model_form.html' conventions."
+      ],
+      "interviewTips": [
+        "Explain the advantage: generic views eliminate boilerplate for standard CRUD operations.",
+        "Know the difference between reverse() and reverse_lazy() — lazy evaluation for class attributes.",
+        "Mention the template naming convention and how context_object_name customizes template variables."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "generic-ex1",
+        "title": "Build CRUD Views",
+        "description": "Create a complete set of generic views for a 'Task' model (title, description, is_complete, created_at). Include: TaskListView (paginated by 20, ordered by -created_at), TaskDetailView, TaskCreateView (with fields title and description), and TaskDeleteView (redirects to task-list).",
+        "starterCode": "from django.views.generic import ListView, DetailView, CreateView, DeleteView\nfrom django.urls import reverse_lazy\nfrom .models import Task\n\n# Define your generic views\n",
+        "solution": "from django.views.generic import ListView, DetailView, CreateView, DeleteView\nfrom django.urls import reverse_lazy\nfrom .models import Task\n\nclass TaskListView(ListView):\n    model = Task\n    template_name = 'tasks/task_list.html'\n    context_object_name = 'tasks'\n    paginate_by = 20\n    ordering = ['-created_at']\n\nclass TaskDetailView(DetailView):\n    model = Task\n    template_name = 'tasks/task_detail.html'\n    context_object_name = 'task'\n\nclass TaskCreateView(CreateView):\n    model = Task\n    fields = ['title', 'description']\n    template_name = 'tasks/task_form.html'\n\nclass TaskDeleteView(DeleteView):\n    model = Task\n    template_name = 'tasks/task_confirm_delete.html'\n    success_url = reverse_lazy('tasks:task-list')",
+        "hints": [
+          "Set paginate_by for pagination and ordering for sort order on ListView",
+          "Specify fields as a list of field names on CreateView",
+          "Use reverse_lazy for success_url on DeleteView"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "generic-ex2",
+        "title": "Override get_queryset and form_valid",
+        "description": "Create a TaskCreateView that sets the task's owner to the current user in form_valid(). Also create a TaskListView that only shows tasks belonging to the current user by overriding get_queryset().",
+        "starterCode": "from django.contrib.auth.mixins import LoginRequiredMixin\nfrom django.views.generic import ListView, CreateView\nfrom .models import Task\n\n# Create views with custom logic\n",
+        "solution": "from django.contrib.auth.mixins import LoginRequiredMixin\nfrom django.views.generic import ListView, CreateView\nfrom .models import Task\n\nclass TaskListView(LoginRequiredMixin, ListView):\n    model = Task\n    template_name = 'tasks/task_list.html'\n    context_object_name = 'tasks'\n\n    def get_queryset(self):\n        return Task.objects.filter(owner=self.request.user).order_by('-created_at')\n\nclass TaskCreateView(LoginRequiredMixin, CreateView):\n    model = Task\n    fields = ['title', 'description']\n    template_name = 'tasks/task_form.html'\n\n    def form_valid(self, form):\n        form.instance.owner = self.request.user\n        return super().form_valid(form)",
+        "hints": [
+          "Override get_queryset() to return a filtered QuerySet for the current user",
+          "In form_valid(), set form.instance.owner before calling super().form_valid()",
+          "Use LoginRequiredMixin to ensure only authenticated users can access these views"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

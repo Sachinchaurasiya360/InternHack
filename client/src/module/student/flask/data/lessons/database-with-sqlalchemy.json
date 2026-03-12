@@ -1,0 +1,294 @@
+[
+  {
+    "id": "flask-sqlalchemy-setup",
+    "sectionId": "database-with-sqlalchemy",
+    "orderIndex": 0,
+    "title": "Flask-SQLAlchemy Setup",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Flask-SQLAlchemy", "ORM", "Database URI", "db.create_all", "SQLite", "PostgreSQL"],
+    "content": {
+      "explanation": "Flask-SQLAlchemy is the most popular database extension for Flask. It integrates SQLAlchemy, Python's premier ORM (Object-Relational Mapper), with Flask's application context and configuration system. An ORM lets you interact with databases using Python objects instead of writing raw SQL queries.\n\nSQLAlchemy maps Python classes to database tables and Python objects to table rows. Instead of writing 'INSERT INTO users (name, email) VALUES (?, ?)' you write 'user = User(name=\"Alice\", email=\"alice@example.com\")' and 'db.session.add(user)'. This abstraction makes your code database-agnostic, more readable, and less prone to SQL injection.\n\nSetting up Flask-SQLAlchemy involves installing the package, configuring the database URI, creating the SQLAlchemy instance, and initializing it with your app. The SQLALCHEMY_DATABASE_URI config value tells SQLAlchemy which database to connect to. SQLite uses 'sqlite:///filename.db' (three slashes for relative path, four for absolute). PostgreSQL uses 'postgresql://user:password@host:port/dbname'.\n\nThe db object (typically a SQLAlchemy instance) is the gateway to all database operations. db.Model is the base class for all your models. db.session provides the transactional interface for queries and writes. db.create_all() creates all tables defined by your models.\n\nWith the application factory pattern, you create db without an app and call db.init_app(app) in the factory. Models are defined using db.Model as the base class, and columns use db.Column with type classes like db.String, db.Integer, db.Boolean, db.DateTime, and db.Text.\n\nFlask-SQLAlchemy adds several features on top of plain SQLAlchemy. It provides a preconfigured scoped session tied to Flask's request lifecycle (the session is automatically removed at the end of each request). It adds a default __tablename__ based on the class name. It includes pagination support via query.paginate(). And it integrates with Flask's app context so you can use db.session in view functions.\n\nThe SQLALCHEMY_TRACK_MODIFICATIONS config should be set to False in production. When True, it adds overhead by tracking all changes to objects and emitting signals. The default changed to False in recent versions, but it is good practice to set it explicitly.",
+      "codeExamples": [
+        {
+          "title": "Basic Setup with Factory Pattern",
+          "code": "# app/extensions.py\nfrom flask_sqlalchemy import SQLAlchemy\n\ndb = SQLAlchemy()\n\n# app/__init__.py\nfrom flask import Flask\nfrom app.extensions import db\n\ndef create_app():\n    app = Flask(__name__)\n    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'\n    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False\n\n    db.init_app(app)\n\n    with app.app_context():\n        from app import models  # Import models\n        db.create_all()         # Create tables\n\n    return app",
+          "explanation": "The db object is created without an app, then initialized in the factory with init_app(). db.create_all() inside an app context creates all tables defined by models. Import models before calling create_all()."
+        },
+        {
+          "title": "Database URI Examples",
+          "code": "# SQLite (file-based, good for development)\nSQLALCHEMY_DATABASE_URI = 'sqlite:///app.db'        # Relative path\nSQLALCHEMY_DATABASE_URI = 'sqlite:////tmp/app.db'   # Absolute path\nSQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'       # In-memory (testing)\n\n# PostgreSQL (production)\nSQLALCHEMY_DATABASE_URI = 'postgresql://user:password@localhost:5432/mydb'\n\n# MySQL\nSQLALCHEMY_DATABASE_URI = 'mysql+pymysql://user:password@localhost/mydb'\n\n# From environment variable (recommended)\nimport os\nSQLALCHEMY_DATABASE_URI = os.environ.get(\n    'DATABASE_URL',\n    'sqlite:///dev.db'  # Fallback for development\n)",
+          "explanation": "The database URI format is dialect+driver://username:password@host:port/database. SQLite is great for development and testing. Use PostgreSQL or MySQL for production. Always use environment variables for credentials."
+        },
+        {
+          "title": "Defining a Simple Model",
+          "code": "from app.extensions import db\nfrom datetime import datetime\n\nclass User(db.Model):\n    __tablename__ = 'users'  # Optional: defaults to 'user'\n\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True, nullable=False)\n    email = db.Column(db.String(120), unique=True, nullable=False)\n    password_hash = db.Column(db.String(256), nullable=False)\n    is_active = db.Column(db.Boolean, default=True)\n    created_at = db.Column(db.DateTime, default=datetime.utcnow)\n\n    def __repr__(self):\n        return f'<User {self.username}>'",
+          "explanation": "Models inherit from db.Model. Each class attribute with db.Column becomes a database column. Common types: Integer, String(max_length), Text, Boolean, DateTime, Float. Set constraints like primary_key, unique, nullable, and default."
+        },
+        {
+          "title": "Using the Flask Shell",
+          "code": "# In terminal: flask shell\n# This opens a Python shell with app context\n\n>>> from app.extensions import db\n>>> from app.models import User\n\n# Create tables (if not using migrations)\n>>> db.create_all()\n\n# Create a user\n>>> user = User(username='alice', email='alice@example.com', password_hash='...')\n>>> db.session.add(user)\n>>> db.session.commit()\n\n# Query users\n>>> User.query.all()\n[<User alice>]\n>>> User.query.filter_by(username='alice').first()\n<User alice>\n\n# Drop all tables (careful!)\n>>> db.drop_all()",
+          "explanation": "The flask shell command opens a Python REPL with the app context active. This is useful for testing queries, creating initial data, and debugging. db.create_all() creates tables, db.drop_all() removes them."
+        }
+      ],
+      "notes": [
+        "Flask-SQLAlchemy wraps SQLAlchemy with Flask-specific features: session management, pagination, and context integration.",
+        "Use the init_app pattern with the factory: create db = SQLAlchemy() then db.init_app(app) in create_app().",
+        "Set SQLALCHEMY_TRACK_MODIFICATIONS = False to avoid unnecessary overhead.",
+        "Use SQLite for development and PostgreSQL for production."
+      ],
+      "commonPitfalls": [
+        "Calling db.create_all() without an app context or before importing models, resulting in missing tables.",
+        "Using db.create_all() in production instead of proper database migrations with Alembic.",
+        "Forgetting to call db.session.commit() after adding or modifying records."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "sqla-setup-ex1",
+        "title": "Setup Flask-SQLAlchemy",
+        "description": "Create a Flask app with SQLAlchemy configured to use SQLite. Define a 'Task' model with id (int, primary key), title (string, 100 chars, not null), and done (boolean, default False). Create all tables.",
+        "starterCode": "from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\n\n# Setup app, db, and Task model\n",
+        "solution": "from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///tasks.db'\napp.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False\n\ndb = SQLAlchemy(app)\n\nclass Task(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    title = db.Column(db.String(100), nullable=False)\n    done = db.Column(db.Boolean, default=False)\n\n    def __repr__(self):\n        return f'<Task {self.title}>'\n\nwith app.app_context():\n    db.create_all()",
+        "hints": [
+          "Set SQLALCHEMY_DATABASE_URI to 'sqlite:///tasks.db'",
+          "Use db.Column with type and constraints",
+          "Call db.create_all() inside an app_context()"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "sqla-setup-ex2",
+        "title": "Factory Pattern with SQLAlchemy",
+        "description": "Write an extensions.py module with a db instance, and a create_app factory that configures SQLite, calls db.init_app(), and creates tables.",
+        "starterCode": "# Write extensions.py and create_app\n",
+        "solution": "from flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\n\ndb = SQLAlchemy()\n\ndef create_app():\n    app = Flask(__name__)\n    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'\n    app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False\n\n    db.init_app(app)\n\n    with app.app_context():\n        db.create_all()\n\n    return app",
+        "hints": [
+          "Create db = SQLAlchemy() at module level (no app argument)",
+          "Call db.init_app(app) inside create_app",
+          "Use app.app_context() for db.create_all()"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "models-and-relationships",
+    "sectionId": "database-with-sqlalchemy",
+    "orderIndex": 1,
+    "title": "Models & Relationships",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["One-to-Many", "Many-to-Many", "ForeignKey", "db.relationship", "backref", "Association Table"],
+    "content": {
+      "explanation": "Database relationships model how different entities connect to each other. In an ORM like SQLAlchemy, relationships let you navigate between related objects using Python attributes instead of writing JOIN queries. Understanding one-to-many, many-to-many, and one-to-one relationships is essential for data modeling.\n\nA one-to-many relationship means one record in table A relates to multiple records in table B. For example, one user has many posts. In SQLAlchemy, you define this with a ForeignKey column on the 'many' side and a relationship() on the 'one' side. The ForeignKey column stores the ID of the related record. The relationship() provides attribute access to related objects.\n\nThe db.relationship() function creates a property that loads related objects. On the User model, posts = db.relationship('Post', backref='author') creates two things: user.posts returns a list of the user's posts, and post.author returns the post's author user. The backref parameter automatically creates the reverse relationship.\n\nA many-to-many relationship means records in table A relate to multiple records in table B, and vice versa. For example, posts and tags: a post can have many tags, and a tag can be on many posts. This requires an association table (also called a junction table) that stores pairs of foreign keys. SQLAlchemy uses db.Table() for this.\n\nRelationship loading strategies affect performance. lazy='select' (default) loads related objects when you access them (lazy loading). lazy='joined' loads them with a JOIN in the initial query (eager loading). lazy='subquery' uses a subquery. lazy='dynamic' returns a query object you can filter further. Choose based on your access patterns.\n\nThe cascade parameter controls what happens to related objects when the parent is deleted. cascade='all, delete-orphan' deletes child records when the parent is deleted. This is important for maintaining referential integrity. Without it, deleting a user would leave orphaned posts with invalid foreign keys.\n\nOne-to-one relationships are a special case of one-to-many with uselist=False. This tells SQLAlchemy that the relationship returns a single object, not a list. For example, a user might have one profile: profile = db.relationship('Profile', backref='user', uselist=False).",
+      "codeExamples": [
+        {
+          "title": "One-to-Many Relationship",
+          "code": "from app.extensions import db\nfrom datetime import datetime\n\nclass User(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True, nullable=False)\n    # One user has many posts\n    posts = db.relationship('Post', backref='author', lazy='dynamic',\n                            cascade='all, delete-orphan')\n\nclass Post(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    title = db.Column(db.String(200), nullable=False)\n    body = db.Column(db.Text)\n    created_at = db.Column(db.DateTime, default=datetime.utcnow)\n    # Foreign key to users table\n    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)\n\n# Usage:\n# user = User(username='alice')\n# post = Post(title='Hello', body='World', author=user)\n# db.session.add(user)\n# db.session.commit()\n# user.posts.all()  # [<Post Hello>]\n# post.author        # <User alice>",
+          "explanation": "The ForeignKey on Post.user_id links posts to users. The relationship on User.posts lets you access all posts by a user. backref='author' creates Post.author automatically. cascade ensures deleting a user deletes their posts."
+        },
+        {
+          "title": "Many-to-Many Relationship",
+          "code": "from app.extensions import db\n\n# Association table (no model class needed)\npost_tags = db.Table('post_tags',\n    db.Column('post_id', db.Integer, db.ForeignKey('post.id'), primary_key=True),\n    db.Column('tag_id', db.Integer, db.ForeignKey('tag.id'), primary_key=True)\n)\n\nclass Post(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    title = db.Column(db.String(200), nullable=False)\n    # Many posts can have many tags\n    tags = db.relationship('Tag', secondary=post_tags, lazy='subquery',\n                           backref=db.backref('posts', lazy=True))\n\nclass Tag(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(50), unique=True, nullable=False)\n\n# Usage:\n# python_tag = Tag(name='Python')\n# post = Post(title='Flask Tutorial')\n# post.tags.append(python_tag)\n# db.session.add(post)\n# db.session.commit()\n# post.tags           # [<Tag Python>]\n# python_tag.posts    # [<Post Flask Tutorial>]",
+          "explanation": "The association table post_tags stores (post_id, tag_id) pairs. The secondary parameter on db.relationship() points to this table. Both sides can navigate the relationship: post.tags and tag.posts."
+        },
+        {
+          "title": "One-to-One Relationship",
+          "code": "from app.extensions import db\n\nclass User(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True)\n    # One user has one profile\n    profile = db.relationship('Profile', backref='user', uselist=False,\n                              cascade='all, delete-orphan')\n\nclass Profile(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    bio = db.Column(db.Text)\n    avatar_url = db.Column(db.String(300))\n    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), unique=True)\n\n# Usage:\n# user = User(username='alice')\n# user.profile = Profile(bio='Developer', avatar_url='/img/alice.png')\n# db.session.add(user)\n# db.session.commit()\n# user.profile       # <Profile object>\n# user.profile.bio   # 'Developer'",
+          "explanation": "uselist=False makes the relationship return a single object instead of a list. The unique=True on the foreign key column enforces the one-to-one constraint at the database level."
+        },
+        {
+          "title": "Model Methods and Serialization",
+          "code": "from app.extensions import db\nfrom datetime import datetime\n\nclass User(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80), unique=True, nullable=False)\n    email = db.Column(db.String(120), unique=True, nullable=False)\n    created_at = db.Column(db.DateTime, default=datetime.utcnow)\n\n    def to_dict(self):\n        \"\"\"Serialize the user to a dictionary.\"\"\"\n        return {\n            'id': self.id,\n            'username': self.username,\n            'email': self.email,\n            'created_at': self.created_at.isoformat()\n        }\n\n    @staticmethod\n    def find_by_email(email):\n        return User.query.filter_by(email=email).first()\n\n    def __repr__(self):\n        return f'<User {self.username}>'",
+          "explanation": "Models can have custom methods. to_dict() serializes the object for JSON API responses. Static methods like find_by_email encapsulate common queries. __repr__ gives a useful string representation for debugging."
+        }
+      ],
+      "notes": [
+        "ForeignKey goes on the 'many' side. relationship() goes on the 'one' side (or either side for many-to-many).",
+        "backref automatically creates the reverse relationship attribute.",
+        "Use cascade='all, delete-orphan' to auto-delete children when the parent is removed.",
+        "lazy loading can cause N+1 query problems. Use lazy='joined' or lazy='subquery' for eager loading."
+      ],
+      "interviewTips": [
+        "Explain the N+1 query problem: accessing user.posts in a loop makes one query per user. Use eager loading or joinedload() to fetch in one query.",
+        "Describe the difference between ForeignKey (database constraint) and relationship (Python-level navigation).",
+        "Mention cascade options and their importance for data integrity."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "models-rel-ex1",
+        "title": "Define a One-to-Many Relationship",
+        "description": "Create Author and Book models. An author has many books. Author has id, name. Book has id, title, author_id (foreign key). Include the relationship with backref.",
+        "starterCode": "from flask_sqlalchemy import SQLAlchemy\n\ndb = SQLAlchemy()\n\n# Define Author and Book models\n",
+        "solution": "from flask_sqlalchemy import SQLAlchemy\n\ndb = SQLAlchemy()\n\nclass Author(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(100), nullable=False)\n    books = db.relationship('Book', backref='author', cascade='all, delete-orphan')\n\nclass Book(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    title = db.Column(db.String(200), nullable=False)\n    author_id = db.Column(db.Integer, db.ForeignKey('author.id'), nullable=False)",
+        "hints": [
+          "ForeignKey references the table name: 'author.id'",
+          "relationship goes on the Author model (the 'one' side)",
+          "backref='author' creates Book.author automatically"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "models-rel-ex2",
+        "title": "Many-to-Many with Association Table",
+        "description": "Create Student and Course models with a many-to-many relationship. A student can enroll in many courses, and a course can have many students. Use an association table called 'enrollments'.",
+        "starterCode": "from flask_sqlalchemy import SQLAlchemy\n\ndb = SQLAlchemy()\n\n# Define the association table and models\n",
+        "solution": "from flask_sqlalchemy import SQLAlchemy\n\ndb = SQLAlchemy()\n\nenrollments = db.Table('enrollments',\n    db.Column('student_id', db.Integer, db.ForeignKey('student.id'), primary_key=True),\n    db.Column('course_id', db.Integer, db.ForeignKey('course.id'), primary_key=True)\n)\n\nclass Student(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(100), nullable=False)\n    courses = db.relationship('Course', secondary=enrollments, backref='students')\n\nclass Course(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    title = db.Column(db.String(200), nullable=False)",
+        "hints": [
+          "Use db.Table() for the association table with two ForeignKey columns",
+          "Both columns in the association table should be primary keys",
+          "Use secondary=enrollments on the relationship"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "crud-operations",
+    "sectionId": "database-with-sqlalchemy",
+    "orderIndex": 2,
+    "title": "CRUD Operations",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Create", "Read", "Update", "Delete", "db.session", "Query API", "Filtering"],
+    "content": {
+      "explanation": "CRUD stands for Create, Read, Update, and Delete, the four basic operations for persistent data. Flask-SQLAlchemy provides an intuitive API for all CRUD operations through the db.session and the Model.query interface.\n\nCreating records involves instantiating a model, adding it to the session, and committing. The session is a staging area for changes. You can add multiple objects before committing them all in a single transaction. If anything goes wrong, you call db.session.rollback() to undo uncommitted changes.\n\nReading records uses the query interface. Model.query returns a BaseQuery object with methods for filtering, ordering, and limiting results. Common methods include .all() (returns all results as a list), .first() (returns the first result or None), .get(id) (returns by primary key or None), .filter() (SQL-like filtering), .filter_by() (keyword argument filtering), .order_by(), .limit(), and .offset().\n\nThe filter() method uses SQLAlchemy column expressions like User.name == 'Alice' or User.age > 18. The filter_by() method uses simpler keyword arguments like filter_by(name='Alice'). filter() is more powerful, supporting complex expressions with and_(), or_(), like(), in_(), and between(). filter_by() is more concise for simple equality checks.\n\nUpdating records is straightforward: query the object, modify its attributes, and commit. SQLAlchemy tracks changes to loaded objects and generates UPDATE statements automatically. For bulk updates without loading objects, use Model.query.filter(...).update({...}).\n\nDeleting records uses db.session.delete(object) followed by commit. For bulk deletes, use Model.query.filter(...).delete(). Be careful with cascading deletes: if a User has Posts with cascade='all, delete-orphan', deleting the user also deletes all their posts.\n\nPagination is essential for large datasets. Flask-SQLAlchemy provides a paginate() method that returns a Pagination object with items, pages, total, has_next, has_prev, next_num, and prev_num attributes. This makes implementing paginated API responses and web pages straightforward.\n\nAlways use try/except around database operations and call db.session.rollback() in the except block. Database operations can fail due to unique constraint violations, connection issues, or data integrity problems. Rolling back ensures the session is in a clean state.",
+      "codeExamples": [
+        {
+          "title": "Create Operations",
+          "code": "from app.extensions import db\nfrom app.models import User, Post\n\n# Create a single record\nuser = User(username='alice', email='alice@example.com')\ndb.session.add(user)\ndb.session.commit()\n\n# Create multiple records\nusers = [\n    User(username='bob', email='bob@example.com'),\n    User(username='charlie', email='charlie@example.com'),\n]\ndb.session.add_all(users)\ndb.session.commit()\n\n# Create with relationship\npost = Post(title='Hello World', body='My first post', author=user)\ndb.session.add(post)\ndb.session.commit()\n\n# Safe creation with error handling\ntry:\n    user = User(username='alice', email='alice@example.com')\n    db.session.add(user)\n    db.session.commit()\nexcept Exception:\n    db.session.rollback()\n    raise",
+          "explanation": "Add objects to the session with add() or add_all(), then commit(). Objects with relationships can be created together. Always handle errors with rollback() to keep the session clean."
+        },
+        {
+          "title": "Read Operations (Queries)",
+          "code": "from app.models import User\n\n# Get all users\nusers = User.query.all()  # [<User alice>, <User bob>]\n\n# Get by primary key\nuser = User.query.get(1)  # <User alice> or None\n\n# Get first match\nuser = User.query.filter_by(username='alice').first()  # <User alice> or None\n\n# Get one or 404\nuser = User.query.get_or_404(1)  # <User alice> or abort(404)\n\n# Filter with expressions\nactive_users = User.query.filter(User.is_active == True).all()\nrecent = User.query.filter(User.created_at > some_date).all()\nsearch = User.query.filter(User.username.like('%ali%')).all()\n\n# Order and limit\ntop_users = User.query.order_by(User.created_at.desc()).limit(10).all()\n\n# Count\ntotal = User.query.count()\nactive_count = User.query.filter_by(is_active=True).count()\n\n# Chaining\nresults = User.query\\\n    .filter(User.is_active == True)\\\n    .filter(User.role == 'admin')\\\n    .order_by(User.username)\\\n    .limit(20)\\\n    .all()",
+          "explanation": "The query API is chainable. filter_by() uses keyword args for simple equality. filter() uses expressions for complex conditions. Methods like all(), first(), count() execute the query."
+        },
+        {
+          "title": "Update and Delete Operations",
+          "code": "from app.extensions import db\nfrom app.models import User\n\n# Update a single record\nuser = User.query.get(1)\nuser.email = 'newemail@example.com'\nuser.is_active = False\ndb.session.commit()  # SQLAlchemy detects changes automatically\n\n# Bulk update (efficient, no loading)\nUser.query.filter(User.is_active == False)\\\n    .update({'role': 'inactive'})\ndb.session.commit()\n\n# Delete a single record\nuser = User.query.get(1)\ndb.session.delete(user)\ndb.session.commit()\n\n# Bulk delete\nUser.query.filter(User.last_login < cutoff_date).delete()\ndb.session.commit()\n\n# Delete with cascade (deletes user AND their posts)\nuser = User.query.get(1)\ndb.session.delete(user)  # Posts auto-deleted if cascade set\ndb.session.commit()",
+          "explanation": "Update by modifying attributes and committing. Bulk update/delete uses filter().update()/delete() without loading objects. SQLAlchemy tracks attribute changes automatically."
+        },
+        {
+          "title": "Pagination",
+          "code": "from app.models import Post\n\n# Paginate results (page 1, 20 per page)\npagination = Post.query.order_by(Post.created_at.desc())\\\n    .paginate(page=1, per_page=20, error_out=False)\n\n# Pagination object attributes\nposts = pagination.items      # List of posts for this page\ntotal = pagination.total       # Total number of posts\npages = pagination.pages       # Total number of pages\nhas_next = pagination.has_next\nhas_prev = pagination.has_prev\nnext_num = pagination.next_num  # Next page number\n\n# In a view function\n@app.route('/api/posts')\ndef list_posts():\n    page = request.args.get('page', 1, type=int)\n    per_page = request.args.get('per_page', 20, type=int)\n\n    pagination = Post.query.order_by(Post.created_at.desc())\\\n        .paginate(page=page, per_page=min(per_page, 100))\n\n    return {\n        'posts': [p.to_dict() for p in pagination.items],\n        'total': pagination.total,\n        'pages': pagination.pages,\n        'page': page,\n        'has_next': pagination.has_next\n    }",
+          "explanation": "paginate() returns a Pagination object with items and metadata. error_out=False returns an empty page instead of 404 for out-of-range pages. Always cap per_page to prevent abuse."
+        }
+      ],
+      "notes": [
+        "Always call db.session.commit() after changes. Objects are not saved until committed.",
+        "Use db.session.rollback() in except blocks to clean up failed transactions.",
+        "filter_by(key=value) is shorthand for filter(Model.key == value).",
+        "Bulk update/delete with filter().update()/delete() is more efficient than loading and modifying each object."
+      ],
+      "commonPitfalls": [
+        "Forgetting to commit after add/update/delete. Changes stay in the session but are not persisted.",
+        "Not rolling back after an error, leaving the session in a dirty state that causes cascading errors.",
+        "Using filter() with Python == on a non-column attribute, which does not generate SQL."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "crud-ex1",
+        "title": "Build CRUD API Endpoints",
+        "description": "Create a Flask app with a Task model and CRUD routes:\n- GET /tasks - list all tasks\n- POST /tasks - create a task from JSON body (title)\n- PUT /tasks/<id> - update task title\n- DELETE /tasks/<id> - delete a task",
+        "starterCode": "from flask import Flask, request\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'\ndb = SQLAlchemy(app)\n\nclass Task(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    title = db.Column(db.String(200), nullable=False)\n\nwith app.app_context():\n    db.create_all()\n\n# Add CRUD routes\n",
+        "solution": "from flask import Flask, request\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'\ndb = SQLAlchemy(app)\n\nclass Task(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    title = db.Column(db.String(200), nullable=False)\n\nwith app.app_context():\n    db.create_all()\n\n@app.get('/tasks')\ndef list_tasks():\n    tasks = Task.query.all()\n    return [{'id': t.id, 'title': t.title} for t in tasks]\n\n@app.post('/tasks')\ndef create_task():\n    data = request.get_json()\n    task = Task(title=data['title'])\n    db.session.add(task)\n    db.session.commit()\n    return {'id': task.id, 'title': task.title}, 201\n\n@app.put('/tasks/<int:task_id>')\ndef update_task(task_id):\n    task = Task.query.get_or_404(task_id)\n    data = request.get_json()\n    task.title = data['title']\n    db.session.commit()\n    return {'id': task.id, 'title': task.title}\n\n@app.delete('/tasks/<int:task_id>')\ndef delete_task(task_id):\n    task = Task.query.get_or_404(task_id)\n    db.session.delete(task)\n    db.session.commit()\n    return '', 204",
+        "hints": [
+          "Use get_or_404() to return 404 for missing records",
+          "Return 201 status for successful creation",
+          "Return 204 (No Content) for successful deletion"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "crud-ex2",
+        "title": "Paginated Query",
+        "description": "Create a GET /users endpoint that accepts 'page' and 'per_page' query parameters, paginates User records, and returns items with pagination metadata.",
+        "starterCode": "from flask import Flask, request\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'\ndb = SQLAlchemy(app)\n\nclass User(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(80))\n\n# Add paginated endpoint\n",
+        "solution": "from flask import Flask, request\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'\ndb = SQLAlchemy(app)\n\nclass User(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(80))\n\n@app.get('/users')\ndef list_users():\n    page = request.args.get('page', 1, type=int)\n    per_page = request.args.get('per_page', 10, type=int)\n    per_page = min(per_page, 100)\n\n    pagination = User.query.paginate(page=page, per_page=per_page, error_out=False)\n\n    return {\n        'users': [{'id': u.id, 'name': u.name} for u in pagination.items],\n        'total': pagination.total,\n        'pages': pagination.pages,\n        'page': page,\n        'has_next': pagination.has_next\n    }",
+        "hints": [
+          "Use request.args.get() with type=int for page parameters",
+          "Cap per_page with min() to prevent abuse",
+          "paginate() returns a Pagination object with items and metadata"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "database-migrations-alembic",
+    "sectionId": "database-with-sqlalchemy",
+    "orderIndex": 3,
+    "title": "Database Migrations with Alembic",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Flask-Migrate", "Alembic", "Migration Scripts", "Upgrade", "Downgrade", "Schema Changes"],
+    "content": {
+      "explanation": "Database migrations are the version control system for your database schema. Just as Git tracks changes to your code, Alembic (through Flask-Migrate) tracks changes to your database tables, columns, and indexes. Without migrations, modifying your schema in production means manually writing ALTER TABLE statements or dropping and recreating tables (losing data).\n\nFlask-Migrate integrates Alembic with Flask and Flask-SQLAlchemy. Alembic compares your current model definitions with the actual database schema and generates migration scripts that describe the changes. These scripts can upgrade the schema (apply changes) or downgrade (revert changes).\n\nThe workflow is: modify your models, run 'flask db migrate' to generate a migration script, review the script, then run 'flask db upgrade' to apply it. Each migration is a Python file with upgrade() and downgrade() functions. The upgrade function applies the change (e.g., add a column), and the downgrade function reverses it (e.g., drop the column).\n\nSetting up Flask-Migrate involves creating a Migrate instance, initializing it with the app and db, running 'flask db init' to create the migrations directory, and then using the migrate/upgrade/downgrade commands. The migrations directory should be committed to version control so all developers and deployment environments share the same migration history.\n\nAuto-generated migrations are a starting point, not a final product. Alembic detects many changes automatically (added/removed columns, renamed tables, changed types), but it cannot detect everything. Column renames are detected as 'drop + add' (losing data), and data migrations require manual intervention. Always review generated migration scripts before running them.\n\nMigration scripts are sequential and form a chain. Each script knows its revision ID and its predecessor ('down_revision'). Alembic tracks which migrations have been applied in an 'alembic_version' table. Running 'flask db upgrade' applies all pending migrations in order. Running 'flask db downgrade' reverts one migration.\n\nFor production deployments, always test migrations against a copy of the production database before applying them. Data loss, type mismatches, and constraint violations can occur if migrations are not carefully reviewed.",
+      "codeExamples": [
+        {
+          "title": "Setting Up Flask-Migrate",
+          "code": "# app/extensions.py\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_migrate import Migrate\n\ndb = SQLAlchemy()\nmigrate = Migrate()\n\n# app/__init__.py\nfrom flask import Flask\nfrom app.extensions import db, migrate\n\ndef create_app():\n    app = Flask(__name__)\n    app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'\n\n    db.init_app(app)\n    migrate.init_app(app, db)\n\n    return app\n\n# Terminal commands:\n# flask db init        # Create migrations/ directory (once)\n# flask db migrate -m \"Initial migration\"  # Generate migration\n# flask db upgrade     # Apply migration\n# flask db downgrade   # Revert last migration",
+          "explanation": "Initialize Migrate with the app and db. 'flask db init' creates the migrations directory. 'flask db migrate' auto-generates migration scripts. 'flask db upgrade' applies them to the database."
+        },
+        {
+          "title": "Generated Migration Script",
+          "code": "\"\"\"Add email column to users\n\nRevision ID: a1b2c3d4e5f6\nRevises: 9z8y7x6w5v4u\nCreate Date: 2024-01-15 10:30:00\n\"\"\"\nfrom alembic import op\nimport sqlalchemy as sa\n\nrevision = 'a1b2c3d4e5f6'\ndown_revision = '9z8y7x6w5v4u'\n\ndef upgrade():\n    op.add_column('users',\n        sa.Column('email', sa.String(120), nullable=True)\n    )\n    # Backfill existing rows\n    op.execute(\"UPDATE users SET email = username || '@example.com'\")\n    # Then make non-nullable\n    op.alter_column('users', 'email', nullable=False)\n\ndef downgrade():\n    op.drop_column('users', 'email')",
+          "explanation": "Migration scripts have upgrade() and downgrade() functions. This one adds an email column, backfills existing rows with default values, then makes it non-nullable. The downgrade simply drops the column."
+        },
+        {
+          "title": "Common Migration Operations",
+          "code": "from alembic import op\nimport sqlalchemy as sa\n\ndef upgrade():\n    # Add a column\n    op.add_column('users', sa.Column('bio', sa.Text))\n\n    # Create a new table\n    op.create_table('posts',\n        sa.Column('id', sa.Integer, primary_key=True),\n        sa.Column('title', sa.String(200), nullable=False),\n        sa.Column('user_id', sa.Integer, sa.ForeignKey('users.id')),\n    )\n\n    # Create an index\n    op.create_index('ix_users_email', 'users', ['email'], unique=True)\n\n    # Alter a column type\n    op.alter_column('users', 'username',\n        type_=sa.String(150),  # was String(80)\n        existing_type=sa.String(80)\n    )\n\ndef downgrade():\n    op.alter_column('users', 'username',\n        type_=sa.String(80),\n        existing_type=sa.String(150)\n    )\n    op.drop_index('ix_users_email', 'users')\n    op.drop_table('posts')\n    op.drop_column('users', 'bio')",
+          "explanation": "Alembic provides operations for all schema changes: add/drop columns, create/drop tables, create/drop indexes, and alter columns. The downgrade must reverse every change in the upgrade."
+        },
+        {
+          "title": "Migration Workflow",
+          "code": "# 1. Modify your model\nclass User(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    username = db.Column(db.String(80))\n    email = db.Column(db.String(120))  # NEW COLUMN\n    phone = db.Column(db.String(20))   # NEW COLUMN\n\n# 2. Generate migration\n# $ flask db migrate -m \"Add email and phone to users\"\n# INFO: Generating migration script...\n# migrations/versions/abc123_add_email_and_phone.py\n\n# 3. Review the generated script (always!)\n# $ cat migrations/versions/abc123_add_email_and_phone.py\n\n# 4. Apply the migration\n# $ flask db upgrade\n# INFO: Running upgrade -> abc123\n\n# 5. Check migration history\n# $ flask db history\n# abc123 -> (head), Add email and phone to users\n# 987654 -> abc123, Initial migration\n\n# 6. Rollback if needed\n# $ flask db downgrade\n# INFO: Running downgrade abc123 -> 987654",
+          "explanation": "The migration workflow is: change models, generate migration, review script, apply. Always review auto-generated scripts before applying. Use 'flask db history' to see the migration chain."
+        }
+      ],
+      "notes": [
+        "Always use migrations in production instead of db.create_all(). Migrations preserve existing data.",
+        "Review auto-generated migrations before applying. Alembic cannot detect all changes correctly.",
+        "Commit the migrations/ directory to version control so all environments share the same history.",
+        "Test migrations against a copy of the production database before deploying."
+      ],
+      "commonPitfalls": [
+        "Running 'flask db migrate' without reviewing the output. Auto-generated scripts may drop and recreate columns instead of renaming them.",
+        "Using db.create_all() in production, which cannot modify existing tables and ignores schema changes.",
+        "Not including a downgrade function, making it impossible to revert a migration."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "migrations-ex1",
+        "title": "Write a Migration Script",
+        "description": "Write the upgrade() and downgrade() functions for a migration that adds a 'role' column (String(50), default 'user', not nullable) to the 'users' table.",
+        "starterCode": "from alembic import op\nimport sqlalchemy as sa\n\ndef upgrade():\n    pass\n\ndef downgrade():\n    pass\n",
+        "solution": "from alembic import op\nimport sqlalchemy as sa\n\ndef upgrade():\n    op.add_column('users',\n        sa.Column('role', sa.String(50), nullable=False, server_default='user')\n    )\n\ndef downgrade():\n    op.drop_column('users', 'role')",
+        "hints": [
+          "Use op.add_column() with sa.Column() for the new column",
+          "Use server_default for database-level default values",
+          "The downgrade should drop the column that was added"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "migrations-ex2",
+        "title": "Create Table Migration",
+        "description": "Write a migration that creates a 'comments' table with: id (Integer, primary key), body (Text, not null), post_id (Integer, foreign key to posts.id), and created_at (DateTime).",
+        "starterCode": "from alembic import op\nimport sqlalchemy as sa\n\ndef upgrade():\n    pass\n\ndef downgrade():\n    pass\n",
+        "solution": "from alembic import op\nimport sqlalchemy as sa\n\ndef upgrade():\n    op.create_table('comments',\n        sa.Column('id', sa.Integer, primary_key=True),\n        sa.Column('body', sa.Text, nullable=False),\n        sa.Column('post_id', sa.Integer, sa.ForeignKey('posts.id'), nullable=False),\n        sa.Column('created_at', sa.DateTime)\n    )\n\ndef downgrade():\n    op.drop_table('comments')",
+        "hints": [
+          "Use op.create_table() with column definitions",
+          "Include sa.ForeignKey() for the foreign key constraint",
+          "The downgrade simply drops the table"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

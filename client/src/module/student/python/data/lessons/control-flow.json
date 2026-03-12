@@ -1,0 +1,454 @@
+[
+  {
+    "id": "if-elif-else",
+    "sectionId": "control-flow",
+    "orderIndex": 0,
+    "title": "Conditional Statements",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["if statement", "elif", "else", "nested conditions", "ternary operator"],
+    "content": {
+      "explanation": "Conditional statements allow your program to make decisions and execute different blocks of code based on whether a condition evaluates to True or False. The if statement is the most fundamental control flow tool in Python.\n\nPython uses `if`, `elif` (short for else-if), and `else` keywords to build conditional logic. Unlike many other languages, Python relies on indentation rather than braces to define code blocks. Each condition is followed by a colon, and the indented block beneath it runs only when that condition is True.\n\nYou can nest conditions inside one another for more complex decision trees. However, deeply nested conditions can make code harder to read, so it is often better to use elif chains or combine conditions with logical operators (`and`, `or`, `not`).\n\nPython also supports a concise ternary (conditional) expression: `value_if_true if condition else value_if_false`. This is useful for simple assignments but should not replace full if/else blocks when logic is complex.",
+      "codeExamples": [
+        {
+          "title": "Basic if/elif/else",
+          "code": "score = 85\n\nif score >= 90:\n    grade = \"A\"\nelif score >= 80:\n    grade = \"B\"\nelif score >= 70:\n    grade = \"C\"\nelse:\n    grade = \"F\"\n\nprint(f\"Score: {score}, Grade: {grade}\")",
+          "output": "Score: 85, Grade: B",
+          "explanation": "Python checks each condition from top to bottom. The first True condition runs its block and the rest are skipped. Since 85 >= 80 is True, grade is set to 'B'."
+        },
+        {
+          "title": "Nested conditions with logical operators",
+          "code": "age = 25\nhas_license = True\nhas_insurance = True\n\nif age >= 18:\n    if has_license and has_insurance:\n        print(\"You can drive.\")\n    elif has_license:\n        print(\"You need insurance.\")\n    else:\n        print(\"You need a license.\")\nelse:\n    print(\"You are too young to drive.\")",
+          "output": "You can drive.",
+          "explanation": "The outer if checks age. If that passes, the inner conditions check for license and insurance using logical AND. Nesting lets you build layered decision logic."
+        },
+        {
+          "title": "Ternary (conditional) expression",
+          "code": "num = 7\nresult = \"even\" if num % 2 == 0 else \"odd\"\nprint(f\"{num} is {result}\")\n\n# Ternary in a function call\nx, y = 10, 20\nprint(f\"Max: {x if x > y else y}\")",
+          "output": "7 is odd\nMax: 20",
+          "explanation": "The ternary expression evaluates the condition in the middle. If True, it returns the left value; otherwise, the right value. It is a single-line alternative to a simple if/else."
+        },
+        {
+          "title": "Truthy and falsy values in conditions",
+          "code": "values = [0, 1, \"\", \"hello\", None, [], [1, 2]]\n\nfor v in values:\n    if v:\n        print(f\"{str(v):>10} -> truthy\")\n    else:\n        print(f\"{str(v):>10} -> falsy\")",
+          "output": "         0 -> falsy\n         1 -> truthy\n           -> falsy\n     hello -> truthy\n      None -> falsy\n        [] -> falsy\n    [1, 2] -> truthy",
+          "explanation": "Python treats 0, empty strings, None, and empty collections as falsy. Everything else is truthy. Understanding this is crucial for writing clean conditional logic."
+        }
+      ],
+      "notes": [
+        "Python uses indentation (4 spaces by convention) to define code blocks, not curly braces.",
+        "The `elif` keyword prevents the need for deeply nested if/else chains.",
+        "Conditions can use comparison operators (==, !=, <, >, <=, >=) and logical operators (and, or, not).",
+        "The `pass` keyword can be used as a placeholder inside an empty if/elif/else block."
+      ],
+      "commonPitfalls": [
+        "Using = (assignment) instead of == (comparison) inside a condition. Python will raise a SyntaxError in an if statement, but this can cause subtle bugs elsewhere.",
+        "Forgetting the colon after if, elif, or else. This is a common SyntaxError for beginners.",
+        "Over-nesting conditions when a flat elif chain or combined logical operators would be clearer and more Pythonic."
+      ],
+      "interviewTips": [
+        "Be prepared to explain truthy vs. falsy values in Python -- interviewers often test this with None, 0, empty string, and empty list.",
+        "Know when to use a ternary expression vs. a full if/else block. Ternary is best for simple value assignments.",
+        "Understand short-circuit evaluation: `and` stops at the first False, `or` stops at the first True. This is frequently tested."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "cf-ex-01",
+        "title": "FizzBuzz Single Number",
+        "description": "Given a number `n`, print \"FizzBuzz\" if it is divisible by both 3 and 5, \"Fizz\" if divisible by 3 only, \"Buzz\" if divisible by 5 only, or the number itself otherwise. Test with n = 15, then n = 9, then n = 10, then n = 7.",
+        "starterCode": "n_values = [15, 9, 10, 7]\n\nfor n in n_values:\n    # Your code here: check divisibility and print the result\n    pass",
+        "solution": "n_values = [15, 9, 10, 7]\n\nfor n in n_values:\n    if n % 3 == 0 and n % 5 == 0:\n        print(\"FizzBuzz\")\n    elif n % 3 == 0:\n        print(\"Fizz\")\n    elif n % 5 == 0:\n        print(\"Buzz\")\n    else:\n        print(n)",
+        "expectedOutput": "FizzBuzz\nFizz\nBuzz\n7",
+        "hints": [
+          "Check the combined condition (divisible by both 3 AND 5) first, before checking individual divisibility.",
+          "Use the modulo operator (%) to check divisibility -- n % 3 == 0 means n is divisible by 3."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "cf-ex-02",
+        "title": "Ticket Price Calculator",
+        "description": "Calculate ticket prices based on age and whether it is a weekday. Children (under 12) pay $5, seniors (65+) pay $7, and adults pay $12. On weekends (weekday=False), everyone gets a $2 surcharge. Print the price for each person.",
+        "starterCode": "people = [\n    {\"name\": \"Alice\", \"age\": 8, \"weekday\": True},\n    {\"name\": \"Bob\", \"age\": 30, \"weekday\": False},\n    {\"name\": \"Carol\", \"age\": 70, \"weekday\": True},\n]\n\nfor person in people:\n    # Your code here\n    pass",
+        "solution": "people = [\n    {\"name\": \"Alice\", \"age\": 8, \"weekday\": True},\n    {\"name\": \"Bob\", \"age\": 30, \"weekday\": False},\n    {\"name\": \"Carol\", \"age\": 70, \"weekday\": True},\n]\n\nfor person in people:\n    age = person[\"age\"]\n    if age < 12:\n        price = 5\n    elif age >= 65:\n        price = 7\n    else:\n        price = 12\n    if not person[\"weekday\"]:\n        price += 2\n    print(f\"{person['name']}: ${price}\")",
+        "expectedOutput": "Alice: $5\nBob: $14\nCarol: $7",
+        "hints": [
+          "First determine the base price using if/elif/else based on age, then apply the weekend surcharge separately.",
+          "Use `not person['weekday']` to check if it is a weekend.",
+          "Alice is a child on a weekday ($5), Bob is an adult on a weekend ($12+$2=$14), Carol is a senior on a weekday ($7)."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "cf-ex-03",
+        "title": "Ternary Chain -- Letter Classifier",
+        "description": "Given a character, use ternary expressions to classify it as \"vowel\", \"consonant\", or \"not a letter\". Test with 'a', 'Z', and '5'.",
+        "starterCode": "chars = ['a', 'Z', '5']\nvowels = \"aeiouAEIOU\"\n\nfor ch in chars:\n    # Use ternary expression to classify and print\n    pass",
+        "solution": "chars = ['a', 'Z', '5']\nvowels = \"aeiouAEIOU\"\n\nfor ch in chars:\n    result = \"vowel\" if ch in vowels else \"consonant\" if ch.isalpha() else \"not a letter\"\n    print(f\"{ch} -> {result}\")",
+        "expectedOutput": "a -> vowel\nZ -> consonant\n5 -> not a letter",
+        "hints": [
+          "You can chain ternary expressions: `a if cond1 else b if cond2 else c`.",
+          "Use `ch.isalpha()` to check if a character is a letter, and `in` to check membership in the vowels string."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "for-loops",
+    "sectionId": "control-flow",
+    "orderIndex": 1,
+    "title": "For Loops",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["for loop", "range()", "iterating sequences", "enumerate()", "loop unpacking"],
+    "content": {
+      "explanation": "The `for` loop in Python iterates over any iterable object -- lists, strings, tuples, dictionaries, ranges, and more. Unlike C-style for loops, Python's for loop directly gives you each element rather than an index.\n\nThe `range()` function generates a sequence of numbers and is commonly used when you need to loop a specific number of times or need index-based iteration. It accepts up to three arguments: `range(start, stop, step)`, where `stop` is exclusive.\n\nWhen you need both the index and the value while iterating, use `enumerate()` instead of manually tracking a counter variable. It returns pairs of (index, value) and accepts an optional `start` parameter to change the starting index.\n\nYou can also unpack tuples directly in the for loop header, which is especially useful when iterating over lists of tuples or dictionary items.",
+      "codeExamples": [
+        {
+          "title": "Iterating over different sequences",
+          "code": "# List\nfruits = [\"apple\", \"banana\", \"cherry\"]\nfor fruit in fruits:\n    print(fruit)\n\n# String\nfor char in \"Hi!\":\n    print(char, end=\" \")\nprint()",
+          "output": "apple\nbanana\ncherry\nH i ! ",
+          "explanation": "A for loop pulls one element at a time from the iterable. Strings are iterable character by character. The end=' ' parameter in print prevents the newline."
+        },
+        {
+          "title": "range() with start, stop, step",
+          "code": "# Count from 1 to 5\nfor i in range(1, 6):\n    print(i, end=\" \")\nprint()\n\n# Even numbers from 0 to 8\nfor i in range(0, 10, 2):\n    print(i, end=\" \")\nprint()\n\n# Countdown\nfor i in range(5, 0, -1):\n    print(i, end=\" \")\nprint()",
+          "output": "1 2 3 4 5 \n0 2 4 6 8 \n5 4 3 2 1 ",
+          "explanation": "range(start, stop, step) generates numbers from start (inclusive) to stop (exclusive). A negative step counts downward."
+        },
+        {
+          "title": "enumerate() for index + value",
+          "code": "languages = [\"Python\", \"JavaScript\", \"Rust\"]\n\nfor index, lang in enumerate(languages):\n    print(f\"{index}: {lang}\")\n\nprint(\"---\")\n\n# Starting index at 1\nfor rank, lang in enumerate(languages, start=1):\n    print(f\"#{rank} {lang}\")",
+          "output": "0: Python\n1: JavaScript\n2: Rust\n---\n#1 Python\n#2 JavaScript\n#3 Rust",
+          "explanation": "enumerate() wraps an iterable and yields (index, element) tuples. The start parameter offsets the index counter."
+        }
+      ],
+      "notes": [
+        "Python's for loop works with any iterable, not just lists. Files, generators, and custom objects can all be iterated.",
+        "range() creates a lazy sequence -- it does not store all numbers in memory, making it efficient for large ranges.",
+        "Use `_` as the loop variable when you don't need the value: `for _ in range(3): print(\"hello\")`.",
+        "Iterating over a dictionary with `for k in d` gives you the keys. Use `d.items()` for key-value pairs."
+      ],
+      "commonPitfalls": [
+        "Modifying a list while iterating over it can skip elements or cause errors. Iterate over a copy or build a new list instead.",
+        "Forgetting that range(stop) starts at 0 and excludes the stop value. range(5) gives 0, 1, 2, 3, 4 -- not 1 through 5.",
+        "Using range(len(lst)) instead of enumerate() when you need both index and value. enumerate() is more Pythonic and less error-prone."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "cf-ex-04",
+        "title": "Sum of Digits",
+        "description": "Given a number as a string, iterate over each character, convert it to an integer, and compute the sum of all digits. Print each digit and the final sum.",
+        "starterCode": "num_str = \"4927\"\ntotal = 0\n\n# Iterate over each character in num_str\n# Convert to int, add to total, and print each digit\n\nprint(f\"Sum: {total}\")",
+        "solution": "num_str = \"4927\"\ntotal = 0\n\nfor ch in num_str:\n    digit = int(ch)\n    total += digit\n    print(f\"Digit: {digit}\")\n\nprint(f\"Sum: {total}\")",
+        "expectedOutput": "Digit: 4\nDigit: 9\nDigit: 2\nDigit: 7\nSum: 22",
+        "hints": [
+          "Strings are iterable -- each iteration gives one character.",
+          "Use int(ch) to convert a character digit to an integer."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "cf-ex-05",
+        "title": "Enumerate a Shopping List",
+        "description": "Given a list of items, use enumerate to print each item with a numbered label starting from 1. Then print the total count.",
+        "starterCode": "items = [\"milk\", \"eggs\", \"bread\", \"butter\"]\n\n# Use enumerate with start=1 to print numbered items\n\n# Print total count",
+        "solution": "items = [\"milk\", \"eggs\", \"bread\", \"butter\"]\n\nfor num, item in enumerate(items, start=1):\n    print(f\"{num}. {item}\")\n\nprint(f\"Total: {len(items)} items\")",
+        "expectedOutput": "1. milk\n2. eggs\n3. bread\n4. butter\nTotal: 4 items",
+        "hints": [
+          "enumerate(items, start=1) begins the counter at 1 instead of the default 0.",
+          "Use len(items) to get the total number of items."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "cf-ex-06",
+        "title": "Reverse a String with range()",
+        "description": "Use range() with a negative step to iterate over a string in reverse and build the reversed string. Print the original and reversed versions.",
+        "starterCode": "original = \"Python\"\nreversed_str = \"\"\n\n# Use range with negative step to build reversed_str\n\nprint(f\"Original: {original}\")\nprint(f\"Reversed: {reversed_str}\")",
+        "solution": "original = \"Python\"\nreversed_str = \"\"\n\nfor i in range(len(original) - 1, -1, -1):\n    reversed_str += original[i]\n\nprint(f\"Original: {original}\")\nprint(f\"Reversed: {reversed_str}\")",
+        "expectedOutput": "Original: Python\nReversed: nohtyP",
+        "hints": [
+          "range(len(original) - 1, -1, -1) generates indices from the last character down to 0.",
+          "Access each character using original[i] and concatenate to reversed_str."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "while-loops",
+    "sectionId": "control-flow",
+    "orderIndex": 2,
+    "title": "While Loops",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["while loop", "break", "continue", "infinite loop", "sentinel value"],
+    "content": {
+      "explanation": "A `while` loop repeatedly executes a block of code as long as its condition remains True. It is used when the number of iterations is not known in advance and depends on some dynamic condition.\n\nThe `break` statement immediately exits the innermost loop, skipping any remaining iterations. The `continue` statement skips the rest of the current iteration and jumps back to the loop condition check. Together, they give you fine-grained control over loop execution.\n\nInfinite loops (`while True`) are intentionally created when you want the loop to run until an explicit `break` condition is met. This pattern is common for menu-driven programs, event loops, and input validation.\n\nA sentinel value is a special value used to signal that a loop should end. For example, reading user input until they type \"quit\" or accumulating numbers until a negative value is entered. This is a classic use case for while loops.",
+      "codeExamples": [
+        {
+          "title": "Basic while loop -- countdown",
+          "code": "count = 5\n\nwhile count > 0:\n    print(count, end=\" \")\n    count -= 1\n\nprint(\"Go!\")",
+          "output": "5 4 3 2 1 Go!",
+          "explanation": "The loop runs as long as count > 0. Each iteration prints the count and decrements it by 1. When count reaches 0, the condition is False and the loop exits."
+        },
+        {
+          "title": "break and continue",
+          "code": "# break: find the first multiple of 7 above 50\nn = 51\nwhile True:\n    if n % 7 == 0:\n        print(f\"First multiple of 7 above 50: {n}\")\n        break\n    n += 1\n\n# continue: print only odd numbers from 1 to 10\nprint(\"Odd numbers:\", end=\" \")\ni = 0\nwhile i < 10:\n    i += 1\n    if i % 2 == 0:\n        continue\n    print(i, end=\" \")\nprint()",
+          "output": "First multiple of 7 above 50: 56\nOdd numbers: 1 3 5 7 9 ",
+          "explanation": "break exits the loop entirely when the condition is met. continue skips even numbers and goes back to the loop's condition check."
+        },
+        {
+          "title": "Collatz sequence (3n+1 problem)",
+          "code": "n = 12\nsteps = 0\nprint(n, end=\"\")\n\nwhile n != 1:\n    if n % 2 == 0:\n        n = n // 2\n    else:\n        n = 3 * n + 1\n    steps += 1\n    print(f\" -> {n}\", end=\"\")\n\nprint(f\"\\nSteps to reach 1: {steps}\")",
+          "output": "12 -> 6 -> 3 -> 10 -> 5 -> 16 -> 8 -> 4 -> 2 -> 1\nSteps to reach 1: 9",
+          "explanation": "The Collatz conjecture says this sequence always reaches 1. The while loop continues until n equals 1, applying the rules each iteration."
+        }
+      ],
+      "notes": [
+        "Always ensure the loop condition will eventually become False, or use break to prevent infinite loops.",
+        "The `while True` pattern combined with break is a clean way to write loops that validate input or wait for a specific event.",
+        "While loops are preferred over for loops when you do not know the number of iterations in advance."
+      ],
+      "commonPitfalls": [
+        "Forgetting to update the loop variable inside the loop body, causing an infinite loop. Always modify the variable that the condition checks.",
+        "Placing the increment before the condition check when using continue. If continue is hit before the counter is updated, the loop will run forever.",
+        "Using while when a for loop would be simpler and clearer. If you know the number of iterations, prefer for."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "cf-ex-07",
+        "title": "Guess the Number",
+        "description": "Simulate a number guessing game. The secret number is 42. A list of guesses is provided. Use a while loop to check each guess, printing whether it is too high or too low, and break when the correct number is found.",
+        "starterCode": "secret = 42\nguesses = [20, 55, 38, 42, 99]\nindex = 0\n\n# Use a while loop to iterate through guesses\n# Print \"Too low\", \"Too high\", or \"Correct!\" and break",
+        "solution": "secret = 42\nguesses = [20, 55, 38, 42, 99]\nindex = 0\n\nwhile index < len(guesses):\n    guess = guesses[index]\n    if guess < secret:\n        print(f\"Guess {guess}: Too low\")\n    elif guess > secret:\n        print(f\"Guess {guess}: Too high\")\n    else:\n        print(f\"Guess {guess}: Correct!\")\n        break\n    index += 1",
+        "expectedOutput": "Guess 20: Too low\nGuess 55: Too high\nGuess 38: Too low\nGuess 42: Correct!",
+        "hints": [
+          "Use a while loop with index < len(guesses) as the condition.",
+          "Compare each guess to the secret number and use break when they match.",
+          "Don't forget to increment index at the end of each iteration."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "cf-ex-08",
+        "title": "Digital Root",
+        "description": "Compute the digital root of a number: repeatedly sum its digits until the result is a single digit. Print each intermediate sum and the final digital root.",
+        "starterCode": "num = 9875\nprint(f\"Start: {num}\")\n\n# Repeatedly sum the digits of num until it is a single digit\n\nprint(f\"Digital root: {num}\")",
+        "solution": "num = 9875\nprint(f\"Start: {num}\")\n\nwhile num >= 10:\n    digit_sum = 0\n    temp = num\n    while temp > 0:\n        digit_sum += temp % 10\n        temp //= 10\n    print(f\"{num} -> {digit_sum}\")\n    num = digit_sum\n\nprint(f\"Digital root: {num}\")",
+        "expectedOutput": "Start: 9875\n9875 -> 29\n29 -> 11\n11 -> 2\nDigital root: 2",
+        "hints": [
+          "Use an outer while loop that continues while num >= 10 (more than one digit).",
+          "Use an inner while loop to extract each digit using modulo (%) and integer division (//).",
+          "9+8+7+5 = 29, 2+9 = 11, 1+1 = 2."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "cf-ex-09",
+        "title": "Power of Two Check",
+        "description": "Use a while loop to determine if a given positive number is a power of 2. Repeatedly divide by 2; if you reach 1, it is a power of 2. Test with 64 and 48.",
+        "starterCode": "numbers = [64, 48]\n\nfor n in numbers:\n    # Check if n is a power of 2 using a while loop\n    pass",
+        "solution": "numbers = [64, 48]\n\nfor n in numbers:\n    original = n\n    while n > 1:\n        if n % 2 != 0:\n            break\n        n //= 2\n    if n == 1:\n        print(f\"{original} is a power of 2\")\n    else:\n        print(f\"{original} is NOT a power of 2\")",
+        "expectedOutput": "64 is a power of 2\n48 is NOT a power of 2",
+        "hints": [
+          "Keep dividing n by 2 as long as n > 1 and n is even.",
+          "If n becomes 1, it was a power of 2. If the loop breaks early because n is odd, it is not."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "nested-loops-patterns",
+    "sectionId": "control-flow",
+    "orderIndex": 3,
+    "title": "Nested Loops & Patterns",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["nested loops", "star patterns", "multiplication table", "loop control flow", "pattern printing"],
+    "content": {
+      "explanation": "Nested loops place one loop inside another. The inner loop completes all its iterations for each single iteration of the outer loop. This creates a multiplicative effect -- if the outer loop runs N times and the inner loop runs M times, the total iterations are N * M.\n\nPattern printing is a classic exercise for understanding nested loops. The outer loop controls the rows and the inner loop controls what is printed in each column of that row. By varying the inner loop's range based on the outer loop variable, you can create triangles, pyramids, diamonds, and other shapes.\n\nMultiplication tables are another natural fit for nested loops. The outer loop iterates over one factor, and the inner loop iterates over the other, printing the product at each position.\n\nWhen working with nested loops, break and continue only affect the innermost loop they are placed in. To break out of multiple levels, you can use a flag variable or restructure the code into a function that returns early.",
+      "codeExamples": [
+        {
+          "title": "Right-angled triangle pattern",
+          "code": "rows = 5\nfor i in range(1, rows + 1):\n    print(\"* \" * i)",
+          "output": "* \n* * \n* * * \n* * * * \n* * * * * ",
+          "explanation": "The outer loop controls the row number (1 to 5). String multiplication '* ' * i repeats the star pattern i times for each row."
+        },
+        {
+          "title": "Number pyramid",
+          "code": "rows = 4\nfor i in range(1, rows + 1):\n    for j in range(1, i + 1):\n        print(j, end=\" \")\n    print()",
+          "output": "1 \n1 2 \n1 2 3 \n1 2 3 4 ",
+          "explanation": "The inner loop prints numbers from 1 to i. Each row i contains numbers 1 through i, creating a growing number triangle."
+        },
+        {
+          "title": "Multiplication table",
+          "code": "size = 4\nfor i in range(1, size + 1):\n    for j in range(1, size + 1):\n        print(f\"{i*j:4}\", end=\"\")\n    print()",
+          "output": "   1   2   3   4\n   2   4   6   8\n   3   6   9  12\n   4   8  12  16",
+          "explanation": "The outer loop picks the row (multiplier), the inner loop picks the column (multiplicand). The format specifier :4 right-aligns each number in a 4-character width."
+        },
+        {
+          "title": "Finding pairs with a condition",
+          "code": "numbers = [2, 5, 8, 11]\ntarget = 13\nprint(f\"Pairs summing to {target}:\")\n\nfor i in range(len(numbers)):\n    for j in range(i + 1, len(numbers)):\n        if numbers[i] + numbers[j] == target:\n            print(f\"  ({numbers[i]}, {numbers[j]})\")",
+          "output": "Pairs summing to 13:\n  (2, 11)\n  (5, 8)",
+          "explanation": "The inner loop starts at i+1 to avoid duplicate pairs. This is a classic two-sum brute-force approach using nested loops."
+        }
+      ],
+      "notes": [
+        "The time complexity of nested loops is multiplicative. Two nested loops over N items is O(N^2).",
+        "Use string multiplication (\"* \" * n) for simple patterns instead of an inner loop where possible.",
+        "break inside a nested loop only exits the innermost loop. Use a flag variable or a function to break outer loops."
+      ],
+      "commonPitfalls": [
+        "Mixing up which variable belongs to the outer vs. inner loop, leading to incorrect patterns or off-by-one errors.",
+        "Forgetting the print() call at the end of the inner loop to move to the next line in pattern problems.",
+        "Creating O(N^3) or higher complexity by adding unnecessary nested loops. Always consider if the problem truly requires nesting."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "cf-ex-10",
+        "title": "Inverted Triangle",
+        "description": "Print an inverted right-angled triangle with 5 rows of stars. Row 1 should have 5 stars and row 5 should have 1 star.",
+        "starterCode": "rows = 5\n\n# Print an inverted triangle of stars",
+        "solution": "rows = 5\n\nfor i in range(rows, 0, -1):\n    print(\"* \" * i)",
+        "expectedOutput": "* * * * * \n* * * * \n* * * \n* * \n* ",
+        "hints": [
+          "Use range(rows, 0, -1) to count from 5 down to 1.",
+          "String multiplication '* ' * i will print i stars per row."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "cf-ex-11",
+        "title": "Multiplication Table (1 to 5)",
+        "description": "Print a formatted multiplication table for numbers 1 through 5. Each cell should be 4 characters wide, right-aligned.",
+        "starterCode": "size = 5\n\n# Print a multiplication table using nested loops",
+        "solution": "size = 5\n\nfor i in range(1, size + 1):\n    for j in range(1, size + 1):\n        print(f\"{i*j:4}\", end=\"\")\n    print()",
+        "expectedOutput": "   1   2   3   4   5\n   2   4   6   8  10\n   3   6   9  12  15\n   4   8  12  16  20\n   5  10  15  20  25",
+        "hints": [
+          "Use f\"{i*j:4}\" to format each product as a 4-character wide right-aligned number.",
+          "Don't forget end=\"\" in the inner print and a plain print() after the inner loop for the newline."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "cf-ex-12",
+        "title": "Diamond Pattern",
+        "description": "Print a diamond shape with a maximum width of 5 stars (middle row). The diamond has 5 rows in the upper half (including middle) and 4 rows in the lower half.",
+        "starterCode": "n = 5\n\n# Print upper half (rows 1 to 5)\n\n# Print lower half (rows 4 to 1)",
+        "solution": "n = 5\n\nfor i in range(1, n + 1):\n    spaces = \" \" * (n - i)\n    stars = \"* \" * i\n    print(spaces + stars)\n\nfor i in range(n - 1, 0, -1):\n    spaces = \" \" * (n - i)\n    stars = \"* \" * i\n    print(spaces + stars)",
+        "expectedOutput": "    * \n   * * \n  * * * \n * * * * \n* * * * * \n * * * * \n  * * * \n   * * \n    * ",
+        "hints": [
+          "The upper half has increasing stars (1 to n) with decreasing leading spaces (n-1 to 0).",
+          "The lower half mirrors the upper half, going from n-1 stars back down to 1.",
+          "Use string multiplication for both spaces and stars."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "loop-techniques",
+    "sectionId": "control-flow",
+    "orderIndex": 4,
+    "title": "Loop Techniques",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["zip()", "list comprehension", "else clause on loops", "itertools basics", "Pythonic iteration"],
+    "content": {
+      "explanation": "Python provides several advanced techniques to make loops more powerful and concise. Mastering these techniques is what separates beginner Python code from professional-grade code.\n\nThe `zip()` function takes two or more iterables and combines them element-wise into tuples. It stops at the shortest iterable by default. This is invaluable when you need to iterate over multiple sequences in parallel without using index-based access.\n\nList comprehensions provide a compact syntax for creating new lists by transforming and filtering elements from an existing iterable. The syntax is `[expression for item in iterable if condition]`. They are faster than equivalent for loops because they are optimized at the C level in CPython.\n\nPython has a unique feature: an `else` clause on loops. The else block after a for or while loop executes only if the loop completed normally (without hitting a break). This is useful for search patterns where you want to take action when a target is not found.\n\nThese techniques are heavily tested in interviews because they demonstrate a deep understanding of Python's iteration protocol and the ability to write clean, idiomatic code.",
+      "codeExamples": [
+        {
+          "title": "zip() -- parallel iteration",
+          "code": "names = [\"Alice\", \"Bob\", \"Carol\"]\nscores = [92, 85, 78]\ngrades = [\"A\", \"B\", \"C+\"]\n\nfor name, score, grade in zip(names, scores, grades):\n    print(f\"{name}: {score} ({grade})\")",
+          "output": "Alice: 92 (A)\nBob: 85 (B)\nCarol: 78 (C+)",
+          "explanation": "zip() combines three lists element by element. Each iteration unpacks one tuple of (name, score, grade). No index variable needed."
+        },
+        {
+          "title": "List comprehension basics",
+          "code": "# Transform: square each number\nnumbers = [1, 2, 3, 4, 5]\nsquares = [x**2 for x in numbers]\nprint(f\"Squares: {squares}\")\n\n# Filter: only even numbers\nevens = [x for x in numbers if x % 2 == 0]\nprint(f\"Evens: {evens}\")\n\n# Transform + Filter: square only odd numbers\nodd_squares = [x**2 for x in numbers if x % 2 != 0]\nprint(f\"Odd squares: {odd_squares}\")",
+          "output": "Squares: [1, 4, 9, 16, 25]\nEvens: [2, 4]\nOdd squares: [1, 9, 25]",
+          "explanation": "List comprehensions combine mapping and filtering in one line. The if clause is optional and filters which elements are included."
+        },
+        {
+          "title": "else clause on a for loop",
+          "code": "def find_prime_factor(n):\n    for i in range(2, n):\n        if n % i == 0:\n            print(f\"{n} is divisible by {i}\")\n            break\n    else:\n        print(f\"{n} is prime\")\n\nfind_prime_factor(7)\nfind_prime_factor(12)\nfind_prime_factor(13)",
+          "output": "7 is prime\n12 is divisible by 2\n13 is prime",
+          "explanation": "The else block runs only when the loop finishes without break. If break is triggered (a factor is found), the else block is skipped. This is a clean pattern for search operations."
+        },
+        {
+          "title": "zip() to build a dictionary",
+          "code": "keys = [\"name\", \"age\", \"city\"]\nvalues = [\"Alice\", 30, \"Pune\"]\n\nperson = dict(zip(keys, values))\nprint(person)\n\n# Unzipping with zip(*...)\npairs = [(1, \"a\"), (2, \"b\"), (3, \"c\")]\nnums, letters = zip(*pairs)\nprint(f\"Numbers: {nums}\")\nprint(f\"Letters: {letters}\")",
+          "output": "{'name': 'Alice', 'age': 30, 'city': 'Pune'}\nNumbers: (1, 2, 3)\nLetters: ('a', 'b', 'c')",
+          "explanation": "zip() combined with dict() is a clean way to build dictionaries from parallel lists. The zip(*iterable) pattern transposes rows and columns."
+        }
+      ],
+      "notes": [
+        "zip() stops at the shortest iterable. Use itertools.zip_longest() if you need to handle unequal lengths with a fill value.",
+        "List comprehensions should remain readable. If the logic requires multiple lines or nested conditions, use a regular for loop instead.",
+        "The for/else pattern is uncommon in other languages. The else runs when there is no break, which makes it ideal for 'item not found' scenarios.",
+        "Dictionary comprehensions ({k: v for ...}) and set comprehensions ({x for ...}) follow the same syntax as list comprehensions."
+      ],
+      "commonPitfalls": [
+        "Confusing the for/else pattern -- the else block runs when the loop does NOT break, which is counterintuitive. Think of it as 'no break else'.",
+        "Overusing list comprehensions for side effects (like printing). Comprehensions are meant to build new lists, not to replace loops that perform actions.",
+        "Forgetting that zip() returns an iterator in Python 3. To reuse the result, wrap it in list(): list(zip(a, b))."
+      ],
+      "interviewTips": [
+        "Be ready to convert a for loop into a list comprehension and explain the trade-offs in readability vs. conciseness.",
+        "The for/else pattern is a popular interview question. Explain it as: else runs when the loop terminates normally, without break.",
+        "Know how to use zip() to transpose a matrix: list(zip(*matrix)). This one-liner is frequently asked in coding interviews.",
+        "Understand that list comprehensions are faster than equivalent for loops due to internal optimization, but readability always comes first."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "cf-ex-13",
+        "title": "Parallel Grade Report",
+        "description": "Use zip() to combine three parallel lists (names, subjects, scores) and print a grade report. A score >= 90 is \"Pass with Distinction\", >= 50 is \"Pass\", below 50 is \"Fail\".",
+        "starterCode": "names = [\"Alice\", \"Bob\", \"Carol\"]\nsubjects = [\"Math\", \"Science\", \"English\"]\nscores = [95, 42, 78]\n\n# Use zip() and print each student's result",
+        "solution": "names = [\"Alice\", \"Bob\", \"Carol\"]\nsubjects = [\"Math\", \"Science\", \"English\"]\nscores = [95, 42, 78]\n\nfor name, subject, score in zip(names, subjects, scores):\n    if score >= 90:\n        status = \"Pass with Distinction\"\n    elif score >= 50:\n        status = \"Pass\"\n    else:\n        status = \"Fail\"\n    print(f\"{name} - {subject}: {score} ({status})\")",
+        "expectedOutput": "Alice - Math: 95 (Pass with Distinction)\nBob - Science: 42 (Fail)\nCarol - English: 78 (Pass)",
+        "hints": [
+          "zip(names, subjects, scores) gives you one tuple per student containing all three values.",
+          "Use if/elif/else to determine the status string based on the score."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "cf-ex-14",
+        "title": "List Comprehension Workout",
+        "description": "Given a list of numbers, use list comprehensions to: (1) create a list of squares of even numbers, (2) create a list of strings like 'NxN=result' for each number. Print both lists.",
+        "starterCode": "numbers = [1, 2, 3, 4, 5, 6]\n\n# 1. Squares of even numbers using list comprehension\n\n# 2. 'NxN=result' strings for all numbers using list comprehension",
+        "solution": "numbers = [1, 2, 3, 4, 5, 6]\n\neven_squares = [x**2 for x in numbers if x % 2 == 0]\nprint(f\"Even squares: {even_squares}\")\n\nmult_strings = [f\"{x}x{x}={x*x}\" for x in numbers]\nprint(f\"Multiplications: {mult_strings}\")",
+        "expectedOutput": "Even squares: [4, 16, 36]\nMultiplications: ['1x1=1', '2x2=4', '3x3=9', '4x4=16', '5x5=25', '6x6=36']",
+        "hints": [
+          "For even squares, add an `if x % 2 == 0` filter to the comprehension.",
+          "For the multiplication strings, use an f-string inside the comprehension: f\"{x}x{x}={x*x}\"."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "cf-ex-15",
+        "title": "Search with for/else",
+        "description": "Search a list of numbers for the first negative number. If found, print it and its index. If no negative number exists, print that all numbers are positive. Test with two different lists.",
+        "starterCode": "lists = [\n    [4, 7, 2, -3, 8],\n    [10, 20, 30, 40]\n]\n\nfor nums in lists:\n    # Use for/else to search for the first negative number\n    pass",
+        "solution": "lists = [\n    [4, 7, 2, -3, 8],\n    [10, 20, 30, 40]\n]\n\nfor nums in lists:\n    for i, n in enumerate(nums):\n        if n < 0:\n            print(f\"Found {n} at index {i} in {nums}\")\n            break\n    else:\n        print(f\"All positive in {nums}\")",
+        "expectedOutput": "Found -3 at index 3 in [4, 7, 2, -3, 8]\nAll positive in [10, 20, 30, 40]",
+        "hints": [
+          "Use enumerate() to get both the index and value in the inner loop.",
+          "The else clause on the for loop runs only if the loop completes without a break.",
+          "break when you find the first negative number."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -1,0 +1,263 @@
+[
+  {
+    "id": "http-methods",
+    "sectionId": "routing-and-path-operations",
+    "orderIndex": 0,
+    "title": "HTTP Methods",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["GET", "POST", "PUT", "DELETE", "PATCH", "HTTP Semantics"],
+    "content": {
+      "explanation": "HTTP methods (also called HTTP verbs) define the type of action a client wants to perform on a resource. In REST API design, each method has a specific semantic meaning, and using them correctly is fundamental to building well-designed APIs. FastAPI provides a decorator for each HTTP method, making it easy to create properly structured RESTful endpoints.\n\nGET is the most common HTTP method. It requests data from a server without modifying anything. GET requests should be idempotent (calling them multiple times produces the same result) and safe (they do not change server state). In FastAPI, you use @app.get() for GET endpoints. GET requests should never have a request body — all parameters should be passed via the URL (path or query parameters).\n\nPOST is used to create new resources. When you submit a form or send data to create a new user, you use POST. POST requests typically include a request body with the data for the new resource. They are not idempotent — sending the same POST request twice usually creates two resources. In FastAPI, use @app.post() and accept a Pydantic model as a parameter to receive the request body.\n\nPUT is used to replace an existing resource entirely. If you update a user profile with PUT, you must send the complete user object — any fields you omit will be set to their defaults or null. PUT is idempotent: sending the same PUT request multiple times produces the same result. Use @app.put() in FastAPI.\n\nPATCH is used for partial updates. Unlike PUT, PATCH only requires the fields that are being changed. If you want to update just the email of a user, you send only the email field. This is more efficient than PUT for minor changes. Use @app.patch() in FastAPI.\n\nDELETE removes a resource. It should be idempotent — deleting a resource that is already deleted should not cause an error (though returning 404 is also acceptable). Use @app.delete() in FastAPI.\n\nFastAPI also supports less common methods like OPTIONS (used by browsers for CORS preflight), HEAD (like GET but returns only headers, no body), and TRACE (echoes the request for debugging). Most APIs only need GET, POST, PUT, PATCH, and DELETE.\n\nA well-designed REST API maps CRUD operations to HTTP methods consistently: Create = POST, Read = GET, Update = PUT/PATCH, Delete = DELETE. The URL identifies the resource (like /users/42), and the HTTP method identifies the action. This convention makes APIs predictable and self-documenting.",
+      "codeExamples": [
+        {
+          "title": "All CRUD Operations",
+          "code": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass UserCreate(BaseModel):\n    name: str\n    email: str\n\nclass UserUpdate(BaseModel):\n    name: str | None = None\n    email: str | None = None\n\nusers_db: dict[int, dict] = {}\nnext_id = 1\n\n@app.get(\"/users\")\ndef list_users():\n    \"\"\"GET: Retrieve all users\"\"\"\n    return list(users_db.values())\n\n@app.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    \"\"\"GET: Retrieve a single user\"\"\"\n    if user_id not in users_db:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    return users_db[user_id]\n\n@app.post(\"/users\", status_code=201)\ndef create_user(user: UserCreate):\n    \"\"\"POST: Create a new user\"\"\"\n    global next_id\n    new_user = {\"id\": next_id, **user.model_dump()}\n    users_db[next_id] = new_user\n    next_id += 1\n    return new_user\n\n@app.put(\"/users/{user_id}\")\ndef replace_user(user_id: int, user: UserCreate):\n    \"\"\"PUT: Replace a user entirely\"\"\"\n    if user_id not in users_db:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    users_db[user_id] = {\"id\": user_id, **user.model_dump()}\n    return users_db[user_id]\n\n@app.patch(\"/users/{user_id}\")\ndef update_user(user_id: int, user: UserUpdate):\n    \"\"\"PATCH: Partially update a user\"\"\"\n    if user_id not in users_db:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    stored = users_db[user_id]\n    update_data = user.model_dump(exclude_unset=True)\n    users_db[user_id] = {**stored, **update_data}\n    return users_db[user_id]\n\n@app.delete(\"/users/{user_id}\", status_code=204)\ndef delete_user(user_id: int):\n    \"\"\"DELETE: Remove a user\"\"\"\n    if user_id not in users_db:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    del users_db[user_id]",
+          "explanation": "This demonstrates all five CRUD operations. Note how PUT requires all fields (uses UserCreate) while PATCH accepts partial data (uses UserUpdate with optional fields). The model_dump(exclude_unset=True) method ensures only explicitly provided fields are updated."
+        },
+        {
+          "title": "Method Semantics Summary",
+          "code": "# HTTP Method Semantics\n#\n# Method   | CRUD    | Idempotent | Safe  | Has Body\n# ---------|---------|------------|-------|----------\n# GET      | Read    | Yes        | Yes   | No\n# POST     | Create  | No         | No    | Yes\n# PUT      | Replace | Yes        | No    | Yes\n# PATCH    | Update  | No*        | No    | Yes\n# DELETE   | Delete  | Yes        | No    | No\n#\n# * PATCH can be idempotent depending on implementation\n#\n# Idempotent: same request repeated = same result\n# Safe: does not modify server state\n\nfrom fastapi import FastAPI\n\napp = FastAPI()\n\n# You can also handle multiple methods on one route\n@app.api_route(\"/multi\", methods=[\"GET\", \"POST\"])\ndef multi_method():\n    return {\"message\": \"This handles both GET and POST\"}",
+          "explanation": "Understanding method semantics helps you design APIs correctly. GET is the only safe method. GET, PUT, and DELETE are idempotent. POST is neither safe nor idempotent. The api_route decorator can handle multiple methods if needed."
+        },
+        {
+          "title": "Docstrings Become API Documentation",
+          "code": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/users\", summary=\"List all users\", tags=[\"Users\"])\ndef list_users():\n    \"\"\"Retrieve a list of all registered users.\n\n    Returns a JSON array of user objects, each containing\n    id, name, and email fields.\n    \"\"\"\n    return []\n\n@app.post(\n    \"/users\",\n    summary=\"Create a user\",\n    description=\"Register a new user in the system\",\n    tags=[\"Users\"],\n    response_description=\"The newly created user\",\n)\ndef create_user():\n    return {}",
+          "explanation": "Function docstrings and decorator parameters automatically appear in the Swagger UI documentation. Use summary for a short description, description for detailed info, tags for grouping endpoints, and response_description for the response section."
+        }
+      ],
+      "notes": [
+        "GET requests should never modify server state. Use POST, PUT, PATCH, or DELETE for modifications.",
+        "PUT replaces the entire resource. PATCH updates only the provided fields. Use PATCH for partial updates to avoid accidentally clearing fields.",
+        "POST returns 201 (Created) by convention. DELETE often returns 204 (No Content) to indicate success without a response body."
+      ],
+      "interviewTips": [
+        "Know the difference between PUT and PATCH. PUT replaces the entire resource; PATCH updates only the specified fields.",
+        "Understand idempotency: GET, PUT, and DELETE are idempotent (repeating them has the same effect). POST is not idempotent.",
+        "Be able to explain why GET should not have a request body — it is not forbidden by HTTP spec, but servers and proxies may not handle it correctly."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "http-methods-ex1",
+        "title": "Design a REST API for Books",
+        "description": "Create a FastAPI app with endpoints for managing books. Implement:\n- GET /books — list all books\n- POST /books — create a book with 'title' (str) and 'author' (str)\n- DELETE /books/{book_id} — delete a book by ID, return 404 if not found\n\nUse in-memory dict storage.",
+        "starterCode": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n# Define the Book model\n\n# In-memory storage\n\n# Implement GET, POST, DELETE endpoints\n",
+        "solution": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass BookCreate(BaseModel):\n    title: str\n    author: str\n\nbooks_db: dict[int, dict] = {}\nnext_id = 1\n\n@app.get(\"/books\")\ndef list_books():\n    return list(books_db.values())\n\n@app.post(\"/books\", status_code=201)\ndef create_book(book: BookCreate):\n    global next_id\n    new_book = {\"id\": next_id, \"title\": book.title, \"author\": book.author}\n    books_db[next_id] = new_book\n    next_id += 1\n    return new_book\n\n@app.delete(\"/books/{book_id}\", status_code=204)\ndef delete_book(book_id: int):\n    if book_id not in books_db:\n        raise HTTPException(status_code=404, detail=\"Book not found\")\n    del books_db[book_id]",
+        "hints": [
+          "POST should return 201 status code for resource creation",
+          "DELETE should return 204 (no content) on success"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "http-methods-ex2",
+        "title": "Implement PATCH for Partial Updates",
+        "description": "Given an existing books API, add a PATCH endpoint at /books/{book_id} that accepts optional 'title' and 'author' fields and updates only the provided fields. Return 404 if the book does not exist.",
+        "starterCode": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass BookUpdate(BaseModel):\n    title: str | None = None\n    author: str | None = None\n\nbooks_db = {\n    1: {\"id\": 1, \"title\": \"FastAPI Guide\", \"author\": \"Alice\"},\n    2: {\"id\": 2, \"title\": \"Python Basics\", \"author\": \"Bob\"},\n}\n\n# Add PATCH /books/{book_id}\n",
+        "solution": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass BookUpdate(BaseModel):\n    title: str | None = None\n    author: str | None = None\n\nbooks_db = {\n    1: {\"id\": 1, \"title\": \"FastAPI Guide\", \"author\": \"Alice\"},\n    2: {\"id\": 2, \"title\": \"Python Basics\", \"author\": \"Bob\"},\n}\n\n@app.patch(\"/books/{book_id}\")\ndef update_book(book_id: int, book: BookUpdate):\n    if book_id not in books_db:\n        raise HTTPException(status_code=404, detail=\"Book not found\")\n    stored = books_db[book_id]\n    update_data = book.model_dump(exclude_unset=True)\n    books_db[book_id] = {**stored, **update_data}\n    return books_db[book_id]",
+        "hints": [
+          "Use model_dump(exclude_unset=True) to get only the fields the client actually sent",
+          "Merge the update data with the stored data using dictionary unpacking"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "path-parameters",
+    "sectionId": "routing-and-path-operations",
+    "orderIndex": 1,
+    "title": "Path Parameters",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Path Parameters", "Type Conversion", "Path Validation", "Multiple Params", "Order Matters"],
+    "content": {
+      "explanation": "Path parameters are dynamic segments of a URL that capture values from the request path. In FastAPI, you define them using curly braces in the path string and matching function parameters. For example, @app.get(\"/users/{user_id}\") captures the value at that position in the URL and passes it to the handler function as user_id.\n\nFastAPI automatically converts path parameter values to the type specified in the function signature. If you declare user_id: int, FastAPI will convert the string from the URL to an integer. If the conversion fails (for example, the client sends /users/abc when int is expected), FastAPI automatically returns a 422 Unprocessable Entity error with a clear error message. This automatic type conversion and validation is one of FastAPI's most useful features.\n\nYou can have multiple path parameters in a single route. For example, @app.get(\"/users/{user_id}/posts/{post_id}\") captures both user_id and post_id. Each parameter in the path must have a corresponding function parameter with the same name.\n\nRoute order matters in FastAPI. Routes are matched in the order they are defined. If you have both @app.get(\"/users/me\") and @app.get(\"/users/{user_id}\"), the /users/me route must be defined first. Otherwise, /users/me would match the {user_id} parameter, with 'me' as the value. FastAPI processes routes top-to-bottom and uses the first match.\n\nFor more complex path parameter validation, you can use FastAPI's Path function. It allows you to add constraints like minimum/maximum values for integers, minimum/maximum lengths for strings, and regex patterns. For example, Path(ge=1) ensures the parameter is greater than or equal to 1.\n\nFastAPI also supports path parameters that contain forward slashes using the special :path converter. Normally, a path parameter captures only a single path segment (between slashes). But with {file_path:path}, you can capture the entire remaining path, including slashes. This is useful for file paths or nested resource identifiers.",
+      "codeExamples": [
+        {
+          "title": "Basic Path Parameters",
+          "code": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    return {\"user_id\": user_id}\n\n@app.get(\"/posts/{post_slug}\")\ndef get_post(post_slug: str):\n    return {\"slug\": post_slug}\n\n# GET /users/42    -> {\"user_id\": 42}\n# GET /users/abc   -> 422 Error (not a valid int)\n# GET /posts/hello-world -> {\"slug\": \"hello-world\"}",
+          "output": "{\"user_id\": 42}",
+          "explanation": "The type hint determines how FastAPI converts the path segment. int expects a number, str accepts any string. Invalid types trigger automatic 422 validation errors."
+        },
+        {
+          "title": "Route Order and Fixed Paths",
+          "code": "from fastapi import FastAPI\n\napp = FastAPI()\n\n# Fixed path MUST come before parameterized path\n@app.get(\"/users/me\")\ndef get_current_user():\n    return {\"user\": \"current authenticated user\"}\n\n@app.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    return {\"user_id\": user_id}\n\n# GET /users/me  -> {\"user\": \"current authenticated user\"}\n# GET /users/42  -> {\"user_id\": 42}\n\n# If the order were reversed, /users/me would try to\n# parse 'me' as an int and return a 422 error!",
+          "explanation": "FastAPI matches routes in order of definition. Fixed paths like /users/me must be declared before parameterized paths like /users/{user_id} to avoid the parameter capturing the literal string 'me'."
+        },
+        {
+          "title": "Path Validation with Path()",
+          "code": "from fastapi import FastAPI, Path\n\napp = FastAPI()\n\n@app.get(\"/items/{item_id}\")\ndef get_item(\n    item_id: int = Path(\n        title=\"The ID of the item\",\n        description=\"Must be a positive integer\",\n        ge=1,        # greater than or equal to 1\n        le=10000,    # less than or equal to 10000\n    )\n):\n    return {\"item_id\": item_id}\n\n# GET /items/0     -> 422 Error (must be >= 1)\n# GET /items/5     -> {\"item_id\": 5}\n# GET /items/99999 -> 422 Error (must be <= 10000)\n\n@app.get(\"/files/{file_path:path}\")\ndef get_file(file_path: str):\n    \"\"\"Captures paths with slashes\"\"\"\n    return {\"path\": file_path}\n\n# GET /files/home/user/doc.txt -> {\"path\": \"home/user/doc.txt\"}",
+          "explanation": "Path() adds metadata and validation constraints to path parameters. The :path converter allows capturing path segments that contain forward slashes, useful for file paths."
+        }
+      ],
+      "notes": [
+        "Path parameters are required by definition — if a URL segment is missing, the route simply will not match.",
+        "Type conversion is automatic. Use int, float, str, or UUID from the uuid module as type hints.",
+        "Define fixed routes before parameterized routes to avoid the parameter capturing literal strings."
+      ],
+      "commonPitfalls": [
+        "Defining /users/{user_id} before /users/me, causing 'me' to be treated as a user_id parameter value.",
+        "Forgetting that path parameters are always strings in the URL. FastAPI converts them, but the URL itself always contains a string.",
+        "Using path parameters for optional values. Path parameters are always required; use query parameters for optional data."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "path-parameters-ex1",
+        "title": "Create a Multi-Level Resource API",
+        "description": "Create endpoints for a nested resource structure:\n- GET /departments/{dept_id} returns the department ID\n- GET /departments/{dept_id}/employees/{emp_id} returns both IDs\nBoth IDs should be integers.",
+        "starterCode": "from fastapi import FastAPI\n\napp = FastAPI()\n\n# Define the two endpoints\n",
+        "solution": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/departments/{dept_id}\")\ndef get_department(dept_id: int):\n    return {\"department_id\": dept_id}\n\n@app.get(\"/departments/{dept_id}/employees/{emp_id}\")\ndef get_employee(dept_id: int, emp_id: int):\n    return {\"department_id\": dept_id, \"employee_id\": emp_id}",
+        "hints": [
+          "Both path parameters need matching function parameters with the same name",
+          "Type hint both as int for automatic validation"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "path-parameters-ex2",
+        "title": "Add Path Validation",
+        "description": "Create a GET endpoint at /products/{product_id} where product_id must be an integer between 1 and 999 (inclusive). Add a title and description to the path parameter. Also create GET /products/featured that returns a featured product (make sure route order is correct).",
+        "starterCode": "from fastapi import FastAPI, Path\n\napp = FastAPI()\n\n# Define /products/featured (fixed path first!)\n\n# Define /products/{product_id} with validation\n",
+        "solution": "from fastapi import FastAPI, Path\n\napp = FastAPI()\n\n@app.get(\"/products/featured\")\ndef get_featured():\n    return {\"id\": 1, \"name\": \"Featured Product\"}\n\n@app.get(\"/products/{product_id}\")\ndef get_product(\n    product_id: int = Path(\n        title=\"Product ID\",\n        description=\"The unique identifier for the product\",\n        ge=1,\n        le=999,\n    )\n):\n    return {\"product_id\": product_id}",
+        "hints": [
+          "The fixed path /products/featured must be defined before /products/{product_id}",
+          "Use ge and le in Path() for greater-than-or-equal and less-than-or-equal constraints"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "route-organization",
+    "sectionId": "routing-and-path-operations",
+    "orderIndex": 2,
+    "title": "Route Organization",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["APIRouter", "Prefixes", "Tags", "Include Router", "Modular Design"],
+    "content": {
+      "explanation": "As your FastAPI application grows beyond a handful of endpoints, you need a strategy for organizing routes into logical modules. FastAPI provides the APIRouter class for exactly this purpose. An APIRouter works just like the main FastAPI app — you define routes on it with the same decorators — but it can be mounted into the main app at a specific prefix.\n\nThink of APIRouter as a mini-FastAPI application. You create an APIRouter instance, define routes on it, and then include it in the main app using app.include_router(). You can set a prefix (like /api/v1/users) and tags (for grouping in documentation) when creating the router or when including it.\n\nA common pattern is to create one router file per resource. For example, a users.py file contains all user-related endpoints, an items.py file contains all item-related endpoints, and so on. Each file exports a router, and the main app imports and includes all routers. This keeps each file small and focused.\n\nRouter prefixes eliminate repetition in path definitions. Instead of writing @router.get(\"/users\"), @router.get(\"/users/{id}\"), @router.post(\"/users\") with the /users prefix repeated everywhere, you set prefix=\"/users\" on the router and then write @router.get(\"/\"), @router.get(\"/{id}\"), @router.post(\"/\"). The prefix is automatically prepended to all routes.\n\nTags group endpoints in the Swagger UI documentation. When you set tags=[\"Users\"] on a router, all its endpoints appear under a 'Users' section in the docs. This makes the documentation easier to navigate, especially for APIs with many endpoints.\n\nYou can also set shared dependencies, responses, and other parameters on the router that apply to all routes within it. For example, setting dependencies=[Depends(verify_token)] on a router means every route in that router requires authentication, without needing to repeat the dependency on each individual endpoint.\n\nFor larger applications, you might have nested routers or a router that includes other routers. FastAPI supports this — you can include a router within another router, creating a hierarchy. This is useful for versioned APIs where you have /api/v1/ and /api/v2/ top-level prefixes, each including the same set of resource routers.",
+      "codeExamples": [
+        {
+          "title": "Basic APIRouter Usage",
+          "code": "# routers/users.py\nfrom fastapi import APIRouter\nfrom pydantic import BaseModel\n\nrouter = APIRouter(\n    prefix=\"/users\",\n    tags=[\"Users\"],\n)\n\nclass UserCreate(BaseModel):\n    name: str\n    email: str\n\n@router.get(\"/\")\ndef list_users():\n    return [{\"id\": 1, \"name\": \"Alice\"}]\n\n@router.get(\"/{user_id}\")\ndef get_user(user_id: int):\n    return {\"id\": user_id, \"name\": \"Alice\"}\n\n@router.post(\"/\", status_code=201)\ndef create_user(user: UserCreate):\n    return {\"id\": 1, **user.model_dump()}",
+          "explanation": "The APIRouter is defined with a prefix and tags. Routes use relative paths (/ instead of /users) because the prefix handles the base path. All endpoints will appear under the 'Users' tag in Swagger UI."
+        },
+        {
+          "title": "Including Routers in the Main App",
+          "code": "# main.py\nfrom fastapi import FastAPI\nfrom routers import users, items, auth\n\napp = FastAPI(title=\"My API\", version=\"1.0.0\")\n\n# Include routers\napp.include_router(users.router)\napp.include_router(items.router)\napp.include_router(auth.router)\n\n# Or override prefix/tags when including\napp.include_router(\n    users.router,\n    prefix=\"/api/v1/users\",  # Overrides router's prefix\n    tags=[\"Users V1\"],       # Overrides router's tags\n)\n\n@app.get(\"/\")\ndef root():\n    return {\"message\": \"Welcome to the API\"}\n\n# Resulting routes:\n# GET  /           -> root()\n# GET  /users      -> list_users()\n# GET  /users/{id} -> get_user()\n# POST /users      -> create_user()\n# (plus all routes from items and auth routers)",
+          "explanation": "The main app imports and includes each router. You can override the prefix and tags at include time if needed. The root endpoint is defined directly on the app since it does not belong to any specific resource."
+        },
+        {
+          "title": "Complete Project Organization",
+          "code": "# Project structure:\n# app/\n#   main.py\n#   routers/\n#     __init__.py\n#     users.py\n#     items.py\n\n# app/routers/__init__.py\nfrom .users import router as users_router\nfrom .items import router as items_router\n\n__all__ = [\"users_router\", \"items_router\"]\n\n# app/main.py\nfrom fastapi import FastAPI\nfrom .routers import users_router, items_router\n\napp = FastAPI()\n\napp.include_router(users_router)\napp.include_router(items_router)\n\n# This pattern scales well:\n# - Each resource has its own file\n# - The __init__.py provides clean imports\n# - main.py is a thin assembly file",
+          "explanation": "This structure keeps each resource module independent. The routers __init__.py provides clean re-exports so main.py only needs simple imports. This scales well from small to large projects."
+        }
+      ],
+      "notes": [
+        "APIRouter has the same interface as the FastAPI app for defining routes. You can use all the same decorators and parameters.",
+        "Prefixes set on the router are prepended to all route paths. You can override them when calling include_router().",
+        "Tags group endpoints in the Swagger documentation. Use meaningful tag names that match your resource names."
+      ],
+      "commonPitfalls": [
+        "Duplicating the prefix in route paths. If the router has prefix='/users', use @router.get('/') not @router.get('/users') — the prefix is added automatically.",
+        "Circular imports when routers depend on each other. Keep dependencies flowing in one direction, or use dependency injection instead.",
+        "Forgetting to include the router in the main app. The router must be added with app.include_router() or its routes will not be accessible."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "route-organization-ex1",
+        "title": "Create a Router Module",
+        "description": "Create an APIRouter for a 'products' resource with prefix '/products' and tag 'Products'. Define three endpoints:\n- GET / (list products)\n- GET /{product_id} (get one product)\n- POST / (create product with 'name' and 'price')",
+        "starterCode": "from fastapi import APIRouter\nfrom pydantic import BaseModel\n\n# Create the router with prefix and tags\n\n# Define the Pydantic model\n\n# Define three endpoints\n",
+        "solution": "from fastapi import APIRouter\nfrom pydantic import BaseModel\n\nrouter = APIRouter(prefix=\"/products\", tags=[\"Products\"])\n\nclass ProductCreate(BaseModel):\n    name: str\n    price: float\n\n@router.get(\"/\")\ndef list_products():\n    return [{\"id\": 1, \"name\": \"Widget\", \"price\": 9.99}]\n\n@router.get(\"/{product_id}\")\ndef get_product(product_id: int):\n    return {\"id\": product_id, \"name\": \"Widget\", \"price\": 9.99}\n\n@router.post(\"/\", status_code=201)\ndef create_product(product: ProductCreate):\n    return {\"id\": 1, **product.model_dump()}",
+        "hints": [
+          "Use APIRouter(prefix='/products', tags=['Products']) to set the prefix and tags",
+          "Route paths are relative to the prefix, so use '/' and '/{product_id}'"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "route-organization-ex2",
+        "title": "Assemble Routers in Main App",
+        "description": "Write a main.py that creates a FastAPI app and includes two routers: users_router at /api/v1/users with tag 'Users' and orders_router at /api/v1/orders with tag 'Orders'. Also add a root GET endpoint that returns the API version.",
+        "starterCode": "from fastapi import FastAPI, APIRouter\n\n# Simulate imported routers\nusers_router = APIRouter()\norders_router = APIRouter()\n\n@users_router.get(\"/\")\ndef list_users():\n    return []\n\n@orders_router.get(\"/\")\ndef list_orders():\n    return []\n\n# Create the app and include routers with prefixes\n",
+        "solution": "from fastapi import FastAPI, APIRouter\n\nusers_router = APIRouter()\norders_router = APIRouter()\n\n@users_router.get(\"/\")\ndef list_users():\n    return []\n\n@orders_router.get(\"/\")\ndef list_orders():\n    return []\n\napp = FastAPI(title=\"My API\", version=\"1.0.0\")\n\napp.include_router(users_router, prefix=\"/api/v1/users\", tags=[\"Users\"])\napp.include_router(orders_router, prefix=\"/api/v1/orders\", tags=[\"Orders\"])\n\n@app.get(\"/\")\ndef root():\n    return {\"version\": \"1.0.0\"}",
+        "hints": [
+          "Use app.include_router() with prefix and tags keyword arguments",
+          "The prefix and tags in include_router override or supplement those on the router itself"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "status-codes-and-responses",
+    "sectionId": "routing-and-path-operations",
+    "orderIndex": 3,
+    "title": "Status Codes & Responses",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["HTTP Status Codes", "status Module", "JSONResponse", "Custom Headers", "Response Classes"],
+    "content": {
+      "explanation": "HTTP status codes are three-digit numbers that indicate the result of an HTTP request. They are grouped into five categories: 1xx (informational), 2xx (success), 3xx (redirection), 4xx (client error), and 5xx (server error). Using the correct status code is essential for building RESTful APIs that clients can interpret correctly.\n\nThe most common success codes are 200 OK (general success, the default), 201 Created (a new resource was created), 204 No Content (success with no response body, often used for DELETE), and 202 Accepted (request received but processing is deferred). FastAPI returns 200 by default; to change it, pass status_code to the route decorator.\n\nCommon client error codes include 400 Bad Request (generic client error), 401 Unauthorized (authentication required), 403 Forbidden (authenticated but not allowed), 404 Not Found (resource does not exist), 409 Conflict (resource already exists or state conflict), and 422 Unprocessable Entity (validation error, FastAPI's default for invalid input).\n\nServer error codes indicate something went wrong on the server side. 500 Internal Server Error is the generic server error. FastAPI returns 500 when an unhandled exception occurs in your handler. In production, you should have error handlers to catch exceptions and return appropriate responses.\n\nFastAPI provides the starlette.status module with constants for all HTTP status codes, making your code more readable. Instead of writing status_code=201, you can write status_code=status.HTTP_201_CREATED. This makes the intent clear and prevents typos in status code numbers.\n\nFor more control over responses, FastAPI offers several response classes. JSONResponse is the default and returns JSON data. PlainTextResponse returns plain text. HTMLResponse returns HTML content. RedirectResponse sends a redirect. StreamingResponse streams data (useful for file downloads). FileResponse sends a file from disk. You can also use the generic Response class for complete control over the response body, headers, and content type.\n\nCustom response headers can be added by using the Response parameter in your handler function. FastAPI injects a Response object that you can modify to add headers, set cookies, or change the status code dynamically. You can also return response objects directly for full control.",
+      "codeExamples": [
+        {
+          "title": "Setting Status Codes",
+          "code": "from fastapi import FastAPI, HTTPException\nfrom starlette import status\n\napp = FastAPI()\n\n@app.post(\"/users\", status_code=status.HTTP_201_CREATED)\ndef create_user():\n    return {\"id\": 1, \"name\": \"Alice\"}\n\n@app.delete(\"/users/{user_id}\", status_code=status.HTTP_204_NO_CONTENT)\ndef delete_user(user_id: int):\n    # 204 means no content is returned\n    pass\n\n@app.get(\"/users/{user_id}\")\ndef get_user(user_id: int):\n    if user_id > 100:\n        raise HTTPException(\n            status_code=status.HTTP_404_NOT_FOUND,\n            detail=\"User not found\",\n        )\n    return {\"id\": user_id, \"name\": \"Alice\"}",
+          "explanation": "Use the status module constants for readable status codes. POST returns 201 for creation. DELETE returns 204 for successful deletion without a body. HTTPException is raised for error status codes."
+        },
+        {
+          "title": "Custom Response Headers",
+          "code": "from fastapi import FastAPI, Response\nfrom fastapi.responses import JSONResponse\n\napp = FastAPI()\n\n# Method 1: Using the Response parameter\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: int, response: Response):\n    response.headers[\"X-Item-Id\"] = str(item_id)\n    response.headers[\"Cache-Control\"] = \"max-age=300\"\n    return {\"id\": item_id, \"name\": \"Widget\"}\n\n# Method 2: Returning a Response object directly\n@app.get(\"/custom\")\ndef custom_response():\n    return JSONResponse(\n        content={\"message\": \"Custom response\"},\n        status_code=200,\n        headers={\n            \"X-Custom-Header\": \"custom-value\",\n            \"X-Request-Id\": \"abc-123\",\n        },\n    )",
+          "explanation": "There are two ways to set custom headers. Using the Response parameter lets you add headers while still returning data normally. Returning a JSONResponse directly gives you complete control over the response."
+        },
+        {
+          "title": "Error Response Patterns",
+          "code": "from fastapi import FastAPI, HTTPException, Request\nfrom fastapi.responses import JSONResponse\n\napp = FastAPI()\n\n# Standard HTTPException\n@app.get(\"/items/{item_id}\")\ndef get_item(item_id: int):\n    if item_id < 1:\n        raise HTTPException(\n            status_code=400,\n            detail=\"Item ID must be positive\",\n            headers={\"X-Error\": \"invalid-id\"},\n        )\n    return {\"id\": item_id}\n\n# Custom exception class\nclass ItemNotFoundError(Exception):\n    def __init__(self, item_id: int):\n        self.item_id = item_id\n\n@app.exception_handler(ItemNotFoundError)\nasync def item_not_found_handler(request: Request, exc: ItemNotFoundError):\n    return JSONResponse(\n        status_code=404,\n        content={\n            \"error\": \"item_not_found\",\n            \"message\": f\"Item {exc.item_id} does not exist\",\n        },\n    )\n\n@app.get(\"/products/{product_id}\")\ndef get_product(product_id: int):\n    raise ItemNotFoundError(item_id=product_id)",
+          "explanation": "HTTPException is the standard way to raise errors. For custom error formats, define exception classes and register exception handlers with @app.exception_handler(). This lets you standardize error response formats across your entire API."
+        }
+      ],
+      "notes": [
+        "FastAPI returns 200 by default for successful responses. Override with status_code in the decorator.",
+        "Use starlette.status constants (HTTP_201_CREATED, HTTP_404_NOT_FOUND) for readable code.",
+        "HTTPException is the standard way to return error responses. Use it for 4xx and 5xx status codes."
+      ],
+      "interviewTips": [
+        "Know common status codes: 200 (OK), 201 (Created), 204 (No Content), 400 (Bad Request), 401 (Unauthorized), 403 (Forbidden), 404 (Not Found), 422 (Unprocessable Entity), 500 (Internal Server Error).",
+        "Understand the difference between 401 and 403: 401 means 'not authenticated' (who are you?), 403 means 'not authorized' (you do not have permission).",
+        "Know that FastAPI returns 422 for validation errors, which is different from Flask's approach of returning 400."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "status-codes-and-responses-ex1",
+        "title": "Return Appropriate Status Codes",
+        "description": "Create a FastAPI app with three endpoints:\n- POST /tasks that creates a task and returns 201\n- GET /tasks/{task_id} that returns the task or 404\n- DELETE /tasks/{task_id} that deletes the task and returns 204, or 404 if not found\n\nUse starlette.status constants.",
+        "starterCode": "from fastapi import FastAPI, HTTPException\nfrom starlette import status\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass TaskCreate(BaseModel):\n    title: str\n\ntasks_db: dict[int, dict] = {}\nnext_id = 1\n\n# Implement the three endpoints\n",
+        "solution": "from fastapi import FastAPI, HTTPException\nfrom starlette import status\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass TaskCreate(BaseModel):\n    title: str\n\ntasks_db: dict[int, dict] = {}\nnext_id = 1\n\n@app.post(\"/tasks\", status_code=status.HTTP_201_CREATED)\ndef create_task(task: TaskCreate):\n    global next_id\n    new_task = {\"id\": next_id, \"title\": task.title}\n    tasks_db[next_id] = new_task\n    next_id += 1\n    return new_task\n\n@app.get(\"/tasks/{task_id}\")\ndef get_task(task_id: int):\n    if task_id not in tasks_db:\n        raise HTTPException(\n            status_code=status.HTTP_404_NOT_FOUND,\n            detail=\"Task not found\",\n        )\n    return tasks_db[task_id]\n\n@app.delete(\"/tasks/{task_id}\", status_code=status.HTTP_204_NO_CONTENT)\ndef delete_task(task_id: int):\n    if task_id not in tasks_db:\n        raise HTTPException(\n            status_code=status.HTTP_404_NOT_FOUND,\n            detail=\"Task not found\",\n        )\n    del tasks_db[task_id]",
+        "hints": [
+          "Import status from starlette and use constants like HTTP_201_CREATED",
+          "204 No Content means the handler should not return any data"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "status-codes-and-responses-ex2",
+        "title": "Custom Error Handler",
+        "description": "Create a custom exception called DuplicateError with a 'resource' field. Register an exception handler that returns a 409 status code with a JSON body containing 'error' set to 'duplicate' and 'message' set to '{resource} already exists'. Create a POST /register endpoint that raises DuplicateError when the username 'admin' is used.",
+        "starterCode": "from fastapi import FastAPI, Request\nfrom fastapi.responses import JSONResponse\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\n# Define the custom exception\n\n# Register the exception handler\n\nclass RegisterRequest(BaseModel):\n    username: str\n\n# POST /register endpoint\n",
+        "solution": "from fastapi import FastAPI, Request\nfrom fastapi.responses import JSONResponse\nfrom pydantic import BaseModel\n\napp = FastAPI()\n\nclass DuplicateError(Exception):\n    def __init__(self, resource: str):\n        self.resource = resource\n\n@app.exception_handler(DuplicateError)\nasync def duplicate_handler(request: Request, exc: DuplicateError):\n    return JSONResponse(\n        status_code=409,\n        content={\"error\": \"duplicate\", \"message\": f\"{exc.resource} already exists\"},\n    )\n\nclass RegisterRequest(BaseModel):\n    username: str\n\n@app.post(\"/register\")\ndef register(body: RegisterRequest):\n    if body.username == \"admin\":\n        raise DuplicateError(resource=\"User\")\n    return {\"username\": body.username, \"registered\": True}",
+        "hints": [
+          "Custom exceptions are regular Python classes that inherit from Exception",
+          "Register the handler with @app.exception_handler(YourException)"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

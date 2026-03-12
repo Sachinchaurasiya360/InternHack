@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { motion } from "framer-motion";
 import { Link } from "react-router";
 import {
@@ -10,7 +11,9 @@ import {
   CheckCircle,
   Mail,
   Eye,
+  Bookmark,
 } from "lucide-react";
+import SaveToPoolModal from "./SaveToPoolModal";
 
 export interface TalentResult {
   id: number;
@@ -67,8 +70,10 @@ interface TalentCardProps {
 
 export default function TalentCard({ student, index = 0 }: TalentCardProps) {
   const hasResume = student.resumes.length > 0;
+  const [showPoolModal, setShowPoolModal] = useState(false);
 
   return (
+    <>
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
@@ -120,14 +125,24 @@ export default function TalentCard({ student, index = 0 }: TalentCardProps) {
           )}
         </div>
 
-        {/* ATS Score Badge */}
-        {student.bestAtsScore !== null && (
-          <span
-            className={`text-xs font-bold px-2.5 py-1 rounded-full flex-shrink-0 ${getAtsScoreColor(student.bestAtsScore)}`}
+        <div className="flex items-center gap-2 shrink-0">
+          {/* ATS Score Badge */}
+          {student.bestAtsScore !== null && (
+            <span
+              className={`text-xs font-bold px-2.5 py-1 rounded-full ${getAtsScoreColor(student.bestAtsScore)}`}
+            >
+              ATS {student.bestAtsScore}
+            </span>
+          )}
+          {/* Save to Pool */}
+          <button
+            onClick={() => setShowPoolModal(true)}
+            className="p-1.5 rounded-lg text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 dark:hover:text-indigo-400 transition-colors"
+            title="Save to Pool"
           >
-            ATS {student.bestAtsScore}
-          </span>
-        )}
+            <Bookmark className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {/* Bio */}
@@ -237,5 +252,12 @@ export default function TalentCard({ student, index = 0 }: TalentCardProps) {
         </div>
       </div>
     </motion.div>
+    <SaveToPoolModal
+      studentId={student.id}
+      studentName={student.name}
+      isOpen={showPoolModal}
+      onClose={() => setShowPoolModal(false)}
+    />
+    </>
   );
 }

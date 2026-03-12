@@ -1,0 +1,353 @@
+[
+  {
+    "id": "lifting-state",
+    "sectionId": "state-management",
+    "orderIndex": 0,
+    "title": "Lifting State Up",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["lifting state", "single source of truth", "sibling communication", "prop drilling", "inverse data flow"],
+    "content": {
+      "explanation": "In React, data flows in one direction — from parent to child via props. When two sibling components need to share or synchronise state, neither sibling can own that state alone. The solution is to 'lift' the state up to their closest common parent and pass it down along with an updater function. This pattern is called Lifting State Up.\n\nThe parent becomes the single source of truth for the shared value. Each child receives the current value as a prop and calls the parent-provided callback whenever the value should change. Because React re-renders the parent when its state changes, both children automatically receive the latest value on the next render cycle.\n\nLifting state is the simplest form of state sharing in React and should be your first choice before reaching for Context or external stores. It keeps data flow explicit and easy to trace. However, when the distance between the state owner and the consumer grows (prop drilling through many layers), you may want to explore other patterns such as Context or Zustand.\n\nA practical example is a temperature converter where Celsius and Fahrenheit inputs must stay in sync. The parent holds one canonical temperature value and each input converts from that value. When either input changes, the parent updates and both inputs reflect the new temperature.\n\nRemember: every piece of state should have exactly one owner. If two components need the same state, find the nearest common ancestor and let it own the data.",
+      "codeExamples": [
+        {
+          "title": "Sibling components sharing state via parent",
+          "code": "function Parent() {\n  const [count, setCount] = React.useState(0);\n\n  return (\n    <div>\n      <Display count={count} />\n      <Controls onIncrement={() => setCount(c => c + 1)} />\n    </div>\n  );\n}\n\nfunction Display({ count }) {\n  return <p>Count: {count}</p>;\n}\n\nfunction Controls({ onIncrement }) {\n  return <button onClick={onIncrement}>Add 1</button>;\n}",
+          "output": "Count: 0  (clicking button updates to 1, 2, 3 ...)",
+          "explanation": "Parent owns the count state. Display reads it, Controls writes it through the callback. Both stay in sync because the parent re-renders on every state change."
+        },
+        {
+          "title": "Temperature converter — syncing two inputs",
+          "code": "function TemperatureCalculator() {\n  const [temp, setTemp] = React.useState({ value: '', scale: 'c' });\n\n  const celsius = temp.scale === 'f'\n    ? ((parseFloat(temp.value) - 32) * 5 / 9).toFixed(2)\n    : temp.value;\n  const fahrenheit = temp.scale === 'c'\n    ? ((parseFloat(temp.value) * 9 / 5) + 32).toFixed(2)\n    : temp.value;\n\n  return (\n    <div>\n      <TemperatureInput scale=\"c\" value={celsius}\n        onChange={v => setTemp({ value: v, scale: 'c' })} />\n      <TemperatureInput scale=\"f\" value={fahrenheit}\n        onChange={v => setTemp({ value: v, scale: 'f' })} />\n    </div>\n  );\n}\n\nfunction TemperatureInput({ scale, value, onChange }) {\n  const label = scale === 'c' ? 'Celsius' : 'Fahrenheit';\n  return (\n    <label>\n      {label}: <input value={value}\n        onChange={e => onChange(e.target.value)} />\n    </label>\n  );\n}",
+          "output": "Two inputs that stay in sync — entering 100°C shows 212°F",
+          "explanation": "The parent stores one canonical temperature plus which scale was last edited. Both inputs derive their display value from that single source of truth."
+        },
+        {
+          "title": "When lifting state causes prop drilling",
+          "code": "// Deeply nested tree — state lifted to App but consumed far below\nfunction App() {\n  const [user, setUser] = React.useState(null);\n  return <Layout user={user} setUser={setUser} />;\n}\n\nfunction Layout({ user, setUser }) {\n  return <Sidebar user={user} setUser={setUser} />;\n}\n\nfunction Sidebar({ user, setUser }) {\n  return <UserMenu user={user} setUser={setUser} />;\n}\n\nfunction UserMenu({ user, setUser }) {\n  return user\n    ? <span>{user.name}</span>\n    : <button onClick={() => setUser({ name: 'Alice' })}>Log in</button>;\n}",
+          "output": "Shows 'Log in' button; clicking sets user to Alice",
+          "explanation": "Every intermediate component (Layout, Sidebar) must forward props it does not use. This is prop drilling and is a signal you may want Context instead."
+        }
+      ],
+      "notes": [
+        "Always lift state to the nearest common ancestor — no higher than necessary.",
+        "If only one component uses the state, keep it local; don't lift prematurely.",
+        "Prop drilling through 2-3 levels is fine; beyond that, consider Context or a state library."
+      ],
+      "commonPitfalls": [
+        "Duplicating state in children instead of deriving it from the lifted state, which causes sync bugs.",
+        "Lifting state too high (e.g., to the root) when only two nearby siblings need it, which triggers unnecessary re-renders across the tree."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "lifting-state-ex1",
+        "title": "Shared Counter Between Siblings",
+        "description": "Create a parent component that owns a counter value. One sibling displays the count, the other provides increment/decrement functions. Log the count after each operation.",
+        "starterCode": "// Implement Parent, Display, and Controls\n// Display should log the count\n// Controls should provide increment and decrement\n\nfunction Parent() {\n  // TODO: own the count state\n}\n\nfunction Display({ count }) {\n  // TODO: log the count\n}\n\nfunction Controls({ onIncrement, onDecrement }) {\n  // TODO: call the callbacks\n}\n\n// Simulate rendering and interactions\n// Call Parent logic, increment twice, decrement once, log final count",
+        "solution": "function Parent() {\n  let count = 0;\n  const increment = () => { count += 1; };\n  const decrement = () => { count -= 1; };\n\n  Display({ count });\n  Controls({ onIncrement: increment, onDecrement: decrement });\n\n  // Simulate: increment twice, decrement once\n  increment();\n  Display({ count });\n  increment();\n  Display({ count });\n  decrement();\n  Display({ count });\n}\n\nfunction Display({ count }) {\n  console.log(\"Count: \" + count);\n}\n\nfunction Controls({ onIncrement, onDecrement }) {\n  console.log(\"Controls ready\");\n}\n\nParent();",
+        "expectedOutput": "Count: 0\nControls ready\nCount: 1\nCount: 2\nCount: 1",
+        "hints": [
+          "The parent function should hold the count variable and provide increment/decrement closures.",
+          "Call Display with the current count after each mutation to simulate re-rendering."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "lifting-state-ex2",
+        "title": "Synced Text Inputs",
+        "description": "Simulate two inputs that share state through a parent. One shows text in uppercase, the other in lowercase. Both derive from a single source of truth held in the parent.",
+        "starterCode": "// Implement Parent that holds the source text\n// UpperDisplay logs text.toUpperCase()\n// LowerDisplay logs text.toLowerCase()\n// Simulate typing 'Hello' then 'World'\n\nfunction Parent() {\n  // TODO\n}\n\nfunction UpperDisplay({ text }) {\n  // TODO\n}\n\nfunction LowerDisplay({ text }) {\n  // TODO\n}",
+        "solution": "function Parent() {\n  function render(text) {\n    UpperDisplay({ text });\n    LowerDisplay({ text });\n  }\n\n  render('Hello');\n  render('World');\n}\n\nfunction UpperDisplay({ text }) {\n  console.log('Upper: ' + text.toUpperCase());\n}\n\nfunction LowerDisplay({ text }) {\n  console.log('Lower: ' + text.toLowerCase());\n}\n\nParent();",
+        "expectedOutput": "Upper: HELLO\nLower: hello\nUpper: WORLD\nLower: world",
+        "hints": [
+          "Parent owns the text and passes it down to both display functions.",
+          "Each display function transforms the single source text — one calls toUpperCase(), the other toLowerCase()."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "context-patterns",
+    "sectionId": "state-management",
+    "orderIndex": 1,
+    "title": "React Context Patterns",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["React.createContext", "Provider pattern", "useContext", "context composition", "when not to use context"],
+    "content": {
+      "explanation": "React Context provides a way to pass data through the component tree without manually passing props at every level. It solves the prop-drilling problem by letting any descendant component subscribe to a shared value. You create a context with React.createContext, wrap a subtree with a Provider, and consume the value with the useContext hook.\n\nThe Provider pattern pairs a Context with a dedicated wrapper component that encapsulates both the state and the logic for updating it. Instead of exposing raw setState, you expose semantic actions (login, logout, toggleTheme) through the context value. Consumers only know about the high-level API, not the implementation details.\n\nA common best practice is to split context into two — one for the state and one for the dispatch/actions. This prevents components that only call actions from re-rendering when the state changes. Similarly, memoizing the context value object with useMemo avoids unnecessary renders caused by a new object reference on every parent render.\n\nContext is ideal for low-frequency, globally relevant data: theme, locale, authenticated user, feature flags. It is NOT a replacement for a state management library when you have rapidly changing data (e.g., form input on every keystroke) or complex derived state. In those cases, every consumer re-renders whenever the context value changes, which can tank performance.\n\nKnow when not to reach for Context. If only a small subtree needs the data, lifting state or component composition (passing components as props) is simpler. If the data changes frequently or many independent slices exist, a library like Zustand with selectors will give you finer-grained control over re-renders.",
+      "codeExamples": [
+        {
+          "title": "Basic Context with Provider pattern",
+          "code": "const ThemeContext = React.createContext('light');\n\nfunction ThemeProvider({ children }) {\n  const [theme, setTheme] = React.useState('light');\n  const toggle = () => setTheme(t => t === 'light' ? 'dark' : 'light');\n\n  return (\n    <ThemeContext.Provider value={{ theme, toggle }}>\n      {children}\n    </ThemeContext.Provider>\n  );\n}\n\nfunction ThemedButton() {\n  const { theme, toggle } = React.useContext(ThemeContext);\n  return (\n    <button\n      onClick={toggle}\n      style={{ background: theme === 'dark' ? '#333' : '#eee' }}\n    >\n      Current: {theme}\n    </button>\n  );\n}\n\n// Usage\n<ThemeProvider>\n  <ThemedButton />\n</ThemeProvider>",
+          "output": "Button shows 'Current: light', clicking toggles to 'Current: dark'",
+          "explanation": "ThemeProvider owns the state and exposes a toggle function. ThemedButton consumes both without knowing about useState."
+        },
+        {
+          "title": "Split context to reduce re-renders",
+          "code": "const StateCtx = React.createContext();\nconst DispatchCtx = React.createContext();\n\nfunction AuthProvider({ children }) {\n  const [user, setUser] = React.useState(null);\n\n  const actions = React.useMemo(() => ({\n    login: (u) => setUser(u),\n    logout: () => setUser(null),\n  }), []);\n\n  return (\n    <StateCtx.Provider value={user}>\n      <DispatchCtx.Provider value={actions}>\n        {children}\n      </DispatchCtx.Provider>\n    </StateCtx.Provider>\n  );\n}\n\nfunction useAuthState() { return React.useContext(StateCtx); }\nfunction useAuthActions() { return React.useContext(DispatchCtx); }\n\n// LogoutButton only uses actions — never re-renders when user changes\nfunction LogoutButton() {\n  const { logout } = useAuthActions();\n  return <button onClick={logout}>Log out</button>;\n}",
+          "output": "LogoutButton renders once and does not re-render when user state changes",
+          "explanation": "Splitting state and dispatch into separate contexts lets action-only consumers skip re-renders. useMemo on the actions object ensures a stable reference."
+        },
+        {
+          "title": "When NOT to use context — high-frequency updates",
+          "code": "// BAD: every keystroke re-renders all consumers\nconst FormContext = React.createContext();\n\nfunction FormProvider({ children }) {\n  const [values, setValues] = React.useState({ name: '', email: '' });\n  return (\n    <FormContext.Provider value={{ values, setValues }}>\n      {children}\n    </FormContext.Provider>\n  );\n}\n\n// 20 field components all consuming FormContext\n// Each keystroke in any field re-renders ALL 20 fields\n\n// BETTER: use Zustand with selectors or keep local state per field\n// and only sync on blur/submit.",
+          "explanation": "Context lacks selectors — when the value changes, every useContext subscriber re-renders. For forms with many fields, this causes noticeable lag."
+        }
+      ],
+      "notes": [
+        "Always provide a meaningful default value to createContext so consumers outside a Provider get useful behaviour or a clear error.",
+        "Wrap context values in useMemo when the value is an object to prevent needless re-renders.",
+        "Create custom hooks (useTheme, useAuth) that call useContext internally — it improves readability and makes provider-missing errors easier to handle."
+      ],
+      "commonPitfalls": [
+        "Putting rapidly changing state in context (mouse position, form keystrokes) — this re-renders every consumer on every change.",
+        "Forgetting to memoize the value object passed to Provider, creating a new reference on every render and triggering all consumers to update."
+      ],
+      "interviewTips": [
+        "Explain that Context is NOT a state manager — it is a dependency injection mechanism. The state management comes from useState/useReducer inside the Provider.",
+        "Mention the split-context pattern (state vs dispatch) to show you understand render optimisation.",
+        "Know when to use Context vs Zustand vs Redux: Context for low-frequency global data, Zustand for medium-complexity apps with selectors, Redux for large apps with complex middleware needs.",
+        "Be ready to discuss that useContextSelector is not built-in and why libraries like use-context-selector or Zustand exist to fill that gap."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "context-patterns-ex1",
+        "title": "Theme Context Simulation",
+        "description": "Simulate a theme context with a provider and consumer. The provider holds a theme value ('light' initially). Implement a toggle function that switches between 'light' and 'dark'. Log the theme after creation and after toggling.",
+        "starterCode": "// Simulate a theme context pattern\n// 1. Create a provider that holds theme state\n// 2. Create a consumer that reads and logs the theme\n// 3. Toggle the theme and log again\n\nfunction createThemeProvider() {\n  // TODO: return { getTheme, toggle }\n}\n\nfunction consumeTheme(provider) {\n  // TODO: log the current theme\n}\n\n// Simulate usage",
+        "solution": "function createThemeProvider() {\n  let theme = 'light';\n  return {\n    getTheme: () => theme,\n    toggle: () => { theme = theme === 'light' ? 'dark' : 'light'; }\n  };\n}\n\nfunction consumeTheme(provider) {\n  console.log('Theme: ' + provider.getTheme());\n}\n\nconst provider = createThemeProvider();\nconsumeTheme(provider);\nprovider.toggle();\nconsumeTheme(provider);\nprovider.toggle();\nconsumeTheme(provider);",
+        "expectedOutput": "Theme: light\nTheme: dark\nTheme: light",
+        "hints": [
+          "The provider is a closure that holds a 'theme' variable and returns getter/toggle methods.",
+          "toggle flips between 'light' and 'dark' using a simple ternary."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "context-patterns-ex2",
+        "title": "Split State and Dispatch",
+        "description": "Simulate the split-context pattern. Create separate state and dispatch providers for an auth system. The state provider holds the user. The dispatch provider holds login/logout actions. Show that calling login updates the state provider and calling logout clears it.",
+        "starterCode": "// Simulate split context: separate state and dispatch\n\nfunction createAuthSystem() {\n  // TODO: return { stateProvider, dispatchProvider }\n}\n\n// Simulate: log initial state, login as 'Alice', log state, logout, log state",
+        "solution": "function createAuthSystem() {\n  let user = null;\n\n  const stateProvider = {\n    getUser: () => user\n  };\n\n  const dispatchProvider = {\n    login: (name) => { user = { name }; },\n    logout: () => { user = null; }\n  };\n\n  return { stateProvider, dispatchProvider };\n}\n\nconst { stateProvider, dispatchProvider } = createAuthSystem();\n\nconsole.log('User: ' + stateProvider.getUser());\ndispatchProvider.login('Alice');\nconsole.log('User: ' + stateProvider.getUser().name);\ndispatchProvider.logout();\nconsole.log('User: ' + stateProvider.getUser());",
+        "expectedOutput": "User: null\nUser: Alice\nUser: null",
+        "hints": [
+          "Both providers close over the same 'user' variable — state reads it, dispatch writes it.",
+          "login sets user to an object with a name property; logout sets user back to null."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "zustand-basics",
+    "sectionId": "state-management",
+    "orderIndex": 2,
+    "title": "Zustand Basics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["zustand store", "selectors", "actions", "devtools middleware", "subscribe"],
+    "content": {
+      "explanation": "Zustand is a small, fast, and scalable state management library for React. Unlike Context, it lives outside the React tree and uses a pub-sub model, so only components that select specific slices of state re-render when those slices change. There is no Provider wrapper needed — you import the hook and use it directly.\n\nYou create a store by calling the 'create' function with a callback that receives 'set' and 'get'. 'set' merges partial state into the store (like Object.assign), and 'get' reads current state synchronously. Actions are plain functions defined inside the store that call 'set' — no action types, reducers, or boilerplate.\n\nSelectors are the key to performance. When you call useStore(state => state.count), the component only re-renders when 'count' changes, not when other parts of the store change. Without a selector (useStore()), the component subscribes to the entire store and re-renders on every change — avoid this.\n\nZustand provides middleware out of the box: 'devtools' connects your store to the Redux DevTools browser extension for time-travel debugging; 'persist' saves and restores state from localStorage or sessionStorage; 'immer' lets you write mutable-looking updates that produce immutable state under the hood.\n\nCompared to Redux, Zustand has far less boilerplate. Compared to Context, it has built-in selector support so you avoid the all-consumers-re-render problem. It is an excellent default choice for most React applications that need shared state beyond simple prop passing.",
+      "codeExamples": [
+        {
+          "title": "Creating a basic Zustand store",
+          "code": "import { create } from 'zustand';\n\nconst useCounterStore = create((set) => ({\n  count: 0,\n  increment: () => set((state) => ({ count: state.count + 1 })),\n  decrement: () => set((state) => ({ count: state.count - 1 })),\n  reset: () => set({ count: 0 }),\n}));\n\n// In a component:\nfunction Counter() {\n  const count = useCounterStore((s) => s.count);\n  const increment = useCounterStore((s) => s.increment);\n\n  return (\n    <div>\n      <p>{count}</p>\n      <button onClick={increment}>+1</button>\n    </div>\n  );\n}",
+          "output": "Displays 0, clicking +1 increments the count",
+          "explanation": "create() returns a React hook. Selectors (s => s.count) ensure Counter only re-renders when count changes, not when unrelated store fields change."
+        },
+        {
+          "title": "Zustand with devtools and persist middleware",
+          "code": "import { create } from 'zustand';\nimport { devtools, persist } from 'zustand/middleware';\n\nconst useAuthStore = create(\n  devtools(\n    persist(\n      (set) => ({\n        user: null,\n        token: null,\n        login: (user, token) => set({ user, token }, false, 'auth/login'),\n        logout: () => set({ user: null, token: null }, false, 'auth/logout'),\n      }),\n      { name: 'auth-storage' }\n    ),\n    { name: 'AuthStore' }\n  )\n);\n\n// State persists across page reloads via localStorage\n// Actions appear in Redux DevTools with labels 'auth/login', 'auth/logout'",
+          "explanation": "devtools wraps the store so every set() call shows in Redux DevTools. persist automatically saves to localStorage under key 'auth-storage' and rehydrates on mount."
+        },
+        {
+          "title": "Subscribing outside React",
+          "code": "const useStore = create((set) => ({\n  notifications: [],\n  add: (msg) => set((s) => ({ notifications: [...s.notifications, msg] })),\n  clear: () => set({ notifications: [] }),\n}));\n\n// Subscribe outside any component\nconst unsub = useStore.subscribe(\n  (state) => console.log('Notifications:', state.notifications.length)\n);\n\n// Trigger from anywhere\nuseStore.getState().add('Hello');\nuseStore.getState().add('World');\nunsub(); // stop listening",
+          "output": "Notifications: 1\nNotifications: 2",
+          "explanation": "useStore.subscribe lets non-React code react to state changes. useStore.getState() gives synchronous access to current state without hooks."
+        }
+      ],
+      "notes": [
+        "Always use selectors to avoid full-store subscriptions. useStore(s => s.field) is the correct pattern.",
+        "Zustand stores are singletons — they live outside the React tree and survive component unmounts.",
+        "You can use getState() and setState() outside React (e.g., in axios interceptors or utility functions)."
+      ],
+      "commonPitfalls": [
+        "Calling useStore() without a selector subscribes to the entire store and defeats the performance benefit.",
+        "Returning a new object from a selector (e.g., s => ({ a: s.a, b: s.b })) creates a new reference every time — use shallow equality from zustand/shallow or select each field separately."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "zustand-basics-ex1",
+        "title": "Simple Store with Actions",
+        "description": "Simulate a Zustand-like store with a count value and increment/decrement actions. The store should use a closure to hold state and expose getState, setState, increment, and decrement.",
+        "starterCode": "// Simulate a Zustand-like store\n\nfunction createStore(initialState) {\n  // TODO: return { getState, setState, increment, decrement }\n}\n\n// Create store with { count: 0 }\n// Log initial count\n// Increment twice, log count\n// Decrement once, log count",
+        "solution": "function createStore(initialState) {\n  let state = { ...initialState };\n\n  return {\n    getState: () => state,\n    setState: (partial) => { state = { ...state, ...partial }; },\n    increment: () => { state = { ...state, count: state.count + 1 }; },\n    decrement: () => { state = { ...state, count: state.count - 1 }; }\n  };\n}\n\nconst store = createStore({ count: 0 });\nconsole.log('Count: ' + store.getState().count);\nstore.increment();\nstore.increment();\nconsole.log('Count: ' + store.getState().count);\nstore.decrement();\nconsole.log('Count: ' + store.getState().count);",
+        "expectedOutput": "Count: 0\nCount: 2\nCount: 1",
+        "hints": [
+          "Use a closure variable 'state' and spread to merge partial updates.",
+          "increment and decrement should create a new state object with the updated count."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "zustand-basics-ex2",
+        "title": "Store with Selectors and Subscribe",
+        "description": "Extend the store pattern to support selectors and a subscribe function. A selector is a function that extracts a value from state. Subscribe should call a listener whenever setState is called.",
+        "starterCode": "// Create a store that supports:\n// - getState()\n// - setState(partial)\n// - select(selectorFn) — returns selectorFn(state)\n// - subscribe(listener) — calls listener(state) on every setState\n\nfunction createStore(initialState) {\n  // TODO\n}\n\n// Create store { count: 0, name: 'Zustand' }\n// Subscribe to log count on every change\n// setState({ count: 1 })\n// setState({ count: 2 })\n// Select name and log it",
+        "solution": "function createStore(initialState) {\n  let state = { ...initialState };\n  let listeners = [];\n\n  return {\n    getState: () => state,\n    setState: (partial) => {\n      state = { ...state, ...partial };\n      listeners.forEach(fn => fn(state));\n    },\n    select: (selectorFn) => selectorFn(state),\n    subscribe: (listener) => {\n      listeners.push(listener);\n      return () => { listeners = listeners.filter(fn => fn !== listener); };\n    }\n  };\n}\n\nconst store = createStore({ count: 0, name: 'Zustand' });\nstore.subscribe((s) => console.log('Count changed: ' + s.count));\nstore.setState({ count: 1 });\nstore.setState({ count: 2 });\nconsole.log('Name: ' + store.select(s => s.name));",
+        "expectedOutput": "Count changed: 1\nCount changed: 2\nName: Zustand",
+        "hints": [
+          "Keep an array of listener functions. On every setState, iterate and call each with the new state.",
+          "select simply calls the selector function with the current state and returns the result."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "react-query-basics",
+    "sectionId": "state-management",
+    "orderIndex": 3,
+    "title": "React Query Basics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["useQuery", "queryKey", "staleTime", "caching", "QueryClient", "refetching"],
+    "content": {
+      "explanation": "React Query (TanStack Query) is a library for managing server state in React applications. Server state is fundamentally different from client state: it is owned by a remote source, can become stale, and is shared across the network. React Query gives you caching, automatic refetching, deduplication, and background updates out of the box.\n\nThe core hook is useQuery. You provide a queryKey (a unique array that identifies the data) and a queryFn (an async function that fetches the data). React Query caches the result under that key and returns an object with data, isLoading, isError, and error fields. If another component requests the same key, React Query returns the cached result instantly and optionally refetches in the background.\n\nThe queryKey is crucial. It must include every variable that the fetch depends on. For example, ['users', userId] ensures that switching userId triggers a new fetch. React Query serialises the key and uses it as a cache lookup. If you forget to include a dependency, you will get stale data.\n\nstaleTime controls how long cached data is considered fresh. While data is fresh, React Query will not refetch — it serves from cache. The default staleTime is 0 (immediately stale), which means every mount triggers a background refetch. Setting staleTime: 60_000 means data is fresh for one minute. gcTime (previously cacheTime) controls how long unused data stays in cache before garbage collection.\n\nReact Query eliminates a huge amount of boilerplate: no more managing loading/error booleans in state, no useEffect for fetching, no manual cache invalidation. It is the recommended way to handle data fetching in modern React applications.",
+      "codeExamples": [
+        {
+          "title": "Basic useQuery usage",
+          "code": "import { useQuery } from '@tanstack/react-query';\n\nfunction UserProfile({ userId }) {\n  const { data, isLoading, isError, error } = useQuery({\n    queryKey: ['user', userId],\n    queryFn: () => fetch(`/api/users/${userId}`).then(r => r.json()),\n    staleTime: 5 * 60 * 1000, // 5 minutes\n  });\n\n  if (isLoading) return <p>Loading...</p>;\n  if (isError) return <p>Error: {error.message}</p>;\n\n  return <h1>{data.name}</h1>;\n}",
+          "output": "Shows 'Loading...' then the user's name",
+          "explanation": "queryKey includes userId so each user gets a separate cache entry. staleTime of 5 minutes means navigating back to this user within 5 minutes shows instant cached data with no refetch."
+        },
+        {
+          "title": "QueryClient provider setup",
+          "code": "import { QueryClient, QueryClientProvider } from '@tanstack/react-query';\n\nconst queryClient = new QueryClient({\n  defaultOptions: {\n    queries: {\n      staleTime: 60_000,       // 1 minute\n      gcTime: 5 * 60_000,     // 5 minutes\n      retry: 2,               // retry failed queries twice\n      refetchOnWindowFocus: true,\n    },\n  },\n});\n\nfunction App() {\n  return (\n    <QueryClientProvider client={queryClient}>\n      <RouterComponent />\n    </QueryClientProvider>\n  );\n}",
+          "explanation": "QueryClient holds the cache and default settings. Wrap your app with QueryClientProvider. All useQuery calls inside share this client."
+        },
+        {
+          "title": "Dependent queries",
+          "code": "function UserPosts({ userId }) {\n  // First query: get user\n  const userQuery = useQuery({\n    queryKey: ['user', userId],\n    queryFn: () => fetchUser(userId),\n  });\n\n  // Second query: get posts, only runs when user is loaded\n  const postsQuery = useQuery({\n    queryKey: ['posts', userId],\n    queryFn: () => fetchPostsByUser(userId),\n    enabled: !!userQuery.data, // disabled until user loads\n  });\n\n  if (userQuery.isLoading) return <p>Loading user...</p>;\n  if (postsQuery.isLoading) return <p>Loading posts...</p>;\n\n  return (\n    <div>\n      <h1>{userQuery.data.name}</h1>\n      {postsQuery.data.map(p => <p key={p.id}>{p.title}</p>)}\n    </div>\n  );\n}",
+          "output": "Shows 'Loading user...' then 'Loading posts...' then user name and post titles",
+          "explanation": "The enabled option lets you chain queries. postsQuery won't fire until userQuery.data is available, avoiding premature fetches."
+        }
+      ],
+      "notes": [
+        "Always include all fetch dependencies in the queryKey array — it acts like a useEffect dependency array.",
+        "Use staleTime to control how often data is refetched. A staleTime of 0 (default) means every mount triggers a background refetch.",
+        "React Query automatically deduplicates identical in-flight requests — if two components mount with the same queryKey, only one fetch happens."
+      ],
+      "commonPitfalls": [
+        "Using a string instead of an array for queryKey (e.g., 'users' instead of ['users']). While it works, arrays are the correct convention and allow parameterised keys.",
+        "Not including dynamic parameters in the queryKey (e.g., using ['user'] for all users instead of ['user', userId]), which causes all users to share the same cache entry."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "react-query-basics-ex1",
+        "title": "Simulated Query Cache",
+        "description": "Build a simple query cache system. Implement a cache that stores results by key, returns cached data if it exists, or calls a fetchFn and stores the result. Demonstrate cache hits and misses.",
+        "starterCode": "// Build a simple query cache\n// - queryCache.fetch(key, fetchFn) returns cached data or calls fetchFn\n// - Log 'CACHE HIT' or 'CACHE MISS' for each call\n\nfunction createQueryCache() {\n  // TODO\n}\n\n// Simulate:\n// fetch('user-1', () => 'Alice')  -> MISS, returns Alice\n// fetch('user-1', () => 'Alice')  -> HIT, returns Alice\n// fetch('user-2', () => 'Bob')    -> MISS, returns Bob",
+        "solution": "function createQueryCache() {\n  const cache = {};\n\n  return {\n    fetch: (key, fetchFn) => {\n      if (cache[key] !== undefined) {\n        console.log('CACHE HIT: ' + key);\n        return cache[key];\n      }\n      console.log('CACHE MISS: ' + key);\n      const result = fetchFn();\n      cache[key] = result;\n      return result;\n    }\n  };\n}\n\nconst queryCache = createQueryCache();\nconsole.log('Data: ' + queryCache.fetch('user-1', () => 'Alice'));\nconsole.log('Data: ' + queryCache.fetch('user-1', () => 'Alice'));\nconsole.log('Data: ' + queryCache.fetch('user-2', () => 'Bob'));",
+        "expectedOutput": "CACHE MISS: user-1\nData: Alice\nCACHE HIT: user-1\nData: Alice\nCACHE MISS: user-2\nData: Bob",
+        "hints": [
+          "Use a plain object as the cache. Check if the key exists before calling fetchFn.",
+          "Return the cached value on a hit, or call fetchFn and store its return value on a miss."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "react-query-basics-ex2",
+        "title": "Cache with Stale Time",
+        "description": "Extend the query cache to support staleTime. If the cached entry is older than staleTime milliseconds, treat it as a miss and refetch. Use timestamps to track when data was cached.",
+        "starterCode": "// Extend query cache with staleTime support\n// cache.fetch(key, fetchFn, staleTime)\n// If cached data is older than staleTime, refetch\n\nfunction createQueryCache() {\n  // TODO\n}\n\n// Simulate with staleTime = 1000ms\n// Fetch, then fetch again (simulating within staleTime), then after staleTime",
+        "solution": "function createQueryCache() {\n  const cache = {};\n\n  return {\n    fetch: (key, fetchFn, staleTime) => {\n      const entry = cache[key];\n      const now = Date.now();\n\n      if (entry && (now - entry.timestamp) < staleTime) {\n        console.log('FRESH: ' + key);\n        return entry.data;\n      }\n\n      console.log('STALE/MISS: ' + key);\n      const data = fetchFn();\n      cache[key] = { data, timestamp: now };\n      return data;\n    },\n    // Helper to simulate time passing\n    expireEntry: (key) => {\n      if (cache[key]) cache[key].timestamp = 0;\n    }\n  };\n}\n\nconst qc = createQueryCache();\nconsole.log('Result: ' + qc.fetch('users', () => 'UserList', 1000));\nconsole.log('Result: ' + qc.fetch('users', () => 'UserList', 1000));\nqc.expireEntry('users');\nconsole.log('Result: ' + qc.fetch('users', () => 'UserListV2', 1000));",
+        "expectedOutput": "STALE/MISS: users\nResult: UserList\nFRESH: users\nResult: UserList\nSTALE/MISS: users\nResult: UserListV2",
+        "hints": [
+          "Store each cache entry as { data, timestamp }. Compare Date.now() - timestamp against staleTime.",
+          "Use a helper method (expireEntry) to simulate time passing by setting the timestamp to 0."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "choosing-state-tool",
+    "sectionId": "state-management",
+    "orderIndex": 4,
+    "title": "Choosing the Right State Tool",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["local state", "global state", "server state", "state colocation", "decision framework"],
+    "content": {
+      "explanation": "One of the most important architectural decisions in a React app is choosing where and how to manage each piece of state. There are three main categories: local (component) state, global (client) state, and server (remote) state. Each has different characteristics and optimal tools.\n\nLocal state is owned by a single component and managed with useState or useReducer. It is the simplest and most performant option because updates only affect that component and its children. Examples include form input values, toggle states, and modal open/close. The rule of thumb: keep state as close to where it is used as possible (state colocation).\n\nGlobal client state is data that many components across different parts of the tree need to access — theme, locale, auth status, sidebar open/close. For low-frequency updates with few consumers, React Context works well. For apps that need finer-grained subscriptions, Zustand is an excellent choice: no Provider boilerplate, selector-based subscriptions, and easy access outside React. Redux Toolkit is appropriate for very large teams where strict patterns (actions, reducers, middleware) aid maintainability.\n\nServer state is data owned by a backend: user profiles, product lists, notifications. It can become stale, requires loading/error handling, and benefits from caching and background sync. React Query (TanStack Query) is the standard tool here — it handles caching, deduplication, stale-while-revalidate, and pagination out of the box. Using React Query eliminates the need to store server data in Redux or Zustand.\n\nThe decision framework: (1) Is the state used by only one component? Use useState. (2) Is it shared between a parent and a few children? Lift state up. (3) Is it needed globally but changes infrequently? Use Context. (4) Is it needed globally and changes frequently or needs selectors? Use Zustand. (5) Does it come from a server? Use React Query. Mixing these tools is normal and expected — a typical app uses useState for forms, Zustand for auth/theme, and React Query for all API data.",
+      "codeExamples": [
+        {
+          "title": "Decision framework in practice",
+          "code": "// 1. LOCAL: Toggle is only used here\nfunction Accordion({ title, children }) {\n  const [isOpen, setIsOpen] = React.useState(false);\n  return (\n    <div>\n      <button onClick={() => setIsOpen(!isOpen)}>{title}</button>\n      {isOpen && children}\n    </div>\n  );\n}\n\n// 2. GLOBAL (Zustand): Auth needed everywhere\nconst useAuth = create((set) => ({\n  user: null,\n  login: (user) => set({ user }),\n  logout: () => set({ user: null }),\n}));\n\n// 3. SERVER (React Query): Products from API\nfunction ProductList() {\n  const { data } = useQuery({\n    queryKey: ['products'],\n    queryFn: () => fetch('/api/products').then(r => r.json()),\n  });\n  return data?.map(p => <ProductCard key={p.id} product={p} />);\n}",
+          "explanation": "Three different state categories, three different tools — each chosen for its strengths. This is the standard modern React pattern."
+        },
+        {
+          "title": "Anti-pattern: putting everything in global state",
+          "code": "// BAD: form values in global store\nconst useFormStore = create((set) => ({\n  name: '',\n  email: '',\n  address: '',\n  setName: (name) => set({ name }),\n  setEmail: (email) => set({ email }),\n  setAddress: (address) => set({ address }),\n}));\n\n// Every keystroke updates the global store\n// All subscribers re-render on every keystroke\n// The form is only on one page!\n\n// GOOD: use local state for forms\nfunction ContactForm() {\n  const [form, setForm] = React.useState({ name: '', email: '', address: '' });\n  // Only this component re-renders on keystrokes\n}",
+          "explanation": "Not all state needs to be global. Form data used by one component should stay local. Global stores are for data that multiple distant components need."
+        },
+        {
+          "title": "Combining React Query with Zustand",
+          "code": "// Zustand for client state\nconst useUIStore = create((set) => ({\n  sidebarOpen: false,\n  toggleSidebar: () => set((s) => ({ sidebarOpen: !s.sidebarOpen })),\n}));\n\n// React Query for server state\nfunction Dashboard() {\n  const sidebarOpen = useUIStore((s) => s.sidebarOpen);\n  const toggleSidebar = useUIStore((s) => s.toggleSidebar);\n\n  const { data: stats } = useQuery({\n    queryKey: ['dashboard-stats'],\n    queryFn: fetchDashboardStats,\n    staleTime: 30_000,\n  });\n\n  return (\n    <div className={sidebarOpen ? 'with-sidebar' : ''}>\n      <button onClick={toggleSidebar}>Toggle Sidebar</button>\n      <StatsGrid stats={stats} />\n    </div>\n  );\n}",
+          "explanation": "Zustand handles UI state (sidebar). React Query handles server data (stats). Each tool does what it is best at. No overlap, no confusion."
+        }
+      ],
+      "notes": [
+        "State colocation principle: keep state as close to where it is read and written as possible.",
+        "Server state and client state are fundamentally different — never store API responses in useState or Zustand when React Query is available.",
+        "It is perfectly normal to use 3-4 state tools in one app: useState, Context, Zustand, and React Query each handle different concerns."
+      ],
+      "commonPitfalls": [
+        "Putting everything in a global store (Redux/Zustand) including form values and local UI toggles — this causes unnecessary complexity and re-renders.",
+        "Storing fetched API data in Zustand or useState instead of using React Query, losing caching, deduplication, and automatic refetching."
+      ],
+      "interviewTips": [
+        "Frame your answer around the three categories (local, global client, server) and name the best tool for each.",
+        "Mention state colocation as a guiding principle — interviewers love hearing that you keep state close to where it is used.",
+        "Explain why React Query changed the game: it removed the need to store server data in Redux, which was a major source of complexity in older React apps.",
+        "Be ready to compare Redux vs Zustand vs Context: Redux for large teams needing strict patterns, Zustand for most apps needing selectors without boilerplate, Context for simple infrequent global data."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "choosing-state-tool-ex1",
+        "title": "Classify State Categories",
+        "description": "Given a list of state examples, classify each as 'local', 'global', or 'server'. Log the classification for each piece of state.",
+        "starterCode": "// Classify each state item as 'local', 'global', or 'server'\n\nconst stateItems = [\n  { name: 'Form input value', description: 'Text typed into a search box' },\n  { name: 'User auth token', description: 'JWT token after login' },\n  { name: 'Product list', description: 'Products fetched from /api/products' },\n  { name: 'Modal open/close', description: 'Whether a dialog is visible' },\n  { name: 'Theme preference', description: 'Dark or light mode for the whole app' },\n  { name: 'User notifications', description: 'Notifications fetched from server' }\n];\n\n// TODO: classify each and log the result",
+        "solution": "const stateItems = [\n  { name: 'Form input value', category: 'local' },\n  { name: 'User auth token', category: 'global' },\n  { name: 'Product list', category: 'server' },\n  { name: 'Modal open/close', category: 'local' },\n  { name: 'Theme preference', category: 'global' },\n  { name: 'User notifications', category: 'server' }\n];\n\nstateItems.forEach(item => {\n  console.log(item.name + ': ' + item.category);\n});",
+        "expectedOutput": "Form input value: local\nUser auth token: global\nProduct list: server\nModal open/close: local\nTheme preference: global\nUser notifications: server",
+        "hints": [
+          "Local state is used by one component (form inputs, toggles). Global state is needed app-wide (auth, theme). Server state comes from an API.",
+          "Ask: 'Where does this data come from?' and 'How many components need it?' to determine the category."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "choosing-state-tool-ex2",
+        "title": "State Tool Recommender",
+        "description": "Build a function that takes a state description object and recommends the appropriate tool. The function should consider: source (local/remote), frequency of updates, and number of consumers.",
+        "starterCode": "// Build a state tool recommender\n// Input: { source: 'local' | 'remote', updateFrequency: 'low' | 'high', consumers: number }\n// Output: recommended tool name\n\nfunction recommendTool(config) {\n  // TODO\n}\n\n// Test cases:\n// { source: 'local', updateFrequency: 'high', consumers: 1 } -> useState\n// { source: 'local', updateFrequency: 'low', consumers: 5 } -> Context\n// { source: 'local', updateFrequency: 'high', consumers: 10 } -> Zustand\n// { source: 'remote', updateFrequency: 'low', consumers: 3 } -> React Query",
+        "solution": "function recommendTool(config) {\n  if (config.source === 'remote') {\n    return 'React Query';\n  }\n  if (config.consumers <= 2) {\n    return 'useState';\n  }\n  if (config.updateFrequency === 'low' && config.consumers <= 8) {\n    return 'Context';\n  }\n  return 'Zustand';\n}\n\nconst tests = [\n  { source: 'local', updateFrequency: 'high', consumers: 1 },\n  { source: 'local', updateFrequency: 'low', consumers: 5 },\n  { source: 'local', updateFrequency: 'high', consumers: 10 },\n  { source: 'remote', updateFrequency: 'low', consumers: 3 }\n];\n\ntests.forEach(t => {\n  console.log(JSON.stringify(t) + ' -> ' + recommendTool(t));\n});",
+        "expectedOutput": "{\"source\":\"local\",\"updateFrequency\":\"high\",\"consumers\":1} -> useState\n{\"source\":\"local\",\"updateFrequency\":\"low\",\"consumers\":5} -> Context\n{\"source\":\"local\",\"updateFrequency\":\"high\",\"consumers\":10} -> Zustand\n{\"source\":\"remote\",\"updateFrequency\":\"low\",\"consumers\":3} -> React Query",
+        "hints": [
+          "Remote source always means React Query. For local state, check consumer count and update frequency.",
+          "Low consumers (1-2) -> useState. Low frequency + moderate consumers -> Context. High frequency or many consumers -> Zustand."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

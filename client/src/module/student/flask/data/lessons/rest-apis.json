@@ -1,0 +1,294 @@
+[
+  {
+    "id": "json-responses",
+    "sectionId": "rest-apis",
+    "orderIndex": 0,
+    "title": "JSON Responses",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["jsonify", "JSON Serialization", "Content Negotiation", "API Design", "Status Codes"],
+    "content": {
+      "explanation": "Building REST APIs with Flask starts with returning JSON responses. While Flask can serve HTML templates, modern web development often separates the frontend (React, Vue, mobile apps) from the backend (Flask API). The API communicates using JSON, a lightweight data format understood by virtually every programming language.\n\nFlask provides two ways to return JSON. The simplest is returning a dict from a view function, which Flask automatically converts to JSON with the correct Content-Type header (application/json). The explicit way is using jsonify(), which provides more flexibility: it can handle top-level arrays, custom kwargs, and lets you chain with make_response for custom headers.\n\nAPI responses should follow consistent conventions. Every response should include meaningful data, appropriate HTTP status codes, and a consistent structure. A common pattern is to always include a top-level key for the data and optional metadata like pagination info, error details, or request ID.\n\nHTTP status codes communicate the result semantically. 200 OK for successful GETs. 201 Created for successful POSTs. 204 No Content for successful DELETEs. 400 Bad Request for invalid input. 401 Unauthorized for missing authentication. 403 Forbidden for insufficient permissions. 404 Not Found for missing resources. 422 Unprocessable Entity for validation failures. 500 Internal Server Error for server bugs.\n\nContent negotiation is the process of serving different response formats based on the client's Accept header. While most APIs serve only JSON, some need to support XML, CSV, or other formats. Flask's request.accept_mimetypes lets you check what the client accepts.\n\nSerialization is converting Python objects to JSON-safe representations. Python dicts, lists, strings, numbers, and booleans map directly to JSON. But datetime objects, Decimal, SQLAlchemy models, and custom classes need custom serialization. A common approach is to add a to_dict() method to your models that returns a JSON-safe dictionary.\n\nFor complex serialization needs, consider libraries like marshmallow (schema-based serialization/deserialization with validation), pydantic (data validation using type annotations), or Flask-RESTX (swagger-documented API with automatic serialization).",
+      "codeExamples": [
+        {
+          "title": "Basic JSON API Endpoints",
+          "code": "from flask import Flask, jsonify, request\n\napp = Flask(__name__)\n\nbooks = [\n    {'id': 1, 'title': 'Flask Web Development', 'author': 'Miguel Grinberg'},\n    {'id': 2, 'title': 'Two Scoops of Django', 'author': 'Daniel Feldroy'},\n]\n\n@app.get('/api/books')\ndef list_books():\n    return jsonify(books)  # Returns JSON array\n\n@app.get('/api/books/<int:book_id>')\ndef get_book(book_id):\n    book = next((b for b in books if b['id'] == book_id), None)\n    if not book:\n        return jsonify({'error': 'Book not found'}), 404\n    return jsonify(book)\n\n@app.post('/api/books')\ndef create_book():\n    data = request.get_json()\n    if not data or 'title' not in data:\n        return jsonify({'error': 'Title is required'}), 400\n    book = {'id': len(books) + 1, 'title': data['title'], 'author': data.get('author', 'Unknown')}\n    books.append(book)\n    return jsonify(book), 201",
+          "explanation": "GET returns data with 200. POST validates input, creates the resource, and returns it with 201. Missing resources return 404. Invalid input returns 400. jsonify handles the JSON conversion."
+        },
+        {
+          "title": "Consistent API Response Format",
+          "code": "from flask import Flask, jsonify\nfrom functools import wraps\n\napp = Flask(__name__)\n\ndef api_response(data=None, message='Success', status=200, **kwargs):\n    \"\"\"Create a consistent API response.\"\"\"\n    response = {\n        'status': 'success' if status < 400 else 'error',\n        'message': message,\n    }\n    if data is not None:\n        response['data'] = data\n    response.update(kwargs)\n    return jsonify(response), status\n\n@app.get('/api/users')\ndef list_users():\n    users = [{'id': 1, 'name': 'Alice'}, {'id': 2, 'name': 'Bob'}]\n    return api_response(data=users, message='Users retrieved')\n    # {\"status\": \"success\", \"message\": \"Users retrieved\", \"data\": [...]}\n\n@app.get('/api/users/<int:user_id>')\ndef get_user(user_id):\n    if user_id != 1:\n        return api_response(message='User not found', status=404)\n    return api_response(data={'id': 1, 'name': 'Alice'})",
+          "explanation": "A helper function ensures every API response follows the same structure. This makes it easy for clients to parse responses consistently. Include status, message, and data fields."
+        },
+        {
+          "title": "Model Serialization",
+          "code": "from flask_sqlalchemy import SQLAlchemy\nfrom datetime import datetime\n\ndb = SQLAlchemy()\n\nclass User(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(80))\n    email = db.Column(db.String(120))\n    created_at = db.Column(db.DateTime, default=datetime.utcnow)\n    posts = db.relationship('Post', backref='author', lazy='dynamic')\n\n    def to_dict(self, include_posts=False):\n        data = {\n            'id': self.id,\n            'name': self.name,\n            'email': self.email,\n            'created_at': self.created_at.isoformat(),\n        }\n        if include_posts:\n            data['posts'] = [p.to_dict() for p in self.posts]\n        return data\n\nclass Post(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    title = db.Column(db.String(200))\n    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))\n    created_at = db.Column(db.DateTime, default=datetime.utcnow)\n\n    def to_dict(self):\n        return {\n            'id': self.id,\n            'title': self.title,\n            'author_id': self.user_id,\n            'created_at': self.created_at.isoformat(),\n        }\n\n# Usage in views:\n@app.get('/api/users/<int:user_id>')\ndef get_user(user_id):\n    user = User.query.get_or_404(user_id)\n    return jsonify(user.to_dict(include_posts=True))",
+          "explanation": "Model to_dict() methods serialize SQLAlchemy objects to JSON-safe dictionaries. Handle datetime with .isoformat(). Control nesting depth with optional parameters to avoid infinite recursion."
+        },
+        {
+          "title": "Request Validation Helper",
+          "code": "from flask import Flask, request, jsonify\nfrom functools import wraps\n\napp = Flask(__name__)\n\ndef require_json(*required_fields):\n    \"\"\"Decorator to validate JSON request body.\"\"\"\n    def decorator(f):\n        @wraps(f)\n        def wrapper(*args, **kwargs):\n            data = request.get_json(silent=True)\n            if data is None:\n                return jsonify({'error': 'Request must be JSON'}), 400\n            missing = [field for field in required_fields if field not in data]\n            if missing:\n                return jsonify({\n                    'error': 'Missing required fields',\n                    'fields': missing\n                }), 400\n            return f(*args, **kwargs)\n        return wrapper\n    return decorator\n\n@app.post('/api/users')\n@require_json('name', 'email')\ndef create_user():\n    data = request.get_json()\n    # data is guaranteed to have 'name' and 'email'\n    return jsonify({'created': data['name']}), 201",
+          "explanation": "A decorator validates the JSON request body before the view runs. This keeps view functions clean and ensures required fields are present. The decorator returns 400 for invalid requests."
+        }
+      ],
+      "notes": [
+        "Return dicts for simple JSON responses. Use jsonify() for arrays or when you need more control.",
+        "Always use meaningful HTTP status codes: 200 for success, 201 for created, 400 for bad input, 404 for not found.",
+        "Serialize datetime objects with .isoformat() for JSON compatibility.",
+        "Keep your API response format consistent across all endpoints."
+      ],
+      "commonPitfalls": [
+        "Returning SQLAlchemy model objects directly (not JSON serializable). Always call to_dict() first.",
+        "Not validating request.get_json(), which returns None for non-JSON or malformed requests.",
+        "Using 200 for everything instead of semantic status codes like 201, 204, 400, 404."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "json-resp-ex1",
+        "title": "Build a Books API",
+        "description": "Create GET /api/books (list all) and POST /api/books (create from JSON with title and author). Use proper status codes (200 for list, 201 for create, 400 for missing fields).",
+        "starterCode": "from flask import Flask, request, jsonify\n\napp = Flask(__name__)\nbooks = []\n\n# Create the API routes\n",
+        "solution": "from flask import Flask, request, jsonify\n\napp = Flask(__name__)\nbooks = []\n\n@app.get('/api/books')\ndef list_books():\n    return jsonify(books)\n\n@app.post('/api/books')\ndef create_book():\n    data = request.get_json()\n    if not data or 'title' not in data:\n        return jsonify({'error': 'Title is required'}), 400\n    book = {\n        'id': len(books) + 1,\n        'title': data['title'],\n        'author': data.get('author', 'Unknown')\n    }\n    books.append(book)\n    return jsonify(book), 201",
+        "hints": [
+          "Use jsonify() for arrays",
+          "Return 201 for successful creation",
+          "Validate that the JSON body and required fields exist"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "json-resp-ex2",
+        "title": "Model to_dict Method",
+        "description": "Add a to_dict() method to a Product model that serializes id, name, price (float), and created_at (datetime as ISO string).",
+        "starterCode": "from flask_sqlalchemy import SQLAlchemy\nfrom datetime import datetime\n\ndb = SQLAlchemy()\n\nclass Product(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(100))\n    price = db.Column(db.Float)\n    created_at = db.Column(db.DateTime, default=datetime.utcnow)\n\n    # Add to_dict method\n",
+        "solution": "from flask_sqlalchemy import SQLAlchemy\nfrom datetime import datetime\n\ndb = SQLAlchemy()\n\nclass Product(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(100))\n    price = db.Column(db.Float)\n    created_at = db.Column(db.DateTime, default=datetime.utcnow)\n\n    def to_dict(self):\n        return {\n            'id': self.id,\n            'name': self.name,\n            'price': self.price,\n            'created_at': self.created_at.isoformat() if self.created_at else None\n        }",
+        "hints": [
+          "Use .isoformat() for datetime serialization",
+          "Handle None datetimes with a conditional",
+          "Return a plain dict, not a JSON string"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "flask-restful",
+    "sectionId": "rest-apis",
+    "orderIndex": 1,
+    "title": "Flask-RESTful",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Flask-RESTful", "Resource", "reqparse", "marshal_with", "Api", "Class-Based API"],
+    "content": {
+      "explanation": "Flask-RESTful is an extension that adds support for building REST APIs with class-based resources. While you can build APIs with plain Flask routes, Flask-RESTful provides a structured approach with automatic request parsing, response marshalling, and error handling.\n\nThe core concept in Flask-RESTful is the Resource class. Each Resource represents a REST endpoint and defines methods for HTTP verbs: get(), post(), put(), patch(), and delete(). The Api object registers Resources with URL rules, similar to how Flask registers view functions.\n\nRequest parsing with reqparse replaces manual request.get_json() and validation. You define a RequestParser with expected arguments, their types, locations (json, args, form, headers), and whether they are required. The parser validates the request and returns parsed arguments as a namespace object.\n\nResponse marshalling with marshal_with defines the output format. You create a dictionary of field definitions that maps model attributes to JSON fields. marshal_with acts as a decorator that filters and formats the response, ensuring only specified fields are included and types are correct.\n\nFlask-RESTful provides automatic error handling. If a request fails parsing, it returns a 400 error with details about which field failed and why. You can customize error messages and add custom error handlers.\n\nThe Api object manages resources and handles content negotiation, error formatting, and URL routing. You can prefix all resources with a URL prefix, and resources can have multiple URL rules.\n\nNote: Flask-RESTful is in maintenance mode. For new projects, consider Flask-RESTX (actively maintained fork with Swagger documentation), Flask-Smorest (built on marshmallow with OpenAPI support), or just plain Flask with marshmallow for serialization.",
+      "codeExamples": [
+        {
+          "title": "Basic Flask-RESTful Setup",
+          "code": "from flask import Flask\nfrom flask_restful import Api, Resource, reqparse\n\napp = Flask(__name__)\napi = Api(app)\n\ntasks = [\n    {'id': 1, 'title': 'Buy groceries', 'done': False},\n    {'id': 2, 'title': 'Read a book', 'done': True},\n]\n\nclass TaskList(Resource):\n    def get(self):\n        return tasks\n\n    def post(self):\n        parser = reqparse.RequestParser()\n        parser.add_argument('title', type=str, required=True, help='Title is required')\n        args = parser.parse_args()\n\n        task = {'id': len(tasks) + 1, 'title': args['title'], 'done': False}\n        tasks.append(task)\n        return task, 201\n\nclass Task(Resource):\n    def get(self, task_id):\n        task = next((t for t in tasks if t['id'] == task_id), None)\n        if not task:\n            return {'error': 'Not found'}, 404\n        return task\n\n    def delete(self, task_id):\n        global tasks\n        tasks = [t for t in tasks if t['id'] != task_id]\n        return '', 204\n\napi.add_resource(TaskList, '/api/tasks')\napi.add_resource(Task, '/api/tasks/<int:task_id>')",
+          "explanation": "Resource classes define HTTP methods. TaskList handles the collection (GET all, POST new). Task handles individual items (GET one, DELETE). api.add_resource binds URLs to resources."
+        },
+        {
+          "title": "Request Parsing with reqparse",
+          "code": "from flask_restful import reqparse\n\n# Define reusable parser\nuser_parser = reqparse.RequestParser()\nuser_parser.add_argument('name', type=str, required=True,\n    help='Name is required', location='json')\nuser_parser.add_argument('email', type=str, required=True,\n    help='Valid email required', location='json')\nuser_parser.add_argument('age', type=int, required=False,\n    default=0, location='json')\nuser_parser.add_argument('role', type=str, choices=('admin', 'user'),\n    default='user', location='json')\n\nclass UserList(Resource):\n    def post(self):\n        args = user_parser.parse_args(strict=True)  # Reject unknown fields\n\n        user = {\n            'name': args['name'],\n            'email': args['email'],\n            'age': args['age'],\n            'role': args['role']\n        }\n        return user, 201\n\n# If validation fails, auto returns:\n# {\"message\": {\"name\": \"Name is required\"}} with 400 status",
+          "explanation": "reqparse validates and parses request data. Each argument has a type, required flag, default, and allowed choices. strict=True rejects unexpected fields. Validation errors return 400 automatically."
+        },
+        {
+          "title": "Response Marshalling",
+          "code": "from flask_restful import Resource, fields, marshal_with, marshal\n\n# Define output format\nuser_fields = {\n    'id': fields.Integer,\n    'name': fields.String,\n    'email': fields.String,\n    'created_at': fields.DateTime(dt_format='iso8601'),\n    'profile_url': fields.Url('user_detail', absolute=True),\n}\n\nclass UserList(Resource):\n    @marshal_with(user_fields)\n    def get(self):\n        users = User.query.all()\n        return users  # Automatically marshalled\n\nclass UserDetail(Resource):\n    @marshal_with(user_fields)\n    def get(self, user_id):\n        user = User.query.get_or_404(user_id)\n        return user\n\n# Or marshal manually:\ndef get_users():\n    users = User.query.all()\n    return marshal(users, user_fields)",
+          "explanation": "marshal_with controls exactly which fields appear in the response and how they are formatted. It filters out unlisted fields (like password_hash) and formats types like DateTime. fields.Url generates URLs automatically."
+        },
+        {
+          "title": "Full CRUD Resource",
+          "code": "from flask import Flask\nfrom flask_restful import Api, Resource, reqparse, marshal_with, fields, abort\n\napp = Flask(__name__)\napi = Api(app)\n\nbook_fields = {\n    'id': fields.Integer,\n    'title': fields.String,\n    'author': fields.String,\n    'year': fields.Integer,\n}\n\nbook_parser = reqparse.RequestParser()\nbook_parser.add_argument('title', type=str, required=True)\nbook_parser.add_argument('author', type=str, required=True)\nbook_parser.add_argument('year', type=int)\n\nbooks = {}\nnext_id = 1\n\nclass BookList(Resource):\n    @marshal_with(book_fields)\n    def get(self):\n        return list(books.values())\n\n    @marshal_with(book_fields)\n    def post(self):\n        global next_id\n        args = book_parser.parse_args()\n        book = {'id': next_id, **args}\n        books[next_id] = book\n        next_id += 1\n        return book, 201\n\nclass BookDetail(Resource):\n    @marshal_with(book_fields)\n    def get(self, book_id):\n        if book_id not in books:\n            abort(404, message=f'Book {book_id} not found')\n        return books[book_id]\n\n    @marshal_with(book_fields)\n    def put(self, book_id):\n        args = book_parser.parse_args()\n        books[book_id] = {'id': book_id, **args}\n        return books[book_id]\n\n    def delete(self, book_id):\n        if book_id in books:\n            del books[book_id]\n        return '', 204\n\napi.add_resource(BookList, '/api/books')\napi.add_resource(BookDetail, '/api/books/<int:book_id>')",
+          "explanation": "A complete CRUD resource with parsing and marshalling. BookList handles collection operations, BookDetail handles individual resources. marshal_with ensures consistent output. abort returns errors with messages."
+        }
+      ],
+      "notes": [
+        "Flask-RESTful Resources are like MethodView but with added parsing and marshalling.",
+        "reqparse validates input automatically and returns 400 with details on failure.",
+        "marshal_with filters output fields, preventing sensitive data (like passwords) from leaking.",
+        "Flask-RESTful is in maintenance mode. Consider Flask-RESTX or Flask-Smorest for new projects."
+      ],
+      "commonPitfalls": [
+        "Using reqparse location='json' but the client sends form data (or vice versa).",
+        "Not including all needed fields in the marshal definition, resulting in missing data in responses.",
+        "Creating a new parser inside each method instead of reusing one, duplicating argument definitions."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "restful-ex1",
+        "title": "Create a Resource Class",
+        "description": "Create a Flask-RESTful Resource called NoteList that handles GET (return all notes) and POST (create a note with parsed 'text' argument). Register it at '/api/notes'.",
+        "starterCode": "from flask import Flask\nfrom flask_restful import Api, Resource, reqparse\n\napp = Flask(__name__)\napi = Api(app)\nnotes = []\n\n# Create NoteList resource and register\n",
+        "solution": "from flask import Flask\nfrom flask_restful import Api, Resource, reqparse\n\napp = Flask(__name__)\napi = Api(app)\nnotes = []\n\nclass NoteList(Resource):\n    def get(self):\n        return notes\n\n    def post(self):\n        parser = reqparse.RequestParser()\n        parser.add_argument('text', type=str, required=True, help='Text is required')\n        args = parser.parse_args()\n        note = {'id': len(notes) + 1, 'text': args['text']}\n        notes.append(note)\n        return note, 201\n\napi.add_resource(NoteList, '/api/notes')",
+        "hints": [
+          "Define get() and post() methods on the Resource class",
+          "Use reqparse to validate the 'text' argument",
+          "Register with api.add_resource()"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "restful-ex2",
+        "title": "Marshalled Response",
+        "description": "Define fields for a user response (id, name, email only - exclude password_hash). Use marshal_with on a UserDetail resource that returns a User object by ID.",
+        "starterCode": "from flask_restful import Resource, fields, marshal_with\n\n# Define fields and create UserDetail resource\n",
+        "solution": "from flask_restful import Resource, fields, marshal_with, abort\n\nuser_fields = {\n    'id': fields.Integer,\n    'name': fields.String,\n    'email': fields.String,\n}\n\nclass UserDetail(Resource):\n    @marshal_with(user_fields)\n    def get(self, user_id):\n        user = User.query.get(user_id)\n        if not user:\n            abort(404, message='User not found')\n        return user",
+        "hints": [
+          "Only include fields you want in the response (exclude password_hash)",
+          "marshal_with automatically serializes the User object",
+          "Use abort() for error responses"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "api-error-handling",
+    "sectionId": "rest-apis",
+    "orderIndex": 2,
+    "title": "Error Handling",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Error Handlers", "Custom Exceptions", "abort", "Error Response Format", "Logging"],
+    "content": {
+      "explanation": "Proper error handling in REST APIs is critical for both the developer experience and application reliability. Clients need consistent, informative error responses to handle failures gracefully. Flask provides several mechanisms for error handling that you should use in every API.\n\nFlask's abort() function immediately stops request processing and returns an error response. By default, it returns HTML error pages, which is not ideal for APIs. Custom error handlers let you override this behavior to return JSON responses with meaningful error details.\n\nA well-designed API error response should include: an error code or type, a human-readable message, optional details about what went wrong, and the HTTP status code. Some APIs also include a request ID for debugging, a documentation URL, and field-level validation errors.\n\nCustom exception classes give you structured error handling. Define exception classes that map to specific HTTP errors (BadRequest, NotFound, Forbidden). Each carries a status code and message. Register error handlers for these exceptions to convert them into JSON responses.\n\nFlask's @app.errorhandler can handle both status codes (404, 500) and exception classes (ValueError, CustomError). For APIs, register handlers for common HTTP errors and your custom exceptions. Use a generic 500 handler as a safety net to catch unexpected errors.\n\nLogging is essential for debugging errors in production. Flask uses Python's logging module. Configure it to log to files, external services (Sentry, CloudWatch), or stdout (for Docker). Log the error details, request information, and stack trace for 500 errors. Never expose stack traces to API clients.\n\nFor validation errors (wrong field types, missing required fields, invalid values), return 400 or 422 with a structured response listing each field and its errors. This helps frontend developers build proper error displays. Libraries like marshmallow provide validation with structured error output.",
+      "codeExamples": [
+        {
+          "title": "JSON Error Handlers",
+          "code": "from flask import Flask, jsonify\n\napp = Flask(__name__)\n\n@app.errorhandler(400)\ndef bad_request(error):\n    return jsonify({\n        'error': 'Bad Request',\n        'message': str(error.description),\n        'status': 400\n    }), 400\n\n@app.errorhandler(404)\ndef not_found(error):\n    return jsonify({\n        'error': 'Not Found',\n        'message': 'The requested resource was not found.',\n        'status': 404\n    }), 404\n\n@app.errorhandler(405)\ndef method_not_allowed(error):\n    return jsonify({\n        'error': 'Method Not Allowed',\n        'message': str(error.description),\n        'status': 405\n    }), 405\n\n@app.errorhandler(500)\ndef server_error(error):\n    app.logger.error(f'Server Error: {error}')\n    return jsonify({\n        'error': 'Internal Server Error',\n        'message': 'An unexpected error occurred.',\n        'status': 500\n    }), 500",
+          "explanation": "Error handlers convert Flask's default HTML error pages to JSON. The 500 handler logs the error but returns a generic message to the client (never expose stack traces). Register handlers for all common HTTP errors."
+        },
+        {
+          "title": "Custom Exception Classes",
+          "code": "from flask import Flask, jsonify\n\nclass APIError(Exception):\n    \"\"\"Base class for API errors.\"\"\"\n    def __init__(self, message, status_code=400, details=None):\n        self.message = message\n        self.status_code = status_code\n        self.details = details\n\n    def to_dict(self):\n        rv = {'error': self.message, 'status': self.status_code}\n        if self.details:\n            rv['details'] = self.details\n        return rv\n\nclass NotFoundError(APIError):\n    def __init__(self, resource='Resource'):\n        super().__init__(f'{resource} not found', 404)\n\nclass ValidationError(APIError):\n    def __init__(self, errors):\n        super().__init__('Validation failed', 422, details=errors)\n\napp = Flask(__name__)\n\n@app.errorhandler(APIError)\ndef handle_api_error(error):\n    return jsonify(error.to_dict()), error.status_code\n\n@app.get('/api/users/<int:user_id>')\ndef get_user(user_id):\n    user = User.query.get(user_id)\n    if not user:\n        raise NotFoundError('User')\n    return jsonify(user.to_dict())\n\n@app.post('/api/users')\ndef create_user():\n    data = request.get_json()\n    errors = {}\n    if not data.get('name'):\n        errors['name'] = 'Name is required'\n    if not data.get('email'):\n        errors['email'] = 'Email is required'\n    if errors:\n        raise ValidationError(errors)\n    # Create user...",
+          "explanation": "Custom exception classes carry error information. A base APIError class provides status code and message. Subclasses like NotFoundError and ValidationError add semantic meaning. One error handler catches all APIError subclasses."
+        },
+        {
+          "title": "Logging Configuration",
+          "code": "import logging\nfrom flask import Flask, jsonify\n\napp = Flask(__name__)\n\n# Configure logging\nif not app.debug:\n    # File handler for production\n    file_handler = logging.FileHandler('app.log')\n    file_handler.setLevel(logging.WARNING)\n    file_handler.setFormatter(logging.Formatter(\n        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'\n    ))\n    app.logger.addHandler(file_handler)\n\n@app.errorhandler(Exception)\ndef handle_unexpected_error(error):\n    \"\"\"Catch-all for unhandled exceptions.\"\"\"\n    app.logger.exception(f'Unhandled exception: {error}')\n    return jsonify({\n        'error': 'Internal Server Error',\n        'message': 'Something went wrong. Please try again later.',\n    }), 500\n\n@app.route('/api/data')\ndef get_data():\n    app.logger.info('Data endpoint accessed')\n    try:\n        result = perform_operation()\n        return jsonify(result)\n    except ValueError as e:\n        app.logger.warning(f'ValueError in get_data: {e}')\n        return jsonify({'error': str(e)}), 400",
+          "explanation": "Configure file logging for production. The catch-all Exception handler logs stack traces with logger.exception() but returns a generic message to clients. Use different log levels (info, warning, error) appropriately."
+        },
+        {
+          "title": "Validation Error Format",
+          "code": "from flask import Flask, request, jsonify\n\napp = Flask(__name__)\n\ndef validate_user_data(data):\n    \"\"\"Validate user creation data and return errors dict.\"\"\"\n    errors = {}\n\n    if not data:\n        return {'_general': 'Request body must be JSON'}\n\n    if not data.get('name') or len(data['name'].strip()) < 2:\n        errors['name'] = 'Name must be at least 2 characters'\n\n    email = data.get('email', '')\n    if not email or '@' not in email:\n        errors['email'] = 'Valid email is required'\n\n    age = data.get('age')\n    if age is not None and (not isinstance(age, int) or age < 0):\n        errors['age'] = 'Age must be a positive integer'\n\n    return errors\n\n@app.post('/api/users')\ndef create_user():\n    data = request.get_json(silent=True)\n    errors = validate_user_data(data)\n\n    if errors:\n        return jsonify({\n            'error': 'Validation failed',\n            'status': 422,\n            'details': errors\n        }), 422\n\n    # Proceed with creation\n    return jsonify({'created': data['name']}), 201",
+          "explanation": "Validation errors return 422 with field-level error messages. The 'details' dict maps field names to error descriptions. Clients can use this to display errors next to the corresponding form inputs."
+        }
+      ],
+      "notes": [
+        "Always return JSON error responses in APIs, never HTML error pages.",
+        "Use custom exception classes for structured error handling across your app.",
+        "Log errors in production but never expose stack traces to API clients.",
+        "Return field-level validation errors with 422 status for the best developer experience."
+      ],
+      "interviewTips": [
+        "Describe a layered error handling strategy: validation errors (400/422), business logic errors (403/409), not found (404), and unexpected errors (500).",
+        "Explain why you never expose stack traces to clients (security risk) but always log them server-side.",
+        "Mention centralized error handling with custom exception classes and a single error handler."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "error-handling-ex1",
+        "title": "Create JSON Error Handlers",
+        "description": "Register error handlers for 400, 404, and 500 that return consistent JSON responses with 'error', 'message', and 'status' keys.",
+        "starterCode": "from flask import Flask, jsonify\n\napp = Flask(__name__)\n\n# Register error handlers\n",
+        "solution": "from flask import Flask, jsonify\n\napp = Flask(__name__)\n\n@app.errorhandler(400)\ndef bad_request(error):\n    return jsonify({'error': 'Bad Request', 'message': str(error.description), 'status': 400}), 400\n\n@app.errorhandler(404)\ndef not_found(error):\n    return jsonify({'error': 'Not Found', 'message': 'Resource not found', 'status': 404}), 404\n\n@app.errorhandler(500)\ndef server_error(error):\n    return jsonify({'error': 'Internal Server Error', 'message': 'An unexpected error occurred', 'status': 500}), 500",
+        "hints": [
+          "Each handler receives the error object as an argument",
+          "Return a tuple of (jsonify result, status code)",
+          "Use str(error.description) for the error message"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "error-handling-ex2",
+        "title": "Custom APIError Exception",
+        "description": "Create an APIError exception class with message and status_code. Create a NotFoundError subclass with status 404. Register an error handler that catches APIError and returns JSON.",
+        "starterCode": "from flask import Flask, jsonify\n\n# Create exception classes and error handler\n",
+        "solution": "from flask import Flask, jsonify\n\nclass APIError(Exception):\n    def __init__(self, message, status_code=400):\n        self.message = message\n        self.status_code = status_code\n\nclass NotFoundError(APIError):\n    def __init__(self, resource='Resource'):\n        super().__init__(f'{resource} not found', 404)\n\napp = Flask(__name__)\n\n@app.errorhandler(APIError)\ndef handle_api_error(error):\n    return jsonify({'error': error.message, 'status': error.status_code}), error.status_code\n\n@app.get('/api/items/<int:item_id>')\ndef get_item(item_id):\n    raise NotFoundError('Item')",
+        "hints": [
+          "APIError inherits from Exception",
+          "Store message and status_code as instance attributes",
+          "The error handler catches APIError and all its subclasses"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "api-pagination-filtering",
+    "sectionId": "rest-apis",
+    "orderIndex": 3,
+    "title": "API Pagination & Filtering",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Pagination", "Filtering", "Sorting", "Query Parameters", "HATEOAS", "Cursor Pagination"],
+    "content": {
+      "explanation": "Pagination and filtering are essential for APIs that serve large datasets. Without pagination, an endpoint returning thousands of records would be slow, consume excessive bandwidth, and overwhelm clients. Filtering lets clients request only the data they need.\n\nOffset-based pagination is the most common approach. Clients pass page and per_page (or limit and offset) query parameters. The API returns a slice of results along with metadata: total count, current page, total pages, and links to next/previous pages. Flask-SQLAlchemy's paginate() method handles this pattern well.\n\nCursor-based pagination is more efficient for large datasets. Instead of page numbers, the client passes a cursor (usually the ID or timestamp of the last item). The API returns items after that cursor. This avoids the performance issues of OFFSET on large tables and handles concurrent inserts gracefully.\n\nFiltering allows clients to narrow down results. Common patterns include exact match (status=active), partial match (name__contains=john), range (price_min=10&price_max=50), and boolean filters (in_stock=true). Parse these from query parameters and build dynamic queries.\n\nSorting lets clients control the order of results. The sort parameter typically uses a field name with an optional prefix for direction: sort=name (ascending) or sort=-name (descending). Support multiple sort fields: sort=category,-price.\n\nHATEOAS (Hypermedia as the Engine of Application State) is a REST principle where API responses include links to related resources and actions. For pagination, this means including links to the next page, previous page, first page, and last page. Clients follow these links instead of constructing URLs themselves.\n\nPerformance considerations: always limit the maximum per_page value to prevent clients from requesting millions of records. Add database indexes on columns used for filtering and sorting. Use select_related or joinedload for related data. Consider caching paginated responses for frequently accessed data.",
+      "codeExamples": [
+        {
+          "title": "Offset-Based Pagination",
+          "code": "from flask import Flask, request, jsonify, url_for\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'\ndb = SQLAlchemy(app)\n\nclass Product(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(100))\n    price = db.Column(db.Float)\n    category = db.Column(db.String(50))\n\n@app.get('/api/products')\ndef list_products():\n    page = request.args.get('page', 1, type=int)\n    per_page = min(request.args.get('per_page', 20, type=int), 100)\n\n    pagination = Product.query.order_by(Product.id)\\\n        .paginate(page=page, per_page=per_page, error_out=False)\n\n    return jsonify({\n        'items': [{'id': p.id, 'name': p.name, 'price': p.price}\n                  for p in pagination.items],\n        'meta': {\n            'page': page,\n            'per_page': per_page,\n            'total': pagination.total,\n            'pages': pagination.pages,\n            'has_next': pagination.has_next,\n            'has_prev': pagination.has_prev,\n        },\n        'links': {\n            'next': url_for('list_products', page=page+1, per_page=per_page,\n                           _external=True) if pagination.has_next else None,\n            'prev': url_for('list_products', page=page-1, per_page=per_page,\n                           _external=True) if pagination.has_prev else None,\n        }\n    })",
+          "explanation": "Offset-based pagination uses page and per_page parameters. The response includes items, metadata (total, pages), and links to next/previous pages. Always cap per_page with min() to prevent abuse."
+        },
+        {
+          "title": "Filtering and Sorting",
+          "code": "from flask import request, jsonify\n\n@app.get('/api/products')\ndef list_products():\n    query = Product.query\n\n    # Filter by category\n    category = request.args.get('category')\n    if category:\n        query = query.filter(Product.category == category)\n\n    # Filter by price range\n    min_price = request.args.get('min_price', type=float)\n    max_price = request.args.get('max_price', type=float)\n    if min_price is not None:\n        query = query.filter(Product.price >= min_price)\n    if max_price is not None:\n        query = query.filter(Product.price <= max_price)\n\n    # Search by name\n    search = request.args.get('q')\n    if search:\n        query = query.filter(Product.name.ilike(f'%{search}%'))\n\n    # Sorting: sort=price or sort=-price\n    sort = request.args.get('sort', 'id')\n    if sort.startswith('-'):\n        query = query.order_by(getattr(Product, sort[1:]).desc())\n    else:\n        query = query.order_by(getattr(Product, sort).asc())\n\n    # Paginate\n    page = request.args.get('page', 1, type=int)\n    pagination = query.paginate(page=page, per_page=20, error_out=False)\n\n    return jsonify({\n        'items': [p.to_dict() for p in pagination.items],\n        'total': pagination.total\n    })",
+          "explanation": "Build the query dynamically based on query parameters. Filter by exact match, range, and search. Sort by field name with '-' prefix for descending. Apply pagination last. Each filter is optional."
+        },
+        {
+          "title": "Cursor-Based Pagination",
+          "code": "from flask import request, jsonify\nfrom sqlalchemy import and_\n\n@app.get('/api/posts')\ndef list_posts():\n    limit = min(request.args.get('limit', 20, type=int), 100)\n    cursor = request.args.get('cursor', type=int)  # Last seen ID\n\n    query = Post.query.order_by(Post.id.asc())\n\n    if cursor:\n        query = query.filter(Post.id > cursor)\n\n    posts = query.limit(limit + 1).all()  # Fetch one extra to check has_next\n\n    has_next = len(posts) > limit\n    if has_next:\n        posts = posts[:limit]  # Remove the extra item\n\n    next_cursor = posts[-1].id if posts and has_next else None\n\n    return jsonify({\n        'items': [p.to_dict() for p in posts],\n        'next_cursor': next_cursor,\n        'has_next': has_next,\n    })\n\n# Client usage:\n# GET /api/posts?limit=20           -> first page\n# GET /api/posts?limit=20&cursor=42 -> items after id 42",
+          "explanation": "Cursor pagination uses the last item's ID as a cursor. Query for items with ID > cursor. Fetch limit+1 items to determine if there are more. Return the last item's ID as next_cursor for the client to use."
+        },
+        {
+          "title": "Reusable Pagination Helper",
+          "code": "from flask import request, url_for, jsonify\n\ndef paginate_query(query, schema_fn, endpoint, **kwargs):\n    \"\"\"Generic pagination helper.\"\"\"\n    page = request.args.get('page', 1, type=int)\n    per_page = min(request.args.get('per_page', 20, type=int), 100)\n\n    pagination = query.paginate(page=page, per_page=per_page, error_out=False)\n\n    return jsonify({\n        'items': [schema_fn(item) for item in pagination.items],\n        'meta': {\n            'page': page,\n            'per_page': per_page,\n            'total': pagination.total,\n            'pages': pagination.pages,\n        },\n        'links': {\n            'self': url_for(endpoint, page=page, per_page=per_page,\n                           _external=True, **kwargs),\n            'next': url_for(endpoint, page=page+1, per_page=per_page,\n                           _external=True, **kwargs) if pagination.has_next else None,\n            'prev': url_for(endpoint, page=page-1, per_page=per_page,\n                           _external=True, **kwargs) if pagination.has_prev else None,\n        }\n    })\n\n# Usage:\n@app.get('/api/users')\ndef list_users():\n    query = User.query.order_by(User.created_at.desc())\n    return paginate_query(query, lambda u: u.to_dict(), 'list_users')\n\n@app.get('/api/posts')\ndef list_posts():\n    query = Post.query.order_by(Post.created_at.desc())\n    return paginate_query(query, lambda p: p.to_dict(), 'list_posts')",
+          "explanation": "A reusable helper function handles pagination for any query. Pass the query, a serialization function, and the endpoint name. The helper handles page/per_page parsing, metadata, and HATEOAS links."
+        }
+      ],
+      "notes": [
+        "Always cap per_page with a maximum (e.g., 100) to prevent performance abuse.",
+        "Offset pagination is simple but slow for large offsets. Use cursor pagination for large datasets.",
+        "Include pagination metadata (total, pages, has_next) and links (next, prev) in responses.",
+        "Add database indexes on columns used for filtering and sorting."
+      ],
+      "commonPitfalls": [
+        "Not capping per_page, allowing clients to request millions of records at once.",
+        "Using OFFSET for large datasets, which gets slower as the offset increases.",
+        "Not validating sort field names, allowing SQL injection through dynamic column selection."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "pagination-ex1",
+        "title": "Paginated API Endpoint",
+        "description": "Create a GET /api/items endpoint that paginates items from a query. Accept 'page' and 'per_page' query params (cap per_page at 50). Return items, total count, and current page.",
+        "starterCode": "from flask import Flask, request, jsonify\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'\ndb = SQLAlchemy(app)\n\nclass Item(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(100))\n\n# Create the paginated endpoint\n",
+        "solution": "from flask import Flask, request, jsonify\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'\ndb = SQLAlchemy(app)\n\nclass Item(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(100))\n\n@app.get('/api/items')\ndef list_items():\n    page = request.args.get('page', 1, type=int)\n    per_page = min(request.args.get('per_page', 20, type=int), 50)\n\n    pagination = Item.query.paginate(page=page, per_page=per_page, error_out=False)\n\n    return jsonify({\n        'items': [{'id': i.id, 'name': i.name} for i in pagination.items],\n        'total': pagination.total,\n        'page': page,\n        'pages': pagination.pages,\n        'has_next': pagination.has_next\n    })",
+        "hints": [
+          "Use min() to cap per_page at 50",
+          "paginate() returns a Pagination object with items and metadata",
+          "error_out=False returns empty page instead of 404 for invalid pages"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "pagination-ex2",
+        "title": "Filtered and Sorted Query",
+        "description": "Create a GET /api/products endpoint that supports filtering by 'category' and sorting by 'sort' parameter (prefix '-' for descending). Apply pagination.",
+        "starterCode": "from flask import Flask, request, jsonify\n\n# Build filtered, sorted, paginated endpoint\n",
+        "solution": "from flask import Flask, request, jsonify\nfrom flask_sqlalchemy import SQLAlchemy\n\napp = Flask(__name__)\napp.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'\ndb = SQLAlchemy(app)\n\nclass Product(db.Model):\n    id = db.Column(db.Integer, primary_key=True)\n    name = db.Column(db.String(100))\n    category = db.Column(db.String(50))\n    price = db.Column(db.Float)\n\n@app.get('/api/products')\ndef list_products():\n    query = Product.query\n\n    category = request.args.get('category')\n    if category:\n        query = query.filter(Product.category == category)\n\n    sort = request.args.get('sort', 'id')\n    allowed = {'id', 'name', 'price'}\n    sort_field = sort.lstrip('-')\n    if sort_field in allowed:\n        col = getattr(Product, sort_field)\n        query = query.order_by(col.desc() if sort.startswith('-') else col.asc())\n\n    page = request.args.get('page', 1, type=int)\n    pagination = query.paginate(page=page, per_page=20, error_out=False)\n\n    return jsonify({\n        'items': [{'id': p.id, 'name': p.name, 'category': p.category, 'price': p.price}\n                  for p in pagination.items],\n        'total': pagination.total\n    })",
+        "hints": [
+          "Build the query dynamically with optional filters",
+          "Validate sort field names against an allowed set (prevent injection)",
+          "Use .lstrip('-') to extract the field name from sort parameter"
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

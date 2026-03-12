@@ -8,6 +8,7 @@ import {
 import api from "../../../lib/axios";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { SEO } from "../../../components/SEO";
+import { BadgesSection } from "../badges/BadgesSection";
 import type { ProjectItem, AchievementItem, VerifiedSkill } from "../../../lib/types";
 
 interface PublicProfile {
@@ -277,9 +278,15 @@ export default function PublicProfilePage() {
             </motion.div>
           )}
 
+          {/* Badges */}
+          <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
+            <BadgesSection studentId={profile.id} />
+          </motion.div>
+
           {/* Resumes */}
           {profile.resumes.length > 0 && (
-            <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible"
+            <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
               className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
               <h3 className="text-sm font-semibold text-gray-950 dark:text-white mb-4 flex items-center gap-2">
                 <FileText className="w-4 h-4 text-violet-500" /> Resumes

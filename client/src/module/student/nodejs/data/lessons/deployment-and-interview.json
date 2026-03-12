@@ -1,0 +1,353 @@
+[
+  {
+    "id": "environment-variables-config",
+    "sectionId": "deployment-and-interview",
+    "orderIndex": 0,
+    "title": "Environment Variables & Configuration",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": [".env files", "dotenv", "process.env", "config management", "secrets", "NODE_ENV"],
+    "content": {
+      "explanation": "Environment variables are the standard way to configure Node.js applications across different environments (development, testing, staging, production). They allow you to change application behavior without modifying code — database URLs, API keys, port numbers, and feature flags can all be set externally. This separation of configuration from code is one of the twelve-factor app principles and is essential for secure, deployable applications.\n\nThe `dotenv` package loads environment variables from a `.env` file into `process.env`. You create a `.env` file in your project root with KEY=VALUE pairs, call `require('dotenv').config()` at the top of your entry point, and access values with `process.env.KEY`. The .env file should never be committed to version control — add it to .gitignore and provide a `.env.example` file with placeholder values so other developers know which variables to set.\n\nConfiguration management goes beyond just reading environment variables. A well-structured config module validates that all required variables are present at startup (fail fast instead of crashing later), provides defaults for optional values, and groups related settings into logical objects. This prevents the common bug where a missing environment variable causes a cryptic error deep in your application long after startup.\n\nThe `NODE_ENV` variable is a convention used by Express and many npm packages. Setting it to 'production' enables optimizations in Express (view caching, less verbose errors), and many libraries use it to adjust their behavior. Common values are 'development', 'test', 'staging', and 'production'. Always set NODE_ENV explicitly in your deployment — Express defaults to 'development' if it is not set, which has performance implications.\n\nSecrets management in production requires more than just .env files. Production secrets (database passwords, API keys, JWT secrets) should be stored in environment variables provided by your hosting platform (Heroku Config Vars, AWS Parameter Store, Docker secrets, Kubernetes ConfigMaps). Never store production secrets in files that could be accidentally committed or accessed by unauthorized users. Use strong, unique values — a JWT secret should be at least 32 random characters.",
+      "codeExamples": [
+        {
+          "title": "dotenv and Configuration Module",
+          "code": "// Load .env file first\nrequire('dotenv').config();\n\n// config.js - centralized configuration\nconst config = {\n  port: parseInt(process.env.PORT, 10) || 3000,\n  nodeEnv: process.env.NODE_ENV || 'development',\n  db: {\n    url: process.env.DATABASE_URL,\n    pool: {\n      min: parseInt(process.env.DB_POOL_MIN, 10) || 2,\n      max: parseInt(process.env.DB_POOL_MAX, 10) || 10\n    }\n  },\n  jwt: {\n    secret: process.env.JWT_SECRET,\n    expiresIn: process.env.JWT_EXPIRES_IN || '1h'\n  },\n  cors: {\n    origin: process.env.CORS_ORIGIN || 'http://localhost:5173'\n  },\n  isProduction: process.env.NODE_ENV === 'production',\n  isDevelopment: process.env.NODE_ENV !== 'production'\n};\n\nconsole.log('Config loaded:');\nconsole.log('  Port:', config.port);\nconsole.log('  Environment:', config.nodeEnv);\nconsole.log('  DB Pool:', config.db.pool);\nconsole.log('  JWT Expiry:', config.jwt.expiresIn);\nconsole.log('  Is Production:', config.isProduction);",
+          "output": "Config loaded:\n  Port: 3000\n  Environment: development\n  DB Pool: { min: 2, max: 10 }\n  JWT Expiry: 1h\n  Is Production: false",
+          "explanation": "The config module centralizes all environment variable access in one place. Values are parsed to the correct type (parseInt for numbers), defaults are provided for optional values, and derived booleans (isProduction) simplify conditional logic throughout the app."
+        },
+        {
+          "title": "Validating Required Environment Variables",
+          "code": "require('dotenv').config();\n\nfunction validateEnv() {\n  const required = [\n    'DATABASE_URL',\n    'JWT_SECRET'\n  ];\n\n  const missing = required.filter(key => !process.env[key]);\n\n  if (missing.length > 0) {\n    console.error('Missing required environment variables:');\n    missing.forEach(key => console.error(`  - ${key}`));\n    console.error('\\nCheck your .env file or environment configuration.');\n    process.exit(1);\n  }\n\n  // Validate specific values\n  if (process.env.JWT_SECRET && process.env.JWT_SECRET.length < 32) {\n    console.warn('WARNING: JWT_SECRET should be at least 32 characters for security');\n  }\n\n  const port = parseInt(process.env.PORT, 10);\n  if (process.env.PORT && (isNaN(port) || port < 1 || port > 65535)) {\n    console.error('PORT must be a number between 1 and 65535');\n    process.exit(1);\n  }\n\n  console.log('Environment validation passed');\n}\n\n// Call at startup before anything else\n// validateEnv();\n\n// Demo with mock environment\nprocess.env.DATABASE_URL = 'postgresql://localhost/myapp';\nprocess.env.JWT_SECRET = 'a-very-long-secret-key-for-production-use-only-32chars';\nvalidateEnv();",
+          "output": "Environment validation passed",
+          "explanation": "Validation runs at startup and fails fast if required variables are missing. This prevents the application from starting in a broken state. It also checks value constraints like minimum JWT secret length and valid port numbers."
+        },
+        {
+          "title": ".env File Patterns and Examples",
+          "code": "// Example .env file structure:\n// # Server\n// PORT=3000\n// NODE_ENV=development\n//\n// # Database\n// DATABASE_URL=postgresql://postgres:password@localhost:5432/myapp\n//\n// # Authentication\n// JWT_SECRET=your-secret-key-at-least-32-characters\n// GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com\n//\n// # External Services\n// AWS_ACCESS_KEY_ID=AKIAIOSFODNN7EXAMPLE\n// AWS_SECRET_ACCESS_KEY=wJalrXUtnFEMI/K7MDENG/bPxRfiCYEXAMPLEKEY\n// AWS_REGION=us-east-1\n// AWS_BUCKET_NAME=my-app-uploads\n\n// .env.example (committed to git, no real values):\nconst envExample = `# Server\nPORT=3000\nNODE_ENV=development\n\n# Database\nDATABASE_URL=postgresql://postgres:password@localhost:5432/myapp\n\n# Auth (generate a strong secret!)\nJWT_SECRET=change-me-to-a-random-32-char-string\n\n# AWS (optional, falls back to local storage)\nAWS_ACCESS_KEY_ID=\nAWS_SECRET_ACCESS_KEY=\nAWS_REGION=us-east-1\nAWS_BUCKET_NAME=`;\n\nconsole.log('.env.example contents:');\nconsole.log(envExample.split('\\n').length, 'lines');\nconsole.log('\\nRules:');\nconsole.log('1. Never commit .env to git');\nconsole.log('2. Commit .env.example with placeholders');\nconsole.log('3. Use strong, unique secrets in production');",
+          "output": ".env.example contents:\n14 lines\n\nRules:\n1. Never commit .env to git\n2. Commit .env.example with placeholders\n3. Use strong, unique secrets in production",
+          "explanation": "The .env file contains actual secrets and is git-ignored. The .env.example file documents all required variables with placeholder values and is committed so new developers know what to configure. Comments explain the purpose of each variable."
+        }
+      ],
+      "notes": [
+        "Call require('dotenv').config() as early as possible in your entry file — before importing modules that use process.env.",
+        "Environment variables are always strings. Use parseInt(), parseFloat(), or === 'true' to convert to other types.",
+        "In production, set environment variables through your platform (Heroku, AWS, Docker) rather than .env files.",
+        "Use .env.test for test-specific configuration and load it conditionally: dotenv.config({ path: '.env.test' })."
+      ],
+      "commonPitfalls": [
+        "Committing .env files to git — secrets end up in version history forever, even if you delete the file later.",
+        "Not validating environment variables at startup — the app starts but crashes later with a confusing error.",
+        "Assuming process.env values are numbers or booleans — they are always strings and need explicit conversion.",
+        "Using different .env variable names than the .env.example — causes confusion when onboarding new developers."
+      ],
+      "interviewTips": [
+        "Explain the twelve-factor app principle of separating configuration from code.",
+        "Know why secrets should not be in code or git — even deleted files persist in git history.",
+        "Describe how NODE_ENV affects Express behavior (error detail, caching, performance).",
+        "Discuss production secrets management: platform env vars, AWS Secrets Manager, Vault."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "environment-variables-config-ex1",
+        "title": "Build a Config Validator",
+        "description": "Write a function `loadConfig(env)` that takes an env object (like process.env) and returns a config object with: port (number, default 3000), dbUrl (string, required), jwtSecret (string, required, min 16 chars). If any required field is missing or invalid, throw an Error listing the issues. Test with valid and invalid env objects.",
+        "starterCode": "// Write loadConfig(env) that:\n// - Extracts port (default 3000), dbUrl, jwtSecret from env\n// - Validates: dbUrl required, jwtSecret required and >= 16 chars\n// - Throws Error with description if invalid\n// - Returns { port, dbUrl, jwtSecret } if valid\n\n// Your code here\n\n// Test:\n// const config = loadConfig({ DATABASE_URL: 'pg://localhost/db', JWT_SECRET: 'a-secret-thats-long-enough' });\n// console.log(config);",
+        "solution": "function loadConfig(env) {\n  const errors = [];\n  const port = parseInt(env.PORT, 10) || 3000;\n  const dbUrl = env.DATABASE_URL;\n  const jwtSecret = env.JWT_SECRET;\n\n  if (!dbUrl) errors.push('DATABASE_URL is required');\n  if (!jwtSecret) errors.push('JWT_SECRET is required');\n  else if (jwtSecret.length < 16) errors.push('JWT_SECRET must be at least 16 characters');\n\n  if (errors.length > 0) {\n    throw new Error('Config validation failed: ' + errors.join('; '));\n  }\n\n  return { port, dbUrl, jwtSecret };\n}\n\n// Valid config\ntry {\n  const config = loadConfig({ DATABASE_URL: 'pg://localhost/db', JWT_SECRET: 'a-secret-thats-long-enough' });\n  console.log('Valid:', config);\n} catch (e) { console.log(e.message); }\n\n// Missing fields\ntry {\n  loadConfig({});\n} catch (e) { console.log('Missing:', e.message); }\n\n// Short secret\ntry {\n  loadConfig({ DATABASE_URL: 'pg://localhost/db', JWT_SECRET: 'short' });\n} catch (e) { console.log('Short:', e.message); }",
+        "expectedOutput": "Valid: { port: 3000, dbUrl: 'pg://localhost/db', jwtSecret: 'a-secret-thats-long-enough' }\nMissing: Config validation failed: DATABASE_URL is required; JWT_SECRET is required\nShort: Config validation failed: JWT_SECRET must be at least 16 characters",
+        "hints": [
+          "Collect all errors in an array before throwing — report all issues at once, not just the first one",
+          "Use parseInt with a fallback default for the port"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "process-managers",
+    "sectionId": "deployment-and-interview",
+    "orderIndex": 1,
+    "title": "Process Managers & PM2",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["PM2", "cluster mode", "graceful shutdown", "zero-downtime restart", "process monitoring", "ecosystem file"],
+    "content": {
+      "explanation": "In production, you never run a Node.js application with just `node app.js`. If the process crashes, it stays down. If the server has 8 CPU cores, a single Node.js process only uses one. Process managers solve both problems: they automatically restart crashed processes and can run multiple instances to utilize all CPU cores. PM2 is the most popular process manager for Node.js production deployments.\n\nPM2 (Process Manager 2) provides process management, monitoring, and load balancing out of the box. Starting an app with `pm2 start app.js` runs it as a background daemon that automatically restarts on crashes. PM2 tracks CPU usage, memory consumption, restart counts, and uptime for each process. The `pm2 monit` command provides a real-time dashboard, and `pm2 logs` streams application output.\n\nCluster mode is one of PM2's most powerful features. Node.js is single-threaded, meaning a single process can only use one CPU core. By running `pm2 start app.js -i max`, PM2 forks your application into multiple processes (one per CPU core) and load-balances incoming connections across them. This multiplies your application's throughput without any code changes. Each worker process handles requests independently, and if one crashes, the others continue serving while PM2 restarts the failed one.\n\nGraceful shutdown is essential for zero-downtime deployments and clean process management. When PM2 sends a shutdown signal (SIGINT), your application should stop accepting new connections, finish processing current requests, close database connections, and then exit. Without graceful shutdown, active requests are abruptly terminated, database transactions may be left in an inconsistent state, and users experience errors during deployments.\n\nThe PM2 ecosystem file (ecosystem.config.js) defines your application's configuration in code — script path, environment variables, cluster instances, log paths, and deployment settings. This file is version-controlled and ensures consistent configuration across team members and environments. PM2 also supports zero-downtime reloads with `pm2 reload`, which starts new worker processes before stopping old ones, ensuring no requests are dropped during deployment.",
+      "codeExamples": [
+        {
+          "title": "PM2 Commands and Ecosystem Configuration",
+          "code": "// PM2 CLI commands (run in terminal, not in code)\n// pm2 start app.js                    # Start in fork mode\n// pm2 start app.js -i max             # Cluster mode (all CPU cores)\n// pm2 start app.js -i 4               # 4 cluster instances\n// pm2 start app.js --name myapp       # Named process\n// pm2 list                             # List all processes\n// pm2 monit                            # Real-time monitoring\n// pm2 logs                             # Stream all logs\n// pm2 logs myapp --lines 100          # Last 100 lines for myapp\n// pm2 restart myapp                    # Restart (downtime)\n// pm2 reload myapp                     # Zero-downtime reload\n// pm2 stop myapp                       # Stop process\n// pm2 delete myapp                     # Remove from PM2\n// pm2 save                             # Save process list\n// pm2 startup                          # Auto-start on boot\n\n// ecosystem.config.js\nconst ecosystemConfig = {\n  apps: [{\n    name: 'myapp-api',\n    script: './src/index.js',\n    instances: 'max',\n    exec_mode: 'cluster',\n    autorestart: true,\n    max_memory_restart: '500M',\n    watch: false,\n    env: {\n      NODE_ENV: 'development',\n      PORT: 3000\n    },\n    env_production: {\n      NODE_ENV: 'production',\n      PORT: 8080\n    }\n  }]\n};\n\nconsole.log('Ecosystem config:', ecosystemConfig.apps[0].name);\nconsole.log('Instances:', ecosystemConfig.apps[0].instances);\nconsole.log('Mode:', ecosystemConfig.apps[0].exec_mode);\nconsole.log('Max memory:', ecosystemConfig.apps[0].max_memory_restart);",
+          "output": "Ecosystem config: myapp-api\nInstances: max\nMode: cluster\nMax memory: 500M",
+          "explanation": "The ecosystem config defines everything PM2 needs to run your app. 'instances: max' uses all CPU cores. 'exec_mode: cluster' enables load balancing. 'max_memory_restart' automatically restarts workers that exceed the memory limit. Different env blocks provide environment-specific variables."
+        },
+        {
+          "title": "Graceful Shutdown Pattern",
+          "code": "const express = require('express');\nconst app = express();\n\n// Simulate database connection\nconst db = { connected: true, close: () => { db.connected = false; } };\n\napp.get('/health', (req, res) => {\n  res.json({ status: 'ok', db: db.connected });\n});\n\nconst server = app.listen(3000, () => {\n  console.log('Server running on port 3000');\n});\n\n// Graceful shutdown handler\nfunction gracefulShutdown(signal) {\n  console.log(`\\n${signal} received. Starting graceful shutdown...`);\n\n  // Stop accepting new connections\n  server.close(() => {\n    console.log('HTTP server closed');\n\n    // Close database connections\n    db.close();\n    console.log('Database connections closed');\n\n    // Exit cleanly\n    console.log('Graceful shutdown complete');\n    process.exit(0);\n  });\n\n  // Force shutdown after 10 seconds\n  setTimeout(() => {\n    console.error('Forced shutdown after timeout');\n    process.exit(1);\n  }, 10000);\n}\n\n// Listen for shutdown signals\nprocess.on('SIGTERM', () => gracefulShutdown('SIGTERM'));\nprocess.on('SIGINT', () => gracefulShutdown('SIGINT'));\n\n// PM2 graceful shutdown\nprocess.on('message', (msg) => {\n  if (msg === 'shutdown') {\n    gracefulShutdown('PM2 shutdown');\n  }\n});\n\nconsole.log('Graceful shutdown handlers registered');\nconsole.log('Handles: SIGTERM, SIGINT, PM2 message');",
+          "output": "Graceful shutdown handlers registered\nHandles: SIGTERM, SIGINT, PM2 message",
+          "explanation": "The shutdown handler stops accepting new connections with server.close(), waits for active requests to finish, closes database connections, and exits. A timeout forces shutdown if cleanup takes too long. PM2 sends a 'shutdown' message via IPC, which is handled separately from OS signals."
+        },
+        {
+          "title": "Cluster Mode with Node.js Cluster Module",
+          "code": "const cluster = require('cluster');\nconst os = require('os');\n\nif (cluster.isPrimary) {\n  const numCPUs = os.cpus().length;\n  console.log(`Primary process ${process.pid}`);\n  console.log(`Starting ${numCPUs} workers...`);\n\n  // Fork workers\n  for (let i = 0; i < numCPUs; i++) {\n    cluster.fork();\n  }\n\n  // Restart crashed workers\n  cluster.on('exit', (worker, code, signal) => {\n    console.log(`Worker ${worker.process.pid} died (code: ${code}). Restarting...`);\n    cluster.fork();\n  });\n\n  cluster.on('online', (worker) => {\n    console.log(`Worker ${worker.process.pid} is online`);\n  });\n\n} else {\n  // Workers share the TCP connection\n  const express = require('express');\n  const app = express();\n\n  app.get('/', (req, res) => {\n    res.json({ worker: process.pid });\n  });\n\n  app.listen(3000, () => {\n    console.log(`Worker ${process.pid} listening on port 3000`);\n  });\n}\n\n// Note: PM2 cluster mode handles all this automatically!\n// Just use: pm2 start app.js -i max\nconsole.log('Process PID:', process.pid);\nconsole.log('Is primary:', cluster.isPrimary);\nconsole.log('CPU cores:', os.cpus().length);",
+          "output": "Process PID: 12345\nIs primary: true\nCPU cores: 8",
+          "explanation": "The Node.js cluster module is what PM2 uses internally. The primary process forks worker processes that share the same port. If a worker crashes, the primary restarts it. In practice, use PM2 instead of coding this manually — it handles clustering, monitoring, and log management."
+        }
+      ],
+      "notes": [
+        "Use `pm2 reload` (not restart) for zero-downtime deployments — it starts new workers before stopping old ones.",
+        "PM2 cluster mode works best with stateless applications — do not store session data in memory.",
+        "Set `max_memory_restart` to prevent memory leaks from taking down your server.",
+        "Use `pm2 startup` to configure PM2 to start automatically when the server reboots."
+      ],
+      "commonPitfalls": [
+        "Storing session data in memory when using cluster mode — each worker has its own memory, so sessions are not shared.",
+        "Not implementing graceful shutdown — active requests are terminated mid-response during deployments.",
+        "Running too many cluster instances — more instances than CPU cores causes context switching overhead.",
+        "Forgetting pm2 save after configuration changes — PM2 will not restore processes after a reboot."
+      ],
+      "interviewTips": [
+        "Explain why Node.js needs clustering — it is single-threaded and cannot utilize multiple CPU cores natively.",
+        "Know the difference between pm2 restart (downtime) and pm2 reload (zero-downtime).",
+        "Describe graceful shutdown: stop accepting connections, drain active requests, close resources, exit.",
+        "Understand the primary/worker architecture of the cluster module and how load balancing works."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "process-managers-ex1",
+        "title": "Implement Graceful Shutdown",
+        "description": "Write a function `setupGracefulShutdown(server, cleanup)` that registers SIGTERM and SIGINT handlers. Each handler should: log the signal name, call server.close() with a callback that calls the cleanup function and then process.exit(0). Add a 5-second forced shutdown timeout. Test by creating mock server and cleanup objects.",
+        "starterCode": "// Write setupGracefulShutdown(server, cleanup)\n// - Listen for SIGTERM and SIGINT\n// - Call server.close() -> cleanup() -> process.exit(0)\n// - Force exit after 5 seconds\n\n// Your code here\n\n// Test with mocks:\n// const mockServer = { close: (cb) => { console.log('Server closed'); cb(); } };\n// const mockCleanup = () => console.log('Cleanup done');\n// setupGracefulShutdown(mockServer, mockCleanup);",
+        "solution": "function setupGracefulShutdown(server, cleanup) {\n  function shutdown(signal) {\n    console.log(`${signal} received`);\n\n    server.close(() => {\n      console.log('Server closed');\n      cleanup();\n      console.log('Cleanup complete, exiting');\n      // process.exit(0); // commented for testing\n    });\n\n    setTimeout(() => {\n      console.error('Forced shutdown after timeout');\n      // process.exit(1); // commented for testing\n    }, 5000);\n  }\n\n  process.on('SIGTERM', () => shutdown('SIGTERM'));\n  process.on('SIGINT', () => shutdown('SIGINT'));\n  console.log('Graceful shutdown handlers registered');\n}\n\nconst mockServer = { close: (cb) => { console.log('HTTP connections drained'); cb(); } };\nconst mockCleanup = () => console.log('DB connections closed');\nsetupGracefulShutdown(mockServer, mockCleanup);",
+        "expectedOutput": "Graceful shutdown handlers registered",
+        "hints": [
+          "server.close() takes a callback that runs after all active connections finish",
+          "Use setTimeout to force exit if graceful shutdown takes too long"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "docker-basics",
+    "sectionId": "deployment-and-interview",
+    "orderIndex": 2,
+    "title": "Docker for Node.js Applications",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Dockerfile", "multi-stage builds", "docker-compose", ".dockerignore", "container", "image", "layer caching"],
+    "content": {
+      "explanation": "Docker packages your Node.js application and all its dependencies into a container — a lightweight, isolated environment that runs consistently everywhere. Whether you are running on your laptop, a CI server, or a production cloud instance, the container behaves identically. This eliminates the 'it works on my machine' problem and makes deployments reproducible and predictable.\n\nA Dockerfile is a text file with instructions for building a Docker image. Each instruction creates a layer in the image. For Node.js apps, the typical flow is: start from a Node.js base image, copy package.json and install dependencies, copy your application code, and define the startup command. The order of instructions matters for layer caching — put things that change rarely (like npm install) before things that change often (like your source code) so Docker can reuse cached layers and rebuild faster.\n\nMulti-stage builds are a powerful technique that significantly reduces image size. Instead of one stage that includes all build tools, dev dependencies, and source code, you use two stages: a 'builder' stage that installs all dependencies and compiles TypeScript, and a 'production' stage that copies only the compiled output and production dependencies. A typical Node.js image drops from 1GB+ to under 200MB with multi-stage builds, which means faster deploys and less storage.\n\nDocker Compose orchestrates multiple containers that work together. A typical web application needs at least two containers: your Node.js app and a database (PostgreSQL, Redis, MongoDB). docker-compose.yml defines these services, their networks, and their volumes in one file. Running `docker-compose up` starts everything together, with proper networking so containers can communicate using service names as hostnames.\n\nThe .dockerignore file prevents unnecessary files from being copied into the image. Without it, Docker copies everything in your project directory — including node_modules, .git, .env files, and test files. A good .dockerignore significantly speeds up builds and reduces image size. It should include node_modules (they are installed fresh in the container), .git, .env, local IDE configs, and any other files not needed at runtime.",
+      "codeExamples": [
+        {
+          "title": "Production-Ready Dockerfile with Multi-Stage Build",
+          "code": "// Dockerfile (save as 'Dockerfile' in project root)\nconst dockerfile = `\n# Stage 1: Build\nFROM node:20-alpine AS builder\nWORKDIR /app\n\n# Copy package files first (layer caching)\nCOPY package*.json ./\nRUN npm ci\n\n# Copy source and build\nCOPY . .\nRUN npm run build\n\n# Stage 2: Production\nFROM node:20-alpine AS production\nWORKDIR /app\n\n# Copy only production dependencies\nCOPY package*.json ./\nRUN npm ci --only=production && npm cache clean --force\n\n# Copy built files from builder\nCOPY --from=builder /app/dist ./dist\n\n# Create non-root user\nRUN addgroup -g 1001 -S nodejs && \\\\\n    adduser -S nodeuser -u 1001\nUSER nodeuser\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n`;\n\nconsole.log('Multi-stage Dockerfile:');\nconsole.log('Stage 1 (builder): install all deps, compile TypeScript');\nconsole.log('Stage 2 (production): only production deps + compiled code');\nconsole.log('Runs as non-root user for security');\nconsole.log('Uses Alpine for minimal image size');",
+          "output": "Multi-stage Dockerfile:\nStage 1 (builder): install all deps, compile TypeScript\nStage 2 (production): only production deps + compiled code\nRuns as non-root user for security\nUses Alpine for minimal image size",
+          "explanation": "The builder stage installs all dependencies (including devDependencies like TypeScript) and compiles the code. The production stage starts fresh with only production dependencies and copies the compiled output. This removes TypeScript, test tools, and build artifacts from the final image."
+        },
+        {
+          "title": "Docker Compose for Full-Stack Development",
+          "code": "// docker-compose.yml\nconst dockerCompose = `\nversion: '3.8'\nservices:\n  api:\n    build: ./server\n    ports:\n      - '3000:3000'\n    environment:\n      - NODE_ENV=development\n      - DATABASE_URL=postgresql://postgres:secret@db:5432/myapp\n      - JWT_SECRET=dev-jwt-secret-for-docker\n    depends_on:\n      db:\n        condition: service_healthy\n    volumes:\n      - ./server/src:/app/src  # Hot reload in development\n    command: npx tsx watch src/index.ts\n\n  db:\n    image: postgres:16-alpine\n    ports:\n      - '5432:5432'\n    environment:\n      POSTGRES_DB: myapp\n      POSTGRES_USER: postgres\n      POSTGRES_PASSWORD: secret\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n    healthcheck:\n      test: pg_isready -U postgres\n      interval: 5s\n      timeout: 5s\n      retries: 5\n\n  redis:\n    image: redis:7-alpine\n    ports:\n      - '6379:6379'\n\nvolumes:\n  pgdata:\n`;\n\nconsole.log('Docker Compose services:');\nconsole.log('1. api - Node.js Express application');\nconsole.log('2. db - PostgreSQL with health check');\nconsole.log('3. redis - Redis for caching/sessions');\nconsole.log('\\nCommands:');\nconsole.log('  docker-compose up -d    # Start all services');\nconsole.log('  docker-compose logs -f  # Follow logs');\nconsole.log('  docker-compose down     # Stop and remove');",
+          "output": "Docker Compose services:\n1. api - Node.js Express application\n2. db - PostgreSQL with health check\n3. redis - Redis for caching/sessions\n\nCommands:\n  docker-compose up -d    # Start all services\n  docker-compose logs -f  # Follow logs\n  docker-compose down     # Stop and remove",
+          "explanation": "Docker Compose defines three services. The API service builds from the server Dockerfile, mounts source code for hot reload, and waits for the database to be healthy. The database uses a named volume for data persistence. Services communicate using service names as hostnames (e.g., 'db' instead of 'localhost')."
+        },
+        {
+          "title": ".dockerignore and Build Optimization",
+          "code": "// .dockerignore file\nconst dockerignore = `\nnode_modules\nnpm-debug.log*\n.git\n.gitignore\n.env\n.env.*\nDockerfile\ndocker-compose.yml\n.dockerignore\nREADME.md\n.vscode\n.idea\ncoverage\ntests\n*.test.js\n*.spec.js\n`;\n\nconsole.log('.dockerignore entries:');\nconst entries = dockerignore.trim().split('\\n').filter(l => l.trim());\nconsole.log(entries.length, 'patterns');\nconsole.log('');\n\n// Build commands\nconsole.log('Docker build commands:');\nconsole.log('  docker build -t myapp:latest .');\nconsole.log('  docker build -t myapp:v1.0.0 --target production .');\nconsole.log('  docker run -p 3000:3000 --env-file .env myapp:latest');\nconsole.log('');\n\n// Image size comparison\nconsole.log('Image size comparison:');\nconsole.log('  node:20          ~1.1GB');\nconsole.log('  node:20-slim     ~250MB');\nconsole.log('  node:20-alpine   ~180MB');\nconsole.log('  Multi-stage app  ~150MB');",
+          "output": "Docker build commands:\n  docker build -t myapp:latest .\n  docker build -t myapp:v1.0.0 --target production .\n  docker run -p 3000:3000 --env-file .env myapp:latest\n\nImage size comparison:\n  node:20          ~1.1GB\n  node:20-slim     ~250MB\n  node:20-alpine   ~180MB\n  Multi-stage app  ~150MB",
+          "explanation": "The .dockerignore prevents unnecessary files from being sent to the Docker daemon during build. Using Alpine-based images and multi-stage builds dramatically reduces image size. The --target flag lets you build a specific stage (useful for building development vs production images from the same Dockerfile)."
+        }
+      ],
+      "notes": [
+        "Always use `npm ci` instead of `npm install` in Dockerfiles — it is faster, more reliable, and respects package-lock.json exactly.",
+        "Copy package*.json before copying source code — this lets Docker cache the npm install layer when only source files change.",
+        "Run your app as a non-root user inside the container for security — use USER directive after installing dependencies.",
+        "Use Alpine-based images (node:20-alpine) for the smallest image size, but note that some native modules may need extra dependencies."
+      ],
+      "commonPitfalls": [
+        "Not using .dockerignore — node_modules are copied into the build context, making it slow and potentially causing platform incompatibilities.",
+        "Installing all dependencies (including devDependencies) in the production image — use npm ci --only=production.",
+        "Hardcoding environment variables in the Dockerfile — use env_file or docker-compose environment section.",
+        "Not using health checks for database services — your API starts before the database is ready, causing crashes."
+      ],
+      "interviewTips": [
+        "Explain the difference between a Docker image (blueprint) and a container (running instance).",
+        "Describe multi-stage builds and why they reduce image size.",
+        "Know how layer caching works and why the order of Dockerfile instructions matters.",
+        "Discuss docker-compose use cases: local development environments with multiple services."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "docker-basics-ex1",
+        "title": "Write a Dockerfile from Scratch",
+        "description": "Write a JavaScript string representing a Dockerfile for a Node.js Express application. It should: use node:20-alpine as the base, set the working directory to /app, copy package*.json and run npm ci, copy the rest of the files, expose port 3000, and set the CMD to start with node src/index.js. Print each instruction.",
+        "starterCode": "// Build a Dockerfile as a string array\n// Each element is a Dockerfile instruction\n// Print the complete Dockerfile\n\n// Your code here\n\n// Expected output: a valid Dockerfile printed line by line",
+        "solution": "const instructions = [\n  'FROM node:20-alpine',\n  'WORKDIR /app',\n  'COPY package*.json ./',\n  'RUN npm ci',\n  'COPY . .',\n  'EXPOSE 3000',\n  'CMD [\"node\", \"src/index.js\"]'\n];\n\nconsole.log('--- Dockerfile ---');\ninstructions.forEach(line => console.log(line));\nconsole.log('--- End ---');\nconsole.log('\\nTotal instructions:', instructions.length);\nconsole.log('Base image: node:20-alpine');\nconsole.log('Layer caching: package files copied before source');",
+        "expectedOutput": "--- Dockerfile ---\nFROM node:20-alpine\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nEXPOSE 3000\nCMD [\"node\", \"src/index.js\"]\n--- End ---\n\nTotal instructions: 7\nBase image: node:20-alpine\nLayer caching: package files copied before source",
+        "hints": [
+          "Each Dockerfile instruction starts with a keyword: FROM, WORKDIR, COPY, RUN, EXPOSE, CMD",
+          "COPY package*.json ./ copies both package.json and package-lock.json"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "common-interview-questions",
+    "sectionId": "deployment-and-interview",
+    "orderIndex": 3,
+    "title": "Common Node.js Interview Questions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["event loop", "streams", "middleware", "REST API", "error handling", "scaling", "libuv"],
+    "content": {
+      "explanation": "Node.js interviews test your understanding of both the runtime's internals and practical application development. Interviewers want to know that you understand why Node.js behaves the way it does, not just how to use it. The event loop, non-blocking I/O, streams, and the module system are the most frequently asked topics because they define what makes Node.js unique.\n\nThe event loop is the heart of Node.js. It is what allows Node.js to handle thousands of concurrent connections with a single thread. When a request comes in, Node.js processes the synchronous code immediately and delegates I/O operations (file reads, database queries, network requests) to the operating system via libuv. When the I/O completes, a callback is placed in the appropriate event loop queue. The event loop continuously cycles through its phases: timers (setTimeout/setInterval), pending callbacks, poll (I/O), check (setImmediate), and close callbacks.\n\nStreams are a fundamental pattern in Node.js for handling data that flows over time. Instead of reading an entire file into memory at once, a ReadableStream processes it chunk by chunk, keeping memory usage constant regardless of file size. There are four stream types: Readable (data source), Writable (data destination), Duplex (both readable and writable), and Transform (modifies data as it passes through). The pipe() method connects streams together. Streams are used everywhere in Node.js: HTTP request/response bodies, file operations, process stdin/stdout, and network sockets.\n\nMiddleware in Express is a powerful composition pattern. Each middleware function has access to the request object, the response object, and the next function. Middleware can execute code, modify req and res, end the request-response cycle, or pass control to the next middleware. This pattern enables clean separation of concerns: logging, authentication, parsing, validation, and error handling are each handled by their own middleware function, stacked in a pipeline.\n\nRESTful API design is another core interview topic. REST (Representational State Transfer) uses HTTP methods to map to CRUD operations: GET for reading, POST for creating, PUT/PATCH for updating, DELETE for removing. URLs represent resources (/api/users, /api/users/42), not actions. RESTful APIs are stateless — each request contains all the information needed to process it, with no server-side session dependency. Status codes communicate the result: 200 (OK), 201 (Created), 400 (Bad Request), 404 (Not Found), 500 (Server Error).",
+      "codeExamples": [
+        {
+          "title": "Event Loop Demonstration",
+          "code": "console.log('1. Synchronous - start');\n\nsetTimeout(() => {\n  console.log('2. setTimeout (macrotask)');\n}, 0);\n\nPromise.resolve().then(() => {\n  console.log('3. Promise.then (microtask)');\n});\n\nprocess.nextTick(() => {\n  console.log('4. process.nextTick (microtask, highest priority)');\n});\n\nsetImmediate(() => {\n  console.log('5. setImmediate (check phase)');\n});\n\nconsole.log('6. Synchronous - end');",
+          "output": "1. Synchronous - start\n6. Synchronous - end\n4. process.nextTick (microtask, highest priority)\n3. Promise.then (microtask)\n2. setTimeout (macrotask)\n5. setImmediate (check phase)",
+          "explanation": "This reveals the event loop execution order. Synchronous code runs first (1, 6). Then microtasks: process.nextTick (4) has highest priority, followed by Promise.then (3). Then macrotasks: setTimeout (2) runs in the timer phase, setImmediate (5) in the check phase. This ordering is a very common interview question."
+        },
+        {
+          "title": "Streams and Piping",
+          "code": "const { Readable, Transform, Writable } = require('stream');\n\n// Create a readable stream (data source)\nconst readable = new Readable({\n  read() {\n    this.push('Hello ');\n    this.push('World ');\n    this.push('from ');\n    this.push('streams!');\n    this.push(null); // Signal end of data\n  }\n});\n\n// Create a transform stream (modifier)\nconst upperCase = new Transform({\n  transform(chunk, encoding, callback) {\n    this.push(chunk.toString().toUpperCase());\n    callback();\n  }\n});\n\n// Create a writable stream (destination)\nconst chunks = [];\nconst writable = new Writable({\n  write(chunk, encoding, callback) {\n    chunks.push(chunk.toString());\n    callback();\n  }\n});\n\nwritable.on('finish', () => {\n  console.log('Result:', chunks.join(''));\n});\n\n// Pipe: readable -> transform -> writable\nreadable.pipe(upperCase).pipe(writable);\n\nconsole.log('Stream pipeline created');\nconsole.log('Types: Readable -> Transform -> Writable');",
+          "output": "Stream pipeline created\nTypes: Readable -> Transform -> Writable\nResult: HELLO WORLD FROM STREAMS!",
+          "explanation": "Three streams are connected with pipe(). Data flows from the Readable source, through the Transform (which uppercases each chunk), to the Writable destination. Each chunk is processed independently, so even a terabyte file would use only a small buffer of memory."
+        },
+        {
+          "title": "Common Interview Questions with Answers",
+          "code": "// Q1: What is the difference between require() and import?\nconst q1 = {\n  require: 'CommonJS (CJS) - synchronous, dynamic, runs at runtime',\n  import: 'ES Modules (ESM) - async, static, analyzed at parse time',\n  key: 'require can be conditional (inside if), import cannot (must be top-level)'\n};\n\n// Q2: What is the difference between process.nextTick and setImmediate?\nconst q2 = {\n  nextTick: 'Runs before any I/O event in the current iteration',\n  setImmediate: 'Runs in the check phase of the next event loop iteration',\n  priority: 'nextTick > Promise.then > setTimeout > setImmediate'\n};\n\n// Q3: How does Node.js handle child processes?\nconst q3 = {\n  exec: 'Spawns shell, buffers output, good for small commands',\n  spawn: 'Spawns process, streams output, good for long-running processes',\n  fork: 'Special spawn for Node.js scripts, includes IPC channel',\n  worker_threads: 'Threads within the same process, share memory'\n};\n\n// Q4: What is middleware in Express?\nconst q4 = {\n  definition: 'Functions with (req, res, next) that process requests in a pipeline',\n  types: ['Application-level', 'Router-level', 'Error-handling', 'Built-in', 'Third-party'],\n  flow: 'Each calls next() to pass control or sends a response to end the cycle'\n};\n\nconsole.log('Q1 (require vs import):', q1.key);\nconsole.log('Q2 (nextTick vs setImmediate):', q2.priority);\nconsole.log('Q3 (child processes):', Object.keys(q3).join(', '));\nconsole.log('Q4 (middleware types):', q4.types.length);",
+          "output": "Q1 (require vs import): require can be conditional (inside if), import cannot (must be top-level)\nQ2 (nextTick vs setImmediate): nextTick > Promise.then > setTimeout > setImmediate\nQ3 (child processes): exec, spawn, fork, worker_threads\nQ4 (middleware types): 5",
+          "explanation": "These are the most frequently asked Node.js interview questions. Understanding event loop phases, the difference between CJS and ESM modules, child process options, and Express middleware is essential. Practice explaining each concept clearly and concisely."
+        }
+      ],
+      "notes": [
+        "The event loop order: synchronous code > process.nextTick > Promise microtasks > macrotasks (setTimeout, setImmediate).",
+        "Node.js is single-threaded for JavaScript execution, but uses a thread pool (libuv) for I/O operations.",
+        "Streams are lazy — they only read data when the consumer is ready to receive it (backpressure).",
+        "REST APIs should be stateless, use proper HTTP methods and status codes, and return consistent response formats."
+      ],
+      "commonPitfalls": [
+        "Saying Node.js is single-threaded without clarifying — JavaScript execution is single-threaded, but I/O is multi-threaded via libuv.",
+        "Confusing process.nextTick with setTimeout(fn, 0) — nextTick runs before any I/O, setTimeout runs in the timer phase.",
+        "Not understanding backpressure in streams — writing data faster than it can be consumed leads to memory issues.",
+        "Designing REST APIs with verbs in URLs (/api/getUsers) instead of nouns (/api/users with GET method)."
+      ],
+      "interviewTips": [
+        "Draw the event loop phases when explaining: timers -> pending -> poll -> check -> close.",
+        "Use concrete examples when explaining concepts — 'a database query is delegated to libuv while Node processes other requests'.",
+        "Know the tradeoffs: Node.js excels at I/O-bound tasks but is poor for CPU-bound tasks without worker threads.",
+        "Be ready to explain how you would scale a Node.js app: clustering, load balancing, caching, microservices."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "common-interview-questions-ex1",
+        "title": "Predict Event Loop Output",
+        "description": "Without running the code, predict the output order: console.log('A'), setTimeout(() => console.log('B'), 0), Promise.resolve().then(() => console.log('C')), process.nextTick(() => console.log('D')), console.log('E'). Write code that logs each with its execution reason, then verify your prediction by running it.",
+        "starterCode": "// Predict the output order, then run to verify\n// Hint: Synchronous > nextTick > Promise > setTimeout\n\n// Write the code and add comments explaining why each appears in its position\n\n// Your code here",
+        "solution": "// Prediction: A, E (sync), D (nextTick), C (promise), B (setTimeout)\n\nconsole.log('A'); // 1st: synchronous\n\nsetTimeout(() => {\n  console.log('B'); // 5th: macrotask (timer phase)\n}, 0);\n\nPromise.resolve().then(() => {\n  console.log('C'); // 4th: microtask (after nextTick)\n});\n\nprocess.nextTick(() => {\n  console.log('D'); // 3rd: microtask (highest priority)\n});\n\nconsole.log('E'); // 2nd: synchronous",
+        "expectedOutput": "A\nE\nD\nC\nB",
+        "hints": [
+          "All synchronous code runs first, regardless of where it appears in the file",
+          "process.nextTick microtasks have higher priority than Promise microtasks"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "common-interview-questions-ex2",
+        "title": "Build a Simple Transform Stream",
+        "description": "Create a Transform stream that takes string chunks and reverses each one. Push the reversed string to the output. Create a test by writing 'hello' and 'world' to the transform stream and collecting the output.",
+        "starterCode": "const { Transform } = require('stream');\n\n// Create a Transform stream that reverses each chunk\n// Write 'hello' and 'world' to it\n// Collect and print the reversed output\n\n// Your code here",
+        "solution": "const { Transform } = require('stream');\n\nconst reverser = new Transform({\n  transform(chunk, encoding, callback) {\n    const reversed = chunk.toString().split('').reverse().join('');\n    this.push(reversed);\n    callback();\n  }\n});\n\nconst results = [];\nreverser.on('data', (chunk) => results.push(chunk.toString()));\nreverser.on('end', () => console.log('Results:', results));\n\nreverser.write('hello');\nreverser.write('world');\nreverser.end();\n\nconsole.log('Transform stream created');",
+        "expectedOutput": "Transform stream created\nResults: [ 'olleh', 'dlrow' ]",
+        "hints": [
+          "Use chunk.toString().split('').reverse().join('') to reverse a string",
+          "Always call callback() in the transform function to signal completion"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "nodejs-best-practices",
+    "sectionId": "deployment-and-interview",
+    "orderIndex": 4,
+    "title": "Node.js Best Practices",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["project structure", "security checklist", "performance tips", "monitoring", "error handling patterns", "code organization"],
+    "content": {
+      "explanation": "Building production-quality Node.js applications requires following established best practices that cover code organization, security, performance, reliability, and maintainability. These practices are the result of years of community experience and hard-learned lessons from production failures. Following them from the start prevents technical debt and makes your application easier to scale, debug, and maintain.\n\nProject structure is the foundation of a maintainable application. The most effective pattern for Express applications is feature-based organization (also called modular architecture), where each feature or domain gets its own directory with routes, controllers, services, and models. This is far better than the alternative 'technical' organization (all controllers in one folder, all models in another) because related code lives together, making it easy to understand and modify a feature without jumping between distant directories.\n\nSecurity is not optional — it must be built into every layer of your application. The essential security checklist includes: use HTTPS everywhere, set security headers with Helmet, configure CORS strictly, rate-limit authentication endpoints, validate and sanitize all input, use parameterized queries (never concatenate SQL), hash passwords with bcrypt (never store plain text), use short-lived JWTs with refresh tokens, set httpOnly and secure flags on cookies, keep dependencies updated (npm audit), and never expose stack traces or internal errors to clients.\n\nPerformance optimization starts with understanding that Node.js is best for I/O-bound workloads. Key tips include: use connection pooling for databases, implement caching with Redis for frequently accessed data, use streams for large data processing (file uploads, CSV exports), enable gzip compression, avoid synchronous operations in request handlers, use pagination for large datasets, and offload CPU-intensive work to worker threads or background jobs. Monitoring tools like PM2, New Relic, or Prometheus help identify bottlenecks before they become outages.\n\nReliable error handling separates amateur code from production code. Every async operation should have error handling. Unhandled promise rejections and uncaught exceptions should be caught at the process level. Use a centralized error handler in Express. Log errors with structured metadata (request ID, user ID, stack trace). Monitor error rates and set up alerts for spikes. Implement health check endpoints that verify database connectivity, cache availability, and external service health.",
+      "codeExamples": [
+        {
+          "title": "Recommended Project Structure",
+          "code": "// Feature-based (modular) structure\nconst projectStructure = `\nserver/\n  src/\n    index.ts              # App entry, middleware setup\n    middleware/\n      auth.middleware.ts   # JWT verification\n      error.middleware.ts  # Centralized error handler\n      upload.middleware.ts # File upload handling\n    module/\n      auth/\n        auth.routes.ts    # Route definitions\n        auth.controller.ts# Request/response handling\n        auth.service.ts   # Business logic\n        auth.validation.ts# Input validation\n      job/\n        job.routes.ts\n        job.controller.ts\n        job.service.ts\n      student/\n        student.routes.ts\n        student.controller.ts\n        student.service.ts\n    database/\n      db.ts               # Prisma client singleton\n      prisma/\n        schema.prisma     # Database schema\n        migrations/       # Migration files\n    utils/\n      jwt.utils.ts        # Token helpers\n      password.utils.ts   # Bcrypt helpers\n      s3.utils.ts         # File upload helpers\n    types/\n      express.d.ts        # Type extensions\n`;\n\nconsole.log('Structure benefits:');\nconsole.log('1. Feature code co-located (routes + controller + service)');\nconsole.log('2. Easy to add new features (copy module template)');\nconsole.log('3. Clear dependency direction (routes -> controller -> service -> db)');\nconsole.log('4. Shared utilities in /utils, shared middleware in /middleware');",
+          "output": "Structure benefits:\n1. Feature code co-located (routes + controller + service)\n2. Easy to add new features (copy module template)\n3. Clear dependency direction (routes -> controller -> service -> db)\n4. Shared utilities in /utils, shared middleware in /middleware",
+          "explanation": "Each module contains all related code: routes define endpoints, controllers handle HTTP concerns, services contain business logic, and validation handles input checking. This separation makes code testable (services can be tested without HTTP) and maintainable (changes to one feature do not touch others)."
+        },
+        {
+          "title": "Production Health Check and Monitoring",
+          "code": "const express = require('express');\nconst app = express();\n\n// Health check endpoint\napp.get('/health', async (req, res) => {\n  const checks = {\n    uptime: process.uptime(),\n    memory: process.memoryUsage(),\n    timestamp: Date.now()\n  };\n\n  try {\n    // Check database\n    // await prisma.$queryRaw`SELECT 1`;\n    checks.database = 'connected';\n  } catch (e) {\n    checks.database = 'disconnected';\n  }\n\n  try {\n    // Check Redis\n    // await redis.ping();\n    checks.cache = 'connected';\n  } catch (e) {\n    checks.cache = 'disconnected';\n  }\n\n  const isHealthy = checks.database === 'connected';\n  res.status(isHealthy ? 200 : 503).json({\n    status: isHealthy ? 'healthy' : 'degraded',\n    checks\n  });\n});\n\n// Metrics endpoint\napp.get('/metrics', (req, res) => {\n  const mem = process.memoryUsage();\n  const metrics = {\n    uptime_seconds: Math.floor(process.uptime()),\n    memory_heap_used_mb: Math.round(mem.heapUsed / 1024 / 1024),\n    memory_heap_total_mb: Math.round(mem.heapTotal / 1024 / 1024),\n    memory_rss_mb: Math.round(mem.rss / 1024 / 1024),\n    event_loop_lag_ms: 0, // Measure with perf_hooks in production\n    pid: process.pid,\n    node_version: process.version\n  };\n  res.json(metrics);\n});\n\nconsole.log('Health check: /health');\nconsole.log('Metrics: /metrics');\nconsole.log('Current memory:', Math.round(process.memoryUsage().heapUsed / 1024 / 1024), 'MB');",
+          "output": "Health check: /health\nMetrics: /metrics\nCurrent memory: 8 MB",
+          "explanation": "The /health endpoint verifies database and cache connectivity, returning 200 when healthy or 503 when degraded. Load balancers use this to route traffic only to healthy instances. The /metrics endpoint exposes runtime statistics for monitoring dashboards."
+        },
+        {
+          "title": "Security and Performance Checklist as Code",
+          "code": "const express = require('express');\n\nfunction createProductionApp() {\n  const app = express();\n\n  // ---- SECURITY ----\n  // 1. Security headers\n  // app.use(helmet());\n\n  // 2. CORS (strict in production)\n  // app.use(cors({ origin: config.cors.origin, credentials: true }));\n\n  // 3. Rate limiting\n  // app.use('/api/auth', authRateLimiter);\n  // app.use('/api', apiRateLimiter);\n\n  // 4. Body size limits\n  app.use(express.json({ limit: '10kb' }));\n  app.use(express.urlencoded({ extended: true, limit: '10kb' }));\n\n  // 5. Trust proxy (behind nginx/load balancer)\n  app.set('trust proxy', 1);\n\n  // ---- PERFORMANCE ----\n  // 6. Compression\n  // app.use(compression());\n\n  // 7. Request logging\n  // app.use(morgan('combined', { stream: winstonStream }));\n\n  // ---- RELIABILITY ----\n  // 8. Request timeout\n  app.use((req, res, next) => {\n    res.setTimeout(30000, () => {\n      res.status(408).json({ error: 'Request timeout' });\n    });\n    next();\n  });\n\n  // 9. 404 handler\n  app.use((req, res) => {\n    res.status(404).json({ error: 'Route not found' });\n  });\n\n  // 10. Centralized error handler\n  app.use((err, req, res, next) => {\n    const status = err.statusCode || 500;\n    res.status(status).json({\n      error: status < 500 ? err.message : 'Internal server error'\n    });\n  });\n\n  return app;\n}\n\nconsole.log('Production app checklist:');\nconsole.log('Security: helmet, cors, rate-limit, body-limit, trust-proxy');\nconsole.log('Performance: compression, logging');\nconsole.log('Reliability: timeout, 404, error-handler');",
+          "output": "Production app checklist:\nSecurity: helmet, cors, rate-limit, body-limit, trust-proxy\nPerformance: compression, logging\nReliability: timeout, 404, error-handler",
+          "explanation": "This shows a production Express app setup with security, performance, and reliability middleware applied in the correct order. Security middleware runs first (before routes), performance middleware is global, and error handling comes last. This template is a solid starting point for any production Express API."
+        }
+      ],
+      "notes": [
+        "Follow the 'routes -> controller -> service -> database' layered architecture for clean separation of concerns.",
+        "Use a linter (ESLint) and formatter (Prettier) for consistent code style across the team.",
+        "Keep controllers thin — they should only handle request parsing and response formatting. Business logic goes in services.",
+        "Set up CI/CD to run tests, lint, and security audits (npm audit) on every pull request."
+      ],
+      "commonPitfalls": [
+        "Putting business logic in controllers — makes code untestable and creates tight coupling with Express.",
+        "Not using environment-specific configuration — development settings leak into production.",
+        "Ignoring npm audit warnings — known vulnerabilities in dependencies are a common attack vector.",
+        "Logging sensitive information (passwords, tokens, personal data) — violates security and privacy requirements."
+      ],
+      "interviewTips": [
+        "Be able to sketch a production-ready Express project structure on a whiteboard.",
+        "Know the OWASP Top 10 and how to address each in a Node.js context.",
+        "Describe your approach to monitoring: health checks, metrics, alerting, log aggregation.",
+        "Explain the difference between horizontal scaling (more instances) and vertical scaling (bigger server) for Node.js apps."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "nodejs-best-practices-ex1",
+        "title": "Production Readiness Checklist",
+        "description": "Create a function `auditApp(config)` that takes a config object with boolean properties: hasHelmet, hasCors, hasRateLimit, hasErrorHandler, hasHealthCheck, hasLogging. Return an object with { score (count of true values), total: 6, missing: ['list of missing items'], ready: score === total }. Test with a partially configured app.",
+        "starterCode": "// Write auditApp(config) that evaluates production readiness\n// config has: hasHelmet, hasCors, hasRateLimit, hasErrorHandler, hasHealthCheck, hasLogging\n// Return: { score, total, missing, ready }\n\n// Your code here\n\n// Test:\n// const result = auditApp({\n//   hasHelmet: true, hasCors: true, hasRateLimit: false,\n//   hasErrorHandler: true, hasHealthCheck: false, hasLogging: true\n// });\n// console.log(result);",
+        "solution": "function auditApp(config) {\n  const checks = {\n    hasHelmet: 'Helmet security headers',\n    hasCors: 'CORS configuration',\n    hasRateLimit: 'Rate limiting',\n    hasErrorHandler: 'Error handling middleware',\n    hasHealthCheck: 'Health check endpoint',\n    hasLogging: 'Request logging'\n  };\n\n  const missing = [];\n  let score = 0;\n\n  for (const [key, label] of Object.entries(checks)) {\n    if (config[key]) {\n      score++;\n    } else {\n      missing.push(label);\n    }\n  }\n\n  return {\n    score,\n    total: Object.keys(checks).length,\n    missing,\n    ready: score === Object.keys(checks).length\n  };\n}\n\nconst result = auditApp({\n  hasHelmet: true, hasCors: true, hasRateLimit: false,\n  hasErrorHandler: true, hasHealthCheck: false, hasLogging: true\n});\n\nconsole.log('Score:', result.score + '/' + result.total);\nconsole.log('Ready:', result.ready);\nconsole.log('Missing:', result.missing);",
+        "expectedOutput": "Score: 4/6\nReady: false\nMissing: [ 'Rate limiting', 'Health check endpoint' ]",
+        "hints": [
+          "Use Object.entries to iterate over both keys and labels simultaneously",
+          "Count truthy values as the score and collect missing labels"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "nodejs-best-practices-ex2",
+        "title": "Service Layer Pattern",
+        "description": "Create a UserService class that accepts a db in the constructor. Add methods: getAll() returns db.users, getById(id) finds by id or throws 'User not found', create(data) validates name and email exist then adds to db.users with an auto-id. This demonstrates separating business logic from the controller layer.",
+        "starterCode": "// Create UserService class with constructor(db)\n// Methods:\n//   getAll() - returns all users\n//   getById(id) - returns user or throws Error\n//   create(data) - validates, creates, returns user\n\n// Your code here\n\n// Test:\n// const db = { users: [], nextId: 1 };\n// const service = new UserService(db);\n// service.create({ name: 'Alice', email: 'alice@test.com' });\n// console.log(service.getAll());\n// console.log(service.getById(1));",
+        "solution": "class UserService {\n  constructor(db) {\n    this.db = db;\n  }\n\n  getAll() {\n    return this.db.users;\n  }\n\n  getById(id) {\n    const user = this.db.users.find(u => u.id === id);\n    if (!user) throw new Error('User not found');\n    return user;\n  }\n\n  create(data) {\n    if (!data.name || !data.email) {\n      throw new Error('Name and email are required');\n    }\n    const user = { id: this.db.nextId++, ...data };\n    this.db.users.push(user);\n    return user;\n  }\n}\n\nconst db = { users: [], nextId: 1 };\nconst service = new UserService(db);\n\nconsole.log('Created:', service.create({ name: 'Alice', email: 'alice@test.com' }));\nconsole.log('Created:', service.create({ name: 'Bob', email: 'bob@test.com' }));\nconsole.log('All users:', service.getAll().length);\nconsole.log('Get by ID:', service.getById(1).name);\n\ntry {\n  service.getById(99);\n} catch (e) {\n  console.log('Error:', e.message);\n}\n\ntry {\n  service.create({ name: 'NoEmail' });\n} catch (e) {\n  console.log('Validation:', e.message);\n}",
+        "expectedOutput": "Created: { id: 1, name: 'Alice', email: 'alice@test.com' }\nCreated: { id: 2, name: 'Bob', email: 'bob@test.com' }\nAll users: 2\nGet by ID: Alice\nError: User not found\nValidation: Name and email are required",
+        "hints": [
+          "The service should throw errors for invalid operations — the controller catches them and sends HTTP responses",
+          "Use dependency injection (constructor parameter) so the service can be tested with a mock db"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

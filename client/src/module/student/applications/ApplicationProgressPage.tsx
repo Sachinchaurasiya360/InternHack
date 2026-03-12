@@ -4,9 +4,10 @@ import { ArrowLeft, CheckCircle, Clock, Circle, Send } from "lucide-react";
 import { motion } from "framer-motion";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { DynamicFieldRenderer } from "../../../components/DynamicFieldRenderer";
+import { AssessmentTestView } from "./AssessmentTestView";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
-import type { Application, CustomFieldDefinition } from "../../../lib/types";
+import type { Application, CustomFieldDefinition, AssessmentQuestion } from "../../../lib/types";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 
 export default function ApplicationProgressPage() {
@@ -23,11 +24,11 @@ export default function ApplicationProgressPage() {
     enabled: !!applicationId,
   });
 
-  const handleSubmitRound = async (roundId: number) => {
+  const handleSubmitRound = async (roundId: number, overrideAnswers?: Record<string, unknown>) => {
     setSubmitting(true);
     try {
       await api.post(`/student/applications/${applicationId}/rounds/${roundId}/submit`, {
-        fieldAnswers,
+        fieldAnswers: overrideAnswers ?? fieldAnswers,
         attachments: [],
       });
       setActiveRoundId(null);
@@ -68,6 +69,8 @@ export default function ApplicationProgressPage() {
           const isCompleted = submission?.status === "COMPLETED";
           const isPending = !submission || submission.status === "PENDING";
           const customFields = (round.customFields || []) as CustomFieldDefinition[];
+          const assessmentQuestions = (round.assessmentQuestions || []) as AssessmentQuestion[];
+          const hasAssessment = assessmentQuestions.length > 0;
 
           return (
             <motion.div key={round.id} initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }}
@@ -110,28 +113,39 @@ export default function ApplicationProgressPage() {
                   </div>
                 )}
 
-                {/* Active round: show form */}
+                {/* Active round: show form or assessment */}
                 {isActive && !isCompleted && (
                   <div className="ml-8 mt-4">
                     {activeRoundId === round.id ? (
-                      <div className="space-y-4">
-                        {customFields.length > 0 && (
-                          <DynamicFieldRenderer
-                            fields={customFields}
-                            values={fieldAnswers}
-                            onChange={(fieldId, value) => setFieldAnswers({ ...fieldAnswers, [fieldId]: value })}
-                          />
-                        )}
-                        <div className="flex items-center gap-3">
-                          <button onClick={() => handleSubmitRound(round.id)} disabled={submitting}
-                            className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-50 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
-                            <Send className="w-4 h-4" />
-                            {submitting ? "Submitting..." : "Submit Round"}
-                          </button>
-                          <button onClick={() => setActiveRoundId(null)}
-                            className="px-4 py-2 text-sm text-gray-500 hover:text-black dark:hover:text-white">Cancel</button>
+                      hasAssessment ? (
+                        <AssessmentTestView
+                          questions={assessmentQuestions}
+                          timeLimitSecs={round.timeLimitSecs}
+                          submitting={submitting}
+                          onSubmit={(answers) => {
+                            handleSubmitRound(round.id, { ...fieldAnswers, assessmentAnswers: answers });
+                          }}
+                        />
+                      ) : (
+                        <div className="space-y-4">
+                          {customFields.length > 0 && (
+                            <DynamicFieldRenderer
+                              fields={customFields}
+                              values={fieldAnswers}
+                              onChange={(fieldId, value) => setFieldAnswers({ ...fieldAnswers, [fieldId]: value })}
+                            />
+                          )}
+                          <div className="flex items-center gap-3">
+                            <button onClick={() => handleSubmitRound(round.id)} disabled={submitting}
+                              className="flex items-center gap-2 px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 disabled:opacity-50 dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">
+                              <Send className="w-4 h-4" />
+                              {submitting ? "Submitting..." : "Submit Round"}
+                            </button>
+                            <button onClick={() => setActiveRoundId(null)}
+                              className="px-4 py-2 text-sm text-gray-500 hover:text-black dark:hover:text-white">Cancel</button>
+                          </div>
                         </div>
-                      </div>
+                      )
                     ) : (
                       <button onClick={() => setActiveRoundId(round.id)}
                         className="px-4 py-2 bg-black text-white text-sm font-semibold rounded-lg hover:bg-gray-800 transition-colors dark:bg-white dark:text-gray-950 dark:hover:bg-gray-200">

@@ -1,0 +1,351 @@
+[
+  {
+    "id": "explicit-annotations",
+    "sectionId": "type-annotations",
+    "orderIndex": 0,
+    "title": "Explicit Type Annotations",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Variable annotations", "Parameter annotations", "Return type annotations", "Type syntax"],
+    "content": {
+      "explanation": "Explicit type annotations are the most direct way to tell TypeScript what type a value should be. You write them using a colon followed by the type after a variable name, function parameter, or before a function body (for return types). The syntax is `variableName: Type`, `(param: Type) => ...`, or `function name(): ReturnType`. These annotations serve as both constraints and documentation.\n\nVariable annotations are placed between the variable name and the assignment operator: `let name: string = \"Alice\"`. While TypeScript can infer the type from the initial value, explicit annotations are useful when you want to declare a variable before assigning it, when you want a wider type than what would be inferred, or when working with complex types that benefit from clarity. For instance, `let items: string[] = []` makes the intended element type clear even though the array starts empty.\n\nFunction parameter annotations are essential because TypeScript generally cannot infer parameter types from the function definition alone. Every parameter in a function should have a type annotation: `function greet(name: string, age: number)`. Return type annotations come after the parameter list: `function greet(name: string): string`. While return types can usually be inferred, adding them explicitly catches bugs where a function accidentally returns the wrong type and serves as documentation for other developers.\n\nAnnotations can be as simple as primitive types or as complex as nested object types, union types, and generic types. The key principle is that annotations are a contract: they declare what a value must be, and TypeScript enforces that contract throughout your code. If you annotate a variable as `string`, any attempt to assign a number will be flagged as an error at compile time.",
+      "codeExamples": [
+        {
+          "title": "Variable type annotations",
+          "code": "// Explicit annotations on variables\nlet username: string = \"Alice\";\nlet age: number = 30;\nlet isOnline: boolean = false;\n\n// Useful when initializing empty structures\nlet tags: string[] = [];\nlet scores: Map<string, number> = new Map();\n\ntags.push(\"typescript\");\ntags.push(\"programming\");\nscores.set(\"Alice\", 95);\n\nconsole.log(tags.join(\", \"));\nconsole.log(scores.get(\"Alice\"));",
+          "output": "typescript, programming\n95",
+          "explanation": "Annotations are especially useful for empty initializations where TypeScript cannot infer the element or value type. Without the annotation, `[]` would be inferred as `never[]`."
+        },
+        {
+          "title": "Function parameter and return annotations",
+          "code": "// Parameters must be annotated; return type is recommended\nfunction formatCurrency(amount: number, currency: string): string {\n  return `${currency}${amount.toFixed(2)}`;\n}\n\n// Arrow function with annotations\nconst multiply = (a: number, b: number): number => a * b;\n\nconsole.log(formatCurrency(29.99, \"$\"));\nconsole.log(formatCurrency(1500, \"EUR \"));\nconsole.log(multiply(6, 7));",
+          "output": "$29.99\nEUR 1500.00\n42",
+          "explanation": "Function parameters always need annotations. Return types can be inferred but adding them improves readability and catches errors when refactoring."
+        },
+        {
+          "title": "Object type annotations",
+          "code": "// Inline object type annotation\nfunction printUser(user: { name: string; age: number; email: string }): void {\n  console.log(`${user.name} (${user.age}) - ${user.email}`);\n}\n\n// Variable with object type\nconst config: { port: number; host: string; debug: boolean } = {\n  port: 3000,\n  host: \"localhost\",\n  debug: true\n};\n\nprintUser({ name: \"Bob\", age: 25, email: \"bob@example.com\" });\nconsole.log(`Server: ${config.host}:${config.port}`);",
+          "output": "Bob (25) - bob@example.com\nServer: localhost:3000",
+          "explanation": "Object types are written as `{ key: Type; key: Type }`. For complex objects used in multiple places, consider using interfaces or type aliases instead of inline annotations."
+        }
+      ],
+      "notes": [
+        "Annotate function parameters always — TypeScript cannot infer them from the function body.",
+        "Use explicit return type annotations on public functions and exported APIs to prevent accidental type changes.",
+        "Inline object types work for one-off uses, but extract to interfaces or type aliases when reused across multiple functions."
+      ],
+      "commonPitfalls": [
+        "Annotating everything redundantly — `const name: string = \"Alice\"` adds no value since TypeScript infers `string` from the value.",
+        "Forgetting return type annotations on functions that should return void — this allows accidentally returning values that callers might depend on."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "explicit-ann-ex1",
+        "title": "Annotate a function",
+        "description": "Add proper type annotations to the function parameters and return type. The function takes a product name (string), price (number), and quantity (number), and returns a formatted receipt line.",
+        "starterCode": "function receiptLine(name, price, quantity) {\n  const total = price * quantity;\n  return `${name}: ${quantity} x $${price.toFixed(2)} = $${total.toFixed(2)}`;\n}\n\nconsole.log(receiptLine(\"Widget\", 9.99, 3));\nconsole.log(receiptLine(\"Gadget\", 24.5, 1));",
+        "solution": "function receiptLine(name: string, price: number, quantity: number): string {\n  const total = price * quantity;\n  return `${name}: ${quantity} x $${price.toFixed(2)} = $${total.toFixed(2)}`;\n}\n\nconsole.log(receiptLine(\"Widget\", 9.99, 3));\nconsole.log(receiptLine(\"Gadget\", 24.5, 1));",
+        "expectedOutput": "Widget: 3 x $9.99 = $29.97\nGadget: 1 x $24.50 = $24.50",
+        "hints": [
+          "The function takes a string and two numbers, and returns a string.",
+          "Add `: type` after each parameter name and after the closing parenthesis for the return type."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "explicit-ann-ex2",
+        "title": "Object parameter annotation",
+        "description": "Write a function `describePerson` that takes an object with `name` (string), `age` (number), and `occupation` (string) properties, and returns a description string.",
+        "starterCode": "// Write the describePerson function with proper annotations\n\n\nconsole.log(describePerson({ name: \"Alice\", age: 30, occupation: \"Engineer\" }));\nconsole.log(describePerson({ name: \"Bob\", age: 25, occupation: \"Designer\" }));",
+        "solution": "function describePerson(person: { name: string; age: number; occupation: string }): string {\n  return `${person.name} is a ${person.age}-year-old ${person.occupation}.`;\n}\n\nconsole.log(describePerson({ name: \"Alice\", age: 30, occupation: \"Engineer\" }));\nconsole.log(describePerson({ name: \"Bob\", age: 25, occupation: \"Designer\" }));",
+        "expectedOutput": "Alice is a 30-year-old Engineer.\nBob is a 25-year-old Designer.",
+        "hints": [
+          "The parameter should have an inline object type: `{ name: string; age: number; occupation: string }`.",
+          "Use template literals to build the return string, which should be of type `string`."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "type-assertions",
+    "sectionId": "type-annotations",
+    "orderIndex": 1,
+    "title": "Type Assertions",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["as keyword", "Angle bracket syntax", "Non-null assertion", "Type narrowing vs assertion"],
+    "content": {
+      "explanation": "Type assertions tell the TypeScript compiler to treat a value as a specific type. Unlike type annotations which declare what a value must be, assertions override the compiler's understanding — you're telling TypeScript \"I know more about this value's type than you do.\" The most common syntax uses the `as` keyword: `value as Type`. There's also an older angle bracket syntax `<Type>value`, though this conflicts with JSX and is rarely used in React projects.\n\nType assertions are commonly needed when working with DOM APIs, data from external sources (like JSON parsing), or when TypeScript's type inference is too broad. For example, `document.getElementById(\"myCanvas\")` returns `HTMLElement | null`, but if you know it's a canvas element, you can assert `document.getElementById(\"myCanvas\") as HTMLCanvasElement`. The assertion doesn't change the runtime value — it only affects how TypeScript views the type during compilation.\n\nThe non-null assertion operator (`!`) is a special form of assertion that removes `null` and `undefined` from a type. Writing `value!` is equivalent to `value as NonNullable<typeof value>`. Use it when you're certain a value isn't null but TypeScript can't determine that on its own. However, overusing non-null assertions is dangerous because you're bypassing TypeScript's null safety checks — if the value actually is null at runtime, you'll get an error.\n\nIt's important to understand that type assertions are not type casts. They don't convert values at runtime — they only change the compile-time type. TypeScript also prevents completely nonsensical assertions: you can't assert `\"hello\" as number` directly because a string is never a number. For such cases, you'd need a double assertion through `unknown`: `\"hello\" as unknown as number`, though this is almost always a code smell.",
+      "codeExamples": [
+        {
+          "title": "The 'as' keyword",
+          "code": "// Asserting a more specific type\nconst input: unknown = \"Hello, TypeScript!\";\nconst message = input as string;\nconsole.log(message.toUpperCase());\n\n// Asserting from a union type\nfunction processValue(value: string | number): string {\n  if (typeof value === \"string\") {\n    return value.toUpperCase(); // TypeScript narrows automatically here\n  }\n  return (value as number).toFixed(2);\n}\n\nconsole.log(processValue(\"hello\"));\nconsole.log(processValue(3.14159));",
+          "output": "HELLO, TYPESCRIPT!\nHELLO\n3.14",
+          "explanation": "The `as` keyword tells TypeScript to treat a value as a specific type. In the union example, TypeScript already narrows in the if branch, and we assert in the else branch for clarity."
+        },
+        {
+          "title": "Non-null assertion operator",
+          "code": "const data: Map<string, number> = new Map();\ndata.set(\"score\", 95);\ndata.set(\"level\", 3);\n\n// Map.get() returns T | undefined\n// We know these keys exist, so we use ! to assert non-null\nconst score = data.get(\"score\")!;\nconst level = data.get(\"level\")!;\n\nconsole.log(`Score: ${score}, Level: ${level}`);\nconsole.log(`Total: ${score + level}`);",
+          "output": "Score: 95, Level: 3\nTotal: 98",
+          "explanation": "The `!` operator removes undefined from the type. Map.get() returns `number | undefined`, but we know the keys exist, so `!` asserts the value is not undefined. Use sparingly — prefer null checks when unsure."
+        },
+        {
+          "title": "Prefer type narrowing over assertions",
+          "code": "// BAD: Using assertion without checking\nfunction riskyLength(value: string | null): number {\n  return (value as string).length; // Dangerous if value is null!\n}\n\n// GOOD: Using type narrowing (type guard)\nfunction safeLength(value: string | null): number {\n  if (value === null) return 0;\n  return value.length; // TypeScript knows it's string here\n}\n\nconsole.log(safeLength(\"hello\"));\nconsole.log(safeLength(null));\nconsole.log(riskyLength(\"world\"));",
+          "output": "5\n0\n5",
+          "explanation": "Type narrowing through conditional checks is safer than assertions because it actually verifies the type at runtime. Assertions only affect compile-time checks and can lead to runtime errors if wrong."
+        }
+      ],
+      "notes": [
+        "Prefer type narrowing (typeof checks, null checks) over assertions — narrowing is verified at runtime while assertions are not.",
+        "The `as` syntax is preferred over angle brackets `<Type>value` because angle brackets conflict with JSX in React files.",
+        "Non-null assertions (`!`) should be used sparingly — each one is a potential runtime error if your assumption is wrong."
+      ],
+      "commonPitfalls": [
+        "Using assertions to silence errors instead of fixing the underlying type issue — this trades compile-time safety for runtime crashes.",
+        "Over-using non-null assertions (`!`) — every `!` is a place where TypeScript's null safety is bypassed. Prefer explicit null checks."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "assertions-ex1",
+        "title": "Safe type assertion",
+        "description": "Write a function `processInput` that takes an `unknown` value. If it's a string, return it uppercased. If it's a number, return it doubled as a string. Otherwise return \"unsupported\".",
+        "starterCode": "function processInput(value: unknown): string {\n  // Use typeof checks and assertions to handle the value\n}\n\nconsole.log(processInput(\"hello\"));\nconsole.log(processInput(42));\nconsole.log(processInput(true));",
+        "solution": "function processInput(value: unknown): string {\n  if (typeof value === \"string\") {\n    return (value as string).toUpperCase();\n  }\n  if (typeof value === \"number\") {\n    return ((value as number) * 2).toString();\n  }\n  return \"unsupported\";\n}\n\nconsole.log(processInput(\"hello\"));\nconsole.log(processInput(42));\nconsole.log(processInput(true));",
+        "expectedOutput": "HELLO\n84\nunsupported",
+        "hints": [
+          "Use `typeof` checks to narrow the type before asserting. Check for 'string' first, then 'number'.",
+          "After a typeof check, you can use `as string` or `as number` to assert the type, though TypeScript also narrows automatically after typeof."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "assertions-ex2",
+        "title": "Non-null extraction",
+        "description": "Write a function `getFirstChar` that takes a `string | null` parameter. Return the first character uppercased, or \"(empty)\" if null or empty string. Use proper null handling, not non-null assertions.",
+        "starterCode": "// Write getFirstChar with proper null handling\n\n\nconsole.log(getFirstChar(\"typescript\"));\nconsole.log(getFirstChar(null));\nconsole.log(getFirstChar(\"\"));",
+        "solution": "function getFirstChar(value: string | null): string {\n  if (value === null || value.length === 0) {\n    return \"(empty)\";\n  }\n  return value[0].toUpperCase();\n}\n\nconsole.log(getFirstChar(\"typescript\"));\nconsole.log(getFirstChar(null));\nconsole.log(getFirstChar(\"\"));",
+        "expectedOutput": "T\n(empty)\n(empty)",
+        "hints": [
+          "Check for null and empty string first, then safely access the first character.",
+          "After the null/empty check, TypeScript knows the value is a non-empty string."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "literal-types",
+    "sectionId": "type-annotations",
+    "orderIndex": 2,
+    "title": "Literal Types",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["String literal types", "Number literal types", "Boolean literal types", "Union of literals"],
+    "content": {
+      "explanation": "Literal types in TypeScript allow you to specify the exact value a variable can hold, not just its general type. Instead of saying a variable is a `string`, you can say it's specifically `\"hello\"` or `\"world\"` and nothing else. This concept applies to strings, numbers, and booleans. Literal types are the foundation for creating precise, expressive type definitions that restrict values to a known set of options.\n\nThe most common use of literal types is combining them with union types to create a set of allowed values. For example, `type Direction = \"north\" | \"south\" | \"east\" | \"west\"` creates a type that only accepts those four specific strings. This is similar to enums but uses plain string values, making them fully compatible with JavaScript without any runtime overhead. Most TypeScript codebases prefer string literal unions over enums for this reason.\n\nLiteral types arise naturally from `const` declarations. When you write `const direction = \"north\"`, TypeScript infers the type as the literal `\"north\"` rather than `string`, because a const can never be reassigned. With `let direction = \"north\"`, TypeScript widens the type to `string` since the variable could later hold a different string. Understanding this widening behavior is key to working with literal types effectively.\n\nNumber literal types work the same way. You can define `type DiceRoll = 1 | 2 | 3 | 4 | 5 | 6` to restrict a value to valid dice outcomes. Boolean literal types are less common on their own but appear in conditional types and discriminated unions. The power of literal types really shines when combined with type narrowing — TypeScript can track which specific literal value a variable holds through conditional branches, enabling very precise type checking.",
+      "codeExamples": [
+        {
+          "title": "String literal types as unions",
+          "code": "type Status = \"pending\" | \"active\" | \"archived\";\ntype Theme = \"light\" | \"dark\" | \"system\";\n\nfunction setStatus(status: Status): string {\n  return `Status set to: ${status}`;\n}\n\nfunction getBackground(theme: Theme): string {\n  switch (theme) {\n    case \"light\": return \"#ffffff\";\n    case \"dark\": return \"#1a1a1a\";\n    case \"system\": return \"#f0f0f0\";\n  }\n}\n\nconsole.log(setStatus(\"active\"));\nconsole.log(getBackground(\"dark\"));\n// setStatus(\"deleted\"); // Error: Argument of type '\"deleted\"' is not assignable",
+          "output": "Status set to: active\n#1a1a1a",
+          "explanation": "String literal unions restrict a parameter to specific allowed values. TypeScript ensures exhaustive checking in switch statements — if you add a new status, the compiler warns about unhandled cases."
+        },
+        {
+          "title": "Number literal types",
+          "code": "type HttpSuccessCode = 200 | 201 | 204;\ntype DiceRoll = 1 | 2 | 3 | 4 | 5 | 6;\n\nfunction describeStatus(code: HttpSuccessCode): string {\n  switch (code) {\n    case 200: return \"OK\";\n    case 201: return \"Created\";\n    case 204: return \"No Content\";\n  }\n}\n\nfunction rollDice(): DiceRoll {\n  return (Math.floor(Math.random() * 6) + 1) as DiceRoll;\n}\n\nconsole.log(describeStatus(200));\nconsole.log(describeStatus(201));\nconsole.log(typeof rollDice());",
+          "output": "OK\nCreated\nnumber",
+          "explanation": "Number literal types restrict values to specific numbers. The switch statement is exhaustive — TypeScript ensures every literal is handled."
+        },
+        {
+          "title": "Literal type widening with let vs const",
+          "code": "const exactColor = \"red\";    // Type: \"red\" (literal)\nlet flexibleColor = \"red\";   // Type: string (widened)\n\n// Using literal type in a function\ntype Color = \"red\" | \"green\" | \"blue\";\n\nfunction paint(color: Color): string {\n  return `Painting with ${color}`;\n}\n\nconsole.log(paint(exactColor));      // Works: \"red\" is assignable to Color\n// paint(flexibleColor);              // Error: string is not assignable to Color\n\nconst flexibleAsLiteral = flexibleColor as Color;\nconsole.log(paint(\"blue\"));\nconsole.log(typeof exactColor);",
+          "output": "Painting with red\nPainting with blue\nstring",
+          "explanation": "const declarations produce literal types while let declarations widen to the general type. A const \"red\" is type '\"red\"', but let \"red\" is type 'string'. This affects assignability to literal type parameters."
+        }
+      ],
+      "notes": [
+        "String literal unions (`\"a\" | \"b\" | \"c\"`) are generally preferred over enums in TypeScript — they're simpler, have no runtime overhead, and work well with JavaScript.",
+        "Literal types from `const` declarations are automatically inferred — you don't need to annotate `const x: \"hello\" = \"hello\"`.",
+        "Combine literal types with type narrowing in switch statements for exhaustive pattern matching."
+      ],
+      "commonPitfalls": [
+        "Passing a `let` variable to a function expecting a literal type — use `as const` on the value or annotate the variable with the literal type.",
+        "Forgetting that string literal types are case-sensitive — `\"Active\"` and `\"active\"` are completely different types."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "literals-ex1",
+        "title": "Direction handler",
+        "description": "Define a type `Direction` as a union of \"up\", \"down\", \"left\", \"right\". Write a function `move` that takes a Direction and returns the coordinate change as a string.",
+        "starterCode": "// Define the Direction type and write the move function\n\n\nconsole.log(move(\"up\"));\nconsole.log(move(\"left\"));\nconsole.log(move(\"down\"));\nconsole.log(move(\"right\"));",
+        "solution": "type Direction = \"up\" | \"down\" | \"left\" | \"right\";\n\nfunction move(direction: Direction): string {\n  switch (direction) {\n    case \"up\": return \"y + 1\";\n    case \"down\": return \"y - 1\";\n    case \"left\": return \"x - 1\";\n    case \"right\": return \"x + 1\";\n  }\n}\n\nconsole.log(move(\"up\"));\nconsole.log(move(\"left\"));\nconsole.log(move(\"down\"));\nconsole.log(move(\"right\"));",
+        "expectedOutput": "y + 1\nx - 1\ny - 1\nx + 1",
+        "hints": [
+          "Define the type with `type Direction = \"up\" | \"down\" | \"left\" | \"right\"`.",
+          "Use a switch statement to handle each direction and return the corresponding coordinate change string."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "literals-ex2",
+        "title": "Traffic light state machine",
+        "description": "Define a `TrafficLight` literal type of \"red\", \"yellow\", \"green\". Write a function `nextLight` that returns the next light in the cycle: red -> green -> yellow -> red.",
+        "starterCode": "// Define TrafficLight type and nextLight function\n\n\nconsole.log(nextLight(\"red\"));\nconsole.log(nextLight(\"green\"));\nconsole.log(nextLight(\"yellow\"));",
+        "solution": "type TrafficLight = \"red\" | \"yellow\" | \"green\";\n\nfunction nextLight(current: TrafficLight): TrafficLight {\n  switch (current) {\n    case \"red\": return \"green\";\n    case \"green\": return \"yellow\";\n    case \"yellow\": return \"red\";\n  }\n}\n\nconsole.log(nextLight(\"red\"));\nconsole.log(nextLight(\"green\"));\nconsole.log(nextLight(\"yellow\"));",
+        "expectedOutput": "green\nyellow\nred",
+        "hints": [
+          "The return type should also be `TrafficLight`, ensuring the function always returns a valid light color.",
+          "The cycle is: red -> green -> yellow -> red. Use a switch statement to map each current state to the next."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "const-assertions",
+    "sectionId": "type-annotations",
+    "orderIndex": 3,
+    "title": "Const Assertions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["as const", "Readonly inference", "Deep immutability", "Literal preservation"],
+    "content": {
+      "explanation": "Const assertions, written as `as const`, tell TypeScript to infer the most specific (narrowest) type possible for a value and make it deeply readonly. When you write `const colors = [\"red\", \"green\", \"blue\"] as const`, TypeScript infers the type as `readonly [\"red\", \"green\", \"blue\"]` instead of `string[]`. Every string becomes a literal type, the array becomes a readonly tuple, and all nested properties become readonly.\n\nWithout `as const`, TypeScript widens types to be practical for mutation. An object `{ name: \"Alice\", age: 30 }` is inferred as `{ name: string; age: number }`, and an array `[1, 2, 3]` as `number[]`. This is correct for mutable values, but when you have configuration objects, lookup tables, or constant data that should never change, `as const` gives you the precision of literal types throughout the entire structure.\n\nConst assertions are particularly powerful when combined with the `typeof` operator to derive types from values. A common pattern is defining a constant array of allowed values and then deriving a union type from it: `const statuses = [\"draft\", \"published\", \"archived\"] as const; type Status = typeof statuses[number];` This gives you `\"draft\" | \"published\" | \"archived\"` — the type and the runtime values stay in sync automatically.\n\nOne important detail: `as const` creates deeply readonly types. All properties, nested objects, and array elements become readonly. This means you cannot modify any part of the structure after creation. If you need to pass a const-asserted value to a function that expects a mutable type, you may need to use a type assertion or adjust the function's parameter type to accept readonly values.",
+      "codeExamples": [
+        {
+          "title": "as const with arrays",
+          "code": "// Without as const: string[]\nconst colorsWide = [\"red\", \"green\", \"blue\"];\n\n// With as const: readonly [\"red\", \"green\", \"blue\"]\nconst colorsNarrow = [\"red\", \"green\", \"blue\"] as const;\n\n// Derive a union type from the const array\ntype Color = typeof colorsNarrow[number]; // \"red\" | \"green\" | \"blue\"\n\nfunction isValidColor(value: string): value is Color {\n  return (colorsNarrow as readonly string[]).includes(value);\n}\n\nconsole.log(isValidColor(\"red\"));\nconsole.log(isValidColor(\"purple\"));\nconsole.log(colorsNarrow.length);",
+          "output": "true\nfalse\n3",
+          "explanation": "The `as const` assertion makes the array a readonly tuple of literal types. Using `typeof arr[number]` extracts a union of all element literal types — a very common and useful pattern."
+        },
+        {
+          "title": "as const with objects",
+          "code": "// Without as const: { host: string; port: number; secure: boolean }\nconst configWide = { host: \"localhost\", port: 3000, secure: false };\n\n// With as const: deeply readonly with literal types\nconst config = {\n  host: \"localhost\",\n  port: 3000,\n  secure: false\n} as const;\n\n// config.port = 8080; // Error: Cannot assign to 'port' because it is a read-only property\n\ntype Config = typeof config;\n// { readonly host: \"localhost\"; readonly port: 3000; readonly secure: false }\n\nconsole.log(`${config.host}:${config.port}`);\nconsole.log(`Secure: ${config.secure}`);",
+          "output": "localhost:3000\nSecure: false",
+          "explanation": "With `as const`, every property becomes readonly and gets its literal type. The object is deeply immutable at the type level — any attempt to modify a property is a compile error."
+        },
+        {
+          "title": "Deriving types from const values",
+          "code": "const ROLES = [\"admin\", \"editor\", \"viewer\"] as const;\ntype Role = typeof ROLES[number]; // \"admin\" | \"editor\" | \"viewer\"\n\nconst PERMISSIONS = {\n  admin: [\"read\", \"write\", \"delete\"],\n  editor: [\"read\", \"write\"],\n  viewer: [\"read\"]\n} as const;\n\ntype Permission = typeof PERMISSIONS[Role][number];\n\nfunction getPermissions(role: Role): readonly string[] {\n  return PERMISSIONS[role];\n}\n\nconsole.log(getPermissions(\"admin\").join(\", \"));\nconsole.log(getPermissions(\"viewer\").join(\", \"));",
+          "output": "read, write, delete\nread",
+          "explanation": "This pattern keeps your runtime values and types in sync. Add a new role to the ROLES array and the Role type updates automatically. This eliminates the possibility of types and values getting out of sync."
+        }
+      ],
+      "notes": [
+        "Use `as const` for configuration objects, lookup tables, and any data that should be immutable and precisely typed.",
+        "The pattern `typeof arr[number]` extracts a union type from a const array — this keeps your types and values in sync.",
+        "Const assertions make things deeply readonly — all nested properties and array elements become immutable."
+      ],
+      "commonPitfalls": [
+        "Trying to mutate a const-asserted value — `as const` makes everything readonly, so push, pop, and property assignment will fail at compile time.",
+        "Forgetting that `as const` affects the entire structure deeply — nested objects and arrays also become readonly, which may cause type mismatches with functions expecting mutable types."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "const-assert-ex1",
+        "title": "Derive types from constants",
+        "description": "Define a const array of HTTP methods and derive a union type from it. Write a function that only accepts valid HTTP methods.",
+        "starterCode": "// Define HTTP_METHODS as a const array and derive the HttpMethod type\n\n\nfunction describeMethod(method) {\n  return `HTTP method: ${method}`;\n}\n\nconsole.log(describeMethod(\"GET\"));\nconsole.log(describeMethod(\"POST\"));\nconsole.log(describeMethod(\"DELETE\"));",
+        "solution": "const HTTP_METHODS = [\"GET\", \"POST\", \"PUT\", \"DELETE\", \"PATCH\"] as const;\ntype HttpMethod = typeof HTTP_METHODS[number];\n\nfunction describeMethod(method: HttpMethod): string {\n  return `HTTP method: ${method}`;\n}\n\nconsole.log(describeMethod(\"GET\"));\nconsole.log(describeMethod(\"POST\"));\nconsole.log(describeMethod(\"DELETE\"));",
+        "expectedOutput": "HTTP method: GET\nHTTP method: POST\nHTTP method: DELETE",
+        "hints": [
+          "Use `as const` on the array to get literal types, then `typeof ARRAY[number]` to get the union type.",
+          "The function parameter should be typed as the derived HttpMethod type."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "const-assert-ex2",
+        "title": "Const config object",
+        "description": "Create a const-asserted configuration object with database settings and write a function to format a connection string from it.",
+        "starterCode": "// Create a const config object with host, port, database, and ssl properties\n\n\nfunction getConnectionString(): string {\n  return `${config.ssl ? \"https\" : \"http\"}://${config.host}:${config.port}/${config.database}`;\n}\n\nconsole.log(getConnectionString());",
+        "solution": "const config = {\n  host: \"db.example.com\",\n  port: 5432,\n  database: \"myapp\",\n  ssl: true\n} as const;\n\nfunction getConnectionString(): string {\n  return `${config.ssl ? \"https\" : \"http\"}://${config.host}:${config.port}/${config.database}`;\n}\n\nconsole.log(getConnectionString());",
+        "expectedOutput": "https://db.example.com:5432/myapp",
+        "hints": [
+          "Create the object with `as const` at the end to make all properties readonly with literal types.",
+          "The function accesses the config object directly — since it's const, TypeScript knows the exact types of all properties."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "any-unknown-never",
+    "sectionId": "type-annotations",
+    "orderIndex": 4,
+    "title": "any, unknown, and never",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["any type", "unknown type", "never type", "void type", "Top and bottom types"],
+    "content": {
+      "explanation": "TypeScript has three special types that occupy important positions in the type system: `any`, `unknown`, and `never`. Understanding the differences between them is crucial for writing safe TypeScript and is a common interview topic. Additionally, `void` plays a specific role for functions that don't return a value. Together, these types form the boundary conditions of the type system.\n\nThe `any` type is an escape hatch that completely disables type checking. A value of type `any` can be assigned to any other type, and any type can be assigned to `any`. You can call any method on it, access any property, and perform any operation without TypeScript complaining. While useful during migration from JavaScript, `any` should be avoided in production code because it silently propagates through your codebase — a single `any` can infect related variables and functions, creating blind spots in type safety.\n\nThe `unknown` type is the type-safe counterpart to `any`. Like `any`, it can hold any value — but unlike `any`, you cannot do anything with an `unknown` value until you narrow its type through type guards. You must use `typeof`, `instanceof`, or other checks before accessing properties or calling methods on an `unknown` value. This forces you to validate the type at runtime before using it, making `unknown` the correct choice for values whose type you genuinely don't know, such as parsed JSON, user input, or data from external APIs.\n\nThe `never` type represents values that can never occur. It's the return type of functions that always throw errors or have infinite loops, and it appears in exhaustive type narrowing when all possibilities have been handled. In type theory, `never` is the \"bottom type\" — it's assignable to every other type but no type is assignable to `never`. The `void` type is different: it represents the absence of a return value in functions. A `void` function can return `undefined` implicitly but cannot return any other value.",
+      "codeExamples": [
+        {
+          "title": "any vs unknown",
+          "code": "// any: no type safety at all\nlet dangerous: any = \"hello\";\ndangerous = 42;\ndangerous = { foo: \"bar\" };\n// No errors — but also no help from TypeScript\n\n// unknown: must narrow before using\nlet safe: unknown = \"hello\";\n// safe.toUpperCase(); // Error: Object is of type 'unknown'\n\n// Narrow with typeof before using\nif (typeof safe === \"string\") {\n  console.log(safe.toUpperCase()); // OK after narrowing\n}\n\nif (typeof safe === \"number\") {\n  console.log(safe.toFixed(2));\n} else {\n  console.log(\"Not a number\");\n}",
+          "output": "HELLO\nNot a number",
+          "explanation": "With `any`, TypeScript allows everything — no errors, no safety. With `unknown`, you must prove the type before using the value. Always prefer `unknown` over `any` when the type is genuinely not known."
+        },
+        {
+          "title": "The never type",
+          "code": "// never: function that always throws\nfunction throwError(message: string): never {\n  throw new Error(message);\n}\n\n// never: exhaustive type checking\ntype Shape = \"circle\" | \"square\" | \"triangle\";\n\nfunction getArea(shape: Shape): string {\n  switch (shape) {\n    case \"circle\": return \"pi * r^2\";\n    case \"square\": return \"side^2\";\n    case \"triangle\": return \"0.5 * base * height\";\n    default:\n      // If all cases are handled, 'shape' is type 'never' here\n      const exhaustiveCheck: never = shape;\n      return exhaustiveCheck;\n  }\n}\n\nconsole.log(getArea(\"circle\"));\nconsole.log(getArea(\"triangle\"));",
+          "output": "pi * r^2\n0.5 * base * height",
+          "explanation": "The `never` type in the default branch ensures exhaustive checking. If you add a new Shape variant without handling it in the switch, TypeScript will show a compile error at the `never` assignment."
+        },
+        {
+          "title": "void vs undefined vs never",
+          "code": "// void: function that doesn't return a meaningful value\nfunction logMessage(msg: string): void {\n  console.log(msg);\n  // implicitly returns undefined\n}\n\n// undefined: explicit undefined value\nfunction findItem(items: string[], target: string): string | undefined {\n  return items.find(item => item === target);\n}\n\nlogMessage(\"Hello from void function\");\n\nconst result = findItem([\"a\", \"b\", \"c\"], \"b\");\nconsole.log(result !== undefined ? result : \"not found\");\n\nconst missing = findItem([\"a\", \"b\"], \"z\");\nconsole.log(missing !== undefined ? missing : \"not found\");",
+          "output": "Hello from void function\nb\nnot found",
+          "explanation": "void means a function doesn't return anything useful. undefined is an actual value that can be returned. never means the function never completes (throws or loops forever)."
+        }
+      ],
+      "notes": [
+        "Use `unknown` instead of `any` when you don't know the type — it forces you to validate before using the value.",
+        "The `never` type is useful for exhaustive switches — assigning to `never` in the default case catches unhandled variants at compile time.",
+        "The `void` type is exclusively for function return types — it means the function doesn't return a meaningful value."
+      ],
+      "commonPitfalls": [
+        "Using `any` to quickly fix type errors — this silences the compiler but hides real bugs. Use `unknown` and proper type narrowing instead.",
+        "Confusing `void` with `undefined` — a `void` function implicitly returns undefined, but `void` and `undefined` are different types in TypeScript's type system."
+      ],
+      "interviewTips": [
+        "When asked about `any` vs `unknown`, explain that `any` disables type checking (opt out) while `unknown` requires type narrowing (opt in). `unknown` is the type-safe alternative.",
+        "For `never`, explain it's the bottom type — it represents computations that never complete. Common examples: functions that throw, infinite loops, and exhaustive type narrowing in switch defaults."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "any-unknown-ex1",
+        "title": "Type-safe data processor",
+        "description": "Write a function `processData` that takes an `unknown` parameter and returns a string. If the input is a string, return it trimmed and uppercased. If it's a number, return it as a string with 2 decimal places. If it's a boolean, return \"yes\" or \"no\". For anything else, return \"unknown type\".",
+        "starterCode": "function processData(data: unknown): string {\n  // Narrow the type and handle each case\n}\n\nconsole.log(processData(\"  hello  \"));\nconsole.log(processData(3.14159));\nconsole.log(processData(true));\nconsole.log(processData(null));",
+        "solution": "function processData(data: unknown): string {\n  if (typeof data === \"string\") {\n    return data.trim().toUpperCase();\n  }\n  if (typeof data === \"number\") {\n    return data.toFixed(2);\n  }\n  if (typeof data === \"boolean\") {\n    return data ? \"yes\" : \"no\";\n  }\n  return \"unknown type\";\n}\n\nconsole.log(processData(\"  hello  \"));\nconsole.log(processData(3.14159));\nconsole.log(processData(true));\nconsole.log(processData(null));",
+        "expectedOutput": "HELLO\n3.14\nyes\nunknown type",
+        "hints": [
+          "Use `typeof` checks to narrow the `unknown` type: 'string', 'number', 'boolean'.",
+          "After each typeof check, TypeScript knows the exact type inside that branch and allows you to use type-specific methods."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "any-unknown-ex2",
+        "title": "Exhaustive switch with never",
+        "description": "Create a `LogLevel` type with values \"info\", \"warn\", \"error\". Write a function `formatLog` that uses a switch statement with a `never` check in the default case to ensure exhaustive handling.",
+        "starterCode": "// Define LogLevel type and formatLog function\n\n\nconsole.log(formatLog(\"info\", \"Server started\"));\nconsole.log(formatLog(\"warn\", \"Disk space low\"));\nconsole.log(formatLog(\"error\", \"Connection failed\"));",
+        "solution": "type LogLevel = \"info\" | \"warn\" | \"error\";\n\nfunction formatLog(level: LogLevel, message: string): string {\n  switch (level) {\n    case \"info\":\n      return `[INFO] ${message}`;\n    case \"warn\":\n      return `[WARN] ${message}`;\n    case \"error\":\n      return `[ERROR] ${message}`;\n    default:\n      const exhaustive: never = level;\n      return exhaustive;\n  }\n}\n\nconsole.log(formatLog(\"info\", \"Server started\"));\nconsole.log(formatLog(\"warn\", \"Disk space low\"));\nconsole.log(formatLog(\"error\", \"Connection failed\"));",
+        "expectedOutput": "[INFO] Server started\n[WARN] Disk space low\n[ERROR] Connection failed",
+        "hints": [
+          "Define the type as a union of literal strings. In the switch default, assign `level` to a `never` variable — this ensures all cases are handled.",
+          "If you later add a new log level to the union without adding a case, TypeScript will error at the `never` assignment."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

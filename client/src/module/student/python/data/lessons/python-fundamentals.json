@@ -1,0 +1,460 @@
+[
+  {
+    "id": "what-is-python",
+    "sectionId": "python-fundamentals",
+    "orderIndex": 0,
+    "title": "What is Python?",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Python overview", "Interpreted language", "Running scripts", "REPL"],
+    "content": {
+      "explanation": "Python is a high-level, interpreted programming language created by Guido van Rossum and first released in 1991. It emphasizes code readability with its use of significant indentation and a clean, expressive syntax. Python supports multiple programming paradigms including procedural, object-oriented, and functional programming.\n\nPython has become one of the most popular programming languages in the world, consistently ranking in the top three across every major language index. Its popularity stems from its gentle learning curve, massive ecosystem of libraries, and versatility across domains like web development, data science, machine learning, automation, and scripting.\n\nOne key characteristic of Python is that it is an interpreted language. Unlike compiled languages such as C or Java, Python code is executed line by line by the Python interpreter. This means you can write a script and run it immediately without a separate compilation step, which makes the development cycle faster and more interactive.\n\nTo run your first Python script, you simply create a file with a .py extension and use the python command to execute it. Python also comes with an interactive shell (REPL -- Read, Eval, Print, Loop) where you can type expressions and see results immediately. This makes it an excellent tool for experimentation and learning.\n\nPython uses a \"batteries included\" philosophy, meaning its standard library provides modules for a wide range of tasks -- from file handling and networking to regular expressions and data serialization -- without needing to install anything extra.",
+      "codeExamples": [
+        {
+          "title": "Your First Python Program",
+          "code": "print(\"Hello, World!\")",
+          "output": "Hello, World!",
+          "explanation": "The print() function outputs text to the console. This single line is a complete, valid Python program. No boilerplate, no class wrappers -- just one function call."
+        },
+        {
+          "title": "Multiple Print Statements",
+          "code": "print(\"Welcome to Python!\")\nprint(\"Python is fun.\")\nprint(\"Let's start coding.\")",
+          "output": "Welcome to Python!\nPython is fun.\nLet's start coding.",
+          "explanation": "Python executes statements top to bottom, one line at a time. Each print() call outputs its text followed by a newline character by default."
+        },
+        {
+          "title": "Using Comments",
+          "code": "# This is a single-line comment\nprint(\"Comments are ignored by Python\")  # Inline comment\n\n# You can use comments to explain your code\n# or temporarily disable lines",
+          "output": "Comments are ignored by Python",
+          "explanation": "Comments start with the # symbol. Everything after # on that line is ignored by the interpreter. They are used to document code and make it easier to understand."
+        },
+        {
+          "title": "Checking Your Python Version",
+          "code": "import sys\nprint(sys.version_info.major)\nprint(sys.version_info.minor)",
+          "output": "3\n12",
+          "explanation": "The sys module provides access to interpreter information. sys.version_info gives you the major and minor version numbers. Most modern environments run Python 3.10 or above."
+        }
+      ],
+      "notes": [
+        "Python files use the .py extension. To run a script, use: python filename.py",
+        "Python is dynamically typed -- you do not need to declare variable types explicitly.",
+        "Indentation is not just a style choice in Python; it is part of the syntax and determines code blocks.",
+        "Python 2 reached end of life in 2020. Always use Python 3 for new projects."
+      ],
+      "commonPitfalls": [
+        "Mixing tabs and spaces for indentation causes IndentationError. Configure your editor to use 4 spaces per indent level.",
+        "Forgetting parentheses around print -- in Python 3, print is a function: print(\"text\"), not print \"text\".",
+        "Running code written for Python 3 with a Python 2 interpreter (or vice versa) will produce unexpected errors."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "what-is-python-ex1",
+        "title": "Say Hello",
+        "description": "Write a program that prints \"Hello, Python!\" on the first line and \"I am learning to code.\" on the second line.",
+        "starterCode": "# TODO: Print \"Hello, Python!\" on the first line\n# TODO: Print \"I am learning to code.\" on the second line",
+        "solution": "print(\"Hello, Python!\")\nprint(\"I am learning to code.\")",
+        "expectedOutput": "Hello, Python!\nI am learning to code.",
+        "hints": [
+          "Use the print() function to display text.",
+          "Each print() call automatically adds a newline at the end.",
+          "Make sure the text inside the quotes matches exactly."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "what-is-python-ex2",
+        "title": "Print a Pattern",
+        "description": "Print the following three-line pattern using three separate print() calls:\n*\n**\n***",
+        "starterCode": "# TODO: Print a triangle pattern of asterisks\n# Line 1: *\n# Line 2: **\n# Line 3: ***",
+        "solution": "print(\"*\")\nprint(\"**\")\nprint(\"***\")",
+        "expectedOutput": "*\n**\n***",
+        "hints": [
+          "Each line has an increasing number of * characters.",
+          "Use one print() call per line of the pattern.",
+          "The first line has 1 asterisk, the second has 2, the third has 3."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "variables-and-data-types",
+    "sectionId": "python-fundamentals",
+    "orderIndex": 1,
+    "title": "Variables & Data Types",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["Variables", "int", "float", "str", "bool", "type()"],
+    "content": {
+      "explanation": "A variable in Python is a name that refers to a value stored in memory. Unlike statically typed languages, Python variables do not require explicit type declarations. You simply assign a value to a name using the = operator, and Python automatically infers the type based on the value.\n\nPython has several built-in data types. The four most fundamental ones are: int (whole numbers like 42 or -7), float (decimal numbers like 3.14 or -0.5), str (text enclosed in single or double quotes like \"hello\"), and bool (logical values True or False). Each value in Python has a type, and you can check it using the built-in type() function.\n\nVariable names in Python must start with a letter or underscore, can contain letters, digits, and underscores, and are case-sensitive. By convention, Python uses snake_case for variable names (e.g., my_variable, total_count). Names that start with an uppercase letter are typically reserved for class names.\n\nPython is dynamically typed, which means a variable can be reassigned to a value of a different type at any time. While this offers flexibility, it also means you need to be careful about tracking what type a variable holds, especially in larger programs. The type() function is your friend for debugging type-related issues.\n\nPython also supports multiple assignment in a single line, letting you assign several variables at once. This is a common Python idiom that makes code more concise. You can also swap variable values without a temporary variable using tuple unpacking: a, b = b, a.",
+      "codeExamples": [
+        {
+          "title": "Creating Variables of Different Types",
+          "code": "name = \"Alice\"\nage = 25\nheight = 5.6\nis_student = True\n\nprint(name)\nprint(age)\nprint(height)\nprint(is_student)",
+          "output": "Alice\n25\n5.6\nTrue",
+          "explanation": "Each variable is assigned a value of a different type. Python infers the type automatically: str for text, int for whole numbers, float for decimals, and bool for True/False."
+        },
+        {
+          "title": "Using type() to Check Data Types",
+          "code": "x = 10\ny = 3.14\nz = \"Python\"\nw = False\n\nprint(type(x))\nprint(type(y))\nprint(type(z))\nprint(type(w))",
+          "output": "<class 'int'>\n<class 'float'>\n<class 'str'>\n<class 'bool'>",
+          "explanation": "The type() function returns the class/type of any value. This is extremely useful for debugging and understanding what kind of data a variable holds."
+        },
+        {
+          "title": "Multiple Assignment and Reassignment",
+          "code": "a, b, c = 1, 2.5, \"hello\"\nprint(a)\nprint(b)\nprint(c)\n\n# Reassigning to a different type\na = \"now I'm a string\"\nprint(a)\nprint(type(a))",
+          "output": "1\n2.5\nhello\nnow I'm a string\n<class 'str'>",
+          "explanation": "Python allows assigning multiple variables in one line. Variables can also be reassigned to values of a completely different type -- this is what 'dynamically typed' means."
+        },
+        {
+          "title": "Variable Swapping",
+          "code": "x = 10\ny = 20\nprint(x, y)\n\nx, y = y, x\nprint(x, y)",
+          "output": "10 20\n20 10",
+          "explanation": "Python supports elegant variable swapping using tuple unpacking. No temporary variable is needed. This is a commonly asked Python idiom in interviews."
+        }
+      ],
+      "notes": [
+        "Variable names are case-sensitive: age, Age, and AGE are three different variables.",
+        "Python uses snake_case by convention: my_variable, not myVariable or MyVariable.",
+        "bool is a subclass of int in Python: True equals 1 and False equals 0.",
+        "You cannot use Python keywords (like if, for, class, return) as variable names."
+      ],
+      "commonPitfalls": [
+        "Using a variable before assigning it raises a NameError. Always assign before you use.",
+        "Starting a variable name with a digit (e.g., 2name = \"Bob\") causes a SyntaxError.",
+        "Confusing = (assignment) with == (comparison). a = 5 assigns; a == 5 checks equality."
+      ],
+      "interviewTips": [
+        "Be ready to explain Python's dynamic typing: variables hold references to objects, not the objects themselves. Reassignment changes what object the name points to.",
+        "Know that bool is a subclass of int. This means True + True equals 2, and you can use booleans in arithmetic expressions."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "variables-ex1",
+        "title": "Personal Info Card",
+        "description": "Create variables for a person's name (str), age (int), gpa (float), and whether they are enrolled (bool). Print each variable's value, then print each variable's type.",
+        "starterCode": "# TODO: Create four variables: name, age, gpa, is_enrolled\n# name should be \"Sam\", age should be 20, gpa should be 3.75, is_enrolled should be True\n\n# TODO: Print each variable's value\n\n# TODO: Print each variable's type using type()",
+        "solution": "name = \"Sam\"\nage = 20\ngpa = 3.75\nis_enrolled = True\n\nprint(name)\nprint(age)\nprint(gpa)\nprint(is_enrolled)\nprint(type(name))\nprint(type(age))\nprint(type(gpa))\nprint(type(is_enrolled))",
+        "expectedOutput": "Sam\n20\n3.75\nTrue\n<class 'str'>\n<class 'int'>\n<class 'float'>\n<class 'bool'>",
+        "hints": [
+          "Strings need quotes, booleans (True/False) do not.",
+          "Use type(variable_name) to get the type of a variable.",
+          "Print values first, then types, each on its own line."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "variables-ex2",
+        "title": "Swap and Report",
+        "description": "Given two variables a = 5 and b = 10, swap their values without using a temporary variable and print the results.",
+        "starterCode": "a = 5\nb = 10\n\n# TODO: Swap the values of a and b without using a temp variable\n\n# TODO: Print a and b after swapping\nprint(a)\nprint(b)",
+        "solution": "a = 5\nb = 10\n\na, b = b, a\n\nprint(a)\nprint(b)",
+        "expectedOutput": "10\n5",
+        "hints": [
+          "Python supports tuple unpacking: a, b = b, a",
+          "This works because Python evaluates the right side fully before assigning to the left side."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "variables-ex3",
+        "title": "Type Detective",
+        "description": "For each of the following values, print True if it is an int and False otherwise: 42, 3.0, \"100\", True",
+        "starterCode": "values = [42, 3.0, \"100\", True]\n\n# TODO: Loop through the values list\n# For each value, print True if type is int, False otherwise\n# Hint: use type(val) == int",
+        "solution": "values = [42, 3.0, \"100\", True]\n\nfor val in values:\n    print(type(val) == int)",
+        "expectedOutput": "True\nFalse\nFalse\nTrue",
+        "hints": [
+          "Use a for loop to iterate through the list.",
+          "Compare type(val) == int for each value.",
+          "Remember: bool is a subclass of int, so type(True) == int is actually False... but wait, check carefully! isinstance(True, int) is True, but type(True) == int is False because type(True) is bool."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "operators",
+    "sectionId": "python-fundamentals",
+    "orderIndex": 2,
+    "title": "Operators",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["Arithmetic operators", "Comparison operators", "Logical operators", "Assignment operators", "Operator precedence"],
+    "content": {
+      "explanation": "Operators are special symbols that perform operations on values and variables. Python provides a rich set of operators organized into several categories: arithmetic, comparison, logical, and assignment operators. Understanding these is fundamental to writing any Python program.\n\nArithmetic operators perform mathematical calculations. Python supports the standard operators: + (addition), - (subtraction), * (multiplication), / (division), // (floor division), % (modulus/remainder), and ** (exponentiation). One important distinction is between / and //: the / operator always returns a float, while // returns the largest integer less than or equal to the result.\n\nComparison operators compare two values and return a boolean (True or False). They include == (equal to), != (not equal to), > (greater than), < (less than), >= (greater than or equal to), and <= (less than or equal to). These are essential for conditional logic and loops. Python also supports chained comparisons like 1 < x < 10, which is equivalent to 1 < x and x < 10.\n\nLogical operators combine boolean expressions. Python uses the English words and, or, and not instead of symbols like && and ||. The and operator returns True only when both operands are True, or returns True when at least one operand is True, and not negates a boolean value. Python uses short-circuit evaluation: in an and expression, if the first operand is False, the second is never evaluated.\n\nAssignment operators provide shorthand for updating variables. Beyond the basic = operator, Python supports augmented assignment operators like +=, -=, *=, /=, //=, %=, and **=. These modify a variable in place. For example, x += 5 is equivalent to x = x + 5. Note that Python does not have ++ or -- increment/decrement operators like C or Java.",
+      "codeExamples": [
+        {
+          "title": "Arithmetic Operators",
+          "code": "a = 17\nb = 5\n\nprint(a + b)\nprint(a - b)\nprint(a * b)\nprint(a / b)\nprint(a // b)\nprint(a % b)\nprint(a ** b)",
+          "output": "22\n12\n85\n3.4\n3\n2\n1419857",
+          "explanation": "Demonstrates all 7 arithmetic operators. Note that / returns 3.4 (float) while // returns 3 (floor division). The % operator gives the remainder, and ** raises to a power."
+        },
+        {
+          "title": "Comparison Operators",
+          "code": "x = 10\ny = 20\n\nprint(x == y)\nprint(x != y)\nprint(x > y)\nprint(x < y)\nprint(x >= 10)\nprint(x <= 5)",
+          "output": "False\nTrue\nFalse\nTrue\nTrue\nFalse",
+          "explanation": "Each comparison returns a boolean. These operators are the building blocks of conditional statements (if/else) that we will cover in later lessons."
+        },
+        {
+          "title": "Logical Operators",
+          "code": "a = True\nb = False\n\nprint(a and b)\nprint(a or b)\nprint(not a)\nprint(not b)\n\n# Chained comparison\nx = 15\nprint(10 < x < 20)\nprint(20 < x < 30)",
+          "output": "False\nTrue\nFalse\nTrue\nTrue\nFalse",
+          "explanation": "Logical operators combine booleans. Python's chained comparisons (10 < x < 20) are a clean alternative to writing 10 < x and x < 20."
+        },
+        {
+          "title": "Assignment Operators",
+          "code": "x = 10\nprint(x)\n\nx += 5\nprint(x)\n\nx -= 3\nprint(x)\n\nx *= 2\nprint(x)\n\nx //= 4\nprint(x)\n\nx **= 3\nprint(x)",
+          "output": "10\n15\n12\n24\n6\n216",
+          "explanation": "Augmented assignment operators modify a variable in place. x += 5 is shorthand for x = x + 5. The sequence: 10 -> +5=15 -> -3=12 -> *2=24 -> //4=6 -> **3=216."
+        }
+      ],
+      "notes": [
+        "Division (/) always returns a float in Python 3, even when dividing two integers: 10 / 2 gives 5.0, not 5.",
+        "Floor division (//) rounds toward negative infinity, not toward zero: -7 // 2 gives -4, not -3.",
+        "Python does not have ++ or -- operators. Use x += 1 or x -= 1 instead.",
+        "Operator precedence follows standard math rules: ** > unary - > *, /, //, % > +, -. Use parentheses to override."
+      ],
+      "commonPitfalls": [
+        "Confusing / (true division, returns float) with // (floor division, returns int for int operands). 7 / 2 is 3.5 but 7 // 2 is 3.",
+        "Assuming floor division rounds toward zero. It actually rounds toward negative infinity: -7 // 2 is -4.",
+        "Using = instead of == in comparisons. if x = 5 is a SyntaxError in Python (unlike C where it would silently assign)."
+      ],
+      "interviewTips": [
+        "Be prepared to explain the difference between / and // and how floor division behaves with negative numbers. -7 // 2 = -4 is a common gotcha.",
+        "Know that Python's logical operators (and, or) return one of their operands, not necessarily True/False. For example, 0 or 'hello' returns 'hello', and '' and 'world' returns ''."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "operators-ex1",
+        "title": "Calculator",
+        "description": "Given two numbers a = 23 and b = 7, print the result of addition, subtraction, multiplication, true division, floor division, modulus, and exponentiation, each on a new line.",
+        "starterCode": "a = 23\nb = 7\n\n# TODO: Print the result of each operation on a new line\n# Addition, Subtraction, Multiplication, True Division,\n# Floor Division, Modulus, Exponentiation",
+        "solution": "a = 23\nb = 7\n\nprint(a + b)\nprint(a - b)\nprint(a * b)\nprint(a / b)\nprint(a // b)\nprint(a % b)\nprint(a ** b)",
+        "expectedOutput": "30\n16\n161\n3.2857142857142856\n3\n2\n3404825447",
+        "hints": [
+          "Use +, -, *, /, //, %, and ** for the seven operations.",
+          "True division (/) returns a float; floor division (//) returns an integer.",
+          "Print each result using a separate print() call."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "operators-ex2",
+        "title": "Even or Odd Checker",
+        "description": "Given a number n = 37, use the modulus operator to determine if it is even or odd. Print True if even, False if odd.",
+        "starterCode": "n = 37\n\n# TODO: Use the modulus operator to check if n is even\n# Print True if n is even, False if n is odd",
+        "solution": "n = 37\n\nprint(n % 2 == 0)",
+        "expectedOutput": "False",
+        "hints": [
+          "A number is even if it has no remainder when divided by 2.",
+          "Use the modulus operator: n % 2 gives the remainder.",
+          "Compare the remainder to 0 using == to get a boolean result."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "operators-ex3",
+        "title": "Compound Expression",
+        "description": "Start with x = 100. Apply these operations in order: subtract 15, floor divide by 4, raise to the power of 2, find the modulus with 50. Print x after each operation.",
+        "starterCode": "x = 100\n\n# TODO: Subtract 15 from x using -=, then print x\n# TODO: Floor divide x by 4 using //=, then print x\n# TODO: Raise x to the power of 2 using **=, then print x\n# TODO: Find x modulus 50 using %=, then print x",
+        "solution": "x = 100\n\nx -= 15\nprint(x)\n\nx //= 4\nprint(x)\n\nx **= 2\nprint(x)\n\nx %= 50\nprint(x)",
+        "expectedOutput": "85\n21\n441\n41",
+        "hints": [
+          "Apply each operation in sequence: 100 - 15 = 85, 85 // 4 = 21, 21 ** 2 = 441, 441 % 50 = 41.",
+          "Use augmented assignment operators: -=, //=, **=, %=",
+          "Print the value of x after each operation."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "type-casting",
+    "sectionId": "python-fundamentals",
+    "orderIndex": 3,
+    "title": "Type Casting",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["int()", "float()", "str()", "bool()", "Type conversion"],
+    "content": {
+      "explanation": "Type casting (also called type conversion) is the process of converting a value from one data type to another. Python provides built-in functions for this purpose: int(), float(), str(), and bool(). These are essential for handling user input, performing calculations with mixed types, and formatting output.\n\nThe int() function converts a value to an integer. It can convert floats (by truncating the decimal part, not rounding), numeric strings, and booleans. For floats, int(3.9) gives 3, not 4 -- it always truncates toward zero. For strings, the string must contain a valid integer representation; int(\"3.14\") will raise a ValueError because the string contains a decimal point.\n\nThe float() function converts a value to a floating-point number. It can handle integers, numeric strings (including those with decimal points), and booleans. This is commonly used when you need decimal precision in calculations, such as when computing averages or performing division.\n\nThe str() function converts any value to its string representation. This is frequently used to concatenate numbers with text, since Python does not allow adding a string and a number directly. For example, \"Age: \" + str(25) produces \"Age: 25\". The str() function works on virtually any Python object.\n\nThe bool() function converts a value to True or False. In Python, several values are considered \"falsy\" (they convert to False): 0, 0.0, empty string \"\", None, empty collections ([], {}, set()). Everything else is \"truthy\" and converts to True. Understanding truthiness is critical for writing clean conditional logic in Python.",
+      "codeExamples": [
+        {
+          "title": "Converting with int()",
+          "code": "print(int(3.7))\nprint(int(3.2))\nprint(int(-3.9))\nprint(int(\"42\"))\nprint(int(True))\nprint(int(False))",
+          "output": "3\n3\n-3\n42\n1\n0",
+          "explanation": "int() truncates floats toward zero (not rounding). It can parse integer strings and convert booleans (True=1, False=0). Note that int(-3.9) gives -3, not -4."
+        },
+        {
+          "title": "Converting with float() and str()",
+          "code": "print(float(10))\nprint(float(\"3.14\"))\nprint(float(True))\n\nprint(str(42))\nprint(str(3.14))\nprint(str(True))",
+          "output": "10.0\n3.14\n1.0\n42\n3.14\nTrue",
+          "explanation": "float() adds a decimal component to integers and parses numeric strings. str() converts any value to its text representation, which is what you would see if you printed the value directly."
+        },
+        {
+          "title": "Understanding bool() and Truthiness",
+          "code": "print(bool(1))\nprint(bool(0))\nprint(bool(-5))\nprint(bool(\"\"))\nprint(bool(\"hello\"))\nprint(bool(0.0))\nprint(bool(3.14))",
+          "output": "True\nFalse\nTrue\nFalse\nTrue\nFalse\nTrue",
+          "explanation": "Zero values (0, 0.0) and empty strings are falsy. Any non-zero number or non-empty string is truthy. This is foundational for Python conditionals."
+        },
+        {
+          "title": "Practical: Processing User Input",
+          "code": "# Simulating user input (input() always returns a string)\nuser_input = \"25\"\nage = int(user_input)\ndouble_age = age * 2\nprint(\"Double your age is \" + str(double_age))",
+          "output": "Double your age is 50",
+          "explanation": "A typical workflow: receive string input, convert to int for math, then convert back to str for concatenation. This pattern appears constantly in real Python programs."
+        }
+      ],
+      "notes": [
+        "int() truncates toward zero, it does not round. Use round() if you need rounding behavior.",
+        "input() always returns a string, so you must cast the result to int or float for numeric operations.",
+        "Falsy values in Python: 0, 0.0, \"\", None, [], {}, set(), False. Everything else is truthy.",
+        "You cannot convert a non-numeric string to int or float: int(\"hello\") raises a ValueError."
+      ],
+      "commonPitfalls": [
+        "Trying to convert a float string directly to int: int(\"3.14\") raises ValueError. Convert to float first: int(float(\"3.14\")).",
+        "Assuming int() rounds values. int(3.9) is 3, not 4. Use round() for rounding.",
+        "Forgetting to convert input() results before doing math: \"5\" * 2 gives \"55\" (string repetition), not 10."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "type-casting-ex1",
+        "title": "Cast and Print",
+        "description": "Convert and print the following: the integer part of 9.99, the float form of 7, the string form of 100, and the boolean of 0. Print each result on its own line.",
+        "starterCode": "# TODO: Convert 9.99 to int and print it\n# TODO: Convert 7 to float and print it\n# TODO: Convert 100 to str and print it (with type to prove it's a string)\n# TODO: Convert 0 to bool and print it",
+        "solution": "print(int(9.99))\nprint(float(7))\nprint(str(100))\nprint(type(str(100)))\nprint(bool(0))",
+        "expectedOutput": "9\n7.0\n100\n<class 'str'>\nFalse",
+        "hints": [
+          "Use int(), float(), str(), and bool() to convert values.",
+          "int(9.99) truncates the decimal, it does not round.",
+          "Use type() to verify the result of str(100) is indeed a string."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "type-casting-ex2",
+        "title": "String Math",
+        "description": "You are given two string variables representing numbers. Convert them to the appropriate types, add them together, and print the result.",
+        "starterCode": "num1 = \"15\"\nnum2 = \"3.5\"\n\n# TODO: Convert num1 and num2 to numbers\n# TODO: Add them together and print the result",
+        "solution": "num1 = \"15\"\nnum2 = \"3.5\"\n\nresult = int(num1) + float(num2)\nprint(result)",
+        "expectedOutput": "18.5",
+        "hints": [
+          "num1 is a whole number string, so use int(). num2 has a decimal, so use float().",
+          "When you add an int and a float, Python automatically returns a float.",
+          "Store the result in a variable and print it."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "type-casting-ex3",
+        "title": "Truthiness Table",
+        "description": "Print the boolean value of each of the following: 0, 1, -1, \"\", \"0\", 0.0, 0.1. Each on its own line.",
+        "starterCode": "# TODO: Print bool() of each value, one per line:\n# 0, 1, -1, \"\", \"0\", 0.0, 0.1",
+        "solution": "print(bool(0))\nprint(bool(1))\nprint(bool(-1))\nprint(bool(\"\"))\nprint(bool(\"0\"))\nprint(bool(0.0))\nprint(bool(0.1))",
+        "expectedOutput": "False\nTrue\nTrue\nFalse\nTrue\nFalse\nTrue",
+        "hints": [
+          "Zero values (0, 0.0) are falsy. Non-zero numbers are truthy.",
+          "An empty string \"\" is falsy, but \"0\" is a non-empty string and therefore truthy.",
+          "Negative numbers like -1 are truthy because they are non-zero."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "input-and-output",
+    "sectionId": "python-fundamentals",
+    "orderIndex": 4,
+    "title": "Input & Output",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["print()", "input()", "f-strings", "String formatting", "sep and end parameters"],
+    "content": {
+      "explanation": "The print() function is Python's primary way of sending output to the console. While it seems simple, print() is quite versatile with its optional parameters. By default, it adds a newline after each call, but you can change this behavior. It can also accept multiple arguments separated by commas, which it joins with spaces.\n\nThe print() function accepts two important keyword arguments: sep and end. The sep parameter controls what is placed between multiple arguments (default is a space), and end controls what is appended after all arguments are printed (default is a newline '\\n'). These parameters give you fine-grained control over output formatting without needing string concatenation.\n\nThe input() function reads a line of text from the user. It always returns a string, regardless of what the user types. You can pass an optional prompt string that is displayed before waiting for input. Since input() always returns a string, you need to use type casting (int(), float()) when you expect numeric input.\n\nF-strings (formatted string literals), introduced in Python 3.6, are the modern and preferred way to embed expressions inside strings. An f-string is prefixed with f or F, and you place expressions inside curly braces {}. The expressions are evaluated at runtime and converted to strings. F-strings support format specifiers for controlling decimal places, alignment, and padding.\n\nBeyond f-strings, Python supports other formatting methods like the .format() method and the older % operator. However, f-strings are the most readable and performant option. They can contain any valid Python expression inside the curly braces, including function calls, arithmetic, and method calls. For complex formatting needs, f-strings support format specifications after a colon, such as {value:.2f} for two decimal places.",
+      "codeExamples": [
+        {
+          "title": "print() with Multiple Arguments",
+          "code": "print(\"Hello\", \"World\")\nprint(\"A\", \"B\", \"C\", sep=\"-\")\nprint(\"No newline\", end=\" \")\nprint(\"Same line\")\nprint(\"a\", \"b\", \"c\", sep=\", \", end=\".\\n\")",
+          "output": "Hello World\nA-B-C\nNo newline Same line\na, b, c.",
+          "explanation": "Multiple arguments to print() are separated by spaces by default. The sep parameter changes the separator, and end changes what comes after (default is newline). Combining these gives precise output control."
+        },
+        {
+          "title": "F-String Basics",
+          "code": "name = \"Alice\"\nage = 30\nheight = 5.678\n\nprint(f\"Name: {name}\")\nprint(f\"{name} is {age} years old\")\nprint(f\"Height: {height:.2f} feet\")\nprint(f\"Next year: {age + 1}\")",
+          "output": "Name: Alice\nAlice is 30 years old\nHeight: 5.68 feet\nNext year: 31",
+          "explanation": "F-strings embed expressions inside {}. You can include variables, format specifiers (:.2f for 2 decimal places), and even arithmetic expressions directly inside the braces."
+        },
+        {
+          "title": "F-String Formatting Options",
+          "code": "pi = 3.14159265\nbig_number = 1000000\n\nprint(f\"Pi: {pi:.4f}\")\nprint(f\"Formatted: {big_number:,}\")\nprint(f\"Padded: {42:05d}\")\nprint(f\"Left: {'hi':<10}|\")\nprint(f\"Right: {'hi':>10}|\")\nprint(f\"Center: {'hi':^10}|\")",
+          "output": "Pi: 3.1416\nFormatted: 1,000,000\nPadded: 00042\nLeft: hi        |\nRight:         hi|\nCenter:     hi    |",
+          "explanation": "F-strings support rich formatting: :.4f for decimal precision, :, for thousand separators, :05d for zero-padding, and <, >, ^ for left, right, and center alignment with a specified width."
+        },
+        {
+          "title": "Simulating Input Processing",
+          "code": "# In a real program you'd use: name = input(\"Enter name: \")\n# We'll simulate the input values here\nname = \"Bob\"\nage_str = \"25\"\n\nage = int(age_str)\nbirth_year = 2026 - age\n\nprint(f\"Hello, {name}!\")\nprint(f\"You were born around {birth_year}.\")",
+          "output": "Hello, Bob!\nYou were born around 2001.",
+          "explanation": "This simulates a typical input-processing pattern: read strings, convert to the right types, compute results, and display formatted output. In a real program, the values would come from input()."
+        }
+      ],
+      "notes": [
+        "input() always returns a string. Use int(input()) or float(input()) for numbers.",
+        "F-strings require Python 3.6 or later. They are the recommended way to format strings.",
+        "Use :.2f for 2 decimal places, :, for thousands separators, :>10 for right-aligned padding.",
+        "print() with no arguments prints an empty line, which is useful for adding vertical spacing in output."
+      ],
+      "commonPitfalls": [
+        "Forgetting to convert input() to a number before doing math: int(input()) not just input().",
+        "Using + to concatenate strings with numbers without converting: \"Age: \" + str(25), or better yet use f\"Age: {25}\".",
+        "Missing the f prefix on a formatted string: \"{name}\" prints literally {name}, not the variable's value."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "io-ex1",
+        "title": "Formatted Profile",
+        "description": "Create variables name = \"Charlie\", age = 22, and gpa = 3.867. Print a formatted profile using f-strings: the name, age, and GPA rounded to 2 decimal places.",
+        "starterCode": "name = \"Charlie\"\nage = 22\ngpa = 3.867\n\n# TODO: Print \"Name: Charlie\" using an f-string\n# TODO: Print \"Age: 22\" using an f-string\n# TODO: Print \"GPA: 3.87\" using an f-string with .2f formatting",
+        "solution": "name = \"Charlie\"\nage = 22\ngpa = 3.867\n\nprint(f\"Name: {name}\")\nprint(f\"Age: {age}\")\nprint(f\"GPA: {gpa:.2f}\")",
+        "expectedOutput": "Name: Charlie\nAge: 22\nGPA: 3.87",
+        "hints": [
+          "Use f\"...\" with {variable_name} to embed variables in strings.",
+          "For 2 decimal places, use {gpa:.2f} inside the f-string.",
+          "Make sure each piece of info is printed on its own line."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "io-ex2",
+        "title": "Custom Separators",
+        "description": "Print the numbers 1 through 5 on a single line separated by \" -> \" using print()'s sep parameter. Then print them again separated by \" | \".",
+        "starterCode": "# TODO: Print 1 2 3 4 5 separated by \" -> \" using the sep parameter\n# TODO: Print 1 2 3 4 5 separated by \" | \" using the sep parameter",
+        "solution": "print(1, 2, 3, 4, 5, sep=\" -> \")\nprint(1, 2, 3, 4, 5, sep=\" | \")",
+        "expectedOutput": "1 -> 2 -> 3 -> 4 -> 5\n1 | 2 | 3 | 4 | 5",
+        "hints": [
+          "Pass multiple values as separate arguments to print(), not as a single string.",
+          "The sep parameter controls what goes between each argument.",
+          "print(1, 2, 3, sep=\"-\") would produce 1-2-3"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "io-ex3",
+        "title": "Receipt Formatter",
+        "description": "Create variables item = \"Widget\", quantity = 3, price = 19.99. Calculate the total and print a formatted receipt showing item, quantity, unit price (2 decimals), and total (2 decimals).",
+        "starterCode": "item = \"Widget\"\nquantity = 3\nprice = 19.99\n\n# TODO: Calculate total = quantity * price\n# TODO: Print \"Item: Widget\"\n# TODO: Print \"Quantity: 3\"\n# TODO: Print \"Price: $19.99\"\n# TODO: Print \"Total: $59.97\"",
+        "solution": "item = \"Widget\"\nquantity = 3\nprice = 19.99\n\ntotal = quantity * price\nprint(f\"Item: {item}\")\nprint(f\"Quantity: {quantity}\")\nprint(f\"Price: ${price:.2f}\")\nprint(f\"Total: ${total:.2f}\")",
+        "expectedOutput": "Item: Widget\nQuantity: 3\nPrice: $19.99\nTotal: $59.97",
+        "hints": [
+          "Calculate total by multiplying quantity and price.",
+          "Use :.2f inside f-strings to format prices to 2 decimal places.",
+          "Place the $ sign outside the curly braces: f\"${variable:.2f}\""
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

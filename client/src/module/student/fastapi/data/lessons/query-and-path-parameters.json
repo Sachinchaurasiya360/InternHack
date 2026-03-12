@@ -1,0 +1,268 @@
+[
+  {
+    "id": "query-parameters-basics",
+    "sectionId": "query-and-path-parameters",
+    "orderIndex": 0,
+    "title": "Query Parameters Basics",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Query Parameters", "Default Values", "Required Params", "Type Conversion", "Multiple Values"],
+    "content": {
+      "explanation": "Query parameters are key-value pairs that appear after the question mark in a URL, like /items?skip=0&limit=10. In FastAPI, any function parameter that is not a path parameter is automatically treated as a query parameter. This makes it intuitive to add filtering, pagination, and other optional parameters to your endpoints.\n\nWhen you define a function parameter with a default value, FastAPI treats it as an optional query parameter. For example, def list_items(skip: int = 0, limit: int = 10) creates two optional query parameters with defaults. Clients can call /items (uses defaults), /items?skip=20 (overrides skip only), or /items?skip=20&limit=5 (overrides both).\n\nA parameter without a default value is required. If you write def search(q: str), the client must provide the q query parameter. A request to /search without ?q=something will result in a 422 validation error. This is a clean way to enforce that certain parameters are always provided.\n\nFastAPI automatically converts query parameter values from strings to the annotated type. The URL always transmits values as strings, but FastAPI handles the conversion. If you declare limit: int, FastAPI converts '10' to 10. If conversion fails (like passing 'abc' for an int), FastAPI returns a 422 error with a clear message.\n\nBoolean query parameters have special handling. FastAPI accepts various truthy and falsy values: true/false, yes/no, 1/0, on/off (case-insensitive). So /items?active=true, /items?active=yes, /items?active=1 all set active to True.\n\nYou can also receive multiple values for the same query parameter using List types. For example, def filter_items(tag: list[str] = Query(default=[])) accepts /items?tag=python&tag=fastapi and provides tag as ['python', 'fastapi']. This is useful for multi-select filters.\n\nQuery parameters are ideal for optional filters, pagination, sorting, and search functionality. They keep the URL clean by separating the resource identifier (path) from the modifiers (query). A well-designed API uses path parameters for resource identification and query parameters for everything else.",
+      "codeExamples": [
+        {
+          "title": "Basic Query Parameters",
+          "code": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/items\")\ndef list_items(skip: int = 0, limit: int = 10):\n    \"\"\"Both parameters are optional with defaults\"\"\"\n    return {\"skip\": skip, \"limit\": limit}\n\n# GET /items           -> {\"skip\": 0, \"limit\": 10}\n# GET /items?skip=20   -> {\"skip\": 20, \"limit\": 10}\n# GET /items?limit=5   -> {\"skip\": 0, \"limit\": 5}\n# GET /items?skip=20&limit=5 -> {\"skip\": 20, \"limit\": 5}\n\n@app.get(\"/search\")\ndef search(q: str):\n    \"\"\"q is required (no default value)\"\"\"\n    return {\"query\": q}\n\n# GET /search?q=fastapi -> {\"query\": \"fastapi\"}\n# GET /search           -> 422 Error: q is required",
+          "output": "{\"skip\": 0, \"limit\": 10}",
+          "explanation": "Parameters with default values are optional. Parameters without defaults are required. FastAPI distinguishes path parameters (in the URL path) from query parameters (everything else) automatically."
+        },
+        {
+          "title": "Type Conversion and Booleans",
+          "code": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/items\")\ndef list_items(\n    skip: int = 0,\n    limit: int = 10,\n    active: bool = True,\n):\n    return {\"skip\": skip, \"limit\": limit, \"active\": active}\n\n# Boolean values accepted:\n# GET /items?active=true    -> active = True\n# GET /items?active=false   -> active = False\n# GET /items?active=yes     -> active = True\n# GET /items?active=no      -> active = False\n# GET /items?active=1       -> active = True\n# GET /items?active=0       -> active = False\n# GET /items?active=on      -> active = True\n\n@app.get(\"/convert\")\ndef conversion_demo(price: float, count: int, name: str):\n    return {\"price\": price, \"count\": count, \"name\": name}\n\n# GET /convert?price=9.99&count=5&name=Widget\n# price is float, count is int, name is str",
+          "explanation": "FastAPI converts query strings to the annotated type. Boolean parameters accept multiple truthy/falsy string representations. Type conversion errors automatically return 422 validation errors."
+        },
+        {
+          "title": "Multiple Values for Same Parameter",
+          "code": "from fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items\")\ndef filter_items(\n    tag: list[str] = Query(default=[]),\n    category: list[str] = Query(default=[]),\n):\n    return {\"tags\": tag, \"categories\": category}\n\n# GET /items?tag=python&tag=fastapi&category=web\n# -> {\"tags\": [\"python\", \"fastapi\"], \"categories\": [\"web\"]}\n\n# GET /items\n# -> {\"tags\": [], \"categories\": []}\n\n@app.get(\"/filter\")\ndef filter_with_ids(\n    ids: list[int] = Query(default=[]),\n):\n    return {\"ids\": ids}\n\n# GET /filter?ids=1&ids=2&ids=3\n# -> {\"ids\": [1, 2, 3]}",
+          "explanation": "Use list[str] or list[int] with Query() to accept multiple values for the same parameter. The client repeats the parameter name for each value. This is common for filters like tags or categories."
+        }
+      ],
+      "notes": [
+        "Parameters with defaults are optional. Parameters without defaults are required.",
+        "Query parameter names in the URL must match the function parameter names exactly.",
+        "Boolean parameters accept true/false, yes/no, 1/0, and on/off (case-insensitive).",
+        "Use list types with Query() for parameters that accept multiple values."
+      ],
+      "commonPitfalls": [
+        "Confusing path parameters with query parameters. If a parameter name appears in the path string, it is a path parameter. Otherwise it is a query parameter.",
+        "Making all query parameters required by forgetting default values. Required query parameters should be rare — most should have sensible defaults.",
+        "Not using Query() when declaring list-type query parameters. Without Query(), FastAPI interprets it as a request body."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "query-parameters-basics-ex1",
+        "title": "Build a Pagination Endpoint",
+        "description": "Create a GET /articles endpoint that accepts optional query parameters: page (int, default 1), per_page (int, default 20), and sort_by (str, default 'date'). Return all three values in the response.",
+        "starterCode": "from fastapi import FastAPI\n\napp = FastAPI()\n\n# Define GET /articles with pagination parameters\n",
+        "solution": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/articles\")\ndef list_articles(page: int = 1, per_page: int = 20, sort_by: str = \"date\"):\n    return {\"page\": page, \"per_page\": per_page, \"sort_by\": sort_by}",
+        "hints": [
+          "Set default values to make the parameters optional",
+          "page starts at 1, per_page defaults to 20, sort_by defaults to 'date'"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "query-parameters-basics-ex2",
+        "title": "Filter with Multiple Tags",
+        "description": "Create a GET /products endpoint that accepts:\n- q: optional search string\n- tags: a list of strings (multiple values)\n- min_price: optional float\n- in_stock: optional boolean (default True)\n\nReturn all parameters in the response.",
+        "starterCode": "from fastapi import FastAPI, Query\n\napp = FastAPI()\n\n# Define GET /products with the specified parameters\n",
+        "solution": "from fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/products\")\ndef list_products(\n    q: str | None = None,\n    tags: list[str] = Query(default=[]),\n    min_price: float | None = None,\n    in_stock: bool = True,\n):\n    return {\n        \"query\": q,\n        \"tags\": tags,\n        \"min_price\": min_price,\n        \"in_stock\": in_stock,\n    }",
+        "hints": [
+          "Use str | None = None for optional string parameters",
+          "Use list[str] = Query(default=[]) for multi-value parameters"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "parameter-validation",
+    "sectionId": "query-and-path-parameters",
+    "orderIndex": 1,
+    "title": "Parameter Validation",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Query Validation", "min_length", "max_length", "regex", "ge", "le", "Annotated"],
+    "content": {
+      "explanation": "FastAPI provides powerful parameter validation through the Query and Path functions. These let you add constraints beyond simple type checking, including string length limits, numeric ranges, regex patterns, and more. This validation happens automatically before your handler runs, so you never receive invalid data.\n\nFor string parameters, you can use min_length and max_length to constrain the string length. For example, Query(min_length=3, max_length=50) ensures the string is between 3 and 50 characters. You can also use pattern (formerly regex) to validate against a regular expression.\n\nFor numeric parameters (int, float), you can use gt (greater than), ge (greater than or equal), lt (less than), and le (less than or equal). For example, Query(ge=1, le=100) ensures the number is between 1 and 100 inclusive.\n\nThe modern way to apply validation in FastAPI uses Python's Annotated type hint. Instead of writing q: str = Query(min_length=3), you write q: Annotated[str, Query(min_length=3)]. The Annotated approach is preferred because it keeps the type information separate from the default value, making it clearer and more composable.\n\nYou can also add metadata to parameters for documentation purposes. The title, description, and example parameters in Query() appear in the auto-generated Swagger documentation. This makes your API self-documenting. The alias parameter lets the query parameter have a different name in the URL than in the function signature, which is useful when query parameter names conflict with Python keywords.\n\nQuery() and Path() can also mark parameters as deprecated using deprecated=True. This adds a visual indicator in the documentation that the parameter is deprecated, while still accepting it for backward compatibility. The include_in_schema=False parameter hides a parameter from the documentation entirely.\n\nValidation error responses in FastAPI are structured JSON objects that include the location of the error (query, path, body), the invalid value, and a human-readable message. The response uses the standard 422 status code and follows a consistent format that clients can parse programmatically.",
+      "codeExamples": [
+        {
+          "title": "String Validation",
+          "code": "from typing import Annotated\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/search\")\ndef search(\n    q: Annotated[str, Query(\n        min_length=2,\n        max_length=100,\n        title=\"Search query\",\n        description=\"The search term to filter results\",\n        examples=[\"fastapi tutorial\"],\n    )],\n):\n    return {\"query\": q}\n\n# GET /search?q=a       -> 422 Error (min_length=2)\n# GET /search?q=fast    -> {\"query\": \"fast\"}\n\n@app.get(\"/users\")\ndef search_users(\n    username: Annotated[str | None, Query(\n        min_length=3,\n        max_length=20,\n        pattern=\"^[a-zA-Z0-9_]+$\",\n    )] = None,\n):\n    return {\"username\": username}\n\n# GET /users?username=ab         -> 422 (too short)\n# GET /users?username=hello@world -> 422 (invalid chars)\n# GET /users?username=alice_99   -> {\"username\": \"alice_99\"}",
+          "explanation": "Annotated[type, Query(...)] is the modern syntax for validated query parameters. min_length and max_length constrain string length. The pattern parameter validates against a regex. Title and description appear in the Swagger docs."
+        },
+        {
+          "title": "Numeric Validation",
+          "code": "from typing import Annotated\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items\")\ndef list_items(\n    page: Annotated[int, Query(ge=1, description=\"Page number\")] = 1,\n    per_page: Annotated[int, Query(ge=1, le=100)] = 20,\n    min_price: Annotated[float | None, Query(gt=0)] = None,\n    max_price: Annotated[float | None, Query(gt=0)] = None,\n):\n    return {\n        \"page\": page,\n        \"per_page\": per_page,\n        \"min_price\": min_price,\n        \"max_price\": max_price,\n    }\n\n# GET /items?page=0       -> 422 (page must be >= 1)\n# GET /items?per_page=200  -> 422 (per_page must be <= 100)\n# GET /items?min_price=-5  -> 422 (must be > 0)\n# GET /items?page=2&per_page=50 -> valid",
+          "explanation": "ge (>=), gt (>), le (<=), lt (<) constrain numeric values. Combining ge=1 with le=100 creates a range. These constraints are documented automatically in the OpenAPI schema."
+        },
+        {
+          "title": "Advanced Query Options",
+          "code": "from typing import Annotated\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/items\")\ndef list_items(\n    # Alias: URL uses 'item-query', code uses 'item_query'\n    item_query: Annotated[str | None, Query(alias=\"item-query\")] = None,\n\n    # Deprecated parameter (still works but shown as deprecated)\n    old_filter: Annotated[str | None, Query(deprecated=True)] = None,\n\n    # Hidden from docs\n    internal_key: Annotated[str | None, Query(include_in_schema=False)] = None,\n):\n    return {\n        \"query\": item_query,\n        \"old_filter\": old_filter,\n    }\n\n# GET /items?item-query=test  -> works (alias maps to item_query)\n# GET /items?item_query=test  -> does NOT work (alias overrides name)\n# old_filter appears strikethrough in docs\n# internal_key is hidden from docs entirely",
+          "explanation": "Alias maps a URL parameter name to a different Python variable name. Deprecated marks a parameter as deprecated in docs. include_in_schema=False hides it from the OpenAPI documentation entirely."
+        }
+      ],
+      "notes": [
+        "Use Annotated[type, Query(...)] for the modern, recommended syntax.",
+        "String validators: min_length, max_length, pattern (regex).",
+        "Numeric validators: gt (>), ge (>=), lt (<), le (<=).",
+        "Validation errors return 422 status with structured JSON showing exactly what went wrong."
+      ],
+      "commonPitfalls": [
+        "Using regex/pattern validation without anchoring. The pattern '^[a-z]+$' ensures the entire string matches, while '[a-z]+' would match any string containing lowercase letters.",
+        "Forgetting that Query() with alias overrides the parameter name in the URL entirely. The function parameter name becomes just a variable name.",
+        "Setting gt=0 when you mean ge=0. gt means strictly greater than, ge means greater than or equal. For pagination starting at 0, use ge=0."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "parameter-validation-ex1",
+        "title": "Validate Search Parameters",
+        "description": "Create a GET /search endpoint with:\n- q: required string, minimum 2 characters, maximum 200 characters\n- page: optional int, must be >= 1, default 1\n- limit: optional int, must be between 1 and 50 (inclusive), default 10",
+        "starterCode": "from typing import Annotated\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n# Define GET /search with validated parameters\n",
+        "solution": "from typing import Annotated\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/search\")\ndef search(\n    q: Annotated[str, Query(min_length=2, max_length=200)],\n    page: Annotated[int, Query(ge=1)] = 1,\n    limit: Annotated[int, Query(ge=1, le=50)] = 10,\n):\n    return {\"query\": q, \"page\": page, \"limit\": limit}",
+        "hints": [
+          "Use Annotated[str, Query(min_length=2, max_length=200)] for the search query",
+          "Required parameters have no default value; optional ones have a default"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "parameter-validation-ex2",
+        "title": "Username Validation with Regex",
+        "description": "Create a GET /check-username endpoint with a required 'username' parameter that must be 3-15 characters long and contain only lowercase letters, numbers, and underscores (regex: ^[a-z0-9_]+$). Return whether the username is 'available' (for this exercise, always return True).",
+        "starterCode": "from typing import Annotated\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n# Define GET /check-username\n",
+        "solution": "from typing import Annotated\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/check-username\")\ndef check_username(\n    username: Annotated[str, Query(\n        min_length=3,\n        max_length=15,\n        pattern=\"^[a-z0-9_]+$\",\n        title=\"Username\",\n        description=\"Lowercase letters, numbers, and underscores only\",\n    )],\n):\n    return {\"username\": username, \"available\": True}",
+        "hints": [
+          "Combine min_length, max_length, and pattern for comprehensive validation",
+          "The regex ^[a-z0-9_]+$ anchors to start and end of string"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "optional-and-default-params",
+    "sectionId": "query-and-path-parameters",
+    "orderIndex": 2,
+    "title": "Optional & Default Params",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Optional", "None", "Default Values", "Union Types", "Required vs Optional"],
+    "content": {
+      "explanation": "Understanding how to make parameters optional, required, or provide default values is essential for designing clean APIs. FastAPI uses Python's type system and default values to determine parameter behavior, making this intuitive once you understand the patterns.\n\nA parameter is required when it has no default value. Writing def endpoint(name: str) means the client must provide the name parameter. If they do not, FastAPI returns a 422 error. This is appropriate for parameters that are essential for the endpoint to function.\n\nA parameter is optional when it has a default value. Writing def endpoint(name: str = \"World\") means the client can omit name, and it will default to 'World'. For truly optional parameters where 'no value' is meaningful, use None as the default: def endpoint(name: str | None = None). The str | None type hint tells FastAPI (and your IDE) that the value can be either a string or None.\n\nThe distinction between 'optional with a default' and 'optional with None' matters for your logic. If limit: int = 10, the client can omit it and gets 10. If limit: int | None = None, the client can omit it and your code receives None, which you can check to apply different behavior.\n\nFastAPI supports Union types for parameters that accept multiple types. For example, item_id: int | str accepts both integers and strings. This is less common but useful for APIs that accept multiple identifier formats.\n\nThe Annotated type from typing can combine type information with Query metadata while keeping defaults separate. This is the recommended pattern in modern FastAPI. For instance, Annotated[str | None, Query(description=\"Search term\")] = None separates the type annotation, validation rules, and default value clearly.\n\nA common pattern is to have required parameters for the main action and optional parameters for modifiers. For example, a search endpoint might require q (the search term) but make page, limit, and sort optional with sensible defaults. This creates a clean API where simple use cases need minimal parameters, while power users can customize behavior.",
+      "codeExamples": [
+        {
+          "title": "Required, Optional, and Default Parameters",
+          "code": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/example\")\ndef example(\n    required_param: str,               # Required (no default)\n    with_default: str = \"hello\",       # Optional with string default\n    nullable: str | None = None,       # Optional, can be None\n    flag: bool = False,                # Optional with bool default\n):\n    return {\n        \"required\": required_param,\n        \"default\": with_default,\n        \"nullable\": nullable,\n        \"flag\": flag,\n    }\n\n# GET /example?required_param=test\n# -> {\"required\": \"test\", \"default\": \"hello\", \"nullable\": null, \"flag\": false}\n\n# GET /example?required_param=test&nullable=value&flag=true\n# -> {\"required\": \"test\", \"default\": \"hello\", \"nullable\": \"value\", \"flag\": true}\n\n# GET /example\n# -> 422 Error: required_param is missing",
+          "explanation": "This shows all four patterns: required (no default), optional with a value default, optional with None default, and optional with a boolean default. Each serves a different purpose in API design."
+        },
+        {
+          "title": "Practical Search Endpoint",
+          "code": "from typing import Annotated\nfrom fastapi import FastAPI, Query\n\napp = FastAPI()\n\n@app.get(\"/search\")\ndef search(\n    # Required: the search term\n    q: Annotated[str, Query(min_length=1, max_length=200)],\n    # Optional pagination\n    page: int = 1,\n    per_page: int = 20,\n    # Optional filters\n    category: str | None = None,\n    min_price: float | None = None,\n    max_price: float | None = None,\n    # Optional sorting\n    sort_by: str = \"relevance\",\n    order: str = \"desc\",\n):\n    filters = {}\n    if category:\n        filters[\"category\"] = category\n    if min_price is not None:\n        filters[\"min_price\"] = min_price\n    if max_price is not None:\n        filters[\"max_price\"] = max_price\n\n    return {\n        \"query\": q,\n        \"page\": page,\n        \"per_page\": per_page,\n        \"filters\": filters,\n        \"sort_by\": sort_by,\n        \"order\": order,\n    }",
+          "explanation": "This real-world search endpoint has one required parameter (q) and many optional ones for pagination, filtering, and sorting. None-defaulted parameters are checked explicitly before use, allowing the code to differentiate between 'not provided' and 'provided with a value'."
+        },
+        {
+          "title": "Combining Path and Query Parameters",
+          "code": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/users/{user_id}/posts\")\ndef get_user_posts(\n    user_id: int,                    # Path parameter (required)\n    published: bool = True,          # Query parameter (optional)\n    skip: int = 0,                   # Query parameter (optional)\n    limit: int = 10,                 # Query parameter (optional)\n    tag: str | None = None,          # Query parameter (optional)\n):\n    return {\n        \"user_id\": user_id,\n        \"published\": published,\n        \"skip\": skip,\n        \"limit\": limit,\n        \"tag\": tag,\n    }\n\n# GET /users/42/posts\n# -> all defaults for query params, user_id=42\n\n# GET /users/42/posts?published=false&tag=python\n# -> user_id=42, published=False, tag=\"python\"",
+          "explanation": "FastAPI automatically distinguishes path parameters (user_id is in the URL path) from query parameters (everything else). Path parameters are always required, while query parameters can have defaults."
+        }
+      ],
+      "notes": [
+        "Use None as the default when you need to distinguish between 'not provided' and 'provided with a value'.",
+        "Use a meaningful default value when there is a sensible fallback (like page=1 or limit=20).",
+        "Check 'if value is not None' rather than 'if value' for optional numeric parameters, since 0 is falsy but valid.",
+        "Required parameters should be listed before optional ones in the function signature."
+      ],
+      "commonPitfalls": [
+        "Using 'if min_price:' instead of 'if min_price is not None:' to check optional numeric params. The value 0.0 is falsy but valid.",
+        "Making too many parameters required. Overloading an endpoint with required parameters makes it hard to use. Keep required params minimal.",
+        "Forgetting that str | None = None means the parameter is optional. Without the = None default, str | None is still required (the type just allows None)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "optional-and-default-params-ex1",
+        "title": "Design a Flexible List Endpoint",
+        "description": "Create GET /events with:\n- city: required string\n- date_from: optional string (None default)\n- date_to: optional string (None default)\n- free_only: optional boolean (default False)\n- page: optional int (default 1)\n\nReturn all parameters in the response, but only include date_from and date_to if they are not None.",
+        "starterCode": "from fastapi import FastAPI\n\napp = FastAPI()\n\n# Define GET /events\n",
+        "solution": "from fastapi import FastAPI\n\napp = FastAPI()\n\n@app.get(\"/events\")\ndef list_events(\n    city: str,\n    date_from: str | None = None,\n    date_to: str | None = None,\n    free_only: bool = False,\n    page: int = 1,\n):\n    result = {\"city\": city, \"free_only\": free_only, \"page\": page}\n    if date_from is not None:\n        result[\"date_from\"] = date_from\n    if date_to is not None:\n        result[\"date_to\"] = date_to\n    return result",
+        "hints": [
+          "Use str | None = None for parameters that should be omitted from the response when not provided",
+          "Build the response dict conditionally using 'is not None' checks"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "optional-and-default-params-ex2",
+        "title": "Conditional Logic Based on Optional Params",
+        "description": "Create GET /calculate that takes two required floats (a and b) and an optional 'operation' string defaulting to 'add'. Supported operations: add, subtract, multiply, divide. If operation is invalid, return a 400 error. If dividing by zero, return a 400 error.",
+        "starterCode": "from fastapi import FastAPI, HTTPException\n\napp = FastAPI()\n\n# Define GET /calculate\n",
+        "solution": "from fastapi import FastAPI, HTTPException\n\napp = FastAPI()\n\n@app.get(\"/calculate\")\ndef calculate(a: float, b: float, operation: str = \"add\"):\n    if operation == \"add\":\n        result = a + b\n    elif operation == \"subtract\":\n        result = a - b\n    elif operation == \"multiply\":\n        result = a * b\n    elif operation == \"divide\":\n        if b == 0:\n            raise HTTPException(status_code=400, detail=\"Division by zero\")\n        result = a / b\n    else:\n        raise HTTPException(\n            status_code=400,\n            detail=f\"Invalid operation: {operation}. Use add, subtract, multiply, or divide.\",\n        )\n    return {\"a\": a, \"b\": b, \"operation\": operation, \"result\": result}",
+        "hints": [
+          "Use HTTPException(status_code=400) for invalid input errors",
+          "Check for division by zero before performing the operation"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "enum-path-parameters",
+    "sectionId": "query-and-path-parameters",
+    "orderIndex": 3,
+    "title": "Enum Path Parameters",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Enum", "str Enum", "IntEnum", "Restricted Values", "Documentation"],
+    "content": {
+      "explanation": "Sometimes you want a path or query parameter to accept only a fixed set of values. Python's Enum class combined with FastAPI provides an elegant solution. When you use an Enum type for a parameter, FastAPI automatically validates that the provided value is one of the allowed options and documents the valid choices in the Swagger UI.\n\nTo create an Enum for use with FastAPI, you typically inherit from both str and Enum (creating a StrEnum). This ensures the enum values are strings that can be used directly in URL paths and JSON responses. For example, class ModelName(str, Enum) defines a string enum whose values work seamlessly with FastAPI's routing.\n\nWhen you declare a parameter with an Enum type, FastAPI restricts the allowed values to only the enum members. If a client sends a value that is not in the enum, FastAPI returns a 422 validation error listing the valid options. This validation is automatic — you do not need any manual checking code.\n\nIn the Swagger UI, Enum parameters appear as dropdown menus showing all valid options. This makes the API self-documenting and easy to test. Clients can see exactly which values are acceptable without reading external documentation.\n\nYou can also use IntEnum for integer path parameters with restricted values. This works the same way but with integer values instead of strings. For example, class Priority(int, Enum) with values like LOW = 1, MEDIUM = 2, HIGH = 3.\n\nEnum parameters can be used as both path parameters and query parameters. For query parameters, the enum provides a constrained choice list. For path parameters, each enum value becomes a valid URL segment. In both cases, the value is converted to the corresponding Python Enum member in your handler function.\n\nIn your handler function, you receive the Enum member, not just the raw string. You can access .value to get the string value, or compare directly with enum members using == or is. Python's pattern matching (match/case) also works well with enum parameters.",
+      "codeExamples": [
+        {
+          "title": "String Enum for Path Parameters",
+          "code": "from enum import Enum\nfrom fastapi import FastAPI\n\nclass ModelName(str, Enum):\n    alexnet = \"alexnet\"\n    resnet = \"resnet\"\n    lenet = \"lenet\"\n\napp = FastAPI()\n\n@app.get(\"/models/{model_name}\")\ndef get_model(model_name: ModelName):\n    if model_name is ModelName.alexnet:\n        return {\"model\": model_name.value, \"message\": \"Deep Learning FTW!\"}\n    if model_name is ModelName.lenet:\n        return {\"model\": model_name.value, \"message\": \"Classic CNN\"}\n    return {\"model\": model_name.value, \"message\": \"Residual learning\"}\n\n# GET /models/alexnet -> {\"model\": \"alexnet\", \"message\": \"Deep Learning FTW!\"}\n# GET /models/resnet  -> {\"model\": \"resnet\", \"message\": \"Residual learning\"}\n# GET /models/invalid -> 422 Error with valid options listed",
+          "output": "{\"model\": \"alexnet\", \"message\": \"Deep Learning FTW!\"}",
+          "explanation": "The ModelName enum restricts the path parameter to three valid values. In Swagger UI, this shows as a dropdown. The handler receives a ModelName enum member, which can be compared with 'is' or accessed via .value."
+        },
+        {
+          "title": "Enum for Query Parameters",
+          "code": "from enum import Enum\nfrom fastapi import FastAPI\n\nclass SortOrder(str, Enum):\n    asc = \"asc\"\n    desc = \"desc\"\n\nclass Category(str, Enum):\n    electronics = \"electronics\"\n    clothing = \"clothing\"\n    books = \"books\"\n    food = \"food\"\n\napp = FastAPI()\n\n@app.get(\"/products\")\ndef list_products(\n    category: Category | None = None,\n    sort: SortOrder = SortOrder.desc,\n):\n    return {\n        \"category\": category.value if category else None,\n        \"sort\": sort.value,\n    }\n\n# GET /products                    -> category=null, sort=\"desc\"\n# GET /products?category=books     -> category=\"books\", sort=\"desc\"\n# GET /products?sort=asc           -> category=null, sort=\"asc\"\n# GET /products?category=invalid   -> 422 Error",
+          "explanation": "Enums work for query parameters too. Optional enum parameters use Category | None = None. The enum ensures only valid values are accepted, and Swagger UI shows a dropdown for selection."
+        },
+        {
+          "title": "Integer Enum and Multiple Enums",
+          "code": "from enum import Enum, IntEnum\nfrom fastapi import FastAPI\n\nclass Priority(IntEnum):\n    low = 1\n    medium = 2\n    high = 3\n    critical = 4\n\nclass Status(str, Enum):\n    open = \"open\"\n    in_progress = \"in_progress\"\n    closed = \"closed\"\n\napp = FastAPI()\n\n@app.get(\"/tickets\")\ndef list_tickets(\n    status: Status | None = None,\n    min_priority: Priority = Priority.low,\n):\n    return {\n        \"status_filter\": status.value if status else None,\n        \"min_priority\": min_priority.value,\n    }\n\n@app.post(\"/tickets\")\ndef create_ticket(\n    priority: Priority = Priority.medium,\n):\n    return {\"priority\": priority.value, \"priority_name\": priority.name}\n\n# GET /tickets?status=open&min_priority=3\n# -> {\"status_filter\": \"open\", \"min_priority\": 3}",
+          "explanation": "IntEnum works with integer values. Multiple enums can be combined in a single endpoint. The .name property gives the enum member name (like 'high'), while .value gives the value (like 3)."
+        }
+      ],
+      "notes": [
+        "Always inherit from both str (or int) and Enum when creating enums for FastAPI. This ensures proper serialization.",
+        "Enum values appear as dropdowns in Swagger UI, making the API self-documenting.",
+        "Use .value to get the raw value and .name to get the member name.",
+        "Enum members can be compared with == or 'is'. Using 'is' is the Pythonic convention for enum comparison."
+      ],
+      "commonPitfalls": [
+        "Forgetting to inherit from str when creating string enums. class Status(Enum) without str will not serialize properly to JSON.",
+        "Comparing enum values with strings instead of enum members. Use 'model_name is ModelName.alexnet' not 'model_name == \"alexnet\"'.",
+        "Returning the enum member directly in a response when you need the string value. Use .value to get the plain string/int."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "enum-path-parameters-ex1",
+        "title": "Create a Color API with Enum",
+        "description": "Create a string enum called Color with values: red, green, blue. Create a GET endpoint at /colors/{color} that returns the color name and its hex code (red=#FF0000, green=#00FF00, blue=#0000FF).",
+        "starterCode": "from enum import Enum\nfrom fastapi import FastAPI\n\n# Define the Color enum\n\napp = FastAPI()\n\n# Define GET /colors/{color}\n",
+        "solution": "from enum import Enum\nfrom fastapi import FastAPI\n\nclass Color(str, Enum):\n    red = \"red\"\n    green = \"green\"\n    blue = \"blue\"\n\nHEX_MAP = {\n    Color.red: \"#FF0000\",\n    Color.green: \"#00FF00\",\n    Color.blue: \"#0000FF\",\n}\n\napp = FastAPI()\n\n@app.get(\"/colors/{color}\")\ndef get_color(color: Color):\n    return {\"color\": color.value, \"hex\": HEX_MAP[color]}",
+        "hints": [
+          "Inherit from both str and Enum: class Color(str, Enum)",
+          "Use a dictionary to map enum members to hex codes"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "enum-path-parameters-ex2",
+        "title": "Ticket System with Enums",
+        "description": "Create two enums: Status (open, in_progress, resolved) and Priority (low, medium, high). Create a GET /tickets endpoint that accepts both as optional query parameters and returns the applied filters. Also create POST /tickets that requires a 'title' (str) and 'priority' (Priority, default medium).",
+        "starterCode": "from enum import Enum\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\n# Define Status and Priority enums\n\napp = FastAPI()\n\n# Define GET /tickets and POST /tickets\n",
+        "solution": "from enum import Enum\nfrom fastapi import FastAPI\nfrom pydantic import BaseModel\n\nclass Status(str, Enum):\n    open = \"open\"\n    in_progress = \"in_progress\"\n    resolved = \"resolved\"\n\nclass Priority(str, Enum):\n    low = \"low\"\n    medium = \"medium\"\n    high = \"high\"\n\nclass TicketCreate(BaseModel):\n    title: str\n    priority: Priority = Priority.medium\n\napp = FastAPI()\n\n@app.get(\"/tickets\")\ndef list_tickets(\n    status: Status | None = None,\n    priority: Priority | None = None,\n):\n    filters = {}\n    if status is not None:\n        filters[\"status\"] = status.value\n    if priority is not None:\n        filters[\"priority\"] = priority.value\n    return {\"filters\": filters}\n\n@app.post(\"/tickets\", status_code=201)\ndef create_ticket(ticket: TicketCreate):\n    return {\"id\": 1, \"title\": ticket.title, \"priority\": ticket.priority.value}",
+        "hints": [
+          "Optional enum parameters use Status | None = None",
+          "Enums work in Pydantic models too, with defaults using enum members"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

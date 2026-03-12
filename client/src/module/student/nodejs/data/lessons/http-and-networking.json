@@ -1,0 +1,292 @@
+[
+  {
+    "id": "creating-http-server",
+    "sectionId": "http-and-networking",
+    "orderIndex": 0,
+    "title": "Creating an HTTP Server",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["http.createServer", "Request Object", "Response Object", "Status Codes", "Headers", "listen()"],
+    "content": {
+      "explanation": "Node.js was built from the ground up to handle networking efficiently. The built-in 'http' module lets you create an HTTP server with just a few lines of code, without installing any external packages. This is the foundation upon which frameworks like Express are built, and understanding it gives you deep insight into how web servers actually work.\n\nThe core function is http.createServer(), which takes a request handler callback. This callback receives two arguments: the request object (often called req) which contains information about the incoming HTTP request such as the URL, method, and headers, and the response object (often called res) which you use to send data back to the client. Every HTTP interaction follows this request-response cycle — the client sends a request, your server processes it, and sends back a response.\n\nThe response object has several important methods. res.writeHead() sets the HTTP status code and response headers in one call. res.setHeader() sets a single header. res.write() sends a chunk of the response body, and res.end() signals that the response is complete. You must always call res.end() or the client will hang waiting for more data. The status code tells the client how the request was handled — 200 means success, 404 means not found, 500 means server error, and so on.\n\nHeaders are key-value pairs that provide metadata about the response. The most important header is Content-Type, which tells the browser how to interpret the response body. For HTML pages you use 'text/html', for plain text 'text/plain', for JSON 'application/json', and for CSS 'text/css'. Setting correct headers is essential for browsers to render your content properly.\n\nAfter creating the server, you call server.listen() with a port number to start accepting connections. Port numbers range from 0 to 65535, with ports below 1024 typically reserved for system services. Common development ports include 3000, 5000, and 8080. The listen() method takes an optional callback that fires once the server is ready to accept connections.",
+      "codeExamples": [
+        {
+          "title": "Basic HTTP Server",
+          "code": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  // Set status code and headers\n  res.writeHead(200, { 'Content-Type': 'text/plain' });\n\n  // Send response body and end\n  res.end('Hello, World!');\n});\n\n// Start listening on port 3000\nserver.listen(3000, () => {\n  console.log('Server running at http://localhost:3000/');\n});",
+          "output": "Server running at http://localhost:3000/",
+          "explanation": "This creates the simplest possible HTTP server. Every request to localhost:3000 gets a plain text 'Hello, World!' response with a 200 status code. The callback in listen() confirms the server started successfully."
+        },
+        {
+          "title": "Serving HTML Content with Headers",
+          "code": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  // Log request details\n  console.log(`${req.method} ${req.url}`);\n  console.log('Headers:', JSON.stringify(req.headers, null, 2));\n\n  // Set multiple headers\n  res.setHeader('Content-Type', 'text/html');\n  res.setHeader('X-Powered-By', 'Node.js');\n  res.statusCode = 200;\n\n  // Send HTML response\n  res.end(`\n    <!DOCTYPE html>\n    <html>\n      <head><title>My Node Server</title></head>\n      <body>\n        <h1>Welcome to Node.js!</h1>\n        <p>Request URL: ${req.url}</p>\n        <p>Request Method: ${req.method}</p>\n      </body>\n    </html>\n  `);\n});\n\nserver.listen(3000, () => {\n  console.log('Server running at http://localhost:3000/');\n});",
+          "output": "Server running at http://localhost:3000/\nGET /\nHeaders: { \"host\": \"localhost:3000\", \"user-agent\": \"...\" }",
+          "explanation": "This demonstrates accessing request properties (method, url, headers) and setting response headers individually with setHeader(). The Content-Type is set to 'text/html' so the browser renders the HTML properly instead of displaying raw markup."
+        },
+        {
+          "title": "Different Status Codes",
+          "code": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  if (req.url === '/') {\n    res.writeHead(200, { 'Content-Type': 'text/plain' });\n    res.end('Home Page');\n  } else if (req.url === '/redirect') {\n    // 301 Moved Permanently\n    res.writeHead(301, { 'Location': '/' });\n    res.end();\n  } else if (req.url === '/error') {\n    // 500 Internal Server Error\n    res.writeHead(500, { 'Content-Type': 'text/plain' });\n    res.end('Something went wrong');\n  } else {\n    // 404 Not Found\n    res.writeHead(404, { 'Content-Type': 'text/plain' });\n    res.end('Page Not Found');\n  }\n});\n\nserver.listen(3000, () => {\n  console.log('Server running at http://localhost:3000/');\n});",
+          "output": "Server running at http://localhost:3000/",
+          "explanation": "HTTP status codes communicate the result of a request. 2xx codes mean success, 3xx codes mean redirection (the Location header tells the browser where to go), 4xx codes mean client errors, and 5xx codes mean server errors. Always use semantically correct status codes."
+        }
+      ],
+      "notes": [
+        "Always call res.end() to finish the response. Forgetting this will cause the client to hang indefinitely waiting for more data, eventually timing out.",
+        "The req object is a readable stream and the res object is a writable stream. This means you can pipe data through them for efficient handling of large files.",
+        "Node.js HTTP servers are single-threaded but non-blocking. They can handle thousands of concurrent connections efficiently because I/O operations do not block the event loop."
+      ],
+      "commonPitfalls": [
+        "Forgetting to set the Content-Type header, which causes browsers to guess the content type and potentially render it incorrectly.",
+        "Sending data after calling res.end() — this throws an error because the response has already been finalized.",
+        "Using port numbers below 1024 without root/admin privileges, which will cause an EACCES permission error."
+      ],
+      "interviewTips": [
+        "Be able to explain the request-response cycle and how Node.js handles concurrent connections with its event-driven, non-blocking I/O model.",
+        "Know the difference between res.write() and res.end() — write() sends chunks and keeps the connection open, end() sends the final chunk and closes the response."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "creating-http-server-ex1",
+        "title": "Create a Basic Server",
+        "description": "Create an HTTP server that listens on port 3000 and responds with 'Welcome to my server!' as plain text with a 200 status code.",
+        "starterCode": "const http = require('http');\n\n// Create a server that responds with 'Welcome to my server!'\n// Set Content-Type to 'text/plain' and status code to 200\n// Listen on port 3000\n",
+        "solution": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  res.writeHead(200, { 'Content-Type': 'text/plain' });\n  res.end('Welcome to my server!');\n});\n\nserver.listen(3000);",
+        "expectedOutput": "Welcome to my server!",
+        "hints": [
+          "Use http.createServer() with a callback that receives req and res",
+          "Use res.writeHead() to set the status code and Content-Type header",
+          "Use res.end() to send the response body and finish the response"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "creating-http-server-ex2",
+        "title": "Server with Request Logging",
+        "description": "Create a server that logs the HTTP method and URL of each request to the console, then responds with an HTML page showing 'Hello from Node.js' inside an <h1> tag.",
+        "starterCode": "const http = require('http');\n\n// Create a server that:\n// 1. Logs the method and URL (e.g., \"GET /\")\n// 2. Responds with HTML containing <h1>Hello from Node.js</h1>\n",
+        "solution": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  console.log(`${req.method} ${req.url}`);\n  res.writeHead(200, { 'Content-Type': 'text/html' });\n  res.end('<h1>Hello from Node.js</h1>');\n});\n\nserver.listen(3000);",
+        "expectedOutput": "<h1>Hello from Node.js</h1>",
+        "hints": [
+          "Access req.method and req.url to get request details",
+          "Set Content-Type to 'text/html' for HTML responses",
+          "Use template literals for clean string formatting"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "handling-routes-manually",
+    "sectionId": "http-and-networking",
+    "orderIndex": 1,
+    "title": "Handling Different Routes Manually",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["URL Parsing", "Method-based Routing", "Query Strings", "url.parse", "URLSearchParams", "Route Handling"],
+    "content": {
+      "explanation": "When building a web server without a framework, you need to manually handle different routes by inspecting the request URL and HTTP method. This is the fundamental concept behind all web routing — every framework like Express simply provides a cleaner API on top of this same mechanism.\n\nThe req.url property contains the path and query string of the incoming request (e.g., '/users?page=2'). To build a router, you use conditional statements (if/else or switch) to check req.url and req.method, then execute different logic for each combination. For example, GET /users might return a list of users, while POST /users creates a new user. This is the essence of RESTful routing.\n\nQuery strings are the key-value pairs that appear after the '?' in a URL. For example, in '/search?q=node&page=2', the query string contains q=node and page=2. In modern Node.js, you can parse these using the URL constructor and its searchParams property, which provides a clean API for accessing individual parameters. The older url.parse() method from the 'url' module still works but is considered legacy.\n\nAs your application grows, manual routing with if/else chains becomes unwieldy. This is exactly why frameworks like Express exist — they provide a declarative routing API that is easier to read, maintain, and extend. However, understanding manual routing is valuable because it demystifies what frameworks do under the hood and helps you debug routing issues more effectively.\n\nA common pattern in manual routing is to separate the URL path from the query string before matching routes. You can do this with the URL constructor: new URL(req.url, 'http://localhost') gives you a URL object with separate pathname and searchParams properties. This avoids the problem of '/users' not matching '/users?page=2' in a simple string comparison.",
+      "codeExamples": [
+        {
+          "title": "Basic Route Handling",
+          "code": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  const { method, url } = req;\n\n  if (method === 'GET' && url === '/') {\n    res.writeHead(200, { 'Content-Type': 'text/html' });\n    res.end('<h1>Home Page</h1>');\n  } else if (method === 'GET' && url === '/about') {\n    res.writeHead(200, { 'Content-Type': 'text/html' });\n    res.end('<h1>About Page</h1>');\n  } else if (method === 'GET' && url === '/api/users') {\n    res.writeHead(200, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify([{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }]));\n  } else {\n    res.writeHead(404, { 'Content-Type': 'text/html' });\n    res.end('<h1>404 - Page Not Found</h1>');\n  }\n});\n\nserver.listen(3000, () => {\n  console.log('Server running at http://localhost:3000/');\n});",
+          "output": "Server running at http://localhost:3000/",
+          "explanation": "This demonstrates the basic pattern: check req.method and req.url to determine which route was requested, then respond accordingly. Every unmatched route falls through to the 404 handler."
+        },
+        {
+          "title": "Parsing Query Strings",
+          "code": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  // Parse the URL to separate path and query string\n  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);\n  const pathname = parsedUrl.pathname;\n  const query = parsedUrl.searchParams;\n\n  if (req.method === 'GET' && pathname === '/search') {\n    const searchTerm = query.get('q') || '';\n    const page = parseInt(query.get('page')) || 1;\n    const limit = parseInt(query.get('limit')) || 10;\n\n    res.writeHead(200, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify({\n      search: searchTerm,\n      page: page,\n      limit: limit,\n      message: `Searching for \"${searchTerm}\" - page ${page}`\n    }));\n  } else {\n    res.writeHead(404, { 'Content-Type': 'text/plain' });\n    res.end('Not Found');\n  }\n});\n\nserver.listen(3000, () => {\n  console.log('Server running at http://localhost:3000/');\n  console.log('Try: http://localhost:3000/search?q=node&page=2&limit=5');\n});",
+          "output": "Server running at http://localhost:3000/\nTry: http://localhost:3000/search?q=node&page=2&limit=5",
+          "explanation": "The URL constructor parses the full URL and gives you searchParams, which has methods like get(), getAll(), has(), and entries(). Always provide default values when reading query parameters since they may be missing."
+        },
+        {
+          "title": "Method-based Routing Pattern",
+          "code": "const http = require('http');\n\n// Simple in-memory data store\nlet todos = [\n  { id: 1, title: 'Learn Node.js', done: false },\n  { id: 2, title: 'Build a server', done: false }\n];\n\nconst server = http.createServer((req, res) => {\n  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);\n  const pathname = parsedUrl.pathname;\n\n  // Set JSON content type for all API responses\n  res.setHeader('Content-Type', 'application/json');\n\n  if (pathname === '/api/todos') {\n    switch (req.method) {\n      case 'GET':\n        res.writeHead(200);\n        res.end(JSON.stringify(todos));\n        break;\n\n      case 'POST':\n        let body = '';\n        req.on('data', chunk => { body += chunk; });\n        req.on('end', () => {\n          const newTodo = JSON.parse(body);\n          newTodo.id = todos.length + 1;\n          newTodo.done = false;\n          todos.push(newTodo);\n          res.writeHead(201);\n          res.end(JSON.stringify(newTodo));\n        });\n        break;\n\n      default:\n        res.writeHead(405);\n        res.end(JSON.stringify({ error: 'Method Not Allowed' }));\n    }\n  } else {\n    res.writeHead(404);\n    res.end(JSON.stringify({ error: 'Not Found' }));\n  }\n});\n\nserver.listen(3000, () => {\n  console.log('Todo API running at http://localhost:3000/');\n});",
+          "output": "Todo API running at http://localhost:3000/",
+          "explanation": "A switch statement on req.method provides cleaner routing than nested if/else. This pattern handles GET to list all todos and POST to create a new one. Status 405 (Method Not Allowed) is returned for unsupported methods on a valid route."
+        }
+      ],
+      "notes": [
+        "Use the URL constructor (new URL()) instead of the legacy url.parse() for parsing URLs. It follows the WHATWG URL standard and works consistently in both Node.js and browsers.",
+        "Always separate the pathname from query parameters before route matching, otherwise '/users' will not match a request to '/users?page=1'.",
+        "HTTP method names in req.method are always uppercase strings: 'GET', 'POST', 'PUT', 'DELETE', etc."
+      ],
+      "commonPitfalls": [
+        "Comparing req.url directly to a route string without stripping query parameters — '/users?page=1' !== '/users' will cause unexpected 404s.",
+        "Forgetting to handle the default case, leaving some requests without any response, which causes the client to hang.",
+        "Not parsing request body data as a stream — the body does not arrive all at once; you must listen for 'data' and 'end' events."
+      ],
+      "interviewTips": [
+        "Explain why manual routing is impractical at scale and how Express Router solves the problem with a declarative, modular approach.",
+        "Know the difference between URL path parameters (/users/:id), query strings (/users?page=1), and request body data."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "handling-routes-manually-ex1",
+        "title": "Multi-Route Server",
+        "description": "Create a server with three routes: GET '/' returns 'Home' as plain text, GET '/about' returns 'About' as plain text, and any other route returns '404 Not Found' with a 404 status code.",
+        "starterCode": "const http = require('http');\n\n// Create a server with routes for '/', '/about', and a 404 fallback\n",
+        "solution": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  res.setHeader('Content-Type', 'text/plain');\n\n  if (req.method === 'GET' && req.url === '/') {\n    res.writeHead(200);\n    res.end('Home');\n  } else if (req.method === 'GET' && req.url === '/about') {\n    res.writeHead(200);\n    res.end('About');\n  } else {\n    res.writeHead(404);\n    res.end('404 Not Found');\n  }\n});\n\nserver.listen(3000);",
+        "expectedOutput": "Home",
+        "hints": [
+          "Check both req.method and req.url in your conditions",
+          "Use res.writeHead() to set the appropriate status code",
+          "Always include a fallback for unmatched routes"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "handling-routes-manually-ex2",
+        "title": "Query String Parser",
+        "description": "Create a server where GET '/greet?name=Alice' responds with 'Hello, Alice!' as JSON ({ message: 'Hello, Alice!' }). If no name query parameter is provided, respond with 'Hello, World!'.",
+        "starterCode": "const http = require('http');\n\n// Create a server that reads the 'name' query parameter from /greet\n// Respond with JSON: { message: 'Hello, <name>!' }\n",
+        "solution": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);\n  const pathname = parsedUrl.pathname;\n\n  if (req.method === 'GET' && pathname === '/greet') {\n    const name = parsedUrl.searchParams.get('name') || 'World';\n    res.writeHead(200, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify({ message: `Hello, ${name}!` }));\n  } else {\n    res.writeHead(404, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify({ error: 'Not Found' }));\n  }\n});\n\nserver.listen(3000);",
+        "expectedOutput": "{\"message\":\"Hello, Alice!\"}",
+        "hints": [
+          "Use new URL(req.url, 'http://localhost') to parse the URL",
+          "Use parsedUrl.searchParams.get('name') to read the query parameter",
+          "Provide a default value with || 'World' when the parameter is missing"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "serving-json-apis",
+    "sectionId": "http-and-networking",
+    "orderIndex": 2,
+    "title": "Serving JSON APIs",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Content-Type", "JSON.parse", "JSON.stringify", "POST Body Parsing", "REST API", "Request Streams"],
+    "content": {
+      "explanation": "JSON (JavaScript Object Notation) is the standard data format for web APIs. When building a Node.js API server, you will send and receive JSON data in almost every request. Understanding how to properly serialize, deserialize, and transmit JSON is essential for backend development.\n\nTo send a JSON response, you need to do two things: set the Content-Type header to 'application/json' and convert your JavaScript object to a JSON string using JSON.stringify(). The Content-Type header tells the client that the response body is JSON, so it knows how to parse it. Without this header, the client may try to interpret the JSON as plain text or HTML.\n\nReceiving JSON data from a client (e.g., in a POST request) is more involved because HTTP request bodies arrive as a stream of data chunks, not as a single string. You must listen for 'data' events to collect the chunks, then listen for the 'end' event to know when the full body has been received. Once you have the complete body string, you parse it with JSON.parse() to convert it back into a JavaScript object. This streaming approach is necessary because request bodies can be very large and Node.js needs to handle them without blocking the event loop.\n\nError handling is critical when parsing JSON. If the client sends malformed JSON, JSON.parse() will throw a SyntaxError. You should always wrap JSON.parse() in a try/catch block and return a 400 (Bad Request) status code if parsing fails. Similarly, you should validate that the parsed data contains the expected fields before processing it.\n\nA well-designed JSON API follows consistent patterns: it always returns JSON (even for errors), uses appropriate HTTP status codes, includes meaningful error messages, and structures responses predictably. A common pattern is to wrap successful data in { data: ... } and errors in { error: ... } or { message: ... }. This makes the API easier for frontend developers to consume.",
+      "codeExamples": [
+        {
+          "title": "Simple JSON API",
+          "code": "const http = require('http');\n\nconst users = [\n  { id: 1, name: 'Alice', email: 'alice@example.com' },\n  { id: 2, name: 'Bob', email: 'bob@example.com' },\n  { id: 3, name: 'Charlie', email: 'charlie@example.com' }\n];\n\nconst server = http.createServer((req, res) => {\n  // Helper to send JSON response\n  const sendJSON = (statusCode, data) => {\n    res.writeHead(statusCode, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify(data));\n  };\n\n  if (req.method === 'GET' && req.url === '/api/users') {\n    sendJSON(200, { data: users, count: users.length });\n  } else if (req.method === 'GET' && req.url.startsWith('/api/users/')) {\n    const id = parseInt(req.url.split('/')[3]);\n    const user = users.find(u => u.id === id);\n\n    if (user) {\n      sendJSON(200, { data: user });\n    } else {\n      sendJSON(404, { error: 'User not found' });\n    }\n  } else {\n    sendJSON(404, { error: 'Endpoint not found' });\n  }\n});\n\nserver.listen(3000, () => {\n  console.log('JSON API running at http://localhost:3000/');\n});",
+          "output": "JSON API running at http://localhost:3000/",
+          "explanation": "The sendJSON helper function standardizes response formatting. Every response is JSON, even errors. The API uses URL path segments to extract the user ID for individual lookups."
+        },
+        {
+          "title": "Parsing POST Request Body",
+          "code": "const http = require('http');\n\nlet items = [];\nlet nextId = 1;\n\nfunction parseBody(req) {\n  return new Promise((resolve, reject) => {\n    let body = '';\n    req.on('data', chunk => { body += chunk.toString(); });\n    req.on('end', () => {\n      try {\n        resolve(JSON.parse(body));\n      } catch (err) {\n        reject(new Error('Invalid JSON'));\n      }\n    });\n    req.on('error', reject);\n  });\n}\n\nconst server = http.createServer(async (req, res) => {\n  const sendJSON = (statusCode, data) => {\n    res.writeHead(statusCode, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify(data));\n  };\n\n  if (req.method === 'GET' && req.url === '/api/items') {\n    sendJSON(200, { data: items });\n  } else if (req.method === 'POST' && req.url === '/api/items') {\n    try {\n      const data = await parseBody(req);\n\n      if (!data.name) {\n        sendJSON(400, { error: 'Name is required' });\n        return;\n      }\n\n      const newItem = { id: nextId++, name: data.name, createdAt: new Date().toISOString() };\n      items.push(newItem);\n      sendJSON(201, { data: newItem });\n    } catch (err) {\n      sendJSON(400, { error: err.message });\n    }\n  } else {\n    sendJSON(404, { error: 'Not Found' });\n  }\n});\n\nserver.listen(3000, () => {\n  console.log('API running at http://localhost:3000/');\n});",
+          "output": "API running at http://localhost:3000/",
+          "explanation": "The parseBody function wraps the stream-based body reading in a Promise for clean async/await usage. It handles JSON parsing errors gracefully. The POST handler validates the data before creating a new item."
+        },
+        {
+          "title": "Complete CRUD API",
+          "code": "const http = require('http');\n\nlet books = [\n  { id: 1, title: '1984', author: 'George Orwell' }\n];\nlet nextId = 2;\n\nfunction parseBody(req) {\n  return new Promise((resolve, reject) => {\n    let body = '';\n    req.on('data', chunk => { body += chunk.toString(); });\n    req.on('end', () => {\n      try { resolve(body ? JSON.parse(body) : {}); }\n      catch (e) { reject(new Error('Invalid JSON')); }\n    });\n  });\n}\n\nconst server = http.createServer(async (req, res) => {\n  const send = (code, data) => {\n    res.writeHead(code, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify(data));\n  };\n\n  const parsedUrl = new URL(req.url, `http://${req.headers.host}`);\n  const path = parsedUrl.pathname;\n  const idMatch = path.match(/^\\/api\\/books\\/(\\d+)$/);\n\n  // GET /api/books\n  if (req.method === 'GET' && path === '/api/books') {\n    return send(200, { data: books });\n  }\n\n  // GET /api/books/:id\n  if (req.method === 'GET' && idMatch) {\n    const book = books.find(b => b.id === parseInt(idMatch[1]));\n    return book ? send(200, { data: book }) : send(404, { error: 'Book not found' });\n  }\n\n  // POST /api/books\n  if (req.method === 'POST' && path === '/api/books') {\n    const data = await parseBody(req);\n    if (!data.title || !data.author) return send(400, { error: 'Title and author required' });\n    const book = { id: nextId++, title: data.title, author: data.author };\n    books.push(book);\n    return send(201, { data: book });\n  }\n\n  // DELETE /api/books/:id\n  if (req.method === 'DELETE' && idMatch) {\n    const index = books.findIndex(b => b.id === parseInt(idMatch[1]));\n    if (index === -1) return send(404, { error: 'Book not found' });\n    books.splice(index, 1);\n    return send(200, { message: 'Book deleted' });\n  }\n\n  send(404, { error: 'Endpoint not found' });\n});\n\nserver.listen(3000, () => console.log('Books API on port 3000'));",
+          "output": "Books API on port 3000",
+          "explanation": "This shows a full CRUD (Create, Read, Update, Delete) API using pure Node.js. Regular expressions extract route parameters. Each HTTP method maps to a CRUD operation: GET=Read, POST=Create, DELETE=Delete. This is the pattern that Express simplifies with app.get(), app.post(), etc."
+        }
+      ],
+      "notes": [
+        "Always set Content-Type to 'application/json' for JSON responses. Clients like fetch() and axios use this header to automatically parse the response.",
+        "JSON.stringify() can take a second argument (replacer) and third argument (spaces) for formatting: JSON.stringify(obj, null, 2) produces pretty-printed JSON.",
+        "Request bodies must be parsed as streams. The entire body is NOT available immediately — you must collect chunks via 'data' events and process the result in the 'end' event."
+      ],
+      "commonPitfalls": [
+        "Not wrapping JSON.parse() in a try/catch block — malformed JSON from clients will crash your server with an unhandled SyntaxError.",
+        "Sending a JavaScript object directly with res.end(obj) instead of res.end(JSON.stringify(obj)) — this will send '[object Object]' as the response.",
+        "Forgetting to return after sending a response in if/else chains, which can cause 'headers already sent' errors when the code continues to another response."
+      ],
+      "interviewTips": [
+        "Understand the difference between JSON and JavaScript objects. JSON is a text format with strict rules (double quotes only, no functions, no undefined). JavaScript objects are in-memory data structures.",
+        "Be ready to explain how streaming body parsing works and why Node.js does not provide the body as a single string by default."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "serving-json-apis-ex1",
+        "title": "JSON Response API",
+        "description": "Create a server where GET '/api/status' returns a JSON response: { status: 'ok', timestamp: '<current ISO timestamp>' }. Use Date.toISOString() for the timestamp.",
+        "starterCode": "const http = require('http');\n\n// Create a server with a GET /api/status endpoint\n// Return JSON: { status: 'ok', timestamp: '<ISO string>' }\n",
+        "solution": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  if (req.method === 'GET' && req.url === '/api/status') {\n    res.writeHead(200, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify({\n      status: 'ok',\n      timestamp: new Date().toISOString()\n    }));\n  } else {\n    res.writeHead(404, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify({ error: 'Not Found' }));\n  }\n});\n\nserver.listen(3000);",
+        "expectedOutput": "{\"status\":\"ok\",\"timestamp\":\"2026-03-12T10:30:00.000Z\"}",
+        "hints": [
+          "Set Content-Type to 'application/json'",
+          "Use JSON.stringify() to convert the object to a string",
+          "Use new Date().toISOString() for the timestamp"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "making-http-requests",
+    "sectionId": "http-and-networking",
+    "orderIndex": 3,
+    "title": "Making HTTP Requests from Node.js",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["http.get", "https module", "fetch API", "Response Handling", "API Consumption", "Promises"],
+    "content": {
+      "explanation": "Node.js is not just for serving HTTP responses — it can also make outgoing HTTP requests to other servers. This is essential for consuming third-party APIs, communicating between microservices, fetching data from external sources, and building proxy servers. Node.js provides multiple ways to make HTTP requests, from built-in modules to the modern fetch API.\n\nThe built-in 'http' and 'https' modules provide http.get() and http.request() functions for making outgoing requests. These are callback-based and stream-oriented: the response arrives as a stream of data chunks that you must collect and concatenate. While this approach is efficient for large responses, it requires more boilerplate code than most developers would like. The http.get() function is a convenience method for GET requests that automatically calls req.end() for you.\n\nStarting with Node.js 18, the global fetch() function is available without any imports, matching the same API that browsers have had for years. This is now the recommended way to make HTTP requests in Node.js for most use cases. fetch() returns a Promise that resolves with a Response object, and you can call response.json() to parse a JSON body or response.text() for plain text. It is much cleaner than the callback-based approach.\n\nWhen consuming external APIs, proper error handling is critical. Network requests can fail for many reasons: the server might be down, the network might be unreliable, the API might return an error status code, or the response might not be valid JSON. You should always handle both network-level errors (the request itself failed) and application-level errors (the server returned a 4xx or 5xx status code). Note that fetch() does NOT throw on HTTP error status codes — a 404 response is still a successful fetch; you must check response.ok or response.status yourself.\n\nFor production applications, you will often use third-party libraries like axios or node-fetch (for older Node.js versions) which provide a more ergonomic API with features like automatic JSON parsing, request/response interceptors, timeout handling, and request cancellation. However, with fetch() now built into Node.js, the need for these libraries has decreased significantly.",
+      "codeExamples": [
+        {
+          "title": "Making Requests with Built-in http/https",
+          "code": "const https = require('https');\n\n// Simple GET request\nhttps.get('https://jsonplaceholder.typicode.com/users/1', (res) => {\n  let data = '';\n\n  // Collect data chunks\n  res.on('data', (chunk) => {\n    data += chunk;\n  });\n\n  // Parse the complete response\n  res.on('end', () => {\n    const user = JSON.parse(data);\n    console.log('User:', user.name);\n    console.log('Email:', user.email);\n  });\n}).on('error', (err) => {\n  console.error('Request failed:', err.message);\n});",
+          "output": "User: Leanne Graham\nEmail: Sincere@april.biz",
+          "explanation": "https.get() makes a GET request and returns the response as a stream. You must collect all chunks in the 'data' event and process the complete response in the 'end' event. The 'error' event handles network-level failures."
+        },
+        {
+          "title": "Using fetch() (Node.js 18+)",
+          "code": "// GET request with fetch\nasync function getUser() {\n  try {\n    const response = await fetch('https://jsonplaceholder.typicode.com/users/1');\n\n    if (!response.ok) {\n      throw new Error(`HTTP error! Status: ${response.status}`);\n    }\n\n    const user = await response.json();\n    console.log('User:', user.name);\n    console.log('Company:', user.company.name);\n  } catch (error) {\n    console.error('Failed to fetch user:', error.message);\n  }\n}\n\n// POST request with fetch\nasync function createPost() {\n  try {\n    const response = await fetch('https://jsonplaceholder.typicode.com/posts', {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({\n        title: 'My New Post',\n        body: 'This is the content of my post.',\n        userId: 1\n      })\n    });\n\n    const newPost = await response.json();\n    console.log('Created post with ID:', newPost.id);\n  } catch (error) {\n    console.error('Failed to create post:', error.message);\n  }\n}\n\ngetUser();\ncreatePost();",
+          "output": "User: Leanne Graham\nCompany: Romaguera-Crona\nCreated post with ID: 101",
+          "explanation": "fetch() provides a Promise-based API that works with async/await. For POST requests, you pass an options object with method, headers, and body. Always check response.ok because fetch() does not throw on HTTP error codes like 404 or 500."
+        },
+        {
+          "title": "Building an API Proxy Server",
+          "code": "const http = require('http');\n\n// Server that proxies requests to an external API\nconst server = http.createServer(async (req, res) => {\n  const sendJSON = (code, data) => {\n    res.writeHead(code, {\n      'Content-Type': 'application/json',\n      'Access-Control-Allow-Origin': '*'\n    });\n    res.end(JSON.stringify(data));\n  };\n\n  if (req.method === 'GET' && req.url === '/api/weather') {\n    try {\n      // Fetch data from external API\n      const response = await fetch(\n        'https://api.open-meteo.com/v1/forecast?latitude=40.71&longitude=-74.01&current_weather=true'\n      );\n      const weather = await response.json();\n\n      // Transform and send only what the client needs\n      sendJSON(200, {\n        temperature: weather.current_weather.temperature,\n        windSpeed: weather.current_weather.windspeed,\n        description: weather.current_weather.weathercode\n      });\n    } catch (error) {\n      sendJSON(502, { error: 'Failed to fetch weather data' });\n    }\n  } else {\n    sendJSON(404, { error: 'Not Found' });\n  }\n});\n\nserver.listen(3000, () => {\n  console.log('Proxy server running on port 3000');\n});",
+          "output": "Proxy server running on port 3000",
+          "explanation": "A proxy server fetches data from external APIs on behalf of the client. This pattern is used to hide API keys, add caching, transform response data, or bypass CORS restrictions. Status 502 (Bad Gateway) indicates the upstream server failed."
+        }
+      ],
+      "notes": [
+        "fetch() is globally available in Node.js 18+ without any imports. For older versions, install the 'node-fetch' package.",
+        "Unlike the browser fetch, Node.js fetch does NOT throw an error on HTTP error status codes (404, 500, etc.). Always check response.ok or response.status before parsing the body.",
+        "For production code, always set timeouts on outgoing requests to prevent your server from hanging if an external API is slow or unresponsive."
+      ],
+      "commonPitfalls": [
+        "Assuming fetch() throws on 404 or 500 responses. It only throws on network errors (server unreachable, DNS failure, etc.). A 404 response with a body is a successful fetch.",
+        "Not handling JSON parse errors when the external API returns non-JSON data (like HTML error pages). Always wrap response.json() in a try/catch.",
+        "Making synchronous-style HTTP requests — all HTTP requests in Node.js are asynchronous. You must use callbacks, Promises, or async/await to handle responses."
+      ],
+      "interviewTips": [
+        "Know the pros and cons of http.get() vs fetch() vs axios. Built-in http is low-level and verbose but has zero dependencies. fetch() is modern and Promise-based. axios adds interceptors, automatic JSON parsing, and request cancellation.",
+        "Understand what a proxy server is and why you might need one — hiding API keys, CORS bypass, response transformation, caching, and rate limiting."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "making-http-requests-ex1",
+        "title": "Fetch and Display Data",
+        "description": "Write an async function called fetchTodo that uses fetch() to get a todo from 'https://jsonplaceholder.typicode.com/todos/1' and logs the title. Handle errors with try/catch.",
+        "starterCode": "// Write an async function 'fetchTodo' that:\n// 1. Fetches from https://jsonplaceholder.typicode.com/todos/1\n// 2. Parses the JSON response\n// 3. Logs the todo's title\n// 4. Handles errors gracefully\n",
+        "solution": "async function fetchTodo() {\n  try {\n    const response = await fetch('https://jsonplaceholder.typicode.com/todos/1');\n    if (!response.ok) {\n      throw new Error(`HTTP error: ${response.status}`);\n    }\n    const todo = await response.json();\n    console.log(todo.title);\n  } catch (error) {\n    console.error('Failed to fetch todo:', error.message);\n  }\n}\n\nfetchTodo();",
+        "expectedOutput": "delectus aut autem",
+        "hints": [
+          "Use async/await with fetch()",
+          "Check response.ok before parsing the body",
+          "Wrap everything in a try/catch for error handling"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "making-http-requests-ex2",
+        "title": "POST Request with fetch",
+        "description": "Write an async function called createUser that sends a POST request to 'https://jsonplaceholder.typicode.com/users' with JSON body { name: 'Jane Doe', email: 'jane@example.com' }. Log the created user's id.",
+        "starterCode": "// Write an async function 'createUser' that:\n// 1. Sends a POST request with JSON body\n// 2. Sets Content-Type header to 'application/json'\n// 3. Logs the returned user's id\n",
+        "solution": "async function createUser() {\n  try {\n    const response = await fetch('https://jsonplaceholder.typicode.com/users', {\n      method: 'POST',\n      headers: { 'Content-Type': 'application/json' },\n      body: JSON.stringify({ name: 'Jane Doe', email: 'jane@example.com' })\n    });\n    const user = await response.json();\n    console.log(user.id);\n  } catch (error) {\n    console.error('Failed to create user:', error.message);\n  }\n}\n\ncreateUser();",
+        "expectedOutput": "11",
+        "hints": [
+          "Pass an options object as the second argument to fetch()",
+          "Set method to 'POST' and include the Content-Type header",
+          "Use JSON.stringify() to convert the body object to a string"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

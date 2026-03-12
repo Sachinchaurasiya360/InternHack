@@ -1,147 +1,153 @@
 import { motion } from "framer-motion";
-import {
-  Briefcase,
-  Map,
-  FileCheck,
-  Building2,
-  Globe,
-  Users,
-  ArrowUpRight,
-  GitBranch,
-} from "lucide-react";
+import { Briefcase, Map, FileCheck, Building2, GitBranch, ArrowRight } from "lucide-react";
 import { Link } from "react-router";
+import type { LucideIcon } from "lucide-react";
 
-const features = [
+const features: { title: string; desc: string; icon: LucideIcon; href: string }[] = [
   {
     title: "Smart Job Board",
-    description:
-      "Curated internships and full-time roles posted by verified recruiters. One-click apply, real-time tracking, and personalized recommendations.",
+    desc: "Curated roles from verified recruiters with real-time tracking and one-click apply.",
     icon: Briefcase,
     href: "/jobs",
-    span: "md:col-span-2",
-    iconColor: "text-indigo-500",
-  },
-  {
-    title: "Career Roadmaps",
-    description:
-      "Step-by-step learning paths across 8+ career tracks - from frontend to data science. Track your progress and never feel lost.",
-    icon: Map,
-    href: "/careers",
-    span: "",
-    iconColor: "text-violet-500",
   },
   {
     title: "AI Resume Scorer",
-    description:
-      "Paste any job description, upload your resume, and get an instant ATS compatibility score with actionable improvement tips.",
+    desc: "Instant ATS scores with actionable tips to beat automated filters.",
     icon: FileCheck,
     href: "/ats-score",
-    span: "",
-    iconColor: "text-emerald-500",
   },
   {
-    title: "Open Source & GSoC",
-    description:
-      "Find beginner-friendly repos, explore GSoC organizations, and get guidance to land your first meaningful open-source contribution.",
-    icon: GitBranch,
-    href: "/opensource",
-    span: "lg:col-span-2",
-    iconColor: "text-teal-500",
+    title: "Career Roadmaps",
+    desc: "Guided learning paths across 8+ tracks with skill checkpoints.",
+    icon: Map,
+    href: "/careers",
   },
   {
     title: "Company Explorer",
-    description:
-      "Research companies before you apply. Browse tech stacks, funding stages, team sizes, and open roles - including 4,000+ Y Combinator startups.",
+    desc: "Research tech stacks, culture, and open roles at 4,000+ companies.",
     icon: Building2,
     href: "/companies",
-    span: "lg:col-span-2",
-    iconColor: "text-sky-500",
   },
   {
-    title: "Recruiter Dashboard",
-    description:
-      "Post jobs, design multi-round hiring pipelines, review applications, and shortlist candidates - all from one clean dashboard.",
-    icon: Users,
-    href: "/register?role=RECRUITER",
-    span: "lg:col-span-2",
-    iconColor: "text-rose-500",
-  },
-  {
-    title: "Web3 Grants & Funding",
-    description:
-      "Browse 50+ blockchain grants, hackathon prizes, and fellowship programs. Filter by ecosystem, category, and funding amount.",
-    icon: Globe,
-    href: "/grants",
-    span: "lg:col-span-2",
-    iconColor: "text-purple-500",
+    title: "Open Source & GSoC",
+    desc: "Discover beginner-friendly repos and 520+ GSoC organizations.",
+    icon: GitBranch,
+    href: "/opensource",
   },
 ];
 
-export function FeaturesSection() {
-  return (
-    <section className="relative py-24 md:py-32 bg-[#fafafa] dark:bg-gray-950">
-      {/* Subtle grid */}
-      <div
-        className="absolute inset-0 opacity-[0.02]"
-        style={{
-          backgroundImage:
-            "linear-gradient(#000 1px, transparent 1px), linear-gradient(90deg, #000 1px, transparent 1px)",
-          backgroundSize: "48px 48px",
-        }}
-      />
+const containerVariants = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.1 } },
+};
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6">
+const cardVariants = {
+  hidden: { opacity: 0, y: 24 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: { duration: 0.5, ease: [0.22, 1, 0.36, 1] },
+  },
+};
+
+export function FeaturesSection() {
+  const [hero, ...rest] = features;
+
+  return (
+    <section className="relative py-24 md:py-32 bg-white dark:bg-gray-900">
+      <div className="max-w-6xl mx-auto px-6">
+        {/* Heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="text-center mb-16"
+          className="text-center mb-14"
         >
-          <span className="text-xs font-medium text-gray-500 dark:text-gray-500 uppercase tracking-wider mb-6 block">
-            Platform Features
-          </span>
-          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
-            One platform,
+          <h2 className="font-display text-4xl sm:text-5xl font-bold text-gray-950 dark:text-white tracking-tight mb-4">
+            Built for students who
             <br />
-            <span className="text-gradient-accent">zero guesswork</span>
+            <span className="text-gradient-accent">mean business</span>
           </h2>
           <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
-            Every tool a student or recruiter needs to go from searching to
-            hired - built into a single, fast platform.
+            Every tool you need to go from resume to offer letter.
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {features.map((feature, i) => (
-            <motion.div
-              key={i}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: i * 0.08, duration: 0.5 }}
-              className={`${feature.span}`}
-            >
-              <Link to={feature.href} className="no-underline block h-full">
+        {/* Bento grid */}
+        <motion.div
+          className="grid grid-cols-1 md:grid-cols-2 gap-4"
+          variants={containerVariants}
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, margin: "-60px" }}
+        >
+          {/* Hero card — full width */}
+          <motion.div variants={cardVariants} className="md:col-span-2">
+            <Link to={hero.href} className="no-underline block group">
+              <motion.div
+                whileHover={{ y: -4 }}
+                transition={{ duration: 0.25 }}
+                className="relative rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 p-6 md:p-8 transition-all duration-300 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-950/50 overflow-hidden"
+              >
+                {/* Subtle dot texture */}
+                <div
+                  className="absolute inset-0 pointer-events-none opacity-[0.02] dark:opacity-[0.04]"
+                  style={{
+                    backgroundImage:
+                      "radial-gradient(circle at 1px 1px, currentColor 1px, transparent 0)",
+                    backgroundSize: "24px 24px",
+                  }}
+                />
+
+                <div className="relative flex flex-col md:flex-row md:items-center gap-5">
+                  <div className="w-12 h-12 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0">
+                    <hero.icon className="w-6 h-6 text-white dark:text-gray-950" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="font-display text-xl font-bold text-gray-900 dark:text-white mb-1">
+                      {hero.title}
+                    </h3>
+                    <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed max-w-lg">
+                      {hero.desc}
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 dark:text-gray-500 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors shrink-0">
+                    Learn more
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
+                </div>
+              </motion.div>
+            </Link>
+          </motion.div>
+
+          {/* Feature cards — 2×2 */}
+          {rest.map((f) => (
+            <motion.div key={f.title} variants={cardVariants}>
+              <Link to={f.href} className="no-underline block group h-full">
                 <motion.div
                   whileHover={{ y: -4 }}
-                  className="relative bg-white dark:bg-gray-900 rounded-2xl p-6 md:p-8 border border-gray-100 dark:border-gray-800 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all h-full group overflow-hidden"
+                  transition={{ duration: 0.25 }}
+                  className="relative h-full rounded-2xl border border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/30 p-6 transition-all duration-300 hover:border-gray-200 dark:hover:border-gray-700 hover:shadow-lg hover:shadow-gray-200/50 dark:hover:shadow-gray-950/50"
                 >
-                  <div className="flex items-start justify-between mb-4">
-                    <feature.icon className={`w-6 h-6 ${feature.iconColor}`} />
-                    <ArrowUpRight className="w-4 h-4 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-all" />
+                  <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center mb-4">
+                    <f.icon className="w-5 h-5 text-white dark:text-gray-950" />
                   </div>
                   <h3 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-2">
-                    {feature.title}
+                    {f.title}
                   </h3>
-                  <p className="text-sm text-gray-500 dark:text-gray-500 leading-relaxed">
-                    {feature.description}
+                  <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
+                    {f.desc}
                   </p>
+                  <span className="inline-flex items-center gap-1 text-xs font-semibold text-gray-400 dark:text-gray-500 group-hover:text-indigo-500 dark:group-hover:text-indigo-400 transition-colors">
+                    Learn more
+                    <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform duration-300" />
+                  </span>
                 </motion.div>
               </Link>
             </motion.div>
           ))}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -1,0 +1,266 @@
+[
+  {
+    "id": "sqlalchemy-setup",
+    "sectionId": "database-integration",
+    "orderIndex": 0,
+    "title": "SQLAlchemy Setup",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["SQLAlchemy", "ORM", "Engine", "Session", "DeclarativeBase"],
+    "content": {
+      "explanation": "SQLAlchemy is the most popular Python ORM (Object-Relational Mapper), and it integrates seamlessly with FastAPI. An ORM lets you interact with your database using Python classes and objects instead of raw SQL queries. SQLAlchemy 2.0 introduced a modern syntax with improved type support that works particularly well with FastAPI and Pydantic.\n\nThe first step in setting up SQLAlchemy is creating an engine. The engine is the starting point for all SQLAlchemy operations — it manages the connection pool and provides connectivity to the database. You create it with create_engine(DATABASE_URL), where the URL follows the format: dialect+driver://user:password@host:port/dbname. For PostgreSQL, this looks like postgresql://user:pass@localhost:5432/mydb. For SQLite, it is sqlite:///./app.db.\n\nA session is the workspace for your database operations. It tracks changes to objects, batches SQL statements, and manages transactions. You create sessions using sessionmaker, which is a factory bound to your engine. Each request should get its own session (via a FastAPI dependency) to prevent cross-request interference.\n\nSQLAlchemy 2.0 uses DeclarativeBase (replacing the older declarative_base() function) to define your ORM models. Each model class represents a database table. Columns are defined using mapped_column() with type annotations, replacing the older Column() syntax. Relationships between tables are defined using relationship().\n\nThe connection between SQLAlchemy models (database representation) and Pydantic models (API representation) is important. SQLAlchemy models define the database schema. Pydantic models define the API request/response schemas. You typically convert between them in your CRUD operations. Pydantic's model_config with from_attributes=True enables creating Pydantic models directly from SQLAlchemy objects.\n\nFor development, SQLAlchemy can create tables automatically using Base.metadata.create_all(engine). For production, use Alembic migrations to manage schema changes incrementally and safely.",
+      "codeExamples": [
+        {
+          "title": "Database Setup and Models",
+          "code": "from sqlalchemy import create_engine, String, Integer\nfrom sqlalchemy.orm import (\n    DeclarativeBase, Mapped, mapped_column, sessionmaker,\n)\n\n# Database URL\nDATABASE_URL = \"sqlite:///./app.db\"\n\n# Create engine\nengine = create_engine(\n    DATABASE_URL,\n    connect_args={\"check_same_thread\": False},  # SQLite only\n    echo=True,  # Log SQL statements (dev only)\n)\n\n# Session factory\nSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)\n\n# Base class for models\nclass Base(DeclarativeBase):\n    pass\n\n# ORM Model\nclass User(Base):\n    __tablename__ = \"users\"\n\n    id: Mapped[int] = mapped_column(primary_key=True, index=True)\n    username: Mapped[str] = mapped_column(String(50), unique=True, index=True)\n    email: Mapped[str] = mapped_column(String(100), unique=True)\n    is_active: Mapped[bool] = mapped_column(default=True)\n\n# Create tables\nBase.metadata.create_all(bind=engine)",
+          "explanation": "The engine manages database connections. SessionLocal creates new sessions. Base is the parent class for all ORM models. The User model maps to a 'users' table. mapped_column replaces the older Column() syntax in SQLAlchemy 2.0."
+        },
+        {
+          "title": "Session Dependency and Pydantic Schemas",
+          "code": "from fastapi import FastAPI, Depends\nfrom sqlalchemy.orm import Session\nfrom pydantic import BaseModel, ConfigDict\n\n# ... (engine, SessionLocal, Base, User from above)\n\napp = FastAPI()\n\n# Database session dependency\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\n# Pydantic schemas (separate from ORM models)\nclass UserCreate(BaseModel):\n    username: str\n    email: str\n\nclass UserResponse(BaseModel):\n    model_config = ConfigDict(from_attributes=True)\n\n    id: int\n    username: str\n    email: str\n    is_active: bool\n\n@app.post(\"/users\", response_model=UserResponse, status_code=201)\ndef create_user(user: UserCreate, db: Session = Depends(get_db)):\n    db_user = User(username=user.username, email=user.email)\n    db.add(db_user)\n    db.commit()\n    db.refresh(db_user)  # Refresh to get the auto-generated ID\n    return db_user  # SQLAlchemy model -> Pydantic via from_attributes\n\n@app.get(\"/users\", response_model=list[UserResponse])\ndef list_users(db: Session = Depends(get_db)):\n    return db.query(User).all()",
+          "explanation": "The get_db dependency provides a session per request and ensures cleanup. Pydantic schemas with from_attributes=True can be created directly from SQLAlchemy models. The handler returns SQLAlchemy objects, and FastAPI converts them using the response_model."
+        },
+        {
+          "title": "Complete Database Configuration",
+          "code": "# database.py\nimport os\nfrom sqlalchemy import create_engine\nfrom sqlalchemy.orm import DeclarativeBase, sessionmaker\n\nDATABASE_URL = os.getenv(\n    \"DATABASE_URL\",\n    \"postgresql://postgres:password@localhost:5432/myapp\"\n)\n\nengine = create_engine(DATABASE_URL, pool_pre_ping=True)\nSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)\n\nclass Base(DeclarativeBase):\n    pass\n\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\n# models.py\nfrom sqlalchemy import String, ForeignKey\nfrom sqlalchemy.orm import Mapped, mapped_column, relationship\nfrom database import Base\n\nclass User(Base):\n    __tablename__ = \"users\"\n\n    id: Mapped[int] = mapped_column(primary_key=True)\n    username: Mapped[str] = mapped_column(String(50), unique=True)\n    email: Mapped[str] = mapped_column(String(100))\n    posts: Mapped[list[\"Post\"]] = relationship(back_populates=\"author\")\n\nclass Post(Base):\n    __tablename__ = \"posts\"\n\n    id: Mapped[int] = mapped_column(primary_key=True)\n    title: Mapped[str] = mapped_column(String(200))\n    body: Mapped[str] = mapped_column()\n    author_id: Mapped[int] = mapped_column(ForeignKey(\"users.id\"))\n    author: Mapped[\"User\"] = relationship(back_populates=\"posts\")",
+          "explanation": "Separating database configuration into its own module keeps the code organized. pool_pre_ping=True checks connections before use, preventing stale connection errors. The User-Post relationship demonstrates one-to-many with back_populates."
+        }
+      ],
+      "notes": [
+        "SQLAlchemy 2.0 uses Mapped[] type annotations and mapped_column() instead of Column().",
+        "Use from_attributes=True in Pydantic models to enable conversion from SQLAlchemy objects.",
+        "The get_db dependency with yield ensures sessions are always closed, even on errors.",
+        "Use pool_pre_ping=True in production to avoid stale database connections."
+      ],
+      "commonPitfalls": [
+        "Forgetting db.commit() after add/update/delete operations. Without commit, changes are not persisted.",
+        "Using the same session across multiple requests (global session). Always create one session per request.",
+        "Forgetting check_same_thread=False for SQLite. Without it, SQLite raises threading errors with FastAPI."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "sqlalchemy-setup-ex1",
+        "title": "Define a Product Model",
+        "description": "Create a SQLAlchemy model for a Product table with: id (primary key), name (str, max 100), price (float), in_stock (bool, default True). Also create a Pydantic ProductResponse schema with from_attributes=True.",
+        "starterCode": "from sqlalchemy import String\nfrom sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column\nfrom pydantic import BaseModel, ConfigDict\n\nclass Base(DeclarativeBase):\n    pass\n\n# Define Product ORM model\n\n# Define ProductResponse Pydantic schema\n",
+        "solution": "from sqlalchemy import String\nfrom sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column\nfrom pydantic import BaseModel, ConfigDict\n\nclass Base(DeclarativeBase):\n    pass\n\nclass Product(Base):\n    __tablename__ = \"products\"\n\n    id: Mapped[int] = mapped_column(primary_key=True)\n    name: Mapped[str] = mapped_column(String(100))\n    price: Mapped[float] = mapped_column()\n    in_stock: Mapped[bool] = mapped_column(default=True)\n\nclass ProductResponse(BaseModel):\n    model_config = ConfigDict(from_attributes=True)\n\n    id: int\n    name: str\n    price: float\n    in_stock: bool",
+        "hints": [
+          "Use Mapped[type] with mapped_column() for SQLAlchemy 2.0 column definitions",
+          "ConfigDict(from_attributes=True) allows Pydantic to read from SQLAlchemy model attributes"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "sqlalchemy-setup-ex2",
+        "title": "Create Database Session Dependency",
+        "description": "Set up a complete database configuration: create an SQLite engine (sqlite:///./test.db), configure SessionLocal, define a get_db yield dependency, and create a GET /health endpoint that uses the session to execute a simple query.",
+        "starterCode": "from fastapi import FastAPI, Depends\nfrom sqlalchemy import create_engine, text\nfrom sqlalchemy.orm import sessionmaker, Session\n\n# Set up engine, session, and dependency\n\napp = FastAPI()\n\n# GET /health that uses the database session\n",
+        "solution": "from fastapi import FastAPI, Depends\nfrom sqlalchemy import create_engine, text\nfrom sqlalchemy.orm import sessionmaker, Session\n\nDATABASE_URL = \"sqlite:///./test.db\"\nengine = create_engine(DATABASE_URL, connect_args={\"check_same_thread\": False})\nSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)\n\ndef get_db():\n    db = SessionLocal()\n    try:\n        yield db\n    finally:\n        db.close()\n\napp = FastAPI()\n\n@app.get(\"/health\")\ndef health_check(db: Session = Depends(get_db)):\n    result = db.execute(text(\"SELECT 1\"))\n    return {\"status\": \"ok\", \"db_connected\": result.scalar() == 1}",
+        "hints": [
+          "Use connect_args={'check_same_thread': False} for SQLite",
+          "text('SELECT 1') is a simple query to verify the database connection"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "crud-operations",
+    "sectionId": "database-integration",
+    "orderIndex": 1,
+    "title": "CRUD Operations",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Create", "Read", "Update", "Delete", "Query API", "Filtering"],
+    "content": {
+      "explanation": "CRUD (Create, Read, Update, Delete) operations are the four basic operations performed on database records. In FastAPI with SQLAlchemy, these operations translate to specific SQLAlchemy methods combined with HTTP endpoints. Organizing CRUD logic into reusable functions keeps your code clean and testable.\n\nThe Create operation adds new records to the database. You create an SQLAlchemy model instance, add it to the session with db.add(), commit the transaction with db.commit(), and refresh the object with db.refresh() to load auto-generated fields like the ID. The endpoint typically uses POST and returns 201.\n\nThe Read operation retrieves records. SQLAlchemy provides db.query(Model) for building queries. Use .all() to get all records, .first() to get the first match, .filter() to add WHERE clauses, and .get() for primary key lookups. For pagination, use .offset() and .limit(). Read endpoints use GET.\n\nThe Update operation modifies existing records. The typical flow is: query the record, modify its attributes, and commit. For partial updates (PATCH), use model_dump(exclude_unset=True) to get only the fields the client sent, then apply them with setattr(). Full updates (PUT) replace all fields.\n\nThe Delete operation removes records. Query the record, call db.delete(record), and commit. Return 204 No Content on success. Always check that the record exists before attempting deletion.\n\nA common pattern is to create a CRUD module that encapsulates all database operations for a resource. This separates database logic from HTTP handling, making both easier to test and maintain. The CRUD functions take a session and parameters, perform the database operation, and return the result. The endpoint handler calls the CRUD function and handles HTTP concerns.",
+      "codeExamples": [
+        {
+          "title": "Complete CRUD Functions",
+          "code": "from sqlalchemy.orm import Session\nfrom sqlalchemy import String\nfrom sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column\nfrom pydantic import BaseModel, ConfigDict\n\nclass Base(DeclarativeBase):\n    pass\n\nclass Item(Base):\n    __tablename__ = \"items\"\n    id: Mapped[int] = mapped_column(primary_key=True)\n    name: Mapped[str] = mapped_column(String(100))\n    price: Mapped[float] = mapped_column()\n    description: Mapped[str | None] = mapped_column(String(500), nullable=True)\n\nclass ItemCreate(BaseModel):\n    name: str\n    price: float\n    description: str | None = None\n\nclass ItemUpdate(BaseModel):\n    name: str | None = None\n    price: float | None = None\n    description: str | None = None\n\nclass ItemResponse(BaseModel):\n    model_config = ConfigDict(from_attributes=True)\n    id: int\n    name: str\n    price: float\n    description: str | None\n\n# CRUD functions\ndef create_item(db: Session, item: ItemCreate) -> Item:\n    db_item = Item(**item.model_dump())\n    db.add(db_item)\n    db.commit()\n    db.refresh(db_item)\n    return db_item\n\ndef get_items(db: Session, skip: int = 0, limit: int = 20) -> list[Item]:\n    return db.query(Item).offset(skip).limit(limit).all()\n\ndef get_item(db: Session, item_id: int) -> Item | None:\n    return db.query(Item).filter(Item.id == item_id).first()\n\ndef update_item(db: Session, item_id: int, item: ItemUpdate) -> Item | None:\n    db_item = db.query(Item).filter(Item.id == item_id).first()\n    if not db_item:\n        return None\n    update_data = item.model_dump(exclude_unset=True)\n    for key, value in update_data.items():\n        setattr(db_item, key, value)\n    db.commit()\n    db.refresh(db_item)\n    return db_item\n\ndef delete_item(db: Session, item_id: int) -> bool:\n    db_item = db.query(Item).filter(Item.id == item_id).first()\n    if not db_item:\n        return False\n    db.delete(db_item)\n    db.commit()\n    return True",
+          "explanation": "Each CRUD function takes a session and parameters, performs one database operation, and returns the result. create uses add/commit/refresh. get uses query/filter/first. update uses setattr for partial updates. delete uses delete/commit."
+        },
+        {
+          "title": "Endpoints Using CRUD Functions",
+          "code": "from fastapi import FastAPI, Depends, HTTPException, Query\nfrom sqlalchemy.orm import Session\n\n# ... (imports and CRUD functions from above)\n\napp = FastAPI()\n\n@app.post(\"/items\", response_model=ItemResponse, status_code=201)\ndef create_item_endpoint(item: ItemCreate, db: Session = Depends(get_db)):\n    return create_item(db, item)\n\n@app.get(\"/items\", response_model=list[ItemResponse])\ndef list_items_endpoint(\n    skip: int = Query(default=0, ge=0),\n    limit: int = Query(default=20, ge=1, le=100),\n    db: Session = Depends(get_db),\n):\n    return get_items(db, skip=skip, limit=limit)\n\n@app.get(\"/items/{item_id}\", response_model=ItemResponse)\ndef get_item_endpoint(item_id: int, db: Session = Depends(get_db)):\n    item = get_item(db, item_id)\n    if not item:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    return item\n\n@app.patch(\"/items/{item_id}\", response_model=ItemResponse)\ndef update_item_endpoint(item_id: int, item: ItemUpdate, db: Session = Depends(get_db)):\n    updated = update_item(db, item_id, item)\n    if not updated:\n        raise HTTPException(status_code=404, detail=\"Item not found\")\n    return updated\n\n@app.delete(\"/items/{item_id}\", status_code=204)\ndef delete_item_endpoint(item_id: int, db: Session = Depends(get_db)):\n    if not delete_item(db, item_id):\n        raise HTTPException(status_code=404, detail=\"Item not found\")",
+          "explanation": "Endpoints are thin wrappers around CRUD functions. They handle HTTP concerns (status codes, error responses, query parameters) while delegating database logic to the CRUD layer. This separation makes both layers independently testable."
+        },
+        {
+          "title": "Filtering and Search",
+          "code": "from sqlalchemy.orm import Session\nfrom sqlalchemy import or_\n\ndef search_items(\n    db: Session,\n    q: str | None = None,\n    min_price: float | None = None,\n    max_price: float | None = None,\n    skip: int = 0,\n    limit: int = 20,\n) -> list[Item]:\n    query = db.query(Item)\n\n    if q:\n        query = query.filter(\n            or_(\n                Item.name.ilike(f\"%{q}%\"),\n                Item.description.ilike(f\"%{q}%\"),\n            )\n        )\n\n    if min_price is not None:\n        query = query.filter(Item.price >= min_price)\n\n    if max_price is not None:\n        query = query.filter(Item.price <= max_price)\n\n    return query.order_by(Item.price).offset(skip).limit(limit).all()\n\n# Usage in endpoint\n@app.get(\"/items/search\", response_model=list[ItemResponse])\ndef search(\n    q: str | None = None,\n    min_price: float | None = None,\n    max_price: float | None = None,\n    skip: int = 0,\n    limit: int = 20,\n    db: Session = Depends(get_db),\n):\n    return search_items(db, q=q, min_price=min_price, max_price=max_price, skip=skip, limit=limit)",
+          "explanation": "Build queries incrementally by conditionally adding filters. ilike() performs case-insensitive LIKE matching. or_() combines conditions with OR logic. Pagination is applied last with offset() and limit()."
+        }
+      ],
+      "notes": [
+        "Always call db.commit() after create/update/delete operations to persist changes.",
+        "Use db.refresh() after commit to reload auto-generated fields (like ID and timestamps).",
+        "Separate CRUD logic from endpoint handlers for better testability and reuse.",
+        "Use model_dump(exclude_unset=True) for PATCH operations to only update provided fields."
+      ],
+      "commonPitfalls": [
+        "Forgetting db.refresh() after commit. Without it, auto-generated fields (like ID) are not available on the object.",
+        "Using model_dump() instead of model_dump(exclude_unset=True) for partial updates. Without exclude_unset, None values overwrite existing data.",
+        "Not handling the case where a record is not found before attempting update or delete."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "crud-operations-ex1",
+        "title": "Write CRUD Functions",
+        "description": "Write four CRUD functions for a Task model (id, title, completed): create_task, get_tasks (with pagination), get_task (by ID), and toggle_task (flip the completed status). Each takes a Session as the first argument.",
+        "starterCode": "from sqlalchemy.orm import Session\n\n# Assume Task model exists with: id, title, completed\n\n# Write four CRUD functions\n",
+        "solution": "from sqlalchemy.orm import Session\n\ndef create_task(db: Session, title: str):\n    task = Task(title=title, completed=False)\n    db.add(task)\n    db.commit()\n    db.refresh(task)\n    return task\n\ndef get_tasks(db: Session, skip: int = 0, limit: int = 20):\n    return db.query(Task).offset(skip).limit(limit).all()\n\ndef get_task(db: Session, task_id: int):\n    return db.query(Task).filter(Task.id == task_id).first()\n\ndef toggle_task(db: Session, task_id: int):\n    task = db.query(Task).filter(Task.id == task_id).first()\n    if not task:\n        return None\n    task.completed = not task.completed\n    db.commit()\n    db.refresh(task)\n    return task",
+        "hints": [
+          "Use db.add() and db.commit() for creating records",
+          "Toggle completed with: task.completed = not task.completed"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "crud-operations-ex2",
+        "title": "Search with Filters",
+        "description": "Write a search_tasks function that accepts a Session, optional query string (search in title), optional completed filter (bool), and pagination (skip, limit). Build the query conditionally.",
+        "starterCode": "from sqlalchemy.orm import Session\n\n# Assume Task model with: id, title, completed\n\n# Write search_tasks function\n",
+        "solution": "from sqlalchemy.orm import Session\n\ndef search_tasks(\n    db: Session,\n    q: str | None = None,\n    completed: bool | None = None,\n    skip: int = 0,\n    limit: int = 20,\n):\n    query = db.query(Task)\n\n    if q:\n        query = query.filter(Task.title.ilike(f\"%{q}%\"))\n\n    if completed is not None:\n        query = query.filter(Task.completed == completed)\n\n    return query.offset(skip).limit(limit).all()",
+        "hints": [
+          "Build the query incrementally by adding filters only when values are provided",
+          "Use ilike for case-insensitive search with SQL LIKE wildcards"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "async-database",
+    "sectionId": "database-integration",
+    "orderIndex": 2,
+    "title": "Async Database",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["AsyncSession", "asyncpg", "async Engine", "select", "Async CRUD"],
+    "content": {
+      "explanation": "Async database access lets FastAPI handle database queries without blocking the event loop, enabling much higher concurrency for I/O-bound applications. SQLAlchemy 2.0 provides full async support through its asyncio extension, working with async database drivers like asyncpg (PostgreSQL), aiosqlite (SQLite), and aiomysql (MySQL).\n\nThe async setup mirrors the synchronous setup but uses async-specific classes. Instead of create_engine, use create_async_engine. Instead of sessionmaker, configure it with class_=AsyncSession. Instead of Session, use AsyncSession. The database URL uses an async driver (postgresql+asyncpg:// instead of postgresql://).\n\nAsync queries use the new select() syntax instead of the older query() API. Instead of db.query(User).filter(...).all(), you write result = await db.execute(select(User).where(...)) followed by result.scalars().all(). This explicit execute-then-extract pattern works well with async/await.\n\nThe async session dependency uses an async generator (async def with yield). The async with statement manages the session lifecycle. You can commit on success and rollback on failure within the same dependency.\n\nAsync database access shines when your API handles many concurrent requests that each perform database I/O. While one request waits for a database query, the event loop can process other requests. This is particularly beneficial for applications that make multiple database calls per request or call external APIs alongside database operations.\n\nNote that async database access is not always faster for individual requests. The overhead of async can make single requests slightly slower. The benefit is in concurrency — handling many simultaneous requests efficiently. If your API has low concurrency, synchronous database access is simpler and equally effective.",
+      "codeExamples": [
+        {
+          "title": "Async SQLAlchemy Setup",
+          "code": "from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession\nfrom sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column, sessionmaker\nfrom sqlalchemy import String\n\n# Async engine (note the async driver)\nDATABASE_URL = \"postgresql+asyncpg://user:pass@localhost:5432/mydb\"\n# For SQLite: \"sqlite+aiosqlite:///./app.db\"\n\nasync_engine = create_async_engine(DATABASE_URL, echo=True)\n\n# Async session factory\nAsyncSessionLocal = sessionmaker(\n    async_engine,\n    class_=AsyncSession,\n    expire_on_commit=False,\n)\n\nclass Base(DeclarativeBase):\n    pass\n\nclass User(Base):\n    __tablename__ = \"users\"\n    id: Mapped[int] = mapped_column(primary_key=True)\n    name: Mapped[str] = mapped_column(String(50))\n    email: Mapped[str] = mapped_column(String(100), unique=True)\n\n# Async session dependency\nasync def get_async_db():\n    async with AsyncSessionLocal() as session:\n        try:\n            yield session\n            await session.commit()\n        except Exception:\n            await session.rollback()\n            raise",
+          "explanation": "create_async_engine uses an async driver (asyncpg/aiosqlite). The session factory creates AsyncSession instances. expire_on_commit=False prevents lazy loading issues. The dependency commits on success and rolls back on failure."
+        },
+        {
+          "title": "Async CRUD Operations",
+          "code": "from fastapi import FastAPI, Depends, HTTPException\nfrom sqlalchemy.ext.asyncio import AsyncSession\nfrom sqlalchemy import select\nfrom pydantic import BaseModel, ConfigDict\n\napp = FastAPI()\n\nclass UserCreate(BaseModel):\n    name: str\n    email: str\n\nclass UserResponse(BaseModel):\n    model_config = ConfigDict(from_attributes=True)\n    id: int\n    name: str\n    email: str\n\n@app.post(\"/users\", response_model=UserResponse, status_code=201)\nasync def create_user(user: UserCreate, db: AsyncSession = Depends(get_async_db)):\n    db_user = User(name=user.name, email=user.email)\n    db.add(db_user)\n    await db.flush()  # Flush to get the ID\n    await db.refresh(db_user)\n    return db_user\n\n@app.get(\"/users\", response_model=list[UserResponse])\nasync def list_users(\n    skip: int = 0,\n    limit: int = 20,\n    db: AsyncSession = Depends(get_async_db),\n):\n    result = await db.execute(\n        select(User).offset(skip).limit(limit)\n    )\n    return result.scalars().all()\n\n@app.get(\"/users/{user_id}\", response_model=UserResponse)\nasync def get_user(user_id: int, db: AsyncSession = Depends(get_async_db)):\n    result = await db.execute(\n        select(User).where(User.id == user_id)\n    )\n    user = result.scalar_one_or_none()\n    if not user:\n        raise HTTPException(status_code=404, detail=\"User not found\")\n    return user",
+          "explanation": "Async endpoints use async def and await for database operations. db.execute() runs the query, and result.scalars().all() extracts the objects. scalar_one_or_none() returns a single result or None. flush() persists without committing (commit happens in the dependency)."
+        },
+        {
+          "title": "Async Filtering and Relationships",
+          "code": "from sqlalchemy import select, or_, func\nfrom sqlalchemy.ext.asyncio import AsyncSession\nfrom sqlalchemy.orm import selectinload\n\nasync def search_users(\n    db: AsyncSession,\n    q: str | None = None,\n    is_active: bool | None = None,\n):\n    stmt = select(User)\n\n    if q:\n        stmt = stmt.where(\n            or_(\n                User.name.ilike(f\"%{q}%\"),\n                User.email.ilike(f\"%{q}%\"),\n            )\n        )\n\n    if is_active is not None:\n        stmt = stmt.where(User.is_active == is_active)\n\n    result = await db.execute(stmt.order_by(User.name))\n    return result.scalars().all()\n\n# Count records\nasync def count_users(db: AsyncSession) -> int:\n    result = await db.execute(select(func.count()).select_from(User))\n    return result.scalar_one()\n\n# Eager load relationships\nasync def get_user_with_posts(db: AsyncSession, user_id: int):\n    result = await db.execute(\n        select(User)\n        .where(User.id == user_id)\n        .options(selectinload(User.posts))\n    )\n    return result.scalar_one_or_none()",
+          "explanation": "Async queries use select() with .where() for filtering. func.count() counts records. selectinload() eagerly loads relationships to avoid lazy loading issues in async contexts (lazy loading does not work with async)."
+        }
+      ],
+      "notes": [
+        "Async database access requires async drivers: asyncpg (PostgreSQL), aiosqlite (SQLite), aiomysql (MySQL).",
+        "Use select() instead of query() with async sessions. The query() API is not supported in async mode.",
+        "Set expire_on_commit=False on async sessions to prevent lazy loading attempts after commit.",
+        "Lazy loading does not work with async sessions. Use eager loading (selectinload, joinedload) instead."
+      ],
+      "commonPitfalls": [
+        "Using the synchronous query() API with async sessions. Use select() instead.",
+        "Forgetting to await database operations. All async session methods must be awaited.",
+        "Relying on lazy loading in async code. Lazy loading triggers a synchronous query, which fails in async context."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "async-database-ex1",
+        "title": "Write Async CRUD",
+        "description": "Write async functions for creating and listing items using AsyncSession and select(). create_item should add to the session and flush. list_items should support skip and limit pagination.",
+        "starterCode": "from sqlalchemy.ext.asyncio import AsyncSession\nfrom sqlalchemy import select\n\n# Assume Item model exists\n\n# Write async create_item and list_items\n",
+        "solution": "from sqlalchemy.ext.asyncio import AsyncSession\nfrom sqlalchemy import select\n\nasync def create_item(db: AsyncSession, name: str, price: float):\n    item = Item(name=name, price=price)\n    db.add(item)\n    await db.flush()\n    await db.refresh(item)\n    return item\n\nasync def list_items(db: AsyncSession, skip: int = 0, limit: int = 20):\n    result = await db.execute(\n        select(Item).offset(skip).limit(limit)\n    )\n    return result.scalars().all()",
+        "hints": [
+          "Use db.add() then await db.flush() to persist without committing",
+          "await db.execute(select(Model)) returns a result; call .scalars().all() to get the list"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "async-database-ex2",
+        "title": "Async Search with Filters",
+        "description": "Write an async search function that takes an AsyncSession, optional search query (str), optional min_price (float), and returns filtered items. Use the select() API with .where() for conditions.",
+        "starterCode": "from sqlalchemy.ext.asyncio import AsyncSession\nfrom sqlalchemy import select\n\n# Assume Item model with: id, name, price\n\n# Write async search_items function\n",
+        "solution": "from sqlalchemy.ext.asyncio import AsyncSession\nfrom sqlalchemy import select\n\nasync def search_items(\n    db: AsyncSession,\n    q: str | None = None,\n    min_price: float | None = None,\n):\n    stmt = select(Item)\n\n    if q:\n        stmt = stmt.where(Item.name.ilike(f\"%{q}%\"))\n\n    if min_price is not None:\n        stmt = stmt.where(Item.price >= min_price)\n\n    result = await db.execute(stmt.order_by(Item.price))\n    return result.scalars().all()",
+        "hints": [
+          "Build the select statement incrementally by adding .where() clauses",
+          "Use .ilike() for case-insensitive LIKE matching"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "alembic-migrations",
+    "sectionId": "database-integration",
+    "orderIndex": 3,
+    "title": "Alembic Migrations",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Alembic", "Migrations", "Schema Changes", "Revision", "Upgrade", "Downgrade"],
+    "content": {
+      "explanation": "Alembic is the database migration tool for SQLAlchemy. While SQLAlchemy's create_all() can create tables from scratch, it cannot modify existing tables. Alembic tracks schema changes over time, creating versioned migration scripts that can upgrade or downgrade the database schema. This is essential for production applications where the database schema evolves.\n\nAlembic works by comparing your SQLAlchemy models to the current database schema and generating migration scripts for the differences. Each migration is a Python file with upgrade() and downgrade() functions. The upgrade function applies the change (like adding a column), and the downgrade function reverses it.\n\nThe setup process begins with alembic init alembic, which creates an alembic/ directory with configuration files. You configure the database URL in alembic.ini or env.py, and point Alembic to your SQLAlchemy Base metadata so it can detect model changes.\n\nTo create a migration, run alembic revision --autogenerate -m \"description\". Alembic compares your models to the database and generates the migration script. Always review the generated script before running it — autogenerate handles most cases but can miss some changes (like column renames or data migrations).\n\nTo apply migrations, run alembic upgrade head (upgrade to the latest version) or alembic upgrade +1 (upgrade one version). To roll back, use alembic downgrade -1 (go back one version) or alembic downgrade base (roll back all migrations). Each migration is tracked in an alembic_version table in the database.\n\nIn a team environment, migrations should be committed to version control. When pulling changes from other developers, run alembic upgrade head to apply their migrations. If two developers create migrations simultaneously, one may need to be rebased (alembic merge to create a merge migration).\n\nFor production deployments, run migrations as part of the deployment process, before starting the new application version. Many teams include alembic upgrade head in their deployment scripts or Docker entrypoints.",
+      "codeExamples": [
+        {
+          "title": "Alembic Setup and Configuration",
+          "code": "# Terminal commands:\n# pip install alembic\n# alembic init alembic\n\n# alembic/env.py - Configure the target metadata\nfrom logging.config import fileConfig\nfrom sqlalchemy import engine_from_config, pool\nfrom alembic import context\n\n# Import your models' Base\nfrom app.database import Base\nfrom app.models import User, Post  # Import all models\n\nconfig = context.config\nfileConfig(config.config_file_name)\n\n# Set the target metadata for autogenerate\ntarget_metadata = Base.metadata\n\ndef run_migrations_online():\n    connectable = engine_from_config(\n        config.get_section(config.config_ini_section),\n        prefix=\"sqlalchemy.\",\n        poolclass=pool.NullPool,\n    )\n    with connectable.connect() as connection:\n        context.configure(\n            connection=connection,\n            target_metadata=target_metadata,\n        )\n        with context.begin_transaction():\n            context.run_migrations()\n\nrun_migrations_online()\n\n# alembic.ini - Set the database URL\n# sqlalchemy.url = postgresql://user:pass@localhost/mydb",
+          "explanation": "env.py tells Alembic about your models via target_metadata. All model modules must be imported so Alembic can see them. The database URL is configured in alembic.ini or can be set programmatically in env.py."
+        },
+        {
+          "title": "Creating and Running Migrations",
+          "code": "# Create initial migration\n# alembic revision --autogenerate -m \"create users table\"\n\n# Generated migration file: alembic/versions/abc123_create_users_table.py\nfrom alembic import op\nimport sqlalchemy as sa\n\ndef upgrade():\n    op.create_table(\n        'users',\n        sa.Column('id', sa.Integer(), nullable=False),\n        sa.Column('username', sa.String(50), nullable=False),\n        sa.Column('email', sa.String(100), nullable=False),\n        sa.PrimaryKeyConstraint('id'),\n        sa.UniqueConstraint('email'),\n    )\n    op.create_index('ix_users_username', 'users', ['username'])\n\ndef downgrade():\n    op.drop_index('ix_users_username', table_name='users')\n    op.drop_table('users')\n\n# Run migrations\n# alembic upgrade head     # Apply all pending migrations\n# alembic upgrade +1       # Apply next migration\n# alembic downgrade -1     # Rollback last migration\n# alembic downgrade base   # Rollback all migrations\n# alembic current          # Show current revision\n# alembic history          # Show migration history",
+          "explanation": "Autogenerate creates upgrade and downgrade functions. upgrade() creates the table with columns, constraints, and indexes. downgrade() reverses everything. Always review autogenerated scripts before running them."
+        },
+        {
+          "title": "Common Migration Operations",
+          "code": "from alembic import op\nimport sqlalchemy as sa\n\n# Add a column\ndef upgrade():\n    op.add_column('users', sa.Column('bio', sa.String(500), nullable=True))\n\ndef downgrade():\n    op.drop_column('users', 'bio')\n\n# Rename a column (not auto-detected!)\ndef upgrade():\n    op.alter_column('users', 'username', new_column_name='name')\n\ndef downgrade():\n    op.alter_column('users', 'name', new_column_name='username')\n\n# Add an index\ndef upgrade():\n    op.create_index('ix_users_email', 'users', ['email'], unique=True)\n\ndef downgrade():\n    op.drop_index('ix_users_email', table_name='users')\n\n# Data migration (modify data, not just schema)\ndef upgrade():\n    # Add column\n    op.add_column('users', sa.Column('is_active', sa.Boolean(), server_default='true'))\n    # Update existing rows\n    op.execute(\"UPDATE users SET is_active = true\")\n\ndef downgrade():\n    op.drop_column('users', 'is_active')",
+          "explanation": "Common operations include adding/dropping columns, renaming columns (manual, not auto-detected), creating indexes, and data migrations. Always pair upgrade() with a corresponding downgrade() for reversibility."
+        }
+      ],
+      "notes": [
+        "Always review autogenerated migrations. Some changes (renames, data migrations) are not detected automatically.",
+        "Import all model modules in env.py so Alembic can detect all tables.",
+        "Run alembic upgrade head during deployment, before starting the application.",
+        "Commit migration files to version control so all team members have the same schema history."
+      ],
+      "commonPitfalls": [
+        "Not importing all model modules in env.py. Alembic cannot detect tables for models it does not know about.",
+        "Running autogenerate without reviewing the output. It can miss renames (detects as drop + add) and data migrations.",
+        "Applying migrations in production without testing them first. Always test on a staging database."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "alembic-migrations-ex1",
+        "title": "Write a Migration Script",
+        "description": "Write the upgrade() and downgrade() functions for a migration that adds a 'posts' table with: id (int, primary key), title (varchar 200), body (text), created_at (datetime), and author_id (int, foreign key to users.id).",
+        "starterCode": "from alembic import op\nimport sqlalchemy as sa\n\ndef upgrade():\n    # Create the posts table\n    pass\n\ndef downgrade():\n    # Drop the posts table\n    pass\n",
+        "solution": "from alembic import op\nimport sqlalchemy as sa\n\ndef upgrade():\n    op.create_table(\n        'posts',\n        sa.Column('id', sa.Integer(), primary_key=True),\n        sa.Column('title', sa.String(200), nullable=False),\n        sa.Column('body', sa.Text(), nullable=False),\n        sa.Column('created_at', sa.DateTime(), server_default=sa.func.now()),\n        sa.Column('author_id', sa.Integer(), sa.ForeignKey('users.id'), nullable=False),\n    )\n    op.create_index('ix_posts_author_id', 'posts', ['author_id'])\n\ndef downgrade():\n    op.drop_index('ix_posts_author_id', table_name='posts')\n    op.drop_table('posts')",
+        "hints": [
+          "Use op.create_table() with sa.Column() for each column",
+          "Add sa.ForeignKey('users.id') for the foreign key constraint"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "alembic-migrations-ex2",
+        "title": "Add Column Migration",
+        "description": "Write upgrade() and downgrade() for a migration that adds a 'role' column (varchar 20, default 'user') to the users table and an index on it.",
+        "starterCode": "from alembic import op\nimport sqlalchemy as sa\n\ndef upgrade():\n    pass\n\ndef downgrade():\n    pass\n",
+        "solution": "from alembic import op\nimport sqlalchemy as sa\n\ndef upgrade():\n    op.add_column(\n        'users',\n        sa.Column('role', sa.String(20), server_default='user', nullable=False),\n    )\n    op.create_index('ix_users_role', 'users', ['role'])\n\ndef downgrade():\n    op.drop_index('ix_users_role', table_name='users')\n    op.drop_column('users', 'role')",
+        "hints": [
+          "Use op.add_column() with server_default for default values",
+          "Drop the index before dropping the column in downgrade()"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

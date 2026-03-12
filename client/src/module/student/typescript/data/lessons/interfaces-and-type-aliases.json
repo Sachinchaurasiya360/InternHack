@@ -1,0 +1,351 @@
+[
+  {
+    "id": "object-types",
+    "sectionId": "interfaces-and-type-aliases",
+    "orderIndex": 0,
+    "title": "Object Types",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Inline object types", "Optional properties", "Readonly properties", "Nested objects"],
+    "content": {
+      "explanation": "Object types are one of the most frequently used type constructs in TypeScript. They describe the shape of an object — what properties it has and what types those properties hold. The simplest form is an inline object type written directly in a type annotation: `{ name: string; age: number }`. Every property is declared with its name, a colon, and its type, separated by semicolons or commas.\n\nOptional properties are marked with a `?` after the property name: `{ name: string; age?: number }`. An optional property can be omitted entirely when creating the object, and its type becomes a union with `undefined`. This is essential for modeling real-world data where not all fields are always present — API responses, form data, configuration objects, and user preferences commonly have optional fields.\n\nThe `readonly` modifier prevents a property from being reassigned after the object is created: `{ readonly id: number; name: string }`. This is a compile-time check only — it doesn't affect runtime behavior. Readonly properties are useful for identifiers, timestamps, and any data that should be set once and never modified. Note that `readonly` is shallow: if a readonly property holds an object, the nested object's properties can still be modified unless they are also marked readonly.\n\nTypeScript uses structural typing for objects, meaning two objects are compatible if they have the same shape, regardless of how they were declared. If a function expects `{ name: string }`, you can pass any object that has a `name` property of type `string`, even if it has additional properties. This is fundamentally different from nominal typing (used in Java/C#) where objects must be explicitly declared as implementing an interface.",
+      "codeExamples": [
+        {
+          "title": "Inline object types and optional properties",
+          "code": "function createProfile(info: {\n  name: string;\n  email: string;\n  bio?: string;\n  age?: number;\n}): string {\n  let profile = `${info.name} <${info.email}>`;\n  if (info.bio) {\n    profile += ` - ${info.bio}`;\n  }\n  if (info.age !== undefined) {\n    profile += ` (age ${info.age})`;\n  }\n  return profile;\n}\n\nconsole.log(createProfile({ name: \"Alice\", email: \"alice@mail.com\" }));\nconsole.log(createProfile({ name: \"Bob\", email: \"bob@mail.com\", bio: \"Developer\", age: 28 }));",
+          "output": "Alice <alice@mail.com>\nBob <bob@mail.com> - Developer (age 28)",
+          "explanation": "Optional properties are marked with `?`. When omitted, their value is `undefined`. Always check for undefined before using optional properties."
+        },
+        {
+          "title": "Readonly properties",
+          "code": "function createUser(name: string, email: string): { readonly id: number; readonly createdAt: string; name: string; email: string } {\n  return {\n    id: Math.floor(Math.random() * 10000),\n    createdAt: new Date().toISOString(),\n    name,\n    email\n  };\n}\n\nconst user = createUser(\"Alice\", \"alice@mail.com\");\n// user.id = 999;         // Error: Cannot assign to 'id' because it is a read-only property\n// user.createdAt = \"\";   // Error: Cannot assign to 'createdAt' because it is a read-only property\nuser.name = \"Alice Smith\"; // OK: name is not readonly\n\nconsole.log(`${user.name} (id: ${user.id})`);\nconsole.log(`Name updated: ${user.name}`);",
+          "output": "Alice Smith (id: ${RANDOM})\nName updated: Alice Smith",
+          "explanation": "Readonly properties cannot be reassigned after creation. Use readonly for IDs, timestamps, and any value that should be immutable. Mutable properties like name can still be updated."
+        },
+        {
+          "title": "Nested object types",
+          "code": "function formatAddress(location: {\n  street: string;\n  city: string;\n  state: string;\n  zip: string;\n  coordinates?: { lat: number; lng: number };\n}): string {\n  let result = `${location.street}, ${location.city}, ${location.state} ${location.zip}`;\n  if (location.coordinates) {\n    result += ` (${location.coordinates.lat}, ${location.coordinates.lng})`;\n  }\n  return result;\n}\n\nconsole.log(formatAddress({\n  street: \"123 Main St\",\n  city: \"Springfield\",\n  state: \"IL\",\n  zip: \"62701\"\n}));\nconsole.log(formatAddress({\n  street: \"456 Oak Ave\",\n  city: \"Portland\",\n  state: \"OR\",\n  zip: \"97201\",\n  coordinates: { lat: 45.52, lng: -122.68 }\n}));",
+          "output": "123 Main St, Springfield, IL 62701\n456 Oak Ave, Portland, OR 97201 (45.52, -122.68)",
+          "explanation": "Object types can be nested — an optional `coordinates` property contains its own object type with lat and lng. Check the outer optional before accessing nested properties."
+        }
+      ],
+      "notes": [
+        "TypeScript uses structural typing — objects are compatible based on shape, not by name or declaration.",
+        "Use `?` for optional properties and `readonly` for immutable properties — these are the two most common property modifiers.",
+        "For inline object types used in more than one place, extract them into an interface or type alias to avoid duplication."
+      ],
+      "commonPitfalls": [
+        "Forgetting to check optional properties for undefined — accessing `obj.optional.nested` without checking `obj.optional` first causes a runtime error.",
+        "Assuming `readonly` is deep — `readonly` only prevents reassignment of the property itself. Nested objects can still be mutated unless their properties are also readonly."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "object-types-ex1",
+        "title": "Product with optional fields",
+        "description": "Write a function `formatProduct` that takes a product object with required `name` (string) and `price` (number), and optional `category` (string) and `inStock` (boolean, default assumption true). Return a formatted string.",
+        "starterCode": "// Write the formatProduct function\n\n\nconsole.log(formatProduct({ name: \"Laptop\", price: 999.99, category: \"Electronics\" }));\nconsole.log(formatProduct({ name: \"Book\", price: 12.5 }));\nconsole.log(formatProduct({ name: \"Phone\", price: 699, inStock: false }));",
+        "solution": "function formatProduct(product: { name: string; price: number; category?: string; inStock?: boolean }): string {\n  const stock = product.inStock === false ? \"Out of Stock\" : \"In Stock\";\n  const cat = product.category ? ` [${product.category}]` : \"\";\n  return `${product.name}${cat} - $${product.price.toFixed(2)} (${stock})`;\n}\n\nconsole.log(formatProduct({ name: \"Laptop\", price: 999.99, category: \"Electronics\" }));\nconsole.log(formatProduct({ name: \"Book\", price: 12.5 }));\nconsole.log(formatProduct({ name: \"Phone\", price: 699, inStock: false }));",
+        "expectedOutput": "Laptop [Electronics] - $999.99 (In Stock)\nBook - $12.50 (In Stock)\nPhone - $699.00 (Out of Stock)",
+        "hints": [
+          "Use `?` to mark category and inStock as optional properties in the object type.",
+          "Check `inStock === false` explicitly since undefined (omitted) should default to 'In Stock'."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "object-types-ex2",
+        "title": "Nested configuration object",
+        "description": "Write a function `describeServer` that takes a server config object with `host` (string), `port` (number), and an optional `ssl` object containing `enabled` (boolean) and `certPath` (string).",
+        "starterCode": "// Write the describeServer function\n\n\nconsole.log(describeServer({ host: \"localhost\", port: 3000 }));\nconsole.log(describeServer({ host: \"api.example.com\", port: 443, ssl: { enabled: true, certPath: \"/etc/ssl/cert.pem\" } }));",
+        "solution": "function describeServer(config: { host: string; port: number; ssl?: { enabled: boolean; certPath: string } }): string {\n  const protocol = config.ssl?.enabled ? \"https\" : \"http\";\n  let result = `${protocol}://${config.host}:${config.port}`;\n  if (config.ssl?.enabled) {\n    result += ` (SSL: ${config.ssl.certPath})`;\n  }\n  return result;\n}\n\nconsole.log(describeServer({ host: \"localhost\", port: 3000 }));\nconsole.log(describeServer({ host: \"api.example.com\", port: 443, ssl: { enabled: true, certPath: \"/etc/ssl/cert.pem\" } }));",
+        "expectedOutput": "http://localhost:3000\nhttps://api.example.com:443 (SSL: /etc/ssl/cert.pem)",
+        "hints": [
+          "The ssl property is optional and contains a nested object type: `ssl?: { enabled: boolean; certPath: string }`.",
+          "Use optional chaining (`config.ssl?.enabled`) to safely access nested optional properties."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "interfaces",
+    "sectionId": "interfaces-and-type-aliases",
+    "orderIndex": 1,
+    "title": "Interfaces",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Interface declaration", "Readonly properties", "Index signatures", "Method signatures"],
+    "content": {
+      "explanation": "Interfaces are named object type definitions in TypeScript. They describe the shape of an object by listing its properties and their types. The syntax uses the `interface` keyword: `interface User { name: string; age: number; }`. Unlike inline object types, interfaces are reusable, can be extended, and support declaration merging — making them the primary tool for defining object shapes in TypeScript.\n\nInterfaces support all the property modifiers available for object types: optional properties (`?`), readonly properties (`readonly`), and method signatures. A method can be declared in shorthand: `greet(name: string): string` or as a property with a function type: `greet: (name: string) => string`. Both are equivalent in practice, though the shorthand form is more conventional in interfaces.\n\nIndex signatures allow an interface to describe objects with dynamic keys. The syntax is `[key: string]: ValueType`, which means the object can have any string key mapping to the specified value type. This is useful for dictionaries, caches, and configuration objects where the exact keys aren't known in advance. You can combine index signatures with known properties, but the known properties must be compatible with the index signature's value type.\n\nInterfaces are open, meaning they can be declared multiple times with the same name and TypeScript automatically merges them. This is called declaration merging. It's particularly useful for extending third-party types — you can add properties to an existing interface from a library without modifying the library's source code. This feature is unique to interfaces and is one of the key differences from type aliases.",
+      "codeExamples": [
+        {
+          "title": "Basic interface with methods",
+          "code": "interface User {\n  readonly id: number;\n  name: string;\n  email: string;\n  age?: number;\n  getDisplayName(): string;\n}\n\nfunction createUser(name: string, email: string): User {\n  const id = Math.floor(Math.random() * 1000);\n  return {\n    id,\n    name,\n    email,\n    getDisplayName() {\n      return `${this.name} <${this.email}>`;\n    }\n  };\n}\n\nconst user = createUser(\"Alice\", \"alice@example.com\");\nconsole.log(user.getDisplayName());\nconsole.log(`ID: ${user.id}`);",
+          "output": "Alice <alice@example.com>\nID: ${RANDOM}",
+          "explanation": "Interfaces combine property definitions and method signatures. The `readonly` modifier on `id` prevents reassignment. Optional `age` can be omitted. The method `getDisplayName()` uses shorthand syntax."
+        },
+        {
+          "title": "Index signatures",
+          "code": "interface StringDictionary {\n  [key: string]: string;\n}\n\ninterface ScoreBoard {\n  [player: string]: number;\n  readonly gameId: number;  // Known property, compatible with index\n}\n\nconst headers: StringDictionary = {\n  \"Content-Type\": \"application/json\",\n  \"Authorization\": \"Bearer token123\",\n  \"Accept\": \"text/html\"\n};\n\nconst scores: ScoreBoard = {\n  gameId: 1,\n  Alice: 95,\n  Bob: 87,\n  Charlie: 92\n};\n\nconsole.log(headers[\"Content-Type\"]);\nconsole.log(`Alice: ${scores[\"Alice\"]}, Bob: ${scores[\"Bob\"]}`);",
+          "output": "application/json\nAlice: 95, Bob: 87",
+          "explanation": "Index signatures allow dynamic keys. StringDictionary accepts any string key with string values. ScoreBoard combines an index signature with a known `gameId` property."
+        },
+        {
+          "title": "Declaration merging",
+          "code": "// First declaration\ninterface Config {\n  appName: string;\n  version: string;\n}\n\n// Second declaration — merges with the first\ninterface Config {\n  debug: boolean;\n  logLevel: string;\n}\n\n// The merged interface has all four properties\nconst config: Config = {\n  appName: \"MyApp\",\n  version: \"1.0.0\",\n  debug: true,\n  logLevel: \"info\"\n};\n\nconsole.log(`${config.appName} v${config.version}`);\nconsole.log(`Debug: ${config.debug}, Log: ${config.logLevel}`);",
+          "output": "MyApp v1.0.0\nDebug: true, Log: info",
+          "explanation": "Declaration merging automatically combines multiple interface declarations with the same name. This is unique to interfaces — type aliases cannot merge. It's useful for extending library types."
+        }
+      ],
+      "notes": [
+        "Interfaces are the standard way to define object shapes in TypeScript — use them for any object type that's referenced in multiple places.",
+        "Index signatures (`[key: string]: Type`) describe objects with dynamic keys. All known properties must be compatible with the index signature type.",
+        "Declaration merging is unique to interfaces — it lets you extend third-party types without modifying their source code."
+      ],
+      "commonPitfalls": [
+        "Adding a known property that conflicts with the index signature type — if you have `[key: string]: number`, all properties must be numbers, including known ones.",
+        "Expecting type aliases to support declaration merging — only interfaces merge. If you need merging, use an interface."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "interfaces-ex1",
+        "title": "Define a Todo interface",
+        "description": "Create a `Todo` interface with `id` (readonly number), `title` (string), `completed` (boolean), and optional `dueDate` (string). Write a function to format todos.",
+        "starterCode": "// Define the Todo interface and the formatTodo function\n\n\nconst todos: Todo[] = [\n  { id: 1, title: \"Learn TypeScript\", completed: true },\n  { id: 2, title: \"Build project\", completed: false, dueDate: \"2026-04-01\" }\n];\n\ntodos.forEach(todo => console.log(formatTodo(todo)));",
+        "solution": "interface Todo {\n  readonly id: number;\n  title: string;\n  completed: boolean;\n  dueDate?: string;\n}\n\nfunction formatTodo(todo: Todo): string {\n  const status = todo.completed ? \"[x]\" : \"[ ]\";\n  const due = todo.dueDate ? ` (due: ${todo.dueDate})` : \"\";\n  return `${status} #${todo.id}: ${todo.title}${due}`;\n}\n\nconst todos: Todo[] = [\n  { id: 1, title: \"Learn TypeScript\", completed: true },\n  { id: 2, title: \"Build project\", completed: false, dueDate: \"2026-04-01\" }\n];\n\ntodos.forEach(todo => console.log(formatTodo(todo)));",
+        "expectedOutput": "[x] #1: Learn TypeScript\n[ ] #2: Build project (due: 2026-04-01)",
+        "hints": [
+          "Use `readonly` on `id` and `?` on `dueDate` to make it optional.",
+          "Check for `todo.dueDate` before including it in the output string."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "interfaces-ex2",
+        "title": "Dictionary with index signature",
+        "description": "Create a `WordCount` interface with an index signature for string keys mapping to numbers. Write a function `countWords` that takes a sentence and returns a WordCount object.",
+        "starterCode": "// Define WordCount interface and countWords function\n\n\nconst result = countWords(\"the cat sat on the mat the cat\");\nconsole.log(`the: ${result[\"the\"]}`);\nconsole.log(`cat: ${result[\"cat\"]}`);\nconsole.log(`sat: ${result[\"sat\"]}`);",
+        "solution": "interface WordCount {\n  [word: string]: number;\n}\n\nfunction countWords(sentence: string): WordCount {\n  const counts: WordCount = {};\n  const words = sentence.split(\" \");\n  for (const word of words) {\n    counts[word] = (counts[word] || 0) + 1;\n  }\n  return counts;\n}\n\nconst result = countWords(\"the cat sat on the mat the cat\");\nconsole.log(`the: ${result[\"the\"]}`);\nconsole.log(`cat: ${result[\"cat\"]}`);\nconsole.log(`sat: ${result[\"sat\"]}`);",
+        "expectedOutput": "the: 3\ncat: 2\nsat: 1",
+        "hints": [
+          "Define the interface with `[word: string]: number` as the index signature.",
+          "Split the sentence by spaces, then iterate and count each word using the index signature."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "type-aliases",
+    "sectionId": "interfaces-and-type-aliases",
+    "orderIndex": 2,
+    "title": "Type Aliases",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["type keyword", "Union types", "Intersection types", "Discriminated unions"],
+    "content": {
+      "explanation": "Type aliases create a name for any type using the `type` keyword. While interfaces can only describe object shapes, type aliases can name any type: primitives, unions, intersections, tuples, functions, and more. The syntax is `type MyType = ...`. Type aliases are one of TypeScript's most versatile features and are essential for expressing complex type relationships.\n\nUnion types, written with the `|` operator, represent a value that could be one of several types: `type Result = string | number`. A variable of a union type can hold any of the constituent types. To use type-specific operations, you must narrow the type first using type guards like `typeof`, `instanceof`, or property checks. Unions are everywhere in TypeScript — optional properties are unions with `undefined`, nullable values are unions with `null`, and API responses often use union types to represent different outcomes.\n\nIntersection types, written with the `&` operator, combine multiple types into one. `type Admin = User & { permissions: string[] }` creates a type that has all properties of `User` plus a `permissions` array. Intersections are the type-level equivalent of \"and\" — the resulting type must satisfy all constituent types. They're commonly used to add properties to existing types, combine mixins, and build complex types from simpler ones.\n\nDiscriminated unions are a powerful pattern that combines union types with a shared literal property (the discriminant). Each member of the union has a common property with a different literal value: `type Shape = { kind: \"circle\"; radius: number } | { kind: \"square\"; side: number }`. By checking the discriminant (`shape.kind`), TypeScript narrows the type to the specific member, enabling safe access to member-specific properties. This pattern is the TypeScript way to implement tagged unions or algebraic data types.",
+      "codeExamples": [
+        {
+          "title": "Union types and type narrowing",
+          "code": "type StringOrNumber = string | number;\ntype Result = { success: true; data: string } | { success: false; error: string };\n\nfunction formatValue(value: StringOrNumber): string {\n  if (typeof value === \"string\") {\n    return value.toUpperCase();\n  }\n  return value.toFixed(2);\n}\n\nfunction handleResult(result: Result): string {\n  if (result.success) {\n    return `Data: ${result.data}`;\n  }\n  return `Error: ${result.error}`;\n}\n\nconsole.log(formatValue(\"hello\"));\nconsole.log(formatValue(3.14));\nconsole.log(handleResult({ success: true, data: \"loaded\" }));\nconsole.log(handleResult({ success: false, error: \"timeout\" }));",
+          "output": "HELLO\n3.14\nData: loaded\nError: timeout",
+          "explanation": "Union types are narrowed using type guards. `typeof` narrows primitives, while checking a boolean property narrows object unions. After narrowing, TypeScript knows the exact type."
+        },
+        {
+          "title": "Intersection types",
+          "code": "type HasName = { name: string };\ntype HasEmail = { email: string };\ntype HasAge = { age: number };\n\n// Intersection combines all properties\ntype Person = HasName & HasEmail & HasAge;\n\nfunction introduce(person: Person): string {\n  return `${person.name} (${person.age}) - ${person.email}`;\n}\n\n// Adding permissions to an existing type\ntype Admin = Person & { role: \"admin\"; permissions: string[] };\n\nconst admin: Admin = {\n  name: \"Alice\",\n  email: \"alice@company.com\",\n  age: 30,\n  role: \"admin\",\n  permissions: [\"read\", \"write\", \"delete\"]\n};\n\nconsole.log(introduce(admin));\nconsole.log(`Role: ${admin.role}, Perms: ${admin.permissions.join(\", \")}`);",
+          "output": "Alice (30) - alice@company.com\nRole: admin, Perms: read, write, delete",
+          "explanation": "Intersections combine types with `&`. A `Person` has all properties from HasName, HasEmail, and HasAge. `Admin` extends Person with additional properties."
+        },
+        {
+          "title": "Discriminated unions",
+          "code": "type Shape =\n  | { kind: \"circle\"; radius: number }\n  | { kind: \"rectangle\"; width: number; height: number }\n  | { kind: \"triangle\"; base: number; height: number };\n\nfunction getArea(shape: Shape): number {\n  switch (shape.kind) {\n    case \"circle\":\n      return Math.PI * shape.radius ** 2;\n    case \"rectangle\":\n      return shape.width * shape.height;\n    case \"triangle\":\n      return 0.5 * shape.base * shape.height;\n  }\n}\n\nconsole.log(getArea({ kind: \"circle\", radius: 5 }).toFixed(2));\nconsole.log(getArea({ kind: \"rectangle\", width: 4, height: 6 }));\nconsole.log(getArea({ kind: \"triangle\", base: 3, height: 8 }));",
+          "output": "78.54\n24\n12",
+          "explanation": "The `kind` property is the discriminant. When you check `shape.kind === 'circle'`, TypeScript narrows the type and knows `shape.radius` exists. This pattern provides exhaustive type-safe handling."
+        }
+      ],
+      "notes": [
+        "Type aliases can name any type (unions, intersections, tuples, functions), while interfaces are limited to object shapes.",
+        "Union types (`|`) mean \"either this or that\" — use type guards to narrow before accessing type-specific properties.",
+        "Discriminated unions use a shared literal property as a tag to enable safe type narrowing in switch statements."
+      ],
+      "commonPitfalls": [
+        "Accessing union-specific properties without narrowing first — `(value: string | number).toUpperCase()` is an error because `number` doesn't have that method.",
+        "Creating intersection types with conflicting properties — `{ x: string } & { x: number }` produces `{ x: never }` since no value can be both string and number."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "type-aliases-ex1",
+        "title": "API response type",
+        "description": "Define a discriminated union type `ApiResponse` with two variants: a success response with `status: \"ok\"` and `data: string`, and an error response with `status: \"error\"` and `message: string`. Write a function to handle both cases.",
+        "starterCode": "// Define ApiResponse type and handleResponse function\n\n\nconsole.log(handleResponse({ status: \"ok\", data: \"User data loaded\" }));\nconsole.log(handleResponse({ status: \"error\", message: \"Not found\" }));",
+        "solution": "type ApiResponse =\n  | { status: \"ok\"; data: string }\n  | { status: \"error\"; message: string };\n\nfunction handleResponse(response: ApiResponse): string {\n  switch (response.status) {\n    case \"ok\":\n      return `Success: ${response.data}`;\n    case \"error\":\n      return `Failed: ${response.message}`;\n  }\n}\n\nconsole.log(handleResponse({ status: \"ok\", data: \"User data loaded\" }));\nconsole.log(handleResponse({ status: \"error\", message: \"Not found\" }));",
+        "expectedOutput": "Success: User data loaded\nFailed: Not found",
+        "hints": [
+          "Use a discriminated union with `status` as the discriminant: one variant has `\"ok\"`, the other has `\"error\"`.",
+          "Use a switch on `response.status` — TypeScript narrows the type in each case branch."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "type-aliases-ex2",
+        "title": "Composing types with intersections",
+        "description": "Define base types `Timestamped` (with `createdAt` and `updatedAt` strings) and `Identifiable` (with `id` number). Create a `Post` type that intersects both with `{ title: string; body: string }`. Write a function to format a post.",
+        "starterCode": "// Define Timestamped, Identifiable, and Post types, then the formatPost function\n\n\nconst post: Post = {\n  id: 1,\n  title: \"Hello World\",\n  body: \"This is my first post.\",\n  createdAt: \"2026-01-15\",\n  updatedAt: \"2026-01-16\"\n};\n\nconsole.log(formatPost(post));",
+        "solution": "type Timestamped = { createdAt: string; updatedAt: string };\ntype Identifiable = { id: number };\ntype Post = Identifiable & Timestamped & { title: string; body: string };\n\nfunction formatPost(post: Post): string {\n  return `[#${post.id}] ${post.title} (created: ${post.createdAt}, updated: ${post.updatedAt})\\n${post.body}`;\n}\n\nconst post: Post = {\n  id: 1,\n  title: \"Hello World\",\n  body: \"This is my first post.\",\n  createdAt: \"2026-01-15\",\n  updatedAt: \"2026-01-16\"\n};\n\nconsole.log(formatPost(post));",
+        "expectedOutput": "[#1] Hello World (created: 2026-01-15, updated: 2026-01-16)\nThis is my first post.",
+        "hints": [
+          "Define each base type separately, then use `&` to combine them: `type Post = Identifiable & Timestamped & { ... }`.",
+          "The resulting Post type has all properties from all three types."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "extending-interfaces",
+    "sectionId": "interfaces-and-type-aliases",
+    "orderIndex": 3,
+    "title": "Extending Interfaces",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["extends keyword", "Multiple inheritance", "Interface composition", "Override properties"],
+    "content": {
+      "explanation": "Interface extension is TypeScript's mechanism for building complex interfaces from simpler ones. Using the `extends` keyword, a new interface inherits all properties from one or more parent interfaces and can add new properties or override existing ones. The syntax is `interface Child extends Parent { ... }`. This is the interface equivalent of the intersection type (`&`), but with a more explicit inheritance relationship.\n\nA key advantage of `extends` over intersections is error detection. If you accidentally declare a property in the child interface that conflicts with the parent, TypeScript immediately shows an error. With intersection types, conflicting properties silently produce `never`, which can be confusing to debug. The explicit inheritance of `extends` makes the relationship clear and catches conflicts early.\n\nTypeScript supports multiple interface inheritance: `interface AdminUser extends User, Permissions { ... }`. The child interface inherits properties from all listed parents and can add its own. If multiple parents have properties with the same name, those properties must have compatible types. This is similar to multiple inheritance in other languages but applied only to type structure, not implementation.\n\nInterface extension is widely used in real-world TypeScript for modeling domain hierarchies, API response types, and component prop types. In React, for example, you might have a `BaseButtonProps` interface extended by `IconButtonProps` and `LinkButtonProps`. ORMs like Prisma use interface extension to build model types. The pattern keeps types DRY and makes the relationships between types explicit and self-documenting.",
+      "codeExamples": [
+        {
+          "title": "Basic interface extension",
+          "code": "interface Animal {\n  name: string;\n  sound: string;\n}\n\ninterface Pet extends Animal {\n  owner: string;\n  vaccinated: boolean;\n}\n\nfunction describePet(pet: Pet): string {\n  const status = pet.vaccinated ? \"vaccinated\" : \"not vaccinated\";\n  return `${pet.name} (${pet.sound}) - owned by ${pet.owner}, ${status}`;\n}\n\nconst dog: Pet = {\n  name: \"Rex\",\n  sound: \"Woof\",\n  owner: \"Alice\",\n  vaccinated: true\n};\n\nconsole.log(describePet(dog));",
+          "output": "Rex (Woof) - owned by Alice, vaccinated",
+          "explanation": "Pet extends Animal, inheriting `name` and `sound` while adding `owner` and `vaccinated`. Every Pet is also a valid Animal, but not every Animal is a Pet."
+        },
+        {
+          "title": "Multiple interface extension",
+          "code": "interface Printable {\n  toString(): string;\n}\n\ninterface Serializable {\n  toJSON(): string;\n}\n\ninterface Loggable {\n  logLevel: string;\n}\n\n// Extend multiple interfaces\ninterface LogEntry extends Printable, Serializable, Loggable {\n  timestamp: string;\n  message: string;\n}\n\nconst entry: LogEntry = {\n  timestamp: \"2026-03-12T10:30:00Z\",\n  message: \"Server started\",\n  logLevel: \"info\",\n  toString() {\n    return `[${this.logLevel}] ${this.timestamp}: ${this.message}`;\n  },\n  toJSON() {\n    return JSON.stringify({ ts: this.timestamp, msg: this.message, level: this.logLevel });\n  }\n};\n\nconsole.log(entry.toString());\nconsole.log(entry.toJSON());",
+          "output": "[info] 2026-03-12T10:30:00Z: Server started\n{\"ts\":\"2026-03-12T10:30:00Z\",\"msg\":\"Server started\",\"level\":\"info\"}",
+          "explanation": "LogEntry extends three interfaces simultaneously. It must implement all inherited methods (toString, toJSON) and properties (logLevel), plus its own (timestamp, message)."
+        },
+        {
+          "title": "Building a type hierarchy",
+          "code": "interface BaseEntity {\n  readonly id: number;\n  createdAt: string;\n}\n\ninterface User extends BaseEntity {\n  name: string;\n  email: string;\n}\n\ninterface Employee extends User {\n  department: string;\n  salary: number;\n}\n\nfunction summarize(emp: Employee): string {\n  return `#${emp.id} ${emp.name} (${emp.department}) - ${emp.email}`;\n}\n\nconst emp: Employee = {\n  id: 42,\n  createdAt: \"2026-01-01\",\n  name: \"Alice Smith\",\n  email: \"alice@company.com\",\n  department: \"Engineering\",\n  salary: 120000\n};\n\nconsole.log(summarize(emp));\nconsole.log(`Created: ${emp.createdAt}`);",
+          "output": "#42 Alice Smith (Engineering) - alice@company.com\nCreated: 2026-01-01",
+          "explanation": "A three-level hierarchy: BaseEntity -> User -> Employee. Each level adds properties. Employee has all properties from the chain: id, createdAt, name, email, department, and salary."
+        }
+      ],
+      "notes": [
+        "Use `extends` for clear inheritance relationships — it's more readable than intersection types for object hierarchies.",
+        "Multiple inheritance is supported: `interface C extends A, B { }` — all parent properties must be compatible.",
+        "Child interfaces can add new properties but cannot remove inherited ones. They can narrow property types but not widen them."
+      ],
+      "commonPitfalls": [
+        "Extending interfaces with conflicting property types — if Parent has `name: string` and you try to redeclare `name: number` in the child, TypeScript shows an error.",
+        "Creating overly deep inheritance chains — more than 3-4 levels becomes hard to follow. Prefer composition (using properties of interface types) over deep inheritance."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "extending-ex1",
+        "title": "Vehicle hierarchy",
+        "description": "Create a `Vehicle` interface with `make` (string) and `year` (number). Extend it to create `Car` (adds `doors`: number) and `Motorcycle` (adds `engineCC`: number). Write a function to describe each.",
+        "starterCode": "// Define Vehicle, Car, and Motorcycle interfaces, then describeVehicle function\n\n\nconst car: Car = { make: \"Toyota\", year: 2024, doors: 4 };\nconst bike: Motorcycle = { make: \"Harley\", year: 2023, engineCC: 1200 };\n\nconsole.log(describeVehicle(car));\nconsole.log(describeVehicle(bike));",
+        "solution": "interface Vehicle {\n  make: string;\n  year: number;\n}\n\ninterface Car extends Vehicle {\n  doors: number;\n}\n\ninterface Motorcycle extends Vehicle {\n  engineCC: number;\n}\n\nfunction describeVehicle(vehicle: Car | Motorcycle): string {\n  let desc = `${vehicle.year} ${vehicle.make}`;\n  if (\"doors\" in vehicle) {\n    desc += ` (${vehicle.doors}-door car)`;\n  } else {\n    desc += ` (${vehicle.engineCC}cc motorcycle)`;\n  }\n  return desc;\n}\n\nconst car: Car = { make: \"Toyota\", year: 2024, doors: 4 };\nconst bike: Motorcycle = { make: \"Harley\", year: 2023, engineCC: 1200 };\n\nconsole.log(describeVehicle(car));\nconsole.log(describeVehicle(bike));",
+        "expectedOutput": "2024 Toyota (4-door car)\n2023 Harley (1200cc motorcycle)",
+        "hints": [
+          "Both Car and Motorcycle extend Vehicle. Use `extends` keyword for each.",
+          "Use `\"doors\" in vehicle` to narrow the union type and determine if it's a Car or Motorcycle."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "extending-ex2",
+        "title": "Composable event system",
+        "description": "Create a `BaseEvent` interface (with `type`: string and `timestamp`: string). Extend it to create `ClickEvent` (adds `x`, `y` numbers) and `KeyEvent` (adds `key`: string, `ctrlKey`: boolean). Write a handler function.",
+        "starterCode": "// Define the event interfaces and handleEvent function\n\n\nconst click: ClickEvent = { type: \"click\", timestamp: \"10:30:00\", x: 100, y: 200 };\nconst key: KeyEvent = { type: \"key\", timestamp: \"10:30:01\", key: \"Enter\", ctrlKey: false };\n\nconsole.log(handleEvent(click));\nconsole.log(handleEvent(key));",
+        "solution": "interface BaseEvent {\n  type: string;\n  timestamp: string;\n}\n\ninterface ClickEvent extends BaseEvent {\n  type: \"click\";\n  x: number;\n  y: number;\n}\n\ninterface KeyEvent extends BaseEvent {\n  type: \"key\";\n  key: string;\n  ctrlKey: boolean;\n}\n\nfunction handleEvent(event: ClickEvent | KeyEvent): string {\n  const base = `[${event.timestamp}]`;\n  if (event.type === \"click\") {\n    return `${base} Click at (${event.x}, ${event.y})`;\n  }\n  return `${base} Key: ${event.key} (ctrl: ${event.ctrlKey})`;\n}\n\nconst click: ClickEvent = { type: \"click\", timestamp: \"10:30:00\", x: 100, y: 200 };\nconst key: KeyEvent = { type: \"key\", timestamp: \"10:30:01\", key: \"Enter\", ctrlKey: false };\n\nconsole.log(handleEvent(click));\nconsole.log(handleEvent(key));",
+        "expectedOutput": "[10:30:00] Click at (100, 200)\n[10:30:01] Key: Enter (ctrl: false)",
+        "hints": [
+          "Narrow the `type` property to a literal in each child interface to create a discriminated union.",
+          "Check `event.type` in the handler to narrow to the specific event type and access its unique properties."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "type-vs-interface",
+    "sectionId": "interfaces-and-type-aliases",
+    "orderIndex": 4,
+    "title": "Type vs Interface",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["type vs interface", "Declaration merging", "Union and intersection types", "When to use each"],
+    "content": {
+      "explanation": "One of the most common TypeScript questions — in interviews and in practice — is when to use `type` versus `interface`. Both can describe object shapes, and for simple cases they're interchangeable. However, they have distinct capabilities that make each more appropriate in specific situations. Understanding these differences helps you make the right choice and write idiomatic TypeScript.\n\nInterfaces have two unique capabilities: declaration merging and `extends` syntax. Declaration merging means you can declare the same interface name multiple times and TypeScript combines them automatically. This is essential for augmenting third-party library types. The `extends` syntax provides clear, explicit inheritance and catches property conflicts at the point of declaration. Interfaces also have slightly better error messages when complex object types don't match.\n\nType aliases have broader capabilities: they can represent unions (`A | B`), intersections (`A & B`), tuples (`[string, number]`), mapped types, conditional types, and primitive type aliases (`type ID = string`). Interfaces cannot express any of these. If you need a union type, a tuple type, a function type alias, or any computed/mapped type, you must use `type`. This makes type aliases more versatile overall.\n\nThe practical guideline used by most teams: use `interface` for defining the shapes of objects and classes (especially public APIs that others might need to extend), and use `type` for everything else — unions, intersections, utility types, function types, and any type that isn't purely an object shape. Some teams prefer a simpler rule: always use `type` unless you specifically need declaration merging. Either convention works as long as the team is consistent.",
+      "codeExamples": [
+        {
+          "title": "Interface-only features",
+          "code": "// Declaration merging — only interfaces can do this\ninterface Window {\n  customProperty: string;\n}\n\ninterface Window {\n  anotherProperty: number;\n}\n\n// Both declarations merge into one interface\n// Useful for extending third-party types\n\n// extends syntax — clearer than intersection for objects\ninterface Animal {\n  name: string;\n}\n\ninterface Dog extends Animal {\n  breed: string;\n}\n\nconst dog: Dog = { name: \"Rex\", breed: \"German Shepherd\" };\nconsole.log(`${dog.name} is a ${dog.breed}`);",
+          "output": "Rex is a German Shepherd",
+          "explanation": "Declaration merging is unique to interfaces — declaring the same interface name twice merges them. The `extends` keyword provides explicit inheritance with conflict detection."
+        },
+        {
+          "title": "Type alias-only features",
+          "code": "// Union types — interfaces can't do this\ntype Status = \"loading\" | \"success\" | \"error\";\ntype ID = string | number;\n\n// Tuple types — interfaces can't do this\ntype Coordinate = [number, number];\ntype NameAge = [string, number];\n\n// Mapped/utility types — interfaces can't do this\ntype Nullable<T> = T | null;\ntype ReadonlyUser = Readonly<{ name: string; age: number }>;\n\n// Function type alias — cleaner than interface for functions\ntype Formatter = (value: unknown) => string;\n\nconst formatId: Formatter = (value) => `ID: ${String(value)}`;\nconst coord: Coordinate = [10, 20];\nconst status: Status = \"success\";\n\nconsole.log(formatId(42));\nconsole.log(`Position: ${coord[0]}, ${coord[1]}`);\nconsole.log(`Status: ${status}`);",
+          "output": "ID: 42\nPosition: 10, 20\nStatus: success",
+          "explanation": "Type aliases can express unions, tuples, mapped types, and function types — none of which are possible with interfaces. These are the cases where `type` is required."
+        },
+        {
+          "title": "Practical guidelines: when to use each",
+          "code": "// USE INTERFACE: object shapes and class contracts\ninterface UserProfile {\n  id: number;\n  name: string;\n  email: string;\n  bio?: string;\n}\n\n// USE TYPE: unions, computed types, and non-object types\ntype UserRole = \"admin\" | \"editor\" | \"viewer\";\ntype UserWithRole = UserProfile & { role: UserRole };\ntype UserKeys = keyof UserProfile;\n\nfunction createUser(name: string, role: UserRole): UserWithRole {\n  return {\n    id: Math.floor(Math.random() * 1000),\n    name,\n    email: `${name.toLowerCase()}@example.com`,\n    role\n  };\n}\n\nconst user = createUser(\"Alice\", \"admin\");\nconsole.log(`${user.name} (${user.role}) - ${user.email}`);",
+          "output": "Alice (admin) - alice@example.com",
+          "explanation": "Use interfaces for object shapes (UserProfile) and type aliases for everything else: unions (UserRole), intersections (UserWithRole), and utility types (UserKeys). This is the most common convention."
+        }
+      ],
+      "notes": [
+        "Use `interface` for object shapes and public APIs that might be extended. Use `type` for unions, tuples, mapped types, and non-object types.",
+        "Only interfaces support declaration merging — this is essential for extending third-party library types.",
+        "Both `interface extends` and `type &` can combine object types, but `extends` provides better error messages for conflicts."
+      ],
+      "commonPitfalls": [
+        "Using interfaces for everything, even unions and tuples — interfaces cannot express these. Use type aliases for non-object types.",
+        "Relying on declaration merging accidentally — if you declare two interfaces with the same name in the same scope, they merge silently, which can cause unexpected type additions."
+      ],
+      "interviewTips": [
+        "Key differences to mention: interfaces support declaration merging and `extends`, while type aliases support unions, intersections, tuples, and mapped types. For object shapes, both work; for everything else, use type.",
+        "A strong answer includes the practical guideline: use `interface` for object contracts (especially public APIs) and `type` for computed types, unions, and utilities. Mention that consistency within a team matters more than the specific choice."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "type-vs-interface-ex1",
+        "title": "Choose the right tool",
+        "description": "Model a notification system: use an interface for the base `Notification` shape (id, message, read), a type alias for `NotificationType` union (\"info\" | \"warning\" | \"error\"), and combine them properly. Write a function to format notifications.",
+        "starterCode": "// Define the types and interface, then write formatNotification\n\n\nconst notifications: Notification[] = [\n  { id: 1, type: \"info\", message: \"Welcome!\", read: false },\n  { id: 2, type: \"error\", message: \"Disk full\", read: true },\n  { id: 3, type: \"warning\", message: \"Low memory\", read: false }\n];\n\nnotifications.forEach(n => console.log(formatNotification(n)));",
+        "solution": "type NotificationType = \"info\" | \"warning\" | \"error\";\n\ninterface Notification {\n  id: number;\n  type: NotificationType;\n  message: string;\n  read: boolean;\n}\n\nfunction formatNotification(n: Notification): string {\n  const icon = n.type === \"error\" ? \"[!]\" : n.type === \"warning\" ? \"[~]\" : \"[i]\";\n  const status = n.read ? \"read\" : \"unread\";\n  return `${icon} #${n.id}: ${n.message} (${status})`;\n}\n\nconst notifications: Notification[] = [\n  { id: 1, type: \"info\", message: \"Welcome!\", read: false },\n  { id: 2, type: \"error\", message: \"Disk full\", read: true },\n  { id: 3, type: \"warning\", message: \"Low memory\", read: false }\n];\n\nnotifications.forEach(n => console.log(formatNotification(n)));",
+        "expectedOutput": "[i] #1: Welcome! (unread)\n[!] #2: Disk full (read)\n[~] #3: Low memory (unread)",
+        "hints": [
+          "Use `type` for the string literal union (NotificationType) and `interface` for the object shape (Notification).",
+          "Use the type alias as a property type within the interface: `type: NotificationType`."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "type-vs-interface-ex2",
+        "title": "Extensible API types",
+        "description": "Create a base `ApiRequest` interface with `url` (string) and `method` (string). Use interface extension to create `GetRequest` and `PostRequest`. Use a type alias to create a union `Request` type. Write a function that handles both request types.",
+        "starterCode": "// Define interfaces, type alias, and executeRequest function\n\n\nconst get: GetRequest = { url: \"/api/users\", method: \"GET\" };\nconst post: PostRequest = { url: \"/api/users\", method: \"POST\", body: '{\"name\":\"Alice\"}' };\n\nconsole.log(executeRequest(get));\nconsole.log(executeRequest(post));",
+        "solution": "interface ApiRequest {\n  url: string;\n  method: string;\n}\n\ninterface GetRequest extends ApiRequest {\n  method: \"GET\";\n}\n\ninterface PostRequest extends ApiRequest {\n  method: \"POST\";\n  body: string;\n}\n\ntype Request = GetRequest | PostRequest;\n\nfunction executeRequest(req: Request): string {\n  if (req.method === \"POST\") {\n    return `POST ${req.url} with body: ${req.body}`;\n  }\n  return `GET ${req.url}`;\n}\n\nconst get: GetRequest = { url: \"/api/users\", method: \"GET\" };\nconst post: PostRequest = { url: \"/api/users\", method: \"POST\", body: '{\"name\":\"Alice\"}' };\n\nconsole.log(executeRequest(get));\nconsole.log(executeRequest(post));",
+        "expectedOutput": "GET /api/users\nPOST /api/users with body: {\"name\":\"Alice\"}",
+        "hints": [
+          "Use interface extension for GetRequest and PostRequest. Narrow the `method` property to a literal type in each child.",
+          "Use a type alias for the union: `type Request = GetRequest | PostRequest`. The narrowed `method` property acts as a discriminant."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

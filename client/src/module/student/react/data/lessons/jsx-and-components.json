@@ -1,0 +1,347 @@
+[
+  {
+    "id": "what-is-jsx",
+    "sectionId": "jsx-and-components",
+    "orderIndex": 0,
+    "title": "What is JSX?",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["JSX syntax", "JSX expressions", "JSX vs HTML", "JSX compilation", "React.createElement"],
+    "content": {
+      "explanation": "JSX stands for JavaScript XML. It is a syntax extension for JavaScript that lets you write HTML-like markup inside a JavaScript file. While it looks like HTML, JSX is actually syntactic sugar for React.createElement() calls. Under the hood, a tool like Babel or SWC transforms JSX into plain JavaScript function calls that React can understand.\n\nThe key difference between JSX and HTML is that JSX is embedded within JavaScript, so you can use the full power of JavaScript expressions inside your markup. You wrap JavaScript expressions in curly braces {} to embed them. This includes variables, function calls, ternary operators, and more. However, you cannot use statements like if/else or for loops directly inside JSX — only expressions that produce a value.\n\nThere are several important differences between JSX and HTML. In JSX, you use `className` instead of `class` (since class is a reserved word in JavaScript), `htmlFor` instead of `for`, and all attribute names use camelCase (like `onClick`, `tabIndex`, `autoFocus`). Self-closing tags like `<img>` and `<input>` must include the closing slash: `<img />`, `<input />`. Every JSX expression must have a single root element — you cannot return two sibling elements without wrapping them.\n\nJSX also differs from HTML in how styles are applied. The `style` attribute in JSX accepts a JavaScript object with camelCased property names rather than a CSS string. For example, `style={{ backgroundColor: 'red', fontSize: '16px' }}`. The outer curly braces denote a JSX expression, and the inner ones define the JavaScript object.\n\nUnderstanding JSX is fundamental because every React component returns JSX. When you see JSX in code, remember that it compiles to React.createElement calls, creating a tree of JavaScript objects (the virtual DOM) that React uses to update the real DOM efficiently.",
+      "codeExamples": [
+        {
+          "title": "Basic JSX Syntax",
+          "code": "// JSX looks like HTML but lives inside JavaScript\nconst element = <h1>Hello, world!</h1>;\n\n// Under the hood, this compiles to:\nconst elementCompiled = React.createElement('h1', null, 'Hello, world!');\n\nconsole.log(typeof element); // 'object'\nconsole.log(element.type);   // 'h1'",
+          "output": "object\nh1",
+          "explanation": "JSX compiles to React.createElement calls which return plain JavaScript objects describing the UI. These objects are called React elements."
+        },
+        {
+          "title": "Embedding Expressions in JSX",
+          "code": "const name = 'Alice';\nconst age = 25;\n\n// Use curly braces {} to embed JavaScript expressions\nconst greeting = <p>Hello, {name}! You are {age} years old.</p>;\n\n// You can use any valid JavaScript expression\nconst math = <p>2 + 2 = {2 + 2}</p>;\nconst upper = <p>{name.toUpperCase()}</p>;\n\nconsole.log(greeting.props.children.join(''));\nconsole.log(math.props.children.join(''));",
+          "output": "Hello, Alice! You are 25 years old.\n2 + 2 = 4",
+          "explanation": "Curly braces inside JSX let you escape back into JavaScript. Any valid expression — variables, function calls, arithmetic — can go inside the braces."
+        },
+        {
+          "title": "JSX vs HTML Differences",
+          "code": "// HTML:  <div class=\"box\"><label for=\"name\">Name</label></div>\n// JSX:\nconst form = (\n  <div className=\"box\">\n    <label htmlFor=\"name\">Name</label>\n    <input type=\"text\" id=\"name\" autoFocus />\n    <img src=\"logo.png\" alt=\"Logo\" />\n  </div>\n);\n\n// Style uses objects, not strings\nconst styled = (\n  <div style={{ backgroundColor: 'blue', fontSize: '16px' }}>\n    Styled content\n  </div>\n);\n\nconsole.log(form.props.className);\nconsole.log(styled.props.style.backgroundColor);",
+          "output": "box\nblue",
+          "explanation": "JSX uses className instead of class, htmlFor instead of for, camelCase attributes, mandatory self-closing tags, and object-based styles."
+        }
+      ],
+      "notes": [
+        "JSX is not required to use React — you can use React.createElement directly — but JSX makes the code much more readable and is used by virtually every React project.",
+        "Curly braces in JSX can contain any JavaScript expression but not statements. Use ternary operators instead of if/else inside JSX.",
+        "JSX prevents injection attacks by default. React DOM escapes any values embedded in JSX before rendering them, so you can never inject anything that is not explicitly written in your code."
+      ],
+      "commonPitfalls": [
+        "Using `class` instead of `className` — this is the most common mistake when coming from HTML. React will warn you in the console if you do this.",
+        "Forgetting to close self-closing tags — `<br>` must be `<br />` and `<img>` must be `<img />` in JSX, otherwise you will get a syntax error."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "jsx-basics-exercise",
+        "title": "Create a JSX Element",
+        "description": "Create a variable called `greeting` that stores a JSX-like object representing a heading. Since we cannot run real JSX here, simulate it by creating an object with `type` and `props` properties. The type should be 'h1' and it should have children that include a name variable.",
+        "starterCode": "const name = 'React Learner';\n\n// Create an object simulating what JSX compiles to:\n// { type: 'h1', props: { children: '...' } }\nconst greeting = // your code here\n\nconsole.log(greeting.type);\nconsole.log(greeting.props.children);",
+        "solution": "const name = 'React Learner';\n\nconst greeting = {\n  type: 'h1',\n  props: { children: 'Hello, ' + name + '!' }\n};\n\nconsole.log(greeting.type);\nconsole.log(greeting.props.children);",
+        "expectedOutput": "h1\nHello, React Learner!",
+        "hints": [
+          "Remember that JSX compiles down to objects with `type` and `props` keys.",
+          "Use string concatenation or template literals to combine 'Hello, ' with the name variable."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "jsx-attributes-exercise",
+        "title": "JSX Attribute Conversion",
+        "description": "Convert HTML attributes to their JSX equivalents. Given an object representing HTML attributes, create a new object with the correct JSX attribute names.",
+        "starterCode": "const htmlAttrs = {\n  'class': 'container',\n  'for': 'email',\n  'tabindex': '1',\n  'autofocus': true,\n  'onclick': 'handleClick'\n};\n\n// Convert to JSX attribute names\nconst jsxAttrs = {\n  // your code here\n};\n\nconsole.log(jsxAttrs.className);\nconsole.log(jsxAttrs.htmlFor);\nconsole.log(jsxAttrs.tabIndex);\nconsole.log(jsxAttrs.autoFocus);\nconsole.log(jsxAttrs.onClick);",
+        "solution": "const htmlAttrs = {\n  'class': 'container',\n  'for': 'email',\n  'tabindex': '1',\n  'autofocus': true,\n  'onclick': 'handleClick'\n};\n\nconst jsxAttrs = {\n  className: htmlAttrs['class'],\n  htmlFor: htmlAttrs['for'],\n  tabIndex: htmlAttrs['tabindex'],\n  autoFocus: htmlAttrs['autofocus'],\n  onClick: htmlAttrs['onclick']\n};\n\nconsole.log(jsxAttrs.className);\nconsole.log(jsxAttrs.htmlFor);\nconsole.log(jsxAttrs.tabIndex);\nconsole.log(jsxAttrs.autoFocus);\nconsole.log(jsxAttrs.onClick);",
+        "expectedOutput": "container\nemail\n1\ntrue\nhandleClick",
+        "hints": [
+          "In JSX, `class` becomes `className`, `for` becomes `htmlFor`, and all event handlers and multi-word attributes use camelCase.",
+          "Think about which HTML attributes are JavaScript reserved words and need different names in JSX."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "functional-components",
+    "sectionId": "jsx-and-components",
+    "orderIndex": 1,
+    "title": "Functional Components",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["functional components", "component creation", "naming conventions", "export patterns", "component return values"],
+    "content": {
+      "explanation": "A functional component in React is simply a JavaScript function that returns JSX. It is the primary and recommended way to create components in modern React. Before hooks were introduced in React 16.8, class components were needed for stateful logic, but today functional components can do everything class components can and more.\n\nTo create a functional component, you write a regular JavaScript function (or arrow function) that accepts a single argument — the props object — and returns JSX. The function name must start with a capital letter. This is not just a convention; React uses the casing to distinguish between DOM elements (lowercase like `div`, `span`) and custom components (PascalCase like `App`, `UserProfile`). If you name a component starting with a lowercase letter, React will treat it as an HTML tag.\n\nThere are two common patterns for defining components: function declarations and arrow function expressions. Function declarations use the `function` keyword and are hoisted, meaning they can be referenced before they are defined in the file. Arrow function expressions are assigned to a `const` and are not hoisted, but they offer a more concise syntax. Both are perfectly valid, and teams typically pick one style and stick with it.\n\nExporting components follows standard JavaScript module patterns. You can use a default export (`export default function App()`) or a named export (`export function App()`). Default exports allow the consumer to name the import whatever they want, while named exports enforce consistent naming. Many React projects prefer named exports because they work better with auto-imports and refactoring tools. A file can have one default export and multiple named exports.\n\nA component must return something that React can render: JSX elements, strings, numbers, booleans, null, or arrays of these. Returning `null` tells React to render nothing. A component should be a pure function of its props — given the same props, it should always return the same output. Side effects should be handled in event handlers or useEffect hooks, not during rendering.",
+      "codeExamples": [
+        {
+          "title": "Creating a Functional Component",
+          "code": "// Function declaration style\nfunction Welcome(props) {\n  return { type: 'h1', props: { children: 'Hello, ' + props.name } };\n}\n\n// Arrow function style\nconst Greeting = (props) => {\n  return { type: 'p', props: { children: 'Welcome back, ' + props.name } };\n};\n\n// Using the components (simulated)\nconst el1 = Welcome({ name: 'Alice' });\nconst el2 = Greeting({ name: 'Bob' });\n\nconsole.log(el1.props.children);\nconsole.log(el2.props.children);",
+          "output": "Hello, Alice\nWelcome back, Bob",
+          "explanation": "Both function declarations and arrow functions work as React components. The component receives props as its first argument and returns a React element."
+        },
+        {
+          "title": "Component Naming and Structure",
+          "code": "// Component names MUST start with uppercase\nfunction UserCard(props) {\n  const fullName = props.firstName + ' ' + props.lastName;\n  return {\n    type: 'div',\n    props: {\n      className: 'user-card',\n      children: fullName + ' (Age: ' + props.age + ')'\n    }\n  };\n}\n\n// Components are just functions — you can call them\nconst result = UserCard({ firstName: 'Jane', lastName: 'Doe', age: 30 });\nconsole.log(result.props.children);\nconsole.log(result.props.className);",
+          "output": "Jane Doe (Age: 30)\nuser-card",
+          "explanation": "PascalCase naming is required for React components. The component is just a function that takes an object of props and returns an element description."
+        },
+        {
+          "title": "Export Patterns",
+          "code": "// Simulating different export patterns\n\n// Pattern 1: Default export\n// export default function App() { return <div>App</div>; }\n\n// Pattern 2: Named export\n// export function Header() { return <header>Header</header>; }\n\n// Pattern 3: Export separately\n// function Footer() { return <footer>Footer</footer>; }\n// export { Footer };\n\n// Demonstrating that components are just functions\nconst components = {\n  App: () => ({ type: 'div', props: { children: 'App' } }),\n  Header: () => ({ type: 'header', props: { children: 'Header' } }),\n  Footer: () => ({ type: 'footer', props: { children: 'Footer' } })\n};\n\nObject.keys(components).forEach(name => {\n  const el = components[name]();\n  console.log(name + ': ' + el.type + ' -> ' + el.props.children);\n});",
+          "output": "App: div -> App\nHeader: header -> Header\nFooter: footer -> Footer",
+          "explanation": "Components can be exported as default or named exports. Named exports are often preferred for better IDE support and consistent imports."
+        }
+      ],
+      "notes": [
+        "Always name your components with PascalCase (e.g., UserProfile, not userProfile). React uses this to differentiate between HTML tags and custom components.",
+        "A functional component must return a renderable value. If you want to render nothing, return null explicitly — do not return undefined.",
+        "Keep components focused on a single responsibility. If a component grows too large, break it into smaller sub-components."
+      ],
+      "commonPitfalls": [
+        "Starting a component name with a lowercase letter — React will treat it as a built-in HTML element and it won't work as expected.",
+        "Forgetting to return JSX from the component. If you use curly braces with an arrow function, you need an explicit return statement: `() => { return <div/>; }` not `() => { <div/>; }`."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "create-component-exercise",
+        "title": "Create a Component Function",
+        "description": "Create a functional component called `ProductCard` that takes props with `name`, `price`, and `inStock` properties and returns an object representing the component output.",
+        "starterCode": "// Create a ProductCard component function\n// It should accept props: name (string), price (number), inStock (boolean)\n// Return an object with type 'div' and props.children as a descriptive string\n\n// your code here\n\nconst card = ProductCard({ name: 'Laptop', price: 999, inStock: true });\nconsole.log(card.type);\nconsole.log(card.props.children);",
+        "solution": "function ProductCard(props) {\n  const status = props.inStock ? 'In Stock' : 'Out of Stock';\n  return {\n    type: 'div',\n    props: {\n      children: props.name + ' - $' + props.price + ' (' + status + ')'\n    }\n  };\n}\n\nconst card = ProductCard({ name: 'Laptop', price: 999, inStock: true });\nconsole.log(card.type);\nconsole.log(card.props.children);",
+        "expectedOutput": "div\nLaptop - $999 (In Stock)",
+        "hints": [
+          "A component is just a function that takes a props object and returns an element. Use PascalCase for the function name.",
+          "Use a ternary operator to convert the boolean `inStock` into a readable string like 'In Stock' or 'Out of Stock'."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "component-return-exercise",
+        "title": "Component Return Values",
+        "description": "Create three component functions that demonstrate different return behaviors: one returns content, one returns null (renders nothing), and one returns conditionally based on props.",
+        "starterCode": "// 1. Create a Visible component that returns an element with children 'I am visible'\n// 2. Create a Hidden component that returns null\n// 3. Create a Toggle component that returns content if props.show is true, null otherwise\n\n// your code here\n\nconst v = Visible();\nconst h = Hidden();\nconst shown = Toggle({ show: true });\nconst hidden = Toggle({ show: false });\n\nconsole.log(v.props.children);\nconsole.log(h);\nconsole.log(shown.props.children);\nconsole.log(hidden);",
+        "solution": "function Visible() {\n  return { type: 'div', props: { children: 'I am visible' } };\n}\n\nfunction Hidden() {\n  return null;\n}\n\nfunction Toggle(props) {\n  if (props.show) {\n    return { type: 'div', props: { children: 'Toggled On' } };\n  }\n  return null;\n}\n\nconst v = Visible();\nconst h = Hidden();\nconst shown = Toggle({ show: true });\nconst hidden = Toggle({ show: false });\n\nconsole.log(v.props.children);\nconsole.log(h);\nconsole.log(shown.props.children);\nconsole.log(hidden);",
+        "expectedOutput": "I am visible\nnull\nToggled On\nnull",
+        "hints": [
+          "Components can return null to render nothing. This is useful for conditional rendering.",
+          "For the Toggle component, use an if statement to check props.show and return content or null accordingly."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "component-composition",
+    "sectionId": "jsx-and-components",
+    "orderIndex": 2,
+    "title": "Component Composition",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["component nesting", "children prop", "component trees", "composition vs inheritance", "reusability"],
+    "content": {
+      "explanation": "Component composition is the fundamental pattern in React for building complex UIs from simple, reusable pieces. Instead of creating one massive component, you break your UI into a tree of smaller components, each responsible for a specific piece. A parent component renders child components, and those children can render their own children, forming a component tree.\n\nThe `children` prop is a special prop in React that lets you pass elements between the opening and closing tags of a component. When you write `<Card><p>Hello</p></Card>`, the `<p>Hello</p>` is automatically available inside Card as `props.children`. This is incredibly powerful because it lets you create wrapper or layout components that do not need to know their content ahead of time. A Card component, for example, can handle styling while the parent decides what goes inside it.\n\nComponent composition follows a top-down data flow. The root component (usually App) sits at the top of the tree and renders other components, passing data down through props. Each component in the tree is independent and reusable — you can use the same Button component in a form, a dialog, or a navbar. This is different from template-based frameworks where you might inherit from a base template.\n\nReact strongly favors composition over inheritance. In object-oriented programming, you might create a SpecialButton that extends Button. In React, you achieve the same thing by composing: creating a SpecialButton that renders a Button with specific props. The React team has found that composition solves every use case that inheritance would, without the tight coupling that inheritance creates.\n\nWhen composing components, think in terms of 'what does this component need to do?' and 'what pieces make up this UI?'. A good component tree has clear boundaries: each component does one thing well, accepts the data it needs via props, and can be understood in isolation. This makes your code easier to test, debug, and modify over time.",
+      "codeExamples": [
+        {
+          "title": "Nesting Components",
+          "code": "// Child components\nfunction Header() {\n  return { type: 'header', props: { children: 'My App' } };\n}\n\nfunction Content() {\n  return { type: 'main', props: { children: 'Page content here' } };\n}\n\nfunction Footer() {\n  return { type: 'footer', props: { children: '© 2026' } };\n}\n\n// Parent component composes children\nfunction App() {\n  return {\n    type: 'div',\n    props: {\n      children: [Header(), Content(), Footer()]\n    }\n  };\n}\n\nconst app = App();\napp.props.children.forEach(child => {\n  console.log(child.type + ': ' + child.props.children);\n});",
+          "output": "header: My App\nmain: Page content here\nfooter: © 2026",
+          "explanation": "The App component composes Header, Content, and Footer together. Each child component is independent and reusable."
+        },
+        {
+          "title": "Using the Children Prop",
+          "code": "// A wrapper component that uses children\nfunction Card(props) {\n  return {\n    type: 'div',\n    props: {\n      className: 'card',\n      children: props.children\n    }\n  };\n}\n\n// Using Card with different content\nconst profileCard = Card({ children: 'User Profile: Alice' });\nconst statsCard = Card({ children: 'Total Sales: 150' });\n\nconsole.log(profileCard.props.className + ' -> ' + profileCard.props.children);\nconsole.log(statsCard.props.className + ' -> ' + statsCard.props.children);",
+          "output": "card -> User Profile: Alice\ncard -> Total Sales: 150",
+          "explanation": "The Card component doesn't know what content it will wrap. The `children` prop lets the parent decide what goes inside, making Card highly reusable."
+        },
+        {
+          "title": "Building a Component Tree",
+          "code": "function Button(props) {\n  return { type: 'button', props: { label: props.label, variant: props.variant } };\n}\n\nfunction NavItem(props) {\n  return { type: 'li', props: { children: props.text, active: props.active } };\n}\n\nfunction Navbar() {\n  const items = [\n    NavItem({ text: 'Home', active: true }),\n    NavItem({ text: 'About', active: false }),\n    NavItem({ text: 'Contact', active: false })\n  ];\n  return { type: 'nav', props: { children: items } };\n}\n\nconst nav = Navbar();\nnav.props.children.forEach(item => {\n  const marker = item.props.active ? ' (active)' : '';\n  console.log(item.props.children + marker);\n});",
+          "output": "Home (active)\nAbout\nContact",
+          "explanation": "The Navbar component builds a tree by composing NavItem components. Each NavItem is independent and receives its data through props."
+        }
+      ],
+      "notes": [
+        "The `children` prop is not limited to JSX elements — it can be strings, numbers, arrays, or even functions (the render props pattern).",
+        "React favors composition over inheritance. Instead of extending a base component, wrap it or pass it specific props to specialize its behavior.",
+        "A well-composed component tree is easy to reason about: data flows down from parent to child, and each component has a clear, focused responsibility."
+      ],
+      "commonPitfalls": [
+        "Creating deeply nested component trees that make data passing difficult. If you find yourself passing props through many layers (prop drilling), consider React Context or state management solutions.",
+        "Making components too granular or too monolithic. Find the right balance — a component should represent a meaningful piece of UI that might be reused or that encapsulates a logical unit."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "composition-basic-exercise",
+        "title": "Compose a Page Layout",
+        "description": "Create a `Layout` component that composes a `Header` and `Footer` around any children content. The Layout should combine header text, the children content, and footer text into an array.",
+        "starterCode": "function Header() {\n  return 'HEADER';\n}\n\nfunction Footer() {\n  return 'FOOTER';\n}\n\n// Create a Layout component that combines Header, children, and Footer\n// It should return an object with type 'div' and props.children as an array\n\n// your code here\n\nconst page = Layout({ children: 'Page Content' });\nconsole.log(page.props.children[0]);\nconsole.log(page.props.children[1]);\nconsole.log(page.props.children[2]);",
+        "solution": "function Header() {\n  return 'HEADER';\n}\n\nfunction Footer() {\n  return 'FOOTER';\n}\n\nfunction Layout(props) {\n  return {\n    type: 'div',\n    props: {\n      children: [Header(), props.children, Footer()]\n    }\n  };\n}\n\nconst page = Layout({ children: 'Page Content' });\nconsole.log(page.props.children[0]);\nconsole.log(page.props.children[1]);\nconsole.log(page.props.children[2]);",
+        "expectedOutput": "HEADER\nPage Content\nFOOTER",
+        "hints": [
+          "The Layout component should call Header() and Footer() and place the result in an array along with props.children.",
+          "Return an object with type 'div' and props.children as an array of three elements: Header result, props.children, Footer result."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "composition-reuse-exercise",
+        "title": "Reusable Wrapper Component",
+        "description": "Create a `Section` component that wraps content with a title. Use it to create two different sections and print their structure.",
+        "starterCode": "// Create a Section component that takes props: title and children\n// It should return an object with type 'section' and a combined string of title + ': ' + children\n\n// your code here\n\nconst intro = Section({ title: 'Introduction', children: 'Welcome to React' });\nconst about = Section({ title: 'About', children: 'Learn component composition' });\n\nconsole.log(intro.type + ' -> ' + intro.props.children);\nconsole.log(about.type + ' -> ' + about.props.children);",
+        "solution": "function Section(props) {\n  return {\n    type: 'section',\n    props: {\n      children: props.title + ': ' + props.children\n    }\n  };\n}\n\nconst intro = Section({ title: 'Introduction', children: 'Welcome to React' });\nconst about = Section({ title: 'About', children: 'Learn component composition' });\n\nconsole.log(intro.type + ' -> ' + intro.props.children);\nconsole.log(about.type + ' -> ' + about.props.children);",
+        "expectedOutput": "section -> Introduction: Welcome to React\nsection -> About: Learn component composition",
+        "hints": [
+          "The Section component is a simple function that takes props with title and children, then combines them.",
+          "Concatenate the title and children with ': ' in between to form the children of the returned element."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "fragments",
+    "sectionId": "jsx-and-components",
+    "orderIndex": 3,
+    "title": "React Fragments",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["React.Fragment", "fragment short syntax", "avoiding unnecessary DOM nodes", "fragment keys", "component return types"],
+    "content": {
+      "explanation": "React Fragments let you group a list of children without adding extra nodes to the DOM. In React, a component must return a single element. Before Fragments existed, developers would wrap sibling elements in a `<div>`, adding unnecessary nodes to the DOM tree. Fragments solve this problem by providing an invisible wrapper that groups elements without rendering any additional HTML.\n\nThere are two syntaxes for Fragments. The explicit syntax is `<React.Fragment>...</React.Fragment>`, and the short syntax is `<>...</>`. The short syntax is cleaner and more commonly used. However, the explicit `<React.Fragment>` syntax supports a `key` prop, which is necessary when rendering lists of Fragments. The short syntax does not support any props at all.\n\nFragments are particularly useful in several scenarios. When a component needs to return multiple table rows or list items, wrapping them in a div would create invalid HTML (a div inside a table, for instance). Fragments let you return multiple `<tr>` elements from a component without breaking the table structure. They are also useful when you want to render adjacent elements without adding a wrapper that might interfere with CSS layouts like Flexbox or Grid.\n\nUnder the hood, Fragments are lightweight. They do not create a real DOM node, so they have zero impact on performance and do not affect CSS styling or the HTML structure. When React processes a Fragment, it simply renders the children directly. This means your rendered HTML stays clean and semantic, with no extra wrapper divs cluttering the markup.\n\nA common pattern is to use Fragments at the top level of a component return when you have sibling elements. Instead of adding a meaningless div, use `<>` and `</>` to wrap them. This keeps your DOM tree shallow and your HTML valid. Remember that the only time you need the full `<React.Fragment>` syntax is when you need to add a key prop, typically when mapping over an array.",
+      "codeExamples": [
+        {
+          "title": "Why Fragments Are Needed",
+          "code": "// Without fragments: extra div in the DOM\nfunction WithDiv() {\n  return {\n    type: 'div', // Unnecessary wrapper!\n    props: {\n      children: [\n        { type: 'h1', props: { children: 'Title' } },\n        { type: 'p', props: { children: 'Content' } }\n      ]\n    }\n  };\n}\n\n// With fragments: no extra DOM node\nfunction WithFragment() {\n  // React.Fragment renders no DOM element\n  return {\n    type: 'Fragment',\n    props: {\n      children: [\n        { type: 'h1', props: { children: 'Title' } },\n        { type: 'p', props: { children: 'Content' } }\n      ]\n    }\n  };\n}\n\nconst withDiv = WithDiv();\nconst withFrag = WithFragment();\nconsole.log('With div wrapper: ' + withDiv.type);\nconsole.log('With fragment: ' + withFrag.type);\nconsole.log('Children count: ' + withFrag.props.children.length);",
+          "output": "With div wrapper: div\nWith fragment: Fragment\nChildren count: 2",
+          "explanation": "Fragments act as invisible wrappers. The children are rendered directly without any extra DOM node, keeping the markup clean."
+        },
+        {
+          "title": "Fragment Syntax Variants",
+          "code": "// Short syntax: <> </>\n// Used when you don't need any props\nfunction ShortSyntax() {\n  // In real JSX: <><h1>Hello</h1><p>World</p></>\n  return [\n    { type: 'h1', props: { children: 'Hello' } },\n    { type: 'p', props: { children: 'World' } }\n  ];\n}\n\n// Explicit syntax: <React.Fragment key={id}>\n// Used when you need a key (e.g., in lists)\nfunction ExplicitSyntax(items) {\n  return items.map(item => ({\n    type: 'Fragment',\n    key: item.id,\n    props: {\n      children: [\n        { type: 'dt', props: { children: item.term } },\n        { type: 'dd', props: { children: item.def } }\n      ]\n    }\n  }));\n}\n\nconst short = ShortSyntax();\nconsole.log(short.map(el => el.type).join(', '));\n\nconst items = [{ id: 1, term: 'JSX', def: 'Syntax extension' }];\nconst explicit = ExplicitSyntax(items);\nconsole.log('Key: ' + explicit[0].key);",
+          "output": "h1, p\nKey: 1",
+          "explanation": "Use the short syntax (<></>) when no props are needed. Use <React.Fragment key={}> when rendering lists that need keys."
+        },
+        {
+          "title": "Practical Use Case: Table Rows",
+          "code": "// A component returning multiple table rows\n// Without Fragment this would need a wrapper div (invalid in <table>)\nfunction UserRows(props) {\n  return props.users.map(user => ({\n    type: 'tr',\n    key: user.id,\n    props: {\n      children: [\n        { type: 'td', props: { children: user.name } },\n        { type: 'td', props: { children: user.email } }\n      ]\n    }\n  }));\n}\n\nconst users = [\n  { id: 1, name: 'Alice', email: 'alice@example.com' },\n  { id: 2, name: 'Bob', email: 'bob@example.com' }\n];\n\nconst rows = UserRows({ users });\nrows.forEach(row => {\n  const cells = row.props.children;\n  console.log(cells[0].props.children + ' | ' + cells[1].props.children);\n});",
+          "output": "Alice | alice@example.com\nBob | bob@example.com",
+          "explanation": "Fragments are essential when returning multiple table rows, list items, or other elements where a wrapper div would create invalid HTML."
+        }
+      ],
+      "notes": [
+        "The short syntax `<>...</>` cannot accept props or keys. Use `<React.Fragment key={id}>` when you need a key in list rendering.",
+        "Fragments add no extra DOM nodes, so they have zero impact on your layout and CSS. Use them freely whenever you need to group elements without a wrapper.",
+        "You can nest Fragments inside other elements and other Fragments without any issues."
+      ],
+      "commonPitfalls": [
+        "Trying to add a className or style to a Fragment — Fragments do not support any props other than `key`. If you need styling, use a real DOM element like a div.",
+        "Using unnecessary wrapper divs out of habit when a Fragment would keep the DOM cleaner. This can cause subtle CSS issues, especially with Flexbox and Grid layouts where extra wrapper elements affect the layout."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "fragment-basics-exercise",
+        "title": "Group Without Wrapper",
+        "description": "Simulate returning multiple elements from a component without a wrapper. Create a function that returns an array of element objects (simulating a Fragment) instead of wrapping them in a div.",
+        "starterCode": "// Create a UserInfo function that returns an array of two elements\n// (simulating a Fragment return)\n// Element 1: type 'h2', children: props.name\n// Element 2: type 'p', children: props.bio\n\n// your code here\n\nconst info = UserInfo({ name: 'Alice', bio: 'React developer' });\nconsole.log(info.length);\nconsole.log(info[0].type + ': ' + info[0].props.children);\nconsole.log(info[1].type + ': ' + info[1].props.children);",
+        "solution": "function UserInfo(props) {\n  return [\n    { type: 'h2', props: { children: props.name } },\n    { type: 'p', props: { children: props.bio } }\n  ];\n}\n\nconst info = UserInfo({ name: 'Alice', bio: 'React developer' });\nconsole.log(info.length);\nconsole.log(info[0].type + ': ' + info[0].props.children);\nconsole.log(info[1].type + ': ' + info[1].props.children);",
+        "expectedOutput": "2\nh2: Alice\np: React developer",
+        "hints": [
+          "A Fragment is essentially an array of elements. Return an array with two objects in it.",
+          "Each element object needs a `type` property and a `props` property with `children`."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "fragment-keys-exercise",
+        "title": "Keyed Fragments for Lists",
+        "description": "Create a function that processes a list of glossary items and returns Fragment-like structures, each with a key and containing a term (dt) and definition (dd) pair.",
+        "starterCode": "const glossary = [\n  { id: 'jsx', term: 'JSX', definition: 'A syntax extension for JavaScript' },\n  { id: 'comp', term: 'Component', definition: 'A reusable piece of UI' },\n  { id: 'prop', term: 'Props', definition: 'Data passed to components' }\n];\n\n// Create a function renderGlossary that maps over the items\n// Each item should become an object with: key, type: 'Fragment', and\n// props.children as an array of { type: 'dt' } and { type: 'dd' }\n\n// your code here\n\nconst result = renderGlossary(glossary);\nresult.forEach(fragment => {\n  const [dt, dd] = fragment.props.children;\n  console.log(fragment.key + ': ' + dt.props.children + ' = ' + dd.props.children);\n});",
+        "solution": "const glossary = [\n  { id: 'jsx', term: 'JSX', definition: 'A syntax extension for JavaScript' },\n  { id: 'comp', term: 'Component', definition: 'A reusable piece of UI' },\n  { id: 'prop', term: 'Props', definition: 'Data passed to components' }\n];\n\nfunction renderGlossary(items) {\n  return items.map(item => ({\n    key: item.id,\n    type: 'Fragment',\n    props: {\n      children: [\n        { type: 'dt', props: { children: item.term } },\n        { type: 'dd', props: { children: item.definition } }\n      ]\n    }\n  }));\n}\n\nconst result = renderGlossary(glossary);\nresult.forEach(fragment => {\n  const [dt, dd] = fragment.props.children;\n  console.log(fragment.key + ': ' + dt.props.children + ' = ' + dd.props.children);\n});",
+        "expectedOutput": "jsx: JSX = A syntax extension for JavaScript\ncomp: Component = A reusable piece of UI\nprop: Props = Data passed to components",
+        "hints": [
+          "Use .map() to transform each glossary item into a Fragment-like object with a key property.",
+          "Each Fragment should have props.children as an array containing two elements: one with type 'dt' (term) and one with type 'dd' (definition)."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "jsx-expressions",
+    "sectionId": "jsx-and-components",
+    "orderIndex": 4,
+    "title": "JSX Expressions and Patterns",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["JSX expressions", "conditional expressions", "template patterns", "dynamic attributes", "expression limitations"],
+    "content": {
+      "explanation": "JSX expressions are the bridge between your JavaScript logic and your rendered UI. Anything inside curly braces `{}` in JSX is evaluated as a JavaScript expression. This means you can embed variables, call functions, perform arithmetic, use ternary operators, and leverage any JavaScript expression that produces a value. This is what makes React's JSX so powerful compared to template languages with limited expression support.\n\nConditional expressions in JSX are used heavily in React. Since you cannot use if/else statements directly inside JSX (they are statements, not expressions), you use alternatives. The ternary operator `condition ? trueValue : falseValue` is the most common for toggling between two outputs. The logical AND `&&` operator is used when you want to render something or nothing: `{isLoggedIn && <Dashboard />}` renders Dashboard only when isLoggedIn is true. The logical OR `||` operator can provide fallbacks: `{username || 'Guest'}` shows the username or 'Guest' if it is falsy.\n\nTemplate patterns in JSX refer to common ways of structuring dynamic content. One pattern is mapping arrays to elements: `{items.map(item => <li key={item.id}>{item.name}</li>)}`. Another is using immediately invoked function expressions (IIFEs) for complex logic: `{(() => { if (a) return 'X'; return 'Y'; })()}`. However, IIFEs should be avoided in favor of extracting logic into helper functions or variables defined before the return statement.\n\nDynamic attributes are another powerful use of JSX expressions. You can compute className, style, disabled, or any attribute dynamically: `<button className={isActive ? 'active' : 'inactive'} disabled={isLoading}>`. Spread syntax works with JSX too: `<Component {...props} />` passes all properties of the props object as individual attributes. This is useful for forwarding props or creating wrapper components.\n\nThere are some values that JSX handles specially. Booleans (`true`, `false`), `null`, and `undefined` are valid children but render nothing. This is what makes `{condition && <Element />}` work — when condition is false, JSX renders `false`, which shows nothing. However, be careful with falsy values like `0` — `{count && <List />}` will render `0` on screen when count is zero, because 0 is a falsy value that JSX does render. Always use explicit comparisons: `{count > 0 && <List />}`.",
+      "codeExamples": [
+        {
+          "title": "Embedding Expressions in JSX",
+          "code": "const user = { name: 'Alice', role: 'admin', loginCount: 42 };\n\n// Variables\nconsole.log('Name: ' + user.name);\n\n// Function calls\nconsole.log('Upper: ' + user.name.toUpperCase());\n\n// Arithmetic\nconsole.log('Next login: #' + (user.loginCount + 1));\n\n// Template literals (also expressions)\nconsole.log(`${user.name} is a${user.role === 'admin' ? 'n admin' : ' user'}`);",
+          "output": "Name: Alice\nUpper: ALICE\nNext login: #43\nAlice is an admin",
+          "explanation": "Any JavaScript expression can go inside JSX curly braces — variables, function calls, arithmetic, template literals, and more."
+        },
+        {
+          "title": "Conditional Expressions",
+          "code": "// Ternary operator: condition ? ifTrue : ifFalse\nconst isLoggedIn = true;\nconst greeting = isLoggedIn ? 'Welcome back!' : 'Please sign in';\nconsole.log(greeting);\n\n// Logical AND: renders right side only if left is truthy\nconst hasNotifications = true;\nconst notifCount = 5;\nconst notifText = hasNotifications && (notifCount + ' new notifications');\nconsole.log(notifText);\n\n// Logical OR: provides fallback for falsy values\nconst username = '';\nconst displayName = username || 'Guest';\nconsole.log('Hello, ' + displayName);\n\n// PITFALL: 0 is falsy but renders in JSX!\nconst count = 0;\nconst badResult = count && 'has items';   // renders 0!\nconst goodResult = count > 0 && 'has items'; // renders false (nothing)\nconsole.log('Bad: ' + badResult);\nconsole.log('Good: ' + goodResult);",
+          "output": "Welcome back!\n5 new notifications\nHello, Guest\nBad: 0\nGood: false",
+          "explanation": "Use ternary for two-way conditions, && for show-or-nothing, and || for fallbacks. Be careful with 0 and empty strings as they render visibly."
+        },
+        {
+          "title": "Dynamic Attributes and Spread",
+          "code": "// Dynamic class names\nconst isActive = true;\nconst btnClass = isActive ? 'btn btn-active' : 'btn';\nconsole.log('className: ' + btnClass);\n\n// Dynamic styles\nconst theme = 'dark';\nconst bgColor = theme === 'dark' ? '#333' : '#fff';\nconst textColor = theme === 'dark' ? '#fff' : '#333';\nconsole.log('bg: ' + bgColor + ', text: ' + textColor);\n\n// Spread operator with props\nconst baseProps = { type: 'button', disabled: false, className: 'btn' };\nconst extraProps = { disabled: true, 'aria-label': 'Submit' };\nconst merged = { ...baseProps, ...extraProps };\nconsole.log('disabled: ' + merged.disabled);\nconsole.log('aria-label: ' + merged['aria-label']);\nconsole.log('className: ' + merged.className);",
+          "output": "className: btn btn-active\nbg: #333, text: #fff\ndisabled: true\naria-label: Submit\nclassName: btn",
+          "explanation": "Attributes can be computed dynamically using expressions. Spread syntax merges props objects, with later properties overriding earlier ones."
+        }
+      ],
+      "notes": [
+        "Only expressions work inside JSX curly braces — not statements. If you need complex logic, compute the value in a variable before the return statement.",
+        "Boolean values (true/false), null, and undefined render nothing in JSX. This is by design and enables the `{condition && <Element />}` pattern.",
+        "Spread syntax `{...props}` is very useful for forwarding props but use it sparingly — it can make it hard to track which props a component actually receives."
+      ],
+      "commonPitfalls": [
+        "Using `{count && <List />}` when count could be 0 — this renders the number 0 on screen. Use `{count > 0 && <List />}` instead for an explicit boolean check.",
+        "Putting statements like if/else or for loops directly inside JSX curly braces — only expressions are allowed. Move complex logic above the return statement."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "expressions-conditional-exercise",
+        "title": "Conditional Display Logic",
+        "description": "Write a function that takes a user object and returns different messages based on the user's properties using conditional expressions (ternary, &&, ||).",
+        "starterCode": "function getUserDisplay(user) {\n  // 1. Use ternary: if user.isOnline, status = 'Online', else 'Offline'\n  // 2. Use ||: displayName = user.nickname or user.name (fallback)\n  // 3. Use &&: if user.isAdmin, adminBadge = ' [ADMIN]', else false\n  // Return: displayName + ' - ' + status + (adminBadge or '')\n\n  // your code here\n}\n\nconsole.log(getUserDisplay({ name: 'Alice', nickname: 'Ali', isOnline: true, isAdmin: true }));\nconsole.log(getUserDisplay({ name: 'Bob', nickname: '', isOnline: false, isAdmin: false }));\nconsole.log(getUserDisplay({ name: 'Charlie', nickname: 'Chuck', isOnline: true, isAdmin: false }));",
+        "solution": "function getUserDisplay(user) {\n  const status = user.isOnline ? 'Online' : 'Offline';\n  const displayName = user.nickname || user.name;\n  const adminBadge = user.isAdmin && ' [ADMIN]';\n  return displayName + ' - ' + status + (adminBadge || '');\n}\n\nconsole.log(getUserDisplay({ name: 'Alice', nickname: 'Ali', isOnline: true, isAdmin: true }));\nconsole.log(getUserDisplay({ name: 'Bob', nickname: '', isOnline: false, isAdmin: false }));\nconsole.log(getUserDisplay({ name: 'Charlie', nickname: 'Chuck', isOnline: true, isAdmin: false }));",
+        "expectedOutput": "Ali - Online [ADMIN]\nBob - Offline\nChuck - Online",
+        "hints": [
+          "Use the ternary operator (? :) for the online/offline status, || for the nickname fallback, and && for the conditional admin badge.",
+          "When adminBadge is false (from &&), use `(adminBadge || '')` to convert it to an empty string for clean concatenation."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "expressions-dynamic-exercise",
+        "title": "Dynamic Attribute Builder",
+        "description": "Create a function that builds a props object dynamically based on component configuration. It should merge base props with conditional props using spread syntax.",
+        "starterCode": "function buildButtonProps(config) {\n  const baseProps = {\n    type: 'button',\n    className: 'btn'\n  };\n\n  // 1. If config.variant exists, add className 'btn btn-' + config.variant\n  // 2. If config.disabled is true, add disabled: true\n  // 3. If config.label exists, add 'aria-label': config.label\n  // Merge everything using spread syntax and return\n\n  // your code here\n}\n\nconst primary = buildButtonProps({ variant: 'primary', disabled: false, label: 'Save' });\nconsole.log(primary.className);\nconsole.log(primary.disabled);\nconsole.log(primary['aria-label']);\n\nconst disabledBtn = buildButtonProps({ disabled: true });\nconsole.log(disabledBtn.className);\nconsole.log(disabledBtn.disabled);",
+        "solution": "function buildButtonProps(config) {\n  const baseProps = {\n    type: 'button',\n    className: 'btn'\n  };\n\n  const variantProps = config.variant ? { className: 'btn btn-' + config.variant } : {};\n  const disabledProps = config.disabled ? { disabled: true } : {};\n  const labelProps = config.label ? { 'aria-label': config.label } : {};\n\n  return { ...baseProps, ...variantProps, ...disabledProps, ...labelProps };\n}\n\nconst primary = buildButtonProps({ variant: 'primary', disabled: false, label: 'Save' });\nconsole.log(primary.className);\nconsole.log(primary.disabled);\nconsole.log(primary['aria-label']);\n\nconst disabledBtn = buildButtonProps({ disabled: true });\nconsole.log(disabledBtn.className);\nconsole.log(disabledBtn.disabled);",
+        "expectedOutput": "btn btn-primary\nundefined\nSave\nbtn\ntrue",
+        "hints": [
+          "Create separate props objects for each conditional property, using empty objects {} when the condition is false.",
+          "Use spread syntax to merge all objects: { ...baseProps, ...variantProps, ...disabledProps, ...labelProps }. Later spreads override earlier properties with the same key."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

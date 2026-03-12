@@ -1,0 +1,301 @@
+[
+  {
+    "id": "what-is-flask",
+    "sectionId": "introduction-to-flask",
+    "orderIndex": 0,
+    "title": "What is Flask?",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["Flask", "Microframework", "Python Web", "WSGI", "Werkzeug", "Jinja2"],
+    "content": {
+      "explanation": "Flask is a lightweight web framework for Python, often called a microframework because it does not require particular tools or libraries beyond what it ships with. Created by Armin Ronacher in 2010 as an April Fools' joke that turned into a serious project, Flask has grown to become one of the most popular Python web frameworks alongside Django.\n\nThe term 'microframework' does not mean Flask lacks functionality. It means Flask keeps its core small and extensible. While Django follows a 'batteries-included' philosophy with a built-in ORM, admin panel, authentication system, and more, Flask gives you the freedom to choose your own tools. Need a database? Pick SQLAlchemy, Peewee, or MongoDB. Need authentication? Choose Flask-Login, Flask-Security, or roll your own. This philosophy makes Flask incredibly flexible and a great choice for both small APIs and large applications.\n\nFlask is built on two key dependencies. The first is Werkzeug (German for 'tool'), a comprehensive WSGI utility library that handles the low-level HTTP details like request parsing, response formatting, URL routing, and cookie management. The second is Jinja2, a powerful template engine that lets you generate HTML dynamically using Python-like syntax with variables, loops, conditionals, and template inheritance.\n\nFlask follows the WSGI (Web Server Gateway Interface) standard, which is a specification that defines how a web server communicates with a Python web application. When a request comes in, the web server (like Gunicorn or uWSGI) passes the request data to Flask through the WSGI interface. Flask processes the request, runs your view function, and returns a response that the web server sends back to the client.\n\nOne of Flask's most attractive features is its simplicity. A minimal Flask application is just five lines of code. You import Flask, create an application instance, define a route with a decorator, write a view function that returns a response, and run the app. This low barrier to entry makes Flask an excellent choice for beginners learning web development, for prototyping ideas quickly, and for building microservices in production.\n\nFlask also provides a built-in development server with an interactive debugger, a RESTful request dispatching system, support for secure cookies (client-side sessions), Unicode support, and extensive documentation. The Flask ecosystem includes hundreds of extensions for every imaginable use case, from sending emails to handling WebSockets.\n\nCompanies like Netflix, Reddit, Lyft, Zillow, and Mozilla use Flask in production. Pinterest originally used Flask as their web framework. Flask's combination of simplicity, flexibility, and a thriving community makes it a top choice for Python web development.",
+      "codeExamples": [
+        {
+          "title": "Minimal Flask Application",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/')\ndef hello():\n    return 'Hello, World!'\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+          "output": " * Running on http://127.0.0.1:5000\n * Debug mode: on",
+          "explanation": "This is the simplest possible Flask app. Flask(__name__) creates the application instance. The @app.route('/') decorator binds the URL path '/' to the hello() function. When a browser visits http://localhost:5000/, Flask calls hello() and returns the string as an HTTP response."
+        },
+        {
+          "title": "Flask vs Django at a Glance",
+          "code": "# Flask - you choose your components\nfrom flask import Flask\nfrom flask_sqlalchemy import SQLAlchemy\nfrom flask_login import LoginManager\n\napp = Flask(__name__)\ndb = SQLAlchemy(app)\nlogin = LoginManager(app)\n\n# Django - batteries included\n# django.contrib.auth   (built-in)\n# django.db.models      (built-in ORM)\n# django.contrib.admin  (built-in admin panel)\n# django.forms          (built-in form handling)",
+          "explanation": "Flask lets you pick each component individually. Django provides everything out of the box. Neither approach is inherently better; it depends on your project needs. Flask gives more control, Django gives more convenience."
+        },
+        {
+          "title": "Flask's Core Dependencies",
+          "code": "# Werkzeug handles low-level HTTP\nfrom werkzeug.serving import run_simple\nfrom werkzeug.wrappers import Request, Response\n\n# Jinja2 handles templating\nfrom jinja2 import Template\n\n# Flask wraps both into a cohesive framework\nfrom flask import Flask, render_template, request, jsonify\n\n# You rarely use Werkzeug or Jinja2 directly,\n# but understanding them helps you debug issues\n# and extend Flask's behavior.",
+          "explanation": "Flask abstracts Werkzeug and Jinja2 behind its own API. The flask.request object is actually a Werkzeug Request. The render_template function uses Jinja2 internally. Understanding this layering helps when you need to debug or customize behavior."
+        },
+        {
+          "title": "Flask Application Context",
+          "code": "from flask import Flask, current_app\n\napp = Flask(__name__)\n\n# Outside a request, you need the app context\nwith app.app_context():\n    print(current_app.name)  # prints '__main__'\n\n@app.route('/')\ndef index():\n    # Inside a request, the context is automatic\n    return f'App name: {current_app.name}'",
+          "output": "__main__",
+          "explanation": "Flask uses application and request contexts to make certain objects globally accessible without passing them around. Inside a view function, current_app and request are automatically available. Outside, you must push a context manually."
+        }
+      ],
+      "notes": [
+        "Flask is a microframework, meaning it provides the essentials and lets you choose additional components.",
+        "Flask is built on Werkzeug (WSGI toolkit) and Jinja2 (template engine).",
+        "The built-in development server should never be used in production. Use Gunicorn, uWSGI, or similar WSGI servers instead.",
+        "Flask follows the WSGI specification, making it compatible with any WSGI-compliant web server."
+      ],
+      "commonPitfalls": [
+        "Using the Flask development server in production. It is single-threaded and not designed for concurrent traffic. Always use a production WSGI server like Gunicorn.",
+        "Confusing Flask with a full-stack framework like Django. Flask does not include an ORM, admin panel, or authentication out of the box."
+      ],
+      "interviewTips": [
+        "Explain that Flask is a WSGI microframework built on Werkzeug and Jinja2, emphasizing its philosophy of keeping the core simple and extensible.",
+        "Compare Flask vs Django: Flask is flexible and unopinionated, Django is batteries-included. Flask is better for microservices and APIs, Django for large monolithic apps.",
+        "Mention that Flask uses decorators for routing and supports both function-based and class-based views."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "what-is-flask-ex1",
+        "title": "Create a Minimal Flask App",
+        "description": "Create a Flask application with a single route at '/' that returns the string 'Welcome to Flask!'. Make sure to import Flask and create the app instance.",
+        "starterCode": "# Import Flask and create your first app\n",
+        "solution": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/')\ndef home():\n    return 'Welcome to Flask!'\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Import Flask from the flask package",
+          "Create an app instance with Flask(__name__)",
+          "Use the @app.route('/') decorator to bind a URL to a function"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "what-is-flask-ex2",
+        "title": "Multiple Routes",
+        "description": "Create a Flask app with three routes:\n- '/' returns 'Home Page'\n- '/about' returns 'About Page'\n- '/contact' returns 'Contact Page'",
+        "starterCode": "from flask import Flask\n\napp = Flask(__name__)\n\n# Add your routes here\n",
+        "solution": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/')\ndef home():\n    return 'Home Page'\n\n@app.route('/about')\ndef about():\n    return 'About Page'\n\n@app.route('/contact')\ndef contact():\n    return 'Contact Page'\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Each route needs its own decorator and function",
+          "Each function must have a unique name",
+          "The string in @app.route() defines the URL path"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "flask-installation-setup",
+    "sectionId": "introduction-to-flask",
+    "orderIndex": 1,
+    "title": "Installation & Setup",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["pip", "Virtual Environments", "venv", "Project Structure", "Requirements", "Dependencies"],
+    "content": {
+      "explanation": "Setting up a proper Flask development environment is crucial for a maintainable project. Python's packaging ecosystem provides all the tools you need, and following best practices from the start will save you from dependency conflicts and deployment headaches.\n\nThe first step is always to create a virtual environment. A virtual environment is an isolated Python installation that keeps your project's dependencies separate from your system Python and other projects. Without a virtual environment, installing Flask globally could conflict with other Python applications on your machine that need different versions of the same packages.\n\nPython 3 ships with the venv module, so you do not need to install anything extra. You create a virtual environment with 'python -m venv venv', which creates a directory called 'venv' containing a copy of the Python interpreter and a fresh pip installation. You activate it with 'source venv/bin/activate' on macOS/Linux or 'venv\\Scripts\\activate' on Windows. Once activated, your terminal prompt changes to show (venv), and any pip install commands will install packages into this isolated environment.\n\nWith the virtual environment active, you install Flask with 'pip install flask'. This also installs Flask's dependencies: Werkzeug, Jinja2, MarkupSafe, ItsDangerous, Click, and Blinker. Each serves a specific purpose: Werkzeug for WSGI utilities, Jinja2 for templating, MarkupSafe for safe string handling, ItsDangerous for cryptographic signing (used in sessions), Click for the flask command-line interface, and Blinker for signal support.\n\nA well-organized Flask project follows a predictable structure. For small applications, a single file (app.py or main.py) in the project root works fine. For larger applications, you should use the application factory pattern with a package structure. The standard layout places your Flask package in a directory named after your project, with __init__.py containing the create_app factory function, separate modules for routes (views), models, forms, and configuration.\n\nManaging dependencies is essential. After installing your packages, run 'pip freeze > requirements.txt' to capture all installed packages and their exact versions. This file allows anyone to reproduce your environment with 'pip install -r requirements.txt'. For more sophisticated dependency management, consider using pip-tools, Poetry, or PDM, which separate direct dependencies from transitive dependencies and provide lock files for deterministic builds.\n\nEnvironment variables play a key role in Flask configuration. The FLASK_APP variable tells the flask command where your application is. The FLASK_ENV variable (deprecated in Flask 2.3 in favor of FLASK_DEBUG) controls the environment. You can use a .env file with python-dotenv to load these automatically. Never commit your .env file to version control, as it often contains secrets like database URLs and API keys.\n\nThe flask command-line tool provides useful commands out of the box. 'flask run' starts the development server, 'flask shell' opens an interactive Python shell with the application context, and 'flask routes' lists all registered URL rules. You can also define custom CLI commands using Click decorators.",
+      "codeExamples": [
+        {
+          "title": "Creating a Virtual Environment",
+          "code": "# Create virtual environment\npython -m venv venv\n\n# Activate on macOS/Linux\nsource venv/bin/activate\n\n# Activate on Windows\nvenv\\Scripts\\activate\n\n# Install Flask\npip install flask\n\n# Verify installation\npython -c \"import flask; print(flask.__version__)\"",
+          "output": "3.1.0",
+          "explanation": "Always use a virtual environment for Flask projects. This isolates your dependencies and prevents conflicts between projects. The venv module is included with Python 3.3+ so no extra installation is needed."
+        },
+        {
+          "title": "Project Structure for Small Apps",
+          "code": "# Simple project structure\nmy_flask_app/\n    venv/\n    app.py\n    requirements.txt\n    .env\n    static/\n        css/\n        js/\n        images/\n    templates/\n        base.html\n        index.html",
+          "explanation": "For small applications, a single app.py file with separate static/ and templates/ directories is sufficient. Flask looks for templates in a 'templates' folder and static files in a 'static' folder by default."
+        },
+        {
+          "title": "Project Structure for Larger Apps",
+          "code": "# Package-based project structure\nmy_project/\n    venv/\n    requirements.txt\n    config.py\n    run.py\n    app/\n        __init__.py      # create_app factory\n        models.py         # database models\n        views/\n            __init__.py\n            main.py       # main blueprint\n            auth.py       # auth blueprint\n            api.py        # API blueprint\n        forms.py          # WTForms\n        templates/\n            base.html\n            main/\n            auth/\n        static/\n            css/\n            js/",
+          "explanation": "Larger applications benefit from a package structure with blueprints. The create_app factory function in __init__.py initializes the app, registers blueprints, and configures extensions. This pattern supports testing with different configurations."
+        },
+        {
+          "title": "Managing Dependencies",
+          "code": "# Save current dependencies\npip freeze > requirements.txt\n\n# Install from requirements file\npip install -r requirements.txt\n\n# Example requirements.txt\n# flask==3.1.0\n# flask-sqlalchemy==3.1.1\n# flask-login==0.6.3\n# python-dotenv==1.0.1\n# gunicorn==22.0.0\n\n# Using .env file for configuration\n# .env\n# FLASK_APP=app.py\n# FLASK_DEBUG=1\n# SECRET_KEY=your-secret-key-here\n# DATABASE_URL=sqlite:///app.db",
+          "explanation": "requirements.txt pins exact versions to ensure reproducible builds. The .env file stores environment variables loaded by python-dotenv. Never commit .env to version control as it contains secrets."
+        }
+      ],
+      "notes": [
+        "Always use virtual environments to isolate project dependencies.",
+        "Flask auto-discovers app.py or wsgi.py in the current directory. Set FLASK_APP to use a different filename.",
+        "The 'flask run' command starts the development server. Use 'flask run --host=0.0.0.0' to make it accessible from other devices on your network.",
+        "Add your venv/ directory and .env file to .gitignore."
+      ],
+      "commonPitfalls": [
+        "Forgetting to activate the virtual environment before installing packages, causing them to install globally.",
+        "Not pinning dependency versions in requirements.txt, leading to inconsistent environments across machines.",
+        "Committing the .env file or venv/ directory to version control."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "flask-install-ex1",
+        "title": "Write a Requirements File",
+        "description": "Write the contents of a requirements.txt file that pins Flask 3.1.0, Flask-SQLAlchemy 3.1.1, and python-dotenv 1.0.1 as dependencies.",
+        "starterCode": "# requirements.txt\n# List your dependencies with pinned versions\n",
+        "solution": "# requirements.txt\nflask==3.1.0\nflask-sqlalchemy==3.1.1\npython-dotenv==1.0.1",
+        "hints": [
+          "Use == to pin exact versions",
+          "Each dependency goes on its own line",
+          "The format is package-name==version"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "flask-install-ex2",
+        "title": "Create a .env Configuration",
+        "description": "Write a .env file that sets FLASK_APP to 'app.py', enables debug mode, sets a SECRET_KEY of 'dev-secret-123', and sets DATABASE_URL to 'sqlite:///app.db'.",
+        "starterCode": "# .env file\n# Set your Flask environment variables\n",
+        "solution": "FLASK_APP=app.py\nFLASK_DEBUG=1\nSECRET_KEY=dev-secret-123\nDATABASE_URL=sqlite:///app.db",
+        "hints": [
+          "Environment variables use KEY=VALUE format",
+          "FLASK_DEBUG=1 enables debug mode",
+          "No quotes needed for simple values in .env files"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "first-flask-app",
+    "sectionId": "introduction-to-flask",
+    "orderIndex": 2,
+    "title": "Your First Flask App",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Routes", "View Functions", "Debug Mode", "Development Server", "Decorators"],
+    "content": {
+      "explanation": "Building your first Flask application is a rewarding experience because Flask's simplicity lets you go from zero to a working web application in minutes. Let us walk through each piece of a basic Flask app to understand what every line does and how the framework processes requests.\n\nThe journey starts with importing Flask and creating an application instance. When you write 'app = Flask(__name__)', you create a Flask object that is the central registry for your application. The __name__ argument tells Flask where to find resources like templates and static files. If the module is the main script, __name__ is '__main__'. If it is an imported module, __name__ is the module's name. Flask uses this to resolve relative paths for the template and static folders.\n\nRoutes are the heart of any Flask application. A route maps a URL pattern to a Python function called a view function. You define routes using the @app.route() decorator. When Flask receives an HTTP request, it matches the URL against registered routes and calls the corresponding view function. The view function must return something Flask can convert into an HTTP response: a string, a tuple of (body, status_code, headers), a Response object, or a dictionary (which Flask automatically converts to JSON).\n\nThe debug mode is your best friend during development. When you run 'app.run(debug=True)' or set FLASK_DEBUG=1, Flask enables two powerful features. First, the automatic reloader watches your Python files for changes and restarts the server when you save a file, so you do not have to stop and restart manually. Second, the interactive debugger appears in your browser when an error occurs, showing a full stack trace with the ability to execute Python code at any frame. This debugger is a security risk in production, so never enable debug mode on a public server.\n\nFlask's development server listens on 127.0.0.1:5000 by default. The address 127.0.0.1 means it only accepts connections from your own machine. To make it accessible from other devices on your network (useful for testing on your phone), pass host='0.0.0.0' to app.run(). The port defaults to 5000 but can be changed with the port parameter.\n\nView functions can return various types. A plain string becomes an HTML response with a 200 status code. A tuple lets you customize the status code and headers. Returning a dict automatically creates a JSON response with the correct Content-Type header. For full control, you can create a Response object from the make_response() function.\n\nFlask uses Python decorators extensively. If you are unfamiliar with decorators, they are functions that modify other functions. The @app.route('/') decorator registers the decorated function as a handler for the '/' URL. Under the hood, it calls app.add_url_rule('/', endpoint='hello', view_func=hello). Understanding this lets you register routes without decorators, which is useful for class-based views and testing.\n\nThe request-response cycle in Flask works as follows: a client sends an HTTP request, the WSGI server passes it to Flask, Flask creates a Request object and pushes an application context and request context, Flask matches the URL to a route and calls the view function, the view function returns a response, Flask converts it to a proper HTTP response, and the WSGI server sends it back to the client.",
+      "codeExamples": [
+        {
+          "title": "Your First Complete App",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/')\ndef home():\n    return '<h1>Welcome to My Flask App</h1>'\n\n@app.route('/about')\ndef about():\n    return '<h1>About</h1><p>This is a Flask application.</p>'\n\n@app.route('/greet/<name>')\ndef greet(name):\n    return f'<h1>Hello, {name}!</h1>'\n\nif __name__ == '__main__':\n    app.run(debug=True, port=5000)",
+          "output": " * Running on http://127.0.0.1:5000\n * Restarting with stat\n * Debugger is active!",
+          "explanation": "This app has three routes. The home route serves the root URL. The about route serves /about. The greet route uses a variable rule <name> to capture part of the URL as a function parameter. Debug mode enables auto-reloading and the interactive debugger."
+        },
+        {
+          "title": "Different Response Types",
+          "code": "from flask import Flask, jsonify, make_response\n\napp = Flask(__name__)\n\n# String response (HTML)\n@app.route('/text')\ndef text_response():\n    return '<p>Plain HTML string</p>'\n\n# Tuple response with status code\n@app.route('/not-found')\ndef not_found():\n    return '<h1>Not Found</h1>', 404\n\n# Dict response (auto JSON)\n@app.route('/api/data')\ndef api_data():\n    return {'message': 'Hello', 'status': 'ok'}\n\n# Explicit Response object\n@app.route('/custom')\ndef custom_response():\n    resp = make_response('Custom response')\n    resp.headers['X-Custom-Header'] = 'MyValue'\n    return resp",
+          "explanation": "Flask handles different return types intelligently. Strings become HTML, dicts become JSON, tuples let you set status codes, and make_response() gives you full control over headers and the response body."
+        },
+        {
+          "title": "Running with the Flask CLI",
+          "code": "# Instead of app.run(), use the flask CLI:\n\n# Set the app (not needed if file is named app.py)\n# export FLASK_APP=myapp.py\n\n# Run in development mode\n# flask run --debug\n\n# Run on a different port\n# flask run --port 8080\n\n# Run accessible from network\n# flask run --host 0.0.0.0\n\n# List all routes\n# flask routes\n\n# Open a shell with app context\n# flask shell",
+          "explanation": "The flask CLI is the recommended way to run your app during development. It automatically finds app.py or wsgi.py, supports the --debug flag for hot reloading, and provides useful subcommands like 'routes' and 'shell'."
+        }
+      ],
+      "notes": [
+        "The debug mode auto-reloader and interactive debugger are invaluable during development but must never be enabled in production.",
+        "Flask view functions must return a response. Returning None or forgetting the return statement causes a 500 error.",
+        "The order of route definitions does not matter. Flask matches URLs based on specificity, not definition order.",
+        "Use the flask CLI (flask run) instead of app.run() for better control and to avoid the if __name__ == '__main__' block."
+      ],
+      "commonPitfalls": [
+        "Forgetting to return a value from a view function. Flask will raise a TypeError if the view returns None.",
+        "Enabling debug mode in production, exposing the interactive debugger which allows arbitrary code execution.",
+        "Defining two view functions with the same name, even on different routes. Each function name must be unique."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "first-app-ex1",
+        "title": "Build a Multi-Page App",
+        "description": "Create a Flask app with three routes:\n- '/' returns an h1 with 'Home'\n- '/services' returns an h1 with 'Our Services' and a paragraph with 'We offer web development.'\n- '/api/status' returns a JSON response with keys 'status' set to 'running' and 'version' set to '1.0'",
+        "starterCode": "from flask import Flask\n\napp = Flask(__name__)\n\n# Define your routes here\n",
+        "solution": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/')\ndef home():\n    return '<h1>Home</h1>'\n\n@app.route('/services')\ndef services():\n    return '<h1>Our Services</h1><p>We offer web development.</p>'\n\n@app.route('/api/status')\ndef status():\n    return {'status': 'running', 'version': '1.0'}\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Return a dict from a view function to get automatic JSON conversion",
+          "Each route decorator takes a URL string as its argument",
+          "Each view function must have a unique name"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "first-app-ex2",
+        "title": "Custom Error Response",
+        "description": "Create a Flask app with a route '/divide/<int:a>/<int:b>' that returns the result of a divided by b as JSON. If b is 0, return a JSON error message with status code 400.",
+        "starterCode": "from flask import Flask, jsonify\n\napp = Flask(__name__)\n\n# Create the divide route\n",
+        "solution": "from flask import Flask, jsonify\n\napp = Flask(__name__)\n\n@app.route('/divide/<int:a>/<int:b>')\ndef divide(a, b):\n    if b == 0:\n        return jsonify({'error': 'Division by zero'}), 400\n    return jsonify({'result': a / b})\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Use <int:a> to capture URL parameters as integers",
+          "Return a tuple of (response, status_code) to set the HTTP status",
+          "Check if b == 0 before dividing"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "understanding-wsgi",
+    "sectionId": "introduction-to-flask",
+    "orderIndex": 3,
+    "title": "Understanding WSGI",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["WSGI", "PEP 3333", "Application Callable", "Middleware", "Werkzeug", "ASGI"],
+    "content": {
+      "explanation": "WSGI stands for Web Server Gateway Interface, defined in PEP 3333. It is the standard interface between Python web servers and web applications. Understanding WSGI gives you a deeper appreciation of how Flask works under the hood and is a common topic in Python web development interviews.\n\nBefore WSGI existed, every Python web framework had its own way of communicating with web servers. This meant that if you wrote an application for one framework, you could not easily run it on a different server. WSGI solved this by defining a universal interface. Any WSGI-compliant application can run on any WSGI-compliant server, giving you freedom to choose servers independently of frameworks.\n\nA WSGI application is simply a callable (function or object with a __call__ method) that accepts two arguments: environ and start_response. The environ dictionary contains all the information about the incoming HTTP request: the request method, URL path, headers, query string, request body, and server information. The start_response callable is used to begin the HTTP response by specifying the status code and response headers. The application then returns an iterable of byte strings that form the response body.\n\nFlask's app object is itself a WSGI application. When you call app.run(), Flask starts Werkzeug's development server, which calls the Flask app as a WSGI callable for each request. In production, you replace this development server with a production WSGI server like Gunicorn, uWSGI, or Waitress. These servers handle concurrent connections, process management, and other production concerns.\n\nWSGI middleware is a powerful concept. A middleware is a component that sits between the server and the application, wrapping the WSGI app to add functionality. Middleware can log requests, handle authentication, compress responses, manage CORS, or rewrite URLs. The middleware receives the request, can modify it, passes it to the inner application, receives the response, can modify it, and passes it back. Flask extensions often use middleware under the hood.\n\nIt is worth knowing about ASGI (Asynchronous Server Gateway Interface), which is the async evolution of WSGI. While WSGI handles one request at a time per worker, ASGI supports async/await, WebSockets, and HTTP/2 server push. Frameworks like FastAPI and Starlette use ASGI. Flask 2.0+ supports async views, but it still runs on a WSGI server by default. For fully async applications, consider using Quart, which is an ASGI re-implementation of the Flask API.\n\nThe WSGI layer is also where the environ dictionary provides important request information. Keys like REQUEST_METHOD, PATH_INFO, QUERY_STRING, CONTENT_TYPE, and wsgi.input (the request body stream) are all standardized. Werkzeug parses this environ dictionary and wraps it in the friendly request object that you use in Flask views.",
+      "codeExamples": [
+        {
+          "title": "A Raw WSGI Application",
+          "code": "def application(environ, start_response):\n    \"\"\"The simplest possible WSGI application.\"\"\"\n    status = '200 OK'\n    headers = [('Content-Type', 'text/plain')]\n    start_response(status, headers)\n    return [b'Hello from raw WSGI!']\n\n# Run with a WSGI server:\n# gunicorn myapp:application\n# or with werkzeug:\nif __name__ == '__main__':\n    from werkzeug.serving import run_simple\n    run_simple('127.0.0.1', 5000, application)",
+          "output": "Hello from raw WSGI!",
+          "explanation": "This is a WSGI application without any framework. The function takes environ (request data) and start_response (to set status/headers), then returns the response body as an iterable of bytes. Flask wraps this pattern behind a friendly API."
+        },
+        {
+          "title": "Flask as a WSGI App",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/')\ndef hello():\n    return 'Hello, World!'\n\n# Flask's app object IS a WSGI callable.\n# Under the hood, app.__call__(environ, start_response)\n# is called for every request.\n\n# This is equivalent to:\ndef flask_wsgi_call(environ, start_response):\n    # Flask parses environ into request object\n    # Matches URL to route\n    # Calls view function\n    # Converts return value to Response\n    # Calls start_response and returns body\n    pass\n\n# In production:\n# gunicorn app:app",
+          "explanation": "Flask's application object implements the WSGI interface via its __call__ method. When Gunicorn or another WSGI server calls app(environ, start_response), Flask handles routing, context creation, view dispatch, and response formatting."
+        },
+        {
+          "title": "Simple WSGI Middleware",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/')\ndef hello():\n    return 'Hello, World!'\n\nclass LoggingMiddleware:\n    \"\"\"WSGI middleware that logs each request.\"\"\"\n    def __init__(self, app):\n        self.app = app\n\n    def __call__(self, environ, start_response):\n        method = environ['REQUEST_METHOD']\n        path = environ['PATH_INFO']\n        print(f'{method} {path}')\n        return self.app(environ, start_response)\n\n# Wrap the Flask app with middleware\napp.wsgi_app = LoggingMiddleware(app.wsgi_app)\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+          "output": "GET /\nGET /favicon.ico",
+          "explanation": "Middleware wraps the WSGI app to add cross-cutting concerns. Flask exposes app.wsgi_app for middleware wrapping. Note we wrap app.wsgi_app (the WSGI callable), not app itself, so Flask's routing and context management still work correctly."
+        },
+        {
+          "title": "The Environ Dictionary",
+          "code": "from flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/debug')\ndef debug_environ():\n    # Flask's request object wraps the WSGI environ\n    info = {\n        'method': request.method,          # environ['REQUEST_METHOD']\n        'path': request.path,              # environ['PATH_INFO']\n        'query': request.query_string.decode(),  # environ['QUERY_STRING']\n        'host': request.host,              # environ['HTTP_HOST']\n        'user_agent': request.user_agent.string,\n        'remote_addr': request.remote_addr,\n    }\n    return info",
+          "output": "{\"host\":\"127.0.0.1:5000\",\"method\":\"GET\",\"path\":\"/debug\",\"query\":\"\",\"remote_addr\":\"127.0.0.1\",\"user_agent\":\"Mozilla/5.0...\"}",
+          "explanation": "Flask's request object is a friendly wrapper around the raw WSGI environ dictionary. It provides parsed and typed access to request data that would otherwise require manual parsing from the environ."
+        }
+      ],
+      "notes": [
+        "WSGI is defined in PEP 3333 and is the standard interface for Python web applications.",
+        "A WSGI app is a callable that takes (environ, start_response) and returns an iterable of bytes.",
+        "Flask's app object IS a WSGI application. Its __call__ method handles the WSGI interface.",
+        "ASGI is the async successor to WSGI, used by FastAPI and Starlette. Quart is Flask's ASGI equivalent."
+      ],
+      "interviewTips": [
+        "Explain WSGI as the interface contract between web servers and Python web apps, defined in PEP 3333.",
+        "Describe the two arguments: environ (dict with request data) and start_response (callable to set status and headers).",
+        "Mention that middleware sits between the server and app, wrapping the WSGI callable to add cross-cutting concerns.",
+        "Compare WSGI (synchronous, one request at a time per worker) with ASGI (asynchronous, supports WebSockets and HTTP/2)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "wsgi-ex1",
+        "title": "Write a Raw WSGI App",
+        "description": "Write a WSGI application function called 'application' that returns a JSON response with Content-Type 'application/json'. The body should be '{\"message\": \"Hello from WSGI\"}'. Remember that WSGI responses must be bytes.",
+        "starterCode": "import json\n\ndef application(environ, start_response):\n    # Set up your WSGI response here\n    pass\n",
+        "solution": "import json\n\ndef application(environ, start_response):\n    status = '200 OK'\n    headers = [('Content-Type', 'application/json')]\n    start_response(status, headers)\n    body = json.dumps({'message': 'Hello from WSGI'})\n    return [body.encode('utf-8')]",
+        "hints": [
+          "Use start_response to set the status and headers before returning",
+          "The response body must be an iterable of bytes, not strings",
+          "Use json.dumps() to serialize the dictionary and .encode('utf-8') to convert to bytes"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "wsgi-ex2",
+        "title": "Create a Timing Middleware",
+        "description": "Create a WSGI middleware class called TimingMiddleware that measures how long the inner app takes to respond and adds an X-Response-Time header (in milliseconds) to the response.",
+        "starterCode": "import time\n\nclass TimingMiddleware:\n    def __init__(self, app):\n        self.app = app\n\n    def __call__(self, environ, start_response):\n        # Measure time and add header\n        pass\n",
+        "solution": "import time\n\nclass TimingMiddleware:\n    def __init__(self, app):\n        self.app = app\n\n    def __call__(self, environ, start_response):\n        start = time.time()\n\n        def custom_start_response(status, headers, exc_info=None):\n            elapsed = (time.time() - start) * 1000\n            headers.append(('X-Response-Time', f'{elapsed:.2f}ms'))\n            return start_response(status, headers, exc_info)\n\n        return self.app(environ, custom_start_response)",
+        "hints": [
+          "Record time.time() before calling the inner app",
+          "Create a wrapper around start_response to inject the timing header",
+          "The header value should be the elapsed time in milliseconds"
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

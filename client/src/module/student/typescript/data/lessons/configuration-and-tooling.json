@@ -1,0 +1,278 @@
+[
+  {
+    "id": "tsconfig-essentials",
+    "sectionId": "configuration-and-tooling",
+    "orderIndex": 0,
+    "title": "tsconfig.json Essentials",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["target", "module", "lib", "outDir", "rootDir", "tsconfig.json", "compiler options"],
+    "content": {
+      "explanation": "The tsconfig.json file is the central configuration file for any TypeScript project. It tells the TypeScript compiler how to process your code — what JavaScript version to target, which module system to use, where to find source files, and where to put compiled output. Understanding the essential compiler options is critical for setting up projects correctly and debugging configuration issues.\n\nThe `target` option specifies the ECMAScript version for the output JavaScript. Common values are 'ES2020', 'ES2022', or 'ESNext'. When you set a target, TypeScript downlevels newer syntax (like optional chaining or nullish coalescing) to work in the target environment. The `lib` option specifies which built-in API declarations to include — for example, 'DOM' includes browser APIs, 'ES2020' includes Promise.allSettled, and 'ES2021' includes String.replaceAll. If you target ES2020 but need DOM APIs, set lib to ['ES2020', 'DOM', 'DOM.Iterable'].\n\nThe `module` option determines the module system for the output code: 'CommonJS' for Node.js require/exports, 'ESNext' or 'ES2020' for native ES modules, or 'NodeNext' for Node.js with ESM support. This works in conjunction with `moduleResolution` which determines how imports are resolved. The `outDir` option specifies where compiled .js files are written, and `rootDir` specifies the root of input files. TypeScript preserves the directory structure relative to rootDir when writing to outDir.\n\nOther essential options include `include` and `exclude` arrays that determine which files TypeScript processes, `declaration` for generating .d.ts files, `sourceMap` for debugging support, and `esModuleInterop` which enables interoperability between CommonJS and ES module import syntax. The `skipLibCheck` option skips type checking of .d.ts files, significantly speeding up compilation in large projects with many dependencies.",
+      "codeExamples": [
+        {
+          "title": "Essential tsconfig.json Options",
+          "code": "// A typical tsconfig.json for a modern project:\n// {\n//   \"compilerOptions\": {\n//     \"target\": \"ES2020\",\n//     \"module\": \"ESNext\",\n//     \"lib\": [\"ES2020\", \"DOM\", \"DOM.Iterable\"],\n//     \"outDir\": \"./dist\",\n//     \"rootDir\": \"./src\",\n//     \"strict\": true,\n//     \"esModuleInterop\": true,\n//     \"skipLibCheck\": true,\n//     \"forceConsistentCasingInFileNames\": true,\n//     \"declaration\": true,\n//     \"sourceMap\": true\n//   },\n//   \"include\": [\"src/**/*\"],\n//   \"exclude\": [\"node_modules\", \"dist\"]\n// }\n\n// Demonstrating how target affects output\ninterface Config {\n  target: string;\n  module: string;\n  lib: string[];\n  outDir: string;\n  rootDir: string;\n}\n\nconst config: Config = {\n  target: 'ES2020',\n  module: 'ESNext',\n  lib: ['ES2020', 'DOM', 'DOM.Iterable'],\n  outDir: './dist',\n  rootDir: './src'\n};\n\nconsole.log(`Target: ${config.target}`);\nconsole.log(`Module: ${config.module}`);\nconsole.log(`Lib: ${config.lib.join(', ')}`);\nconsole.log(`Output: ${config.outDir}`);\nconsole.log(`Source: ${config.rootDir}`);",
+          "output": "Target: ES2020\nModule: ESNext\nLib: ES2020, DOM, DOM.Iterable\nOutput: ./dist\nSource: ./src",
+          "explanation": "These five options form the core of any tsconfig: target sets the JS output version, module sets the module system, lib declares available APIs, outDir is where output goes, rootDir is where source lives."
+        },
+        {
+          "title": "Target Downleveling",
+          "code": "// TypeScript downlevels syntax based on the target\n// With target: ES2015, optional chaining is compiled away\n// With target: ES2020, optional chaining is kept as-is\n\ninterface User {\n  name: string;\n  address?: {\n    city?: string;\n    zip?: string;\n  };\n}\n\n// Optional chaining (ES2020+)\nconst user1: User = { name: 'Alice', address: { city: 'NYC' } };\nconst user2: User = { name: 'Bob' };\n\n// These use optional chaining — kept as-is for ES2020 target\nconsole.log(user1.address?.city ?? 'Unknown');\nconsole.log(user2.address?.city ?? 'Unknown');\n\n// Nullish coalescing (ES2020+)\nconst port: number | undefined = undefined;\nconst resolvedPort = port ?? 3000;\nconsole.log(`Port: ${resolvedPort}`);\n\n// If target were ES2015, the above would compile to:\n// user1.address !== null && user1.address !== void 0 ? user1.address.city : undefined\nconsole.log('All modern syntax works with ES2020 target');",
+          "output": "NYC\nUnknown\nPort: 3000\nAll modern syntax works with ES2020 target",
+          "explanation": "The target option determines which syntax features are kept and which are downleveled. ES2020 supports optional chaining (?.) and nullish coalescing (??)."
+        },
+        {
+          "title": "Module and Lib Interaction",
+          "code": "// The lib option determines which global types are available\n// Without 'DOM', you cannot use document, window, fetch, etc.\n// Without 'ES2020', you cannot use Promise.allSettled, BigInt, etc.\n\n// Simulating lib availability\nconst availableAPIs: Record<string, string[]> = {\n  'ES2015': ['Promise', 'Map', 'Set', 'Symbol', 'WeakMap'],\n  'ES2020': ['Promise.allSettled', 'BigInt', 'globalThis', 'matchAll'],\n  'ES2021': ['String.replaceAll', 'Promise.any', 'WeakRef'],\n  'ES2022': ['Array.at', 'Object.hasOwn', 'Error.cause'],\n  'DOM': ['document', 'window', 'fetch', 'localStorage']\n};\n\nconst selectedLibs = ['ES2020', 'DOM'];\nconst allAPIs = selectedLibs.flatMap(lib => availableAPIs[lib] || []);\n\nconsole.log(`Libs: ${selectedLibs.join(', ')}`);\nconsole.log(`Available APIs: ${allAPIs.join(', ')}`);\nconsole.log(`Total APIs: ${allAPIs.length}`);",
+          "output": "Libs: ES2020, DOM\nAvailable APIs: Promise.allSettled, BigInt, globalThis, matchAll, document, window, fetch, localStorage\nTotal APIs: 8",
+          "explanation": "The lib array is additive — each entry includes a set of type declarations. You must include both the ES version and DOM if building for the browser."
+        }
+      ],
+      "notes": [
+        "Set 'target' to the lowest ES version your runtime environment supports. For modern browsers, ES2020 is safe. For Node.js 18+, ES2022 is appropriate.",
+        "The 'lib' option only affects type checking — it does not polyfill missing APIs. If you target ES2020 but need Array.at (ES2022), you need a polyfill at runtime.",
+        "Use 'skipLibCheck: true' in application projects to speed up compilation. Only disable it in library projects where .d.ts correctness is critical."
+      ],
+      "commonPitfalls": [
+        "Setting 'target' to ESNext in a library — this means your output uses the latest syntax, which may not work in consumers' environments. Use a specific version like ES2020.",
+        "Confusing 'target' and 'lib' — target controls output syntax, lib controls available type declarations. You can target ES2015 while having lib set to ES2022 if you polyfill the missing APIs."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "tsconfig-exercise-1",
+        "title": "Config Validator",
+        "description": "Create a function that validates tsconfig compiler options. Check for common misconfigurations and return warnings.",
+        "starterCode": "// Create interface CompilerOptions with:\n// target: string, module: string, lib: string[],\n// outDir: string, rootDir: string, strict: boolean\n\n// Create validateConfig(options: CompilerOptions): string[]\n// Return array of warning messages:\n// - If target is 'ESNext', warn \"Use a specific target for libraries\"\n// - If strict is false, warn \"Enable strict mode for type safety\"\n// - If outDir === rootDir, warn \"outDir should differ from rootDir\"\n// - If lib does not include 'DOM' and target is for browser, warn \"Add DOM to lib for browser projects\"\n\n// Test with two different configs\n\n// Your code here",
+        "solution": "interface CompilerOptions {\n  target: string;\n  module: string;\n  lib: string[];\n  outDir: string;\n  rootDir: string;\n  strict: boolean;\n}\n\nfunction validateConfig(options: CompilerOptions): string[] {\n  const warnings: string[] = [];\n\n  if (options.target === 'ESNext') {\n    warnings.push('Use a specific target for libraries');\n  }\n  if (!options.strict) {\n    warnings.push('Enable strict mode for type safety');\n  }\n  if (options.outDir === options.rootDir) {\n    warnings.push('outDir should differ from rootDir');\n  }\n  if (!options.lib.includes('DOM')) {\n    warnings.push('Add DOM to lib for browser projects');\n  }\n\n  return warnings;\n}\n\nconst goodConfig: CompilerOptions = {\n  target: 'ES2020', module: 'ESNext', lib: ['ES2020', 'DOM'],\n  outDir: './dist', rootDir: './src', strict: true\n};\n\nconst badConfig: CompilerOptions = {\n  target: 'ESNext', module: 'CommonJS', lib: ['ES2015'],\n  outDir: './src', rootDir: './src', strict: false\n};\n\nconsole.log(`Good config warnings: ${validateConfig(goodConfig).length}`);\nconst badWarnings = validateConfig(badConfig);\nconsole.log(`Bad config warnings: ${badWarnings.length}`);\nbadWarnings.forEach(w => console.log(`- ${w}`));",
+        "expectedOutput": "Good config warnings: 0\nBad config warnings: 4\n- Use a specific target for libraries\n- Enable strict mode for type safety\n- outDir should differ from rootDir\n- Add DOM to lib for browser projects",
+        "hints": [
+          "Push a warning string into the array for each failing check. Return the array at the end.",
+          "Use Array.includes to check if 'DOM' is in the lib array."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "tsconfig-exercise-2",
+        "title": "Config Merger",
+        "description": "Implement a function that merges a base tsconfig with an override config, similar to how tsconfig 'extends' works. Arrays should be replaced, not merged.",
+        "starterCode": "// Create mergeConfig(base: Record<string, any>, override: Record<string, any>): Record<string, any>\n// For each key in override:\n//   - If the value is an object (not array), recursively merge\n//   - Otherwise, override replaces base\n\n// Test:\n// base = { target: 'ES2015', strict: false, lib: ['ES2015'], paths: { '@/*': ['src/*'] } }\n// override = { target: 'ES2020', strict: true, lib: ['ES2020', 'DOM'], paths: { '@utils/*': ['src/utils/*'] } }\n\n// Your code here",
+        "solution": "function mergeConfig(base: Record<string, any>, override: Record<string, any>): Record<string, any> {\n  const result: Record<string, any> = { ...base };\n\n  for (const key of Object.keys(override)) {\n    const baseVal = base[key];\n    const overrideVal = override[key];\n\n    if (\n      overrideVal !== null &&\n      typeof overrideVal === 'object' &&\n      !Array.isArray(overrideVal) &&\n      baseVal !== null &&\n      typeof baseVal === 'object' &&\n      !Array.isArray(baseVal)\n    ) {\n      result[key] = mergeConfig(baseVal, overrideVal);\n    } else {\n      result[key] = overrideVal;\n    }\n  }\n\n  return result;\n}\n\nconst base = { target: 'ES2015', strict: false, lib: ['ES2015'], paths: { '@/*': ['src/*'] } };\nconst override = { target: 'ES2020', strict: true, lib: ['ES2020', 'DOM'], paths: { '@utils/*': ['src/utils/*'] } };\n\nconst merged = mergeConfig(base, override);\nconsole.log(`target: ${merged.target}`);\nconsole.log(`strict: ${merged.strict}`);\nconsole.log(`lib: ${merged.lib.join(', ')}`);\nconsole.log(`paths: ${JSON.stringify(merged.paths)}`);",
+        "expectedOutput": "target: ES2020\nstrict: true\nlib: ES2020, DOM\npaths: {\"@/*\":[\"src/*\"],\"@utils/*\":[\"src/utils/*\"]}",
+        "hints": [
+          "Use typeof to check if a value is an object, and Array.isArray to distinguish objects from arrays.",
+          "Recursively merge when both the base and override values are plain objects. Otherwise, the override replaces the base."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "strict-mode-flags",
+    "sectionId": "configuration-and-tooling",
+    "orderIndex": 1,
+    "title": "Strict Mode Flags",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["strict", "strictNullChecks", "noImplicitAny", "strictFunctionTypes", "strictPropertyInitialization", "noImplicitReturns", "noUncheckedIndexedAccess"],
+    "content": {
+      "explanation": "TypeScript's strict mode is a meta-flag that enables a group of stricter type-checking options. When you set `strict: true` in tsconfig.json, it activates strictNullChecks, noImplicitAny, strictFunctionTypes, strictBindCallApply, strictPropertyInitialization, noImplicitThis, useUnknownInCatchVariables, and alwaysStrict. Each flag addresses a specific category of type safety issues, and understanding them individually is essential for interviews and debugging.\n\n`strictNullChecks` is arguably the most impactful flag. Without it, null and undefined are assignable to every type — a string variable could be null, and TypeScript would not warn you. With strictNullChecks enabled, null and undefined are only assignable to their own types and void. This forces you to handle null cases explicitly, preventing the most common runtime error in JavaScript: \"Cannot read property of null/undefined\".\n\n`noImplicitAny` prevents TypeScript from silently inferring the `any` type when it cannot determine a more specific type. Without this flag, function parameters without type annotations get the `any` type, effectively disabling type checking for those values. With noImplicitAny, you must provide explicit type annotations where inference is not possible, ensuring complete type coverage.\n\n`strictFunctionTypes` enables contravariant checking of function parameter types. Without it, function parameters are checked bivariantly — both covariantly and contravariantly — which is unsound. With strictFunctionTypes, assigning a function that accepts a base type to a variable typed to accept a derived type is correctly flagged as an error. This is particularly important when working with callback hierarchies and event handlers.",
+      "codeExamples": [
+        {
+          "title": "strictNullChecks in Action",
+          "code": "// With strictNullChecks: true\n// null and undefined are NOT assignable to other types\n\nfunction findUser(id: number): { name: string } | null {\n  if (id === 1) return { name: 'Alice' };\n  return null;\n}\n\nconst user = findUser(1);\n\n// Must check for null before accessing properties\nif (user !== null) {\n  console.log(`Found: ${user.name}`);\n} else {\n  console.log('User not found');\n}\n\n// Using optional chaining + nullish coalescing\nconst user2 = findUser(2);\nconsole.log(`Name: ${user2?.name ?? 'Unknown'}`);\n\n// Non-null assertion (use sparingly)\nconst user3 = findUser(1);\nconsole.log(`Asserted: ${user3!.name}`);",
+          "output": "Found: Alice\nName: Unknown\nAsserted: Alice",
+          "explanation": "strictNullChecks forces you to handle null explicitly. Use narrowing (if checks), optional chaining (?.), nullish coalescing (??), or non-null assertion (!) to access values that may be null."
+        },
+        {
+          "title": "noImplicitAny and Type Annotations",
+          "code": "// With noImplicitAny: true\n// Parameters without annotations cause errors if type cannot be inferred\n\n// ERROR without annotation: Parameter 'x' implicitly has an 'any' type\n// function double(x) { return x * 2; }\n\n// CORRECT: explicit annotation\nfunction double(x: number): number {\n  return x * 2;\n}\n\n// Inference works for variables — no annotation needed\nconst result = double(5); // TypeScript infers: number\nconsole.log(`Double: ${result}`);\n\n// Array methods infer callback types from the array\nconst numbers = [1, 2, 3, 4, 5];\nconst doubled = numbers.map(n => n * 2); // n is inferred as number\nconsole.log(`Doubled: ${doubled.join(', ')}`);\n\n// Object destructuring also infers\nconst config = { host: 'localhost', port: 3000 };\nconst { host, port } = config; // both correctly inferred\nconsole.log(`Server: ${host}:${port}`);",
+          "output": "Double: 10\nDoubled: 2, 4, 6, 8, 10\nServer: localhost:3000",
+          "explanation": "noImplicitAny requires explicit types where TypeScript cannot infer them — mainly function parameters. Variables, return values, and callback parameters are usually inferred."
+        },
+        {
+          "title": "strictFunctionTypes",
+          "code": "// strictFunctionTypes enables contravariant parameter checking\n\nclass Animal {\n  name: string;\n  constructor(name: string) { this.name = name; }\n}\n\nclass Dog extends Animal {\n  breed: string;\n  constructor(name: string, breed: string) {\n    super(name);\n    this.breed = breed;\n  }\n}\n\n// Function type hierarchy\ntype AnimalHandler = (animal: Animal) => void;\ntype DogHandler = (dog: Dog) => void;\n\n// Safe: AnimalHandler can be used where DogHandler is expected?\n// NO — with strictFunctionTypes, this would be an error:\n// const handler: DogHandler = (animal: Animal) => { ... }; // OK — accepting wider type\n// const handler: AnimalHandler = (dog: Dog) => { console.log(dog.breed); }; // ERROR — unsafe\n\n// Demonstration of why this matters\nconst animalHandler: AnimalHandler = (animal: Animal) => {\n  console.log(`Animal: ${animal.name}`);\n};\n\n// This is safe — handler accepts any Animal, Dog is an Animal\nconst dog = new Dog('Rex', 'Shepherd');\nanimalHandler(dog);\n\n// The reverse is unsafe because:\nconst dogHandler: DogHandler = (dog: Dog) => {\n  console.log(`Dog: ${dog.name}, Breed: ${dog.breed}`);\n};\ndogHandler(new Dog('Buddy', 'Labrador'));\n\nconsole.log('strictFunctionTypes prevents unsound assignments');",
+          "output": "Animal: Rex\nDog: Buddy, Breed: Labrador\nstrictFunctionTypes prevents unsound assignments",
+          "explanation": "strictFunctionTypes ensures that when assigning functions, parameter types are checked contravariantly. A function expecting a Dog parameter cannot be assigned where an Animal handler is expected, because it might access Dog-specific properties on a plain Animal."
+        }
+      ],
+      "notes": [
+        "Always enable 'strict: true' in new projects. It is much harder to enable strict mode retroactively in a large codebase.",
+        "strictNullChecks alone catches the majority of null-related runtime errors — it is the single most valuable strict flag.",
+        "noUncheckedIndexedAccess (not part of strict) adds undefined to array/object index access types — consider enabling it for extra safety."
+      ],
+      "commonPitfalls": [
+        "Disabling strictNullChecks to avoid null handling — this trades compile-time safety for runtime crashes. Use narrowing, optional chaining, or non-null assertion instead.",
+        "Using non-null assertion (!) everywhere to satisfy strictNullChecks — this bypasses the safety net. Prefer proper null checks or providing default values."
+      ],
+      "interviewTips": [
+        "Know all flags that 'strict: true' enables — interviewers may ask you to list them and explain what each does.",
+        "Be able to explain why strictFunctionTypes uses contravariant checking for parameters — it prevents assigning a handler that accesses derived-class properties to a base-class callback position.",
+        "Understand the difference between 'any' and 'unknown' in the context of noImplicitAny — unknown is the type-safe alternative that requires narrowing before use.",
+        "Explain how strictNullChecks changes the type system: without it, null is assignable to every type; with it, null is its own type that must be handled explicitly."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "strict-mode-exercise-1",
+        "title": "Null-Safe Data Access",
+        "description": "Write functions that safely access nested properties, demonstrating patterns used with strictNullChecks enabled.",
+        "starterCode": "// Create a function safeGet<T>(value: T | null | undefined, fallback: T): T\n// Returns value if it's not null/undefined, otherwise returns fallback\n\n// Create a function getNestedValue(obj: any, path: string, fallback: string): string\n// Splits path by '.' and traverses the object\n// Returns fallback if any step is null/undefined\n\n// Test:\n// safeGet(null, 'default')\n// safeGet('hello', 'default')\n// getNestedValue({ a: { b: { c: 'deep' } } }, 'a.b.c', 'N/A')\n// getNestedValue({ a: { b: null } }, 'a.b.c', 'N/A')\n// getNestedValue({}, 'x.y', 'N/A')\n\n// Your code here",
+        "solution": "function safeGet<T>(value: T | null | undefined, fallback: T): T {\n  return value !== null && value !== undefined ? value : fallback;\n}\n\nfunction getNestedValue(obj: any, path: string, fallback: string): string {\n  const keys = path.split('.');\n  let current = obj;\n  for (const key of keys) {\n    if (current === null || current === undefined) {\n      return fallback;\n    }\n    current = current[key];\n  }\n  return current !== null && current !== undefined ? String(current) : fallback;\n}\n\nconsole.log(safeGet(null, 'default'));\nconsole.log(safeGet('hello', 'default'));\nconsole.log(getNestedValue({ a: { b: { c: 'deep' } } }, 'a.b.c', 'N/A'));\nconsole.log(getNestedValue({ a: { b: null } }, 'a.b.c', 'N/A'));\nconsole.log(getNestedValue({}, 'x.y', 'N/A'));",
+        "expectedOutput": "default\nhello\ndeep\nN/A\nN/A",
+        "hints": [
+          "Use a !== null && a !== undefined check to determine if a value is present.",
+          "In getNestedValue, iterate through the path keys and check for null/undefined at each step before accessing the next level."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "strict-mode-exercise-2",
+        "title": "Type Guard Collection",
+        "description": "Build a set of type guard functions that help work with strict mode. These functions narrow types and eliminate null/undefined safely.",
+        "starterCode": "// Create these type guard functions:\n// isString(value: unknown): value is string\n// isNumber(value: unknown): value is number\n// isNonNull<T>(value: T | null | undefined): value is T\n// hasProperty<T extends object>(obj: T, key: string): boolean\n\n// Test each guard with various inputs and print the results\n// Use the guards to safely process an array of unknown values:\n// [42, 'hello', null, true, undefined, 'world', 7]\n// Filter to only strings, then only numbers\n\n// Your code here",
+        "solution": "function isString(value: unknown): value is string {\n  return typeof value === 'string';\n}\n\nfunction isNumber(value: unknown): value is number {\n  return typeof value === 'number';\n}\n\nfunction isNonNull<T>(value: T | null | undefined): value is T {\n  return value !== null && value !== undefined;\n}\n\nfunction hasProperty<T extends object>(obj: T, key: string): boolean {\n  return key in obj;\n}\n\nconst mixed: unknown[] = [42, 'hello', null, true, undefined, 'world', 7];\n\nconst strings = mixed.filter(isString);\nconsole.log(`Strings: ${strings.join(', ')}`);\n\nconst numbers = mixed.filter(isNumber);\nconsole.log(`Numbers: ${numbers.join(', ')}`);\n\nconst nonNull = mixed.filter(isNonNull);\nconsole.log(`Non-null count: ${nonNull.length}`);\n\nconst obj = { name: 'Alice', age: 30 };\nconsole.log(`Has name: ${hasProperty(obj, 'name')}`);\nconsole.log(`Has email: ${hasProperty(obj, 'email')}`);",
+        "expectedOutput": "Strings: hello, world\nNumbers: 42, 7\nNon-null count: 4\nHas name: true\nHas email: false",
+        "hints": [
+          "Type guard functions return 'value is Type' — this tells TypeScript to narrow the type in the truthy branch.",
+          "Use typeof checks for primitive types and !== null && !== undefined for the isNonNull guard."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "path-aliases",
+    "sectionId": "configuration-and-tooling",
+    "orderIndex": 2,
+    "title": "Path Aliases",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["paths", "baseUrl", "module aliases", "Vite resolve.alias", "tsconfig paths", "import mapping"],
+    "content": {
+      "explanation": "Path aliases transform long, fragile relative imports like `import { Button } from '../../../components/ui/Button'` into clean absolute-style imports like `import { Button } from '@/components/ui/Button'`. This dramatically improves code readability and makes refactoring easier since moving a file does not break its imports if you use aliases consistently. TypeScript supports path aliases natively through the `paths` and `baseUrl` options in tsconfig.json.\n\nThe `paths` option is a map of import patterns to file locations. Patterns can use wildcards: `@/*` matches anything starting with `@/`, and `*` captures the rest of the path. The value is an array of possible locations, checked in order. The `baseUrl` option sets the base directory for non-relative module resolution. In TypeScript 4.1+, `paths` can be used without `baseUrl`, but setting `baseUrl: \".\"` is still common for clarity.\n\nCritically, TypeScript path aliases only affect the type checker — they do not transform import paths in the compiled output. This means your bundler or runtime must also understand these aliases. For Vite projects, you configure `resolve.alias` in vite.config.ts. For Webpack, you use `resolve.alias` in webpack.config.js. For Jest, you use `moduleNameMapper`. For Node.js without a bundler, you need packages like `tsconfig-paths` or the newer `--experimental-specifier-resolution` flag.\n\nCommon alias patterns include `@/*` for the src directory root, `@components/*` for the components directory, `@utils/*` for utilities, and `@types/*` for shared type definitions. Some teams use shorter aliases like `~/*` instead of `@/*`. The key is consistency — pick a pattern and use it throughout the project. Avoid creating too many aliases, as they add cognitive overhead and require maintaining parallel configurations.",
+      "codeExamples": [
+        {
+          "title": "Configuring Path Aliases",
+          "code": "// tsconfig.json paths configuration\n// {\n//   \"compilerOptions\": {\n//     \"baseUrl\": \".\",\n//     \"paths\": {\n//       \"@/*\": [\"src/*\"],\n//       \"@components/*\": [\"src/components/*\"],\n//       \"@utils/*\": [\"src/utils/*\"],\n//       \"@hooks/*\": [\"src/hooks/*\"],\n//       \"@types/*\": [\"src/types/*\"]\n//     }\n//   }\n// }\n\n// Before aliases:\n// import { Button } from '../../../components/ui/Button';\n// import { formatDate } from '../../utils/date';\n// import { useAuth } from '../../../hooks/useAuth';\n\n// After aliases:\n// import { Button } from '@components/ui/Button';\n// import { formatDate } from '@utils/date';\n// import { useAuth } from '@hooks/useAuth';\n\n// Demonstrating the transformation\nconst imports = [\n  { before: '../../../components/ui/Button', after: '@components/ui/Button' },\n  { before: '../../utils/date', after: '@utils/date' },\n  { before: '../../../hooks/useAuth', after: '@hooks/useAuth' }\n];\n\nimports.forEach(({ before, after }) => {\n  console.log(`${before}`);\n  console.log(`  -> ${after}`);\n});",
+          "output": "../../../components/ui/Button\n  -> @components/ui/Button\n../../utils/date\n  -> @utils/date\n../../../hooks/useAuth\n  -> @hooks/useAuth",
+          "explanation": "Path aliases replace deeply nested relative imports with clean, absolute-style paths. This makes the codebase more readable and resilient to file moves."
+        },
+        {
+          "title": "Vite + TypeScript Alias Setup",
+          "code": "// vite.config.ts — must mirror tsconfig paths\n// import { defineConfig } from 'vite';\n// import path from 'path';\n//\n// export default defineConfig({\n//   resolve: {\n//     alias: {\n//       '@': path.resolve(__dirname, 'src'),\n//       '@components': path.resolve(__dirname, 'src/components'),\n//       '@utils': path.resolve(__dirname, 'src/utils'),\n//     }\n//   }\n// });\n\n// Simulating alias resolution for both TS and Vite\ninterface AliasConfig {\n  pattern: string;\n  tsPath: string;\n  vitePath: string;\n}\n\nconst aliases: AliasConfig[] = [\n  { pattern: '@/*', tsPath: 'src/*', vitePath: 'path.resolve(__dirname, \"src\")' },\n  { pattern: '@components/*', tsPath: 'src/components/*', vitePath: 'path.resolve(__dirname, \"src/components\")' },\n  { pattern: '@utils/*', tsPath: 'src/utils/*', vitePath: 'path.resolve(__dirname, \"src/utils\")' }\n];\n\nconsole.log('TypeScript paths:');\naliases.forEach(a => console.log(`  \"${a.pattern}\": [\"${a.tsPath}\"]`));\nconsole.log('\\nVite resolve.alias:');\naliases.forEach(a => console.log(`  \"${a.pattern.replace('/*', '')}\": ${a.vitePath}`));",
+          "output": "TypeScript paths:\n  \"@/*\": [\"src/*\"]\n  \"@components/*\": [\"src/components/*\"]\n  \"@utils/*\": [\"src/utils/*\"]\n\nVite resolve.alias:\n  \"@\": path.resolve(__dirname, \"src\")\n  \"@components\": path.resolve(__dirname, \"src/components\")\n  \"@utils\": path.resolve(__dirname, \"src/utils\")",
+          "explanation": "Path aliases require dual configuration — tsconfig.json for TypeScript type checking, and vite.config.ts (or webpack.config.js) for runtime resolution."
+        }
+      ],
+      "notes": [
+        "Path aliases in tsconfig only affect type checking — you must configure your bundler (Vite, Webpack) separately for runtime resolution.",
+        "Use the '@/' prefix as a convention for the src root. This is widely recognized and does not conflict with npm package names.",
+        "When using Jest with path aliases, configure 'moduleNameMapper' in jest.config.js to mirror your tsconfig paths."
+      ],
+      "commonPitfalls": [
+        "Configuring paths in tsconfig.json but not in the bundler — TypeScript will type-check correctly but the application will fail to build or run.",
+        "Creating circular dependencies through aliases — aliased imports can mask circular dependencies that would be obvious with relative paths."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "path-aliases-exercise-1",
+        "title": "Alias Resolver",
+        "description": "Build a function that resolves aliased import paths to their actual file paths based on a provided alias configuration.",
+        "starterCode": "// Create resolveImport(importPath: string, aliases: Record<string, string>, baseDir: string): string\n// The aliases map patterns like '@components' to directory paths like 'src/components'\n// If import starts with an alias, replace it with the directory path\n// Prepend baseDir to the result\n// If no alias matches, return the import path as-is\n\n// Test with:\n// aliases = { '@': 'src', '@components': 'src/components', '@utils': 'src/utils' }\n// baseDir = '/project'\n// resolve '@components/Button'\n// resolve '@utils/date'\n// resolve '@/App'\n// resolve './local'\n\n// Your code here",
+        "solution": "function resolveImport(importPath: string, aliases: Record<string, string>, baseDir: string): string {\n  const sortedAliases = Object.entries(aliases).sort((a, b) => b[0].length - a[0].length);\n\n  for (const [alias, dir] of sortedAliases) {\n    if (importPath.startsWith(alias + '/') || importPath === alias) {\n      const rest = importPath.slice(alias.length);\n      return `${baseDir}/${dir}${rest}`;\n    }\n  }\n  return importPath;\n}\n\nconst aliases = { '@': 'src', '@components': 'src/components', '@utils': 'src/utils' };\nconst baseDir = '/project';\n\nconsole.log(resolveImport('@components/Button', aliases, baseDir));\nconsole.log(resolveImport('@utils/date', aliases, baseDir));\nconsole.log(resolveImport('@/App', aliases, baseDir));\nconsole.log(resolveImport('./local', aliases, baseDir));",
+        "expectedOutput": "/project/src/components/Button\n/project/src/utils/date\n/project/src/App\n./local",
+        "hints": [
+          "Sort aliases by length (longest first) to match '@components' before '@' — otherwise '@/components/Button' would match '@' first.",
+          "Check if the import starts with the alias followed by '/' to avoid partial matches."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "path-aliases-exercise-2",
+        "title": "Config Synchronizer",
+        "description": "Write a function that takes tsconfig paths and generates the equivalent Vite alias configuration, ensuring both stay in sync.",
+        "starterCode": "// Given tsconfig paths like:\n// { \"@/*\": [\"src/*\"], \"@components/*\": [\"src/components/*\"] }\n\n// Generate vite aliases like:\n// { \"@\": \"/project/src\", \"@components\": \"/project/src/components\" }\n\n// Create tsconfigToViteAliases(paths: Record<string, string[]>, projectRoot: string): Record<string, string>\n// Strip '/*' from keys and values, prepend projectRoot to values\n\n// Test with paths:\n// { '@/*': ['src/*'], '@components/*': ['src/components/*'], '@utils/*': ['src/utils/*'] }\n// projectRoot: '/home/user/project'\n\n// Your code here",
+        "solution": "function tsconfigToViteAliases(paths: Record<string, string[]>, projectRoot: string): Record<string, string> {\n  const aliases: Record<string, string> = {};\n\n  for (const [pattern, targets] of Object.entries(paths)) {\n    const alias = pattern.replace('/*', '');\n    const target = targets[0].replace('/*', '');\n    aliases[alias] = `${projectRoot}/${target}`;\n  }\n\n  return aliases;\n}\n\nconst tsconfigPaths = {\n  '@/*': ['src/*'],\n  '@components/*': ['src/components/*'],\n  '@utils/*': ['src/utils/*']\n};\n\nconst viteAliases = tsconfigToViteAliases(tsconfigPaths, '/home/user/project');\n\nfor (const [alias, path] of Object.entries(viteAliases)) {\n  console.log(`\"${alias}\": \"${path}\"`);\n}",
+        "expectedOutput": "\"@\": \"/home/user/project/src\"\n\"@components\": \"/home/user/project/src/components\"\n\"@utils\": \"/home/user/project/src/utils\"",
+        "hints": [
+          "Use String.replace('/*', '') to strip the wildcard suffix from both the key and value.",
+          "The targets array may have multiple entries; use the first one (targets[0]) as the primary resolution path."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "project-references",
+    "sectionId": "configuration-and-tooling",
+    "orderIndex": 3,
+    "title": "Project References",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["composite projects", "build mode", "project references", "incremental builds", "tsc --build", "declaration maps"],
+    "content": {
+      "explanation": "TypeScript project references allow you to structure a large codebase as multiple smaller TypeScript projects that reference each other. Each sub-project has its own tsconfig.json with `composite: true`, and the root project lists them in the `references` array. This enables incremental builds — TypeScript only recompiles projects whose source files have changed, dramatically improving build times in large monorepos.\n\nThe `composite: true` flag is required in every referenced project's tsconfig.json. It enforces two rules: `declaration` must be true (so other projects can consume the types), and all source files must be matched by the `include` patterns. This ensures that TypeScript can reliably determine the project's public API from its declaration files without needing to re-parse source code.\n\nTo build a project with references, you use `tsc --build` (or `tsc -b`) instead of plain `tsc`. Build mode understands the dependency graph between projects and builds them in the correct order. It checks file timestamps and only rebuilds projects that are out of date. The `--clean` flag removes all build outputs, and `--force` rebuilds everything regardless of timestamps.\n\nDeclaration maps (`declarationMap: true`) are a companion feature that creates .d.ts.map files alongside your declarations. These maps allow your IDE to navigate from a type declaration directly to its source implementation in the referenced project, rather than landing on the .d.ts file. This is essential for a smooth development experience in multi-project setups, enabling features like Go to Definition and Rename across project boundaries.",
+      "codeExamples": [
+        {
+          "title": "Project References Structure",
+          "code": "// Monorepo structure with project references:\n// packages/\n//   shared/\n//     tsconfig.json    { composite: true, declaration: true }\n//     src/types.ts\n//   server/\n//     tsconfig.json    { references: [{ path: \"../shared\" }] }\n//     src/index.ts     (imports from shared)\n//   client/\n//     tsconfig.json    { references: [{ path: \"../shared\" }] }\n//     src/App.tsx      (imports from shared)\n// tsconfig.json        { references: [...all packages] }\n\n// Simulating the project structure\ninterface ProjectConfig {\n  name: string;\n  composite: boolean;\n  references: string[];\n  files: string[];\n}\n\nconst projects: ProjectConfig[] = [\n  { name: 'shared', composite: true, references: [], files: ['types.ts', 'utils.ts'] },\n  { name: 'server', composite: true, references: ['shared'], files: ['index.ts', 'routes.ts'] },\n  { name: 'client', composite: true, references: ['shared'], files: ['App.tsx', 'main.tsx'] }\n];\n\nfunction buildOrder(projects: ProjectConfig[]): string[] {\n  const built = new Set<string>();\n  const order: string[] = [];\n\n  function build(name: string): void {\n    if (built.has(name)) return;\n    const project = projects.find(p => p.name === name)!;\n    project.references.forEach(ref => build(ref));\n    built.add(name);\n    order.push(name);\n  }\n\n  projects.forEach(p => build(p.name));\n  return order;\n}\n\nconsole.log(`Build order: ${buildOrder(projects).join(' -> ')}`);\nprojects.forEach(p => {\n  console.log(`${p.name}: ${p.files.length} files, refs: [${p.references.join(', ') || 'none'}]`);\n});",
+          "output": "Build order: shared -> server -> client\nshared: 2 files, refs: [none]\nserver: 2 files, refs: [shared]\nclient: 2 files, refs: [shared]",
+          "explanation": "tsc --build resolves the dependency graph and builds projects in topological order. Shared dependencies are built first, then consumers."
+        },
+        {
+          "title": "Composite Project Config",
+          "code": "// A composite project's tsconfig.json:\n// {\n//   \"compilerOptions\": {\n//     \"composite\": true,\n//     \"declaration\": true,\n//     \"declarationMap\": true,\n//     \"outDir\": \"./dist\",\n//     \"rootDir\": \"./src\"\n//   },\n//   \"include\": [\"src/**/*\"]\n// }\n\n// Checking composite requirements\ninterface CompositeConfig {\n  composite: boolean;\n  declaration: boolean;\n  declarationMap: boolean;\n  outDir: string;\n  include: string[];\n}\n\nfunction validateComposite(config: CompositeConfig): string[] {\n  const errors: string[] = [];\n  if (config.composite && !config.declaration) {\n    errors.push('composite requires declaration: true');\n  }\n  if (config.composite && config.include.length === 0) {\n    errors.push('composite requires include patterns');\n  }\n  if (config.composite && !config.outDir) {\n    errors.push('composite projects should have outDir');\n  }\n  if (errors.length === 0) {\n    errors.push('Configuration is valid');\n  }\n  return errors;\n}\n\nconst validConfig: CompositeConfig = {\n  composite: true, declaration: true, declarationMap: true,\n  outDir: './dist', include: ['src/**/*']\n};\n\nconst invalidConfig: CompositeConfig = {\n  composite: true, declaration: false, declarationMap: false,\n  outDir: '', include: []\n};\n\nconsole.log('Valid config:');\nvalidateComposite(validConfig).forEach(m => console.log(`  ${m}`));\nconsole.log('Invalid config:');\nvalidateComposite(invalidConfig).forEach(m => console.log(`  ${m}`));",
+          "output": "Valid config:\n  Configuration is valid\nInvalid config:\n  composite requires declaration: true\n  composite requires include patterns\n  composite projects should have outDir",
+          "explanation": "Composite projects must have declaration: true and include patterns. These constraints ensure reliable incremental builds."
+        },
+        {
+          "title": "Incremental Build Simulation",
+          "code": "// Simulating incremental build behavior\ninterface BuildState {\n  project: string;\n  lastBuildTime: number;\n  lastModifiedTime: number;\n}\n\nfunction needsRebuild(state: BuildState): boolean {\n  return state.lastModifiedTime > state.lastBuildTime;\n}\n\nfunction incrementalBuild(states: BuildState[]): string[] {\n  const rebuilt: string[] = [];\n  for (const state of states) {\n    if (needsRebuild(state)) {\n      rebuilt.push(state.project);\n      state.lastBuildTime = Date.now();\n    }\n  }\n  return rebuilt;\n}\n\nconst now = Date.now();\nconst states: BuildState[] = [\n  { project: 'shared', lastBuildTime: now - 1000, lastModifiedTime: now - 500 },\n  { project: 'server', lastBuildTime: now - 1000, lastModifiedTime: now - 2000 },\n  { project: 'client', lastBuildTime: now - 1000, lastModifiedTime: now - 100 }\n];\n\nconst rebuilt = incrementalBuild(states);\nconsole.log(`Projects rebuilt: ${rebuilt.join(', ')}`);\nconsole.log(`Projects skipped: ${states.filter(s => !rebuilt.includes(s.project)).map(s => s.project).join(', ')}`);\nconsole.log(`Total: ${rebuilt.length} rebuilt, ${states.length - rebuilt.length} skipped`);",
+          "output": "Projects rebuilt: shared, client\nProjects skipped: server\nTotal: 2 rebuilt, 1 skipped",
+          "explanation": "Incremental builds compare file modification times with the last build time. Only projects with changes since the last build are recompiled."
+        }
+      ],
+      "notes": [
+        "Use 'tsc --build' (not plain 'tsc') when working with project references — it understands the dependency graph and builds in correct order.",
+        "Enable 'declarationMap: true' for a better IDE experience — it lets Go to Definition jump to source code instead of .d.ts files.",
+        "Project references are most valuable in monorepos with shared packages — they enable faster builds and clearer dependency boundaries."
+      ],
+      "commonPitfalls": [
+        "Running 'tsc' instead of 'tsc --build' in a project with references — plain tsc does not resolve references or build dependencies.",
+        "Forgetting to set 'composite: true' in a referenced project — the referencing project will fail to build with a clear but confusing error."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "project-references-exercise-1",
+        "title": "Dependency Graph Builder",
+        "description": "Build a function that computes the correct build order for a set of projects with dependencies, using topological sorting.",
+        "starterCode": "// Define Project interface: { name: string, dependencies: string[] }\n// Create function getBuildOrder(projects: Project[]): string[]\n// Return project names in topological order (dependencies first)\n\n// Test with:\n// shared -> no deps\n// utils -> depends on shared\n// server -> depends on shared, utils\n// client -> depends on shared, utils\n\n// Your code here",
+        "solution": "interface Project {\n  name: string;\n  dependencies: string[];\n}\n\nfunction getBuildOrder(projects: Project[]): string[] {\n  const order: string[] = [];\n  const visited = new Set<string>();\n\n  function visit(name: string): void {\n    if (visited.has(name)) return;\n    visited.add(name);\n    const project = projects.find(p => p.name === name);\n    if (project) {\n      project.dependencies.forEach(dep => visit(dep));\n    }\n    order.push(name);\n  }\n\n  projects.forEach(p => visit(p.name));\n  return order;\n}\n\nconst projects: Project[] = [\n  { name: 'shared', dependencies: [] },\n  { name: 'utils', dependencies: ['shared'] },\n  { name: 'server', dependencies: ['shared', 'utils'] },\n  { name: 'client', dependencies: ['shared', 'utils'] }\n];\n\nconst order = getBuildOrder(projects);\nconsole.log(`Build order: ${order.join(' -> ')}`);\nconsole.log(`Total projects: ${order.length}`);",
+        "expectedOutput": "Build order: shared -> utils -> server -> client\nTotal projects: 4",
+        "hints": [
+          "Use a recursive depth-first traversal — visit all dependencies before adding the current project to the order.",
+          "Track visited nodes with a Set to avoid processing the same project twice."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "project-references-exercise-2",
+        "title": "Incremental Build Checker",
+        "description": "Create a system that determines which projects need rebuilding based on file changes and dependency relationships.",
+        "starterCode": "// Create interface BuildInfo:\n// { name: string, deps: string[], lastBuild: number, lastChange: number }\n\n// Create function getProjectsToRebuild(projects: BuildInfo[]): string[]\n// A project needs rebuild if:\n//   1. Its lastChange > lastBuild (source changed)\n//   2. Any of its dependencies need rebuild (transitive)\n// Return names in build order\n\n// Test with 4 projects where only 'shared' has changed\n\n// Your code here",
+        "solution": "interface BuildInfo {\n  name: string;\n  deps: string[];\n  lastBuild: number;\n  lastChange: number;\n}\n\nfunction getProjectsToRebuild(projects: BuildInfo[]): string[] {\n  const needsRebuild = new Set<string>();\n  const projectMap = new Map(projects.map(p => [p.name, p]));\n\n  function check(name: string): boolean {\n    if (needsRebuild.has(name)) return true;\n    const project = projectMap.get(name);\n    if (!project) return false;\n\n    const selfChanged = project.lastChange > project.lastBuild;\n    const depChanged = project.deps.some(dep => check(dep));\n\n    if (selfChanged || depChanged) {\n      needsRebuild.add(name);\n      return true;\n    }\n    return false;\n  }\n\n  projects.forEach(p => check(p.name));\n\n  // Return in build order (deps first)\n  const order: string[] = [];\n  const visited = new Set<string>();\n  function visit(name: string): void {\n    if (visited.has(name) || !needsRebuild.has(name)) return;\n    visited.add(name);\n    const project = projectMap.get(name);\n    if (project) project.deps.forEach(d => visit(d));\n    order.push(name);\n  }\n  projects.forEach(p => visit(p.name));\n  return order;\n}\n\nconst now = 1000;\nconst projects: BuildInfo[] = [\n  { name: 'shared', deps: [], lastBuild: 500, lastChange: 800 },\n  { name: 'utils', deps: ['shared'], lastBuild: 500, lastChange: 400 },\n  { name: 'server', deps: ['shared', 'utils'], lastBuild: 500, lastChange: 400 },\n  { name: 'client', deps: ['utils'], lastBuild: 500, lastChange: 400 }\n];\n\nconst toRebuild = getProjectsToRebuild(projects);\nconsole.log(`Need rebuild: ${toRebuild.join(' -> ')}`);\nconsole.log(`Can skip: ${projects.filter(p => !toRebuild.includes(p.name)).map(p => p.name).join(', ') || 'none'}`);",
+        "expectedOutput": "Need rebuild: shared -> utils -> server -> client\nCan skip: none",
+        "hints": [
+          "A project needs rebuilding if its own files changed OR if any of its dependencies need rebuilding (transitive dependency).",
+          "Use recursion to check dependencies — if a dependency needs rebuild, all projects depending on it also need rebuild."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

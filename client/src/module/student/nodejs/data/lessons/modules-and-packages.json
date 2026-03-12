@@ -1,0 +1,295 @@
+[
+  {
+    "id": "commonjs-modules",
+    "sectionId": "modules-and-packages",
+    "orderIndex": 0,
+    "title": "CommonJS Modules",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["require", "module.exports", "exports", "Module Resolution", "Module Caching"],
+    "content": {
+      "explanation": "Node.js was built with a module system called CommonJS (CJS) that allows you to split your code into separate files and share functionality between them. Every file in Node.js is treated as a separate module with its own scope. Variables, functions, and classes defined in one file are private to that file unless explicitly exported. This encapsulation prevents naming collisions and encourages modular, maintainable code.\n\nTo export values from a module, you use module.exports or the exports shorthand. module.exports is the actual object that gets returned when another file requires your module. By default, it is an empty object {}. You can assign a single value (a function, class, or object) directly to module.exports, or you can add properties to it. The exports variable is a reference to module.exports, so adding properties to exports (like exports.myFunc = ...) also adds them to module.exports. However, reassigning exports directly (exports = something) breaks the reference and does not work.\n\nTo import values from another module, you use the require() function. When you call require('./myModule'), Node.js loads the file, executes it, and returns whatever module.exports was set to. The path can be a relative path (starting with ./ or ../), an absolute path, or a module name (for built-in modules like 'fs' or npm packages). For relative paths, Node.js resolves .js, .json, and .node extensions automatically, and if the path points to a directory, it looks for an index.js file inside.\n\nNode.js caches modules after the first require() call. If you require the same module from multiple files, the module code runs only once and the same exported object is returned each time. This means if a module exports an object and one file modifies that object, the change is visible to all other files that require the same module. Module caching is based on the resolved filename, so requiring './utils' and requiring '/home/user/project/utils' for the same file results in a cache hit.\n\nThe module resolution algorithm follows a specific order: (1) core modules like fs, path, http always take priority, (2) relative paths (./file or ../file) resolve relative to the current file, (3) for bare module names like 'express', Node.js walks up the directory tree checking each node_modules folder until it finds the package or reaches the root. Understanding this algorithm helps you debug situations where the wrong version of a module is loaded.",
+      "codeExamples": [
+        {
+          "title": "Exporting and Importing with module.exports",
+          "code": "// --- math.js ---\nfunction add(a, b) {\n  return a + b;\n}\n\nfunction subtract(a, b) {\n  return a - b;\n}\n\n// Export multiple functions\nmodule.exports = { add, subtract };\n\n// --- app.js ---\nconst { add, subtract } = require('./math');\n\nconsole.log(add(10, 5));\nconsole.log(subtract(10, 5));\n\n// You can also import the whole object\nconst math = require('./math');\nconsole.log(math.add(3, 4));",
+          "output": "15\n5\n7",
+          "explanation": "module.exports is set to an object containing both functions. When requiring, you can destructure to get individual functions or import the entire object. The .js extension is optional in require paths."
+        },
+        {
+          "title": "exports Shorthand vs module.exports",
+          "code": "// --- logger.js ---\n// Using exports shorthand (adds to module.exports)\nexports.info = (msg) => console.log(`[INFO] ${msg}`);\nexports.warn = (msg) => console.log(`[WARN] ${msg}`);\nexports.error = (msg) => console.log(`[ERROR] ${msg}`);\n\n// --- counter.js ---\n// Exporting a single value (must use module.exports)\nlet count = 0;\nmodule.exports = {\n  increment() { return ++count; },\n  decrement() { return --count; },\n  getCount() { return count; }\n};\n\n// --- app.js ---\nconst logger = require('./logger');\nconst counter = require('./counter');\n\nlogger.info('Starting app');\nconsole.log(counter.increment());\nconsole.log(counter.increment());\nconsole.log(counter.getCount());\nlogger.warn('Counter is at ' + counter.getCount());",
+          "output": "[INFO] Starting app\n1\n2\n2\n[WARN] Counter is at 2",
+          "explanation": "The exports shorthand works for adding named exports. For exporting a single constructor, class, or specific object, use module.exports directly. The counter module demonstrates that the private 'count' variable maintains state across requires due to module caching."
+        },
+        {
+          "title": "Module Caching Behavior",
+          "code": "// --- config.js ---\nconsole.log('Config module loaded');\nmodule.exports = {\n  dbHost: 'localhost',\n  dbPort: 5432\n};\n\n// --- app.js ---\n// First require: executes config.js and caches result\nconst config1 = require('./config');\nconsole.log('First require:', config1.dbHost);\n\n// Second require: returns cached module (no re-execution)\nconst config2 = require('./config');\nconsole.log('Second require:', config2.dbHost);\n\n// Both references point to the same object\nconfig1.dbHost = 'production-server';\nconsole.log('config2 sees change:', config2.dbHost);\nconsole.log('Same object?', config1 === config2);",
+          "output": "Config module loaded\nFirst require: localhost\nSecond require: localhost\nconfig2 sees change: production-server\nSame object? true",
+          "explanation": "'Config module loaded' prints only once because Node.js caches the module after the first require. Both config1 and config2 reference the exact same object. Modifying one affects the other. This is why singleton patterns work naturally with CommonJS modules."
+        }
+      ],
+      "notes": [
+        "Every CommonJS module is wrapped in a function: (function(exports, require, module, __filename, __dirname) { ... }). This is why these variables are available in every file.",
+        "require() is synchronous. It blocks execution until the module is loaded and evaluated. This is fine at startup but avoid dynamic requires in hot paths.",
+        "JSON files can be required directly: const data = require('./data.json'). Node.js parses them and returns a JavaScript object."
+      ],
+      "commonPitfalls": [
+        "Reassigning exports directly: exports = { func: myFunc } does NOT work because it breaks the reference to module.exports. Always use module.exports for full replacement.",
+        "Circular dependencies: if module A requires module B which requires module A, you get a partially loaded module. Restructure your code to avoid circular requires.",
+        "Forgetting that require is cached. If you expect a module to run its code again on each require, you will be surprised. Delete require.cache[modulePath] to force a reload (not recommended in production)."
+      ],
+      "interviewTips": [
+        "Explain the difference between module.exports and exports: exports is just a reference to module.exports. Reassigning exports breaks the reference.",
+        "Know the module resolution algorithm: core modules > relative paths > node_modules walk up the directory tree."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "commonjs-modules-ex1",
+        "title": "Create a Utility Module",
+        "description": "Create a module that exports two functions: 'capitalize' (takes a string and returns it with the first letter uppercase) and 'reverse' (takes a string and returns it reversed). Then require and use both functions.",
+        "starterCode": "// Pretend this is utils.js\nfunction capitalize(str) {\n  // Return string with first letter uppercased\n}\n\nfunction reverse(str) {\n  // Return reversed string\n}\n\n// Export both functions\n\n// Pretend this is app.js\n// const { capitalize, reverse } = require('./utils');\nconsole.log(capitalize('hello'));\nconsole.log(reverse('hello'));\n",
+        "solution": "function capitalize(str) {\n  return str.charAt(0).toUpperCase() + str.slice(1);\n}\n\nfunction reverse(str) {\n  return str.split('').reverse().join('');\n}\n\nmodule.exports = { capitalize, reverse };\n\n// In app.js you would do:\n// const { capitalize, reverse } = require('./utils');\nconsole.log(capitalize('hello'));\nconsole.log(reverse('hello'));",
+        "expectedOutput": "Hello\nolleh",
+        "hints": [
+          "Use charAt(0).toUpperCase() + str.slice(1) to capitalize",
+          "Use split('').reverse().join('') to reverse a string"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "es-modules-in-node",
+    "sectionId": "modules-and-packages",
+    "orderIndex": 1,
+    "title": "ES Modules in Node",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["import/export", ".mjs Extension", "package.json type Field", "Named Exports", "Default Exports", "Interop"],
+    "content": {
+      "explanation": "ES Modules (ESM) are the official JavaScript module standard defined in the ECMAScript specification. While CommonJS was Node.js's original module system, ES Modules are the future of JavaScript modules and work in both browsers and Node.js. Node.js has supported ES Modules since version 12 (behind a flag) and fully since version 14. Understanding both systems and their interoperability is essential for modern Node.js development.\n\nThere are two ways to enable ES Modules in Node.js. The first is to use the .mjs file extension instead of .js. Any file ending in .mjs is treated as an ES Module regardless of any other configuration. The second is to add \"type\": \"module\" to the nearest package.json file. When this field is set, all .js files in that package are treated as ES Modules. If you need a CommonJS file in a \"type\": \"module\" package, use the .cjs extension. The package.json approach is the most common in modern projects.\n\nES Modules use import and export statements instead of require and module.exports. Named exports allow you to export multiple values: 'export function add() {}' or 'export const PI = 3.14'. A module can also have a single default export: 'export default class Calculator {}'. When importing, named exports require curly braces: 'import { add, PI } from \"./math.js\"', while default exports do not: 'import Calculator from \"./calc.js\"'. Unlike CommonJS, import statements are static and must be at the top level of the file (not inside if blocks or functions).\n\nThere are several key differences between ESM and CJS that you must understand. ES Modules are loaded asynchronously while CommonJS is synchronous. ESM uses static analysis (imports are resolved before execution) while CJS is dynamic (require can be called conditionally at runtime). In ESM, __dirname and __filename are NOT available; instead you use import.meta.url. ESM files must always include the file extension in import paths: 'import { x } from \"./file.js\"' (not './file'). ESM exports are live bindings (changes to exported values are reflected in importers) while CJS exports are value copies.\n\nInteroperability between ESM and CJS modules is possible but has some rough edges. An ES Module can import a CommonJS module using a default import: 'import express from \"express\"'. However, a CommonJS module cannot use 'require' to load an ES Module synchronously. Instead, you must use dynamic import: 'const mod = await import(\"./esm-module.mjs\")'. This asymmetry is because ESM loading is asynchronous. Most popular npm packages now support both module systems through conditional exports in package.json.",
+      "codeExamples": [
+        {
+          "title": "Named and Default Exports",
+          "code": "// --- math.mjs (or math.js with \"type\": \"module\" in package.json) ---\n\n// Named exports\nexport function add(a, b) {\n  return a + b;\n}\n\nexport function multiply(a, b) {\n  return a * b;\n}\n\nexport const PI = 3.14159;\n\n// Default export\nexport default class Calculator {\n  constructor() {\n    this.history = [];\n  }\n  compute(a, op, b) {\n    const ops = { '+': add, '*': multiply };\n    const result = ops[op](a, b);\n    this.history.push(`${a} ${op} ${b} = ${result}`);\n    return result;\n  }\n}\n\n// --- app.mjs ---\nimport Calculator, { add, multiply, PI } from './math.mjs';\n\nconsole.log(add(2, 3));\nconsole.log(multiply(4, 5));\nconsole.log('PI:', PI);\n\nconst calc = new Calculator();\nconsole.log(calc.compute(10, '+', 5));\nconsole.log(calc.history);",
+          "output": "5\n20\nPI: 3.14159\n15\n['10 + 5 = 15']",
+          "explanation": "Named exports are imported with curly braces. The default export is imported without braces and can be given any name. A module can have multiple named exports but only one default export."
+        },
+        {
+          "title": "Replacing __dirname and __filename in ESM",
+          "code": "// In CommonJS:\n// console.log(__dirname);\n// console.log(__filename);\n\n// In ES Modules, use import.meta.url:\nimport { fileURLToPath } from 'url';\nimport { dirname, join } from 'path';\n\nconst __filename = fileURLToPath(import.meta.url);\nconst __dirname = dirname(__filename);\n\nconsole.log('Current file:', __filename);\nconsole.log('Current dir:', __dirname);\n\n// Building paths relative to the current file\nconst configPath = join(__dirname, 'config', 'settings.json');\nconsole.log('Config path:', configPath);\n\n// import.meta.url gives a file:// URL\nconsole.log('Raw URL:', import.meta.url);",
+          "output": "Current file: /home/user/project/app.mjs\nCurrent dir: /home/user/project\nConfig path: /home/user/project/config/settings.json\nRaw URL: file:///home/user/project/app.mjs",
+          "explanation": "import.meta.url provides the file URL of the current module. Use fileURLToPath to convert it to a regular path. This two-line pattern replaces __dirname and __filename in ES Modules."
+        },
+        {
+          "title": "Dynamic Imports",
+          "code": "// Dynamic import works in both ESM and CJS\n// Returns a Promise, so you can use it with await\n\nasync function loadModule(moduleName) {\n  try {\n    const mod = await import(moduleName);\n    return mod;\n  } catch (err) {\n    console.log(`Failed to load ${moduleName}:`, err.message);\n    return null;\n  }\n}\n\n// Conditional loading\nasync function main() {\n  const os = await import('os');\n  console.log('Platform:', os.platform());\n  console.log('CPUs:', os.cpus().length);\n\n  // Dynamic import is the only way to load ESM from CJS\n  // and to do conditional/lazy loading in ESM\n  const moduleName = 'path';\n  const pathMod = await import(moduleName);\n  console.log('Separator:', pathMod.sep);\n}\n\nmain();",
+          "output": "Platform: linux\nCPUs: 4\nSeparator: /",
+          "explanation": "Dynamic import() returns a Promise and works everywhere. It is the only way to import ES Modules from CommonJS code and enables code splitting and lazy loading patterns."
+        }
+      ],
+      "notes": [
+        "In ES Modules, you MUST include file extensions in relative imports: import { x } from './file.js', not './file'. Node.js does not auto-resolve extensions in ESM.",
+        "ES Module exports are live bindings. If the exporting module changes a value, the importing module sees the updated value. CommonJS exports are static copies.",
+        "Top-level await is supported in ES Modules: you can write 'const data = await fetch(url)' at the module level without wrapping it in an async function."
+      ],
+      "commonPitfalls": [
+        "Omitting file extensions in ESM imports. Unlike CommonJS, Node.js requires explicit extensions (.js, .mjs, .json) when using ES Modules.",
+        "Trying to use require() in an ES Module file. ESM files use import/export. If you need dynamic loading, use import() instead.",
+        "Mixing \"type\": \"module\" in package.json without updating all files. Existing CommonJS files in the package will break unless renamed to .cjs."
+      ],
+      "interviewTips": [
+        "Know the key differences: ESM is async and static, CJS is sync and dynamic. ESM has live bindings, CJS has value copies.",
+        "Explain how to enable ESM in Node.js: either .mjs extension or \"type\": \"module\" in package.json."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "es-modules-in-node-ex1",
+        "title": "Convert CJS to ESM",
+        "description": "Convert the following CommonJS code to ES Module syntax. The module exports an 'add' function and a 'PI' constant using named exports. Write both the module file (math.mjs) and the importing file (app.mjs).",
+        "starterCode": "// Original CJS (math.js):\n// const PI = 3.14159;\n// function add(a, b) { return a + b; }\n// module.exports = { PI, add };\n\n// Original CJS (app.js):\n// const { PI, add } = require('./math');\n// console.log(add(PI, 1));\n\n// Convert to ESM below:\n",
+        "solution": "// math.mjs\nexport const PI = 3.14159;\nexport function add(a, b) { return a + b; }\n\n// app.mjs\n// import { PI, add } from './math.mjs';\nconst PI = 3.14159;\nfunction add(a, b) { return a + b; }\nconsole.log(add(PI, 1));",
+        "expectedOutput": "4.14159",
+        "hints": [
+          "Replace module.exports with export keyword on each declaration",
+          "Replace require() with import { } from './math.mjs'"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "npm-basics",
+    "sectionId": "modules-and-packages",
+    "orderIndex": 2,
+    "title": "npm Basics",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["npm init", "npm install", "npm scripts", "devDependencies", "Lock Files", "npx"],
+    "content": {
+      "explanation": "npm (Node Package Manager) is the default package manager for Node.js and the world's largest software registry with over two million packages. It consists of three components: the npm CLI tool (installed with Node.js), the online registry (npmjs.com) where packages are published, and the website for browsing and searching packages. Understanding npm is essential because virtually every Node.js project depends on third-party packages.\n\nEvery Node.js project starts with a package.json file, which is the project's manifest. You create one by running 'npm init' (interactive) or 'npm init -y' (accepts all defaults). package.json contains metadata like the project name, version, description, entry point, and most importantly, the dependencies your project needs. It also defines scripts that automate common tasks like starting the server, running tests, or building the project.\n\nnpm install (or npm i) is the command you use most frequently. Running 'npm install express' adds Express to your dependencies and downloads it into the node_modules directory. The --save-dev (or -D) flag installs a package as a devDependency, meaning it is only needed during development, not in production. Typical devDependencies include testing frameworks (jest, mocha), linters (eslint), formatters (prettier), and build tools (typescript, webpack). Running 'npm install' with no arguments installs all dependencies listed in package.json.\n\nThe package-lock.json file is automatically generated and tracks the exact version of every installed package and its transitive dependencies. This ensures that everyone on your team (and your CI/CD pipeline) installs the exact same dependency tree, preventing the 'works on my machine' problem. You should always commit package-lock.json to version control. Never edit it manually. If you need a clean install that strictly follows the lock file, use 'npm ci' instead of 'npm install' — it is faster, stricter, and is the command you should use in CI/CD pipelines.\n\nnpm scripts are custom commands defined in the 'scripts' section of package.json. You run them with 'npm run <scriptName>'. Special script names like 'start', 'test', 'preinstall', and 'postinstall' can be run without the 'run' keyword (just 'npm start' or 'npm test'). Scripts are powerful because they let you standardize common operations across the team. Pre and post hooks (prefixed with 'pre' and 'post') run automatically before and after a script — for example, 'pretest' runs before 'test'.",
+      "codeExamples": [
+        {
+          "title": "Initializing a Project and Installing Packages",
+          "code": "// Terminal commands (not JavaScript):\n\n// Create package.json with defaults\n// npm init -y\n\n// Install production dependencies\n// npm install express cors dotenv\n\n// Install dev dependencies\n// npm install -D typescript @types/node jest\n\n// Install a specific version\n// npm install express@4.18.2\n\n// Install globally (available system-wide)\n// npm install -g nodemon\n\n// View installed packages\n// npm list --depth=0\n\n// Simulating what a package.json looks like after installs:\nconst packageJson = {\n  name: \"my-api\",\n  version: \"1.0.0\",\n  scripts: {\n    start: \"node src/index.js\",\n    dev: \"node --watch src/index.js\",\n    test: \"jest\"\n  },\n  dependencies: {\n    cors: \"^2.8.5\",\n    dotenv: \"^16.3.1\",\n    express: \"^4.18.2\"\n  },\n  devDependencies: {\n    \"@types/node\": \"^20.11.0\",\n    jest: \"^29.7.0\",\n    typescript: \"^5.3.3\"\n  }\n};\n\nconsole.log(JSON.stringify(packageJson, null, 2));",
+          "output": "{\n  \"name\": \"my-api\",\n  \"version\": \"1.0.0\",\n  \"scripts\": {\n    \"start\": \"node src/index.js\",\n    \"dev\": \"node --watch src/index.js\",\n    \"test\": \"jest\"\n  },\n  \"dependencies\": {\n    \"cors\": \"^2.8.5\",\n    \"dotenv\": \"^16.3.1\",\n    \"express\": \"^4.18.2\"\n  },\n  \"devDependencies\": {\n    \"@types/node\": \"^20.11.0\",\n    \"jest\": \"^29.7.0\",\n    \"typescript\": \"^5.3.3\"\n  }\n}",
+          "explanation": "dependencies are required in production. devDependencies are only needed during development. The ^ prefix means compatible updates are allowed (e.g., ^4.18.2 allows 4.19.0 but not 5.0.0)."
+        },
+        {
+          "title": "npm Scripts and Lifecycle Hooks",
+          "code": "// package.json scripts section:\nconst scripts = {\n  // Special scripts (run without 'run' keyword)\n  \"start\": \"node dist/index.js\",\n  \"test\": \"jest --coverage\",\n\n  // Custom scripts (need 'npm run <name>')\n  \"dev\": \"node --watch src/index.js\",\n  \"build\": \"tsc\",\n  \"lint\": \"eslint src/\",\n  \"format\": \"prettier --write src/\",\n\n  // Lifecycle hooks\n  \"pretest\": \"npm run lint\",\n  \"postbuild\": \"echo Build complete!\",\n\n  // Chaining commands\n  \"ci\": \"npm run lint && npm test && npm run build\"\n};\n\nconsole.log('Run with: npm start, npm test, npm run dev');\nconsole.log('pretest runs automatically before test');\nconsole.log('postbuild runs automatically after build');\nconsole.log('ci runs lint, test, and build in sequence');",
+          "output": "Run with: npm start, npm test, npm run dev\npretest runs automatically before test\npostbuild runs automatically after build\nci runs lint, test, and build in sequence",
+          "explanation": "npm scripts standardize project commands. 'start' and 'test' are special and can be run as 'npm start' and 'npm test'. All others need 'npm run'. The && operator chains commands so the next one only runs if the previous succeeded."
+        },
+        {
+          "title": "npx: Execute Without Installing",
+          "code": "// npx runs a package without installing it globally\n\n// Create a new project:\n// npx create-react-app my-app\n// npx create-next-app@latest my-app\n\n// Run a one-off tool:\n// npx eslint --init\n// npx tsc --init\n// npx json-server db.json\n\n// Run a specific version:\n// npx node@18 --version\n// npx typescript@5.0 tsc --version\n\n// npx first checks local node_modules/.bin,\n// then global, then downloads temporarily\n\nconsole.log('npx checks: local -> global -> download');\nconsole.log('Great for project scaffolding and one-off tools');",
+          "output": "npx checks: local -> global -> download\nGreat for project scaffolding and one-off tools",
+          "explanation": "npx is bundled with npm 5.2+ and solves the problem of installing tools globally just to use them once. It checks the local node_modules first, making it ideal for running project-local binaries like eslint or tsc."
+        }
+      ],
+      "notes": [
+        "Always commit package-lock.json to version control. It ensures deterministic installs across all environments.",
+        "Use 'npm ci' in CI/CD pipelines instead of 'npm install'. It is faster, deletes node_modules first, and strictly follows the lock file.",
+        "Add node_modules/ to .gitignore. Never commit the node_modules directory — it can contain tens of thousands of files and is reproducible from package.json and package-lock.json."
+      ],
+      "commonPitfalls": [
+        "Not committing package-lock.json. Without it, different team members may get different dependency versions, causing subtle bugs.",
+        "Installing everything as a regular dependency. Testing frameworks, linters, and build tools should be devDependencies (--save-dev / -D).",
+        "Running 'npm install' in CI instead of 'npm ci'. npm install can modify package-lock.json, making builds non-reproducible."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "npm-basics-ex1",
+        "title": "Package.json Scripts",
+        "description": "Create a scripts object for a package.json with the following commands: 'start' runs 'node src/index.js', 'dev' runs 'node --watch src/index.js', 'test' runs 'jest', and 'lint' runs 'eslint src/'. Log the object.",
+        "starterCode": "// Create a scripts object with start, dev, test, and lint commands\n// Log the object\n",
+        "solution": "const scripts = {\n  start: 'node src/index.js',\n  dev: 'node --watch src/index.js',\n  test: 'jest',\n  lint: 'eslint src/'\n};\nconsole.log(scripts);",
+        "expectedOutput": "{\n  start: 'node src/index.js',\n  dev: 'node --watch src/index.js',\n  test: 'jest',\n  lint: 'eslint src/'\n}",
+        "hints": [
+          "Scripts are just string values representing terminal commands",
+          "'start' and 'test' are special npm scripts that can run without 'npm run'"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "creating-your-own-package",
+    "sectionId": "modules-and-packages",
+    "orderIndex": 3,
+    "title": "Creating Your Own Package",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["package.json Anatomy", "main Field", "exports Field", "files Field", "Publishing", "Scoped Packages"],
+    "content": {
+      "explanation": "Creating and publishing your own npm package is a fundamental skill for any Node.js developer. Whether you are sharing a utility library with the open-source community or creating private packages for your organization, understanding package structure and the publishing workflow is essential. A well-structured package is easy to consume, maintain, and distribute.\n\nThe package.json file is the heart of every npm package. Beyond the basic name and version fields, several fields control how your package is discovered and consumed. The 'main' field specifies the entry point for CommonJS require calls (default: index.js). The 'module' field (unofficial but widely supported) points to an ES Module entry point for bundlers. The 'exports' field (Node.js 12+) is the modern way to define entry points and replaces both 'main' and 'module' with a more powerful conditional exports map.\n\nThe 'exports' field lets you define different entry points for different environments. You can specify separate paths for CommonJS (require) and ES Module (import) consumers: '\"exports\": { \".\": { \"require\": \"./dist/index.cjs\", \"import\": \"./dist/index.mjs\" } }'. You can also define subpath exports to expose specific files: '\"exports\": { \"./utils\": \"./src/utils.js\" }' allows consumers to write 'import { helper } from \"your-package/utils\"'. Anything not explicitly listed in exports is inaccessible to consumers, giving you control over your public API.\n\nThe 'files' field is an array of file patterns that specifies which files to include when your package is published. By default, npm includes everything except what is listed in .npmignore (or .gitignore if .npmignore does not exist). Setting 'files' to [\"dist\"] ensures only your compiled output is published, not source files, tests, or configuration. Use 'npm pack' to create a tarball and inspect what would be published before actually publishing. The 'npm pack --dry-run' command lists the files without creating the archive.\n\nTo publish a package, you need an npm account (create one at npmjs.com). Run 'npm login' to authenticate, then 'npm publish' to publish. Package names must be unique on the registry. If your desired name is taken, you can use a scoped package: '@yourname/package-name'. Scoped packages are namespaced under your account or organization and are private by default on npm. To publish a scoped package publicly, use 'npm publish --access public'. Always use semantic versioning and update the version with 'npm version patch/minor/major' before publishing.",
+      "codeExamples": [
+        {
+          "title": "Complete package.json for a Library",
+          "code": "const packageJson = {\n  \"name\": \"@myorg/string-utils\",\n  \"version\": \"1.2.0\",\n  \"description\": \"A collection of string utility functions\",\n  \"main\": \"dist/index.cjs\",\n  \"module\": \"dist/index.mjs\",\n  \"types\": \"dist/index.d.ts\",\n  \"exports\": {\n    \".\": {\n      \"require\": \"./dist/index.cjs\",\n      \"import\": \"./dist/index.mjs\",\n      \"types\": \"./dist/index.d.ts\"\n    },\n    \"./capitalize\": {\n      \"require\": \"./dist/capitalize.cjs\",\n      \"import\": \"./dist/capitalize.mjs\"\n    }\n  },\n  \"files\": [\"dist\"],\n  \"scripts\": {\n    \"build\": \"tsup src/index.ts --format cjs,esm --dts\",\n    \"prepublishOnly\": \"npm run build\"\n  },\n  \"keywords\": [\"string\", \"utils\", \"capitalize\"],\n  \"author\": \"Your Name\",\n  \"license\": \"MIT\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/myorg/string-utils\"\n  }\n};\n\nconsole.log(JSON.stringify(packageJson, null, 2));",
+          "output": "{\n  \"name\": \"@myorg/string-utils\",\n  \"version\": \"1.2.0\",\n  \"description\": \"A collection of string utility functions\",\n  \"main\": \"dist/index.cjs\",\n  \"module\": \"dist/index.mjs\",\n  \"types\": \"dist/index.d.ts\",\n  \"exports\": {\n    \".\": {\n      \"require\": \"./dist/index.cjs\",\n      \"import\": \"./dist/index.mjs\",\n      \"types\": \"./dist/index.d.ts\"\n    },\n    \"./capitalize\": {\n      \"require\": \"./dist/capitalize.cjs\",\n      \"import\": \"./dist/capitalize.mjs\"\n    }\n  },\n  \"files\": [\"dist\"],\n  \"scripts\": {\n    \"build\": \"tsup src/index.ts --format cjs,esm --dts\",\n    \"prepublishOnly\": \"npm run build\"\n  },\n  \"keywords\": [\"string\", \"utils\", \"capitalize\"],\n  \"author\": \"Your Name\",\n  \"license\": \"MIT\",\n  \"repository\": {\n    \"type\": \"git\",\n    \"url\": \"https://github.com/myorg/string-utils\"\n  }\n}",
+          "explanation": "This package.json supports both CJS and ESM consumers via the exports field. The 'files' field ensures only the dist directory is published. The 'prepublishOnly' script automatically builds before publishing. Subpath exports let consumers import specific modules."
+        },
+        {
+          "title": "Creating the Package Source",
+          "code": "// --- src/index.ts ---\nexport { capitalize } from './capitalize';\nexport { slugify } from './slugify';\n\n// --- src/capitalize.ts ---\nexport function capitalize(str) {\n  if (!str) return '';\n  return str.charAt(0).toUpperCase() + str.slice(1).toLowerCase();\n}\n\n// --- src/slugify.ts ---\nexport function slugify(str) {\n  return str\n    .toLowerCase()\n    .trim()\n    .replace(/[^a-z0-9\\s-]/g, '')\n    .replace(/[\\s_]+/g, '-')\n    .replace(/-+/g, '-');\n}\n\n// Test the functions\nconst { capitalize } = { capitalize: (s) => s.charAt(0).toUpperCase() + s.slice(1).toLowerCase() };\nconst { slugify } = { slugify: (s) => s.toLowerCase().trim().replace(/[^a-z0-9\\s-]/g, '').replace(/[\\s_]+/g, '-') };\n\nconsole.log(capitalize('hello world'));\nconsole.log(slugify('Hello World! This is Great'));",
+          "output": "Hello world\nhello-world-this-is-great",
+          "explanation": "A barrel file (index.ts) re-exports from individual modules, giving consumers a clean import API. Each function is in its own file for tree-shaking. The package can be consumed as 'import { capitalize } from \"@myorg/string-utils\"'."
+        },
+        {
+          "title": "Publishing Workflow",
+          "code": "// Terminal commands for publishing:\n\n// 1. Login to npm\n// npm login\n\n// 2. Check what will be published\n// npm pack --dry-run\n\n// 3. Bump version (updates package.json and creates git tag)\n// npm version patch   -> 1.2.0 -> 1.2.1 (bug fixes)\n// npm version minor   -> 1.2.0 -> 1.3.0 (new features)\n// npm version major   -> 1.2.0 -> 2.0.0 (breaking changes)\n\n// 4. Publish\n// npm publish                      (unscoped, public)\n// npm publish --access public      (scoped, public)\n\n// 5. Verify\n// npm info @myorg/string-utils\n\nconsole.log('Publishing checklist:');\nconsole.log('1. Run tests: npm test');\nconsole.log('2. Build: npm run build');\nconsole.log('3. Dry run: npm pack --dry-run');\nconsole.log('4. Bump version: npm version <patch|minor|major>');\nconsole.log('5. Publish: npm publish --access public');",
+          "output": "Publishing checklist:\n1. Run tests: npm test\n2. Build: npm run build\n3. Dry run: npm pack --dry-run\n4. Bump version: npm version <patch|minor|major>\n5. Publish: npm publish --access public",
+          "explanation": "Always test and build before publishing. npm pack --dry-run lets you verify which files will be included. npm version automatically updates package.json and creates a git tag. For scoped packages, --access public is required for the first publish."
+        }
+      ],
+      "notes": [
+        "The 'exports' field takes priority over 'main' in Node.js 12+. When both are present, 'main' serves as a fallback for older Node versions.",
+        "Use 'npm pack --dry-run' before every publish to verify you are not including unnecessary files like test fixtures, source maps, or .env files.",
+        "The 'prepublishOnly' lifecycle script is the best place to put your build command. It runs automatically before 'npm publish' but not before 'npm install'."
+      ],
+      "commonPitfalls": [
+        "Publishing without a 'files' field, accidentally including tests, source files, and configuration in the published package, bloating the download size.",
+        "Forgetting to build before publishing. Use the 'prepublishOnly' script to automate this.",
+        "Not testing the package locally before publishing. Use 'npm link' or 'npm pack' + 'npm install ./package.tgz' to test in a real project."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "creating-your-own-package-ex1",
+        "title": "Package Exports Configuration",
+        "description": "Create a package.json exports object that exposes the main entry point for both CJS (./dist/index.cjs) and ESM (./dist/index.mjs), and a subpath './helpers' pointing to ./dist/helpers.mjs for ESM only. Log the exports object.",
+        "starterCode": "// Create an exports configuration object\n// Main entry: CJS and ESM\n// Subpath './helpers': ESM only\n// Log the result\n",
+        "solution": "const exports = {\n  '.': {\n    require: './dist/index.cjs',\n    import: './dist/index.mjs'\n  },\n  './helpers': {\n    import: './dist/helpers.mjs'\n  }\n};\nconsole.log(JSON.stringify(exports, null, 2));",
+        "expectedOutput": "{\n  \".\": {\n    \"require\": \"./dist/index.cjs\",\n    \"import\": \"./dist/index.mjs\"\n  },\n  \"./helpers\": {\n    \"import\": \"./dist/helpers.mjs\"\n  }\n}",
+        "hints": [
+          "The '.' key represents the main entry point of the package",
+          "Use 'require' for CJS and 'import' for ESM conditions"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "semantic-versioning",
+    "sectionId": "modules-and-packages",
+    "orderIndex": 4,
+    "title": "Semantic Versioning",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["semver", "Caret ^", "Tilde ~", "Version Ranges", "npm outdated", "Breaking Changes"],
+    "content": {
+      "explanation": "Semantic Versioning (semver) is a versioning convention that gives meaning to version numbers. It is the standard used by virtually all npm packages and is essential to understand for managing dependencies safely. A semver version consists of three numbers separated by dots: MAJOR.MINOR.PATCH (e.g., 2.4.1). Each number has a specific meaning that communicates the nature of changes to consumers of the package.\n\nThe PATCH number (rightmost) is incremented for backward-compatible bug fixes that do not add new functionality. The MINOR number (middle) is incremented when you add new functionality in a backward-compatible manner — existing code that depends on your package will continue to work. The MAJOR number (leftmost) is incremented when you make incompatible API changes, also known as breaking changes. A major version bump signals to consumers that they may need to modify their code to upgrade. Version 0.x.y is special: it indicates initial development where the API is not yet stable, and even minor version bumps may contain breaking changes.\n\nIn package.json, dependency versions often include a prefix character that defines what range of versions is acceptable. The caret (^) is the default when you run npm install and is the most common. ^2.4.1 means 'compatible with 2.4.1': it allows updates that do not change the leftmost non-zero number. So ^2.4.1 matches >=2.4.1 and <3.0.0. The tilde (~) is more restrictive: ~2.4.1 allows only patch updates, matching >=2.4.1 and <2.5.0. An exact version (no prefix, e.g., 2.4.1) pins to that specific version.\n\nOther version range syntax includes >= and < for explicit ranges, || for combining ranges (e.g., '>=1.0.0 <2.0.0 || >=3.0.0'), * or latest for the latest available version, and x or empty positions as wildcards (2.x matches any 2.minor.patch). Understanding these ranges is crucial because they determine which version npm installs when you run 'npm install' and whether 'npm update' will pull in new versions.\n\nnpm provides several commands for managing versions. 'npm outdated' shows which installed packages have newer versions available, distinguishing between current, wanted (latest matching your range), and latest (absolute latest). 'npm update' updates packages to the latest version matching the range in package.json. 'npm audit' checks for known security vulnerabilities in your dependency tree. 'npm version patch/minor/major' bumps the version in your own package.json, creates a git commit, and tags it. For libraries, always follow semver strictly — consumers depend on it to safely update.",
+      "codeExamples": [
+        {
+          "title": "Semver Ranges Explained",
+          "code": "// Demonstrating version range matching\nconst ranges = {\n  // Caret (^): allows minor and patch updates\n  '^2.4.1': 'matches >=2.4.1 <3.0.0 (e.g., 2.5.0, 2.99.0)',\n  '^0.3.1': 'matches >=0.3.1 <0.4.0 (special: 0.x treats minor as major)',\n  '^0.0.3': 'matches >=0.0.3 <0.0.4 (only exact patch for 0.0.x)',\n\n  // Tilde (~): allows only patch updates\n  '~2.4.1': 'matches >=2.4.1 <2.5.0',\n  '~2.4':   'matches >=2.4.0 <2.5.0',\n  '~2':     'matches >=2.0.0 <3.0.0',\n\n  // Exact and other ranges\n  '2.4.1':    'matches only 2.4.1 exactly',\n  '>=2.0.0':  'matches 2.0.0 and above',\n  '>=1.0 <3': 'matches 1.x and 2.x only',\n  '*':        'matches any version'\n};\n\nObject.entries(ranges).forEach(([range, desc]) => {\n  console.log(`${range.padEnd(15)} -> ${desc}`);\n});",
+          "output": "^2.4.1          -> matches >=2.4.1 <3.0.0 (e.g., 2.5.0, 2.99.0)\n^0.3.1          -> matches >=0.3.1 <0.4.0 (special: 0.x treats minor as major)\n^0.0.3          -> matches >=0.0.3 <0.0.4 (only exact patch for 0.0.x)\n~2.4.1          -> matches >=2.4.1 <2.5.0\n~2.4            -> matches >=2.4.0 <2.5.0\n~2              -> matches >=2.0.0 <3.0.0\n2.4.1           -> matches only 2.4.1 exactly\n>=2.0.0         -> matches 2.0.0 and above\n>=1.0 <3        -> matches 1.x and 2.x only\n*               -> matches any version",
+          "explanation": "The caret (^) is the most common range specifier and npm's default. It allows updates that don't change the leftmost non-zero number. Be careful with 0.x packages: ^0.3.1 only allows patch updates (0.3.x) because the API is considered unstable."
+        },
+        {
+          "title": "Version Bumping Workflow",
+          "code": "// Starting version: 1.2.3\n\n// Bug fix that doesn't change the API\n// npm version patch -> 1.2.4\nconsole.log('patch: 1.2.3 -> 1.2.4 (bug fix)');\n\n// New feature, backward compatible\n// npm version minor -> 1.3.0 (patch resets to 0)\nconsole.log('minor: 1.2.3 -> 1.3.0 (new feature)');\n\n// Breaking change\n// npm version major -> 2.0.0 (minor and patch reset to 0)\nconsole.log('major: 1.2.3 -> 2.0.0 (breaking change)');\n\n// Pre-release versions\nconsole.log('pre-release: 2.0.0-alpha.1, 2.0.0-beta.1, 2.0.0-rc.1');\nconsole.log('pre-release < release: 2.0.0-alpha.1 < 2.0.0');\n\n// npm version creates a git commit and tag automatically\nconsole.log('\\nnpm version patch creates:');\nconsole.log('  - Updates package.json version');\nconsole.log('  - Creates git commit: \"1.2.4\"');\nconsole.log('  - Creates git tag: v1.2.4');",
+          "output": "patch: 1.2.3 -> 1.2.4 (bug fix)\nminor: 1.2.3 -> 1.3.0 (new feature)\nmajor: 1.2.3 -> 2.0.0 (breaking change)\npre-release: 2.0.0-alpha.1, 2.0.0-beta.1, 2.0.0-rc.1\npre-release < release: 2.0.0-alpha.1 < 2.0.0\n\nnpm version patch creates:\n  - Updates package.json version\n  - Creates git commit: \"1.2.4\"\n  - Creates git tag: v1.2.4",
+          "explanation": "Semantic versioning communicates intent. Patch = safe to update automatically. Minor = safe, has new features. Major = may break your code. Pre-release versions (alpha, beta, rc) sort before the release version."
+        },
+        {
+          "title": "Checking for Updates with npm outdated",
+          "code": "// npm outdated output shows:\n// Package    Current  Wanted  Latest  Location\n// express    4.18.2   4.19.0  5.0.0   my-app\n// lodash     4.17.20  4.17.21 4.17.21 my-app\n// react      18.2.0   18.3.1  19.0.0  my-app\n\nconst outdated = [\n  { pkg: 'express', current: '4.18.2', wanted: '4.19.0', latest: '5.0.0' },\n  { pkg: 'lodash',  current: '4.17.20', wanted: '4.17.21', latest: '4.17.21' },\n  { pkg: 'react',   current: '18.2.0', wanted: '18.3.1', latest: '19.0.0' }\n];\n\noutdated.forEach(({ pkg, current, wanted, latest }) => {\n  const safe = wanted !== current ? `safe update to ${wanted}` : 'up to date';\n  const breaking = latest !== wanted ? ` (major: ${latest})` : '';\n  console.log(`${pkg}: ${current} -> ${safe}${breaking}`);\n});\n\nconsole.log('\\nnpm update  -> installs \"wanted\" versions (within range)');\nconsole.log('npm install express@latest -> installs latest (may break!)');",
+          "output": "express: 4.18.2 -> safe update to 4.19.0 (major: 5.0.0)\nlodash: 4.17.20 -> safe update to 4.17.21\nreact: 18.2.0 -> safe update to 18.3.1 (major: 19.0.0)\n\nnpm update  -> installs \"wanted\" versions (within range)\nnpm install express@latest -> installs latest (may break!)",
+          "explanation": "'Wanted' is the latest version matching your package.json range (safe to install). 'Latest' is the absolute latest version. If Latest differs from Wanted, there's a major version available that may contain breaking changes. Run 'npm update' for safe updates within your ranges."
+        }
+      ],
+      "notes": [
+        "The caret (^) is npm's default range operator. ^1.2.3 allows 1.2.3 through 1.x.x but not 2.0.0. It is the safest default for most dependencies.",
+        "Version 0.x.y packages are special in semver: the API is not considered stable. The caret (^0.3.1) only allows patch updates (0.3.x), treating minor as major.",
+        "Always run 'npm audit' periodically and before deployments to check for known security vulnerabilities in your dependency tree."
+      ],
+      "commonPitfalls": [
+        "Using * or latest as a version range in package.json. This can pull in breaking changes unexpectedly and makes builds non-reproducible.",
+        "Ignoring major version updates for too long. The longer you wait, the harder the migration. Update major versions incrementally and read changelogs.",
+        "Not understanding the caret behavior for 0.x packages. ^0.3.1 does NOT allow 0.4.0 because 0.x is considered unstable in semver."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "semantic-versioning-ex1",
+        "title": "Version Range Matching",
+        "description": "Create an object called 'versions' with four properties: 'caret' set to the caret range for version 3.2.1, 'tilde' set to the tilde range for 3.2.1, 'exact' set to the exact version 3.2.1, and 'minimum' set to a range string for 3.0.0 and above. Log the object, then log which one would allow installing version 3.5.0.",
+        "starterCode": "// Create a versions object with caret, tilde, exact, and minimum ranges\n// Log the object\n// Log which ranges would allow version 3.5.0\n",
+        "solution": "const versions = {\n  caret: '^3.2.1',\n  tilde: '~3.2.1',\n  exact: '3.2.1',\n  minimum: '>=3.0.0'\n};\nconsole.log(versions);\nconsole.log('Allows 3.5.0: caret (yes), tilde (no), exact (no), minimum (yes)');",
+        "expectedOutput": "{ caret: '^3.2.1', tilde: '~3.2.1', exact: '3.2.1', minimum: '>=3.0.0' }\nAllows 3.5.0: caret (yes), tilde (no), exact (no), minimum (yes)",
+        "hints": [
+          "Caret (^3.2.1) allows any 3.x.x version >= 3.2.1",
+          "Tilde (~3.2.1) only allows 3.2.x versions >= 3.2.1"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

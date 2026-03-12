@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { DynamicFieldBuilder } from "../../../components/DynamicFieldBuilder";
-import { Plus, Trash2 } from "lucide-react";
-import type { CustomFieldDefinition } from "../../../lib/types";
+import { AssessmentBuilder } from "./AssessmentBuilder";
+import { Plus, Trash2, ToggleLeft, ToggleRight } from "lucide-react";
+import type { CustomFieldDefinition, AssessmentQuestion } from "../../../lib/types";
 
 interface RoundFormData {
   name: string;
@@ -9,6 +10,9 @@ interface RoundFormData {
   instructions: string;
   customFields: CustomFieldDefinition[];
   evaluationCriteria: { id: string; criterion: string; maxScore: number }[];
+  assessmentQuestions: AssessmentQuestion[];
+  timeLimitSecs: number | null;
+  autoGrade: boolean;
 }
 
 interface RoundFormProps {
@@ -25,7 +29,20 @@ export function RoundForm({ initialData, onSubmit, onCancel, loading }: RoundFor
     instructions: "",
     customFields: [],
     evaluationCriteria: [],
+    assessmentQuestions: [],
+    timeLimitSecs: null,
+    autoGrade: false,
   });
+
+  const assessmentMode = form.assessmentQuestions.length > 0 || form.autoGrade;
+
+  const toggleAssessmentMode = () => {
+    if (assessmentMode) {
+      setForm({ ...form, assessmentQuestions: [], timeLimitSecs: null, autoGrade: false });
+    } else {
+      setForm({ ...form, autoGrade: true });
+    }
+  };
 
   const addCriterion = () => {
     setForm({ ...form, evaluationCriteria: [...form.evaluationCriteria, { id: crypto.randomUUID(), criterion: "", maxScore: 10 }] });
@@ -53,6 +70,47 @@ export function RoundForm({ initialData, onSubmit, onCancel, loading }: RoundFor
       <div>
         <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Custom Fields</h4>
         <DynamicFieldBuilder fields={form.customFields} onChange={(fields) => setForm({ ...form, customFields: fields })} />
+      </div>
+
+      {/* Assessment Mode Toggle */}
+      <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-4 space-y-4">
+        <div className="flex items-center justify-between">
+          <div>
+            <h4 className="text-sm font-medium text-gray-700 dark:text-gray-300">Assessment Mode</h4>
+            <p className="text-xs text-gray-500 dark:text-gray-500 mt-0.5">Add auto-graded MCQ questions to this round</p>
+          </div>
+          <button type="button" onClick={toggleAssessmentMode} className="text-gray-500 dark:text-gray-400 hover:text-black dark:hover:text-white transition-colors">
+            {assessmentMode ? <ToggleRight className="w-8 h-8 text-indigo-600 dark:text-indigo-400" /> : <ToggleLeft className="w-8 h-8" />}
+          </button>
+        </div>
+
+        {assessmentMode && (
+          <>
+            <div className="flex items-center gap-4">
+              <div className="flex-1">
+                <label className="block text-xs font-medium text-gray-600 dark:text-gray-400 mb-1">Time Limit (minutes)</label>
+                <input type="number" min={1} placeholder="No limit"
+                  value={form.timeLimitSecs ? Math.round(form.timeLimitSecs / 60) : ""}
+                  onChange={(e) => {
+                    const mins = e.target.value ? Number(e.target.value) : null;
+                    setForm({ ...form, timeLimitSecs: mins ? mins * 60 : null });
+                  }}
+                  className="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white" />
+              </div>
+              <label className="flex items-center gap-2 cursor-pointer mt-5">
+                <input type="checkbox" checked={form.autoGrade}
+                  onChange={(e) => setForm({ ...form, autoGrade: e.target.checked })}
+                  className="accent-black dark:accent-white" />
+                <span className="text-sm text-gray-700 dark:text-gray-300">Auto-grade</span>
+              </label>
+            </div>
+
+            <AssessmentBuilder
+              questions={form.assessmentQuestions}
+              onChange={(questions) => setForm({ ...form, assessmentQuestions: questions })}
+            />
+          </>
+        )}
       </div>
 
       <div>

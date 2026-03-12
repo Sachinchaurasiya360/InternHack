@@ -1,0 +1,349 @@
+[
+  {
+    "id": "fetch-with-useeffect",
+    "sectionId": "data-fetching",
+    "orderIndex": 0,
+    "title": "Data Fetching with useEffect",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["useEffect", "fetch API", "loading state", "error state", "cleanup", "race conditions"],
+    "content": {
+      "explanation": "The most fundamental data fetching pattern in React uses the useEffect hook to trigger a fetch call when a component mounts or when dependencies change. Inside useEffect, you call fetch (or any async operation), parse the response, and store the result in state. Alongside the data, you maintain loading and error states to give users feedback while the request is in flight.\n\nThe pattern follows a clear structure: (1) declare state for data, loading, and error; (2) inside useEffect, set loading to true, perform the fetch, update data on success or error on failure, and set loading to false in both cases; (3) render conditionally based on these states. This gives you a complete lifecycle for any async operation.\n\nA critical detail is the cleanup function. When the component unmounts before the fetch completes, or when the dependency changes mid-flight, you need to ignore the stale response. The classic approach is to use a boolean flag (let ignore = false) and set it to true in the cleanup. Before updating state, check if ignore is true. The AbortController API is even better — it actually cancels the HTTP request, saving bandwidth.\n\nRace conditions are a common bug in this pattern. If a user rapidly switches between pages or filters, multiple fetches launch in parallel and responses can arrive out of order. The last-dispatched fetch might resolve before an earlier one, causing stale data to overwrite fresh data. Using an AbortController or the ignore-flag pattern prevents this.\n\nWhile this pattern works and is important to understand, modern React apps prefer React Query or SWR for production data fetching. These libraries handle caching, deduplication, retries, and race conditions automatically. However, understanding the manual useEffect pattern is essential for interviews and for understanding what those libraries abstract away.",
+      "codeExamples": [
+        {
+          "title": "Basic fetch with loading and error states",
+          "code": "function UserProfile({ userId }) {\n  const [user, setUser] = React.useState(null);\n  const [loading, setLoading] = React.useState(true);\n  const [error, setError] = React.useState(null);\n\n  React.useEffect(() => {\n    let ignore = false;\n    setLoading(true);\n    setError(null);\n\n    fetch(`/api/users/${userId}`)\n      .then(res => {\n        if (!res.ok) throw new Error('Failed to fetch');\n        return res.json();\n      })\n      .then(data => {\n        if (!ignore) {\n          setUser(data);\n          setLoading(false);\n        }\n      })\n      .catch(err => {\n        if (!ignore) {\n          setError(err.message);\n          setLoading(false);\n        }\n      });\n\n    return () => { ignore = true; };\n  }, [userId]);\n\n  if (loading) return <p>Loading...</p>;\n  if (error) return <p>Error: {error}</p>;\n  return <h1>{user.name}</h1>;\n}",
+          "output": "Shows 'Loading...' then user's name, or 'Error: ...' on failure",
+          "explanation": "The ignore flag prevents state updates after unmount or when userId changes. Without it, a stale response could update state for the wrong userId."
+        },
+        {
+          "title": "Using AbortController for cancellation",
+          "code": "function SearchResults({ query }) {\n  const [results, setResults] = React.useState([]);\n  const [loading, setLoading] = React.useState(false);\n\n  React.useEffect(() => {\n    if (!query) return;\n\n    const controller = new AbortController();\n    setLoading(true);\n\n    fetch(`/api/search?q=${query}`, { signal: controller.signal })\n      .then(res => res.json())\n      .then(data => {\n        setResults(data);\n        setLoading(false);\n      })\n      .catch(err => {\n        if (err.name !== 'AbortError') {\n          console.error(err);\n          setLoading(false);\n        }\n      });\n\n    return () => controller.abort();\n  }, [query]);\n\n  return (\n    <div>\n      {loading && <p>Searching...</p>}\n      {results.map(r => <p key={r.id}>{r.title}</p>)}\n    </div>\n  );\n}",
+          "output": "Cancels previous request when query changes, shows latest results",
+          "explanation": "AbortController.abort() cancels the in-flight request entirely. This saves bandwidth and prevents race conditions. The AbortError is caught and ignored since it is expected."
+        },
+        {
+          "title": "Custom useFetch hook",
+          "code": "function useFetch(url) {\n  const [state, setState] = React.useState({\n    data: null,\n    loading: true,\n    error: null,\n  });\n\n  React.useEffect(() => {\n    const controller = new AbortController();\n    setState({ data: null, loading: true, error: null });\n\n    fetch(url, { signal: controller.signal })\n      .then(res => {\n        if (!res.ok) throw new Error(`HTTP ${res.status}`);\n        return res.json();\n      })\n      .then(data => setState({ data, loading: false, error: null }))\n      .catch(err => {\n        if (err.name !== 'AbortError') {\n          setState({ data: null, loading: false, error: err.message });\n        }\n      });\n\n    return () => controller.abort();\n  }, [url]);\n\n  return state;\n}\n\n// Usage\nfunction Posts() {\n  const { data, loading, error } = useFetch('/api/posts');\n  if (loading) return <p>Loading...</p>;\n  if (error) return <p>Error: {error}</p>;\n  return data.map(p => <p key={p.id}>{p.title}</p>);\n}",
+          "output": "Reusable hook that handles loading, error, and cancellation",
+          "explanation": "Extracting the pattern into a custom hook reduces duplication. However, this is essentially a simplified version of what React Query provides with far more features."
+        }
+      ],
+      "notes": [
+        "Always handle the loading, success, and error states — never leave the user staring at a blank screen.",
+        "Use AbortController for cleanup to actually cancel the network request, not just ignore the response.",
+        "This manual pattern is great for learning but in production, use React Query or SWR which handle caching, retries, and deduplication automatically."
+      ],
+      "commonPitfalls": [
+        "Forgetting the cleanup function in useEffect, causing 'can't perform a React state update on an unmounted component' warnings and race conditions.",
+        "Using async/await directly in useEffect (useEffect(() => async ...) is not allowed). Instead, define an async function inside and call it immediately."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "fetch-useeffect-ex1",
+        "title": "Simulated Fetch with States",
+        "description": "Simulate the useEffect fetch pattern without React. Create a function that takes a URL, simulates loading, then returns data. Track and log the loading, success, and error states throughout the lifecycle.",
+        "starterCode": "// Simulate a fetch lifecycle\n// 1. Set loading = true, log state\n// 2. 'Fetch' the data (simulate with a function call)\n// 3. On success: set data, loading = false, log state\n// 4. On error: set error, loading = false, log state\n\nfunction simulateFetch(url, shouldFail) {\n  // TODO: simulate the complete fetch lifecycle\n}\n\n// Test success case\n// Test error case",
+        "solution": "function simulateFetch(url, shouldFail) {\n  let state = { data: null, loading: false, error: null };\n\n  // Mount: start loading\n  state = { ...state, loading: true };\n  console.log('Loading: ' + state.loading + ', Data: ' + state.data + ', Error: ' + state.error);\n\n  // Simulate fetch\n  if (shouldFail) {\n    state = { data: null, loading: false, error: 'Network error' };\n    console.log('Loading: ' + state.loading + ', Data: ' + state.data + ', Error: ' + state.error);\n  } else {\n    const mockData = 'Response from ' + url;\n    state = { data: mockData, loading: false, error: null };\n    console.log('Loading: ' + state.loading + ', Data: ' + state.data + ', Error: ' + state.error);\n  }\n}\n\nconsole.log('--- Success ---');\nsimulateFetch('/api/users', false);\nconsole.log('--- Error ---');\nsimulateFetch('/api/users', true);",
+        "expectedOutput": "--- Success ---\nLoading: true, Data: null, Error: null\nLoading: false, Data: Response from /api/users, Error: null\n--- Error ---\nLoading: true, Data: null, Error: null\nLoading: false, Data: null, Error: Network error",
+        "hints": [
+          "Track state as an object with data, loading, and error fields. Spread to create new state objects.",
+          "The shouldFail parameter determines whether to simulate a success or error response."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "fetch-useeffect-ex2",
+        "title": "Race Condition Prevention",
+        "description": "Demonstrate how an ignore flag prevents race conditions. Simulate two fetch calls where the first one is slower than the second. Without the ignore flag, stale data overwrites fresh data. With it, the stale response is discarded.",
+        "starterCode": "// Simulate race condition and its fix\n// Two requests: request A (slow) and request B (fast)\n// Without ignore flag: A overwrites B's result\n// With ignore flag: A is discarded\n\nfunction simulateRaceCondition() {\n  // TODO: show the problem\n}\n\nfunction simulateWithIgnoreFlag() {\n  // TODO: show the fix\n}",
+        "solution": "function simulateRaceCondition() {\n  console.log('Without ignore flag:');\n  let currentData = null;\n\n  // Request A starts (slow - resolves second)\n  const requestA = () => { currentData = 'Stale data from Request A'; };\n  // Request B starts (fast - resolves first)\n  const requestB = () => { currentData = 'Fresh data from Request B'; };\n\n  // B resolves first\n  requestB();\n  console.log('After B resolves: ' + currentData);\n  // A resolves later, overwriting B!\n  requestA();\n  console.log('After A resolves: ' + currentData);\n  console.log('Bug! Stale data displayed');\n}\n\nfunction simulateWithIgnoreFlag() {\n  console.log('With ignore flag:');\n  let currentData = null;\n  let ignoreA = false;\n\n  // User changes query, so we ignore A\n  ignoreA = true;\n\n  // Request B resolves\n  currentData = 'Fresh data from Request B';\n  console.log('After B resolves: ' + currentData);\n\n  // Request A resolves but is ignored\n  if (!ignoreA) {\n    currentData = 'Stale data from Request A';\n  } else {\n    console.log('Request A ignored (stale)');\n  }\n  console.log('Final data: ' + currentData);\n}\n\nsimulateRaceCondition();\nconsole.log('---');\nsimulateWithIgnoreFlag();",
+        "expectedOutput": "Without ignore flag:\nAfter B resolves: Fresh data from Request B\nAfter A resolves: Stale data from Request A\nBug! Stale data displayed\n---\nWith ignore flag:\nAfter B resolves: Fresh data from Request B\nRequest A ignored (stale)\nFinal data: Fresh data from Request B",
+        "hints": [
+          "In the broken version, both requests update currentData and the slower one wins. In the fixed version, the ignore flag prevents the stale response from updating state.",
+          "The ignore flag is set to true when the dependency changes (simulating the cleanup function in useEffect)."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "axios-integration",
+    "sectionId": "data-fetching",
+    "orderIndex": 1,
+    "title": "Axios Integration",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["axios instance", "interceptors", "request config", "error handling", "base URL", "headers"],
+    "content": {
+      "explanation": "Axios is an HTTP client library that improves on the native fetch API with features like automatic JSON parsing, request/response interceptors, timeout support, and better error handling. While fetch is built into browsers, Axios provides a more ergonomic API and is especially useful in production applications that need consistent error handling and authentication headers.\n\nThe recommended pattern is to create an Axios instance with a base URL and default configuration, then export it for use throughout the app. This centralises your API configuration in one place. If your API base URL or default headers change, you update one file instead of every fetch call.\n\nInterceptors are the most powerful feature of Axios. A request interceptor runs before every request — the most common use is attaching the Authorization header with a JWT token. A response interceptor runs after every response — you can use it to handle 401 errors globally (redirect to login), transform response data, or log errors. This eliminates repetitive error handling in every component.\n\nError handling in Axios is more structured than fetch. Fetch only rejects on network errors, not on HTTP error codes (404, 500 still resolve). Axios rejects on any non-2xx status code, making it easier to catch errors in .catch() or try/catch. The error object includes response (server responded with error), request (no response received), and message (setup error).\n\nA typical production setup creates an Axios instance, adds a request interceptor for auth tokens, adds a response interceptor for global error handling (401 redirect, toast notifications), and exports the instance. Components and React Query queryFn functions import this instance and use it for all API calls.",
+      "codeExamples": [
+        {
+          "title": "Creating a configured Axios instance",
+          "code": "import axios from 'axios';\n\nconst api = axios.create({\n  baseURL: 'https://api.example.com/v1',\n  timeout: 10000,\n  headers: {\n    'Content-Type': 'application/json',\n  },\n});\n\n// Usage\nconst getUser = (id) => api.get(`/users/${id}`);\nconst createUser = (data) => api.post('/users', data);\nconst updateUser = (id, data) => api.put(`/users/${id}`, data);\nconst deleteUser = (id) => api.delete(`/users/${id}`);\n\nexport default api;",
+          "output": "All requests go to https://api.example.com/v1/... with 10s timeout",
+          "explanation": "axios.create returns a new instance with the given defaults. All requests made through this instance inherit the baseURL, timeout, and headers."
+        },
+        {
+          "title": "Request and response interceptors",
+          "code": "import api from './api';\n\n// Request interceptor: attach auth token\napi.interceptors.request.use(\n  (config) => {\n    const token = localStorage.getItem('token');\n    if (token) {\n      config.headers.Authorization = `Bearer ${token}`;\n    }\n    return config;\n  },\n  (error) => Promise.reject(error)\n);\n\n// Response interceptor: handle global errors\napi.interceptors.response.use(\n  (response) => response,\n  (error) => {\n    if (error.response?.status === 401) {\n      localStorage.removeItem('token');\n      window.location.href = '/login';\n    }\n    if (error.response?.status === 500) {\n      console.error('Server error — please try again later');\n    }\n    return Promise.reject(error);\n  }\n);",
+          "explanation": "The request interceptor reads the token from storage and injects it into every request. The response interceptor handles 401 (redirect to login) and 500 (log error) globally, so individual components don't need to."
+        },
+        {
+          "title": "Axios error handling structure",
+          "code": "async function fetchData() {\n  try {\n    const response = await api.get('/data');\n    return response.data;\n  } catch (error) {\n    if (error.response) {\n      // Server responded with non-2xx status\n      console.log('Status:', error.response.status);\n      console.log('Data:', error.response.data);\n    } else if (error.request) {\n      // Request was made but no response received\n      console.log('No response received');\n    } else {\n      // Error setting up the request\n      console.log('Setup error:', error.message);\n    }\n    throw error;\n  }\n}",
+          "explanation": "Axios errors have three categories: response errors (server replied with error code), request errors (network failure), and setup errors (bad config). This structure lets you handle each case appropriately."
+        }
+      ],
+      "notes": [
+        "Always create a shared Axios instance instead of using axios directly — it centralises configuration and makes interceptors work consistently.",
+        "Axios automatically parses JSON responses; you don't need to call .json() like with fetch.",
+        "Use interceptors for cross-cutting concerns (auth, logging, error handling) instead of duplicating logic in every API call."
+      ],
+      "commonPitfalls": [
+        "Forgetting that Axios throws on non-2xx responses (unlike fetch which resolves) — make sure your catch blocks handle these.",
+        "Creating multiple Axios instances when only one is needed, causing interceptors to be applied inconsistently across the app."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "axios-integration-ex1",
+        "title": "Simulated API Client with Interceptors",
+        "description": "Build a simplified API client that supports interceptors. Implement request interceptors (to add auth headers) and response interceptors (to handle errors). Log each step to show the interceptor pipeline.",
+        "starterCode": "// Build a simplified axios-like client\n// Supports: request interceptors, response interceptors\n// Simulate a GET request going through the pipeline\n\nfunction createApiClient(config) {\n  // TODO: return { get, interceptors: { request, response } }\n}\n\n// Add a request interceptor that adds an auth header\n// Add a response interceptor that checks for errors\n// Make a simulated GET request",
+        "solution": "function createApiClient(config) {\n  const requestInterceptors = [];\n  const responseInterceptors = [];\n\n  return {\n    interceptors: {\n      request: { use: (fn) => requestInterceptors.push(fn) },\n      response: { use: (successFn, errorFn) => responseInterceptors.push({ successFn, errorFn }) }\n    },\n    get: (url) => {\n      let reqConfig = { url: config.baseURL + url, headers: {} };\n\n      // Run request interceptors\n      requestInterceptors.forEach(fn => {\n        reqConfig = fn(reqConfig);\n      });\n      console.log('Request: ' + reqConfig.url);\n      console.log('Headers: ' + JSON.stringify(reqConfig.headers));\n\n      // Simulate response\n      let response = { status: 200, data: { message: 'Success' } };\n\n      // Run response interceptors\n      responseInterceptors.forEach(({ successFn }) => {\n        response = successFn(response);\n      });\n      console.log('Response: ' + JSON.stringify(response.data));\n      return response;\n    }\n  };\n}\n\nconst api = createApiClient({ baseURL: 'https://api.example.com' });\n\napi.interceptors.request.use((config) => {\n  config.headers.Authorization = 'Bearer abc123';\n  console.log('Interceptor: Added auth header');\n  return config;\n});\n\napi.interceptors.response.use(\n  (response) => {\n    console.log('Interceptor: Status ' + response.status);\n    return response;\n  },\n  (error) => error\n);\n\napi.get('/users');",
+        "expectedOutput": "Interceptor: Added auth header\nRequest: https://api.example.com/users\nHeaders: {\"Authorization\":\"Bearer abc123\"}\nInterceptor: Status 200\nResponse: {\"message\":\"Success\"}",
+        "hints": [
+          "Store interceptors in arrays. Before the request, run all request interceptors on the config object. After the response, run all response interceptors.",
+          "Each interceptor is a function that receives the config/response and returns a modified version."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "axios-integration-ex2",
+        "title": "Error Classification",
+        "description": "Simulate Axios-style error classification. Given different error scenarios (server error, network error, setup error), classify and log each error type with its details.",
+        "starterCode": "// Classify errors like Axios does:\n// - response error: server returned non-2xx\n// - request error: no response received\n// - setup error: bad configuration\n\nfunction classifyError(error) {\n  // TODO: classify and log the error\n}\n\n// Test with three error types",
+        "solution": "function classifyError(error) {\n  if (error.response) {\n    console.log('Type: Response Error');\n    console.log('Status: ' + error.response.status);\n    console.log('Message: ' + error.response.data);\n  } else if (error.request) {\n    console.log('Type: Request Error');\n    console.log('Message: No response received');\n  } else {\n    console.log('Type: Setup Error');\n    console.log('Message: ' + error.message);\n  }\n}\n\nconsole.log('--- Server Error ---');\nclassifyError({ response: { status: 404, data: 'Not Found' } });\nconsole.log('--- Network Error ---');\nclassifyError({ request: {}, message: 'Network Error' });\nconsole.log('--- Setup Error ---');\nclassifyError({ message: 'Invalid URL' });",
+        "expectedOutput": "--- Server Error ---\nType: Response Error\nStatus: 404\nMessage: Not Found\n--- Network Error ---\nType: Request Error\nMessage: No response received\n--- Setup Error ---\nType: Setup Error\nMessage: Invalid URL",
+        "hints": [
+          "Check for error.response first (server responded), then error.request (no response), then fall through to setup error.",
+          "This mirrors the exact error structure Axios uses — the order of checks matters."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "react-query-advanced",
+    "sectionId": "data-fetching",
+    "orderIndex": 2,
+    "title": "React Query Advanced Patterns",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["useMutation", "optimistic updates", "infinite queries", "query invalidation", "prefetching"],
+    "content": {
+      "explanation": "Beyond basic queries, React Query provides powerful tools for mutations (write operations), optimistic updates (instant UI feedback), and infinite queries (pagination/infinite scroll). These patterns handle the complex server-state scenarios that would require hundreds of lines of manual code.\n\nuseMutation is the write counterpart to useQuery. It handles POST, PUT, DELETE operations and provides onMutate, onSuccess, onError, and onSettled callbacks. The key pattern is to invalidate related queries after a successful mutation so the UI shows fresh data. For example, after creating a new todo, you invalidate the ['todos'] query to trigger a refetch.\n\nOptimistic updates take this further. Instead of waiting for the server to confirm a mutation, you immediately update the UI to reflect the expected result. In onMutate, you cancel outgoing queries, snapshot the current data, and manually set the cache to the optimistic value. If the server returns an error, onError rolls back to the snapshot. This gives the user instant feedback, making the app feel faster.\n\nInfinite queries with useInfiniteQuery handle paginated or cursor-based data. You provide a getNextPageParam function that extracts the next cursor/page from the last response. The hook returns pages (an array of page results), fetchNextPage, hasNextPage, and isFetchingNextPage. This maps directly to infinite scroll UIs or 'Load More' buttons.\n\nPrefetching is another advanced technique. queryClient.prefetchQuery lets you start fetching data before the user navigates to a page (e.g., on hover over a link). When they actually navigate, the data is already in cache and the page renders instantly. Combined with staleTime, this creates a near-instant navigation experience.",
+      "codeExamples": [
+        {
+          "title": "useMutation with query invalidation",
+          "code": "import { useMutation, useQueryClient } from '@tanstack/react-query';\n\nfunction AddTodo() {\n  const queryClient = useQueryClient();\n\n  const mutation = useMutation({\n    mutationFn: (newTodo) => fetch('/api/todos', {\n      method: 'POST',\n      body: JSON.stringify(newTodo),\n      headers: { 'Content-Type': 'application/json' },\n    }).then(r => r.json()),\n\n    onSuccess: () => {\n      // Refetch the todos list after adding\n      queryClient.invalidateQueries({ queryKey: ['todos'] });\n    },\n  });\n\n  return (\n    <button\n      onClick={() => mutation.mutate({ title: 'New Todo' })}\n      disabled={mutation.isPending}\n    >\n      {mutation.isPending ? 'Adding...' : 'Add Todo'}\n    </button>\n  );\n}",
+          "output": "Button shows 'Adding...' during mutation, then todos list refreshes",
+          "explanation": "invalidateQueries marks the ['todos'] cache as stale and triggers a refetch. The list updates with the new todo from the server."
+        },
+        {
+          "title": "Optimistic update pattern",
+          "code": "const mutation = useMutation({\n  mutationFn: updateTodo,\n\n  onMutate: async (updatedTodo) => {\n    // Cancel outgoing refetches\n    await queryClient.cancelQueries({ queryKey: ['todos'] });\n\n    // Snapshot previous value\n    const previousTodos = queryClient.getQueryData(['todos']);\n\n    // Optimistically update cache\n    queryClient.setQueryData(['todos'], (old) =>\n      old.map(t => t.id === updatedTodo.id ? { ...t, ...updatedTodo } : t)\n    );\n\n    return { previousTodos }; // context for rollback\n  },\n\n  onError: (err, variables, context) => {\n    // Rollback on error\n    queryClient.setQueryData(['todos'], context.previousTodos);\n  },\n\n  onSettled: () => {\n    // Always refetch to ensure server truth\n    queryClient.invalidateQueries({ queryKey: ['todos'] });\n  },\n});",
+          "explanation": "onMutate saves a snapshot and updates the cache optimistically. If the server rejects the mutation, onError rolls back. onSettled always refetches to sync with server truth."
+        },
+        {
+          "title": "Infinite query for pagination",
+          "code": "import { useInfiniteQuery } from '@tanstack/react-query';\n\nfunction InfinitePostList() {\n  const {\n    data,\n    fetchNextPage,\n    hasNextPage,\n    isFetchingNextPage,\n  } = useInfiniteQuery({\n    queryKey: ['posts'],\n    queryFn: ({ pageParam = 1 }) =>\n      fetch(`/api/posts?page=${pageParam}`).then(r => r.json()),\n    getNextPageParam: (lastPage) => lastPage.nextPage ?? undefined,\n    initialPageParam: 1,\n  });\n\n  return (\n    <div>\n      {data?.pages.map(page =>\n        page.items.map(post => <p key={post.id}>{post.title}</p>)\n      )}\n      <button\n        onClick={() => fetchNextPage()}\n        disabled={!hasNextPage || isFetchingNextPage}\n      >\n        {isFetchingNextPage ? 'Loading...' : hasNextPage ? 'Load More' : 'No More Posts'}\n      </button>\n    </div>\n  );\n}",
+          "output": "Shows posts with a 'Load More' button that fetches next pages",
+          "explanation": "getNextPageParam extracts the next page number from the server response. data.pages is an array of all fetched pages. hasNextPage is true as long as getNextPageParam returns a value."
+        }
+      ],
+      "notes": [
+        "Always invalidate related queries after mutations to keep the UI in sync with the server.",
+        "Optimistic updates improve perceived performance but add complexity — use them for frequent user actions like toggling, liking, or reordering.",
+        "Use useInfiniteQuery for any list that loads incrementally (infinite scroll, 'Load More' button, cursor-based pagination)."
+      ],
+      "commonPitfalls": [
+        "Forgetting to call invalidateQueries after a mutation, leaving the UI showing stale data until the user manually refreshes.",
+        "Not handling the rollback in onError for optimistic updates — if the server fails, the UI will show incorrect data permanently."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "react-query-advanced-ex1",
+        "title": "Mutation with Cache Update",
+        "description": "Simulate a mutation that adds an item to a cached list. After the mutation, invalidate the cache and refetch. Log each step: the initial cache, the mutation, the invalidation, and the refetched data.",
+        "starterCode": "// Simulate a mutation + cache invalidation flow\n\nfunction createQuerySystem() {\n  // TODO: create a system with cache, query, mutate, and invalidate\n}\n\n// 1. Initial fetch of todos -> cache\n// 2. Mutate: add a new todo\n// 3. Invalidate and refetch\n// 4. Show updated cache",
+        "solution": "function createQuerySystem() {\n  let cache = {};\n  let serverData = { todos: ['Buy milk', 'Walk dog'] };\n\n  return {\n    query: (key) => {\n      if (!cache[key]) {\n        cache[key] = [...serverData[key]];\n        console.log('Fetched ' + key + ': ' + JSON.stringify(cache[key]));\n      } else {\n        console.log('Cache hit ' + key + ': ' + JSON.stringify(cache[key]));\n      }\n      return cache[key];\n    },\n    mutate: (key, newItem) => {\n      serverData[key].push(newItem);\n      console.log('Mutated: added \"' + newItem + '\" to server');\n    },\n    invalidate: (key) => {\n      delete cache[key];\n      console.log('Invalidated: ' + key);\n    }\n  };\n}\n\nconst qs = createQuerySystem();\nqs.query('todos');\nqs.mutate('todos', 'Read book');\nqs.invalidate('todos');\nqs.query('todos');",
+        "expectedOutput": "Fetched todos: [\"Buy milk\",\"Walk dog\"]\nMutated: added \"Read book\" to server\nInvalidated: todos\nFetched todos: [\"Buy milk\",\"Walk dog\",\"Read book\"]",
+        "hints": [
+          "Keep separate 'cache' and 'serverData' objects. query reads from cache (or fetches from server). mutate writes to server. invalidate deletes the cache entry.",
+          "After invalidation, the next query call should see a cache miss and refetch from the (now updated) server data."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "react-query-advanced-ex2",
+        "title": "Optimistic Update with Rollback",
+        "description": "Simulate an optimistic update. Update the cache immediately before the server confirms. If the server returns an error, roll back to the previous state. Log the cache state at each step.",
+        "starterCode": "// Simulate optimistic update with rollback\n// 1. Show current cache\n// 2. Optimistically update cache\n// 3a. If server succeeds: keep the update\n// 3b. If server fails: rollback to snapshot\n\nfunction simulateOptimisticUpdate(shouldFail) {\n  // TODO\n}",
+        "solution": "function simulateOptimisticUpdate(shouldFail) {\n  let cache = ['Todo 1', 'Todo 2'];\n  console.log('Initial cache: ' + JSON.stringify(cache));\n\n  // Snapshot for rollback\n  const snapshot = [...cache];\n\n  // Optimistic update\n  cache.push('Todo 3 (optimistic)');\n  console.log('After optimistic update: ' + JSON.stringify(cache));\n\n  // Simulate server response\n  if (shouldFail) {\n    console.log('Server error! Rolling back...');\n    cache = [...snapshot];\n    console.log('After rollback: ' + JSON.stringify(cache));\n  } else {\n    console.log('Server confirmed!');\n    // Replace optimistic entry with server version\n    cache[cache.length - 1] = 'Todo 3 (confirmed)';\n    console.log('After confirmation: ' + JSON.stringify(cache));\n  }\n}\n\nconsole.log('=== Success Case ===');\nsimulateOptimisticUpdate(false);\nconsole.log('=== Failure Case ===');\nsimulateOptimisticUpdate(true);",
+        "expectedOutput": "=== Success Case ===\nInitial cache: [\"Todo 1\",\"Todo 2\"]\nAfter optimistic update: [\"Todo 1\",\"Todo 2\",\"Todo 3 (optimistic)\"]\nServer confirmed!\nAfter confirmation: [\"Todo 1\",\"Todo 2\",\"Todo 3 (confirmed)\"]\n=== Failure Case ===\nInitial cache: [\"Todo 1\",\"Todo 2\"]\nAfter optimistic update: [\"Todo 1\",\"Todo 2\",\"Todo 3 (optimistic)\"]\nServer error! Rolling back...\nAfter rollback: [\"Todo 1\",\"Todo 2\"]",
+        "hints": [
+          "Take a snapshot (copy) of the cache BEFORE the optimistic update. This snapshot is your rollback target.",
+          "On success, replace the optimistic entry with the server-confirmed version. On failure, restore the snapshot."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "error-boundaries",
+    "sectionId": "data-fetching",
+    "orderIndex": 3,
+    "title": "Error Boundaries",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["error boundary", "componentDidCatch", "getDerivedStateFromError", "fallback UI", "error recovery"],
+    "content": {
+      "explanation": "Error boundaries are React components that catch JavaScript errors anywhere in their child component tree, log those errors, and display a fallback UI instead of crashing the entire application. Without error boundaries, a single thrown error in any component will unmount the whole React tree, leaving users with a blank white screen.\n\nError boundaries must be class components — there is no hook equivalent for componentDidCatch and getDerivedStateFromError as of React 18. getDerivedStateFromError is a static method that runs during rendering and returns new state (typically { hasError: true }). componentDidCatch is an instance method that runs after the error has been committed — use it for logging to an error reporting service.\n\nYou should place error boundaries strategically. A top-level boundary around your entire app prevents the white screen of death. More granular boundaries around individual routes, widgets, or feature sections let the rest of the app continue working when one section fails. For example, if the chat widget throws, the main content should still be usable.\n\nError boundaries catch errors during rendering, in lifecycle methods, and in constructors of the whole tree below them. They do NOT catch errors in event handlers (use try/catch), asynchronous code (promises, setTimeout), server-side rendering, or errors thrown in the error boundary itself. For event handler errors, you need explicit try/catch blocks.\n\nRecovery is an important UX concern. A good fallback UI includes a message explaining something went wrong and a 'Try Again' button that resets the error boundary state. You can do this by changing the key prop on the boundary (forcing a remount) or by providing a reset method via a render prop or callback.",
+      "codeExamples": [
+        {
+          "title": "Basic error boundary class component",
+          "code": "class ErrorBoundary extends React.Component {\n  constructor(props) {\n    super(props);\n    this.state = { hasError: false, error: null };\n  }\n\n  static getDerivedStateFromError(error) {\n    return { hasError: true, error };\n  }\n\n  componentDidCatch(error, errorInfo) {\n    console.error('Error caught by boundary:', error);\n    console.error('Component stack:', errorInfo.componentStack);\n    // Send to error reporting service\n    // logErrorToService(error, errorInfo);\n  }\n\n  render() {\n    if (this.state.hasError) {\n      return (\n        <div>\n          <h2>Something went wrong</h2>\n          <p>{this.state.error?.message}</p>\n          <button onClick={() => this.setState({ hasError: false, error: null })}>\n            Try Again\n          </button>\n        </div>\n      );\n    }\n    return this.props.children;\n  }\n}\n\n// Usage\n<ErrorBoundary>\n  <RiskyComponent />\n</ErrorBoundary>",
+          "output": "If RiskyComponent throws, shows 'Something went wrong' with Try Again button",
+          "explanation": "getDerivedStateFromError sets the error state during render. componentDidCatch logs the error after commit. The fallback UI includes a reset button."
+        },
+        {
+          "title": "Granular error boundaries per route",
+          "code": "function App() {\n  return (\n    <ErrorBoundary fallback={<FullPageError />}>\n      <Header />\n      <main>\n        <Routes>\n          <Route path=\"/dashboard\" element={\n            <ErrorBoundary fallback={<p>Dashboard failed to load</p>}>\n              <Dashboard />\n            </ErrorBoundary>\n          } />\n          <Route path=\"/settings\" element={\n            <ErrorBoundary fallback={<p>Settings failed to load</p>}>\n              <Settings />\n            </ErrorBoundary>\n          } />\n        </Routes>\n      </main>\n    </ErrorBoundary>\n  );\n}",
+          "explanation": "The outer boundary catches catastrophic errors. Inner boundaries per route let the header and navigation keep working even if a page crashes."
+        },
+        {
+          "title": "Error boundary with reset via key",
+          "code": "function App() {\n  const [errorKey, setErrorKey] = React.useState(0);\n\n  return (\n    <ErrorBoundary\n      key={errorKey}\n      fallback={\n        <div>\n          <p>Something broke.</p>\n          <button onClick={() => setErrorKey(k => k + 1)}>\n            Reset & Try Again\n          </button>\n        </div>\n      }\n    >\n      <Dashboard />\n    </ErrorBoundary>\n  );\n}",
+          "output": "Clicking 'Reset & Try Again' remounts the error boundary and its children",
+          "explanation": "Changing the key forces React to unmount and remount the ErrorBoundary, clearing its error state and giving the children a fresh start."
+        }
+      ],
+      "notes": [
+        "Error boundaries must be class components — there is no hooks API for catching render errors (as of React 18).",
+        "Place error boundaries at both the app level (prevent white screen) and at feature/route level (isolate failures).",
+        "Error boundaries do NOT catch errors in event handlers, async code, or SSR — use try/catch for those."
+      ],
+      "commonPitfalls": [
+        "Assuming error boundaries catch event handler errors — they don't. A click handler that throws will not be caught; you need explicit try/catch inside the handler.",
+        "Placing only one error boundary at the root, which means any error still takes down the whole visible UI inside that boundary. Use granular boundaries."
+      ],
+      "interviewTips": [
+        "Explain that error boundaries are the React equivalent of try/catch for the component tree — they prevent a single failing component from crashing the entire app.",
+        "Mention that they must be class components and explain what getDerivedStateFromError (sync, during render) and componentDidCatch (async, after commit) each do.",
+        "Discuss granular placement: root boundary for catastrophic errors, route-level boundaries for page isolation, widget-level boundaries for non-critical features.",
+        "Know the limitations: event handlers, async code, and SSR errors are NOT caught — this is a common follow-up question."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "error-boundaries-ex1",
+        "title": "Simulated Error Boundary",
+        "description": "Simulate an error boundary pattern without React. Create a function that wraps another function call, catches any thrown errors, and returns a fallback value. Log whether the call succeeded or was caught.",
+        "starterCode": "// Simulate an error boundary\n// withErrorBoundary(fn, fallback) — calls fn, returns result or fallback on error\n\nfunction withErrorBoundary(fn, fallback) {\n  // TODO\n}\n\n// Test with a function that succeeds\n// Test with a function that throws",
+        "solution": "function withErrorBoundary(fn, fallback) {\n  try {\n    const result = fn();\n    console.log('Render success: ' + result);\n    return result;\n  } catch (error) {\n    console.log('Error caught: ' + error.message);\n    console.log('Showing fallback: ' + fallback);\n    return fallback;\n  }\n}\n\nconsole.log('--- Success Case ---');\nwithErrorBoundary(() => 'Dashboard Content', 'Something went wrong');\n\nconsole.log('--- Error Case ---');\nwithErrorBoundary(() => { throw new Error('Component crashed'); }, 'Something went wrong');\n\nconsole.log('--- Another Error ---');\nwithErrorBoundary(() => { throw new Error('Data is undefined'); }, 'Failed to load widget');",
+        "expectedOutput": "--- Success Case ---\nRender success: Dashboard Content\n--- Error Case ---\nError caught: Component crashed\nShowing fallback: Something went wrong\n--- Another Error ---\nError caught: Data is undefined\nShowing fallback: Failed to load widget",
+        "hints": [
+          "Use a try/catch block around the function call. Return the result on success, the fallback on error.",
+          "Log the error message from the caught error and the fallback value being displayed."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "error-boundaries-ex2",
+        "title": "Nested Error Boundaries with Isolation",
+        "description": "Simulate nested error boundaries. An outer boundary wraps the whole app. Inner boundaries wrap individual sections. If one section throws, the outer boundary should NOT catch it — only the inner boundary should. Show that other sections keep working.",
+        "starterCode": "// Simulate nested error boundaries\n// Outer boundary wraps everything\n// Inner boundaries wrap individual sections\n// Show that a failure in one section doesn't affect others\n\nfunction simulateNestedBoundaries() {\n  // TODO\n}",
+        "solution": "function errorBoundary(name, fn, fallback) {\n  try {\n    return fn();\n  } catch (error) {\n    console.log('[' + name + '] caught: ' + error.message);\n    return fallback;\n  }\n}\n\nfunction simulateNestedBoundaries() {\n  const appResult = errorBoundary('App', () => {\n    // Header always works\n    console.log('Header: rendered OK');\n\n    // Dashboard section — will throw\n    const dashboard = errorBoundary('Dashboard', () => {\n      throw new Error('Dashboard crashed');\n    }, 'Dashboard fallback UI');\n    console.log('Dashboard: ' + dashboard);\n\n    // Settings section — works fine\n    const settings = errorBoundary('Settings', () => {\n      return 'Settings Content';\n    }, 'Settings fallback UI');\n    console.log('Settings: ' + settings);\n\n    return 'App rendered';\n  }, 'Full app fallback');\n\n  console.log('Result: ' + appResult);\n}\n\nsimulateNestedBoundaries();",
+        "expectedOutput": "Header: rendered OK\n[Dashboard] caught: Dashboard crashed\nDashboard: Dashboard fallback UI\nSettings: Settings Content\nResult: App rendered",
+        "hints": [
+          "Each errorBoundary function wraps a section. The inner boundary catches Dashboard's error, so the outer boundary never sees it.",
+          "The key insight is that inner boundaries catch errors first, preventing them from propagating to outer boundaries."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "suspense-basics",
+    "sectionId": "data-fetching",
+    "orderIndex": 4,
+    "title": "React Suspense Basics",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["React.Suspense", "React.lazy", "lazy loading", "code splitting", "fallback UI", "concurrent features"],
+    "content": {
+      "explanation": "React Suspense is a mechanism that lets components 'wait' for something before rendering — whether that is lazily loaded code, data, or other asynchronous resources. When a component inside a Suspense boundary is not ready, React shows the fallback UI (typically a loading spinner) until the component resolves.\n\nThe most established use of Suspense is with React.lazy for code splitting. React.lazy takes a function that returns a dynamic import and creates a component that loads the module on demand. Wrapping it with Suspense provides the loading state. This is the foundation of route-based code splitting — instead of loading your entire app's JavaScript upfront, each route's code loads only when the user navigates to it.\n\nRoute-based code splitting is the most impactful optimization because routes represent natural boundaries where users expect a brief loading moment. You lazy-load each page component and wrap your routes in a Suspense boundary. The initial bundle becomes much smaller, and subsequent routes load on demand. This dramatically improves Time to Interactive for large applications.\n\nSuspense for data fetching is a newer pattern. Libraries like React Query (with its suspense option) and the experimental React.use hook let components suspend while data is loading. Instead of managing isLoading state manually, the component simply reads the data and Suspense handles the loading state. This leads to cleaner component code — no loading/error conditionals.\n\nSuspense boundaries can be nested. A page-level boundary shows a full-page loader while the route loads. Inside that page, section-level boundaries can show inline spinners while individual data sources load. This gives you fine-grained control over the loading experience without cluttering components with loading logic.",
+      "codeExamples": [
+        {
+          "title": "React.lazy with Suspense for code splitting",
+          "code": "import React, { Suspense, lazy } from 'react';\nimport { Routes, Route } from 'react-router-dom';\n\n// Lazy-loaded route components\nconst Dashboard = lazy(() => import('./pages/Dashboard'));\nconst Settings = lazy(() => import('./pages/Settings'));\nconst Profile = lazy(() => import('./pages/Profile'));\n\nfunction App() {\n  return (\n    <Suspense fallback={<div className=\"loading\">Loading page...</div>}>\n      <Routes>\n        <Route path=\"/dashboard\" element={<Dashboard />} />\n        <Route path=\"/settings\" element={<Settings />} />\n        <Route path=\"/profile\" element={<Profile />} />\n      </Routes>\n    </Suspense>\n  );\n}",
+          "output": "Shows 'Loading page...' while route JS bundle downloads, then renders the page",
+          "explanation": "Each route component is in a separate chunk. The browser only downloads Dashboard.js when the user navigates to /dashboard. Suspense shows the fallback during download."
+        },
+        {
+          "title": "Nested Suspense boundaries",
+          "code": "function DashboardPage() {\n  return (\n    <div>\n      <h1>Dashboard</h1>\n      <Suspense fallback={<p>Loading stats...</p>}>\n        <StatsWidget />\n      </Suspense>\n      <Suspense fallback={<p>Loading chart...</p>}>\n        <ChartWidget />\n      </Suspense>\n      <Suspense fallback={<p>Loading activity...</p>}>\n        <ActivityFeed />\n      </Suspense>\n    </div>\n  );\n}",
+          "output": "Each widget shows its own loading state independently",
+          "explanation": "Nested boundaries let each section load independently. The stats might appear first while the chart and activity feed are still loading. Users see progressive content instead of one big spinner."
+        },
+        {
+          "title": "Suspense with React Query",
+          "code": "import { useSuspenseQuery } from '@tanstack/react-query';\n\nfunction UserProfile({ userId }) {\n  // No loading state needed — Suspense handles it\n  const { data } = useSuspenseQuery({\n    queryKey: ['user', userId],\n    queryFn: () => fetchUser(userId),\n  });\n\n  // data is guaranteed to exist here\n  return (\n    <div>\n      <h1>{data.name}</h1>\n      <p>{data.email}</p>\n    </div>\n  );\n}\n\n// Wrap with Suspense\n<Suspense fallback={<ProfileSkeleton />}>\n  <UserProfile userId={1} />\n</Suspense>",
+          "output": "Shows ProfileSkeleton while loading, then renders user data",
+          "explanation": "useSuspenseQuery suspends the component while data loads. The component code is cleaner — no isLoading check, data is always defined. The Suspense boundary handles the loading state."
+        }
+      ],
+      "notes": [
+        "React.lazy only works with default exports. If your component uses named exports, create an intermediate module that re-exports it as default.",
+        "Place Suspense boundaries at natural loading points: route transitions, widget sections, modals that load content.",
+        "Suspense for data fetching requires library support (React Query's useSuspenseQuery, or experimental React.use). You cannot just throw a promise manually in production code."
+      ],
+      "commonPitfalls": [
+        "Wrapping every single component in Suspense — this creates too many loading spinners and a janky UX. Use Suspense at meaningful boundaries (routes, page sections).",
+        "Using React.lazy inside a component body instead of at the module level. Defining it inside a component causes a new lazy component on every render, which resets state and re-triggers loading."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "suspense-basics-ex1",
+        "title": "Simulated Lazy Loading",
+        "description": "Simulate React.lazy behavior. Create a lazyLoad function that takes a loader (a function returning a value) and returns an object that starts 'loading' and transitions to 'loaded' with the value. Log the state at each step.",
+        "starterCode": "// Simulate React.lazy\n// lazyLoad(loader) returns { status, value }\n// Initially status is 'loading'\n// After load, status is 'loaded' and value is the result\n\nfunction lazyLoad(loader) {\n  // TODO\n}\n\n// Simulate loading a component\n// Log status before and after loading",
+        "solution": "function lazyLoad(loader) {\n  const result = { status: 'loading', value: null };\n  console.log('Status: ' + result.status);\n\n  // Simulate loading\n  result.value = loader();\n  result.status = 'loaded';\n  console.log('Status: ' + result.status);\n  console.log('Value: ' + result.value);\n\n  return result;\n}\n\nconsole.log('--- Loading Dashboard ---');\nconst dashboard = lazyLoad(() => 'Dashboard Component');\n\nconsole.log('--- Loading Settings ---');\nconst settings = lazyLoad(() => 'Settings Component');",
+        "expectedOutput": "--- Loading Dashboard ---\nStatus: loading\nStatus: loaded\nValue: Dashboard Component\n--- Loading Settings ---\nStatus: loading\nStatus: loaded\nValue: Settings Component",
+        "hints": [
+          "Create an object with status: 'loading'. After calling the loader function, update status to 'loaded' and store the result.",
+          "This simulates what React.lazy does: it starts in a loading state and transitions to loaded once the dynamic import resolves."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "suspense-basics-ex2",
+        "title": "Suspense Boundary Simulation",
+        "description": "Simulate a Suspense boundary. Create a function that takes a render function and a fallback string. If the render function throws a 'SuspenseSignal', show the fallback. Otherwise, show the rendered content. Demonstrate with a component that suspends on first call and resolves on second.",
+        "starterCode": "// Simulate Suspense boundary behavior\n// If render throws SuspenseSignal, show fallback\n// Otherwise show the rendered content\n\nfunction SuspenseBoundary(renderFn, fallback) {\n  // TODO\n}\n\n// Create a component that suspends on first call, resolves on second\n// Show the Suspense boundary handling both cases",
+        "solution": "function SuspenseBoundary(renderFn, fallback) {\n  try {\n    const content = renderFn();\n    console.log('Rendered: ' + content);\n  } catch (e) {\n    if (e.type === 'SuspenseSignal') {\n      console.log('Suspended! Showing fallback: ' + fallback);\n    } else {\n      throw e;\n    }\n  }\n}\n\nfunction createSuspendingComponent(data) {\n  let loaded = false;\n\n  return function render() {\n    if (!loaded) {\n      loaded = true;\n      throw { type: 'SuspenseSignal', message: 'Still loading' };\n    }\n    return data;\n  };\n}\n\nconst UserProfile = createSuspendingComponent('User: Alice');\n\nconsole.log('--- First render (suspends) ---');\nSuspenseBoundary(UserProfile, 'Loading profile...');\n\nconsole.log('--- Second render (resolved) ---');\nSuspenseBoundary(UserProfile, 'Loading profile...');",
+        "expectedOutput": "--- First render (suspends) ---\nSuspended! Showing fallback: Loading profile...\n--- Second render (resolved) ---\nRendered: User: Alice",
+        "hints": [
+          "Wrap the renderFn call in a try/catch. If the caught error has type 'SuspenseSignal', show the fallback instead of crashing.",
+          "The suspending component uses a closure variable (loaded) to throw on first call and return data on subsequent calls, simulating async data loading."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

@@ -1,0 +1,264 @@
+[
+  {
+    "id": "request-object-deep-dive",
+    "sectionId": "request-and-response",
+    "orderIndex": 0,
+    "title": "Request Object Deep Dive",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["req.params", "req.query", "req.body", "req.headers", "req.cookies", "req.method", "req.path"],
+    "content": {
+      "explanation": "The Express request object (req) is an enhanced version of Node.js's http.IncomingMessage. It contains all the information about the incoming HTTP request: the URL, HTTP method, headers, body, cookies, and more. Mastering the request object is essential because every route handler begins by extracting data from it.\n\nreq.params contains route parameters — named URL segments captured by patterns like ':id' or ':slug'. For the route '/users/:id/posts/:postId', a request to '/users/5/posts/42' produces req.params = { id: '5', postId: '42' }. All parameter values are strings, so parse them with parseInt() or Number() for numeric comparisons. Route parameters are used to identify specific resources in RESTful APIs.\n\nreq.query contains the parsed query string parameters. For the URL '/search?q=express&page=2&sort=date', req.query = { q: 'express', page: '2', sort: 'date' }. Like route params, all values are strings. Query strings are used for optional parameters like filtering, pagination, sorting, and search terms. Express automatically parses the query string using the 'qs' library, which supports nested objects and arrays.\n\nreq.body contains the parsed request body, but only if you have registered a body-parsing middleware like express.json() or express.urlencoded(). Without body parsing middleware, req.body is undefined. The body is used for sending data in POST, PUT, and PATCH requests — things like creating a new user, updating a profile, or submitting a form.\n\nreq.headers is an object containing all HTTP headers sent by the client, with header names lowercased. Common headers include 'content-type' (the format of the request body), 'authorization' (authentication tokens), 'user-agent' (the client software), and 'accept' (what response formats the client can handle). Express also provides convenience properties: req.hostname gives the host, req.ip gives the client IP address, req.protocol gives 'http' or 'https', and req.secure is true for HTTPS requests.",
+      "codeExamples": [
+        {
+          "title": "Extracting Data from the Request",
+          "code": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\n// Route parameters\napp.get('/api/users/:userId/posts/:postId', (req, res) => {\n  res.json({\n    params: req.params,\n    userId: parseInt(req.params.userId),\n    postId: parseInt(req.params.postId)\n  });\n});\n// GET /api/users/5/posts/42\n// => { params: { userId: '5', postId: '42' }, userId: 5, postId: 42 }\n\n// Query strings\napp.get('/api/search', (req, res) => {\n  const {\n    q = '',\n    page = '1',\n    limit = '10',\n    sort = 'createdAt'\n  } = req.query;\n\n  res.json({\n    query: req.query,\n    parsed: {\n      searchTerm: q,\n      page: parseInt(page),\n      limit: parseInt(limit),\n      sort\n    }\n  });\n});\n// GET /api/search?q=express&page=2&sort=name\n\n// Request body\napp.post('/api/users', (req, res) => {\n  const { name, email, age } = req.body;\n  res.status(201).json({ id: 1, name, email, age });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "Route parameters capture URL segments, query strings carry optional filters, and the body contains submitted data. Destructuring with defaults is a clean pattern for extracting and defaulting query parameters."
+        },
+        {
+          "title": "Headers, IP, and Request Metadata",
+          "code": "const express = require('express');\nconst app = express();\n\n// Middleware to log all request details\napp.use((req, res, next) => {\n  console.log('--- Request Details ---');\n  console.log('Method:', req.method);\n  console.log('Path:', req.path);\n  console.log('Full URL:', req.originalUrl);\n  console.log('Protocol:', req.protocol);\n  console.log('Hostname:', req.hostname);\n  console.log('IP:', req.ip);\n  console.log('Secure:', req.secure);\n  next();\n});\n\napp.get('/api/request-info', (req, res) => {\n  res.json({\n    method: req.method,\n    path: req.path,\n    originalUrl: req.originalUrl,\n    protocol: req.protocol,\n    hostname: req.hostname,\n    ip: req.ip,\n    headers: {\n      contentType: req.headers['content-type'],\n      authorization: req.headers['authorization'],\n      userAgent: req.headers['user-agent'],\n      accept: req.headers['accept']\n    },\n    // Express convenience methods\n    is_json: req.is('json'),\n    accepts_html: req.accepts('html'),\n    accepts_json: req.accepts('json')\n  });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000\n--- Request Details ---\nMethod: GET\nPath: /api/request-info\nFull URL: /api/request-info\nProtocol: http\nHostname: localhost\nIP: ::1\nSecure: false",
+          "explanation": "req.path gives just the URL path without query string. req.originalUrl includes the full URL with query string. req.is() checks the Content-Type. req.accepts() performs content negotiation by checking what the client can handle."
+        },
+        {
+          "title": "Practical Request Data Processing",
+          "code": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\n// Advanced search endpoint using all request data sources\napp.get('/api/products/:category', (req, res) => {\n  // Route parameter for the resource category\n  const { category } = req.params;\n\n  // Query string for filtering and pagination\n  const page = Math.max(1, parseInt(req.query.page) || 1);\n  const limit = Math.min(100, Math.max(1, parseInt(req.query.limit) || 20));\n  const sortBy = req.query.sort || 'price';\n  const order = req.query.order === 'desc' ? 'desc' : 'asc';\n  const minPrice = parseFloat(req.query.minPrice) || 0;\n  const maxPrice = parseFloat(req.query.maxPrice) || Infinity;\n\n  // Headers for authentication and content negotiation\n  const authToken = req.headers['authorization'];\n  const isAuthenticated = !!authToken;\n\n  res.json({\n    category,\n    filters: { minPrice, maxPrice, sortBy, order },\n    pagination: { page, limit, offset: (page - 1) * limit },\n    authenticated: isAuthenticated,\n    results: [] // Would be populated from database\n  });\n});\n\n// GET /api/products/electronics?page=2&limit=10&sort=price&order=desc&minPrice=100\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "Real-world endpoints combine multiple data sources. Route params identify the resource, query strings provide optional filtering/pagination, and headers carry auth tokens. Always validate and sanitize values with defaults, min/max bounds, and type conversion."
+        }
+      ],
+      "notes": [
+        "req.params, req.query values are always strings. Always parse to the correct type before comparisons or database queries.",
+        "req.body is undefined unless body-parsing middleware (express.json or express.urlencoded) is registered. This is the single most common Express gotcha.",
+        "req.originalUrl preserves the full URL including query string and mount prefix. req.path only has the path relative to the mounted router, without query string."
+      ],
+      "commonPitfalls": [
+        "Comparing req.params.id directly with a number: req.params.id === 1 is always false because params are strings. Use parseInt(req.params.id) === 1.",
+        "Assuming req.body exists without registering express.json() middleware. This leads to 'Cannot destructure property of undefined' errors.",
+        "Not providing default values for optional query parameters, causing NaN or undefined to propagate through your code."
+      ],
+      "interviewTips": [
+        "Know all the data sources on a request: params (URL segments), query (URL query string), body (request payload), headers (metadata), and cookies (stored client data).",
+        "Explain when to use each: params for resource identity (/users/5), query for optional filters (?page=2), body for creation/update data, headers for auth tokens and content type."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "request-object-deep-dive-ex1",
+        "title": "Extract All Request Data",
+        "description": "Create a POST '/api/items/:category' route that extracts the category from params, page and limit from query string (default 1 and 10), name and price from req.body, and the authorization header. Return all extracted data as JSON.",
+        "starterCode": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\n// POST /api/items/:category?page=1&limit=10\n// Body: { name: 'Widget', price: 9.99 }\n// Header: Authorization: Bearer token123\n",
+        "solution": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\napp.post('/api/items/:category', (req, res) => {\n  const category = req.params.category;\n  const page = parseInt(req.query.page) || 1;\n  const limit = parseInt(req.query.limit) || 10;\n  const { name, price } = req.body;\n  const auth = req.headers['authorization'];\n\n  res.json({ category, page, limit, name, price, auth });\n});\n\napp.listen(3000);",
+        "expectedOutput": "{\"category\":\"electronics\",\"page\":1,\"limit\":10,\"name\":\"Widget\",\"price\":9.99,\"auth\":\"Bearer token123\"}",
+        "hints": [
+          "Use req.params.category for route parameters",
+          "Use req.query.page with parseInt and a default via ||",
+          "Use req.headers['authorization'] for the auth header (lowercase)"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "response-methods",
+    "sectionId": "request-and-response",
+    "orderIndex": 1,
+    "title": "Response Methods",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["res.json", "res.send", "res.status", "res.redirect", "res.render", "res.sendFile", "res.cookie", "Method Chaining"],
+    "content": {
+      "explanation": "The Express response object (res) is an enhanced version of Node.js's http.ServerResponse. It provides a rich set of methods for sending data back to the client. While the raw Node.js response requires you to manually set headers, serialize data, and call end(), Express response methods handle these details automatically.\n\nres.json(data) is the workhorse method for API development. It serializes a JavaScript object or array to JSON, sets the Content-Type header to 'application/json', and sends the response. It handles edge cases like circular references (throws an error) and special values (Infinity, NaN become null). Under the hood, it calls JSON.stringify() with the app's 'json replacer' and 'json spaces' settings.\n\nres.send(data) is a more general method that automatically determines the Content-Type based on the argument type. If you pass a string, it sets Content-Type to 'text/html'. If you pass an object or array, it behaves like res.json(). If you pass a Buffer, it sets Content-Type to 'application/octet-stream'. For most API work, prefer res.json() for clarity.\n\nres.status(code) sets the HTTP status code and returns the response object, allowing method chaining. This is commonly used with res.json(): res.status(201).json(newUser) or res.status(404).json({ error: 'Not found' }). Express also provides res.sendStatus(code) which sets the status AND sends the status text as the response body — res.sendStatus(204) sends a 204 response with 'No Content' as the body.\n\nres.redirect(url) sends a redirect response (302 by default) that tells the browser to navigate to a different URL. You can specify a different status code: res.redirect(301, '/new-url') for permanent redirects. res.redirect('back') redirects to the URL in the Referer header, useful for redirecting back after form submissions.\n\nres.cookie() sets a cookie on the client, and res.clearCookie() removes one. Cookies are sent via the Set-Cookie response header. Important cookie options include httpOnly (prevents JavaScript access, protecting against XSS), secure (only sent over HTTPS), sameSite (CSRF protection), maxAge (expiration in milliseconds), and path (which URLs the cookie applies to).",
+      "codeExamples": [
+        {
+          "title": "Core Response Methods",
+          "code": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\n// res.json() — JSON response\napp.get('/api/users', (req, res) => {\n  res.json([{ id: 1, name: 'Alice' }, { id: 2, name: 'Bob' }]);\n});\n\n// res.status().json() — Status code + JSON\napp.post('/api/users', (req, res) => {\n  const user = { id: 3, ...req.body };\n  res.status(201).json(user); // 201 Created\n});\n\n// res.send() — Auto-detects content type\napp.get('/html', (req, res) => {\n  res.send('<h1>Hello World</h1>'); // Content-Type: text/html\n});\n\napp.get('/text', (req, res) => {\n  res.type('text').send('Plain text response'); // Force text/plain\n});\n\n// res.sendStatus() — Status code + status text as body\napp.delete('/api/users/:id', (req, res) => {\n  res.sendStatus(204); // Sends \"No Content\"\n});\n\n// res.redirect() — Redirect to another URL\napp.get('/old-page', (req, res) => {\n  res.redirect(301, '/new-page'); // Permanent redirect\n});\n\napp.get('/new-page', (req, res) => {\n  res.send('You have been redirected!');\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "res.json() is for JSON APIs, res.send() auto-detects content type from the argument, res.status() chains with other methods, res.sendStatus() sends just a status code, and res.redirect() navigates the client to another URL."
+        },
+        {
+          "title": "Sending Files and Downloads",
+          "code": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\n// res.sendFile() — Send a file as the response\napp.get('/page', (req, res) => {\n  res.sendFile(path.join(__dirname, 'public', 'index.html'));\n});\n\n// res.download() — Prompt file download\napp.get('/download/report', (req, res) => {\n  const filePath = path.join(__dirname, 'files', 'report.pdf');\n  res.download(filePath, 'monthly-report.pdf', (err) => {\n    if (err) {\n      res.status(404).json({ error: 'File not found' });\n    }\n  });\n});\n\n// Conditional response format (content negotiation)\napp.get('/api/data', (req, res) => {\n  const data = { id: 1, name: 'Sample', value: 42 };\n\n  res.format({\n    'application/json': () => {\n      res.json(data);\n    },\n    'text/html': () => {\n      res.send(`<h1>${data.name}</h1><p>Value: ${data.value}</p>`);\n    },\n    'text/plain': () => {\n      res.type('text').send(`${data.name}: ${data.value}`);\n    },\n    default: () => {\n      res.status(406).json({ error: 'Not Acceptable' });\n    }\n  });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "res.sendFile() sends a file with the correct Content-Type based on extension. res.download() triggers a browser download dialog with a custom filename. res.format() performs content negotiation, sending different formats based on the client's Accept header."
+        },
+        {
+          "title": "Cookies and Response Headers",
+          "code": "const express = require('express');\nconst cookieParser = require('cookie-parser');\nconst app = express();\n\napp.use(express.json());\napp.use(cookieParser());\n\n// Set cookies on login\napp.post('/api/login', (req, res) => {\n  const { username } = req.body;\n\n  // Set a regular cookie\n  res.cookie('username', username, {\n    maxAge: 24 * 60 * 60 * 1000, // 1 day\n    httpOnly: false               // Accessible by JavaScript\n  });\n\n  // Set an HTTP-only session cookie\n  res.cookie('sessionToken', 'abc123xyz', {\n    httpOnly: true,   // NOT accessible by JavaScript (XSS protection)\n    secure: process.env.NODE_ENV === 'production', // HTTPS only in prod\n    sameSite: 'strict', // CSRF protection\n    maxAge: 7 * 24 * 60 * 60 * 1000 // 7 days\n  });\n\n  res.json({ message: `Welcome, ${username}!` });\n});\n\n// Read cookies\napp.get('/api/profile', (req, res) => {\n  res.json({\n    username: req.cookies.username || 'Guest',\n    hasSession: !!req.cookies.sessionToken\n  });\n});\n\n// Clear cookies on logout\napp.post('/api/logout', (req, res) => {\n  res.clearCookie('username');\n  res.clearCookie('sessionToken');\n  res.json({ message: 'Logged out' });\n});\n\n// Custom response headers\napp.get('/api/data', (req, res) => {\n  res.set('X-Total-Count', '42');\n  res.set('X-Request-Id', Math.random().toString(36).slice(2));\n  res.set('Cache-Control', 'public, max-age=300');\n  res.json({ data: 'Some data' });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "res.cookie() sets cookies with options for security (httpOnly, secure, sameSite) and expiration (maxAge). res.clearCookie() removes cookies. res.set() adds custom headers — commonly used for pagination metadata (X-Total-Count) and cache control."
+        }
+      ],
+      "notes": [
+        "res.json() and res.send() both end the response. You cannot call them twice in the same handler — doing so throws a 'Cannot set headers after they are sent' error.",
+        "res.status() does NOT send the response — it only sets the status code and returns the response object for chaining. You must still call .json(), .send(), or .end() to actually send the response.",
+        "Set httpOnly: true on session cookies to prevent JavaScript access. This is a critical security practice that prevents XSS attacks from stealing session tokens."
+      ],
+      "commonPitfalls": [
+        "Calling res.json() or res.send() multiple times in the same handler, especially in if/else branches without return statements. Always use 'return res.json()' in early exits.",
+        "Using res.sendStatus(200) when you meant res.status(200).json(data). sendStatus sends the status text as the body, not your data.",
+        "Setting cookies without httpOnly: true for session tokens, allowing client-side JavaScript (and potential XSS attacks) to read them."
+      ],
+      "interviewTips": [
+        "Know the difference between res.json(), res.send(), and res.end(). json() serializes to JSON. send() auto-detects the type. end() sends an empty response with no body.",
+        "Explain cookie security options: httpOnly (prevents JS access), secure (HTTPS only), sameSite (CSRF protection), and why each matters."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "response-methods-ex1",
+        "title": "Multi-Format Response",
+        "description": "Create an Express app with: GET '/api/users' returns a JSON array of users with 200 status, POST '/api/users' returns the created user with 201 status, GET '/redirect' redirects to '/api/users', and DELETE '/api/users/:id' returns 204 No Content.",
+        "starterCode": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\nconst users = [{ id: 1, name: 'Alice' }];\n\n// GET /api/users -> 200 + JSON array\n// POST /api/users -> 201 + created user\n// GET /redirect -> 302 redirect to /api/users\n// DELETE /api/users/:id -> 204 No Content\n",
+        "solution": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\nconst users = [{ id: 1, name: 'Alice' }];\n\napp.get('/api/users', (req, res) => {\n  res.status(200).json(users);\n});\n\napp.post('/api/users', (req, res) => {\n  const user = { id: users.length + 1, ...req.body };\n  users.push(user);\n  res.status(201).json(user);\n});\n\napp.get('/redirect', (req, res) => {\n  res.redirect('/api/users');\n});\n\napp.delete('/api/users/:id', (req, res) => {\n  res.sendStatus(204);\n});\n\napp.listen(3000);",
+        "expectedOutput": "[{\"id\":1,\"name\":\"Alice\"}]",
+        "hints": [
+          "Chain res.status(201).json() for created resources",
+          "Use res.redirect('/path') for 302 redirects",
+          "Use res.sendStatus(204) for no-content responses"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "file-uploads-with-multer",
+    "sectionId": "request-and-response",
+    "orderIndex": 2,
+    "title": "File Uploads with Multer",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Multer", "multipart/form-data", "Single Upload", "Multiple Uploads", "Storage Engines", "File Validation"],
+    "content": {
+      "explanation": "HTTP was originally designed for text data, but modern web applications frequently need to handle file uploads: profile pictures, documents, spreadsheets, videos, and more. The standard way to send files over HTTP is using the multipart/form-data content type, which can include both text fields and binary file data in a single request. Express.json() and express.urlencoded() cannot parse multipart data — you need a specialized library.\n\nMulter is the most popular file upload middleware for Express. It processes multipart/form-data requests and makes uploaded files available on req.file (for single uploads) or req.files (for multiple uploads). Multer handles the complex task of reading binary data from the multipart stream, buffering it, and either storing it on disk or keeping it in memory as a Buffer.\n\nMulter provides two storage engines. DiskStorage saves files directly to the file system, where you can configure the destination directory and filename. MemoryStorage keeps files in memory as Buffer objects on req.file.buffer, which is useful when you want to process the file (resize images, upload to cloud storage like S3) before saving it. For production applications that use cloud storage, MemoryStorage is typically preferred because you never need to write temporary files to disk.\n\nFile validation is critical for security. Without validation, users could upload executable files, gigabyte-sized archives, or files with malicious content. Multer provides a fileFilter function that lets you reject files based on their mimetype, extension, or other criteria. The limits option restricts file size, number of files, and field name length. Always validate both the file type and file size on the server — client-side validation can be bypassed.\n\nMulter offers different methods for different upload scenarios: upload.single('fieldName') for a single file, upload.array('fieldName', maxCount) for multiple files from the same field, upload.fields([{name, maxCount}]) for files from different fields, and upload.none() for multipart requests with no files (just text fields).",
+      "codeExamples": [
+        {
+          "title": "Single File Upload",
+          "code": "const express = require('express');\nconst multer = require('multer');\nconst path = require('path');\nconst app = express();\n\n// Configure disk storage\nconst storage = multer.diskStorage({\n  destination: (req, file, cb) => {\n    cb(null, path.join(__dirname, 'uploads'));\n  },\n  filename: (req, file, cb) => {\n    // Create unique filename: timestamp-originalname\n    const uniqueName = `${Date.now()}-${file.originalname}`;\n    cb(null, uniqueName);\n  }\n});\n\n// File filter — only allow images\nconst fileFilter = (req, file, cb) => {\n  const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp'];\n  if (allowedTypes.includes(file.mimetype)) {\n    cb(null, true);  // Accept file\n  } else {\n    cb(new Error('Only image files are allowed'), false); // Reject\n  }\n};\n\nconst upload = multer({\n  storage,\n  fileFilter,\n  limits: { fileSize: 5 * 1024 * 1024 } // 5MB max\n});\n\n// Single file upload endpoint\napp.post('/api/upload/avatar', upload.single('avatar'), (req, res) => {\n  if (!req.file) {\n    return res.status(400).json({ error: 'No file uploaded' });\n  }\n\n  res.json({\n    message: 'File uploaded successfully',\n    file: {\n      filename: req.file.filename,\n      originalName: req.file.originalname,\n      mimetype: req.file.mimetype,\n      size: req.file.size,\n      path: req.file.path\n    }\n  });\n});\n\n// Handle multer errors\napp.use((err, req, res, next) => {\n  if (err instanceof multer.MulterError) {\n    if (err.code === 'LIMIT_FILE_SIZE') {\n      return res.status(400).json({ error: 'File too large. Max size is 5MB.' });\n    }\n    return res.status(400).json({ error: err.message });\n  }\n  if (err.message === 'Only image files are allowed') {\n    return res.status(400).json({ error: err.message });\n  }\n  next(err);\n});\n\napp.listen(3000, () => console.log('Upload server on port 3000'));",
+          "output": "Upload server on port 3000",
+          "explanation": "upload.single('avatar') processes a single file from the form field named 'avatar'. The file is available on req.file with properties like filename, originalname, mimetype, size, and path. Multer errors (size limit, wrong type) are caught by the error middleware."
+        },
+        {
+          "title": "Multiple File Uploads",
+          "code": "const express = require('express');\nconst multer = require('multer');\nconst app = express();\n\nconst upload = multer({\n  storage: multer.memoryStorage(), // Store in memory as Buffer\n  limits: { fileSize: 10 * 1024 * 1024 } // 10MB per file\n});\n\n// Multiple files from the same field\napp.post('/api/upload/photos', upload.array('photos', 5), (req, res) => {\n  if (!req.files || req.files.length === 0) {\n    return res.status(400).json({ error: 'No files uploaded' });\n  }\n\n  const fileInfo = req.files.map(file => ({\n    originalName: file.originalname,\n    mimetype: file.mimetype,\n    size: file.size,\n    // file.buffer contains the raw file data\n    bufferSize: file.buffer.length\n  }));\n\n  res.json({\n    message: `${req.files.length} files uploaded`,\n    files: fileInfo\n  });\n});\n\n// Multiple fields with different file types\napp.post('/api/upload/profile', upload.fields([\n  { name: 'avatar', maxCount: 1 },\n  { name: 'resume', maxCount: 1 },\n  { name: 'portfolio', maxCount: 5 }\n]), (req, res) => {\n  res.json({\n    avatar: req.files['avatar'] ? req.files['avatar'][0].originalname : null,\n    resume: req.files['resume'] ? req.files['resume'][0].originalname : null,\n    portfolioCount: req.files['portfolio'] ? req.files['portfolio'].length : 0,\n    // Text fields from the multipart form\n    name: req.body.name,\n    bio: req.body.bio\n  });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "upload.array('photos', 5) accepts up to 5 files from the 'photos' field. upload.fields() handles files from multiple named fields. With memoryStorage, files are available as Buffers on file.buffer, ready to be processed or uploaded to cloud storage."
+        },
+        {
+          "title": "Upload to Cloud Storage (S3 Pattern)",
+          "code": "const express = require('express');\nconst multer = require('multer');\nconst app = express();\n\n// Use memory storage for cloud uploads\nconst upload = multer({\n  storage: multer.memoryStorage(),\n  limits: { fileSize: 5 * 1024 * 1024 },\n  fileFilter: (req, file, cb) => {\n    const allowed = ['image/jpeg', 'image/png', 'application/pdf'];\n    if (allowed.includes(file.mimetype)) cb(null, true);\n    else cb(new Error('Invalid file type'), false);\n  }\n});\n\n// Simulated cloud upload function\nasync function uploadToCloud(buffer, filename, mimetype) {\n  // In real code, this would upload to S3, GCS, etc.\n  console.log(`Uploading ${filename} (${mimetype}, ${buffer.length} bytes)`);\n  return {\n    url: `https://storage.example.com/uploads/${Date.now()}-${filename}`,\n    key: `uploads/${Date.now()}-${filename}`\n  };\n}\n\napp.post('/api/upload', upload.single('file'), async (req, res) => {\n  try {\n    if (!req.file) {\n      return res.status(400).json({ error: 'No file provided' });\n    }\n\n    // Upload the buffer to cloud storage\n    const result = await uploadToCloud(\n      req.file.buffer,\n      req.file.originalname,\n      req.file.mimetype\n    );\n\n    res.json({\n      message: 'File uploaded to cloud',\n      url: result.url,\n      originalName: req.file.originalname,\n      size: req.file.size\n    });\n  } catch (error) {\n    res.status(500).json({ error: 'Upload failed' });\n  }\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000\nUploading photo.jpg (image/jpeg, 102400 bytes)",
+          "explanation": "memoryStorage keeps the file as a Buffer, which can be passed directly to cloud storage SDKs (AWS S3 putObject, Google Cloud Storage upload). This avoids writing temporary files to disk. The async handler processes the upload and returns the cloud URL."
+        }
+      ],
+      "notes": [
+        "Multer only processes multipart/form-data requests. For JSON or URL-encoded bodies, use express.json() or express.urlencoded() instead.",
+        "The 'fieldName' in upload.single('fieldName') must match the name attribute of the file input in the HTML form or the field name used by the API client.",
+        "Always validate file types on the server side using the fileFilter function. Client-side validation (accept attribute on input) is easily bypassed."
+      ],
+      "commonPitfalls": [
+        "Using express.json() middleware before multer for multipart requests. They are for different content types and do not conflict, but the order matters for error handling.",
+        "Forgetting to create the uploads directory when using diskStorage. Multer will throw an error if the destination directory does not exist.",
+        "Not setting fileSize limits, allowing users to upload arbitrarily large files that can fill your disk or memory."
+      ],
+      "interviewTips": [
+        "Explain the difference between diskStorage and memoryStorage and when to use each. DiskStorage for local file serving, memoryStorage for cloud upload pipelines.",
+        "Discuss file upload security: validate file types (not just extensions — check mimetype), limit file sizes, scan for malware in production, and never trust client-provided filenames."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "file-uploads-with-multer-ex1",
+        "title": "Image Upload Endpoint",
+        "description": "Create a POST '/api/upload' endpoint that accepts a single image file (field name: 'image'). Use memoryStorage. Only allow JPEG and PNG files. Limit file size to 2MB. Return the original filename and size on success.",
+        "starterCode": "const express = require('express');\nconst multer = require('multer');\nconst app = express();\n\n// Configure multer with memoryStorage\n// File filter: only image/jpeg and image/png\n// Limit: 2MB\n// POST /api/upload - single file, field name 'image'\n",
+        "solution": "const express = require('express');\nconst multer = require('multer');\nconst app = express();\n\nconst upload = multer({\n  storage: multer.memoryStorage(),\n  fileFilter: (req, file, cb) => {\n    if (['image/jpeg', 'image/png'].includes(file.mimetype)) {\n      cb(null, true);\n    } else {\n      cb(new Error('Only JPEG and PNG allowed'), false);\n    }\n  },\n  limits: { fileSize: 2 * 1024 * 1024 }\n});\n\napp.post('/api/upload', upload.single('image'), (req, res) => {\n  if (!req.file) return res.status(400).json({ error: 'No file' });\n  res.json({ filename: req.file.originalname, size: req.file.size });\n});\n\napp.listen(3000);",
+        "expectedOutput": "{\"filename\":\"photo.jpg\",\"size\":102400}",
+        "hints": [
+          "Use multer.memoryStorage() for in-memory file handling",
+          "Check file.mimetype in the fileFilter callback",
+          "2MB in bytes is 2 * 1024 * 1024"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "input-validation",
+    "sectionId": "request-and-response",
+    "orderIndex": 3,
+    "title": "Input Validation",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["express-validator", "Joi", "Zod", "Sanitization", "Error Messages", "Validation Middleware"],
+    "content": {
+      "explanation": "Input validation is one of the most critical aspects of building secure, reliable APIs. Every piece of data that comes from the client — route parameters, query strings, request bodies, headers — must be validated before use. Without validation, your application is vulnerable to SQL injection, XSS attacks, data corruption, and crashes from unexpected data types or formats.\n\nThere are three popular validation libraries for Express: express-validator, Joi, and Zod. express-validator is middleware-based and integrates directly into Express's middleware chain. Joi is a standalone schema description library that defines validation rules as JavaScript objects. Zod is a TypeScript-first schema library that provides both runtime validation and TypeScript type inference from the same schema definition.\n\nexpress-validator uses a chain-based API: you call validation functions like body('email').isEmail().normalizeEmail() to define rules, then call validationResult(req) in your route handler to check for errors. It integrates seamlessly with Express because each validation rule is a middleware function. You can validate body fields, query parameters, route parameters, headers, and cookies with dedicated functions.\n\nZod has become increasingly popular because it provides type safety alongside validation. You define a schema like z.object({ name: z.string().min(2), email: z.string().email() }), then call schema.parse(req.body) or schema.safeParse(req.body) to validate. If validation fails, Zod throws a ZodError with detailed information about each validation failure. The safeParse variant returns a result object instead of throwing, which is often more convenient for API error handling.\n\nSanitization is the process of cleaning input data to prevent injection attacks and normalize formats. Common sanitization operations include trimming whitespace, converting email addresses to lowercase, escaping HTML special characters, and removing non-alphanumeric characters. Sanitization should be done after validation but before the data is used in database queries or rendered in HTML. Many validation libraries include built-in sanitization functions.",
+      "codeExamples": [
+        {
+          "title": "Validation with express-validator",
+          "code": "const express = require('express');\nconst { body, param, query, validationResult } = require('express-validator');\nconst app = express();\napp.use(express.json());\n\n// Reusable validation error handler\nconst validate = (req, res, next) => {\n  const errors = validationResult(req);\n  if (!errors.isEmpty()) {\n    return res.status(400).json({ errors: errors.array() });\n  }\n  next();\n};\n\n// POST /api/users — validate body fields\napp.post('/api/users', [\n  body('name')\n    .trim()\n    .isLength({ min: 2, max: 50 })\n    .withMessage('Name must be 2-50 characters'),\n  body('email')\n    .isEmail()\n    .withMessage('Must be a valid email')\n    .normalizeEmail(),\n  body('age')\n    .isInt({ min: 18, max: 120 })\n    .withMessage('Age must be between 18 and 120'),\n  body('password')\n    .isLength({ min: 8 })\n    .withMessage('Password must be at least 8 characters')\n    .matches(/[A-Z]/)\n    .withMessage('Password must contain an uppercase letter')\n    .matches(/[0-9]/)\n    .withMessage('Password must contain a number'),\n  validate\n], (req, res) => {\n  res.status(201).json({ message: 'User created', data: req.body });\n});\n\n// GET /api/users/:id — validate params\napp.get('/api/users/:id', [\n  param('id').isInt({ min: 1 }).withMessage('ID must be a positive integer'),\n  validate\n], (req, res) => {\n  res.json({ id: parseInt(req.params.id), name: 'Alice' });\n});\n\n// GET /api/search?q=term&page=1 — validate query strings\napp.get('/api/search', [\n  query('q').trim().notEmpty().withMessage('Search term is required'),\n  query('page').optional().isInt({ min: 1 }).withMessage('Page must be a positive integer'),\n  validate\n], (req, res) => {\n  res.json({ query: req.query.q, page: parseInt(req.query.page) || 1 });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "express-validator chains validation rules as middleware. body(), param(), and query() target different request data sources. The validate middleware checks for errors and returns 400 with error details if validation fails. .trim() and .normalizeEmail() are sanitizers that clean the data."
+        },
+        {
+          "title": "Validation with Zod",
+          "code": "const express = require('express');\nconst { z } = require('zod');\nconst app = express();\napp.use(express.json());\n\n// Define schemas\nconst createUserSchema = z.object({\n  name: z.string().min(2).max(50).trim(),\n  email: z.string().email().toLowerCase(),\n  age: z.number().int().min(18).max(120),\n  role: z.enum(['user', 'admin']).default('user'),\n  tags: z.array(z.string()).max(10).optional()\n});\n\nconst querySchema = z.object({\n  page: z.coerce.number().int().min(1).default(1),\n  limit: z.coerce.number().int().min(1).max(100).default(20),\n  sort: z.enum(['name', 'date', 'price']).default('date')\n});\n\n// Reusable validation middleware factory\nfunction validateBody(schema) {\n  return (req, res, next) => {\n    const result = schema.safeParse(req.body);\n    if (!result.success) {\n      return res.status(400).json({\n        error: 'Validation failed',\n        details: result.error.issues.map(issue => ({\n          field: issue.path.join('.'),\n          message: issue.message\n        }))\n      });\n    }\n    req.body = result.data; // Replace with validated + transformed data\n    next();\n  };\n}\n\nfunction validateQuery(schema) {\n  return (req, res, next) => {\n    const result = schema.safeParse(req.query);\n    if (!result.success) {\n      return res.status(400).json({ error: 'Invalid query parameters' });\n    }\n    req.query = result.data;\n    next();\n  };\n}\n\napp.post('/api/users', validateBody(createUserSchema), (req, res) => {\n  // req.body is now validated and typed\n  res.status(201).json({ message: 'User created', user: req.body });\n});\n\napp.get('/api/products', validateQuery(querySchema), (req, res) => {\n  // req.query.page is now a number, not a string\n  res.json({ page: req.query.page, limit: req.query.limit, sort: req.query.sort });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "Zod schemas define both the structure and validation rules. safeParse() returns { success, data } or { success, error } without throwing. z.coerce.number() automatically converts query string values to numbers. The validated data replaces req.body/req.query with properly typed values."
+        },
+        {
+          "title": "Validation with Joi",
+          "code": "const express = require('express');\nconst Joi = require('joi');\nconst app = express();\napp.use(express.json());\n\n// Define Joi schemas\nconst userSchema = Joi.object({\n  name: Joi.string().min(2).max(50).trim().required(),\n  email: Joi.string().email().lowercase().required(),\n  age: Joi.number().integer().min(18).max(120).required(),\n  phone: Joi.string().pattern(/^\\+?[1-9]\\d{1,14}$/).optional(),\n  address: Joi.object({\n    street: Joi.string().required(),\n    city: Joi.string().required(),\n    zip: Joi.string().pattern(/^\\d{5,6}$/).required()\n  }).optional()\n});\n\n// Generic validation middleware\nfunction validateSchema(schema, property = 'body') {\n  return (req, res, next) => {\n    const { error, value } = schema.validate(req[property], {\n      abortEarly: false,  // Report ALL errors, not just the first\n      stripUnknown: true  // Remove fields not in the schema\n    });\n\n    if (error) {\n      const errors = error.details.map(detail => ({\n        field: detail.path.join('.'),\n        message: detail.message\n      }));\n      return res.status(400).json({ error: 'Validation failed', details: errors });\n    }\n\n    req[property] = value; // Use sanitized/transformed values\n    next();\n  };\n}\n\napp.post('/api/users', validateSchema(userSchema), (req, res) => {\n  res.status(201).json({ message: 'User created', user: req.body });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));\n\n// Example invalid request body:\n// { name: \"A\", email: \"not-an-email\", age: 15 }\n// Response:\n// { error: 'Validation failed', details: [\n//   { field: 'name', message: '\"name\" length must be at least 2 characters long' },\n//   { field: 'email', message: '\"email\" must be a valid email' },\n//   { field: 'age', message: '\"age\" must be greater than or equal to 18' }\n// ]}",
+          "output": "Server on port 3000",
+          "explanation": "Joi uses a fluent API to define validation rules. abortEarly: false reports all errors at once instead of stopping at the first. stripUnknown: true removes extra fields not defined in the schema, preventing injection of unexpected data."
+        }
+      ],
+      "notes": [
+        "Never trust client input. Validate everything: route parameters, query strings, request bodies, and even headers used in your logic.",
+        "Zod provides TypeScript type inference from schemas: z.infer<typeof userSchema> gives you the TypeScript type, eliminating the need to maintain separate type definitions.",
+        "Choose one validation library and use it consistently throughout your project. Mixing libraries adds unnecessary complexity and cognitive load."
+      ],
+      "commonPitfalls": [
+        "Validating only some fields and trusting the rest. Attackers can inject additional fields that bypass partial validation and pollute your database.",
+        "Not reporting all validation errors at once. Users find it frustrating to fix one error, resubmit, and discover another. Use abortEarly: false (Joi) or collect all issues (Zod).",
+        "Relying solely on client-side validation. Client-side checks improve UX but provide zero security — always validate on the server."
+      ],
+      "interviewTips": [
+        "Compare express-validator, Joi, and Zod: express-validator is middleware-first and lightweight. Joi is mature with rich validation rules. Zod provides TypeScript type inference. Know the tradeoffs.",
+        "Explain the difference between validation (checking that data meets rules) and sanitization (cleaning data to prevent injection). Both are necessary."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "input-validation-ex1",
+        "title": "Zod Validation Middleware",
+        "description": "Create a Zod schema for a blog post: title (string, min 5 chars, required), content (string, min 20 chars, required), category (enum: 'tech', 'lifestyle', 'news'), and published (boolean, default false). Create a validateBody middleware and use it on a POST '/api/posts' route.",
+        "starterCode": "const express = require('express');\nconst { z } = require('zod');\nconst app = express();\napp.use(express.json());\n\n// Define the postSchema with Zod\n// Create validateBody middleware\n// POST /api/posts with validation\n",
+        "solution": "const express = require('express');\nconst { z } = require('zod');\nconst app = express();\napp.use(express.json());\n\nconst postSchema = z.object({\n  title: z.string().min(5),\n  content: z.string().min(20),\n  category: z.enum(['tech', 'lifestyle', 'news']),\n  published: z.boolean().default(false)\n});\n\nfunction validateBody(schema) {\n  return (req, res, next) => {\n    const result = schema.safeParse(req.body);\n    if (!result.success) {\n      return res.status(400).json({\n        error: 'Validation failed',\n        details: result.error.issues.map(i => ({\n          field: i.path.join('.'),\n          message: i.message\n        }))\n      });\n    }\n    req.body = result.data;\n    next();\n  };\n}\n\napp.post('/api/posts', validateBody(postSchema), (req, res) => {\n  res.status(201).json({ message: 'Post created', post: req.body });\n});\n\napp.listen(3000);",
+        "expectedOutput": "{\"message\":\"Post created\",\"post\":{\"title\":\"My Blog Post\",\"content\":\"This is the content...\",\"category\":\"tech\",\"published\":false}}",
+        "hints": [
+          "Use z.object() to define the schema shape",
+          "Use z.enum() for a fixed set of allowed values",
+          "schema.safeParse() returns { success, data } or { success, error }"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "input-validation-ex2",
+        "title": "Express-Validator Signup",
+        "description": "Create a POST '/api/signup' route with express-validator rules: email must be valid email (normalized), password must be at least 8 chars with one number, and name must be 2-50 chars (trimmed). Return 400 with error array if validation fails.",
+        "starterCode": "const express = require('express');\nconst { body, validationResult } = require('express-validator');\nconst app = express();\napp.use(express.json());\n\n// POST /api/signup with validation:\n// - email: valid email, normalized\n// - password: min 8 chars, contains a number\n// - name: 2-50 chars, trimmed\n",
+        "solution": "const express = require('express');\nconst { body, validationResult } = require('express-validator');\nconst app = express();\napp.use(express.json());\n\napp.post('/api/signup', [\n  body('email').isEmail().normalizeEmail().withMessage('Valid email required'),\n  body('password')\n    .isLength({ min: 8 }).withMessage('Password must be at least 8 characters')\n    .matches(/[0-9]/).withMessage('Password must contain a number'),\n  body('name').trim().isLength({ min: 2, max: 50 }).withMessage('Name must be 2-50 characters')\n], (req, res) => {\n  const errors = validationResult(req);\n  if (!errors.isEmpty()) {\n    return res.status(400).json({ errors: errors.array() });\n  }\n  res.status(201).json({ message: 'User registered', user: { email: req.body.email, name: req.body.name } });\n});\n\napp.listen(3000);",
+        "expectedOutput": "{\"message\":\"User registered\",\"user\":{\"email\":\"alice@example.com\",\"name\":\"Alice\"}}",
+        "hints": [
+          "Chain validation methods: body('field').isEmail().normalizeEmail()",
+          "Use .matches(/regex/) for pattern validation",
+          "Call validationResult(req) at the start of the handler to check for errors"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

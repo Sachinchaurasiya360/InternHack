@@ -1,0 +1,453 @@
+[
+  {
+    "id": "list-basics",
+    "sectionId": "lists-and-tuples",
+    "orderIndex": 0,
+    "title": "List Basics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Lists", "Indexing", "Negative Indexing", "len()", "Nested Lists"],
+    "content": {
+      "explanation": "Lists are one of the most versatile and commonly used data structures in Python. A list is an ordered, mutable collection of items that can hold elements of any data type, including other lists. You create a list by enclosing comma-separated values inside square brackets [], or by using the list() constructor. Unlike arrays in languages like C or Java, Python lists can contain mixed types in the same list, though in practice you usually store homogeneous data.\n\nIndexing allows you to access individual elements of a list by their position. Python uses zero-based indexing, meaning the first element is at index 0, the second at index 1, and so on. If you try to access an index that does not exist, Python raises an IndexError. You can also assign to a specific index to change the value at that position, since lists are mutable.\n\nNegative indexing is a powerful Python feature that lets you access elements from the end of a list. Index -1 refers to the last element, -2 to the second-to-last, and so on. This is extremely useful when you need the last few elements without knowing the list's length. Negative indexing works because Python internally translates a negative index i to len(list) + i.\n\nThe len() function returns the number of elements in a list. It runs in O(1) constant time because Python internally tracks the length of every list object, so it does not need to count elements each time. You will use len() constantly when working with lists, especially in loops, conditional checks, and slicing.\n\nNested lists are lists that contain other lists as elements, effectively creating multi-dimensional data structures. A list of lists can represent a matrix, a grid, a table, or any hierarchical data. You access elements in nested lists using chained indexing: matrix[row][col]. Be careful with how you create nested lists, as multiplying a list with the * operator creates shallow copies that all point to the same inner list.",
+      "codeExamples": [
+        {
+          "title": "Creating Lists",
+          "code": "# Different ways to create lists\nempty = []\nnumbers = [1, 2, 3, 4, 5]\nmixed = [1, \"hello\", 3.14, True, None]\nfrom_range = list(range(5))\nfrom_string = list(\"Python\")\n\nprint(empty)\nprint(numbers)\nprint(mixed)\nprint(from_range)\nprint(from_string)",
+          "output": "[]\n[1, 2, 3, 4, 5]\n[1, 'hello', 3.14, True, None]\n[0, 1, 2, 3, 4]\n['P', 'y', 't', 'h', 'o', 'n']",
+          "explanation": "Lists can be created with literal brackets, from iterables using list(), or from range objects. The list() constructor converts any iterable (string, range, tuple, etc.) into a list."
+        },
+        {
+          "title": "Indexing and Negative Indexing",
+          "code": "fruits = [\"apple\", \"banana\", \"cherry\", \"date\", \"elderberry\"]\n\n# Positive indexing (0-based)\nprint(fruits[0])\nprint(fruits[2])\n\n# Negative indexing (from the end)\nprint(fruits[-1])\nprint(fruits[-3])\n\n# Modifying elements via index\nfruits[1] = \"blueberry\"\nprint(fruits)",
+          "output": "apple\ncherry\nelderberry\ncherry\n['apple', 'blueberry', 'cherry', 'date', 'elderberry']",
+          "explanation": "Index 0 is the first element, index -1 is the last. Since lists are mutable, you can reassign any element by its index. Attempting to access an out-of-range index raises an IndexError."
+        },
+        {
+          "title": "len() and Membership Testing",
+          "code": "colors = [\"red\", \"green\", \"blue\", \"yellow\"]\n\nprint(len(colors))\nprint(\"green\" in colors)\nprint(\"purple\" in colors)\nprint(\"purple\" not in colors)",
+          "output": "4\nTrue\nFalse\nTrue",
+          "explanation": "len() returns the count of elements in O(1) time. The 'in' and 'not in' operators check for membership, scanning the list in O(n) time."
+        },
+        {
+          "title": "Nested Lists",
+          "code": "# 2D matrix as nested lists\nmatrix = [\n    [1, 2, 3],\n    [4, 5, 6],\n    [7, 8, 9]\n]\n\nprint(matrix[0])\nprint(matrix[1][2])\nprint(matrix[-1][-1])\n\n# Iterating over a nested list\nfor row in matrix:\n    for item in row:\n        print(item, end=\" \")\n    print()",
+          "output": "[1, 2, 3]\n6\n9\n1 2 3 \n4 5 6 \n7 8 9 ",
+          "explanation": "Nested lists use chained indexing: matrix[row][col]. The outer index selects the row (inner list), and the inner index selects the element within that row."
+        }
+      ],
+      "notes": [
+        "Lists are ordered and mutable. The order you insert elements is preserved, and you can change, add, or remove elements after creation.",
+        "Python lists are implemented as dynamic arrays internally. They over-allocate memory to make append() an amortized O(1) operation.",
+        "Use 'in' for membership testing, but be aware it runs in O(n). For frequent lookups, consider using a set instead."
+      ],
+      "commonPitfalls": [
+        "Creating nested lists with multiplication like [[0] * 3] * 3 creates three references to the SAME inner list. Changing one row changes all rows. Use a list comprehension instead: [[0] * 3 for _ in range(3)].",
+        "Accessing an index beyond the list length raises an IndexError. Always check length or use try/except when the index is computed dynamically."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "list-basics-ex1",
+        "title": "Create and Access a List",
+        "description": "Create a list called 'languages' containing 'Python', 'Java', 'C++', 'JavaScript', 'Go'. Print the first element, the last element (using negative indexing), and the total number of elements.",
+        "starterCode": "# Create the list\n\n# Print the first element\n\n# Print the last element using negative indexing\n\n# Print the total number of elements\n",
+        "solution": "languages = [\"Python\", \"Java\", \"C++\", \"JavaScript\", \"Go\"]\nprint(languages[0])\nprint(languages[-1])\nprint(len(languages))",
+        "expectedOutput": "Python\nGo\n5",
+        "hints": [
+          "Use square brackets to create the list and assign it to 'languages'",
+          "Use index 0 for the first element and index -1 for the last element"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "list-basics-ex2",
+        "title": "Nested List Access",
+        "description": "Given the nested list below, print the element 'target' by accessing it with the correct indices. Then print the entire second inner list.",
+        "starterCode": "grid = [[10, 20, 30], [40, \"target\", 60], [70, 80, 90]]\n\n# Print the element 'target'\n\n# Print the entire second inner list\n",
+        "solution": "grid = [[10, 20, 30], [40, \"target\", 60], [70, 80, 90]]\nprint(grid[1][1])\nprint(grid[1])",
+        "expectedOutput": "target\n[40, 'target', 60]",
+        "hints": [
+          "'target' is in the second row (index 1) and second column (index 1)",
+          "To get the entire inner list, use only the outer index: grid[1]"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "list-basics-ex3",
+        "title": "Build a List Dynamically",
+        "description": "Start with an empty list called 'squares'. Use a for loop to append the squares of numbers 1 through 5. Print the final list and its length.",
+        "starterCode": "# Start with an empty list\n\n# Use a for loop to append squares of 1 through 5\n\n# Print the list and its length\n",
+        "solution": "squares = []\nfor i in range(1, 6):\n    squares.append(i ** 2)\nprint(squares)\nprint(len(squares))",
+        "expectedOutput": "[1, 4, 9, 16, 25]\n5",
+        "hints": [
+          "range(1, 6) generates 1, 2, 3, 4, 5",
+          "Use the append() method to add each squared value"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "list-methods",
+    "sectionId": "lists-and-tuples",
+    "orderIndex": 1,
+    "title": "List Methods",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["append()", "extend()", "insert()", "remove()", "pop()", "sort()", "reverse()", "copy()"],
+    "content": {
+      "explanation": "Python lists come with a rich set of built-in methods that let you add, remove, search, and reorder elements. Mastering these methods is essential for writing clean, efficient Python code. Most list methods modify the list in place and return None, which is a common source of confusion for beginners who try to assign the result to a variable.\n\nFor adding elements, you have three main methods. append(item) adds a single item to the end of the list in O(1) amortized time. extend(iterable) takes any iterable and adds each of its elements to the end of the list, essentially concatenating them. insert(index, item) places an item at the specified index, shifting all subsequent elements one position to the right, which runs in O(n) time since elements must be moved in memory.\n\nFor removing elements, remove(value) deletes the first occurrence of the specified value and raises a ValueError if not found. pop(index) removes and returns the element at the given index (defaulting to the last element if no index is given). pop() from the end is O(1), but pop(0) from the beginning is O(n) because all remaining elements must shift. If you need frequent removals from both ends, consider using collections.deque instead.\n\nThe sort() method sorts the list in place using the Timsort algorithm, which runs in O(n log n) time. It accepts two optional keyword arguments: key (a function applied to each element for comparison) and reverse (a boolean to sort in descending order). It modifies the original list and returns None. If you need a new sorted list without modifying the original, use the built-in sorted() function instead.\n\nThe reverse() method reverses the list in place in O(n) time and returns None. The copy() method creates a shallow copy of the list, meaning it creates a new list object but the elements themselves are not copied. For lists containing mutable objects like other lists or dictionaries, you need copy.deepcopy() from the copy module to create fully independent copies.",
+      "codeExamples": [
+        {
+          "title": "Adding Elements: append, extend, insert",
+          "code": "fruits = [\"apple\", \"banana\"]\n\n# append adds one item to the end\nfruits.append(\"cherry\")\nprint(fruits)\n\n# extend adds all items from an iterable\nfruits.extend([\"date\", \"elderberry\"])\nprint(fruits)\n\n# insert at a specific position\nfruits.insert(1, \"avocado\")\nprint(fruits)",
+          "output": "['apple', 'banana', 'cherry']\n['apple', 'banana', 'cherry', 'date', 'elderberry']\n['apple', 'avocado', 'banana', 'cherry', 'date', 'elderberry']",
+          "explanation": "append() adds to the end, extend() merges another iterable, and insert() places an element at a specific index. All three modify the list in place and return None."
+        },
+        {
+          "title": "Removing Elements: remove, pop, clear",
+          "code": "nums = [10, 20, 30, 40, 50, 30]\n\n# remove first occurrence of value\nnums.remove(30)\nprint(nums)\n\n# pop removes and returns by index\nlast = nums.pop()\nprint(last)\nprint(nums)\n\nfirst = nums.pop(0)\nprint(first)\nprint(nums)\n\n# clear removes all elements\nnums.clear()\nprint(nums)",
+          "output": "[10, 20, 40, 50, 30]\n30\n[10, 20, 40, 50]\n10\n[20, 40, 50]\n[]",
+          "explanation": "remove() finds by value and deletes the first match. pop() removes by index and returns the removed element. pop() with no argument removes the last element. clear() empties the entire list."
+        },
+        {
+          "title": "Sorting and Reversing",
+          "code": "numbers = [3, 1, 4, 1, 5, 9, 2, 6]\n\n# sort ascending in place\nnumbers.sort()\nprint(numbers)\n\n# sort descending\nnumbers.sort(reverse=True)\nprint(numbers)\n\n# sort by custom key\nwords = [\"banana\", \"pie\", \"apple\", \"fig\"]\nwords.sort(key=len)\nprint(words)\n\n# reverse in place\nwords.reverse()\nprint(words)",
+          "output": "[1, 1, 2, 3, 4, 5, 6, 9]\n[9, 6, 5, 4, 3, 2, 1, 1]\n['pie', 'fig', 'apple', 'banana']\n['banana', 'apple', 'fig', 'pie']",
+          "explanation": "sort() modifies the list in place and returns None. Use the key parameter for custom sort logic. reverse() reverses element order in place. For a new sorted list without modifying the original, use the built-in sorted() function."
+        },
+        {
+          "title": "copy() and Shallow vs Deep",
+          "code": "original = [1, 2, 3]\nshallow = original.copy()\nshallow.append(4)\nprint(original)\nprint(shallow)\n\n# Shallow copy gotcha with nested lists\nnested = [[1, 2], [3, 4]]\nshallow_nested = nested.copy()\nshallow_nested[0][0] = 99\nprint(nested)\nprint(shallow_nested)",
+          "output": "[1, 2, 3]\n[1, 2, 3, 4]\n[[99, 2], [3, 4]]\n[[99, 2], [3, 4]]",
+          "explanation": "copy() creates a new list object, so appending to the copy does not affect the original. However, for nested lists, inner objects are shared. Modifying a nested element in the copy also modifies the original. Use copy.deepcopy() for fully independent copies."
+        }
+      ],
+      "notes": [
+        "Most list methods (append, extend, insert, remove, sort, reverse, clear) modify the list in place and return None. Do not write x = x.sort() as this sets x to None.",
+        "The difference between append() and extend() is critical: append([1, 2]) adds [1, 2] as a single nested element, while extend([1, 2]) adds 1 and 2 as separate elements.",
+        "Use sorted() instead of sort() when you need a new sorted list without modifying the original."
+      ],
+      "commonPitfalls": [
+        "Writing my_list = my_list.sort() or my_list = my_list.append(x) sets my_list to None because these methods return None. Call them without assignment.",
+        "Using remove() without checking if the element exists raises ValueError. Use 'if x in my_list' before calling remove(), or use try/except."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "list-methods-ex1",
+        "title": "Build and Modify a List",
+        "description": "Start with the list [10, 20, 30]. Append 40, insert 15 at index 1, extend with [50, 60], then remove 30. Print the final list.",
+        "starterCode": "nums = [10, 20, 30]\n\n# Append 40\n\n# Insert 15 at index 1\n\n# Extend with [50, 60]\n\n# Remove 30\n\n# Print the final list\n",
+        "solution": "nums = [10, 20, 30]\nnums.append(40)\nnums.insert(1, 15)\nnums.extend([50, 60])\nnums.remove(30)\nprint(nums)",
+        "expectedOutput": "[10, 15, 20, 40, 50, 60]",
+        "hints": [
+          "Call each method on the list directly: nums.append(40), nums.insert(1, 15), etc.",
+          "remove(30) deletes the first occurrence of 30"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "list-methods-ex2",
+        "title": "Sort by Last Character",
+        "description": "Given the list of words, sort them by their last character in ascending order using the key parameter of sort(). Print the sorted list.",
+        "starterCode": "words = [\"hello\", \"world\", \"python\", \"code\", \"data\"]\n\n# Sort by last character\n\n# Print the sorted list\n",
+        "solution": "words = [\"hello\", \"world\", \"python\", \"code\", \"data\"]\nwords.sort(key=lambda w: w[-1])\nprint(words)",
+        "expectedOutput": "['data', 'world', 'code', 'python', 'hello']",
+        "hints": [
+          "Use the key parameter with a lambda function",
+          "Access the last character of a string with w[-1]"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "list-methods-ex3",
+        "title": "Pop Until Empty",
+        "description": "Start with the list [100, 200, 300]. Use a while loop to pop elements from the end one at a time, printing each popped value. After the loop, print the empty list.",
+        "starterCode": "stack = [100, 200, 300]\n\n# Pop elements one by one and print each\n\n# Print the empty list\n",
+        "solution": "stack = [100, 200, 300]\nwhile stack:\n    print(stack.pop())\nprint(stack)",
+        "expectedOutput": "300\n200\n100\n[]",
+        "hints": [
+          "A while loop with the list as condition runs until the list is empty",
+          "pop() without arguments removes and returns the last element"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "list-slicing-comprehensions",
+    "sectionId": "lists-and-tuples",
+    "orderIndex": 2,
+    "title": "List Slicing & Comprehensions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Slicing", "List Comprehensions", "Conditional Comprehensions", "Nested Comprehensions"],
+    "content": {
+      "explanation": "Slicing is one of Python's most powerful features for extracting portions of sequences. The slice syntax is list[start:stop:step], where start is the inclusive beginning index, stop is the exclusive ending index, and step is the stride between elements. All three parameters are optional: omitting start defaults to 0, omitting stop defaults to the length of the list, and omitting step defaults to 1. Slicing always returns a new list, never modifies the original.\n\nThe step parameter unlocks advanced slicing patterns. A step of 2 selects every other element, a step of 3 selects every third, and so on. A negative step reverses the traversal direction, which is why list[::-1] is the idiomatic way to reverse a list. When using a negative step, the start index should be greater than the stop index. You can also assign to a slice to replace a range of elements in a single operation: list[1:4] = [10, 20] replaces indices 1, 2, 3 with two new values.\n\nList comprehensions provide a concise, readable way to create new lists by transforming or filtering elements from an existing iterable. The basic syntax is [expression for item in iterable]. This is equivalent to a for loop that appends to an empty list, but it is more Pythonic, often faster (the loop runs at C speed internally), and reads as a single declarative statement rather than an imperative sequence of steps.\n\nConditional comprehensions add filtering by appending an if clause: [expression for item in iterable if condition]. Only elements that satisfy the condition are included in the result. You can also use if-else within the expression itself for transformations: [x if condition else y for item in iterable]. The placement of if matters: after 'for' it filters, within the expression it transforms.\n\nNested comprehensions let you work with multi-dimensional data or generate combinations. The syntax [expression for outer in iterable1 for inner in iterable2] is equivalent to nested for loops. The outer loop comes first, then the inner loop. While powerful, nested comprehensions can become unreadable beyond two levels. If you find yourself nesting three or more loops, switch to regular for loops for clarity.",
+      "codeExamples": [
+        {
+          "title": "Basic Slicing",
+          "code": "nums = [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]\n\nprint(nums[2:5])\nprint(nums[:4])\nprint(nums[6:])\nprint(nums[::2])\nprint(nums[::-1])\nprint(nums[1:8:3])",
+          "output": "[2, 3, 4]\n[0, 1, 2, 3]\n[6, 7, 8, 9]\n[0, 2, 4, 6, 8]\n[9, 8, 7, 6, 5, 4, 3, 2, 1, 0]\n[1, 4, 7]",
+          "explanation": "Slicing creates a new list from start (inclusive) to stop (exclusive) with the given step. Omitted values use sensible defaults. Negative step reverses the direction."
+        },
+        {
+          "title": "Slice Assignment",
+          "code": "letters = ['a', 'b', 'c', 'd', 'e']\n\n# Replace a range\nletters[1:3] = ['X', 'Y', 'Z']\nprint(letters)\n\n# Delete via empty slice assignment\nletters[1:4] = []\nprint(letters)",
+          "output": "['a', 'X', 'Y', 'Z', 'd', 'e']\n['a', 'd', 'e']",
+          "explanation": "Slice assignment replaces the specified range with the given elements. The replacement can have a different length than the slice being replaced. Assigning an empty list effectively deletes those elements."
+        },
+        {
+          "title": "List Comprehensions",
+          "code": "# Basic comprehension\nsquares = [x ** 2 for x in range(1, 6)]\nprint(squares)\n\n# With condition (filter)\nevens = [x for x in range(10) if x % 2 == 0]\nprint(evens)\n\n# With if-else (transform)\nlabels = [\"even\" if x % 2 == 0 else \"odd\" for x in range(5)]\nprint(labels)\n\n# From string\nuppers = [c.upper() for c in \"hello\" if c != 'l']\nprint(uppers)",
+          "output": "[1, 4, 9, 16, 25]\n[0, 2, 4, 6, 8]\n['even', 'odd', 'even', 'odd', 'even']\n['H', 'E', 'O']",
+          "explanation": "List comprehensions are a concise way to build lists. The if clause after 'for' filters elements. An if-else before 'for' transforms each element. Comprehensions can work with any iterable, including strings."
+        },
+        {
+          "title": "Nested Comprehensions",
+          "code": "# Flatten a 2D list\nmatrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nflat = [num for row in matrix for num in row]\nprint(flat)\n\n# Generate a multiplication table (3x3)\ntable = [[i * j for j in range(1, 4)] for i in range(1, 4)]\nfor row in table:\n    print(row)",
+          "output": "[1, 2, 3, 4, 5, 6, 7, 8, 9]\n[1, 2, 3]\n[2, 4, 6]\n[3, 6, 9]",
+          "explanation": "To flatten a 2D list, the outer loop iterates over rows and the inner loop over elements. For creating a 2D structure, the outer comprehension produces rows and the inner comprehension produces columns."
+        }
+      ],
+      "notes": [
+        "Slicing never raises IndexError, even if indices go out of bounds. Python silently clamps them to the valid range.",
+        "List comprehensions are generally faster than equivalent for loops because the iteration happens at C level internally, and the resulting bytecode is more optimized.",
+        "Use generator expressions (parentheses instead of brackets) when you only need to iterate once and do not need to store the entire result in memory."
+      ],
+      "commonPitfalls": [
+        "Confusing the position of 'if' in comprehensions: [x for x in items if cond] filters, while [x if cond else y for x in items] transforms. Mixing them up causes SyntaxError.",
+        "Writing overly complex nested comprehensions. If it takes more than a few seconds to understand, rewrite it as regular for loops."
+      ],
+      "interviewTips": [
+        "Reversing a list with [::-1] is a classic interview question. Know that it creates a new list, unlike list.reverse() which modifies in place.",
+        "Flattening a nested list with a comprehension is a frequent interview pattern. Be ready to explain the order of loops: the outer for comes first, matching regular nested loop order.",
+        "When asked to optimize list creation, mention that comprehensions are faster than building with append() in a loop due to internal optimizations."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "list-slicing-comprehensions-ex1",
+        "title": "Slice and Reverse",
+        "description": "Given the list [10, 20, 30, 40, 50, 60, 70, 80], print a slice of elements from index 2 to 6 (exclusive), then print the entire list reversed using slicing.",
+        "starterCode": "nums = [10, 20, 30, 40, 50, 60, 70, 80]\n\n# Print slice from index 2 to 6\n\n# Print the reversed list using slicing\n",
+        "solution": "nums = [10, 20, 30, 40, 50, 60, 70, 80]\nprint(nums[2:6])\nprint(nums[::-1])",
+        "expectedOutput": "[30, 40, 50, 60]\n[80, 70, 60, 50, 40, 30, 20, 10]",
+        "hints": [
+          "Use nums[2:6] for the slice (stop is exclusive)",
+          "Use nums[::-1] to reverse the list via slicing"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "list-slicing-comprehensions-ex2",
+        "title": "Comprehension with Filter",
+        "description": "Use a list comprehension to create a list of squares of all odd numbers from 1 to 10 (inclusive). Print the resulting list.",
+        "starterCode": "# Use a list comprehension for squares of odd numbers 1-10\n\n# Print the result\n",
+        "solution": "result = [x ** 2 for x in range(1, 11) if x % 2 != 0]\nprint(result)",
+        "expectedOutput": "[1, 9, 25, 49, 81]",
+        "hints": [
+          "Use range(1, 11) to get numbers 1 through 10",
+          "Add 'if x % 2 != 0' after the for clause to filter only odd numbers"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "list-slicing-comprehensions-ex3",
+        "title": "Flatten a 2D List",
+        "description": "Use a nested list comprehension to flatten the given 2D list into a 1D list. Print the flattened list.",
+        "starterCode": "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\n\n# Flatten using a nested list comprehension\n\n# Print the flattened list\n",
+        "solution": "matrix = [[1, 2, 3], [4, 5, 6], [7, 8, 9]]\nflat = [num for row in matrix for num in row]\nprint(flat)",
+        "expectedOutput": "[1, 2, 3, 4, 5, 6, 7, 8, 9]",
+        "hints": [
+          "The outer loop iterates over rows: 'for row in matrix'",
+          "The inner loop iterates over elements: 'for num in row'"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "tuple-basics",
+    "sectionId": "lists-and-tuples",
+    "orderIndex": 3,
+    "title": "Tuple Basics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["Tuples", "Immutability", "Tuple Packing", "Tuple Unpacking", "Named Tuples"],
+    "content": {
+      "explanation": "Tuples are ordered, immutable sequences in Python, defined by enclosing comma-separated values in parentheses (). They look similar to lists but have a fundamentally different purpose: while lists represent a collection of items that may change, tuples represent a fixed collection of related values, like coordinates (x, y), a database row, or an RGB color value. The immutability of tuples makes them suitable as dictionary keys, set elements, and function return values.\n\nCreating tuples has a subtle gotcha: it is the comma that makes a tuple, not the parentheses. A single-element tuple requires a trailing comma: (42,) is a tuple, but (42) is just the integer 42 wrapped in grouping parentheses. An empty tuple is created with () or tuple(). You can also create tuples from other iterables using the tuple() constructor: tuple([1, 2, 3]) converts a list to a tuple.\n\nImmutability means you cannot add, remove, or change elements of a tuple after creation. Attempting to assign to a tuple index (my_tuple[0] = 99) raises a TypeError. However, if a tuple contains mutable objects (like a list), those inner objects can still be modified. The tuple only guarantees that the references it holds do not change, not that the referenced objects themselves are frozen.\n\nTuple packing and unpacking are elegant features. Packing is when Python automatically bundles multiple comma-separated values into a tuple: coordinates = 3, 4 creates the tuple (3, 4). Unpacking does the reverse: x, y = coordinates assigns 3 to x and 4 to y. Unpacking works with any iterable, and you can use the * operator to capture remaining elements: first, *rest = (1, 2, 3, 4) gives first=1 and rest=[2, 3, 4]. Unpacking is used everywhere: multiple return values, swapping variables, and loop destructuring.\n\nNamed tuples from the collections module give your tuples field names, making code self-documenting. Instead of accessing elements by cryptic integer indices, you use descriptive attribute names: point.x instead of point[0]. Named tuples are lightweight, memory-efficient alternatives to full classes when you just need a simple data container. They remain immutable and fully compatible with regular tuples, supporting indexing, iteration, and unpacking.",
+      "codeExamples": [
+        {
+          "title": "Creating Tuples",
+          "code": "# Various ways to create tuples\nempty = ()\nsingle = (42,)        # Note the trailing comma!\nnot_a_tuple = (42)    # This is just an int\ncoords = (3, 4, 5)\nfrom_list = tuple([1, 2, 3])\n\nprint(type(empty))\nprint(type(single), single)\nprint(type(not_a_tuple), not_a_tuple)\nprint(coords)\nprint(from_list)",
+          "output": "<class 'tuple'>\n<class 'tuple'> (42,)\n<class 'int'> 42\n(3, 4, 5)\n(1, 2, 3)",
+          "explanation": "A single-element tuple needs a trailing comma. Without it, parentheses are just grouping operators. The tuple() constructor converts any iterable to a tuple."
+        },
+        {
+          "title": "Immutability",
+          "code": "colors = (\"red\", \"green\", \"blue\")\n\n# Tuples support indexing and slicing\nprint(colors[0])\nprint(colors[-1])\nprint(colors[1:])\nprint(len(colors))\n\n# But they cannot be modified\ntry:\n    colors[0] = \"yellow\"\nexcept TypeError as e:\n    print(f\"Error: {e}\")",
+          "output": "red\nblue\n('green', 'blue')\n3\nError: 'tuple' object does not support item assignment",
+          "explanation": "Tuples support reading operations like indexing, slicing, and len(), but any attempt to modify their contents raises a TypeError."
+        },
+        {
+          "title": "Packing and Unpacking",
+          "code": "# Packing: commas create a tuple\npoint = 10, 20\nprint(point)\n\n# Unpacking: assign tuple elements to variables\nx, y = point\nprint(x)\nprint(y)\n\n# Swap variables using unpacking\na, b = 5, 10\na, b = b, a\nprint(a, b)\n\n# Extended unpacking with *\nfirst, *middle, last = (1, 2, 3, 4, 5)\nprint(first)\nprint(middle)\nprint(last)",
+          "output": "(10, 20)\n10\n20\n10 5\n1\n[2, 3, 4]\n5",
+          "explanation": "Tuple packing bundles values into a tuple. Unpacking extracts them into variables. The * operator collects remaining elements into a list. Variable swapping with a, b = b, a is a classic Pythonic pattern."
+        },
+        {
+          "title": "Named Tuples",
+          "code": "from collections import namedtuple\n\nPoint = namedtuple(\"Point\", [\"x\", \"y\"])\np = Point(3, 7)\n\nprint(p)\nprint(p.x)\nprint(p.y)\nprint(p[0])\n\n# Named tuples are still tuples\nprint(isinstance(p, tuple))\n\n# Convert to dictionary\nprint(p._asdict())",
+          "output": "Point(x=3, y=7)\n3\n7\n3\nTrue\n{'x': 3, 'y': 7}",
+          "explanation": "Named tuples add field names to tuples, making code more readable. They support both attribute access (p.x) and index access (p[0]). The _asdict() method converts them to an OrderedDict."
+        }
+      ],
+      "notes": [
+        "Tuples are hashable (if all their elements are hashable), so they can be used as dictionary keys and set elements. Lists cannot.",
+        "Functions that return multiple values in Python are actually returning a single tuple that gets unpacked by the caller: return a, b packs (a, b).",
+        "Tuples use less memory than lists because Python can optimize their storage due to their fixed size."
+      ],
+      "commonPitfalls": [
+        "Forgetting the trailing comma for single-element tuples: (42) is an int, (42,) is a tuple. This is one of the most common beginner mistakes.",
+        "Assuming tuple immutability means everything inside is frozen. A tuple containing a list still allows the list to be modified: t = ([1, 2],); t[0].append(3) works fine."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "tuple-basics-ex1",
+        "title": "Create and Unpack",
+        "description": "Create a tuple called 'person' with three elements: 'Alice', 30, 'Engineer'. Unpack it into variables name, age, and role. Print each variable on a separate line.",
+        "starterCode": "# Create the tuple\n\n# Unpack into name, age, role\n\n# Print each variable\n",
+        "solution": "person = (\"Alice\", 30, \"Engineer\")\nname, age, role = person\nprint(name)\nprint(age)\nprint(role)",
+        "expectedOutput": "Alice\n30\nEngineer",
+        "hints": [
+          "Create the tuple with parentheses: person = ('Alice', 30, 'Engineer')",
+          "Unpack with: name, age, role = person"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "tuple-basics-ex2",
+        "title": "Extended Unpacking",
+        "description": "Given the tuple (100, 200, 300, 400, 500), use extended unpacking to assign the first element to 'head', the last element to 'tail', and everything in between to 'body'. Print all three.",
+        "starterCode": "nums = (100, 200, 300, 400, 500)\n\n# Use extended unpacking\n\n# Print head, body, tail\n",
+        "solution": "nums = (100, 200, 300, 400, 500)\nhead, *body, tail = nums\nprint(head)\nprint(body)\nprint(tail)",
+        "expectedOutput": "100\n[200, 300, 400]\n500",
+        "hints": [
+          "Use the * operator before body: head, *body, tail = nums",
+          "The * variable captures remaining elements as a list"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "tuple-basics-ex3",
+        "title": "Named Tuple Usage",
+        "description": "Create a named tuple type called 'Book' with fields 'title', 'author', and 'year'. Create an instance with title='1984', author='George Orwell', year=1949. Print the instance, then print each field using attribute access.",
+        "starterCode": "from collections import namedtuple\n\n# Define the Book named tuple\n\n# Create an instance\n\n# Print the instance, then each field\n",
+        "solution": "from collections import namedtuple\n\nBook = namedtuple(\"Book\", [\"title\", \"author\", \"year\"])\nb = Book(title=\"1984\", author=\"George Orwell\", year=1949)\nprint(b)\nprint(b.title)\nprint(b.author)\nprint(b.year)",
+        "expectedOutput": "Book(title='1984', author='George Orwell', year=1949)\n1984\nGeorge Orwell\n1949",
+        "hints": [
+          "Define with: Book = namedtuple('Book', ['title', 'author', 'year'])",
+          "Access fields with dot notation: b.title, b.author, b.year"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "list-vs-tuple",
+    "sectionId": "lists-and-tuples",
+    "orderIndex": 4,
+    "title": "List vs Tuple: When to Use Which",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Mutability vs Immutability", "Performance Comparison", "Use Cases", "Interview Patterns"],
+    "content": {
+      "explanation": "One of the most frequently asked Python interview questions is: what is the difference between a list and a tuple, and when should you use each? The superficial answer is that lists are mutable and tuples are immutable, but a thorough answer covers design intent, performance characteristics, memory usage, and idiomatic usage patterns that demonstrate deep understanding of Python.\n\nLists are mutable sequences designed for collections of homogeneous items that may change over time. Think of a list of users, a queue of tasks, or a log of events. Because lists can grow, shrink, and have elements replaced, Python must allocate extra memory for future growth and maintain internal machinery for resizing. Lists are not hashable, so they cannot be used as dictionary keys or set members.\n\nTuples are immutable sequences designed for heterogeneous records: fixed collections of related values like (name, age, email) or (latitude, longitude). Because tuples cannot change, Python can optimize their storage. Tuples are created faster, use less memory, and support hashing (when all elements are hashable), making them valid dictionary keys. Python also caches small tuples internally, reusing them to save memory and allocation time.\n\nPerformance differences are measurable but rarely the deciding factor. Tuple creation is faster because Python can allocate a fixed block of memory. Iteration speed is marginally faster for tuples. Memory usage is lower: a tuple of 5 integers uses about 20-30% less memory than an equivalent list. Tuples also benefit from constant folding by the compiler: a tuple of literals like (1, 2, 3) is stored as a single constant in the bytecode, while [1, 2, 3] must be rebuilt each time.\n\nThe real decision should be based on semantics, not performance. Use a list when the collection represents items of the same kind that will change: a list of scores, a stack of undo operations, a buffer of incoming messages. Use a tuple when the collection represents a single record with a fixed structure: a coordinate (x, y), a function returning multiple values, or a dictionary key composed of multiple parts. If you find yourself never modifying a sequence, prefer a tuple to signal that intent clearly.",
+      "codeExamples": [
+        {
+          "title": "Memory Comparison",
+          "code": "import sys\n\nmy_list = [1, 2, 3, 4, 5]\nmy_tuple = (1, 2, 3, 4, 5)\n\nprint(f\"List size:  {sys.getsizeof(my_list)} bytes\")\nprint(f\"Tuple size: {sys.getsizeof(my_tuple)} bytes\")\nprint(f\"Difference: {sys.getsizeof(my_list) - sys.getsizeof(my_tuple)} bytes\")",
+          "output": "List size:  104 bytes\nTuple size: 80 bytes\nDifference: 24 bytes",
+          "explanation": "Tuples use less memory because they do not need extra space for dynamic resizing. A list over-allocates to make future appends efficient, resulting in higher memory usage."
+        },
+        {
+          "title": "Tuples as Dictionary Keys",
+          "code": "# Tuples can be dict keys because they are hashable\ngrid = {}\ngrid[(0, 0)] = \"origin\"\ngrid[(1, 2)] = \"point A\"\ngrid[(3, 4)] = \"point B\"\n\nprint(grid[(0, 0)])\nprint(grid[(1, 2)])\n\n# Lists CANNOT be dict keys\ntry:\n    bad = {[1, 2]: \"nope\"}\nexcept TypeError as e:\n    print(f\"Error: {e}\")",
+          "output": "origin\npoint A\nError: unhashable type: 'list'",
+          "explanation": "Tuples are hashable (if their contents are hashable), making them valid dictionary keys and set elements. Lists are mutable and therefore unhashable, so they cannot serve as keys."
+        },
+        {
+          "title": "Semantic Usage Patterns",
+          "code": "# LIST: collection of similar items (homogeneous, may change)\nscores = [85, 92, 78, 95, 88]\nscores.append(91)\nscores.sort()\nprint(\"Scores:\", scores)\n\n# TUPLE: single record with fixed structure (heterogeneous)\nstudent = (\"Alice\", 21, \"Computer Science\", 3.8)\nname, age, major, gpa = student\nprint(f\"Student: {name}, Age: {age}, Major: {major}, GPA: {gpa}\")\n\n# TUPLE: function returning multiple values\ndef min_max(numbers):\n    return min(numbers), max(numbers)\n\nlow, high = min_max(scores)\nprint(f\"Min: {low}, Max: {high}\")",
+          "output": "Scores: [78, 85, 88, 91, 92, 95]\nStudent: Alice, Age: 21, Major: Computer Science, GPA: 3.8\nMin: 78, Max: 95",
+          "explanation": "Lists suit collections that grow, shrink, or get sorted. Tuples suit fixed records where each position has meaning. Functions returning multiple values use tuples by convention."
+        },
+        {
+          "title": "Common Interview Patterns",
+          "code": "# Pattern 1: Count frequency using tuples as grouping keys\nfrom collections import Counter\n\nwords = [\"apple\", \"banana\", \"apple\", \"cherry\", \"banana\", \"apple\"]\ncounts = Counter(words)\nprint(counts.most_common(2))\n\n# Pattern 2: Sorting with tuple comparison\nstudents = [(\"Alice\", 88), (\"Bob\", 95), (\"Charlie\", 88)]\n# Sort by score descending, then name ascending\nstudents.sort(key=lambda s: (-s[1], s[0]))\nprint(students)\n\n# Pattern 3: Enumerate returns (index, value) tuples\nfruits = [\"apple\", \"banana\", \"cherry\"]\nfor i, fruit in enumerate(fruits):\n    print(f\"{i}: {fruit}\")",
+          "output": "[('apple', 3), ('banana', 2)]\n[('Bob', 95), ('Alice', 88), ('Charlie', 88)]\n0: apple\n1: banana\n2: cherry",
+          "explanation": "Tuples naturally appear in many Python patterns: Counter returns a list of (element, count) tuples, multi-key sorting uses tuples, and enumerate yields (index, value) tuples. Understanding these patterns is crucial for interviews."
+        }
+      ],
+      "notes": [
+        "Default to tuples for fixed-structure data and lists for variable-length collections. This communicates intent clearly to other developers.",
+        "Python caches small tuples (roughly 0-20 elements) and reuses them, making repeated creation of identical tuples very efficient.",
+        "When in doubt, consider: will this sequence ever need to change? If yes, use a list. If no, use a tuple."
+      ],
+      "commonPitfalls": [
+        "Using lists as dictionary keys. Lists are unhashable because they are mutable. Convert to a tuple first: dict[tuple(my_list)] = value.",
+        "Choosing between list and tuple solely based on performance. The memory and speed differences are minimal for most applications. Choose based on semantics and mutability requirements."
+      ],
+      "interviewTips": [
+        "When asked 'list vs tuple', structure your answer around: mutability, performance (memory and speed), hashability (dict keys), and semantic intent (collection vs record).",
+        "Mention that tuples support all non-mutating operations that lists do: indexing, slicing, iteration, in operator, count(), index(), len().",
+        "A strong answer also covers that tuples enable Python-specific patterns like multiple return values, tuple unpacking, and named tuples as lightweight data classes.",
+        "Be ready to explain why (42) is not a tuple but (42,) is, and why this matters in real code."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "list-vs-tuple-ex1",
+        "title": "Choose the Right Structure",
+        "description": "Create a tuple 'rgb' for the color red (255, 0, 0). Create a list 'color_palette' containing three tuples: (255, 0, 0), (0, 255, 0), (0, 0, 255). Add the tuple (255, 255, 0) to color_palette. Print the rgb tuple and the final color_palette list.",
+        "starterCode": "# Create the rgb tuple for red\n\n# Create color_palette as a list of tuples\n\n# Add yellow (255, 255, 0) to the palette\n\n# Print rgb and color_palette\n",
+        "solution": "rgb = (255, 0, 0)\ncolor_palette = [(255, 0, 0), (0, 255, 0), (0, 0, 255)]\ncolor_palette.append((255, 255, 0))\nprint(rgb)\nprint(color_palette)",
+        "expectedOutput": "(255, 0, 0)\n[(255, 0, 0), (0, 255, 0), (0, 0, 255), (255, 255, 0)]",
+        "hints": [
+          "RGB values are fixed records, so tuples are appropriate. The collection of colors may grow, so a list is appropriate.",
+          "Use append() to add a new tuple to the list"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "list-vs-tuple-ex2",
+        "title": "Tuples as Dictionary Keys",
+        "description": "Create a dictionary called 'grid' that maps (row, col) tuple keys to string values. Add: (0, 0) -> 'start', (2, 3) -> 'obstacle', (4, 4) -> 'end'. Print the value at (0, 0) and (4, 4), then print all the keys.",
+        "starterCode": "# Create the grid dictionary with tuple keys\n\n# Print value at (0, 0)\n\n# Print value at (4, 4)\n\n# Print all keys\n",
+        "solution": "grid = {(0, 0): \"start\", (2, 3): \"obstacle\", (4, 4): \"end\"}\nprint(grid[(0, 0)])\nprint(grid[(4, 4)])\nprint(list(grid.keys()))",
+        "expectedOutput": "start\nend\n[(0, 0), (2, 3), (4, 4)]",
+        "hints": [
+          "Use tuple literals as dictionary keys: {(0, 0): 'start', ...}",
+          "Use list(grid.keys()) to print the keys as a list"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "list-vs-tuple-ex3",
+        "title": "Multi-Key Sort",
+        "description": "Given a list of (name, score) tuples, sort them by score descending. If scores tie, sort by name ascending. Print each tuple in the sorted list on its own line.",
+        "starterCode": "results = [(\"Alice\", 85), (\"Bob\", 92), (\"Charlie\", 85), (\"Diana\", 92)]\n\n# Sort by score descending, then name ascending\n\n# Print each tuple on its own line\n",
+        "solution": "results = [(\"Alice\", 85), (\"Bob\", 92), (\"Charlie\", 85), (\"Diana\", 92)]\nresults.sort(key=lambda s: (-s[1], s[0]))\nfor r in results:\n    print(r)",
+        "expectedOutput": "('Bob', 92)\n('Diana', 92)\n('Alice', 85)\n('Charlie', 85)",
+        "hints": [
+          "Use a lambda with a tuple key: key=lambda s: (-s[1], s[0])",
+          "Negating the score sorts it descending; names sort ascending by default"
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

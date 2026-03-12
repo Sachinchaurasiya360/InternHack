@@ -1,0 +1,389 @@
+[
+  {
+    "id": "file-io-basics",
+    "sectionId": "file-handling-and-modules",
+    "orderIndex": 0,
+    "title": "File I/O Basics",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["open()", "Read Modes", "Write Modes", "with Statement", "io.StringIO"],
+    "content": {
+      "explanation": "File Input/Output (I/O) is one of the most fundamental operations in any programming language. In Python, the built-in open() function is the primary gateway to reading from and writing to files. It returns a file object that provides methods like read(), readline(), write(), and close(). Understanding how file I/O works is essential for data processing, configuration management, logging, and virtually every real-world application.\n\nThe open() function accepts two primary arguments: the file path and the mode. The most common modes are 'r' (read, the default), 'w' (write, which truncates existing content), 'a' (append, which adds to the end), 'x' (exclusive creation, fails if file exists), and 'b' (binary mode, used with other modes like 'rb' or 'wb'). You can also combine modes: 'r+' opens for both reading and writing. Choosing the correct mode is critical because 'w' mode will destroy existing file contents without warning.\n\nReading files can be done in several ways. The read() method reads the entire file into a single string. The readline() method reads one line at a time, which is memory-efficient for large files. You can also iterate over a file object directly in a for loop, which reads line by line. Each approach has its use case: read() is convenient for small files, while line-by-line iteration is essential when processing files that may not fit in memory.\n\nWriting to files uses the write() method for strings or writelines() for a list of strings. The write() method does not automatically add newline characters, so you must include '\\n' explicitly. When using 'w' mode, the file is created if it does not exist, or truncated to zero length if it does. The 'a' mode preserves existing content and appends new data at the end.\n\nThe with statement (context manager) is the Pythonic way to handle files. It automatically closes the file when the block exits, even if an exception occurs. Without with, you must remember to call close() manually, and forgetting to do so can lead to data loss (buffered writes may not be flushed) or resource leaks (too many open file handles). Always use with when working with files in Python.",
+      "codeExamples": [
+        {
+          "title": "Reading a File with io.StringIO",
+          "code": "import io\n\n# Simulate a file with io.StringIO\nf = io.StringIO(\"Hello, World!\\nPython is great.\\nFile I/O is easy.\")\n\n# read() returns the entire content as a string\ncontent = f.read()\nprint(content)\nprint(\"---\")\n\n# Reset position to beginning\nf.seek(0)\n\n# readline() reads one line at a time\nfirst_line = f.readline()\nprint(first_line.strip())",
+          "output": "Hello, World!\nPython is great.\nFile I/O is easy.\n---\nHello, World!",
+          "explanation": "io.StringIO creates an in-memory file-like object. It supports the same methods as a real file: read(), readline(), seek(), write(), etc. We use seek(0) to reset the read position back to the beginning after reading all content."
+        },
+        {
+          "title": "Writing to a StringIO Object",
+          "code": "import io\n\n# Create an empty StringIO object (like opening a file in write mode)\nf = io.StringIO()\n\n# Write data\nf.write(\"Line 1\\n\")\nf.write(\"Line 2\\n\")\nf.write(\"Line 3\\n\")\n\n# Get the entire content\nprint(f.getvalue())",
+          "output": "Line 1\nLine 2\nLine 3\n",
+          "explanation": "StringIO's write() method works exactly like file write(). The getvalue() method returns all content written so far as a string. This is equivalent to closing a file and reading it back."
+        },
+        {
+          "title": "The with Statement (Context Manager)",
+          "code": "import io\n\n# Using with ensures the file-like object is properly managed\nwith io.StringIO(\"apple\\nbanana\\ncherry\") as f:\n    for line in f:\n        print(line.strip())\n\n# In real Python, you would write:\n# with open('fruits.txt', 'r') as f:\n#     for line in f:\n#         print(line.strip())\nprint(\"File closed:\", f.closed)",
+          "output": "apple\nbanana\ncherry\nFile closed: True",
+          "explanation": "The with statement automatically calls close() when the block ends. Iterating over a file object reads it line by line, which is memory efficient. Each line includes a trailing newline, so strip() removes it."
+        },
+        {
+          "title": "File Open Modes Explained",
+          "code": "import io\n\n# 'w' mode: write (truncates existing content)\nf = io.StringIO(\"old content\")\nf.seek(0)\nf.write(\"new content\")\nf.truncate()  # Remove anything after current position\nprint(\"Write mode:\", f.getvalue())\n\n# 'a' mode: append (adds to end)\nf2 = io.StringIO(\"existing data\\n\")\nf2.seek(0, 2)  # Seek to end (like append mode)\nf2.write(\"appended data\\n\")\nprint(\"Append mode:\", f2.getvalue())",
+          "output": "Write mode: new content\nAppend mode: existing data\nappended data\n",
+          "explanation": "In write mode ('w'), existing content is replaced. In append mode ('a'), new content is added after existing data. With StringIO, we simulate these modes using seek() and truncate()."
+        }
+      ],
+      "notes": [
+        "Always use the with statement when working with files. It guarantees the file is closed even if an exception is raised inside the block.",
+        "The 'w' mode will silently destroy all existing content in the file. Use 'a' to add data without losing what is already there.",
+        "In browser-based Python environments (like Pyodide), real file system access is not available. Use io.StringIO for string data or io.BytesIO for binary data as in-memory file substitutes."
+      ],
+      "commonPitfalls": [
+        "Forgetting to close a file after opening it without a with statement. This can lead to data corruption because buffered writes may never be flushed to disk.",
+        "Using 'w' mode when you meant 'a' mode. Write mode truncates the file immediately upon opening, destroying all previous content before you even write anything.",
+        "Not handling the newline character when reading lines. readline() and iteration include the trailing '\\n', which can cause unexpected output if not stripped."
+      ],
+      "interviewTips": [
+        "When asked about file handling, always mention the with statement as the best practice. Explain that it uses the context manager protocol (__enter__ and __exit__ magic methods).",
+        "Know the difference between read(), readline(), and readlines(). read() returns a single string, readline() returns one line, readlines() returns a list of all lines."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "file-io-basics-ex1",
+        "title": "Read and Count Lines",
+        "description": "Create a StringIO object containing three lines: 'Python', 'Java', and 'JavaScript' (each on its own line). Read all lines into a list and print the number of lines, then print each line in uppercase.",
+        "starterCode": "import io\n\n# Create a StringIO with three lines: Python, Java, JavaScript\n# Read all lines into a list\n# Print the count of lines\n# Print each line in uppercase\n",
+        "solution": "import io\n\nf = io.StringIO(\"Python\\nJava\\nJavaScript\")\nlines = f.readlines()\nprint(len(lines))\nfor line in lines:\n    print(line.strip().upper())",
+        "expectedOutput": "3\nPYTHON\nJAVA\nJAVASCRIPT",
+        "hints": [
+          "Use io.StringIO(\"Python\\nJava\\nJavaScript\") to create the file-like object",
+          "readlines() returns a list of lines, each possibly ending with '\\n'",
+          "Use strip() to remove trailing newlines before calling upper()"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "file-io-basics-ex2",
+        "title": "Write and Read Back",
+        "description": "Create an empty StringIO object. Write three lines to it: 'Name: Alice', 'Age: 30', and 'City: Mumbai'. Then read back and print the entire content.",
+        "starterCode": "import io\n\n# Create an empty StringIO\n# Write three lines to it\n# Read back and print the content\n",
+        "solution": "import io\n\nf = io.StringIO()\nf.write(\"Name: Alice\\n\")\nf.write(\"Age: 30\\n\")\nf.write(\"City: Mumbai\\n\")\nprint(f.getvalue())",
+        "expectedOutput": "Name: Alice\nAge: 30\nCity: Mumbai\n",
+        "hints": [
+          "Use io.StringIO() with no arguments to create an empty writable object",
+          "write() does not add newlines automatically; include '\\n' in each string",
+          "Use getvalue() to retrieve everything written so far"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "file-io-basics-ex3",
+        "title": "Search in File Content",
+        "description": "Given a StringIO containing a log file, find and print only the lines that contain the word 'ERROR'.",
+        "starterCode": "import io\n\nlog_data = \"\"\"INFO: Server started\nERROR: Connection timeout\nINFO: Request received\nERROR: Database unreachable\nINFO: Response sent\"\"\"\n\n# Create StringIO from log_data\n# Print only lines containing 'ERROR'\n",
+        "solution": "import io\n\nlog_data = \"\"\"INFO: Server started\nERROR: Connection timeout\nINFO: Request received\nERROR: Database unreachable\nINFO: Response sent\"\"\"\n\nf = io.StringIO(log_data)\nfor line in f:\n    if \"ERROR\" in line:\n        print(line.strip())",
+        "expectedOutput": "ERROR: Connection timeout\nERROR: Database unreachable",
+        "hints": [
+          "Create a StringIO from the log_data string",
+          "Iterate over the file object line by line using a for loop",
+          "Use the 'in' operator to check if 'ERROR' appears in each line"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "working-with-files",
+    "sectionId": "file-handling-and-modules",
+    "orderIndex": 1,
+    "title": "Working with Files",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["readlines()", "writelines()", "csv Module", "json Module", "os.path Basics"],
+    "content": {
+      "explanation": "Beyond basic read and write operations, Python provides powerful tools for working with structured file formats. Real-world data is rarely stored as plain text; it comes in formats like CSV (Comma-Separated Values), JSON (JavaScript Object Notation), XML, and more. Python's standard library includes dedicated modules for the most common formats, making it straightforward to parse and generate structured data.\n\nThe readlines() method reads all lines from a file and returns them as a list of strings, where each string includes the trailing newline character. This is convenient when you need random access to specific lines, but be cautious with very large files as the entire content is loaded into memory. The writelines() method is the counterpart: it takes an iterable of strings and writes each one to the file. Importantly, writelines() does not add newline characters between items, so you must include them yourself.\n\nThe csv module provides reader and writer objects for CSV data. csv.reader() parses each row into a list of strings, handling quoting, escaping, and delimiters automatically. csv.writer() produces properly formatted CSV output. For working with named columns, csv.DictReader reads each row as a dictionary with column headers as keys, and csv.DictWriter writes dictionaries as rows. The csv module handles edge cases like commas within quoted fields that would break naive string splitting.\n\nThe json module handles JSON data through four main functions: json.dumps() serializes a Python object to a JSON string, json.loads() parses a JSON string into a Python object, json.dump() writes JSON directly to a file object, and json.load() reads JSON from a file object. JSON maps naturally to Python types: objects become dicts, arrays become lists, strings remain strings, numbers become int or float, true/false become True/False, and null becomes None.\n\nThe os.path module (or its modern replacement, pathlib) provides utilities for working with file paths in a cross-platform way. Functions like os.path.join() combines path components using the correct separator for the OS, os.path.exists() checks if a path exists, os.path.basename() extracts the file name, and os.path.splitext() separates the name from the extension. These functions abstract away platform differences between Windows backslashes and Unix forward slashes.",
+      "codeExamples": [
+        {
+          "title": "readlines() and writelines()",
+          "code": "import io\n\n# readlines() returns a list of lines\nf = io.StringIO(\"apple\\nbanana\\ncherry\\n\")\nlines = f.readlines()\nprint(lines)\nprint(len(lines))\n\n# writelines() writes a list of strings (no auto-newlines)\nout = io.StringIO()\nout.writelines([\"one\\n\", \"two\\n\", \"three\\n\"])\nprint(out.getvalue())",
+          "output": "['apple\\n', 'banana\\n', 'cherry\\n']\n3\none\ntwo\nthree\n",
+          "explanation": "readlines() preserves newlines in each element. writelines() writes each string exactly as given without adding separators. You must include '\\n' in each string if you want separate lines."
+        },
+        {
+          "title": "Parsing CSV Data",
+          "code": "import csv\nimport io\n\ncsv_data = \"\"\"name,age,city\nAlice,30,Mumbai\nBob,25,Delhi\nCharlie,35,Bangalore\"\"\"\n\nf = io.StringIO(csv_data)\nreader = csv.DictReader(f)\nfor row in reader:\n    print(f\"{row['name']} is {row['age']} from {row['city']}\")",
+          "output": "Alice is 30 from Mumbai\nBob is 25 from Delhi\nCharlie is 35 from Bangalore",
+          "explanation": "csv.DictReader uses the first row as column headers. Each subsequent row becomes a dictionary mapping header names to values. This is much safer than splitting on commas because the csv module handles quoting and escaping correctly."
+        },
+        {
+          "title": "Working with JSON Data",
+          "code": "import json\nimport io\n\n# Python dict to JSON string\ndata = {\n    \"name\": \"Alice\",\n    \"scores\": [95, 87, 92],\n    \"active\": True\n}\n\njson_string = json.dumps(data, indent=2)\nprint(json_string)\nprint(\"---\")\n\n# JSON string back to Python dict\nparsed = json.loads(json_string)\nprint(type(parsed))\nprint(parsed[\"name\"])\nprint(sum(parsed[\"scores\"]))",
+          "output": "{\n  \"name\": \"Alice\",\n  \"scores\": [\n    95,\n    87,\n    92\n  ],\n  \"active\": true\n}\n---\n<class 'dict'>\nAlice\n274",
+          "explanation": "json.dumps() converts Python objects to a JSON string. The indent parameter makes the output human-readable. json.loads() reverses the process. Note that Python True becomes JSON true (lowercase) and Python None becomes JSON null."
+        },
+        {
+          "title": "os.path Utilities",
+          "code": "import os.path\n\n# Join path components\npath = os.path.join(\"home\", \"user\", \"documents\", \"report.txt\")\nprint(path)\n\n# Extract file name and extension\nprint(os.path.basename(path))\nprint(os.path.dirname(path))\n\nname, ext = os.path.splitext(\"report.txt\")\nprint(f\"Name: {name}, Extension: {ext}\")",
+          "output": "home/user/documents/report.txt\nreport.txt\nhome/user/documents\nName: report, Extension: .txt",
+          "explanation": "os.path.join() uses the correct path separator for your OS. basename() extracts the filename, dirname() extracts the directory, and splitext() splits the filename from its extension. These work purely on strings and do not require the file to exist."
+        }
+      ],
+      "notes": [
+        "Use csv.DictReader instead of manually splitting CSV lines by commas. Manual splitting breaks when field values contain commas inside quotes.",
+        "json.dumps() with indent=2 produces readable output for debugging. Without indent, you get a compact single-line string suitable for APIs and storage.",
+        "readlines() loads the entire file into memory. For very large files, iterate over the file object directly instead: for line in f."
+      ],
+      "commonPitfalls": [
+        "Using str.split(',') to parse CSV data instead of the csv module. This fails when fields contain commas, newlines, or quotes. Always use the csv module for reliable parsing.",
+        "Forgetting that json.dumps() returns a string while json.dump() writes to a file. Mixing them up leads to writing the string representation of a string (double-encoded JSON).",
+        "Assuming writelines() adds newline characters between items. It does not. You must include '\\n' at the end of each string you pass to writelines()."
+      ],
+      "interviewTips": [
+        "Be ready to explain the difference between json.dump/load (file operations) and json.dumps/loads (string operations). The 's' stands for 'string'.",
+        "When asked about handling CSV in Python, mention csv.DictReader for readability and csv.reader for raw row access. Discuss how the csv module handles edge cases that naive splitting cannot."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "working-with-files-ex1",
+        "title": "Parse CSV and Calculate Average",
+        "description": "Given CSV data of student scores, parse it using the csv module and calculate the average score. Print each student's name and score, then print the average formatted to one decimal place.",
+        "starterCode": "import csv\nimport io\n\ncsv_data = \"\"\"name,score\nAlice,85\nBob,92\nCharlie,78\nDiana,95\"\"\"\n\n# Parse the CSV data\n# Print each student's name and score in format: 'Name: score'\n# Print the average score as 'Average: X.X'\n",
+        "solution": "import csv\nimport io\n\ncsv_data = \"\"\"name,score\nAlice,85\nBob,92\nCharlie,78\nDiana,95\"\"\"\n\nf = io.StringIO(csv_data)\nreader = csv.DictReader(f)\ntotal = 0\ncount = 0\nfor row in reader:\n    print(f\"{row['name']}: {row['score']}\")\n    total += int(row['score'])\n    count += 1\nprint(f\"Average: {total / count:.1f}\")",
+        "expectedOutput": "Alice: 85\nBob: 92\nCharlie: 78\nDiana: 95\nAverage: 87.5",
+        "hints": [
+          "Use csv.DictReader with a StringIO object wrapping the CSV string",
+          "CSV values are always strings; convert scores to int for math",
+          "Use f-string formatting with :.1f for one decimal place"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "working-with-files-ex2",
+        "title": "JSON Roundtrip",
+        "description": "Create a Python dictionary representing a book with keys: title, author, year, and genres (a list). Convert it to a JSON string and back. Print the JSON string, then print the title and number of genres from the parsed dictionary.",
+        "starterCode": "import json\n\n# Create a book dict: title='The Great Gatsby', author='F. Scott Fitzgerald',\n# year=1925, genres=['Novel', 'Fiction', 'Tragedy']\n# Convert to JSON string (no indentation)\n# Print the JSON string\n# Parse it back to a dict\n# Print the title and number of genres\n",
+        "solution": "import json\n\nbook = {\n    \"title\": \"The Great Gatsby\",\n    \"author\": \"F. Scott Fitzgerald\",\n    \"year\": 1925,\n    \"genres\": [\"Novel\", \"Fiction\", \"Tragedy\"]\n}\njson_string = json.dumps(book)\nprint(json_string)\nparsed = json.loads(json_string)\nprint(parsed[\"title\"])\nprint(len(parsed[\"genres\"]))",
+        "expectedOutput": "{\"title\": \"The Great Gatsby\", \"author\": \"F. Scott Fitzgerald\", \"year\": 1925, \"genres\": [\"Novel\", \"Fiction\", \"Tragedy\"]}\nThe Great Gatsby\n3",
+        "hints": [
+          "Use json.dumps() without indent to get a compact JSON string",
+          "Use json.loads() to parse the string back into a Python dict",
+          "Access list length with len()"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "working-with-files-ex3",
+        "title": "Build CSV from Data",
+        "description": "Given a list of dictionaries representing employees, write them to a StringIO object as CSV using csv.DictWriter. Include a header row. Print the resulting CSV content.",
+        "starterCode": "import csv\nimport io\n\nemployees = [\n    {\"name\": \"Alice\", \"dept\": \"Engineering\", \"salary\": \"90000\"},\n    {\"name\": \"Bob\", \"dept\": \"Marketing\", \"salary\": \"75000\"},\n    {\"name\": \"Charlie\", \"dept\": \"Engineering\", \"salary\": \"95000\"}\n]\n\n# Write employees to CSV using DictWriter\n# Print the CSV content\n",
+        "solution": "import csv\nimport io\n\nemployees = [\n    {\"name\": \"Alice\", \"dept\": \"Engineering\", \"salary\": \"90000\"},\n    {\"name\": \"Bob\", \"dept\": \"Marketing\", \"salary\": \"75000\"},\n    {\"name\": \"Charlie\", \"dept\": \"Engineering\", \"salary\": \"95000\"}\n]\n\nout = io.StringIO()\nwriter = csv.DictWriter(out, fieldnames=[\"name\", \"dept\", \"salary\"])\nwriter.writeheader()\nwriter.writerows(employees)\nprint(out.getvalue())",
+        "expectedOutput": "name,dept,salary\r\nAlice,Engineering,90000\r\nBob,Marketing,75000\r\nCharlie,Engineering,95000\r\n",
+        "hints": [
+          "Create a csv.DictWriter with fieldnames matching the dictionary keys",
+          "Call writeheader() before writerows() to include column names",
+          "Use getvalue() on StringIO to retrieve the written content"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "modules-and-imports",
+    "sectionId": "file-handling-and-modules",
+    "orderIndex": 2,
+    "title": "Modules & Imports",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["import Statement", "from...import", "as Alias", "__name__ == '__main__'", "Creating Modules"],
+    "content": {
+      "explanation": "Modules are the building blocks of Python's code organization system. A module is simply a .py file containing Python definitions (functions, classes, variables) and statements. Modules allow you to break large programs into smaller, manageable, and reusable pieces. Python's extensive standard library is organized as a collection of modules, and the ability to create and import your own modules is fundamental to writing maintainable software.\n\nThe import statement is the primary way to use code from other modules. When you write import math, Python searches for a module named math, executes it, and creates a namespace object. You then access its contents using dot notation: math.sqrt(16). The import system searches in a specific order: the current directory, then the directories listed in the PYTHONPATH environment variable, and finally the standard library paths. This search order is stored in sys.path and can be inspected or modified at runtime.\n\nThe from...import syntax lets you import specific names directly into your current namespace. With from math import sqrt, pi you can use sqrt() and pi directly without the math. prefix. While this is more concise, it can lead to naming conflicts if two modules export the same name. The from module import * syntax imports everything, which is generally discouraged in production code because it pollutes the namespace and makes it unclear where names come from. A good rule: use import module for standard library modules and from module import specific_thing for your own modules.\n\nThe as keyword creates an alias for an imported module or name. This is useful for long module names (import numpy as np) or to avoid name collisions (from datetime import datetime as dt). Aliasing is purely a convenience feature and does not change what is imported. Some aliases are so widespread they are effectively standard: np for numpy, pd for pandas, plt for matplotlib.pyplot.\n\nThe if __name__ == '__main__' idiom is a critical pattern in Python. Every module has a special __name__ attribute. When a module is run directly (python mymodule.py), __name__ is set to '__main__'. When it is imported by another module, __name__ is set to the module's actual name (e.g., 'mymodule'). This lets you write code that behaves differently when run as a script versus when imported as a library. Test code, example usage, and CLI entry points are typically placed inside this guard.",
+      "codeExamples": [
+        {
+          "title": "Import Styles",
+          "code": "# Style 1: import the whole module\nimport math\nprint(math.sqrt(144))\nprint(math.pi)\n\n# Style 2: import specific names\nfrom math import factorial, gcd\nprint(factorial(5))\nprint(gcd(24, 36))\n\n# Style 3: import with alias\nimport math as m\nprint(m.ceil(4.3))\nprint(m.floor(4.7))",
+          "output": "12.0\n3.141592653589793\n120\n12\n5\n4",
+          "explanation": "Style 1 keeps the namespace clean by requiring the module prefix. Style 2 is concise for frequently used names. Style 3 shortens long module names. All three are valid; choose based on readability and convention."
+        },
+        {
+          "title": "The __name__ Variable",
+          "code": "# When this file is run directly: __name__ == '__main__'\n# When imported by another file: __name__ == 'module_name'\n\ndef greet(name):\n    return f\"Hello, {name}!\"\n\ndef main():\n    print(greet(\"World\"))\n    print(f\"Module name: {__name__}\")\n\n# This block only runs when the file is executed directly\nif __name__ == \"__main__\":\n    main()",
+          "output": "Hello, World!\nModule name: __main__",
+          "explanation": "__name__ is '__main__' when the script is run directly. This pattern lets a file serve as both a reusable library (when imported) and a standalone script (when run directly). Functions defined outside the if block are available for import either way."
+        },
+        {
+          "title": "Creating and Using a Module",
+          "code": "# Imagine we have a module called 'mathutils.py' containing:\n# def add(a, b): return a + b\n# def multiply(a, b): return a * b\n# PI = 3.14159\n\n# We can simulate it here:\ndef add(a, b):\n    return a + b\n\ndef multiply(a, b):\n    return a * b\n\nPI = 3.14159\n\n# Using the 'module'\nresult1 = add(10, 20)\nresult2 = multiply(5, 6)\nprint(f\"add(10, 20) = {result1}\")\nprint(f\"multiply(5, 6) = {result2}\")\nprint(f\"PI = {PI}\")",
+          "output": "add(10, 20) = 30\nmultiply(5, 6) = 30\nPI = 3.14159",
+          "explanation": "A module is just a .py file with functions, classes, and variables. Other files import it using its filename (without .py). Organizing related functionality into modules makes code reusable and easier to maintain."
+        },
+        {
+          "title": "Inspecting Module Contents",
+          "code": "import math\n\n# dir() lists all names in a module\nmath_funcs = [name for name in dir(math) if not name.startswith('_')]\nprint(f\"Number of public names in math: {len(math_funcs)}\")\nprint(f\"First 5: {math_funcs[:5]}\")\n\n# hasattr() checks if a module has a specific attribute\nprint(f\"Has sqrt: {hasattr(math, 'sqrt')}\")\nprint(f\"Has power: {hasattr(math, 'power')}\")",
+          "output": "Number of public names in math: 57\nFirst 5: ['acos', 'acosh', 'asin', 'asinh', 'atan']\nHas sqrt: True\nHas power: False",
+          "explanation": "dir() returns all names defined in a module. We filter out private names starting with underscore. hasattr() is useful for checking if a module provides a specific function before calling it."
+        }
+      ],
+      "notes": [
+        "Avoid from module import * in production code. It pollutes the namespace and makes it impossible to tell where a name was defined without searching every imported module.",
+        "Python caches imported modules in sys.modules. Importing the same module multiple times does not re-execute it; subsequent imports just reuse the cached module object.",
+        "The if __name__ == '__main__' pattern is not just a convention. It is essential for writing modules that can be both imported as libraries and run as standalone scripts."
+      ],
+      "commonPitfalls": [
+        "Circular imports: module A imports module B, which imports module A. This causes ImportError or partially initialized modules. Restructure your code to break the cycle, or move imports inside functions.",
+        "Naming a file the same as a standard library module (e.g., creating a file called math.py or random.py). Python will import your file instead of the standard library module, causing confusing errors.",
+        "Using from module import * and accidentally overwriting built-in names. For example, from os import * can shadow the built-in open() function."
+      ],
+      "interviewTips": [
+        "Explain the difference between import math and from math import sqrt. The first creates a namespace; the second imports directly into the current scope. Discuss trade-offs of namespace cleanliness vs. convenience.",
+        "When asked about __name__ == '__main__', explain that it enables dual-use modules that work as both importable libraries and executable scripts. Give a concrete example of when this is useful.",
+        "Know that Python imports are executed only once and cached in sys.modules. Subsequent imports of the same module just return the cached reference."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "modules-and-imports-ex1",
+        "title": "Import and Use Math Functions",
+        "description": "Import the math module and use it to: (1) print the square root of 256, (2) print the factorial of 7, and (3) print the value of pi rounded to 4 decimal places.",
+        "starterCode": "# Import math module\n# Print sqrt of 256\n# Print factorial of 7\n# Print pi rounded to 4 decimal places\n",
+        "solution": "import math\n\nprint(math.sqrt(256))\nprint(math.factorial(7))\nprint(round(math.pi, 4))",
+        "expectedOutput": "16.0\n5040\n3.1416",
+        "hints": [
+          "Use import math to access all math functions via math.function_name()",
+          "math.sqrt() returns a float, math.factorial() returns an int",
+          "Use round(value, 4) to round to 4 decimal places"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "modules-and-imports-ex2",
+        "title": "Selective Imports and Aliases",
+        "description": "Use from...import to import only gcd from math. Also import the datetime module with alias dt. Print the GCD of 48 and 18. Then print the name of the datetime module using its __name__ attribute.",
+        "starterCode": "# Import gcd from math\n# Import datetime module as dt\n# Print GCD of 48 and 18\n# Print the __name__ of the datetime module\n",
+        "solution": "from math import gcd\nimport datetime as dt\n\nprint(gcd(48, 18))\nprint(dt.__name__)",
+        "expectedOutput": "6\ndatetime",
+        "hints": [
+          "Use from math import gcd for a selective import",
+          "Use import datetime as dt to create an alias",
+          "Every module has a __name__ attribute that contains its name as a string"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "modules-and-imports-ex3",
+        "title": "Module Function Dispatcher",
+        "description": "Create a function called calculate that takes an operation string ('sqrt', 'factorial', or 'log') and a number, then uses the math module to return and print the result. Test it with sqrt(49), factorial(6), and log(100).",
+        "starterCode": "import math\n\ndef calculate(operation, number):\n    # Return the result of applying the operation to the number\n    # Supported operations: 'sqrt', 'factorial', 'log'\n    pass\n\n# Test the function\nprint(calculate(\"sqrt\", 49))\nprint(calculate(\"factorial\", 6))\nprint(calculate(\"log\", 100))",
+        "solution": "import math\n\ndef calculate(operation, number):\n    if operation == \"sqrt\":\n        return math.sqrt(number)\n    elif operation == \"factorial\":\n        return math.factorial(number)\n    elif operation == \"log\":\n        return math.log(number)\n\nprint(calculate(\"sqrt\", 49))\nprint(calculate(\"factorial\", 6))\nprint(calculate(\"log\", 100))",
+        "expectedOutput": "7.0\n720\n4.605170185988092",
+        "hints": [
+          "Use if/elif to dispatch to the correct math function based on the operation string",
+          "math.log() computes the natural logarithm (base e) by default",
+          "math.factorial() only works with non-negative integers"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "standard-library",
+    "sectionId": "file-handling-and-modules",
+    "orderIndex": 3,
+    "title": "Standard Library Highlights",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["os Module", "sys Module", "math Module", "random Module", "datetime Module", "itertools", "functools"],
+    "content": {
+      "explanation": "Python's standard library is one of its greatest strengths, often described as 'batteries included.' It ships with hundreds of modules covering everything from file handling to networking to data compression. Mastering the key standard library modules dramatically increases your productivity because you can solve common problems without installing third-party packages. In interviews, knowledge of the standard library signals that you are an experienced Python developer.\n\nThe os module provides functions for interacting with the operating system: os.getcwd() returns the current working directory, os.listdir() lists files, os.makedirs() creates nested directories, os.environ accesses environment variables, and os.path handles path manipulation. The sys module gives access to Python interpreter internals: sys.argv holds command-line arguments, sys.path lists module search paths, sys.exit() terminates the program, and sys.stdin/stdout/stderr provide access to standard I/O streams.\n\nThe math module offers mathematical functions and constants: sqrt(), pow(), log(), sin(), cos(), ceil(), floor(), factorial(), gcd(), and constants pi and e. For random number generation, the random module provides random.random() for a float between 0 and 1, random.randint(a, b) for an integer in [a, b], random.choice() to pick from a sequence, random.shuffle() to reorder a list in place, and random.sample() for random sampling without replacement.\n\nThe datetime module handles dates and times. datetime.datetime.now() gets the current timestamp, datetime.date.today() gets today's date, timedelta represents a duration for date arithmetic, and strftime()/strptime() handle formatting and parsing. Date arithmetic is intuitive: you can subtract two dates to get a timedelta, or add a timedelta to a date to get a future date.\n\nThe itertools module provides memory-efficient iterator building blocks. Key functions include chain() (concatenate iterables), combinations() and permutations() (combinatorics), product() (Cartesian product), groupby() (group consecutive elements), count() (infinite counter), cycle() (infinite repeater), and islice() (slice an iterator). The functools module offers higher-order function utilities: reduce() applies a function cumulatively, lru_cache decorates a function for memoization, partial() creates a new function with some arguments pre-filled, and wraps() preserves metadata when writing decorators.",
+      "codeExamples": [
+        {
+          "title": "os and sys Essentials",
+          "code": "import os\nimport sys\n\n# os.path operations\nprint(os.path.join(\"data\", \"files\", \"report.csv\"))\nprint(os.path.splitext(\"image.png\"))\n\n# sys module\nprint(f\"Python version: {sys.version_info.major}.{sys.version_info.minor}\")\nprint(f\"Platform: {sys.platform}\")\nprint(f\"Max integer size: {sys.maxsize}\")",
+          "output": "data/files/report.csv\n('image', '.png')\nPython version: 3.12\nPlatform: emscripten\nMax integer size: 9223372036854775807",
+          "explanation": "os.path works with file paths as strings. sys provides runtime information about the Python interpreter. In Pyodide, sys.platform reports 'emscripten' since it runs in WebAssembly."
+        },
+        {
+          "title": "datetime Arithmetic",
+          "code": "from datetime import datetime, date, timedelta\n\n# Create specific dates\nstart = date(2025, 1, 1)\nend = date(2025, 12, 31)\n\n# Date arithmetic\ndelta = end - start\nprint(f\"Days in 2025: {delta.days}\")\n\n# Add days to a date\nfuture = start + timedelta(days=90)\nprint(f\"90 days from Jan 1: {future}\")\n\n# Format dates\ndt = datetime(2025, 6, 15, 14, 30)\nprint(dt.strftime(\"%B %d, %Y at %I:%M %p\"))",
+          "output": "Days in 2025: 364\n90 days from Jan 1: 2025-04-01\nJune 15, 2025 at 02:30 PM",
+          "explanation": "Subtracting two dates produces a timedelta object. Adding a timedelta to a date produces a new date. strftime() formats dates using format codes: %B for full month name, %d for day, %Y for year, %I for 12-hour clock, %p for AM/PM."
+        },
+        {
+          "title": "itertools Combinatorics",
+          "code": "from itertools import combinations, permutations, chain, product\n\n# combinations: order doesn't matter\nprint(list(combinations(\"ABC\", 2)))\n\n# permutations: order matters\nprint(list(permutations(\"AB\", 2)))\n\n# chain: concatenate iterables\nprint(list(chain([1, 2], [3, 4], [5])))\n\n# product: Cartesian product\nprint(list(product(\"AB\", \"12\")))",
+          "output": "[('A', 'B'), ('A', 'C'), ('B', 'C')]\n[('A', 'B'), ('B', 'A')]\n[1, 2, 3, 4, 5]\n[('A', '1'), ('A', '2'), ('B', '1'), ('B', '2')]",
+          "explanation": "combinations picks r items without regard to order. permutations considers order, so ('A','B') and ('B','A') are distinct. chain flattens multiple iterables into one. product generates all pairs from two iterables."
+        },
+        {
+          "title": "functools: reduce and lru_cache",
+          "code": "from functools import reduce, lru_cache\n\n# reduce applies a function cumulatively\nnumbers = [1, 2, 3, 4, 5]\ntotal = reduce(lambda a, b: a + b, numbers)\nprint(f\"Sum via reduce: {total}\")\n\nproduct_val = reduce(lambda a, b: a * b, numbers)\nprint(f\"Product via reduce: {product_val}\")\n\n# lru_cache for memoization\n@lru_cache(maxsize=None)\ndef fibonacci(n):\n    if n < 2:\n        return n\n    return fibonacci(n - 1) + fibonacci(n - 2)\n\nprint(f\"fib(10) = {fibonacci(10)}\")\nprint(f\"fib(30) = {fibonacci(30)}\")",
+          "output": "Sum via reduce: 15\nProduct via reduce: 120\nfib(10) = 55\nfib(30) = 832040",
+          "explanation": "reduce() folds a sequence using a binary function: ((((1+2)+3)+4)+5) = 15. lru_cache memoizes function results, making the naive recursive fibonacci O(n) instead of O(2^n). Without caching, fib(30) would take billions of calls."
+        }
+      ],
+      "notes": [
+        "The standard library covers most common tasks. Before installing a third-party package, check if a standard library module already solves your problem.",
+        "itertools functions return lazy iterators, not lists. Wrap them in list() only when you need to see all results at once. For large datasets, consuming them lazily saves memory.",
+        "functools.lru_cache is one of the easiest performance optimizations in Python. Adding @lru_cache to any pure function with hashable arguments gives you automatic memoization."
+      ],
+      "commonPitfalls": [
+        "Using random.seed() incorrectly in production. Setting a fixed seed is great for reproducible tests but must never be used in code that needs truly random behavior like security tokens.",
+        "Confusing datetime.datetime and datetime.date. The datetime class includes time information; the date class only has year, month, and day. Using the wrong one leads to AttributeError when accessing time fields.",
+        "Forgetting that itertools functions return iterators that can only be consumed once. If you need to iterate multiple times, convert to a list first or recreate the iterator."
+      ],
+      "interviewTips": [
+        "When asked about performance optimization, mention functools.lru_cache for memoization. Explain that it stores results of expensive function calls and returns the cached result when the same inputs occur again.",
+        "Know itertools.combinations vs. permutations. Combinations ignore order (nCr), permutations consider order (nPr). Be able to calculate the number of results: C(n,r) = n!/(r!(n-r)!), P(n,r) = n!/(n-r)!.",
+        "Understand reduce() even though sum(), max(), and min() cover the most common cases. Interviewers test reduce() to see if you understand functional programming concepts like folding.",
+        "Be familiar with collections module extensions too: Counter for frequency counting, defaultdict for auto-initializing dicts, deque for O(1) append/pop from both ends, and namedtuple for readable tuples."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "standard-library-ex1",
+        "title": "Date Calculator",
+        "description": "Calculate the number of days between January 15, 2025 and October 20, 2025. Then find the date that is 200 days after January 15, 2025. Print both results.",
+        "starterCode": "from datetime import date, timedelta\n\n# Calculate days between Jan 15 and Oct 20, 2025\n# Find date 200 days after Jan 15, 2025\n# Print both results\n",
+        "solution": "from datetime import date, timedelta\n\nstart = date(2025, 1, 15)\nend = date(2025, 10, 20)\ndelta = end - start\nprint(f\"Days between: {delta.days}\")\n\nfuture = start + timedelta(days=200)\nprint(f\"200 days later: {future}\")",
+        "expectedOutput": "Days between: 278\n200 days later: 2025-08-03",
+        "hints": [
+          "Create date objects with date(year, month, day)",
+          "Subtracting two dates gives a timedelta; use .days to get the integer",
+          "Add a timedelta(days=200) to get a future date"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "standard-library-ex2",
+        "title": "Combinations Counter",
+        "description": "Given the list of colors ['red', 'blue', 'green', 'yellow'], use itertools.combinations to find all possible pairs (combinations of 2). Print each pair and then print the total number of pairs.",
+        "starterCode": "from itertools import combinations\n\ncolors = ['red', 'blue', 'green', 'yellow']\n\n# Find all combinations of 2 colors\n# Print each pair as 'color1 & color2'\n# Print the total count\n",
+        "solution": "from itertools import combinations\n\ncolors = ['red', 'blue', 'green', 'yellow']\n\npairs = list(combinations(colors, 2))\nfor pair in pairs:\n    print(f\"{pair[0]} & {pair[1]}\")\nprint(f\"Total pairs: {len(pairs)}\")",
+        "expectedOutput": "red & blue\nred & green\nred & yellow\nblue & green\nblue & yellow\ngreen & yellow\nTotal pairs: 6",
+        "hints": [
+          "Use combinations(colors, 2) to get all pairs",
+          "Convert to a list to iterate and count",
+          "C(4,2) = 6 pairs total"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "standard-library-ex3",
+        "title": "Memoized Factorial with Reduce",
+        "description": "Use functools.reduce to compute the factorial of a number, and functools.lru_cache to memoize a recursive Fibonacci function. Print factorial of 6 using reduce, then print fibonacci numbers for n=0 through n=9 as a space-separated string.",
+        "starterCode": "from functools import reduce, lru_cache\n\n# Compute factorial of 6 using reduce\n# Print the result\n\n# Create a memoized fibonacci function using lru_cache\n# Print fibonacci(0) through fibonacci(9) space-separated\n",
+        "solution": "from functools import reduce, lru_cache\n\nfact = reduce(lambda a, b: a * b, range(1, 7))\nprint(fact)\n\n@lru_cache(maxsize=None)\ndef fibonacci(n):\n    if n < 2:\n        return n\n    return fibonacci(n - 1) + fibonacci(n - 2)\n\nprint(\" \".join(str(fibonacci(i)) for i in range(10)))",
+        "expectedOutput": "720\n0 1 1 2 3 5 8 13 21 34",
+        "hints": [
+          "reduce(lambda a, b: a * b, range(1, 7)) multiplies 1*2*3*4*5*6",
+          "Use @lru_cache(maxsize=None) decorator for unlimited caching",
+          "Join the results with ' '.join() after converting each to a string"
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

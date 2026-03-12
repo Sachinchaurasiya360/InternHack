@@ -26,6 +26,7 @@ export interface User {
   name: string;
   email: string;
   role: UserRole;
+  isVerified?: boolean;
   contactNo?: string;
   profilePic?: string;
   coverImage?: string;
@@ -91,6 +92,14 @@ export interface Job {
   updatedAt: string;
 }
 
+export interface AssessmentQuestion {
+  question: string;
+  options: string[];
+  correctIndex: number;
+  explanation?: string;
+  points: number;
+}
+
 export interface Round {
   id: number;
   jobId: number;
@@ -100,6 +109,9 @@ export interface Round {
   instructions?: string;
   customFields: CustomFieldDefinition[];
   evaluationCriteria: EvaluationCriterion[];
+  assessmentQuestions?: AssessmentQuestion[];
+  timeLimitSecs?: number | null;
+  autoGrade?: boolean;
   _count?: { roundSubmissions: number };
   createdAt: string;
   updatedAt: string;
@@ -833,6 +845,145 @@ export interface AptitudeProgress {
   totalQuestions: number;
   totalAnswered: number;
   totalCorrect: number;
+}
+
+// Badges
+export type BadgeCategory = "CAREER" | "QUIZ" | "SKILL" | "CONTRIBUTION" | "MILESTONE";
+
+export interface Badge {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  iconUrl?: string;
+  category: BadgeCategory;
+  criteria: Record<string, unknown>;
+  isActive: boolean;
+  createdAt: string;
+}
+
+export interface StudentBadge {
+  id: number;
+  studentId: number;
+  badgeId: number;
+  badge: Badge;
+  earnedAt: string;
+}
+
+// Talent Pools
+export interface TalentPool {
+  id: number;
+  recruiterId: number;
+  name: string;
+  description?: string;
+  _count?: { members: number };
+  members?: TalentPoolMember[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface TalentPoolMember {
+  id: number;
+  poolId: number;
+  studentId: number;
+  notes?: string;
+  addedAt: string;
+  student: {
+    id: number;
+    name: string;
+    email: string;
+    profilePic?: string;
+    college?: string;
+    graduationYear?: number;
+    skills: string[];
+    location?: string;
+  };
+}
+
+// Campus Drives
+export type CampusDriveStatus = "DRAFT" | "OPEN" | "CLOSED" | "COMPLETED";
+export type CampusRegistrationStatus = "REGISTERED" | "SHORTLISTED" | "REJECTED";
+
+export interface CampusDrive {
+  id: number;
+  recruiterId: number;
+  title: string;
+  description: string;
+  company: string;
+  targetColleges: string[];
+  eligibleBranches: string[];
+  minCGPA?: number;
+  eligibleGraduationYears: number[];
+  registrationDeadline: string;
+  driveDate?: string;
+  status: CampusDriveStatus;
+  jobIds: number[];
+  recruiter?: { id: number; name: string; company?: string };
+  _count?: { registrations: number };
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CampusDriveRegistration {
+  id: number;
+  driveId: number;
+  studentId: number;
+  status: CampusRegistrationStatus;
+  registeredAt: string;
+  student?: { id: number; name: string; email: string; college?: string; graduationYear?: number; profilePic?: string };
+  drive?: CampusDrive;
+}
+
+// Trends
+export interface TrendsOverview {
+  totalJobs: number;
+  totalScrapedJobs: number;
+  topCity: string;
+  topSkill: string;
+}
+
+export interface TrendSkill {
+  name: string;
+  demandCount: number;
+  supplyCount: number;
+}
+
+export interface TrendLocation {
+  city: string;
+  jobCount: number;
+}
+
+export interface TrendSalary {
+  range: string;
+  count: number;
+}
+
+export interface TrendTimeline {
+  month: string;
+  jobCount: number;
+  scrapedCount: number;
+}
+
+export interface TrendSupply {
+  name: string;
+  userCount: number;
+}
+
+// GitHub Import
+export interface GitHubImportData {
+  name: string | null;
+  bio: string | null;
+  avatar: string | null;
+  portfolioUrl: string | null;
+  location: string | null;
+  languages: string[];
+  projects: {
+    title: string;
+    description: string;
+    techStack: string[];
+    repoUrl: string;
+    liveUrl?: string;
+  }[];
 }
 
 // Blog

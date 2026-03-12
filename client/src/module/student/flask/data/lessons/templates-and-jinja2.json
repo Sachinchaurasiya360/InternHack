@@ -1,0 +1,299 @@
+[
+  {
+    "id": "template-rendering",
+    "sectionId": "templates-and-jinja2",
+    "orderIndex": 0,
+    "title": "Template Rendering",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["render_template", "Jinja2", "Template Variables", "Templates Directory", "Context"],
+    "content": {
+      "explanation": "Templates are the foundation of dynamic HTML generation in Flask. Instead of returning raw HTML strings from your view functions, you write HTML files with special placeholders that Jinja2 fills in with data at render time. This separates your presentation logic from your application logic, making code easier to maintain and allowing designers and developers to work independently.\n\nFlask looks for templates in a directory called 'templates' in your application root by default. You can customize this by passing template_folder to the Flask constructor. The render_template() function takes a template filename and keyword arguments that become available as variables in the template.\n\nJinja2 uses three types of delimiters in templates. Double curly braces {{ expression }} output the result of an expression. Curly-brace-percent {% statement %} execute control flow statements like if/else and for loops. Curly-brace-hash {# comment #} creates comments that do not appear in the output.\n\nTemplate variables are passed from view functions as keyword arguments to render_template(). Inside the template, you access them by name. Jinja2 supports attribute access (user.name), item access (user['name']), and method calls (items.count()). If a variable does not exist, Jinja2 returns an Undefined object that renders as an empty string by default.\n\nJinja2 automatically escapes HTML in variables to prevent Cross-Site Scripting (XSS) attacks. If you pass the string '<script>alert(1)</script>' to a template, Jinja2 renders it as '&lt;script&gt;alert(1)&lt;/script&gt;', which displays as text rather than executing as JavaScript. If you need to render raw HTML (for trusted content like CMS output), use the |safe filter or the Markup class.\n\nFlask makes several variables available in templates automatically without passing them explicitly. These include request (the current request object), session (the session dict), g (the application global namespace), url_for (the URL building function), and get_flashed_messages (for flash messages). You can also register custom global template variables using app.context_processor.\n\nThe render_template_string() function renders a Jinja2 template from a string instead of a file. This is useful for short templates or testing, but should never be used with user input due to Server-Side Template Injection (SSTI) vulnerabilities.\n\nTemplate rendering is synchronous by default. For very complex templates with heavy computation, consider precomputing values in the view function and passing simple data to the template. Jinja2 compiles templates to Python bytecode and caches them, so template rendering is generally fast.",
+      "codeExamples": [
+        {
+          "title": "Basic Template Rendering",
+          "code": "# app.py\nfrom flask import Flask, render_template\n\napp = Flask(__name__)\n\n@app.route('/')\ndef index():\n    return render_template('index.html',\n        title='Home',\n        username='Alice',\n        items=['Flask', 'Jinja2', 'Werkzeug']\n    )\n\n# templates/index.html\n# <!DOCTYPE html>\n# <html>\n# <head><title>{{ title }}</title></head>\n# <body>\n#     <h1>Hello, {{ username }}!</h1>\n#     <ul>\n#     {% for item in items %}\n#         <li>{{ item }}</li>\n#     {% endfor %}\n#     </ul>\n# </body>\n# </html>",
+          "explanation": "render_template loads the template file from the templates/ directory and passes keyword arguments as template variables. {{ variable }} outputs values, {% %} handles control flow like for loops."
+        },
+        {
+          "title": "Jinja2 Control Flow",
+          "code": "<!-- templates/dashboard.html -->\n<h1>Dashboard</h1>\n\n{% if user.is_admin %}\n    <p>Welcome, Admin {{ user.name }}!</p>\n    <a href=\"{{ url_for('admin_panel') }}\">Admin Panel</a>\n{% elif user.is_authenticated %}\n    <p>Welcome back, {{ user.name }}!</p>\n{% else %}\n    <p>Please <a href=\"{{ url_for('login') }}\">log in</a>.</p>\n{% endif %}\n\n{% for notification in notifications %}\n    <div class=\"alert alert-{{ notification.type }}\">\n        {{ notification.message }}\n        {% if notification.link %}\n            <a href=\"{{ notification.link }}\">View</a>\n        {% endif %}\n    </div>\n{% else %}\n    <p>No notifications.</p>\n{% endfor %}",
+          "explanation": "Jinja2 supports if/elif/else for conditionals and for/else for loops. The else clause on a for loop executes when the iterable is empty. You can access object attributes with dot notation."
+        },
+        {
+          "title": "Auto-escaping and the safe Filter",
+          "code": "from flask import Flask, render_template, Markup\n\napp = Flask(__name__)\n\n@app.route('/')\ndef index():\n    # This will be escaped (safe from XSS)\n    user_input = '<script>alert(\"xss\")</script>'\n\n    # This is trusted HTML (from your CMS, etc.)\n    trusted_html = Markup('<strong>Bold text</strong>')\n\n    return render_template('index.html',\n        user_input=user_input,\n        trusted_html=trusted_html\n    )\n\n# templates/index.html\n# <!-- Escaped: &lt;script&gt;alert(\"xss\")&lt;/script&gt; -->\n# <p>{{ user_input }}</p>\n#\n# <!-- Not escaped: <strong>Bold text</strong> -->\n# <p>{{ trusted_html }}</p>\n#\n# <!-- Also not escaped (use sparingly): -->\n# <p>{{ user_input|safe }}</p>  {# DANGEROUS with user input! #}",
+          "explanation": "Jinja2 auto-escapes HTML to prevent XSS. Use the |safe filter or Markup class only for trusted content. Never use |safe on user-supplied data."
+        },
+        {
+          "title": "Context Processors",
+          "code": "from flask import Flask, render_template\nimport datetime\n\napp = Flask(__name__)\n\n@app.context_processor\ndef inject_globals():\n    \"\"\"Make these variables available in all templates.\"\"\"\n    return {\n        'app_name': 'My Flask App',\n        'current_year': datetime.datetime.now().year,\n        'nav_links': [\n            {'url': '/', 'label': 'Home'},\n            {'url': '/about', 'label': 'About'},\n            {'url': '/contact', 'label': 'Contact'},\n        ]\n    }\n\n@app.route('/')\ndef index():\n    # No need to pass app_name or current_year\n    return render_template('index.html')\n\n# templates/index.html can use {{ app_name }}, {{ current_year }},\n# and {{ nav_links }} without them being passed from the view.",
+          "explanation": "Context processors inject variables into every template automatically. This is useful for app-wide data like navigation, the app name, or the current year for copyright notices."
+        }
+      ],
+      "notes": [
+        "Templates live in the 'templates/' directory by default. You can nest them in subdirectories like 'templates/auth/login.html'.",
+        "Jinja2 auto-escapes HTML by default to prevent XSS attacks. Only use |safe for trusted content.",
+        "Flask provides request, session, g, url_for(), and get_flashed_messages() in all templates automatically.",
+        "Use context processors to inject variables into every template without passing them from each view."
+      ],
+      "commonPitfalls": [
+        "Using render_template_string() with user input, allowing Server-Side Template Injection (SSTI).",
+        "Applying the |safe filter to untrusted user content, enabling XSS attacks.",
+        "Forgetting to create the 'templates/' directory or placing templates in the wrong location."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "template-render-ex1",
+        "title": "Render a User Profile",
+        "description": "Write a view function for '/profile/<username>' that renders a template called 'profile.html', passing the username and a list of hobbies ['Reading', 'Coding', 'Hiking'].",
+        "starterCode": "from flask import Flask, render_template\n\napp = Flask(__name__)\n\n# Create the profile route\n",
+        "solution": "from flask import Flask, render_template\n\napp = Flask(__name__)\n\n@app.route('/profile/<username>')\ndef profile(username):\n    hobbies = ['Reading', 'Coding', 'Hiking']\n    return render_template('profile.html', username=username, hobbies=hobbies)\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Pass template variables as keyword arguments to render_template()",
+          "The first argument to render_template is the template filename",
+          "The template file must exist in the templates/ directory"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "template-render-ex2",
+        "title": "Write a Jinja2 Template",
+        "description": "Write a Jinja2 template that:\n- Displays an h1 with 'Hello, {{ name }}!'\n- If is_admin is true, shows a paragraph 'You have admin access'\n- Loops through a 'tasks' list displaying each as an li element\n- Shows 'No tasks yet' if the list is empty",
+        "starterCode": "<!-- Write your Jinja2 template -->\n",
+        "solution": "<h1>Hello, {{ name }}!</h1>\n\n{% if is_admin %}\n    <p>You have admin access</p>\n{% endif %}\n\n<ul>\n{% for task in tasks %}\n    <li>{{ task }}</li>\n{% else %}\n    <li>No tasks yet</li>\n{% endfor %}\n</ul>",
+        "hints": [
+          "Use {% if condition %} ... {% endif %} for conditionals",
+          "Use {% for item in list %} ... {% else %} ... {% endfor %} for loops with empty fallback",
+          "{{ variable }} outputs the value of a variable"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "template-inheritance",
+    "sectionId": "templates-and-jinja2",
+    "orderIndex": 1,
+    "title": "Template Inheritance",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["extends", "block", "super()", "Base Template", "DRY Principle"],
+    "content": {
+      "explanation": "Template inheritance is Jinja2's most powerful feature. It lets you define a base template with the common structure of your site (header, navigation, footer) and then extend it in child templates that only override specific blocks. This follows the DRY (Don't Repeat Yourself) principle and makes maintaining consistent layouts across your application effortless.\n\nThe concept works like class inheritance in Python. A base template defines blocks — named sections that child templates can override. A child template declares which base template it extends and then fills in the blocks with specific content. Everything outside of blocks in the child template is ignored.\n\nThe base template uses {% block name %}...{% endblock %} to define overridable sections. Common blocks include title, head (for page-specific CSS/meta tags), content (the main page body), and scripts (for page-specific JavaScript). You can place default content inside a block that child templates can override or extend.\n\nChild templates begin with {% extends 'base.html' %} and then use {% block name %} to override specific blocks. The extends tag must be the first tag in the template (not counting comments). Only content inside block tags is used from the child template.\n\nThe super() function lets you include the parent block's content while adding to it. This is useful for blocks like head or scripts where you want to keep the parent's content and add page-specific items. Inside a block, {{ super() }} renders the parent's version of that block.\n\nYou can nest inheritance multiple levels deep. For example, base.html defines the overall structure, admin/base.html extends it to add an admin sidebar, and admin/users.html extends admin/base.html to fill in the specific content. Each level can add blocks, override blocks, or call super() to extend them.\n\nBlock names must be unique within a template. However, Jinja2 allows using the block name in the endblock tag for readability: {% endblock content %}. Blocks can also be used inline for simple overrides: {% block title %}Home{% endblock %}.\n\nTemplate inheritance reduces code duplication dramatically. Instead of copying the entire HTML structure into every page template, you write it once in the base template. When you need to change the navigation or footer, you change it in one place and every page updates automatically.",
+      "codeExamples": [
+        {
+          "title": "Base Template",
+          "code": "<!-- templates/base.html -->\n<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n    <meta charset=\"UTF-8\">\n    <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n    <title>{% block title %}My App{% endblock %}</title>\n    {% block head %}{% endblock %}\n</head>\n<body>\n    <nav>\n        <a href=\"{{ url_for('index') }}\">Home</a>\n        <a href=\"{{ url_for('about') }}\">About</a>\n    </nav>\n\n    <main>\n        {% block content %}{% endblock %}\n    </main>\n\n    <footer>\n        <p>&copy; 2024 My App</p>\n    </footer>\n\n    {% block scripts %}{% endblock %}\n</body>\n</html>",
+          "explanation": "The base template defines the overall page structure with block placeholders. Each block has a name and optional default content. Child templates override these blocks."
+        },
+        {
+          "title": "Child Template",
+          "code": "<!-- templates/home.html -->\n{% extends 'base.html' %}\n\n{% block title %}Home - My App{% endblock %}\n\n{% block content %}\n    <h1>Welcome Home</h1>\n    <p>This is the home page.</p>\n    <ul>\n    {% for item in items %}\n        <li>{{ item }}</li>\n    {% endfor %}\n    </ul>\n{% endblock %}\n\n{% block scripts %}\n    <script src=\"{{ url_for('static', filename='js/home.js') }}\"></script>\n{% endblock %}",
+          "explanation": "The child template extends base.html and overrides the title, content, and scripts blocks. Everything outside of blocks is ignored. The nav and footer from the base template appear automatically."
+        },
+        {
+          "title": "Using super() to Extend Blocks",
+          "code": "<!-- templates/base.html -->\n<head>\n    <title>{% block title %}My App{% endblock %}</title>\n    {% block head %}\n        <link rel=\"stylesheet\" href=\"{{ url_for('static', filename='css/base.css') }}\">\n    {% endblock %}\n</head>\n\n<!-- templates/dashboard.html -->\n{% extends 'base.html' %}\n\n{% block title %}Dashboard - {{ super() }}{% endblock %}\n\n{% block head %}\n    {{ super() }}\n    <!-- Adds to parent's head instead of replacing -->\n    <link rel=\"stylesheet\" href=\"{{ url_for('static', filename='css/dashboard.css') }}\">\n{% endblock %}\n\n{% block content %}\n    <h1>Dashboard</h1>\n{% endblock %}",
+          "explanation": "super() inserts the parent block's content. The title becomes 'Dashboard - My App'. The head block includes BOTH base.css (from parent) and dashboard.css (added by child). Without super(), the parent's content is replaced."
+        },
+        {
+          "title": "Multi-Level Inheritance",
+          "code": "<!-- templates/base.html -->\n<html>\n<body>\n    <nav>{% block nav %}Main Nav{% endblock %}</nav>\n    <div class=\"container\">\n        {% block sidebar %}{% endblock %}\n        <main>{% block content %}{% endblock %}</main>\n    </div>\n</body>\n</html>\n\n<!-- templates/admin/base.html -->\n{% extends 'base.html' %}\n\n{% block nav %}\n    {{ super() }}\n    <span>| Admin Panel</span>\n{% endblock %}\n\n{% block sidebar %}\n    <aside>\n        <a href=\"/admin/users\">Users</a>\n        <a href=\"/admin/settings\">Settings</a>\n    </aside>\n{% endblock %}\n\n<!-- templates/admin/users.html -->\n{% extends 'admin/base.html' %}\n\n{% block content %}\n    <h1>Manage Users</h1>\n    <table>...</table>\n{% endblock %}",
+          "explanation": "Inheritance can be nested: admin/users.html extends admin/base.html, which extends base.html. The users page gets the main nav, the admin sidebar, and fills in its own content."
+        }
+      ],
+      "notes": [
+        "{% extends %} must be the first tag in a child template.",
+        "Only content inside {% block %} tags is used from child templates. Everything else is ignored.",
+        "{{ super() }} includes the parent block's content, letting you add to it instead of replacing it.",
+        "Block names must be unique within each template file."
+      ],
+      "commonPitfalls": [
+        "Placing content outside of blocks in a child template. This content is silently discarded.",
+        "Forgetting {% extends %} at the top, causing the template to render without the base layout.",
+        "Using the same block name twice in one template, which causes unexpected behavior."
+      ],
+      "interviewTips": [
+        "Explain template inheritance as analogous to class inheritance: base templates define structure, child templates override specifics.",
+        "Mention super() for extending rather than replacing parent blocks.",
+        "Emphasize the DRY principle: change the nav in one place and every page updates."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "template-inherit-ex1",
+        "title": "Create a Child Template",
+        "description": "Given a base.html with blocks 'title', 'content', and 'scripts', write an about.html child template that:\n- Sets the title to 'About Us'\n- Adds a heading 'About Us' and a paragraph in the content block\n- Adds no scripts",
+        "starterCode": "<!-- Write the about.html child template -->\n",
+        "solution": "{% extends 'base.html' %}\n\n{% block title %}About Us{% endblock %}\n\n{% block content %}\n    <h1>About Us</h1>\n    <p>We are a team passionate about building great software.</p>\n{% endblock %}",
+        "hints": [
+          "Start with {% extends 'base.html' %}",
+          "Override blocks with {% block name %}...{% endblock %}",
+          "You do not need to override blocks you want to leave at their defaults"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "template-inherit-ex2",
+        "title": "Use super() in a Template",
+        "description": "Write a child template that extends base.html and in the 'head' block, keeps the parent's content (using super()) while adding a new stylesheet link for '/static/css/page.css'.",
+        "starterCode": "<!-- Write the child template using super() -->\n",
+        "solution": "{% extends 'base.html' %}\n\n{% block head %}\n    {{ super() }}\n    <link rel=\"stylesheet\" href=\"{{ url_for('static', filename='css/page.css') }}\">\n{% endblock %}\n\n{% block content %}\n    <h1>Page Content</h1>\n{% endblock %}",
+        "hints": [
+          "{{ super() }} renders the parent block's content",
+          "Place {{ super() }} before your additions to keep the parent's content first",
+          "Use url_for('static', filename='...') for static file paths"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "filters-and-tests",
+    "sectionId": "templates-and-jinja2",
+    "orderIndex": 2,
+    "title": "Filters & Tests",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Filters", "Tests", "Custom Filters", "Built-in Filters", "Pipe Operator"],
+    "content": {
+      "explanation": "Jinja2 filters and tests are tools for transforming and checking template variables. Filters modify the output of an expression, while tests check conditions about a value. They keep your templates clean by handling formatting and logic directly in the template layer.\n\nFilters are applied to expressions using the pipe operator (|). The syntax is {{ value|filter }}. Filters can be chained: {{ value|filter1|filter2 }}. Some filters accept arguments: {{ value|truncate(100) }}. Filters never modify the original variable; they return a new transformed value.\n\nJinja2 provides many built-in filters. The most commonly used include: upper and lower (case conversion), title (title case), capitalize (first letter uppercase), trim (strip whitespace), truncate(length) (shorten text with ellipsis), default(value) (provide a fallback for undefined/empty values), length (count items), sort (sort a list), join(separator) (join list elements), replace(old, new) (string replacement), int and float (type conversion), round(precision) (number rounding), safe (mark as safe HTML), and escape (force HTML escaping).\n\nThe default filter is particularly useful. {{ username|default('Anonymous') }} displays 'Anonymous' if username is undefined or empty. This prevents template errors and provides sensible fallback values. You can use default(value, boolean=true) to also catch empty strings and zero values.\n\nTests are used with the 'is' keyword in Jinja2 expressions. They return true or false and are commonly used in {% if %} statements. Built-in tests include: defined (variable exists), undefined (variable does not exist), none (value is None), true/false (boolean checks), string/number/integer/float (type checks), iterable (can be looped), mapping (is a dict), even/odd (number checks), and divisibleby(num).\n\nFlask allows you to register custom filters and tests. Custom filters are Python functions registered with @app.template_filter('name') or app.jinja_env.filters['name']. Custom tests are registered similarly with @app.template_test('name'). This lets you extend Jinja2 with domain-specific formatting like date formatting, currency display, or markdown rendering.\n\nFilters are evaluated in template rendering, so they should be fast. Avoid putting heavy computation in custom filters. If a transformation requires significant processing, do it in the view function and pass the result to the template.",
+      "codeExamples": [
+        {
+          "title": "Common Built-in Filters",
+          "code": "<!-- String filters -->\n{{ 'hello world'|title }}          <!-- Hello World -->\n{{ 'HELLO'|lower }}                <!-- hello -->\n{{ '  spaces  '|trim }}            <!-- spaces -->\n{{ 'Hello World'|replace('World', 'Flask') }}  <!-- Hello Flask -->\n{{ 'A long text here...'|truncate(10) }}       <!-- A long ... -->\n\n<!-- Number filters -->\n{{ 3.14159|round(2) }}             <!-- 3.14 -->\n{{ 42|string }}                    <!-- '42' -->\n\n<!-- List filters -->\n{{ [3,1,2]|sort }}                 <!-- [1, 2, 3] -->\n{{ ['a','b','c']|join(', ') }}     <!-- a, b, c -->\n{{ items|length }}                 <!-- number of items -->\n\n<!-- Default values -->\n{{ username|default('Guest') }}    <!-- Guest if undefined -->\n{{ bio|default('No bio yet', true) }}  <!-- handles empty strings too -->",
+          "explanation": "Filters transform values using the pipe operator. They can be chained and some accept arguments. The default filter is essential for handling missing or empty values gracefully."
+        },
+        {
+          "title": "Jinja2 Tests",
+          "code": "<!-- Type tests -->\n{% if name is defined %}\n    <p>Hello, {{ name }}</p>\n{% endif %}\n\n{% if value is none %}\n    <p>No value provided</p>\n{% endif %}\n\n{% if count is number %}\n    <p>Count: {{ count }}</p>\n{% endif %}\n\n<!-- Number tests -->\n{% for i in range(10) %}\n    {% if i is even %}\n        <span class=\"even\">{{ i }}</span>\n    {% else %}\n        <span class=\"odd\">{{ i }}</span>\n    {% endif %}\n{% endfor %}\n\n{% if total is divisibleby(3) %}\n    <p>Divisible by 3!</p>\n{% endif %}\n\n<!-- String tests -->\n{% if email is string %}\n    <p>Email: {{ email }}</p>\n{% endif %}",
+          "explanation": "Tests check conditions about values using the 'is' keyword. They are used in if statements to check types, properties, and relationships. Use 'is not' for negation."
+        },
+        {
+          "title": "Custom Filters",
+          "code": "from flask import Flask\nimport datetime\n\napp = Flask(__name__)\n\n@app.template_filter('timeago')\ndef timeago_filter(dt):\n    \"\"\"Convert a datetime to a human-friendly 'time ago' string.\"\"\"\n    now = datetime.datetime.now()\n    diff = now - dt\n    seconds = diff.total_seconds()\n\n    if seconds < 60:\n        return 'just now'\n    elif seconds < 3600:\n        return f'{int(seconds // 60)} minutes ago'\n    elif seconds < 86400:\n        return f'{int(seconds // 3600)} hours ago'\n    else:\n        return f'{int(seconds // 86400)} days ago'\n\n@app.template_filter('currency')\ndef currency_filter(value, symbol='$'):\n    return f'{symbol}{value:,.2f}'\n\n# Usage in templates:\n# {{ post.created_at|timeago }}\n# {{ product.price|currency }}\n# {{ product.price|currency('EUR') }}",
+          "explanation": "Custom filters are Python functions registered with @app.template_filter(). They receive the piped value as the first argument. Additional filter arguments come as function parameters."
+        },
+        {
+          "title": "Chaining Filters and Advanced Usage",
+          "code": "<!-- Chaining multiple filters -->\n{{ user.bio|default('No bio')|truncate(150)|title }}\n\n<!-- Filter with conditional -->\n{{ items|sort(attribute='name')|join(', ') if items else 'No items' }}\n\n<!-- Using filters in for loops -->\n{% for user in users|sort(attribute='created_at', reverse=true) %}\n    <div class=\"user\">\n        <h3>{{ user.name|title }}</h3>\n        <p>{{ user.email|lower }}</p>\n        <small>Joined: {{ user.created_at|timeago }}</small>\n    </div>\n{% endfor %}\n\n<!-- Filters on blocks -->\n{% filter upper %}\n    This text will be ALL UPPERCASE.\n{% endfilter %}",
+          "explanation": "Filters can be chained left to right, each receiving the output of the previous. The sort filter accepts 'attribute' for sorting objects. {% filter %} blocks apply a filter to an entire section of content."
+        }
+      ],
+      "notes": [
+        "Filters transform values: {{ value|filter }}. Tests check conditions: {% if value is test %}.",
+        "Filters never modify the original variable. They return a new value.",
+        "The default filter is essential for handling undefined or empty values gracefully.",
+        "Custom filters should be fast since they run during template rendering."
+      ],
+      "commonPitfalls": [
+        "Confusing filters (|) with tests (is). Filters transform values, tests check conditions.",
+        "Using |safe on user-supplied content, bypassing Jinja2's XSS protection.",
+        "Putting expensive computation in custom filters instead of pre-computing in the view function."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "filters-tests-ex1",
+        "title": "Apply Filters to a Product List",
+        "description": "Write a Jinja2 template snippet that iterates over a 'products' list, displaying each product's name in title case and price rounded to 2 decimal places. Show 'No products' if the list is empty.",
+        "starterCode": "<!-- Write your Jinja2 template with filters -->\n",
+        "solution": "{% for product in products %}\n    <div>\n        <h3>{{ product.name|title }}</h3>\n        <p>${{ product.price|round(2) }}</p>\n    </div>\n{% else %}\n    <p>No products</p>\n{% endfor %}",
+        "hints": [
+          "Use |title to convert to title case",
+          "Use |round(2) to round to 2 decimal places",
+          "{% else %} in a for loop runs when the list is empty"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "filters-tests-ex2",
+        "title": "Create a Custom Filter",
+        "description": "Create a custom Jinja2 filter called 'pluralize' that takes a count and a word. If count is 1, return the word as-is. Otherwise, append 's'. Example: {{ 3|pluralize('item') }} outputs '3 items'.",
+        "starterCode": "from flask import Flask\n\napp = Flask(__name__)\n\n# Create the pluralize filter\n",
+        "solution": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.template_filter('pluralize')\ndef pluralize_filter(count, word):\n    if count == 1:\n        return f'{count} {word}'\n    return f'{count} {word}s'\n\n# Usage in template: {{ items|length|pluralize('item') }}",
+        "hints": [
+          "Register with @app.template_filter('pluralize')",
+          "The piped value (count) is the first argument",
+          "The filter argument (word) is the second parameter"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "macros-and-includes",
+    "sectionId": "templates-and-jinja2",
+    "orderIndex": 3,
+    "title": "Macros & Includes",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Macros", "include", "import", "Reusable Components", "Partial Templates"],
+    "content": {
+      "explanation": "Macros and includes are two mechanisms for reusing template code in Jinja2. While template inheritance defines the overall page structure, macros and includes let you create reusable components and partial templates that you can use across multiple pages.\n\nThe {% include %} tag inserts the content of another template at that point. It is the simplest way to share template fragments. Common use cases include header, footer, and sidebar partials. The included template has access to all variables from the current context. You can pass additional variables with the 'with context' clause, though this is the default behavior in Flask.\n\nYou can use 'ignore missing' with include to prevent errors when a template might not exist: {% include 'sidebar.html' ignore missing %}. You can also provide a list of template names and Jinja2 will use the first one that exists: {% include ['custom.html', 'default.html'] %}.\n\nMacros are like functions in templates. They accept arguments, have a body, and return rendered content. You define them with {% macro name(args) %}...{% endmacro %}. Macros are called like functions: {{ macros.render_field(form.username) }}. They are the Jinja2 equivalent of React components.\n\nMacros are typically defined in a separate file and imported. The {% from 'macros.html' import render_field %} syntax imports specific macros. The {% import 'macros.html' as macros %} syntax imports the entire file as a namespace. Imported macros do not have access to the current template's variables by default. Add 'with context' if they need it.\n\nMacros support default argument values, keyword arguments, and even variable arguments through the special 'varargs' and 'kwargs' variables. Inside a macro, the 'caller' variable gives access to the content between the call block's tags, enabling a pattern similar to slots or children in component frameworks.\n\nThe combination of inheritance, includes, and macros gives you a complete component system. Inheritance handles page structure, includes handle simple partials, and macros handle reusable components with parameters. This layered approach keeps templates organized and DRY.\n\nA common pattern is to create a forms macro file that defines macros for rendering form fields, error messages, and buttons. This lets you change the appearance of all forms in your application by editing a single file.",
+      "codeExamples": [
+        {
+          "title": "Using include for Partials",
+          "code": "<!-- templates/base.html -->\n<html>\n<body>\n    {% include 'partials/nav.html' %}\n\n    <main>{% block content %}{% endblock %}</main>\n\n    {% include 'partials/footer.html' %}\n</body>\n</html>\n\n<!-- templates/partials/nav.html -->\n<nav>\n    <a href=\"{{ url_for('index') }}\">Home</a>\n    <a href=\"{{ url_for('about') }}\">About</a>\n    {% if current_user.is_authenticated %}\n        <a href=\"{{ url_for('logout') }}\">Logout</a>\n    {% endif %}\n</nav>\n\n<!-- templates/partials/footer.html -->\n<footer>\n    <p>&copy; {{ current_year }} My App</p>\n</footer>",
+          "explanation": "{% include %} inserts another template's content inline. Included templates have access to all current context variables. This is ideal for partials like navigation, headers, and footers."
+        },
+        {
+          "title": "Defining and Using Macros",
+          "code": "<!-- templates/macros/forms.html -->\n{% macro render_field(field) %}\n    <div class=\"form-group\">\n        <label for=\"{{ field.id }}\">{{ field.label.text }}</label>\n        {{ field(class='form-control') }}\n        {% if field.errors %}\n            <div class=\"errors\">\n            {% for error in field.errors %}\n                <span class=\"text-danger\">{{ error }}</span>\n            {% endfor %}\n            </div>\n        {% endif %}\n    </div>\n{% endmacro %}\n\n{% macro render_button(text, type='submit', class='btn-primary') %}\n    <button type=\"{{ type }}\" class=\"btn {{ class }}\">{{ text }}</button>\n{% endmacro %}",
+          "explanation": "Macros are defined with {% macro name(args) %}. They accept parameters with optional defaults. This forms macro renders WTForms fields with labels, error messages, and consistent styling."
+        },
+        {
+          "title": "Importing Macros",
+          "code": "<!-- Import specific macros -->\n{% from 'macros/forms.html' import render_field, render_button %}\n\n<form method=\"POST\">\n    {{ form.hidden_tag() }}\n    {{ render_field(form.username) }}\n    {{ render_field(form.email) }}\n    {{ render_field(form.password) }}\n    {{ render_button('Sign Up') }}\n</form>\n\n<!-- Or import as namespace -->\n{% import 'macros/ui.html' as ui %}\n\n{{ ui.card('Title', 'Card content here') }}\n{{ ui.alert('Success!', type='success') }}\n{{ ui.badge('New', color='green') }}",
+          "explanation": "Use 'from ... import' for specific macros or 'import ... as' for a namespace. Macros are called like functions with parentheses. This keeps your templates clean and component-like."
+        },
+        {
+          "title": "Macro with Caller Block",
+          "code": "<!-- templates/macros/ui.html -->\n{% macro card(title, footer=None) %}\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <h3>{{ title }}</h3>\n        </div>\n        <div class=\"card-body\">\n            {{ caller() }}\n        </div>\n        {% if footer %}\n        <div class=\"card-footer\">{{ footer }}</div>\n        {% endif %}\n    </div>\n{% endmacro %}\n\n<!-- Usage with call block -->\n{% from 'macros/ui.html' import card %}\n\n{% call card('User Profile') %}\n    <p>Name: {{ user.name }}</p>\n    <p>Email: {{ user.email }}</p>\n    <img src=\"{{ user.avatar }}\" alt=\"Avatar\">\n{% endcall %}",
+          "explanation": "The call/caller pattern lets you pass a block of content to a macro, similar to React children or Vue slots. The macro calls {{ caller() }} to render the content passed inside the {% call %} block."
+        }
+      ],
+      "notes": [
+        "{% include %} is for simple partials that need access to the current context.",
+        "Macros are for reusable components that accept parameters. They are like template functions.",
+        "Imported macros do not access the current context by default. Add 'with context' if needed.",
+        "The call/caller pattern enables slot-like behavior in macros."
+      ],
+      "commonPitfalls": [
+        "Expecting imported macros to access template variables. They are sandboxed by default; use 'with context' if needed.",
+        "Using include for complex reusable components that should be macros with parameters.",
+        "Not organizing macros into separate files, leading to template bloat."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "macros-includes-ex1",
+        "title": "Create a Card Macro",
+        "description": "Write a Jinja2 macro called 'card' that accepts title and content parameters and renders them in a div structure with appropriate class names.",
+        "starterCode": "<!-- Write a card macro -->\n",
+        "solution": "{% macro card(title, content) %}\n    <div class=\"card\">\n        <div class=\"card-header\">\n            <h3>{{ title }}</h3>\n        </div>\n        <div class=\"card-body\">\n            <p>{{ content }}</p>\n        </div>\n    </div>\n{% endmacro %}\n\n<!-- Usage -->\n{{ card('Welcome', 'This is a card component') }}\n{{ card('About', 'Learn more about us') }}",
+        "hints": [
+          "Use {% macro name(args) %}...{% endmacro %} to define a macro",
+          "Access parameters like template variables with {{ }}",
+          "Call the macro like a function: {{ card('Title', 'Content') }}"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "macros-includes-ex2",
+        "title": "Import and Use Macros",
+        "description": "Write a template that imports render_field from 'macros/forms.html' and uses it to render three form fields: form.name, form.email, and form.message. Wrap them in a form tag with method POST.",
+        "starterCode": "<!-- Import macros and create a form -->\n",
+        "solution": "{% from 'macros/forms.html' import render_field %}\n\n<form method=\"POST\">\n    {{ form.hidden_tag() }}\n    {{ render_field(form.name) }}\n    {{ render_field(form.email) }}\n    {{ render_field(form.message) }}\n    <button type=\"submit\">Send</button>\n</form>",
+        "hints": [
+          "Use {% from 'file' import macro_name %} syntax",
+          "Call the macro with form field objects as arguments",
+          "Include form.hidden_tag() for CSRF protection"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

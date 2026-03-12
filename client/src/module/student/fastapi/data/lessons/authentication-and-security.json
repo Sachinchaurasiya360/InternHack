@@ -1,0 +1,266 @@
+[
+  {
+    "id": "oauth2-password-flow",
+    "sectionId": "authentication-and-security",
+    "orderIndex": 0,
+    "title": "OAuth2 Password Flow",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["OAuth2", "Password Flow", "Token Endpoint", "Bearer Token", "OAuth2PasswordBearer"],
+    "content": {
+      "explanation": "OAuth2 is an authorization framework that enables applications to obtain limited access to user accounts. FastAPI has built-in support for OAuth2, with the Password flow being the most common for first-party applications (where you control both the frontend and backend). In this flow, the user provides their username and password directly to your application, which exchanges them for an access token.\n\nFastAPI provides OAuth2PasswordBearer, a security scheme class that tells FastAPI (and the Swagger UI) that the application uses Bearer token authentication. When you declare OAuth2PasswordBearer(tokenUrl=\"token\"), it creates a dependency that extracts the token from the Authorization: Bearer <token> header. If the header is missing, it returns a 401 error.\n\nThe token endpoint is where users exchange credentials for tokens. It receives username and password via form data (not JSON), validates them, and returns an access token. The response format follows the OAuth2 specification: it must include access_token (the token string) and token_type (usually 'bearer').\n\nOAuth2PasswordRequestForm is a FastAPI utility that parses the standard OAuth2 password flow form data. It expects form fields: username, password, and optionally scope, grant_type, client_id, and client_secret. Using this form class ensures your token endpoint follows the OAuth2 specification.\n\nThe complete flow works like this: the client sends a POST to /token with username and password as form data, the server validates the credentials and returns a JWT token, the client stores the token, and for subsequent requests the client includes the token in the Authorization header as 'Bearer <token>'. The server verifies the token on each request using a dependency.\n\nThe Swagger UI at /docs automatically shows a 'Authorize' button when OAuth2PasswordBearer is used. Clicking it presents a login form where you can enter credentials. After authentication, all subsequent requests from the Swagger UI include the token automatically. This makes interactive API testing seamless.",
+      "codeExamples": [
+        {
+          "title": "Basic OAuth2 Password Flow",
+          "code": "from fastapi import FastAPI, Depends, HTTPException\nfrom fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\n\napp = FastAPI()\n\n# Security scheme - tells FastAPI about Bearer token auth\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\")\n\n# Fake user database\nfake_users = {\n    \"alice\": {\"username\": \"alice\", \"password\": \"secret123\", \"role\": \"admin\"},\n    \"bob\": {\"username\": \"bob\", \"password\": \"password456\", \"role\": \"user\"},\n}\n\n# Token endpoint - exchange credentials for token\n@app.post(\"/token\")\ndef login(form_data: OAuth2PasswordRequestForm = Depends()):\n    user = fake_users.get(form_data.username)\n    if not user or user[\"password\"] != form_data.password:\n        raise HTTPException(\n            status_code=401,\n            detail=\"Incorrect username or password\",\n            headers={\"WWW-Authenticate\": \"Bearer\"},\n        )\n    # In a real app, create a JWT token here\n    return {\"access_token\": form_data.username, \"token_type\": \"bearer\"}\n\n# Protected endpoint - requires valid token\n@app.get(\"/me\")\ndef read_current_user(token: str = Depends(oauth2_scheme)):\n    # In a real app, decode the JWT token here\n    user = fake_users.get(token)\n    if not user:\n        raise HTTPException(status_code=401, detail=\"Invalid token\")\n    return {\"username\": user[\"username\"], \"role\": user[\"role\"]}",
+          "explanation": "OAuth2PasswordBearer creates a dependency that extracts Bearer tokens from the Authorization header. The /token endpoint validates credentials and returns a token. Protected endpoints use Depends(oauth2_scheme) to require authentication."
+        },
+        {
+          "title": "Token Response with User Data",
+          "code": "from fastapi import FastAPI, Depends, HTTPException\nfrom fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\nfrom pydantic import BaseModel\n\napp = FastAPI()\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\")\n\nclass Token(BaseModel):\n    access_token: str\n    token_type: str\n\nclass User(BaseModel):\n    username: str\n    email: str\n    role: str\n\nfake_users_db = {\n    \"alice\": {\n        \"username\": \"alice\",\n        \"email\": \"alice@example.com\",\n        \"password\": \"secret\",\n        \"role\": \"admin\",\n    },\n}\n\ndef get_current_user(token: str = Depends(oauth2_scheme)) -> User:\n    user_data = fake_users_db.get(token)\n    if not user_data:\n        raise HTTPException(\n            status_code=401,\n            detail=\"Could not validate credentials\",\n            headers={\"WWW-Authenticate\": \"Bearer\"},\n        )\n    return User(**{k: v for k, v in user_data.items() if k != \"password\"})\n\n@app.post(\"/token\", response_model=Token)\ndef login(form_data: OAuth2PasswordRequestForm = Depends()):\n    user = fake_users_db.get(form_data.username)\n    if not user or user[\"password\"] != form_data.password:\n        raise HTTPException(status_code=401, detail=\"Bad credentials\")\n    return Token(access_token=user[\"username\"], token_type=\"bearer\")\n\n@app.get(\"/me\", response_model=User)\ndef read_me(current_user: User = Depends(get_current_user)):\n    return current_user\n\n@app.get(\"/admin\")\ndef admin_only(current_user: User = Depends(get_current_user)):\n    if current_user.role != \"admin\":\n        raise HTTPException(status_code=403, detail=\"Admin only\")\n    return {\"message\": f\"Welcome admin {current_user.username}\"}",
+          "explanation": "A get_current_user dependency wraps the token extraction and user lookup. Protected endpoints depend on get_current_user to get a typed User object. Role-based authorization checks the user's role in the handler."
+        },
+        {
+          "title": "Optional Authentication",
+          "code": "from fastapi import FastAPI, Depends\nfrom fastapi.security import OAuth2PasswordBearer\n\napp = FastAPI()\n\n# auto_error=False makes the token optional\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\", auto_error=False)\n\ndef get_optional_user(token: str | None = Depends(oauth2_scheme)):\n    if token is None:\n        return None\n    # Validate token and return user\n    users = {\"valid-token\": {\"name\": \"Alice\"}}\n    return users.get(token)\n\n@app.get(\"/content\")\ndef get_content(user: dict | None = Depends(get_optional_user)):\n    if user:\n        return {\"content\": \"Premium content\", \"user\": user[\"name\"]}\n    return {\"content\": \"Public content only\"}\n\n# Without token: returns public content\n# With valid token: returns premium content",
+          "explanation": "Setting auto_error=False on OAuth2PasswordBearer makes the token optional. Instead of returning 401 when the token is missing, it returns None. This enables endpoints that show different content for authenticated vs anonymous users."
+        }
+      ],
+      "notes": [
+        "OAuth2 Password flow is for first-party apps where you control both client and server.",
+        "The token endpoint MUST accept form data (not JSON) per the OAuth2 spec. Use OAuth2PasswordRequestForm.",
+        "Always include WWW-Authenticate: Bearer header in 401 responses per the OAuth2 spec.",
+        "Use auto_error=False for endpoints that should work for both authenticated and anonymous users."
+      ],
+      "interviewTips": [
+        "Know the OAuth2 flows: Password (credentials exchange), Authorization Code (third-party), Client Credentials (service-to-service).",
+        "The Password flow sends credentials as form data to the token endpoint and receives a Bearer token.",
+        "OAuth2PasswordBearer extracts the token from the Authorization header. It is a dependency, not middleware."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "oauth2-password-flow-ex1",
+        "title": "Implement Token Login",
+        "description": "Create a FastAPI app with OAuth2PasswordBearer (tokenUrl='token'). Add a POST /token endpoint that validates credentials from a fake user dict and returns access_token and token_type. Add GET /me that returns the current user's name.",
+        "starterCode": "from fastapi import FastAPI, Depends, HTTPException\nfrom fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\n\napp = FastAPI()\n\nusers_db = {\n    \"alice\": {\"username\": \"alice\", \"password\": \"pass123\"},\n}\n\n# Set up OAuth2 and endpoints\n",
+        "solution": "from fastapi import FastAPI, Depends, HTTPException\nfrom fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\n\napp = FastAPI()\n\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\")\n\nusers_db = {\n    \"alice\": {\"username\": \"alice\", \"password\": \"pass123\"},\n}\n\n@app.post(\"/token\")\ndef login(form_data: OAuth2PasswordRequestForm = Depends()):\n    user = users_db.get(form_data.username)\n    if not user or user[\"password\"] != form_data.password:\n        raise HTTPException(status_code=401, detail=\"Invalid credentials\")\n    return {\"access_token\": user[\"username\"], \"token_type\": \"bearer\"}\n\n@app.get(\"/me\")\ndef read_me(token: str = Depends(oauth2_scheme)):\n    user = users_db.get(token)\n    if not user:\n        raise HTTPException(status_code=401, detail=\"Invalid token\")\n    return {\"username\": user[\"username\"]}",
+        "hints": [
+          "OAuth2PasswordRequestForm provides form_data.username and form_data.password",
+          "Depends(oauth2_scheme) extracts the Bearer token from the Authorization header"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "oauth2-password-flow-ex2",
+        "title": "Role-Based Access Control",
+        "description": "Extend the auth system: add a get_current_user dependency that validates the token and returns the user dict. Add a require_admin dependency that checks user role == 'admin'. Create GET /admin/dashboard that requires admin access.",
+        "starterCode": "from fastapi import FastAPI, Depends, HTTPException\nfrom fastapi.security import OAuth2PasswordBearer\n\napp = FastAPI()\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\")\n\nusers_db = {\n    \"admin-token\": {\"username\": \"alice\", \"role\": \"admin\"},\n    \"user-token\": {\"username\": \"bob\", \"role\": \"user\"},\n}\n\n# Define get_current_user and require_admin dependencies\n\n# GET /admin/dashboard\n",
+        "solution": "from fastapi import FastAPI, Depends, HTTPException\nfrom fastapi.security import OAuth2PasswordBearer\n\napp = FastAPI()\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\")\n\nusers_db = {\n    \"admin-token\": {\"username\": \"alice\", \"role\": \"admin\"},\n    \"user-token\": {\"username\": \"bob\", \"role\": \"user\"},\n}\n\ndef get_current_user(token: str = Depends(oauth2_scheme)):\n    user = users_db.get(token)\n    if not user:\n        raise HTTPException(status_code=401, detail=\"Invalid token\")\n    return user\n\ndef require_admin(user: dict = Depends(get_current_user)):\n    if user[\"role\"] != \"admin\":\n        raise HTTPException(status_code=403, detail=\"Admin access required\")\n    return user\n\n@app.get(\"/admin/dashboard\")\ndef admin_dashboard(admin: dict = Depends(require_admin)):\n    return {\"message\": f\"Welcome admin {admin['username']}\"}",
+        "hints": [
+          "Chain dependencies: require_admin depends on get_current_user which depends on oauth2_scheme",
+          "Use 403 Forbidden for authorization failures, 401 for authentication failures"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "jwt-tokens",
+    "sectionId": "authentication-and-security",
+    "orderIndex": 1,
+    "title": "JWT Tokens",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["JWT", "JSON Web Token", "jose", "Claims", "Expiration", "Secret Key"],
+    "content": {
+      "explanation": "JSON Web Tokens (JWT) are a compact, URL-safe means of representing claims to be transferred between two parties. In the context of API authentication, JWTs are used as access tokens that encode user identity and permissions. When a user logs in, the server creates a JWT containing user information, signs it with a secret key, and returns it. The client includes this token in subsequent requests, and the server verifies it without needing to look up a session in a database.\n\nA JWT consists of three parts separated by dots: header.payload.signature. The header specifies the signing algorithm (typically HS256). The payload contains claims — key-value pairs like sub (subject/user ID), exp (expiration time), iat (issued at), and any custom data. The signature is created by signing the header and payload with a secret key, ensuring the token has not been tampered with.\n\nIn Python, the python-jose library (or PyJWT) is commonly used to create and verify JWTs. The jose.jwt.encode() function creates a token from a dictionary of claims and a secret key. jwt.decode() verifies the signature and returns the claims. If the token is expired, tampered with, or uses the wrong key, decode raises an exception.\n\nToken expiration is critical for security. Every JWT should have an exp claim that sets when the token expires. Short-lived tokens (15-60 minutes) are more secure because a stolen token is only usable briefly. For longer sessions, use refresh tokens — a separate long-lived token that can be exchanged for new access tokens.\n\nThe secret key used to sign JWTs must be kept secret. If someone obtains your secret key, they can create valid tokens for any user. In production, use a strong random key (at least 256 bits) stored in environment variables, not hardcoded in source code. For even more security, use RS256 (asymmetric keys) instead of HS256 (symmetric key).\n\nJWT tokens are stateless — the server does not store them. All the information needed to verify the token is contained within the token itself (plus the secret key). This is different from session-based authentication where the server maintains a session store. Stateless tokens scale better because any server instance can verify them, but they cannot be revoked individually without additional infrastructure like a token blocklist.",
+      "codeExamples": [
+        {
+          "title": "Creating and Verifying JWTs",
+          "code": "from datetime import datetime, timedelta, timezone\nfrom jose import jwt, JWTError\n\nSECRET_KEY = \"your-secret-key-at-least-32-characters-long\"\nALGORITHM = \"HS256\"\nACCESS_TOKEN_EXPIRE_MINUTES = 30\n\ndef create_access_token(data: dict, expires_delta: timedelta | None = None):\n    to_encode = data.copy()\n    expire = datetime.now(timezone.utc) + (\n        expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)\n    )\n    to_encode.update({\"exp\": expire})\n    return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)\n\ndef verify_token(token: str) -> dict:\n    try:\n        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])\n        return payload\n    except JWTError:\n        return None\n\n# Create a token\ntoken = create_access_token({\"sub\": \"alice\", \"role\": \"admin\"})\nprint(token)  # eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...\n\n# Verify a token\npayload = verify_token(token)\nprint(payload)  # {\"sub\": \"alice\", \"role\": \"admin\", \"exp\": 1710284400}",
+          "explanation": "create_access_token encodes user data with an expiration claim. verify_token decodes and validates the token. If the token is expired or tampered with, jwt.decode raises JWTError. Always use timezone-aware datetimes for expiration."
+        },
+        {
+          "title": "Complete JWT Auth in FastAPI",
+          "code": "from datetime import datetime, timedelta, timezone\nfrom fastapi import FastAPI, Depends, HTTPException\nfrom fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\nfrom jose import jwt, JWTError\nfrom pydantic import BaseModel\n\nSECRET_KEY = \"super-secret-key-change-in-production\"\nALGORITHM = \"HS256\"\n\napp = FastAPI()\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\")\n\nclass Token(BaseModel):\n    access_token: str\n    token_type: str\n\nfake_users = {\n    \"alice\": {\"username\": \"alice\", \"password\": \"secret\", \"role\": \"admin\"},\n}\n\ndef create_token(data: dict):\n    expire = datetime.now(timezone.utc) + timedelta(minutes=30)\n    return jwt.encode({**data, \"exp\": expire}, SECRET_KEY, algorithm=ALGORITHM)\n\ndef get_current_user(token: str = Depends(oauth2_scheme)):\n    try:\n        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])\n        username = payload.get(\"sub\")\n        if username is None:\n            raise HTTPException(status_code=401, detail=\"Invalid token\")\n    except JWTError:\n        raise HTTPException(status_code=401, detail=\"Invalid token\")\n    user = fake_users.get(username)\n    if not user:\n        raise HTTPException(status_code=401, detail=\"User not found\")\n    return user\n\n@app.post(\"/token\", response_model=Token)\ndef login(form_data: OAuth2PasswordRequestForm = Depends()):\n    user = fake_users.get(form_data.username)\n    if not user or user[\"password\"] != form_data.password:\n        raise HTTPException(status_code=401, detail=\"Bad credentials\")\n    token = create_token({\"sub\": user[\"username\"], \"role\": user[\"role\"]})\n    return Token(access_token=token, token_type=\"bearer\")\n\n@app.get(\"/me\")\ndef read_me(user: dict = Depends(get_current_user)):\n    return {\"username\": user[\"username\"], \"role\": user[\"role\"]}",
+          "explanation": "The login endpoint creates a JWT with the user's identity encoded in the 'sub' claim. get_current_user decodes the JWT, extracts the username, and looks up the user. JWTError is caught for expired or invalid tokens."
+        },
+        {
+          "title": "Token with Custom Claims",
+          "code": "from datetime import datetime, timedelta, timezone\nfrom jose import jwt\n\nSECRET_KEY = \"your-secret-key\"\nALGORITHM = \"HS256\"\n\n# Token with multiple claims\ndef create_token_with_claims(\n    user_id: int,\n    username: str,\n    role: str,\n    scopes: list[str],\n):\n    now = datetime.now(timezone.utc)\n    payload = {\n        \"sub\": str(user_id),       # Subject (user ID)\n        \"username\": username,       # Custom claim\n        \"role\": role,               # Custom claim\n        \"scopes\": scopes,           # Custom claim (permissions)\n        \"iat\": now,                 # Issued at\n        \"exp\": now + timedelta(minutes=30),  # Expires\n        \"iss\": \"myapp.com\",        # Issuer\n    }\n    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)\n\ntoken = create_token_with_claims(\n    user_id=42,\n    username=\"alice\",\n    role=\"admin\",\n    scopes=[\"users:read\", \"users:write\", \"admin\"],\n)\n\n# Decode to see all claims\npayload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])\n# {\n#   \"sub\": \"42\",\n#   \"username\": \"alice\",\n#   \"role\": \"admin\",\n#   \"scopes\": [\"users:read\", \"users:write\", \"admin\"],\n#   \"iat\": 1710280800,\n#   \"exp\": 1710282600,\n#   \"iss\": \"myapp.com\"\n# }",
+          "explanation": "JWTs can carry any JSON-serializable claims. Standard claims include sub, exp, iat, iss. Custom claims like role and scopes encode user permissions directly in the token, enabling authorization without database lookups."
+        }
+      ],
+      "notes": [
+        "JWTs are signed, not encrypted. Anyone can read the payload (it is just base64). Do not put secrets in JWTs.",
+        "Always set an exp claim. Tokens without expiration are a security risk.",
+        "Use environment variables for the SECRET_KEY. Never hardcode it in source code.",
+        "The 'sub' claim should contain the user's unique identifier (ID), not the username."
+      ],
+      "interviewTips": [
+        "JWT structure: header (algorithm), payload (claims), signature. Each part is base64-encoded and separated by dots.",
+        "JWTs are stateless — the server does not store them. This is a key difference from session-based auth.",
+        "JWT drawbacks: cannot be revoked individually (need a blocklist), payload is readable (not encrypted), tokens can be large."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "jwt-tokens-ex1",
+        "title": "Create a JWT Token Function",
+        "description": "Write a function create_access_token that takes a username (str) and role (str), and returns a JWT with claims: sub=username, role=role, exp=30 minutes from now. Use SECRET_KEY='test-secret' and HS256.",
+        "starterCode": "from datetime import datetime, timedelta, timezone\nfrom jose import jwt\n\nSECRET_KEY = \"test-secret\"\nALGORITHM = \"HS256\"\n\n# Define create_access_token\n",
+        "solution": "from datetime import datetime, timedelta, timezone\nfrom jose import jwt\n\nSECRET_KEY = \"test-secret\"\nALGORITHM = \"HS256\"\n\ndef create_access_token(username: str, role: str) -> str:\n    expire = datetime.now(timezone.utc) + timedelta(minutes=30)\n    payload = {\"sub\": username, \"role\": role, \"exp\": expire}\n    return jwt.encode(payload, SECRET_KEY, algorithm=ALGORITHM)",
+        "hints": [
+          "Use datetime.now(timezone.utc) + timedelta(minutes=30) for the expiration",
+          "jwt.encode takes the payload dict, secret key, and algorithm"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "jwt-tokens-ex2",
+        "title": "JWT Verification Dependency",
+        "description": "Create a get_current_user dependency that decodes a JWT from the OAuth2 Bearer token, extracts the 'sub' claim, and returns the user dict from a fake database. Handle JWTError and missing users with 401.",
+        "starterCode": "from fastapi import FastAPI, Depends, HTTPException\nfrom fastapi.security import OAuth2PasswordBearer\nfrom jose import jwt, JWTError\n\nSECRET_KEY = \"test-secret\"\nALGORITHM = \"HS256\"\n\napp = FastAPI()\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\")\n\nfake_users = {\"alice\": {\"username\": \"alice\", \"role\": \"admin\"}}\n\n# Define get_current_user\n\n# GET /me\n",
+        "solution": "from fastapi import FastAPI, Depends, HTTPException\nfrom fastapi.security import OAuth2PasswordBearer\nfrom jose import jwt, JWTError\n\nSECRET_KEY = \"test-secret\"\nALGORITHM = \"HS256\"\n\napp = FastAPI()\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\")\n\nfake_users = {\"alice\": {\"username\": \"alice\", \"role\": \"admin\"}}\n\ndef get_current_user(token: str = Depends(oauth2_scheme)):\n    try:\n        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])\n        username = payload.get(\"sub\")\n        if username is None:\n            raise HTTPException(status_code=401, detail=\"Invalid token claims\")\n    except JWTError:\n        raise HTTPException(status_code=401, detail=\"Could not validate token\")\n    user = fake_users.get(username)\n    if not user:\n        raise HTTPException(status_code=401, detail=\"User not found\")\n    return user\n\n@app.get(\"/me\")\ndef read_me(user: dict = Depends(get_current_user)):\n    return user",
+        "hints": [
+          "Wrap jwt.decode in try/except JWTError",
+          "Check that the 'sub' claim exists in the decoded payload"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "password-hashing",
+    "sectionId": "authentication-and-security",
+    "orderIndex": 2,
+    "title": "Password Hashing",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["bcrypt", "Hashing", "Salt", "Passlib", "Verification", "Security"],
+    "content": {
+      "explanation": "Storing passwords securely is one of the most critical security requirements for any application. Passwords must never be stored as plain text — if your database is compromised, all user passwords would be exposed. Instead, passwords are hashed using a one-way cryptographic function that converts them into a fixed-length string that cannot be reversed.\n\nbcrypt is the recommended hashing algorithm for passwords. It is specifically designed for password hashing with built-in salting and configurable computational cost. A salt is a random string added to each password before hashing, ensuring that identical passwords produce different hashes. The cost factor (or 'rounds') controls how slow the hashing is — slower is more secure because it makes brute-force attacks impractical.\n\nIn Python, the passlib library provides a high-level interface for password hashing. Its CryptContext class supports multiple hashing schemes and handles versioning. You configure it with the bcrypt scheme and use hash() to create a hash and verify() to check a password against a hash. Passlib also supports deprecated schemes, allowing you to migrate from weaker algorithms over time.\n\nThe typical flow is: during registration, hash the password and store only the hash in the database. During login, retrieve the stored hash and use verify() to check if the provided password matches. The verify function re-hashes the provided password with the same salt and compares the results. It also handles timing-safe comparison to prevent timing attacks.\n\nPassword hashing should be the last step before storage and the first step during verification. Never log passwords, never transmit them in URL parameters, and always use HTTPS to encrypt the transmission. The backend should receive the plain password (over HTTPS), immediately hash it, and discard the plain text.\n\nNote that bcrypt has a maximum input length of 72 bytes. For passwords longer than 72 characters, only the first 72 bytes are used. If you need to support longer passwords, pre-hash with SHA-256 before bcrypt (this is what passlib's bcrypt_sha256 scheme does).",
+      "codeExamples": [
+        {
+          "title": "Password Hashing with Passlib",
+          "code": "from passlib.context import CryptContext\n\n# Configure password hashing\npwd_context = CryptContext(schemes=[\"bcrypt\"], deprecated=\"auto\")\n\n# Hash a password\nplain_password = \"my-secure-password\"\nhashed = pwd_context.hash(plain_password)\nprint(hashed)\n# $2b$12$LJ3m4ys2ZzK5v6Q8K5v6Q8K5v6Q8K5v6Q8K5v6Q8K5...\n# Different every time due to random salt!\n\n# Verify a password against a hash\nis_valid = pwd_context.verify(\"my-secure-password\", hashed)\nprint(is_valid)  # True\n\nis_valid = pwd_context.verify(\"wrong-password\", hashed)\nprint(is_valid)  # False\n\n# Hash is different each time (different salt)\nhash1 = pwd_context.hash(\"same-password\")\nhash2 = pwd_context.hash(\"same-password\")\nprint(hash1 == hash2)  # False (different salts)\n# But both verify correctly:\nprint(pwd_context.verify(\"same-password\", hash1))  # True\nprint(pwd_context.verify(\"same-password\", hash2))  # True",
+          "explanation": "CryptContext provides hash() and verify() methods. Each hash() call produces a different result because of the random salt. verify() extracts the salt from the stored hash and re-hashes to compare. Never compare hashes directly."
+        },
+        {
+          "title": "Complete Registration and Login Flow",
+          "code": "from fastapi import FastAPI, Depends, HTTPException\nfrom fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm\nfrom passlib.context import CryptContext\nfrom pydantic import BaseModel\nfrom jose import jwt\nfrom datetime import datetime, timedelta, timezone\n\napp = FastAPI()\npwd_context = CryptContext(schemes=[\"bcrypt\"], deprecated=\"auto\")\noauth2_scheme = OAuth2PasswordBearer(tokenUrl=\"token\")\n\nSECRET_KEY = \"your-secret-key\"\nALGORITHM = \"HS256\"\n\n# In-memory user store (use a database in production)\nusers_db: dict[str, dict] = {}\n\nclass UserCreate(BaseModel):\n    username: str\n    password: str\n    email: str\n\n@app.post(\"/register\", status_code=201)\ndef register(user: UserCreate):\n    if user.username in users_db:\n        raise HTTPException(status_code=409, detail=\"Username taken\")\n    hashed_password = pwd_context.hash(user.password)\n    users_db[user.username] = {\n        \"username\": user.username,\n        \"email\": user.email,\n        \"hashed_password\": hashed_password,\n    }\n    return {\"username\": user.username, \"email\": user.email}\n\n@app.post(\"/token\")\ndef login(form_data: OAuth2PasswordRequestForm = Depends()):\n    user = users_db.get(form_data.username)\n    if not user:\n        raise HTTPException(status_code=401, detail=\"Invalid credentials\")\n    if not pwd_context.verify(form_data.password, user[\"hashed_password\"]):\n        raise HTTPException(status_code=401, detail=\"Invalid credentials\")\n    token = jwt.encode(\n        {\"sub\": user[\"username\"], \"exp\": datetime.now(timezone.utc) + timedelta(minutes=30)},\n        SECRET_KEY, algorithm=ALGORITHM,\n    )\n    return {\"access_token\": token, \"token_type\": \"bearer\"}",
+          "explanation": "Registration hashes the password before storage. Login retrieves the stored hash and uses verify() to check the password. The same error message is used for both wrong username and wrong password to prevent username enumeration."
+        },
+        {
+          "title": "Password Validation Helper",
+          "code": "from passlib.context import CryptContext\n\npwd_context = CryptContext(schemes=[\"bcrypt\"], deprecated=\"auto\")\n\ndef hash_password(password: str) -> str:\n    \"\"\"Hash a plain text password.\"\"\"\n    return pwd_context.hash(password)\n\ndef verify_password(plain_password: str, hashed_password: str) -> bool:\n    \"\"\"Verify a plain password against a hash.\"\"\"\n    return pwd_context.verify(plain_password, hashed_password)\n\n# Usage in a user service\nclass UserService:\n    def __init__(self, db: dict):\n        self.db = db\n\n    def create_user(self, username: str, password: str, email: str):\n        if username in self.db:\n            raise ValueError(\"Username exists\")\n        self.db[username] = {\n            \"username\": username,\n            \"email\": email,\n            \"hashed_password\": hash_password(password),\n        }\n        return self.db[username]\n\n    def authenticate(self, username: str, password: str):\n        user = self.db.get(username)\n        if not user:\n            return None\n        if not verify_password(password, user[\"hashed_password\"]):\n            return None\n        return user",
+          "explanation": "Extract hashing logic into helper functions for reuse. The UserService encapsulates user creation (with hashing) and authentication (with verification). This separation makes the code testable and maintainable."
+        }
+      ],
+      "notes": [
+        "Never store plain text passwords. Always hash with bcrypt or a similar algorithm.",
+        "Each hash includes a random salt, so the same password produces different hashes. Use verify(), not string comparison.",
+        "Use the same error message for wrong username and wrong password to prevent username enumeration attacks.",
+        "bcrypt is intentionally slow. This is a feature, not a bug — it makes brute-force attacks impractical."
+      ],
+      "commonPitfalls": [
+        "Comparing password hashes directly (hash1 == hash2). Different salts produce different hashes. Always use verify().",
+        "Using MD5 or SHA-256 for password hashing. These are fast general-purpose hashes, not suitable for passwords. Use bcrypt.",
+        "Returning different error messages for 'user not found' vs 'wrong password'. This lets attackers discover valid usernames."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "password-hashing-ex1",
+        "title": "Hash and Verify Passwords",
+        "description": "Create two functions: hash_password(password: str) -> str that hashes with bcrypt, and verify_password(plain: str, hashed: str) -> bool that verifies. Use passlib's CryptContext.",
+        "starterCode": "from passlib.context import CryptContext\n\n# Create CryptContext\n\n# Define hash_password and verify_password\n",
+        "solution": "from passlib.context import CryptContext\n\npwd_context = CryptContext(schemes=[\"bcrypt\"], deprecated=\"auto\")\n\ndef hash_password(password: str) -> str:\n    return pwd_context.hash(password)\n\ndef verify_password(plain: str, hashed: str) -> bool:\n    return pwd_context.verify(plain, hashed)",
+        "hints": [
+          "CryptContext(schemes=['bcrypt'], deprecated='auto') configures bcrypt hashing",
+          "Use .hash() to create a hash and .verify() to check a password"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "password-hashing-ex2",
+        "title": "Secure Registration Endpoint",
+        "description": "Create POST /register that accepts username, email, and password. Hash the password before storing. Validate that the password is at least 8 characters. Return 409 if username exists. Return the username and email (never the password).",
+        "starterCode": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel, field_validator\nfrom passlib.context import CryptContext\n\napp = FastAPI()\npwd_context = CryptContext(schemes=[\"bcrypt\"], deprecated=\"auto\")\nusers_db: dict = {}\n\n# Define model with password validation\n\n# Define POST /register\n",
+        "solution": "from fastapi import FastAPI, HTTPException\nfrom pydantic import BaseModel, field_validator\nfrom passlib.context import CryptContext\n\napp = FastAPI()\npwd_context = CryptContext(schemes=[\"bcrypt\"], deprecated=\"auto\")\nusers_db: dict = {}\n\nclass UserCreate(BaseModel):\n    username: str\n    email: str\n    password: str\n\n    @field_validator(\"password\")\n    @classmethod\n    def password_strength(cls, v: str) -> str:\n        if len(v) < 8:\n            raise ValueError(\"Password must be at least 8 characters\")\n        return v\n\n@app.post(\"/register\", status_code=201)\ndef register(user: UserCreate):\n    if user.username in users_db:\n        raise HTTPException(status_code=409, detail=\"Username already exists\")\n    users_db[user.username] = {\n        \"username\": user.username,\n        \"email\": user.email,\n        \"hashed_password\": pwd_context.hash(user.password),\n    }\n    return {\"username\": user.username, \"email\": user.email}",
+        "hints": [
+          "Use a Pydantic field_validator for password strength validation",
+          "Never return the password or hash in the response"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "scopes-and-permissions",
+    "sectionId": "authentication-and-security",
+    "orderIndex": 3,
+    "title": "Scopes & Permissions",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["OAuth2 Scopes", "SecurityScopes", "Fine-Grained Access", "RBAC", "Permission Checks"],
+    "content": {
+      "explanation": "OAuth2 scopes provide fine-grained access control beyond simple authentication. Instead of just checking whether a user is logged in, scopes let you define specific permissions like 'users:read', 'users:write', 'admin', and check that the user's token includes the required scopes for each endpoint.\n\nFastAPI has built-in support for OAuth2 scopes. You define available scopes when creating the OAuth2PasswordBearer instance, include the granted scopes in the JWT token, and use Security() with SecurityScopes to enforce scope requirements on individual endpoints.\n\nScopes are typically included as a claim in the JWT token. When the user logs in, the server determines their permissions based on their role or group membership, and includes those scopes in the token. The token might contain scopes: ['users:read', 'users:write'] for a regular user or scopes: ['users:read', 'users:write', 'admin'] for an admin.\n\nFastAPI's SecurityScopes class provides the required scopes for the current endpoint. A dependency can compare the token's scopes against the required scopes and raise 401 or 403 if the token lacks the necessary permissions. This enables a single get_current_user dependency that handles both authentication and authorization.\n\nRole-Based Access Control (RBAC) is a higher-level pattern built on top of scopes. You define roles (admin, editor, viewer) and map each role to a set of scopes. When a user logs in, their role determines which scopes are included in the token. This simplifies permission management — you change a user's role instead of managing individual scopes.\n\nThe Swagger UI documentation shows the required scopes for each endpoint and allows users to request specific scopes when authenticating. This makes the security model visible and testable directly from the docs.",
+      "codeExamples": [
+        {
+          "title": "Basic Scope-Based Authorization",
+          "code": "from fastapi import FastAPI, Depends, HTTPException, Security\nfrom fastapi.security import OAuth2PasswordBearer, SecurityScopes\n\napp = FastAPI()\n\noauth2_scheme = OAuth2PasswordBearer(\n    tokenUrl=\"token\",\n    scopes={\n        \"users:read\": \"Read user data\",\n        \"users:write\": \"Create and update users\",\n        \"admin\": \"Full administrative access\",\n    },\n)\n\n# Simulated token -> scopes mapping\ntoken_scopes = {\n    \"user-token\": [\"users:read\"],\n    \"editor-token\": [\"users:read\", \"users:write\"],\n    \"admin-token\": [\"users:read\", \"users:write\", \"admin\"],\n}\n\ndef get_current_user(\n    security_scopes: SecurityScopes,\n    token: str = Depends(oauth2_scheme),\n):\n    user_scopes = token_scopes.get(token, [])\n\n    # Check required scopes\n    for scope in security_scopes.scopes:\n        if scope not in user_scopes:\n            raise HTTPException(\n                status_code=403,\n                detail=f\"Missing required scope: {scope}\",\n                headers={\"WWW-Authenticate\": f'Bearer scope=\"{security_scopes.scope_str}\"'},\n            )\n\n    return {\"token\": token, \"scopes\": user_scopes}\n\n# Endpoints with different scope requirements\n@app.get(\"/users\")\ndef list_users(user: dict = Security(get_current_user, scopes=[\"users:read\"])):\n    return {\"users\": [], \"accessed_by\": user}\n\n@app.post(\"/users\")\ndef create_user(user: dict = Security(get_current_user, scopes=[\"users:write\"])):\n    return {\"created\": True}\n\n@app.delete(\"/users/{user_id}\")\ndef delete_user(\n    user_id: int,\n    user: dict = Security(get_current_user, scopes=[\"admin\"]),\n):\n    return {\"deleted\": user_id}",
+          "explanation": "Security() is like Depends() but also passes scope requirements to the dependency via SecurityScopes. The get_current_user dependency checks that the token has all required scopes. Different endpoints require different scopes."
+        },
+        {
+          "title": "Role-Based Access Control",
+          "code": "from fastapi import FastAPI, Depends, HTTPException\n\napp = FastAPI()\n\n# Role -> scopes mapping\nROLE_SCOPES = {\n    \"viewer\": [\"read\"],\n    \"editor\": [\"read\", \"write\"],\n    \"admin\": [\"read\", \"write\", \"delete\", \"manage\"],\n}\n\n# Simulated users with roles\nusers_db = {\n    \"alice\": {\"name\": \"Alice\", \"role\": \"admin\"},\n    \"bob\": {\"name\": \"Bob\", \"role\": \"editor\"},\n    \"charlie\": {\"name\": \"Charlie\", \"role\": \"viewer\"},\n}\n\ndef get_user_from_token(token: str):\n    user = users_db.get(token)\n    if not user:\n        raise HTTPException(status_code=401, detail=\"Invalid token\")\n    return user\n\ndef require_scope(scope: str):\n    def dependency(user: dict = Depends(get_user_from_token)):\n        user_scopes = ROLE_SCOPES.get(user[\"role\"], [])\n        if scope not in user_scopes:\n            raise HTTPException(\n                status_code=403,\n                detail=f\"Requires '{scope}' permission\",\n            )\n        return user\n    return dependency\n\n@app.get(\"/articles\")\ndef list_articles(user: dict = Depends(require_scope(\"read\"))):\n    return {\"articles\": [], \"user\": user[\"name\"]}\n\n@app.post(\"/articles\")\ndef create_article(user: dict = Depends(require_scope(\"write\"))):\n    return {\"created\": True, \"user\": user[\"name\"]}\n\n@app.delete(\"/articles/{id}\")\ndef delete_article(id: int, user: dict = Depends(require_scope(\"delete\"))):\n    return {\"deleted\": id}",
+          "explanation": "require_scope is a dependency factory that returns a dependency checking for a specific scope. Roles are mapped to scopes, so changing a user's role automatically changes their permissions. This is a clean RBAC implementation."
+        },
+        {
+          "title": "Permission Decorators",
+          "code": "from fastapi import FastAPI, Depends, HTTPException\nfrom functools import wraps\n\napp = FastAPI()\n\nusers_db = {\n    \"admin-key\": {\"name\": \"Alice\", \"permissions\": [\"read\", \"write\", \"admin\"]},\n    \"user-key\": {\"name\": \"Bob\", \"permissions\": [\"read\"]},\n}\n\ndef get_current_user(x_api_key: str = Depends(lambda x_api_key=\"\": x_api_key)):\n    # Simplified - in production use proper auth\n    return users_db.get(x_api_key)\n\ndef has_permission(*required_permissions: str):\n    \"\"\"Dependency factory for permission checking.\"\"\"\n    def checker(user: dict | None = Depends(get_current_user)):\n        if not user:\n            raise HTTPException(status_code=401, detail=\"Not authenticated\")\n        user_perms = set(user.get(\"permissions\", []))\n        required = set(required_permissions)\n        if not required.issubset(user_perms):\n            missing = required - user_perms\n            raise HTTPException(\n                status_code=403,\n                detail=f\"Missing permissions: {', '.join(missing)}\",\n            )\n        return user\n    return checker\n\n@app.get(\"/data\")\ndef read_data(user: dict = Depends(has_permission(\"read\"))):\n    return {\"data\": \"public\", \"user\": user[\"name\"]}\n\n@app.post(\"/data\")\ndef write_data(user: dict = Depends(has_permission(\"read\", \"write\"))):\n    return {\"written\": True}\n\n@app.get(\"/admin\")\ndef admin_panel(user: dict = Depends(has_permission(\"admin\"))):\n    return {\"admin\": True}",
+          "explanation": "has_permission is a dependency factory that creates dependencies requiring specific permissions. Multiple permissions can be required (all must be present). Missing permissions are listed in the error message for debugging."
+        }
+      ],
+      "notes": [
+        "Scopes provide fine-grained access control beyond simple 'authenticated or not' checks.",
+        "Use Security() instead of Depends() when you need to pass scope requirements to the dependency.",
+        "RBAC maps roles to scopes, simplifying permission management for administrators.",
+        "Always return 403 (Forbidden) for authorization failures, not 401 (Unauthorized)."
+      ],
+      "commonPitfalls": [
+        "Confusing authentication (who are you?) with authorization (what can you do?). Use 401 for auth failures, 403 for permission failures.",
+        "Hardcoding permissions in handlers instead of using a centralized system. This makes permission changes error-prone.",
+        "Not including scopes in the JWT token, requiring database lookups for every request."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "scopes-and-permissions-ex1",
+        "title": "Create a Permission Checker",
+        "description": "Create a dependency factory require_role(role: str) that checks if the current user's role matches. Use it to protect GET /admin (requires 'admin' role) and GET /profile (requires 'user' or 'admin' role).",
+        "starterCode": "from fastapi import FastAPI, Depends, HTTPException, Header\n\napp = FastAPI()\n\nusers = {\n    \"admin-key\": {\"name\": \"Alice\", \"role\": \"admin\"},\n    \"user-key\": {\"name\": \"Bob\", \"role\": \"user\"},\n}\n\ndef get_user(x_api_key: str = Header()):\n    user = users.get(x_api_key)\n    if not user:\n        raise HTTPException(status_code=401)\n    return user\n\n# Define require_role factory\n\n# Define endpoints\n",
+        "solution": "from fastapi import FastAPI, Depends, HTTPException, Header\n\napp = FastAPI()\n\nusers = {\n    \"admin-key\": {\"name\": \"Alice\", \"role\": \"admin\"},\n    \"user-key\": {\"name\": \"Bob\", \"role\": \"user\"},\n}\n\ndef get_user(x_api_key: str = Header()):\n    user = users.get(x_api_key)\n    if not user:\n        raise HTTPException(status_code=401, detail=\"Invalid API key\")\n    return user\n\ndef require_role(*allowed_roles: str):\n    def checker(user: dict = Depends(get_user)):\n        if user[\"role\"] not in allowed_roles:\n            raise HTTPException(status_code=403, detail=\"Insufficient permissions\")\n        return user\n    return checker\n\n@app.get(\"/admin\")\ndef admin(user: dict = Depends(require_role(\"admin\"))):\n    return {\"message\": f\"Admin panel for {user['name']}\"}\n\n@app.get(\"/profile\")\ndef profile(user: dict = Depends(require_role(\"user\", \"admin\"))):\n    return {\"name\": user[\"name\"], \"role\": user[\"role\"]}",
+        "hints": [
+          "require_role returns a dependency function that checks the user's role",
+          "Accept multiple allowed roles using *allowed_roles"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "scopes-and-permissions-ex2",
+        "title": "Scope-Based Route Protection",
+        "description": "Create a check_scopes dependency factory that verifies a user's scopes include all required scopes. Define three endpoints: GET /read (needs 'read'), POST /write (needs 'read' and 'write'), DELETE /delete (needs 'admin').",
+        "starterCode": "from fastapi import FastAPI, Depends, HTTPException\n\napp = FastAPI()\n\n# Simulated user with scopes\ndef get_current_user():\n    return {\"name\": \"Alice\", \"scopes\": [\"read\", \"write\"]}\n\n# Define check_scopes factory\n\n# Define three endpoints\n",
+        "solution": "from fastapi import FastAPI, Depends, HTTPException\n\napp = FastAPI()\n\ndef get_current_user():\n    return {\"name\": \"Alice\", \"scopes\": [\"read\", \"write\"]}\n\ndef check_scopes(*required: str):\n    def dependency(user: dict = Depends(get_current_user)):\n        user_scopes = set(user.get(\"scopes\", []))\n        missing = set(required) - user_scopes\n        if missing:\n            raise HTTPException(\n                status_code=403,\n                detail=f\"Missing scopes: {', '.join(missing)}\",\n            )\n        return user\n    return dependency\n\n@app.get(\"/read\")\ndef read_data(user: dict = Depends(check_scopes(\"read\"))):\n    return {\"data\": \"read access\", \"user\": user[\"name\"]}\n\n@app.post(\"/write\")\ndef write_data(user: dict = Depends(check_scopes(\"read\", \"write\"))):\n    return {\"written\": True}\n\n@app.delete(\"/delete\")\ndef delete_data(user: dict = Depends(check_scopes(\"admin\"))):\n    return {\"deleted\": True}",
+        "hints": [
+          "Use set operations to find missing scopes: required - user_scopes",
+          "Include the missing scopes in the error message for debugging"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

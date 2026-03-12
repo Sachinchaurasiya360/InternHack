@@ -1,0 +1,88 @@
+import type { ReactSection } from "./types";
+
+export const reactSections: ReactSection[] = [
+  {
+    id: "jsx-and-components",
+    title: "JSX & Components",
+    description: "JSX syntax, expressions in JSX, functional components, component composition, and fragments.",
+    orderIndex: 0,
+    level: "Beginner",
+  },
+  {
+    id: "props-and-state",
+    title: "Props & State",
+    description: "Passing props, prop types, default props, useState hook, state updates, and immutability.",
+    orderIndex: 1,
+    level: "Beginner",
+  },
+  {
+    id: "event-handling",
+    title: "Event Handling",
+    description: "Synthetic events, event handlers, passing arguments, event delegation, and keyboard/form events.",
+    orderIndex: 2,
+    level: "Beginner",
+  },
+  {
+    id: "conditional-rendering-and-lists",
+    title: "Conditional Rendering & Lists",
+    description: "Ternary operators, short-circuit evaluation, rendering lists, keys, and dynamic rendering patterns.",
+    orderIndex: 3,
+    level: "Beginner",
+  },
+  {
+    id: "core-hooks",
+    title: "Core Hooks",
+    description: "useEffect, useRef, useContext, cleanup functions, dependency arrays, and common hook patterns.",
+    orderIndex: 4,
+    level: "Intermediate",
+  },
+  {
+    id: "advanced-hooks",
+    title: "Advanced Hooks",
+    description: "useMemo, useCallback, useReducer, custom hooks, and hook composition patterns.",
+    orderIndex: 5,
+    level: "Intermediate",
+  },
+  {
+    id: "forms-and-controlled-components",
+    title: "Forms & Controlled Components",
+    description: "Controlled vs uncontrolled inputs, form submission, validation patterns, and multi-field forms.",
+    orderIndex: 6,
+    level: "Intermediate",
+  },
+  {
+    id: "react-router",
+    title: "React Router",
+    description: "Route configuration, Link/NavLink, dynamic routes, nested routes, URL parameters, and guards.",
+    orderIndex: 7,
+    level: "Intermediate",
+  },
+  {
+    id: "state-management",
+    title: "State Management",
+    description: "Lifting state up, context API patterns, Zustand basics, React Query for server state.",
+    orderIndex: 8,
+    level: "Intermediate",
+  },
+  {
+    id: "data-fetching",
+    title: "API Integration & Data Fetching",
+    description: "fetch/axios, loading and error states, useEffect for data fetching, React Query, and optimistic updates.",
+    orderIndex: 9,
+    level: "Advanced",
+  },
+  {
+    id: "performance-optimization",
+    title: "Performance Optimization",
+    description: "React.memo, useMemo, useCallback, lazy loading, code splitting, virtualization, and profiling.",
+    orderIndex: 10,
+    level: "Advanced",
+  },
+  {
+    id: "react-interview-essentials",
+    title: "Interview Essentials",
+    description: "Virtual DOM, reconciliation, key prop, hooks rules, common patterns, and output-based questions.",
+    orderIndex: 11,
+    level: "Advanced",
+  },
+];

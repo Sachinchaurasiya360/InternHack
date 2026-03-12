@@ -1,0 +1,354 @@
+[
+  {
+    "id": "express-routing-basics",
+    "sectionId": "routing-and-middleware",
+    "orderIndex": 0,
+    "title": "Express Routing Basics",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["GET", "POST", "PUT", "DELETE", "Route Parameters", "Query Strings", "Route Methods"],
+    "content": {
+      "explanation": "Routing is the mechanism by which an application responds to client requests at specific URLs (endpoints) using specific HTTP methods. In Express, you define routes using methods on the app object that correspond to HTTP methods: app.get() for GET requests, app.post() for POST, app.put() for PUT, app.delete() for DELETE, and so on. Each route takes a path pattern and one or more handler functions.\n\nHTTP methods have semantic meaning in RESTful APIs. GET retrieves data and should never modify server state. POST creates new resources. PUT replaces an existing resource entirely. PATCH partially updates a resource. DELETE removes a resource. Following these conventions makes your API predictable and intuitive to consume. Express also provides app.all() which matches any HTTP method, useful for middleware that should run on all requests to a particular path.\n\nRoute parameters are named URL segments prefixed with a colon. For example, the route '/users/:id' matches '/users/1', '/users/42', and '/users/abc'. The captured value is available on req.params — in this case, req.params.id. You can have multiple parameters in a single route: '/users/:userId/posts/:postId' captures both values. Route parameters always produce string values, so you must parse them to numbers with parseInt() when needed.\n\nQuery strings are appended to the URL after a '?' character and are used for optional parameters like filtering, sorting, and pagination. In Express, query string parameters are automatically parsed and available on req.query as an object. For the URL '/users?role=admin&page=2', req.query would be { role: 'admin', page: '2' }. Note that query values are always strings.\n\nExpress matches routes in the order they are defined. The first matching route handles the request, and subsequent matching routes are ignored (unless the handler calls next()). This means more specific routes should be defined before more general ones. For example, '/users/new' should be defined before '/users/:id', otherwise a request to '/users/new' would be captured by the parameter route with id='new'.",
+      "codeExamples": [
+        {
+          "title": "HTTP Methods and Route Parameters",
+          "code": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\nlet users = [\n  { id: 1, name: 'Alice', email: 'alice@example.com' },\n  { id: 2, name: 'Bob', email: 'bob@example.com' }\n];\nlet nextId = 3;\n\n// GET all users\napp.get('/api/users', (req, res) => {\n  res.json(users);\n});\n\n// GET single user by ID\napp.get('/api/users/:id', (req, res) => {\n  const user = users.find(u => u.id === parseInt(req.params.id));\n  if (!user) return res.status(404).json({ error: 'User not found' });\n  res.json(user);\n});\n\n// POST create user\napp.post('/api/users', (req, res) => {\n  const { name, email } = req.body;\n  if (!name || !email) return res.status(400).json({ error: 'Name and email required' });\n  const user = { id: nextId++, name, email };\n  users.push(user);\n  res.status(201).json(user);\n});\n\n// PUT update user (full replacement)\napp.put('/api/users/:id', (req, res) => {\n  const index = users.findIndex(u => u.id === parseInt(req.params.id));\n  if (index === -1) return res.status(404).json({ error: 'User not found' });\n  users[index] = { id: parseInt(req.params.id), ...req.body };\n  res.json(users[index]);\n});\n\n// DELETE user\napp.delete('/api/users/:id', (req, res) => {\n  const index = users.findIndex(u => u.id === parseInt(req.params.id));\n  if (index === -1) return res.status(404).json({ error: 'User not found' });\n  users.splice(index, 1);\n  res.json({ message: 'User deleted' });\n});\n\napp.listen(3000, () => console.log('API on port 3000'));",
+          "output": "API on port 3000",
+          "explanation": "This is a complete RESTful CRUD API. Each HTTP method maps to a CRUD operation: GET=Read, POST=Create, PUT=Update, DELETE=Delete. Route parameters (:id) capture dynamic URL segments. Status codes communicate the result: 201 for created, 404 for not found, 400 for bad input."
+        },
+        {
+          "title": "Query Strings for Filtering and Pagination",
+          "code": "const express = require('express');\nconst app = express();\n\nconst products = [\n  { id: 1, name: 'Laptop', category: 'electronics', price: 999 },\n  { id: 2, name: 'Shirt', category: 'clothing', price: 29 },\n  { id: 3, name: 'Phone', category: 'electronics', price: 699 },\n  { id: 4, name: 'Pants', category: 'clothing', price: 49 },\n  { id: 5, name: 'Tablet', category: 'electronics', price: 499 },\n  { id: 6, name: 'Jacket', category: 'clothing', price: 89 }\n];\n\n// GET /api/products?category=electronics&minPrice=500&page=1&limit=2\napp.get('/api/products', (req, res) => {\n  let result = [...products];\n\n  // Filter by category\n  if (req.query.category) {\n    result = result.filter(p => p.category === req.query.category);\n  }\n\n  // Filter by minimum price\n  if (req.query.minPrice) {\n    result = result.filter(p => p.price >= parseInt(req.query.minPrice));\n  }\n\n  // Pagination\n  const page = parseInt(req.query.page) || 1;\n  const limit = parseInt(req.query.limit) || 10;\n  const startIndex = (page - 1) * limit;\n  const paginatedResult = result.slice(startIndex, startIndex + limit);\n\n  res.json({\n    data: paginatedResult,\n    total: result.length,\n    page,\n    totalPages: Math.ceil(result.length / limit)\n  });\n});\n\napp.listen(3000, () => console.log('Product API on port 3000'));",
+          "output": "Product API on port 3000",
+          "explanation": "Query strings handle optional parameters like filtering, sorting, and pagination. req.query automatically parses the URL query string into an object. All query values are strings, so use parseInt() for numeric comparisons."
+        },
+        {
+          "title": "Route Order and app.all()",
+          "code": "const express = require('express');\nconst app = express();\n\n// app.all() matches ANY HTTP method\napp.all('/api/*', (req, res, next) => {\n  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);\n  next(); // Pass to the next matching route\n});\n\n// Specific route MUST come before parameter route\napp.get('/api/users/me', (req, res) => {\n  res.json({ id: 1, name: 'Current User' });\n});\n\n// This would catch '/users/me' if defined first!\napp.get('/api/users/:id', (req, res) => {\n  res.json({ id: req.params.id, name: `User ${req.params.id}` });\n});\n\n// Route chaining with app.route()\napp.route('/api/posts')\n  .get((req, res) => {\n    res.json([{ id: 1, title: 'First Post' }]);\n  })\n  .post((req, res) => {\n    res.status(201).json({ id: 2, title: 'New Post' });\n  });\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "Route order matters: '/users/me' must be defined before '/users/:id' or the parameter route will capture 'me' as an id. app.all() is useful for logging or auth checks on all methods. app.route() chains multiple method handlers for the same path."
+        }
+      ],
+      "notes": [
+        "Route parameters (req.params) are always strings. Always use parseInt() or Number() when you need numeric values.",
+        "Query string values (req.query) are also always strings. For boolean flags, check against the string 'true' or 'false', not JavaScript booleans.",
+        "Express provides app.route() to chain multiple HTTP method handlers for the same path, reducing code duplication."
+      ],
+      "commonPitfalls": [
+        "Defining a parameter route like '/users/:id' before a specific route like '/users/search' — the parameter route will match first and treat 'search' as an id value.",
+        "Forgetting to parse route parameters as numbers: req.params.id === 1 is always false because req.params.id is the string '1'.",
+        "Using GET requests for operations that modify data. GET should be safe and idempotent — it should never create, update, or delete data."
+      ],
+      "interviewTips": [
+        "Know the HTTP method semantics: GET (safe, idempotent), POST (not idempotent), PUT (idempotent, full replacement), PATCH (idempotent, partial update), DELETE (idempotent).",
+        "Explain the difference between route parameters and query strings: parameters identify a specific resource (/users/42), while query strings modify the request (filtering, sorting, pagination)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "express-routing-basics-ex1",
+        "title": "RESTful Book Routes",
+        "description": "Create an Express app with GET '/api/books' that returns all books, GET '/api/books/:id' that returns a single book (404 if not found), and POST '/api/books' that adds a new book with title from req.body. Use this initial data: [{ id: 1, title: 'Dune' }].",
+        "starterCode": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\nlet books = [{ id: 1, title: 'Dune' }];\n\n// GET /api/books - return all books\n// GET /api/books/:id - return single book or 404\n// POST /api/books - create book from req.body.title\n",
+        "solution": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\nlet books = [{ id: 1, title: 'Dune' }];\nlet nextId = 2;\n\napp.get('/api/books', (req, res) => {\n  res.json(books);\n});\n\napp.get('/api/books/:id', (req, res) => {\n  const book = books.find(b => b.id === parseInt(req.params.id));\n  if (!book) return res.status(404).json({ error: 'Book not found' });\n  res.json(book);\n});\n\napp.post('/api/books', (req, res) => {\n  const book = { id: nextId++, title: req.body.title };\n  books.push(book);\n  res.status(201).json(book);\n});\n\napp.listen(3000);",
+        "expectedOutput": "[{\"id\":1,\"title\":\"Dune\"}]",
+        "hints": [
+          "Use parseInt(req.params.id) to compare with numeric ids",
+          "Return 404 status when a book is not found",
+          "Return 201 status when creating a new resource"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "express-routing-basics-ex2",
+        "title": "Filtered Products Endpoint",
+        "description": "Create a GET '/api/products' endpoint that supports filtering by category via query string. If '?category=electronics' is provided, return only products matching that category. If no category filter, return all products. Use data: [{ id: 1, name: 'Laptop', category: 'electronics' }, { id: 2, name: 'Shirt', category: 'clothing' }].",
+        "starterCode": "const express = require('express');\nconst app = express();\n\nconst products = [\n  { id: 1, name: 'Laptop', category: 'electronics' },\n  { id: 2, name: 'Shirt', category: 'clothing' },\n  { id: 3, name: 'Phone', category: 'electronics' }\n];\n\n// GET /api/products?category=electronics\n// Filter by category if query param exists, else return all\n",
+        "solution": "const express = require('express');\nconst app = express();\n\nconst products = [\n  { id: 1, name: 'Laptop', category: 'electronics' },\n  { id: 2, name: 'Shirt', category: 'clothing' },\n  { id: 3, name: 'Phone', category: 'electronics' }\n];\n\napp.get('/api/products', (req, res) => {\n  let result = products;\n  if (req.query.category) {\n    result = products.filter(p => p.category === req.query.category);\n  }\n  res.json(result);\n});\n\napp.listen(3000);",
+        "expectedOutput": "[{\"id\":1,\"name\":\"Laptop\",\"category\":\"electronics\"},{\"id\":3,\"name\":\"Phone\",\"category\":\"electronics\"}]",
+        "hints": [
+          "Access query parameters with req.query.category",
+          "Use Array.filter() to filter products by category",
+          "If no category is specified, return the full array"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "express-router",
+    "sectionId": "routing-and-middleware",
+    "orderIndex": 1,
+    "title": "Express Router",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["express.Router", "Modular Routes", "router.use", "Mounting Routers", "Route Prefixes", "Route Organization"],
+    "content": {
+      "explanation": "As your Express application grows, defining all routes directly on the app object becomes unmanageable. Express Router provides a way to create modular, mountable route handlers. A Router instance is a complete middleware and routing system — often called a 'mini-app'. You can define routes and middleware on a Router, then mount the entire Router onto the main app at a specific path prefix.\n\nTo create a router, call express.Router() which returns a new router instance. You define routes on this instance using the same methods as the app object: router.get(), router.post(), router.put(), router.delete(), etc. Then you mount the router onto your app with app.use('/prefix', router). All routes defined on the router become relative to this prefix. For example, if you mount a router at '/api/users' and define router.get('/'), that route matches GET /api/users.\n\nThe standard pattern is to create one router file per resource or feature. A users router handles /api/users routes, a products router handles /api/products routes, and so on. A central routes/index.js file imports all routers and mounts them with their prefixes. This keeps each file focused and small, making the codebase easier to navigate.\n\nRouters can also have their own middleware using router.use(). This middleware only applies to routes defined on that specific router, not to the entire application. For example, you might apply authentication middleware only to the users router while keeping the public product routes open. This is much cleaner than adding auth checks to every individual route handler.\n\nRouters can be nested: a router can mount another router. This enables deeply structured URL hierarchies like /api/users/:userId/posts/:postId/comments. Each level can have its own router with its own middleware, keeping the code organized and the concerns separated. The mergeParams option allows child routers to access parameters defined by parent routers.",
+      "codeExamples": [
+        {
+          "title": "Basic Router Setup",
+          "code": "// --- routes/users.routes.js ---\nconst express = require('express');\nconst router = express.Router();\n\nlet users = [\n  { id: 1, name: 'Alice' },\n  { id: 2, name: 'Bob' }\n];\n\n// These routes are relative to where the router is mounted\n// If mounted at '/api/users', router.get('/') = GET /api/users\nrouter.get('/', (req, res) => {\n  res.json(users);\n});\n\nrouter.get('/:id', (req, res) => {\n  const user = users.find(u => u.id === parseInt(req.params.id));\n  if (!user) return res.status(404).json({ error: 'User not found' });\n  res.json(user);\n});\n\nrouter.post('/', (req, res) => {\n  const user = { id: users.length + 1, name: req.body.name };\n  users.push(user);\n  res.status(201).json(user);\n});\n\nmodule.exports = router;\n\n// --- app.js ---\nconst express = require('express');\nconst usersRouter = require('./routes/users.routes');\n\nconst app = express();\napp.use(express.json());\n\n// Mount the router at /api/users\napp.use('/api/users', usersRouter);\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "The users router defines routes relative to its mount point. router.get('/') becomes GET /api/users, and router.get('/:id') becomes GET /api/users/:id. The router file exports only route definitions, keeping it clean and focused."
+        },
+        {
+          "title": "Multiple Routers with Central Aggregation",
+          "code": "// --- routes/users.routes.js ---\nconst express = require('express');\nconst router = express.Router();\n\nrouter.get('/', (req, res) => res.json([{ id: 1, name: 'Alice' }]));\nrouter.post('/', (req, res) => res.status(201).json({ id: 2, ...req.body }));\n\nmodule.exports = router;\n\n// --- routes/products.routes.js ---\nconst express = require('express');\nconst router = express.Router();\n\nrouter.get('/', (req, res) => res.json([{ id: 1, name: 'Laptop', price: 999 }]));\nrouter.get('/:id', (req, res) => res.json({ id: req.params.id, name: 'Laptop' }));\n\nmodule.exports = router;\n\n// --- routes/index.js (route aggregator) ---\nconst express = require('express');\nconst router = express.Router();\n\nconst usersRouter = require('./users.routes');\nconst productsRouter = require('./products.routes');\n\nrouter.use('/users', usersRouter);\nrouter.use('/products', productsRouter);\n\nmodule.exports = router;\n\n// --- app.js ---\nconst express = require('express');\nconst routes = require('./routes');\n\nconst app = express();\napp.use(express.json());\napp.use('/api', routes);  // All routes under /api\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "The route aggregator (routes/index.js) imports all feature routers and mounts them with their prefixes. The main app mounts the aggregator at /api. This creates a clean hierarchy: /api/users, /api/products. Adding a new feature just means creating a new router file and adding one line to the aggregator."
+        },
+        {
+          "title": "Router-level Middleware and Nested Routers",
+          "code": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\n// Simulated auth middleware\nfunction requireAuth(req, res, next) {\n  const token = req.headers.authorization;\n  if (!token) return res.status(401).json({ error: 'Authentication required' });\n  req.user = { id: 1, name: 'Alice' }; // Simulated user\n  next();\n}\n\n// Public routes — no auth required\nconst publicRouter = express.Router();\npublicRouter.get('/products', (req, res) => {\n  res.json([{ id: 1, name: 'Laptop' }]);\n});\n\n// Protected routes — auth required for ALL routes on this router\nconst protectedRouter = express.Router();\nprotectedRouter.use(requireAuth); // Applied to all routes below\n\nprotectedRouter.get('/profile', (req, res) => {\n  res.json({ user: req.user });\n});\n\nprotectedRouter.get('/settings', (req, res) => {\n  res.json({ theme: 'dark', user: req.user });\n});\n\n// Nested router with mergeParams\nconst commentsRouter = express.Router({ mergeParams: true });\ncommentsRouter.get('/', (req, res) => {\n  res.json({\n    postId: req.params.postId,\n    comments: [{ id: 1, text: 'Great post!' }]\n  });\n});\n\nconst postsRouter = express.Router();\npostsRouter.get('/', (req, res) => res.json([{ id: 1, title: 'My Post' }]));\npostsRouter.use('/:postId/comments', commentsRouter); // Nested!\n\n// Mount everything\napp.use('/api', publicRouter);\napp.use('/api', protectedRouter);\napp.use('/api/posts', postsRouter);\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "router.use(requireAuth) applies auth middleware to all routes on that router. The comments router uses { mergeParams: true } to access :postId from the parent router. GET /api/posts/1/comments returns comments for post 1."
+        }
+      ],
+      "notes": [
+        "A Router is essentially a mini Express application that only handles middleware and routes — it cannot listen on a port or configure view engines.",
+        "Use { mergeParams: true } when creating nested routers that need to access parameters defined by parent routers. Without this option, parent params are not accessible.",
+        "Router-level middleware (router.use()) only applies to routes defined on that router, providing fine-grained control over which routes are protected or logged."
+      ],
+      "commonPitfalls": [
+        "Forgetting to export the router from the route file — module.exports = router is required for the main app to import it.",
+        "Defining routes with absolute paths on a router that will be mounted with a prefix. router.get('/api/users') mounted at app.use('/api', router) creates the path /api/api/users.",
+        "Not using mergeParams when nesting routers, causing req.params to be empty for parent-level parameters."
+      ],
+      "interviewTips": [
+        "Explain how Express Router enables separation of concerns and modular code organization in larger applications.",
+        "Discuss router-level vs application-level middleware and when you would use each."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "express-router-ex1",
+        "title": "Create a Modular Router",
+        "description": "Create a router for books with GET '/' (returns all books), GET '/:id' (returns single book), and POST '/' (creates a book). Export the router and mount it at '/api/books' on an Express app.",
+        "starterCode": "const express = require('express');\n\n// Create a router with:\n// GET / - returns all books\n// GET /:id - returns single book\n// POST / - creates book from req.body\n// Mount at /api/books\n\nlet books = [{ id: 1, title: 'Node.js in Action' }];\n",
+        "solution": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\nconst router = express.Router();\nlet books = [{ id: 1, title: 'Node.js in Action' }];\nlet nextId = 2;\n\nrouter.get('/', (req, res) => {\n  res.json(books);\n});\n\nrouter.get('/:id', (req, res) => {\n  const book = books.find(b => b.id === parseInt(req.params.id));\n  if (!book) return res.status(404).json({ error: 'Not found' });\n  res.json(book);\n});\n\nrouter.post('/', (req, res) => {\n  const book = { id: nextId++, title: req.body.title };\n  books.push(book);\n  res.status(201).json(book);\n});\n\napp.use('/api/books', router);\napp.listen(3000);",
+        "expectedOutput": "[{\"id\":1,\"title\":\"Node.js in Action\"}]",
+        "hints": [
+          "Use express.Router() to create a router instance",
+          "Define routes with router.get(), router.post()",
+          "Mount with app.use('/api/books', router)"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "middleware-concepts",
+    "sectionId": "routing-and-middleware",
+    "orderIndex": 2,
+    "title": "Middleware Concepts",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["Middleware", "next()", "Application Middleware", "Router Middleware", "Error Middleware", "Middleware Chain"],
+    "content": {
+      "explanation": "Middleware is the core architectural concept in Express. A middleware function is any function that has access to the request object (req), the response object (res), and the next function (next) in the application's request-response cycle. Middleware functions can execute any code, modify the request and response objects, end the request-response cycle, or call the next middleware in the stack.\n\nWhen a request arrives at your Express application, it passes through a pipeline of middleware functions in the order they were registered. Each middleware can either send a response (ending the cycle) or call next() to pass control to the next middleware. If a middleware neither sends a response nor calls next(), the request hangs forever. This pipeline model is what makes Express so flexible — you can add, remove, and reorder middleware to change how requests are processed.\n\nThere are three main types of middleware in Express. Application-level middleware is registered with app.use() or app.METHOD() and runs on every matching request. Router-level middleware is registered with router.use() and only runs for routes on that specific router. Error-handling middleware has four parameters (err, req, res, next) and is only invoked when an error is passed to next(err) or thrown in an async handler.\n\nThe order in which middleware is registered matters enormously. Middleware registered first runs first. This means you should register body parsers before route handlers (so req.body is populated), loggers before everything (so all requests are logged), and error handlers after everything (so they catch all errors). A common bug is registering a body parser after routes, causing req.body to be undefined.\n\nYou can pass errors to the error handling middleware by calling next(err) with an error object. In Express 5, you can also throw errors or return rejected Promises from async route handlers and they will be automatically forwarded to the error handler. Error handling middleware must have exactly four parameters (err, req, res, next) — Express uses the parameter count to distinguish error handlers from regular middleware.",
+      "codeExamples": [
+        {
+          "title": "Understanding the Middleware Chain",
+          "code": "const express = require('express');\nconst app = express();\n\n// Middleware 1: Logger (runs on ALL requests)\napp.use((req, res, next) => {\n  console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);\n  req.requestTime = Date.now(); // Attach data to req\n  next(); // MUST call next() to continue the chain\n});\n\n// Middleware 2: Add custom header to all responses\napp.use((req, res, next) => {\n  res.setHeader('X-Request-Id', Math.random().toString(36).substring(7));\n  next();\n});\n\n// Route handler (the final middleware in the chain)\napp.get('/', (req, res) => {\n  const responseTime = Date.now() - req.requestTime;\n  res.json({\n    message: 'Hello World',\n    responseTime: `${responseTime}ms`\n  });\n  // No next() call — this ends the request-response cycle\n});\n\n// This middleware only runs if no route matched above\napp.use((req, res) => {\n  res.status(404).json({ error: 'Route not found' });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000\n[2026-03-12T10:00:00.000Z] GET /",
+          "explanation": "Requests flow through middleware in registration order. The logger runs first, attaches timing data, then calls next(). The header middleware adds a custom header, then calls next(). The route handler sends the response (no next needed). If no route matches, the 404 handler catches it."
+        },
+        {
+          "title": "Route-Specific and Conditional Middleware",
+          "code": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\n// Auth middleware (reusable)\nfunction authenticate(req, res, next) {\n  const token = req.headers.authorization;\n  if (!token || token !== 'Bearer secret123') {\n    return res.status(401).json({ error: 'Unauthorized' });\n  }\n  req.user = { id: 1, name: 'Alice', role: 'admin' };\n  next();\n}\n\n// Role check middleware (factory function)\nfunction requireRole(role) {\n  return (req, res, next) => {\n    if (req.user.role !== role) {\n      return res.status(403).json({ error: 'Forbidden' });\n    }\n    next();\n  };\n}\n\n// Public route — no middleware\napp.get('/api/public', (req, res) => {\n  res.json({ message: 'This is public' });\n});\n\n// Protected route — auth middleware applied to this route only\napp.get('/api/profile', authenticate, (req, res) => {\n  res.json({ user: req.user });\n});\n\n// Admin route — stacked middleware (auth + role check)\napp.delete('/api/users/:id', authenticate, requireRole('admin'), (req, res) => {\n  res.json({ message: `User ${req.params.id} deleted by ${req.user.name}` });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "Middleware can be applied to specific routes by passing it as an argument before the handler. Multiple middleware functions can be stacked: authenticate runs first, then requireRole('admin'), then the handler. requireRole is a factory function that returns a middleware, allowing you to customize the required role."
+        },
+        {
+          "title": "Error Handling Middleware",
+          "code": "const express = require('express');\nconst app = express();\napp.use(express.json());\n\n// Custom error class\nclass AppError extends Error {\n  constructor(message, statusCode) {\n    super(message);\n    this.statusCode = statusCode;\n  }\n}\n\n// Route that throws an error\napp.get('/api/data', (req, res) => {\n  throw new AppError('Data not available', 503);\n});\n\n// Async route — Express 5 catches rejected promises automatically\napp.get('/api/users/:id', async (req, res) => {\n  const id = parseInt(req.params.id);\n  if (isNaN(id)) {\n    throw new AppError('Invalid user ID', 400);\n  }\n  // Simulated async operation\n  if (id > 100) {\n    throw new AppError('User not found', 404);\n  }\n  res.json({ id, name: `User ${id}` });\n});\n\n// Error handling middleware — MUST have 4 parameters\napp.use((err, req, res, next) => {\n  console.error(`Error: ${err.message}`);\n\n  const statusCode = err.statusCode || 500;\n  const message = err.message || 'Internal Server Error';\n\n  res.status(statusCode).json({\n    error: message,\n    ...(process.env.NODE_ENV !== 'production' && { stack: err.stack })\n  });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "Error middleware has exactly 4 parameters (err, req, res, next). It catches errors thrown in route handlers and errors passed via next(err). Custom error classes like AppError carry a statusCode for precise HTTP error responses. Stack traces are only included in development."
+        }
+      ],
+      "notes": [
+        "A middleware function MUST either call next() to pass control to the next middleware OR send a response to end the cycle. Doing neither causes the request to hang.",
+        "Error handling middleware must have exactly 4 parameters (err, req, res, next) even if you do not use them all. Express identifies error handlers by the parameter count.",
+        "Middleware factory functions (functions that return middleware) are a powerful pattern for creating configurable middleware like role checks, rate limiters, and validators."
+      ],
+      "commonPitfalls": [
+        "Forgetting to call next() in middleware that should pass control to the next handler. Without next(), the request chain stops and the client receives no response.",
+        "Registering error handling middleware before routes — it must come after all routes and other middleware to catch their errors.",
+        "Writing error middleware with only 3 parameters (req, res, next) instead of 4 (err, req, res, next). Express will not recognize it as an error handler."
+      ],
+      "interviewTips": [
+        "Middleware is one of the most common Express interview topics. Be able to explain the middleware chain, the role of next(), and how error handling middleware differs from regular middleware.",
+        "Explain the middleware execution order and why registration order matters. Draw the request flow through multiple middleware functions."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "middleware-concepts-ex1",
+        "title": "Request Logger Middleware",
+        "description": "Create a middleware function called 'logger' that logs the HTTP method, URL, and current timestamp for every request, then calls next(). Apply it to all routes using app.use().",
+        "starterCode": "const express = require('express');\nconst app = express();\n\n// Create a 'logger' middleware that logs: METHOD URL TIMESTAMP\n// Apply it to all routes\n\napp.get('/', (req, res) => {\n  res.json({ message: 'Home' });\n});\n\napp.listen(3000);\n",
+        "solution": "const express = require('express');\nconst app = express();\n\nfunction logger(req, res, next) {\n  console.log(`${req.method} ${req.url} ${new Date().toISOString()}`);\n  next();\n}\n\napp.use(logger);\n\napp.get('/', (req, res) => {\n  res.json({ message: 'Home' });\n});\n\napp.listen(3000);",
+        "expectedOutput": "GET / 2026-03-12T10:00:00.000Z",
+        "hints": [
+          "A middleware function takes (req, res, next) as parameters",
+          "Always call next() to pass control to the next middleware",
+          "Register with app.use(logger) before your routes"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "middleware-concepts-ex2",
+        "title": "Auth Middleware",
+        "description": "Create an 'authenticate' middleware that checks for an 'x-api-key' header. If the header equals 'my-secret-key', attach { id: 1, name: 'Admin' } to req.user and call next(). Otherwise, return a 401 JSON response with { error: 'Unauthorized' }.",
+        "starterCode": "const express = require('express');\nconst app = express();\n\n// Create authenticate middleware\n// Check for 'x-api-key' header === 'my-secret-key'\n// If valid: set req.user and call next()\n// If invalid: return 401\n\napp.get('/api/secret', /* add middleware here */ (req, res) => {\n  res.json({ data: 'Secret data', user: req.user });\n});\n\napp.listen(3000);\n",
+        "solution": "const express = require('express');\nconst app = express();\n\nfunction authenticate(req, res, next) {\n  if (req.headers['x-api-key'] === 'my-secret-key') {\n    req.user = { id: 1, name: 'Admin' };\n    next();\n  } else {\n    res.status(401).json({ error: 'Unauthorized' });\n  }\n}\n\napp.get('/api/secret', authenticate, (req, res) => {\n  res.json({ data: 'Secret data', user: req.user });\n});\n\napp.listen(3000);",
+        "expectedOutput": "{\"data\":\"Secret data\",\"user\":{\"id\":1,\"name\":\"Admin\"}}",
+        "hints": [
+          "Access headers with req.headers['header-name'] (lowercase)",
+          "Attach data to req for downstream handlers to use",
+          "Pass middleware as an argument to the route: app.get(path, middleware, handler)"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "built-in-middleware",
+    "sectionId": "routing-and-middleware",
+    "orderIndex": 3,
+    "title": "Built-in Middleware",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["express.json", "express.urlencoded", "express.static", "Body Parsing", "Form Data", "Content-Type Handling"],
+    "content": {
+      "explanation": "Express ships with three built-in middleware functions that handle the most common request processing tasks: express.json() for parsing JSON request bodies, express.urlencoded() for parsing URL-encoded form data, and express.static() for serving static files. In older versions of Express, these were provided by the separate 'body-parser' package, but since Express 4.16+ they are built in.\n\nexpress.json() parses incoming request bodies with a Content-Type of 'application/json'. When a client sends a POST or PUT request with a JSON body, this middleware reads the stream, parses the JSON string, and makes the resulting JavaScript object available on req.body. Without this middleware, req.body is undefined for JSON requests. You should register it with app.use(express.json()) before any routes that need to read JSON request bodies.\n\nexpress.urlencoded() parses incoming request bodies with a Content-Type of 'application/x-www-form-urlencoded' — this is the default format used by HTML forms. When a form is submitted with method POST, the browser sends the form data in key=value&key=value format. This middleware parses it and populates req.body. The { extended: true } option allows parsing of nested objects using the qs library, while { extended: false } uses the simpler querystring library.\n\nexpress.static() serves static files from a directory, as covered in the Static Files lesson. It is the only built-in middleware that does not process request bodies. Instead, it maps URL paths to file system paths and serves matching files with appropriate Content-Type headers.\n\nAll three built-in middleware functions accept an options object for customization. express.json() and express.urlencoded() accept options like 'limit' (maximum body size, default '100kb'), 'type' (which Content-Type values to parse), and 'verify' (a function to verify the raw body). Setting an appropriate limit is important for security — without it, a malicious client could send an enormous request body and consume all your server's memory.",
+      "codeExamples": [
+        {
+          "title": "express.json() for API Endpoints",
+          "code": "const express = require('express');\nconst app = express();\n\n// Parse JSON bodies (limit to 10kb for security)\napp.use(express.json({ limit: '10kb' }));\n\n// Without express.json(), req.body would be undefined\napp.post('/api/users', (req, res) => {\n  console.log('Body:', req.body);\n  console.log('Type:', typeof req.body);\n\n  const { name, email } = req.body;\n\n  if (!name || !email) {\n    return res.status(400).json({ error: 'Name and email are required' });\n  }\n\n  res.status(201).json({\n    id: 1,\n    name,\n    email,\n    createdAt: new Date().toISOString()\n  });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));\n\n// Test with:\n// curl -X POST http://localhost:3000/api/users \\\n//   -H \"Content-Type: application/json\" \\\n//   -d '{\"name\": \"Alice\", \"email\": \"alice@example.com\"}'",
+          "output": "Server on port 3000\nBody: { name: 'Alice', email: 'alice@example.com' }\nType: object",
+          "explanation": "express.json() intercepts requests with Content-Type: application/json, reads the body stream, parses it with JSON.parse(), and sets req.body to the result. The limit option prevents denial-of-service attacks via oversized payloads."
+        },
+        {
+          "title": "express.urlencoded() for HTML Forms",
+          "code": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\n// Parse URL-encoded bodies (from HTML forms)\napp.use(express.urlencoded({ extended: true }));\napp.use(express.json()); // Also parse JSON for API clients\n\n// Serve a simple HTML form\napp.get('/form', (req, res) => {\n  res.send(`\n    <form method=\"POST\" action=\"/submit\">\n      <label>Name: <input type=\"text\" name=\"name\"></label><br>\n      <label>Email: <input type=\"email\" name=\"email\"></label><br>\n      <label>Age: <input type=\"number\" name=\"age\"></label><br>\n      <button type=\"submit\">Submit</button>\n    </form>\n  `);\n});\n\n// Handle form submission\napp.post('/submit', (req, res) => {\n  console.log('Form data:', req.body);\n  // req.body = { name: 'Alice', email: 'alice@example.com', age: '25' }\n  // Note: all values are strings!\n\n  res.json({\n    received: req.body,\n    message: `Hello ${req.body.name}, your form was submitted!`\n  });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000\nForm data: { name: 'Alice', email: 'alice@example.com', age: '25' }",
+          "explanation": "HTML forms with method POST send data as URL-encoded (key=value&key=value). express.urlencoded() parses this into req.body. The { extended: true } option enables parsing of nested objects and arrays in form data."
+        },
+        {
+          "title": "Combining Built-in Middleware",
+          "code": "const express = require('express');\nconst path = require('path');\nconst app = express();\n\n// Register ALL built-in middleware\napp.use(express.json({ limit: '10kb' }));            // JSON bodies\napp.use(express.urlencoded({ extended: true }));       // Form bodies\napp.use(express.static(path.join(__dirname, 'public'))); // Static files\n\n// This route accepts BOTH JSON and form data\napp.post('/api/contact', (req, res) => {\n  const { name, email, message } = req.body;\n  console.log('Content-Type:', req.headers['content-type']);\n  console.log('Body:', req.body);\n\n  if (!name || !email || !message) {\n    return res.status(400).json({ error: 'All fields required' });\n  }\n\n  res.json({ success: true, data: { name, email, message } });\n});\n\n// Check what middleware parsed\napp.post('/api/debug', (req, res) => {\n  res.json({\n    contentType: req.headers['content-type'],\n    body: req.body,\n    bodyType: typeof req.body,\n    hasBody: !!req.body\n  });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "Most Express apps register all three built-in middleware. express.json() and express.urlencoded() only parse requests with matching Content-Type headers, so they coexist without conflict. A route can accept both JSON and form data seamlessly."
+        }
+      ],
+      "notes": [
+        "express.json() only parses requests where the Content-Type header is 'application/json'. Requests with other content types are ignored and req.body remains undefined for those.",
+        "The { extended: true } option in express.urlencoded() uses the 'qs' library which supports nested objects like user[name]=Alice. With { extended: false }, only flat key-value pairs are parsed.",
+        "In Express 4.16+, express.json() and express.urlencoded() are built-in. You do NOT need to install the body-parser package separately."
+      ],
+      "commonPitfalls": [
+        "Registering body parsing middleware after routes. Middleware runs in order — if a route is defined before express.json(), req.body will be undefined in that route.",
+        "Sending a POST request without the Content-Type header. Without 'Content-Type: application/json', express.json() will not parse the body even if it contains valid JSON.",
+        "Not setting a body size limit. The default is 100kb, which may be too small for some payloads or too large for security. Set it explicitly based on your needs."
+      ],
+      "interviewTips": [
+        "Explain what happens when express.json() is NOT registered — req.body is undefined, not null or empty. This is the most common Express debugging question.",
+        "Know that the body-parser package is no longer needed in modern Express (4.16+). The built-in middleware replaced it."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "built-in-middleware-ex1",
+        "title": "JSON Body Parser Setup",
+        "description": "Create an Express app with express.json() middleware. Add a POST '/api/echo' route that returns whatever JSON body is received. Return 400 with { error: 'Body required' } if req.body is empty.",
+        "starterCode": "const express = require('express');\nconst app = express();\n\n// Add JSON body parsing middleware\n// Create POST /api/echo that returns the received body\n// Return 400 if body is empty\n",
+        "solution": "const express = require('express');\nconst app = express();\n\napp.use(express.json());\n\napp.post('/api/echo', (req, res) => {\n  if (!req.body || Object.keys(req.body).length === 0) {\n    return res.status(400).json({ error: 'Body required' });\n  }\n  res.json(req.body);\n});\n\napp.listen(3000);",
+        "expectedOutput": "{\"name\":\"test\"}",
+        "hints": [
+          "Register express.json() with app.use() before routes",
+          "Check for empty body with Object.keys(req.body).length === 0",
+          "Use res.json() to echo back the parsed body"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "third-party-middleware",
+    "sectionId": "routing-and-middleware",
+    "orderIndex": 4,
+    "title": "Third-Party Middleware",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["cors", "morgan", "helmet", "compression", "cookie-parser", "rate-limiting"],
+    "content": {
+      "explanation": "The Express ecosystem includes hundreds of middleware packages that extend your application with common functionality. Instead of writing logging, security headers, CORS handling, or compression from scratch, you install well-tested packages and register them with app.use(). Understanding the most important third-party middleware is essential for building production-ready Express applications.\n\ncors (Cross-Origin Resource Sharing) is needed when your frontend and backend run on different domains or ports, which is the case in virtually every modern web application during development. By default, browsers block cross-origin requests for security. The cors middleware adds the necessary Access-Control-Allow-Origin and related headers to your responses, telling the browser which origins are allowed to make requests. You can configure it to allow all origins, specific origins, or dynamically determine allowed origins.\n\nmorgan is an HTTP request logger that outputs information about every incoming request: the method, URL, status code, response time, and content length. It supports predefined formats ('dev', 'combined', 'common', 'short', 'tiny') and custom formats. In development, the 'dev' format provides color-coded output. In production, the 'combined' format (Apache-style) is standard for log analysis tools.\n\nhelmet secures your Express app by setting various HTTP response headers. It sets X-Content-Type-Options to prevent MIME sniffing, X-Frame-Options to prevent clickjacking, Content-Security-Policy to prevent XSS, and many more. Helmet is a collection of smaller middleware functions that each set a specific header. You should use it in every production application — it is a simple one-line addition that significantly improves security.\n\ncompression applies gzip or deflate compression to response bodies, reducing transfer size by 60-80% for text-based content like JSON, HTML, CSS, and JavaScript. The browser automatically decompresses the response, so this is transparent to the client. For production applications serving substantial amounts of data, compression middleware dramatically improves load times and reduces bandwidth costs.",
+      "codeExamples": [
+        {
+          "title": "CORS Configuration",
+          "code": "const express = require('express');\nconst cors = require('cors');\nconst app = express();\n\n// Allow all origins (development)\napp.use(cors());\n\n// OR: Configure specific origins (production)\n// app.use(cors({\n//   origin: ['https://myapp.com', 'https://admin.myapp.com'],\n//   methods: ['GET', 'POST', 'PUT', 'DELETE'],\n//   allowedHeaders: ['Content-Type', 'Authorization'],\n//   credentials: true  // Allow cookies\n// }));\n\n// OR: Dynamic origin based on a whitelist\n// const whitelist = ['https://myapp.com', 'http://localhost:5173'];\n// app.use(cors({\n//   origin: (origin, callback) => {\n//     if (!origin || whitelist.includes(origin)) {\n//       callback(null, true);\n//     } else {\n//       callback(new Error('Not allowed by CORS'));\n//     }\n//   }\n// }));\n\napp.get('/api/data', (req, res) => {\n  res.json({ message: 'This is accessible from any origin' });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "cors() with no arguments allows all origins. In production, always specify allowed origins explicitly. The credentials option must be true if your frontend sends cookies or Authorization headers. Dynamic origin allows runtime decisions based on a whitelist."
+        },
+        {
+          "title": "Morgan, Helmet, and Compression",
+          "code": "const express = require('express');\nconst morgan = require('morgan');\nconst helmet = require('helmet');\nconst compression = require('compression');\nconst app = express();\n\n// Security headers (should be first)\napp.use(helmet());\n\n// Compress responses\napp.use(compression());\n\n// Request logging\nif (process.env.NODE_ENV === 'production') {\n  app.use(morgan('combined')); // Apache-style logs\n} else {\n  app.use(morgan('dev'));      // Colorized development logs\n}\n\n// Body parsing\napp.use(express.json());\n\napp.get('/api/data', (req, res) => {\n  // This response will be compressed automatically\n  res.json({\n    message: 'Hello World',\n    items: Array.from({ length: 100 }, (_, i) => ({\n      id: i + 1,\n      name: `Item ${i + 1}`,\n      description: 'A sample item for testing compression'\n    }))\n  });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));\n\n// Morgan 'dev' output example:\n// GET /api/data 200 3.456 ms - 4523",
+          "output": "Server on port 3000\nGET /api/data 200 3.456 ms - 4523",
+          "explanation": "Register helmet() first for maximum security. compression() should come before route handlers so all responses are compressed. Morgan logs request details — 'dev' format shows METHOD URL STATUS TIME SIZE with color coding."
+        },
+        {
+          "title": "Cookie Parser and Rate Limiting",
+          "code": "const express = require('express');\nconst cookieParser = require('cookie-parser');\nconst rateLimit = require('express-rate-limit');\nconst app = express();\n\n// Parse cookies from request headers\napp.use(cookieParser('my-secret')); // Secret for signed cookies\n\n// Rate limiting — max 100 requests per 15 minutes per IP\nconst limiter = rateLimit({\n  windowMs: 15 * 60 * 1000, // 15 minutes\n  max: 100,                  // Max 100 requests per window\n  message: { error: 'Too many requests, please try again later' },\n  standardHeaders: true,     // Send RateLimit-* headers\n  legacyHeaders: false       // Disable X-RateLimit-* headers\n});\n\n// Apply rate limiting to all API routes\napp.use('/api', limiter);\n\n// Stricter limit for auth routes\nconst authLimiter = rateLimit({\n  windowMs: 15 * 60 * 1000,\n  max: 5, // Only 5 login attempts per 15 minutes\n  message: { error: 'Too many login attempts' }\n});\n\napp.use(express.json());\n\napp.post('/api/login', authLimiter, (req, res) => {\n  // Set a cookie\n  res.cookie('session', 'abc123', {\n    httpOnly: true,\n    secure: process.env.NODE_ENV === 'production',\n    maxAge: 24 * 60 * 60 * 1000 // 1 day\n  });\n  res.json({ message: 'Logged in' });\n});\n\napp.get('/api/profile', (req, res) => {\n  // Read cookies\n  const session = req.cookies.session;\n  res.json({ session: session || 'No session cookie' });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "cookie-parser reads cookies from the Cookie header and makes them available on req.cookies. express-rate-limit prevents abuse by limiting requests per IP address. Different rate limits can be applied to different routes — stricter limits for authentication endpoints prevent brute-force attacks."
+        }
+      ],
+      "notes": [
+        "Always use helmet() in production — it sets security headers with zero configuration. It prevents common attacks like XSS, clickjacking, and MIME sniffing.",
+        "cors() with no arguments allows ALL origins. This is fine for development but is a security risk in production. Always specify allowed origins explicitly in production.",
+        "Rate limiting should be applied globally for general protection and more strictly on sensitive routes like login, registration, and password reset."
+      ],
+      "commonPitfalls": [
+        "Using cors() with no options in production, which allows any website to make requests to your API. Always configure specific allowed origins.",
+        "Registering compression middleware after route handlers — compression only works on responses sent after it is registered.",
+        "Applying the same rate limit to all routes. Authentication routes should have much stricter limits (5-10 per 15 minutes) than general API routes (100+ per 15 minutes)."
+      ],
+      "interviewTips": [
+        "Explain what CORS is and why it exists — the Same-Origin Policy is a browser security feature that prevents cross-origin requests by default. CORS headers explicitly allow specific cross-origin access.",
+        "Know which middleware packages are considered essential for production Express applications: cors, helmet, compression, morgan, and rate limiting."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "third-party-middleware-ex1",
+        "title": "Production Middleware Stack",
+        "description": "Set up an Express app with helmet for security, cors for cross-origin access (allow origin 'http://localhost:5173'), morgan for logging (dev format), and express.json for body parsing. Add a GET '/api/test' route that returns { status: 'ok' }.",
+        "starterCode": "const express = require('express');\nconst cors = require('cors');\nconst helmet = require('helmet');\nconst morgan = require('morgan');\nconst app = express();\n\n// Set up: helmet, cors (allow localhost:5173), morgan (dev), express.json\n// Add GET /api/test returning { status: 'ok' }\n",
+        "solution": "const express = require('express');\nconst cors = require('cors');\nconst helmet = require('helmet');\nconst morgan = require('morgan');\nconst app = express();\n\napp.use(helmet());\napp.use(cors({ origin: 'http://localhost:5173' }));\napp.use(morgan('dev'));\napp.use(express.json());\n\napp.get('/api/test', (req, res) => {\n  res.json({ status: 'ok' });\n});\n\napp.listen(3000);",
+        "expectedOutput": "{\"status\":\"ok\"}",
+        "hints": [
+          "Register middleware in order: security (helmet), CORS, logging (morgan), body parsing",
+          "Pass an options object to cors() with the origin property",
+          "Morgan 'dev' format gives colorized output for development"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "third-party-middleware-ex2",
+        "title": "Rate Limited API",
+        "description": "Create an Express app with a rate limiter that allows maximum 10 requests per 1 minute window. Apply it to all routes under '/api'. Return the message 'Rate limit exceeded' when the limit is hit. Add a GET '/api/data' route that returns { value: 42 }.",
+        "starterCode": "const express = require('express');\nconst rateLimit = require('express-rate-limit');\nconst app = express();\n\n// Create a rate limiter: 10 requests per 1 minute\n// Apply to /api routes\n// Add GET /api/data returning { value: 42 }\n",
+        "solution": "const express = require('express');\nconst rateLimit = require('express-rate-limit');\nconst app = express();\n\nconst limiter = rateLimit({\n  windowMs: 60 * 1000,\n  max: 10,\n  message: { error: 'Rate limit exceeded' }\n});\n\napp.use('/api', limiter);\n\napp.get('/api/data', (req, res) => {\n  res.json({ value: 42 });\n});\n\napp.listen(3000);",
+        "expectedOutput": "{\"value\":42}",
+        "hints": [
+          "windowMs is in milliseconds: 60 * 1000 = 1 minute",
+          "max sets the maximum number of requests per window",
+          "Apply the limiter to '/api' with app.use('/api', limiter)"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

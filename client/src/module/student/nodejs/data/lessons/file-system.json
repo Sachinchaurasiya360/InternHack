@@ -1,0 +1,256 @@
+[
+  {
+    "id": "reading-files",
+    "sectionId": "file-system",
+    "orderIndex": 0,
+    "title": "Reading Files",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["readFile", "readFileSync", "fs/promises", "Encoding", "Buffers"],
+    "content": {
+      "explanation": "The fs (file system) module is one of Node.js's most important built-in modules, providing an API for interacting with the file system. Reading files is the most common file system operation, and Node.js offers three distinct APIs for it: the callback-based API (fs.readFile), the synchronous API (fs.readFileSync), and the promise-based API (fs/promises). Understanding when to use each is key to writing efficient Node.js code.\n\nThe callback-based fs.readFile(path, options, callback) is the original Node.js API. It reads the entire file asynchronously and calls the callback with an error (or null) and the file data when complete. If you do not specify an encoding (like 'utf8'), the callback receives a Buffer object containing raw binary data. With encoding specified, you get a string. The callback pattern follows the Node.js convention of error-first callbacks: the first argument is always the error, and the second is the result. This pattern predates Promises and is still widely used.\n\nfs.readFileSync(path, options) is the synchronous version that blocks the event loop until the file is completely read. It returns the file content directly (no callback needed) and throws an error if something goes wrong. Use readFileSync only at application startup for reading configuration files or during build scripts where blocking is acceptable. Never use synchronous file operations in request handlers or hot paths of a server, as it blocks all other operations.\n\nThe modern and recommended approach is the promise-based API available through 'fs/promises' (or 'fs.promises'). It provides the same operations as the callback API but returns Promises, making it compatible with async/await. This is cleaner, easier to read, and easier to handle errors with try/catch. For example: 'const data = await fs.readFile(\"file.txt\", \"utf8\")'. The fs/promises module was stabilized in Node.js 14 and is now the preferred way to work with the file system.\n\nWhen reading files, understanding Buffers is important. A Buffer is Node.js's way of handling raw binary data. When you read a file without specifying encoding, you get a Buffer. You can convert it to a string with buffer.toString('utf8') or specify the encoding directly in the readFile options. Common encodings include 'utf8' (text files), 'ascii', 'base64' (for embedding binary data in strings), and 'hex'. For binary files like images or PDFs, work with Buffers directly rather than converting to strings.",
+      "codeExamples": [
+        {
+          "title": "Three Ways to Read a File",
+          "code": "const fs = require('fs');\nconst fsPromises = require('fs/promises');\n\n// 1. Callback-based (original API)\nfs.readFile('example.txt', 'utf8', (err, data) => {\n  if (err) {\n    console.log('Callback error:', err.message);\n    return;\n  }\n  console.log('Callback:', data);\n});\n\n// 2. Synchronous (blocks event loop)\ntry {\n  const data = fs.readFileSync('example.txt', 'utf8');\n  console.log('Sync:', data);\n} catch (err) {\n  console.log('Sync error:', err.message);\n}\n\n// 3. Promise-based (recommended)\nasync function readWithPromise() {\n  try {\n    const data = await fsPromises.readFile('example.txt', 'utf8');\n    console.log('Promise:', data);\n  } catch (err) {\n    console.log('Promise error:', err.message);\n  }\n}\nreadWithPromise();",
+          "output": "Sync error: ENOENT: no such file or directory, open 'example.txt'\nCallback error: ENOENT: no such file or directory, open 'example.txt'\nPromise error: ENOENT: no such file or directory, open 'example.txt'",
+          "explanation": "All three approaches do the same thing but with different patterns. The sync version blocks execution. The callback version is non-blocking but uses nested callbacks. The promise version is non-blocking and supports clean async/await syntax. Always prefer fs/promises for new code."
+        },
+        {
+          "title": "Working with Buffers and Encodings",
+          "code": "const fs = require('fs');\n\n// Without encoding: returns a Buffer\nconst buffer = Buffer.from('Hello, Node.js!');\nconsole.log('Buffer:', buffer);\nconsole.log('Buffer hex:', buffer.toString('hex'));\nconsole.log('Buffer base64:', buffer.toString('base64'));\nconsole.log('Buffer utf8:', buffer.toString('utf8'));\nconsole.log('Buffer length:', buffer.length, 'bytes');\n\n// Reading binary data (like an image) would give you a Buffer\n// const imageBuffer = fs.readFileSync('photo.jpg');\n// console.log('Image size:', imageBuffer.length, 'bytes');\n\n// Comparing encoding differences\nconst emoji = Buffer.from('Hello 🌍');\nconsole.log('\\nString length:', 'Hello 🌍'.length);\nconsole.log('Buffer length:', emoji.length, '(bytes, UTF-8 encoded)');",
+          "output": "Buffer: <Buffer 48 65 6c 6c 6f 2c 20 4e 6f 64 65 2e 6a 73 21>\nBuffer hex: 48656c6c6f2c204e6f64652e6a7321\nBuffer base64: SGVsbG8sIE5vZGUuanMh\nBuffer utf8: Hello, Node.js!\nBuffer length: 15 bytes\n\nString length: 8\nBuffer length: 10 (bytes, UTF-8 encoded)",
+          "explanation": "Buffers represent raw binary data. Without encoding, readFile returns a Buffer. The emoji example shows that string length (character count) differs from buffer length (byte count) because multi-byte characters like emojis take 4 bytes in UTF-8."
+        },
+        {
+          "title": "Reading JSON and CSV Files",
+          "code": "const fsPromises = require('fs/promises');\n\n// Reading and parsing a JSON file\nasync function readJSON(filePath) {\n  const raw = await fsPromises.readFile(filePath, 'utf8');\n  return JSON.parse(raw);\n}\n\n// Reading a CSV file line by line\nasync function readCSV(filePath) {\n  const raw = await fsPromises.readFile(filePath, 'utf8');\n  const lines = raw.trim().split('\\n');\n  const headers = lines[0].split(',');\n  return lines.slice(1).map(line => {\n    const values = line.split(',');\n    return headers.reduce((obj, header, i) => {\n      obj[header.trim()] = values[i].trim();\n      return obj;\n    }, {});\n  });\n}\n\n// Demo with inline data\nconst jsonData = JSON.parse('{\"name\": \"Node\", \"version\": 20}');\nconsole.log('JSON:', jsonData);\n\nconst csvText = 'name,age\\nAlice,25\\nBob,30';\nconst lines = csvText.trim().split('\\n');\nconst headers = lines[0].split(',');\nconst parsed = lines.slice(1).map(line => {\n  const vals = line.split(',');\n  return { [headers[0]]: vals[0], [headers[1]]: vals[1] };\n});\nconsole.log('CSV:', parsed);",
+          "output": "JSON: { name: 'Node', version: 20 }\nCSV: [ { name: 'Alice', age: '25' }, { name: 'Bob', age: '30' } ]",
+          "explanation": "JSON files can be read as UTF-8 strings and parsed with JSON.parse(). For CSV files, split by newlines for rows and commas for columns. In production, use a library like csv-parse for handling quoted fields, escaping, and edge cases."
+        }
+      ],
+      "notes": [
+        "Always use fs/promises with async/await for new code. The callback API is legacy and the sync API blocks the event loop.",
+        "The ENOENT error code means 'Error NO ENTry' — the file or directory does not exist. Always handle this error gracefully.",
+        "For large files, use streams (createReadStream) instead of readFile, which loads the entire file into memory at once."
+      ],
+      "commonPitfalls": [
+        "Using readFileSync in server request handlers. This blocks the entire event loop and no other requests can be processed until the file is read.",
+        "Forgetting to specify 'utf8' encoding and getting a Buffer instead of a string. Always pass the encoding option when reading text files.",
+        "Not handling ENOENT errors. Always check if a file exists or use try/catch when reading files that might not be present."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "reading-files-ex1",
+        "title": "Buffer to String Conversion",
+        "description": "Create a Buffer from the string 'Node.js is awesome', then convert it to UTF-8, base64, and hex strings. Log each conversion on a separate line.",
+        "starterCode": "// Create a Buffer from 'Node.js is awesome'\n// Convert and log as UTF-8\n// Convert and log as base64\n// Convert and log as hex\n",
+        "solution": "const buf = Buffer.from('Node.js is awesome');\nconsole.log(buf.toString('utf8'));\nconsole.log(buf.toString('base64'));\nconsole.log(buf.toString('hex'));",
+        "expectedOutput": "Node.js is awesome\nTm9kZS5qcyBpcyBhd2Vzb21l\n4e6f64652e6a7320697320617765736f6d65",
+        "hints": [
+          "Buffer.from(string) creates a buffer from a string",
+          "buffer.toString(encoding) converts the buffer to a string with the specified encoding"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "writing-files",
+    "sectionId": "file-system",
+    "orderIndex": 1,
+    "title": "Writing Files",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["writeFile", "appendFile", "createWriteStream", "File Flags", "Atomic Writes"],
+    "content": {
+      "explanation": "Writing files is the counterpart to reading and is equally essential in Node.js applications. Common use cases include writing log files, generating reports, saving user data, creating configuration files, and caching computed results. Like reading, Node.js provides callback-based, synchronous, and promise-based APIs for writing files.\n\nfs.writeFile(path, data, options, callback) writes data to a file, creating the file if it does not exist or completely replacing its contents if it does. The data can be a string, Buffer, or TypedArray. Options include encoding (default 'utf8'), mode (file permissions), and flag (default 'w' for write). The promise-based equivalent is fsPromises.writeFile(). Always use the promise-based API with async/await in new code. Be careful: writeFile overwrites the entire file by default. If you want to add content to the end of a file, use appendFile instead.\n\nfs.appendFile(path, data, options, callback) adds data to the end of a file without erasing existing content. If the file does not exist, it creates it. This is commonly used for log files where you want to add entries over time. However, for high-frequency appending (like logging many events per second), appendFile opens and closes the file for each call, which is inefficient. In such cases, use a write stream or a logging library.\n\nFile flags control how the file is opened. The default flag for writeFile is 'w' (open for writing, create if needed, truncate if exists). Other useful flags include 'a' (append), 'wx' (write but fail if file exists, useful for preventing accidental overwrites), 'r+' (open for reading and writing without truncating), and 'ax' (append but fail if exists). Understanding flags gives you fine-grained control over file operations.\n\nFor writing large amounts of data or writing continuously over time, use fs.createWriteStream(). A write stream buffers data and writes it in chunks, which is much more memory-efficient than building a large string and calling writeFile once. Write streams emit events like 'finish' (all data flushed), 'error', and 'drain' (ready for more data after backpressure). The stream approach is essential for generating large files like CSV exports, log files, or data dumps without consuming excessive memory.",
+      "codeExamples": [
+        {
+          "title": "writeFile and appendFile",
+          "code": "const fs = require('fs/promises');\n\nasync function demo() {\n  // Write a new file (creates or overwrites)\n  await fs.writeFile('output.txt', 'Line 1\\n', 'utf8');\n  console.log('File written');\n\n  // Append to the file\n  await fs.appendFile('output.txt', 'Line 2\\n', 'utf8');\n  await fs.appendFile('output.txt', 'Line 3\\n', 'utf8');\n  console.log('Lines appended');\n\n  // Read back to verify\n  const content = await fs.readFile('output.txt', 'utf8');\n  console.log('File contents:');\n  console.log(content);\n\n  // Write JSON data\n  const config = { host: 'localhost', port: 3000, debug: true };\n  await fs.writeFile(\n    'config.json',\n    JSON.stringify(config, null, 2),\n    'utf8'\n  );\n  console.log('JSON file written');\n\n  // Clean up\n  await fs.unlink('output.txt');\n  await fs.unlink('config.json');\n}\n\ndemo().catch(console.error);",
+          "output": "File written\nLines appended\nFile contents:\nLine 1\nLine 2\nLine 3\n\nJSON file written",
+          "explanation": "writeFile creates or overwrites the file. appendFile adds to the end without erasing. JSON.stringify with null and 2 as arguments produces pretty-printed JSON with 2-space indentation, making config files human-readable."
+        },
+        {
+          "title": "File Flags: Preventing Overwrites",
+          "code": "const fs = require('fs/promises');\n\nasync function safeWrite() {\n  const filename = 'important.txt';\n\n  // Write with 'wx' flag: fails if file already exists\n  try {\n    await fs.writeFile(filename, 'Original data', { flag: 'wx' });\n    console.log('File created successfully');\n  } catch (err) {\n    if (err.code === 'EEXIST') {\n      console.log('File already exists, not overwriting');\n    } else {\n      throw err;\n    }\n  }\n\n  // Try again (should fail since file now exists)\n  try {\n    await fs.writeFile(filename, 'New data', { flag: 'wx' });\n  } catch (err) {\n    console.log('Second write blocked:', err.code);\n  }\n\n  // Clean up\n  await fs.unlink(filename);\n  console.log('Cleanup done');\n}\n\nsafeWrite();",
+          "output": "File created successfully\nSecond write blocked: EEXIST\nCleanup done",
+          "explanation": "The 'wx' flag stands for 'write exclusive'. It creates a new file but throws EEXIST if the file already exists. This is useful for operations where accidentally overwriting an existing file would cause data loss."
+        },
+        {
+          "title": "Write Streams for Large Data",
+          "code": "const fs = require('fs');\n\n// Create a write stream\nconst stream = fs.createWriteStream('large-file.txt');\n\n// Write 100 lines\nfor (let i = 1; i <= 100; i++) {\n  stream.write(`Line ${i}: This is some data\\n`);\n}\n\n// Signal that we are done writing\nstream.end();\n\n// Events\nstream.on('finish', () => {\n  console.log('All data written to file');\n\n  // Check file size\n  const stats = fs.statSync('large-file.txt');\n  console.log(`File size: ${stats.size} bytes`);\n\n  // Clean up\n  fs.unlinkSync('large-file.txt');\n  console.log('File deleted');\n});\n\nstream.on('error', (err) => {\n  console.error('Write error:', err.message);\n});",
+          "output": "All data written to file\nFile size: 3300 bytes\nFile deleted",
+          "explanation": "createWriteStream is ideal for writing large amounts of data. It buffers writes internally and flushes them efficiently. The 'finish' event fires when all data has been flushed to the underlying file system. For very high throughput, monitor the 'drain' event to handle backpressure."
+        }
+      ],
+      "notes": [
+        "writeFile completely replaces file contents. Use appendFile to add data to the end of an existing file.",
+        "When writing JSON, always use JSON.stringify(data, null, 2) for human-readable output. Omit the last two arguments for compact JSON in production data files.",
+        "For atomic writes (preventing partial file corruption on crash), write to a temporary file first, then rename it to the target path using fs.rename()."
+      ],
+      "commonPitfalls": [
+        "Using writeFile when you meant appendFile, accidentally erasing the file's existing contents.",
+        "Writing to files in server request handlers without proper error handling. File writes can fail due to permissions, disk space, or path issues.",
+        "Not using write streams for large data. Calling writeFile with a huge string consumes memory equal to the entire string size."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "writing-files-ex1",
+        "title": "JSON Config Writer",
+        "description": "Create a config object with properties: host ('localhost'), port (3000), and debug (true). Convert it to a pretty-printed JSON string using JSON.stringify with 2-space indentation, and log the result.",
+        "starterCode": "// Create a config object\n// Convert to pretty JSON string\n// Log the result\n",
+        "solution": "const config = {\n  host: 'localhost',\n  port: 3000,\n  debug: true\n};\nconst json = JSON.stringify(config, null, 2);\nconsole.log(json);",
+        "expectedOutput": "{\n  \"host\": \"localhost\",\n  \"port\": 3000,\n  \"debug\": true\n}",
+        "hints": [
+          "JSON.stringify takes three arguments: the value, a replacer (null for all), and the indent level",
+          "Use 2 for the indent parameter to get readable formatting"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "working-with-paths",
+    "sectionId": "file-system",
+    "orderIndex": 2,
+    "title": "Working with Paths",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["path.join", "path.resolve", "path.basename", "path.extname", "path.dirname", "__dirname"],
+    "content": {
+      "explanation": "The path module is essential for working with file and directory paths in Node.js. It provides utilities for manipulating path strings in a cross-platform way, handling differences between Windows (backslashes) and POSIX systems like Linux and macOS (forward slashes). Never manually concatenate paths with string operations like 'dir + \"/\" + file' because this breaks on different operating systems and creates bugs with double slashes.\n\npath.join() is the most commonly used method. It joins multiple path segments together using the platform-specific separator, normalizing the result. For example, path.join('/users', 'john', 'documents', 'file.txt') produces '/users/john/documents/file.txt' on Linux and '\\\\users\\\\john\\\\documents\\\\file.txt' on Windows. It also resolves '..' (parent directory) and '.' (current directory) segments. Always use path.join when combining path parts.\n\npath.resolve() is similar to join but works differently: it resolves a sequence of paths into an absolute path, processing from right to left. If at any point an absolute path is encountered, the preceding segments are discarded. If no absolute path is encountered, the current working directory is prepended. For example, path.resolve('src', 'index.js') gives you an absolute path like '/home/user/project/src/index.js'. Use resolve when you need to guarantee an absolute path.\n\nThe path module provides several methods for extracting parts of a path. path.basename(filePath) returns the last portion (filename with extension). path.basename(filePath, ext) returns the filename without the specified extension. path.extname(filePath) returns the file extension including the dot (.js, .txt). path.dirname(filePath) returns the directory portion. path.parse(filePath) breaks a path into an object with root, dir, base, name, and ext properties. path.format(pathObject) does the reverse, building a path string from an object.\n\nA critical concept is the difference between __dirname and process.cwd(). __dirname is always the directory of the current source file, regardless of where the Node process was started. process.cwd() returns the current working directory of the process, which depends on where the user ran the 'node' command from. When building paths to files relative to your source code (like templates, static assets, or config files), always use __dirname with path.join. When working with paths relative to the user's location (like file arguments), use process.cwd().",
+      "codeExamples": [
+        {
+          "title": "path.join vs path.resolve",
+          "code": "const path = require('path');\n\n// path.join: concatenates segments with platform separator\nconsole.log(path.join('src', 'utils', 'helper.js'));\nconsole.log(path.join('/users', 'john', '..', 'jane', 'file.txt'));\nconsole.log(path.join('a', 'b', '..', 'c')); // normalizes ..\n\n// path.resolve: produces absolute path, right-to-left\nconsole.log('\\nresolve:');\nconsole.log(path.resolve('src', 'index.js'));\nconsole.log(path.resolve('/base', 'src', 'index.js'));\nconsole.log(path.resolve('/base', '/override', 'file.js'));\n\n// Key difference:\nconsole.log('\\njoin vs resolve:');\nconsole.log('join:', path.join('/a', '/b'));       // /a/b\nconsole.log('resolve:', path.resolve('/a', '/b')); // /b (absolute resets)",
+          "output": "src/utils/helper.js\n/users/jane/file.txt\na/c\n\nresolve:\n/home/user/project/src/index.js\n/base/src/index.js\n/override/file.js\n\njoin vs resolve:\njoin: /a/b\nresolve: /b",
+          "explanation": "path.join simply concatenates and normalizes. path.resolve works like navigating in a terminal: if it encounters an absolute path, it starts over from there. The difference between join('/a', '/b') -> '/a/b' and resolve('/a', '/b') -> '/b' is a common interview question."
+        },
+        {
+          "title": "Extracting Path Components",
+          "code": "const path = require('path');\n\nconst filePath = '/home/user/project/src/index.ts';\n\n// Individual methods\nconsole.log('basename:', path.basename(filePath));\nconsole.log('basename (no ext):', path.basename(filePath, '.ts'));\nconsole.log('extname:', path.extname(filePath));\nconsole.log('dirname:', path.dirname(filePath));\n\n// parse: breaks path into components\nconst parsed = path.parse(filePath);\nconsole.log('\\nparsed:', parsed);\n\n// format: builds path from components\nconst rebuilt = path.format({\n  dir: '/home/user/project/dist',\n  name: 'index',\n  ext: '.js'\n});\nconsole.log('formatted:', rebuilt);\n\n// Platform separator\nconsole.log('\\nseparator:', path.sep);\nconsole.log('delimiter:', path.delimiter);",
+          "output": "basename: index.ts\nbasename (no ext): index\nextname: .ts\ndirname: /home/user/project/src\n\nparsed: { root: '/', dir: '/home/user/project/src', base: 'index.ts', ext: '.ts', name: 'index' }\nformatted: /home/user/project/dist/index.js\n\nseparator: /\ndelimiter: :",
+          "explanation": "path.parse() returns all components of a path at once. path.format() reconstructs a path from components, which is useful when you need to change the extension or directory while keeping the filename."
+        },
+        {
+          "title": "__dirname vs process.cwd()",
+          "code": "const path = require('path');\n\n// __dirname: directory of THIS file (always the same)\nconsole.log('__dirname:', __dirname);\n\n// process.cwd(): where the node command was run from\nconsole.log('cwd:', process.cwd());\n\n// Building paths relative to source code (use __dirname)\nconst templatePath = path.join(__dirname, 'templates', 'email.html');\nconsole.log('Template:', templatePath);\n\nconst configPath = path.join(__dirname, '..', 'config', 'default.json');\nconsole.log('Config:', configPath);\n\n// Building paths relative to user location (use cwd)\nconst userFile = path.resolve(process.cwd(), 'user-input.txt');\nconsole.log('User file:', userFile);\n\n// path.isAbsolute: check if a path is absolute\nconsole.log('\\n/home/user is absolute:', path.isAbsolute('/home/user'));\nconsole.log('src/index.js is absolute:', path.isAbsolute('src/index.js'));",
+          "output": "__dirname: /home/user/project/src\ncwd: /home/user/project\nTemplate: /home/user/project/src/templates/email.html\nConfig: /home/user/project/config/default.json\nUser file: /home/user/project/user-input.txt\n\n/home/user is absolute: true\nsrc/index.js is absolute: false",
+          "explanation": "Always use __dirname with path.join for paths relative to your source files. Use process.cwd() for paths relative to where the process was started. This distinction prevents bugs when your app is run from different directories."
+        }
+      ],
+      "notes": [
+        "Never concatenate paths with + or template literals. Always use path.join() or path.resolve(). Manual concatenation breaks cross-platform compatibility.",
+        "path.resolve without arguments returns process.cwd(). path.resolve('file.txt') is equivalent to path.join(process.cwd(), 'file.txt').",
+        "In ES Modules, use import.meta.url with fileURLToPath and dirname to replicate __dirname: const __dirname = dirname(fileURLToPath(import.meta.url));"
+      ],
+      "commonPitfalls": [
+        "Using string concatenation for paths: 'dir + \"/\" + file' breaks on Windows and creates double-slash issues. Always use path.join().",
+        "Confusing path.join and path.resolve. join simply concatenates; resolve produces absolute paths and resets on absolute segments.",
+        "Using process.cwd() when you meant __dirname. If the user runs your script from a different directory, cwd changes but __dirname stays the same."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "working-with-paths-ex1",
+        "title": "Path Manipulation",
+        "description": "Given the file path '/home/user/projects/app/src/index.ts', use the path module to extract and log: the filename with extension, the filename without extension, the file extension, and the parent directory. Each on a separate line.",
+        "starterCode": "const path = require('path');\nconst filePath = '/home/user/projects/app/src/index.ts';\n\n// Extract and log:\n// 1. Filename with extension\n// 2. Filename without extension\n// 3. File extension\n// 4. Parent directory\n",
+        "solution": "const path = require('path');\nconst filePath = '/home/user/projects/app/src/index.ts';\n\nconsole.log(path.basename(filePath));\nconsole.log(path.basename(filePath, '.ts'));\nconsole.log(path.extname(filePath));\nconsole.log(path.dirname(filePath));",
+        "expectedOutput": "index.ts\nindex\n.ts\n/home/user/projects/app/src",
+        "hints": [
+          "path.basename with one arg gives name + extension",
+          "path.basename with two args strips the given extension"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "working-with-paths-ex2",
+        "title": "Build a File Path",
+        "description": "Use path.join to construct a path from __dirname, go up one directory ('..'), then into 'config', then 'database.json'. Also use path.resolve to turn the relative path 'src/utils/helpers.js' into an absolute path. Log both results.",
+        "starterCode": "const path = require('path');\n\n// 1. Use path.join: __dirname + '..' + 'config' + 'database.json'\n// 2. Use path.resolve: make 'src/utils/helpers.js' absolute\n// Log both results\n",
+        "solution": "const path = require('path');\n\nconst configPath = path.join(__dirname, '..', 'config', 'database.json');\nconsole.log(configPath);\n\nconst absolutePath = path.resolve('src', 'utils', 'helpers.js');\nconsole.log(absolutePath);",
+        "expectedOutput": "/home/user/project/config/database.json\n/home/user/project/src/utils/helpers.js",
+        "hints": [
+          "path.join concatenates segments with the correct separator",
+          "path.resolve creates an absolute path, prepending cwd if needed"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "directories-and-file-info",
+    "sectionId": "file-system",
+    "orderIndex": 3,
+    "title": "Directories & File Info",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["mkdir", "readdir", "stat", "rename", "unlink", "watch"],
+    "content": {
+      "explanation": "Beyond reading and writing file contents, you often need to work with the file system at a higher level: creating directories, listing directory contents, checking file metadata, renaming and deleting files, and watching for changes. The fs module provides all of these capabilities, and like file I/O, they come in callback, synchronous, and promise-based variants.\n\nCreating directories is done with fs.mkdir(path, options). The most useful option is 'recursive: true', which creates all intermediate directories in the path if they do not exist (similar to 'mkdir -p' in shell). Without recursive, creating 'a/b/c' fails if 'a/b' does not exist. To remove a directory, use fs.rmdir (empty directories only) or fs.rm with the 'recursive: true' option (removes directory and all contents, like 'rm -rf'). The rm method with recursive was stabilized in Node.js 14.\n\nfs.readdir(path, options) reads the contents of a directory and returns an array of filenames (strings). With the 'withFileTypes: true' option, it returns an array of Dirent objects that include type information (isFile(), isDirectory(), isSymbolicLink()). This is much more efficient than calling stat on each entry separately. For recursive directory listing, Node.js 18.17+ supports the 'recursive: true' option, which returns all files and subdirectories in the entire tree.\n\nfs.stat(path) returns detailed metadata about a file or directory as a Stats object. Key properties include size (in bytes), birthtime (creation time), mtime (last modification time), atime (last access time), and methods like isFile(), isDirectory(), and isSymbolicLink(). The lstat variant does not follow symbolic links, returning info about the link itself rather than the target. Stat is useful for checking if a file exists, determining its size before reading, or implementing conditional logic based on modification time.\n\nfs.rename(oldPath, newPath) moves or renames a file or directory. fs.unlink(path) deletes a file (not a directory). fs.copyFile(src, dest) copies a file. For watching file system changes, fs.watch(path, callback) monitors a file or directory for modifications. The callback receives the event type ('rename' or 'change') and the filename. fs.watch is useful for development tools, live reload, and file synchronization, though it has some platform-specific quirks. For production use, consider the chokidar library which provides a more reliable cross-platform API.",
+      "codeExamples": [
+        {
+          "title": "Creating and Reading Directories",
+          "code": "const fs = require('fs/promises');\nconst path = require('path');\n\nasync function directoryOps() {\n  // Create nested directories recursively\n  await fs.mkdir('demo/src/utils', { recursive: true });\n  console.log('Directories created');\n\n  // Create some files\n  await fs.writeFile('demo/src/index.js', 'console.log(\"hi\")');\n  await fs.writeFile('demo/src/utils/helpers.js', '// helpers');\n  await fs.writeFile('demo/README.md', '# Demo');\n\n  // List directory contents (simple)\n  const files = await fs.readdir('demo');\n  console.log('demo/:', files);\n\n  // List with file type info\n  const entries = await fs.readdir('demo', { withFileTypes: true });\n  entries.forEach(entry => {\n    const type = entry.isDirectory() ? 'DIR' : 'FILE';\n    console.log(`  ${type}: ${entry.name}`);\n  });\n\n  // Recursive listing (Node 18.17+)\n  const allFiles = await fs.readdir('demo', { recursive: true });\n  console.log('\\nAll files:', allFiles);\n\n  // Clean up\n  await fs.rm('demo', { recursive: true });\n  console.log('Cleaned up');\n}\n\ndirectoryOps();",
+          "output": "Directories created\ndemo/: [ 'README.md', 'src' ]\n  FILE: README.md\n  DIR: src\n\nAll files: [ 'README.md', 'src', 'src/index.js', 'src/utils', 'src/utils/helpers.js' ]\nCleaned up",
+          "explanation": "mkdir with recursive:true creates all intermediate directories. readdir with withFileTypes:true returns Dirent objects so you can distinguish files from directories without extra stat calls. The recursive option in readdir lists the entire tree."
+        },
+        {
+          "title": "File Metadata with stat",
+          "code": "const fs = require('fs/promises');\n\nasync function fileInfo() {\n  // Create a test file\n  await fs.writeFile('test.txt', 'Hello, World!');\n\n  const stats = await fs.stat('test.txt');\n\n  console.log('Is file:', stats.isFile());\n  console.log('Is directory:', stats.isDirectory());\n  console.log('Size:', stats.size, 'bytes');\n  console.log('Created:', stats.birthtime.toISOString());\n  console.log('Modified:', stats.mtime.toISOString());\n  console.log('Accessed:', stats.atime.toISOString());\n\n  // Check if file exists (modern approach)\n  try {\n    await fs.access('test.txt');\n    console.log('\\nFile exists');\n  } catch {\n    console.log('\\nFile does not exist');\n  }\n\n  // Clean up\n  await fs.unlink('test.txt');\n  console.log('File deleted');\n}\n\nfileInfo();",
+          "output": "Is file: true\nIs directory: false\nSize: 13 bytes\nCreated: 2024-01-15T10:30:00.000Z\nModified: 2024-01-15T10:30:00.000Z\nAccessed: 2024-01-15T10:30:00.000Z\n\nFile exists\nFile deleted",
+          "explanation": "fs.stat provides detailed metadata including size, timestamps, and type information. Use fs.access to check if a file exists rather than the deprecated fs.exists. unlink deletes a single file."
+        },
+        {
+          "title": "Rename, Copy, and Watch Files",
+          "code": "const fs = require('fs/promises');\nconst fsSync = require('fs');\n\nasync function fileOperations() {\n  // Create a file\n  await fs.writeFile('original.txt', 'Original content');\n\n  // Rename (move) a file\n  await fs.rename('original.txt', 'renamed.txt');\n  console.log('File renamed');\n\n  // Copy a file\n  await fs.copyFile('renamed.txt', 'backup.txt');\n  console.log('File copied');\n\n  // Verify both exist\n  const files = await fs.readdir('.');\n  const relevant = files.filter(f => f.includes('renamed') || f.includes('backup'));\n  console.log('Files:', relevant);\n\n  // Watch for changes (demo with sync API for simplicity)\n  // const watcher = fsSync.watch('renamed.txt', (eventType, filename) => {\n  //   console.log(`Event: ${eventType} on ${filename}`);\n  // });\n  // To stop watching: watcher.close();\n\n  console.log('\\nfs.watch monitors files for changes in real-time');\n  console.log('Events: \"change\" (content modified) or \"rename\" (file renamed/deleted)');\n\n  // Clean up\n  await fs.unlink('renamed.txt');\n  await fs.unlink('backup.txt');\n  console.log('Cleaned up');\n}\n\nfileOperations();",
+          "output": "File renamed\nFile copied\nFiles: [ 'backup.txt', 'renamed.txt' ]\n\nfs.watch monitors files for changes in real-time\nEvents: \"change\" (content modified) or \"rename\" (file renamed/deleted)\nCleaned up",
+          "explanation": "fs.rename moves or renames files and directories. fs.copyFile creates a duplicate. fs.watch observes file changes in real-time, useful for development tools. For production file watching, use the chokidar library for better cross-platform reliability."
+        }
+      ],
+      "notes": [
+        "Always use { recursive: true } with mkdir when creating nested directories. Without it, the call fails if parent directories do not exist.",
+        "Use fs.access() instead of the deprecated fs.exists() to check if a file exists. fs.access checks both existence and permissions.",
+        "fs.rm with { recursive: true, force: true } is the equivalent of 'rm -rf'. Use with extreme caution and always validate paths before calling it."
+      ],
+      "commonPitfalls": [
+        "Calling mkdir without recursive:true for nested paths. Each parent directory must exist for the call to succeed.",
+        "Using readdir without withFileTypes and then calling stat on each entry. withFileTypes is more efficient as it avoids extra system calls.",
+        "Trusting fs.watch completely. It has known cross-platform inconsistencies: it may fire duplicate events, miss events on some systems, or report different event types. Use chokidar for reliable watching."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "directories-and-file-info-ex1",
+        "title": "Directory Structure Creator",
+        "description": "Write an async function called 'scaffold' that uses fs/promises to create the following directory structure: 'project/src', 'project/tests', 'project/docs'. Use a single mkdir call with recursive:true for each. Then use readdir to list the contents of 'project' and log the result. Finally, clean up with fs.rm.",
+        "starterCode": "const fs = require('fs/promises');\n\nasync function scaffold() {\n  // Create project/src, project/tests, project/docs\n  // List contents of 'project'\n  // Clean up with fs.rm\n}\n\nscaffold();\n",
+        "solution": "const fs = require('fs/promises');\n\nasync function scaffold() {\n  await fs.mkdir('project/src', { recursive: true });\n  await fs.mkdir('project/tests', { recursive: true });\n  await fs.mkdir('project/docs', { recursive: true });\n\n  const contents = await fs.readdir('project');\n  console.log(contents);\n\n  await fs.rm('project', { recursive: true });\n}\n\nscaffold();",
+        "expectedOutput": "[ 'docs', 'src', 'tests' ]",
+        "hints": [
+          "mkdir with recursive:true creates parent directories automatically",
+          "readdir returns an array of entry names as strings"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "directories-and-file-info-ex2",
+        "title": "File Size Reporter",
+        "description": "Write an async function that creates three files: 'a.txt' with content 'Hello' (5 bytes), 'b.txt' with content 'Hello World' (11 bytes), and 'c.txt' with content 'Hi' (2 bytes). Use fs.stat on each file to get its size, then log each filename and size in the format 'filename: X bytes'. Clean up all files afterward.",
+        "starterCode": "const fs = require('fs/promises');\n\nasync function reportSizes() {\n  // Create three files with different content\n  // Get and log each file's size using stat\n  // Clean up\n}\n\nreportSizes();\n",
+        "solution": "const fs = require('fs/promises');\n\nasync function reportSizes() {\n  await fs.writeFile('a.txt', 'Hello');\n  await fs.writeFile('b.txt', 'Hello World');\n  await fs.writeFile('c.txt', 'Hi');\n\n  for (const file of ['a.txt', 'b.txt', 'c.txt']) {\n    const stats = await fs.stat(file);\n    console.log(`${file}: ${stats.size} bytes`);\n  }\n\n  await fs.unlink('a.txt');\n  await fs.unlink('b.txt');\n  await fs.unlink('c.txt');\n}\n\nreportSizes();",
+        "expectedOutput": "a.txt: 5 bytes\nb.txt: 11 bytes\nc.txt: 2 bytes",
+        "hints": [
+          "fs.stat returns an object with a 'size' property in bytes",
+          "Use a for...of loop to await each stat call sequentially"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

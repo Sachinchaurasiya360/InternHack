@@ -1,5 +1,5 @@
 import type { Request, Response } from "express";
-import { registerSchema, loginSchema, updateProfileSchema } from "./auth.validation.js";
+import { registerSchema, loginSchema, updateProfileSchema, importGitHubSchema } from "./auth.validation.js";
 import { AuthService } from "./auth.service.js";
 
 export class AuthController {
@@ -121,6 +121,87 @@ export class AuthController {
       }
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  async verifyEmail(req: Request, res: Response) {
+    const { email, otp } = req.body as { email?: string; otp?: string };
+    if (!email || !otp) {
+      return res.status(400).json({ message: "Email and OTP are required" });
+    }
+    try {
+      const user = await this.authService.verifyEmail(email, otp);
+      return res.json({ message: "Email verified successfully", user });
+    } catch (err: unknown) {
+      return res.status(400).json({ message: err instanceof Error ? err.message : "Verification failed" });
+    }
+  }
+
+  async resendOtp(req: Request, res: Response) {
+    const { email } = req.body as { email?: string };
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+    try {
+      await this.authService.resendOtp(email);
+      return res.json({ message: "OTP sent successfully" });
+    } catch (err: unknown) {
+      return res.status(400).json({ message: err instanceof Error ? err.message : "Failed to send OTP" });
+    }
+  }
+
+  async forgotPassword(req: Request, res: Response) {
+    const { email } = req.body as { email?: string };
+    if (!email) {
+      return res.status(400).json({ message: "Email is required" });
+    }
+    try {
+      await this.authService.forgotPassword(email);
+      return res.json({ message: "If an account exists with this email, a reset code has been sent" });
+    } catch (_err: unknown) {
+      // Always return success to prevent email enumeration
+      return res.json({ message: "If an account exists with this email, a reset code has been sent" });
+    }
+  }
+
+  async importGitHub(req: Request, res: Response) {
+    try {
+      if (!req.user) {
+        return res.status(401).json({ message: "Authentication required" });
+      }
+      if (req.user.role !== "STUDENT") {
+        return res.status(403).json({ message: "Only students can import GitHub profiles" });
+      }
+
+      const result = importGitHubSchema.safeParse(req.body);
+      if (!result.success) {
+        return res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
+      }
+
+      const data = await this.authService.importGitHub(result.data.username);
+      return res.status(200).json(data);
+    } catch (error) {
+      if (error instanceof Error && error.message === "GitHub user not found") {
+        return res.status(404).json({ message: error.message });
+      }
+      console.error(error);
+      return res.status(500).json({ message: "Failed to import GitHub profile" });
+    }
+  }
+
+  async resetPassword(req: Request, res: Response) {
+    const { email, otp, newPassword } = req.body as { email?: string; otp?: string; newPassword?: string };
+    if (!email || !otp || !newPassword) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+    if (newPassword.length < 6) {
+      return res.status(400).json({ message: "Password must be at least 6 characters" });
+    }
+    try {
+      await this.authService.resetPassword(email, otp, newPassword);
+      return res.json({ message: "Password reset successfully" });
+    } catch (err: unknown) {
+      return res.status(400).json({ message: err instanceof Error ? err.message : "Password reset failed" });
     }
   }
 }

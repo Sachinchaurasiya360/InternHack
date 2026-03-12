@@ -1,0 +1,351 @@
+[
+  {
+    "id": "partial-required-readonly",
+    "sectionId": "utility-types",
+    "orderIndex": 0,
+    "title": "Partial, Required & Readonly",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Partial<T>", "Required<T>", "Readonly<T>", "mapped type modifiers", "immutability"],
+    "content": {
+      "explanation": "TypeScript provides several built-in utility types that transform existing types into new ones. `Partial<T>`, `Required<T>`, and `Readonly<T>` are the most fundamental of these. They modify the property modifiers of a type — making properties optional, required, or read-only respectively. Understanding these utilities is essential because they appear everywhere in real-world TypeScript code.\n\n`Partial<T>` makes every property of `T` optional by adding the `?` modifier. This is commonly used for update functions where you only want to change some properties of an object. Instead of requiring the caller to pass the entire object, `Partial<T>` lets them pass only the fields they want to change. Under the hood, it is defined as `{ [K in keyof T]?: T[K] }`.\n\n`Required<T>` is the opposite of `Partial` — it removes the `?` modifier from all properties, making them mandatory. This is useful when you have a type with optional properties but need a complete version for certain operations like database insertion or serialization. Its definition uses the `-?` modifier: `{ [K in keyof T]-?: T[K] }`.\n\n`Readonly<T>` adds the `readonly` modifier to every property, preventing reassignment after construction. This is valuable for enforcing immutability patterns, especially when passing objects to functions that should not modify them. Note that `Readonly<T>` is shallow — it only makes the top-level properties readonly. Nested objects can still be mutated unless they are also wrapped in `Readonly`.",
+      "codeExamples": [
+        {
+          "title": "Partial for Update Functions",
+          "code": "interface User {\n  name: string;\n  email: string;\n  age: number;\n}\n\nfunction updateUser(user: User, updates: Partial<User>): User {\n  return { ...user, ...updates };\n}\n\nconst user: User = { name: \"Alice\", email: \"alice@test.com\", age: 30 };\nconst updated = updateUser(user, { age: 31 });\nconsole.log(updated.name);\nconsole.log(updated.age);\n\nconst updated2 = updateUser(user, { name: \"Alicia\", email: \"alicia@test.com\" });\nconsole.log(updated2.name);\nconsole.log(updated2.email);",
+          "output": "Alice\n31\nAlicia\nalicia@test.com",
+          "explanation": "Partial<User> makes all User properties optional, so the caller can pass any subset of fields. The spread operator merges the updates with the original."
+        },
+        {
+          "title": "Required for Strict Validation",
+          "code": "interface FormData {\n  name?: string;\n  email?: string;\n  phone?: string;\n}\n\nfunction validateForm(data: FormData): Required<FormData> | null {\n  if (!data.name || !data.email || !data.phone) {\n    return null;\n  }\n  return data as Required<FormData>;\n}\n\nconst valid = validateForm({ name: \"Bob\", email: \"bob@test.com\", phone: \"555-1234\" });\nif (valid) {\n  console.log(`${valid.name} - ${valid.email} - ${valid.phone}`);\n}\n\nconst invalid = validateForm({ name: \"Bob\" });\nconsole.log(invalid);",
+          "output": "Bob - bob@test.com - 555-1234\nnull",
+          "explanation": "Required<FormData> ensures all properties are present. The validation function checks this at runtime and returns the stricter type or null."
+        },
+        {
+          "title": "Readonly for Immutability",
+          "code": "interface Config {\n  apiUrl: string;\n  timeout: number;\n  retries: number;\n}\n\nfunction createConfig(overrides: Partial<Config> = {}): Readonly<Config> {\n  return Object.freeze({\n    apiUrl: \"https://api.example.com\",\n    timeout: 5000,\n    retries: 3,\n    ...overrides\n  });\n}\n\nconst config = createConfig({ timeout: 10000 });\nconsole.log(config.apiUrl);\nconsole.log(config.timeout);\nconsole.log(config.retries);\n// config.timeout = 3000; // Error: Cannot assign to 'timeout' because it is a read-only property",
+          "output": "https://api.example.com\n10000\n3",
+          "explanation": "Readonly<Config> prevents any reassignment to the config properties. Object.freeze provides the runtime immutability to match the type-level guarantee."
+        }
+      ],
+      "notes": [
+        "`Partial`, `Required`, and `Readonly` are shallow — they only affect the top-level properties. Nested objects retain their original modifiers.",
+        "You can combine these utilities: `Readonly<Partial<T>>` makes all properties optional and readonly.",
+        "These utilities are implemented as mapped types. Understanding mapped types helps you create your own custom versions."
+      ],
+      "commonPitfalls": [
+        "Assuming `Readonly<T>` provides deep immutability. It only prevents reassignment of top-level properties — nested objects and arrays can still be mutated.",
+        "Using `Partial<T>` when you only want some properties to be optional. Use `Pick` and intersection types instead: `Partial<Pick<T, 'optional'>> & Omit<T, 'optional'>`."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "partial-required-readonly-ex1",
+        "title": "Settings Merge Function",
+        "description": "Create an interface `Settings` with properties `theme: string`, `fontSize: number`, and `language: string`. Write a function `mergeSettings(defaults: Settings, overrides: Partial<Settings>): Readonly<Settings>` that merges overrides into defaults and returns a frozen result. Log the output.",
+        "starterCode": "// Define Settings interface and mergeSettings function here\n\nconst defaults: Settings = { theme: \"light\", fontSize: 14, language: \"en\" };\nconst custom = mergeSettings(defaults, { theme: \"dark\", fontSize: 18 });\nconsole.log(custom.theme);\nconsole.log(custom.fontSize);\nconsole.log(custom.language);",
+        "solution": "interface Settings {\n  theme: string;\n  fontSize: number;\n  language: string;\n}\n\nfunction mergeSettings(defaults: Settings, overrides: Partial<Settings>): Readonly<Settings> {\n  return Object.freeze({ ...defaults, ...overrides });\n}\n\nconst defaults: Settings = { theme: \"light\", fontSize: 14, language: \"en\" };\nconst custom = mergeSettings(defaults, { theme: \"dark\", fontSize: 18 });\nconsole.log(custom.theme);\nconsole.log(custom.fontSize);\nconsole.log(custom.language);",
+        "expectedOutput": "dark\n18\nen",
+        "hints": [
+          "Use the spread operator to merge: `{ ...defaults, ...overrides }`. Later spreads override earlier ones.",
+          "Wrap the result with `Object.freeze()` for runtime immutability and return as `Readonly<Settings>` for type-level immutability."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "partial-required-readonly-ex2",
+        "title": "Form Builder with Required Fields",
+        "description": "Create an interface `FormFields` with all optional properties: `name?: string`, `email?: string`, `age?: number`. Write a function `buildForm(fields: FormFields): Required<FormFields> | string` that returns the required form if all fields are present, or an error message listing missing fields. Log results.",
+        "starterCode": "// Define FormFields and buildForm function here\n\nconst result1 = buildForm({ name: \"Alice\", email: \"a@b.com\", age: 30 });\nconsole.log(typeof result1 === \"string\" ? result1 : `${result1.name}, ${result1.email}, ${result1.age}`);\n\nconst result2 = buildForm({ name: \"Bob\" });\nconsole.log(result2);",
+        "solution": "interface FormFields {\n  name?: string;\n  email?: string;\n  age?: number;\n}\n\nfunction buildForm(fields: FormFields): Required<FormFields> | string {\n  const missing: string[] = [];\n  if (!fields.name) missing.push(\"name\");\n  if (!fields.email) missing.push(\"email\");\n  if (fields.age === undefined) missing.push(\"age\");\n\n  if (missing.length > 0) {\n    return `Missing fields: ${missing.join(\", \")}`;\n  }\n\n  return fields as Required<FormFields>;\n}\n\nconst result1 = buildForm({ name: \"Alice\", email: \"a@b.com\", age: 30 });\nconsole.log(typeof result1 === \"string\" ? result1 : `${result1.name}, ${result1.email}, ${result1.age}`);\n\nconst result2 = buildForm({ name: \"Bob\" });\nconsole.log(result2);",
+        "expectedOutput": "Alice, a@b.com, 30\nMissing fields: email, age",
+        "hints": [
+          "Check each field for presence. Collect missing field names into an array.",
+          "If no fields are missing, cast the object to `Required<FormFields>`. Otherwise return an error string listing the missing fields."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "pick-omit-record",
+    "sectionId": "utility-types",
+    "orderIndex": 1,
+    "title": "Pick, Omit & Record",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Pick<T,K>", "Omit<T,K>", "Record<K,V>", "type projection", "index signatures"],
+    "content": {
+      "explanation": "`Pick<T, K>` creates a new type by selecting a subset of properties from `T`. The second type parameter `K` must be a union of keys that exist in `T`. This is useful when you need a view of an object that only includes certain fields — for example, creating a summary type from a detailed entity, or extracting just the fields needed for a specific API call.\n\n`Omit<T, K>` is the complement of `Pick` — it creates a new type by removing specified properties from `T`. If you have a `User` type with 10 properties and you want everything except `password` and `ssn`, `Omit<User, 'password' | 'ssn'>` is much more concise than picking the other 8 fields. Under the hood, `Omit` is defined as `Pick<T, Exclude<keyof T, K>>`.\n\n`Record<K, V>` creates a type with keys of type `K` and values of type `V`. It is the utility type for defining dictionaries and lookup maps. `K` is typically a union of string literals or `string` itself, and `V` is the value type. `Record<string, number>` is equivalent to `{ [key: string]: number }`, but more explicit and composable.\n\nThese three utilities are frequently combined in practice. For example, you might use `Pick` to extract relevant fields from a large type, then `Record` to create a mapping from enum values to those picked types. Or use `Omit` to remove sensitive fields before sending data to the client. Mastering these utilities lets you derive precise types from existing ones without duplication.",
+      "codeExamples": [
+        {
+          "title": "Pick for Creating Subsets",
+          "code": "interface User {\n  id: number;\n  name: string;\n  email: string;\n  password: string;\n  createdAt: string;\n}\n\ntype UserPreview = Pick<User, \"id\" | \"name\" | \"email\">;\ntype UserCredentials = Pick<User, \"email\" | \"password\">;\n\nfunction toPreview(user: User): UserPreview {\n  return { id: user.id, name: user.name, email: user.email };\n}\n\nconst user: User = {\n  id: 1, name: \"Alice\", email: \"alice@test.com\",\n  password: \"secret\", createdAt: \"2025-01-01\"\n};\n\nconst preview = toPreview(user);\nconsole.log(`${preview.id}: ${preview.name} (${preview.email})`);",
+          "output": "1: Alice (alice@test.com)",
+          "explanation": "Pick<User, 'id' | 'name' | 'email'> creates a type with only those three properties, useful for API responses that should not expose sensitive fields."
+        },
+        {
+          "title": "Omit for Removing Fields",
+          "code": "interface Product {\n  id: string;\n  name: string;\n  price: number;\n  internalCode: string;\n  supplierNotes: string;\n}\n\ntype PublicProduct = Omit<Product, \"internalCode\" | \"supplierNotes\">;\n\nfunction sanitize(product: Product): PublicProduct {\n  const { internalCode, supplierNotes, ...public_ } = product;\n  return public_;\n}\n\nconst product: Product = {\n  id: \"p1\", name: \"Widget\", price: 29.99,\n  internalCode: \"WDG-001\", supplierNotes: \"Fragile\"\n};\n\nconst safe = sanitize(product);\nconsole.log(`${safe.name}: $${safe.price}`);",
+          "output": "Widget: $29.99",
+          "explanation": "Omit removes the internal fields, creating a safe type for external consumption. Destructuring with rest handles the runtime removal."
+        },
+        {
+          "title": "Record for Lookup Maps",
+          "code": "type Role = \"admin\" | \"editor\" | \"viewer\";\n\ninterface Permissions {\n  canRead: boolean;\n  canWrite: boolean;\n  canDelete: boolean;\n}\n\nconst rolePermissions: Record<Role, Permissions> = {\n  admin: { canRead: true, canWrite: true, canDelete: true },\n  editor: { canRead: true, canWrite: true, canDelete: false },\n  viewer: { canRead: true, canWrite: false, canDelete: false }\n};\n\nfunction describeRole(role: Role): string {\n  const perms = rolePermissions[role];\n  const abilities = [];\n  if (perms.canRead) abilities.push(\"read\");\n  if (perms.canWrite) abilities.push(\"write\");\n  if (perms.canDelete) abilities.push(\"delete\");\n  return `${role}: ${abilities.join(\", \")}`;\n}\n\nconsole.log(describeRole(\"admin\"));\nconsole.log(describeRole(\"viewer\"));",
+          "output": "admin: read, write, delete\nviewer: read",
+          "explanation": "Record<Role, Permissions> ensures every role has a permissions entry. If a new role is added to the union, TypeScript will error until its permissions are defined."
+        }
+      ],
+      "notes": [
+        "`Pick` and `Omit` create new types — they do not affect the runtime object. You still need to handle the actual data extraction in your code.",
+        "`Record<K, V>` when K is a union type acts as an exhaustive map — every member of the union must have a corresponding entry.",
+        "`Omit` does not restrict K to keys of T — you can omit keys that do not exist, which may hide typos. Use carefully."
+      ],
+      "commonPitfalls": [
+        "Assuming `Omit` validates that the keys exist in T. Unlike `Pick`, `Omit` accepts any string keys, so typos go unnoticed.",
+        "Confusing `Record<string, T>` with `Map<string, T>`. Record creates a plain object type; Map is a runtime data structure with different semantics."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "pick-omit-record-ex1",
+        "title": "API Response Shaping",
+        "description": "Given an `Employee` interface with `id`, `name`, `email`, `salary`, and `ssn`, create a `PublicEmployee` type using `Omit` that excludes `salary` and `ssn`. Write a function `toPublic` that strips those fields. Then create a `Record<string, PublicEmployee>` directory. Log results.",
+        "starterCode": "interface Employee {\n  id: string;\n  name: string;\n  email: string;\n  salary: number;\n  ssn: string;\n}\n\n// Define PublicEmployee, toPublic, and the directory here\n\nconst employees: Employee[] = [\n  { id: \"e1\", name: \"Alice\", email: \"alice@co.com\", salary: 90000, ssn: \"123-45-6789\" },\n  { id: \"e2\", name: \"Bob\", email: \"bob@co.com\", salary: 85000, ssn: \"987-65-4321\" }\n];\n\nconst directory: Record<string, PublicEmployee> = {};\nemployees.forEach(emp => {\n  directory[emp.id] = toPublic(emp);\n});\n\nObject.entries(directory).forEach(([id, emp]) => {\n  console.log(`${id}: ${emp.name} (${emp.email})`);\n});",
+        "solution": "interface Employee {\n  id: string;\n  name: string;\n  email: string;\n  salary: number;\n  ssn: string;\n}\n\ntype PublicEmployee = Omit<Employee, \"salary\" | \"ssn\">;\n\nfunction toPublic(emp: Employee): PublicEmployee {\n  const { salary, ssn, ...public_ } = emp;\n  return public_;\n}\n\nconst employees: Employee[] = [\n  { id: \"e1\", name: \"Alice\", email: \"alice@co.com\", salary: 90000, ssn: \"123-45-6789\" },\n  { id: \"e2\", name: \"Bob\", email: \"bob@co.com\", salary: 85000, ssn: \"987-65-4321\" }\n];\n\nconst directory: Record<string, PublicEmployee> = {};\nemployees.forEach(emp => {\n  directory[emp.id] = toPublic(emp);\n});\n\nObject.entries(directory).forEach(([id, emp]) => {\n  console.log(`${id}: ${emp.name} (${emp.email})`);\n});",
+        "expectedOutput": "e1: Alice (alice@co.com)\ne2: Bob (bob@co.com)",
+        "hints": [
+          "Use `Omit<Employee, 'salary' | 'ssn'>` to create the PublicEmployee type.",
+          "Use destructuring with rest syntax `{ salary, ssn, ...public_ }` to strip the private fields at runtime."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "pick-omit-record-ex2",
+        "title": "Config Registry with Record and Pick",
+        "description": "Define a `ServiceConfig` interface with `name`, `url`, `port`, `apiKey`, and `timeout`. Create a `ServiceSummary` using `Pick` with just `name` and `url`. Build a `Record<string, ServiceSummary>` registry from an array of configs and log each entry.",
+        "starterCode": "interface ServiceConfig {\n  name: string;\n  url: string;\n  port: number;\n  apiKey: string;\n  timeout: number;\n}\n\n// Define ServiceSummary and build the registry\n\nconst configs: ServiceConfig[] = [\n  { name: \"Auth\", url: \"https://auth.api.com\", port: 443, apiKey: \"key1\", timeout: 5000 },\n  { name: \"Data\", url: \"https://data.api.com\", port: 443, apiKey: \"key2\", timeout: 3000 }\n];\n\nconst registry: Record<string, ServiceSummary> = {};\nconfigs.forEach(c => {\n  registry[c.name] = { name: c.name, url: c.url };\n});\n\nObject.values(registry).forEach(s => {\n  console.log(`${s.name}: ${s.url}`);\n});",
+        "solution": "interface ServiceConfig {\n  name: string;\n  url: string;\n  port: number;\n  apiKey: string;\n  timeout: number;\n}\n\ntype ServiceSummary = Pick<ServiceConfig, \"name\" | \"url\">;\n\nconst configs: ServiceConfig[] = [\n  { name: \"Auth\", url: \"https://auth.api.com\", port: 443, apiKey: \"key1\", timeout: 5000 },\n  { name: \"Data\", url: \"https://data.api.com\", port: 443, apiKey: \"key2\", timeout: 3000 }\n];\n\nconst registry: Record<string, ServiceSummary> = {};\nconfigs.forEach(c => {\n  registry[c.name] = { name: c.name, url: c.url };\n});\n\nObject.values(registry).forEach(s => {\n  console.log(`${s.name}: ${s.url}`);\n});",
+        "expectedOutput": "Auth: https://auth.api.com\nData: https://data.api.com",
+        "hints": [
+          "Use `Pick<ServiceConfig, 'name' | 'url'>` to create the summary type with only the two needed fields.",
+          "Build the registry by iterating over configs and extracting just the name and url properties."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "exclude-extract-nonnullable",
+    "sectionId": "utility-types",
+    "orderIndex": 2,
+    "title": "Exclude, Extract & NonNullable",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Exclude<T,U>", "Extract<T,U>", "NonNullable<T>", "conditional type filtering", "union manipulation"],
+    "content": {
+      "explanation": "`Exclude<T, U>` removes from union type `T` all members that are assignable to `U`. It is defined as the distributive conditional type `T extends U ? never : T`. This is useful when you need to create a narrower union by removing specific members. For example, `Exclude<'a' | 'b' | 'c', 'a'>` produces `'b' | 'c'`.\n\n`Extract<T, U>` is the opposite of `Exclude` — it keeps only the members of `T` that are assignable to `U`. Its definition is `T extends U ? T : never`. This is useful for filtering a union to only the members that match a certain pattern. For example, `Extract<string | number | boolean, string | number>` produces `string | number`.\n\n`NonNullable<T>` removes `null` and `undefined` from a type. It is equivalent to `Exclude<T, null | undefined>`. This utility is extremely common in practice because TypeScript's strict null checks mean many values are typed as `T | null` or `T | undefined`. NonNullable strips away the nullable parts when you have already validated that a value exists.\n\nThese three utilities work on union types by filtering their members. They are the type-level equivalents of array filtering — just as `array.filter()` removes elements that don't match a predicate, these utilities remove type members that don't match a type condition. They are building blocks for more complex type transformations and appear frequently in library type definitions.",
+      "codeExamples": [
+        {
+          "title": "Exclude for Removing Union Members",
+          "code": "type AllEvents = \"click\" | \"hover\" | \"scroll\" | \"keydown\" | \"keyup\";\ntype MouseEvents = Exclude<AllEvents, \"keydown\" | \"keyup\">;\n// \"click\" | \"hover\" | \"scroll\"\n\ntype NonStringPrimitives = Exclude<string | number | boolean | symbol, string>;\n// number | boolean | symbol\n\nfunction handleMouseEvent(event: MouseEvents): string {\n  return `Mouse event: ${event}`;\n}\n\nconsole.log(handleMouseEvent(\"click\"));\nconsole.log(handleMouseEvent(\"hover\"));\nconsole.log(handleMouseEvent(\"scroll\"));",
+          "output": "Mouse event: click\nMouse event: hover\nMouse event: scroll",
+          "explanation": "Exclude removes 'keydown' and 'keyup' from the AllEvents union, leaving only mouse-related events. TypeScript enforces that only the remaining members can be passed."
+        },
+        {
+          "title": "Extract for Filtering Union Members",
+          "code": "type AllTypes = string | number | boolean | null | undefined | object;\ntype Primitives = Extract<AllTypes, string | number | boolean>;\n// string | number | boolean\n\ntype EventMap = {\n  click: { x: number; y: number };\n  keydown: { key: string };\n  scroll: { position: number };\n  hover: { target: string };\n};\n\ntype PositionEvents = Extract<keyof EventMap, \"click\" | \"scroll\">;\n// \"click\" | \"scroll\"\n\nfunction getPosition(event: PositionEvents): string {\n  return `Position event: ${event}`;\n}\n\nconsole.log(getPosition(\"click\"));\nconsole.log(getPosition(\"scroll\"));",
+          "output": "Position event: click\nPosition event: scroll",
+          "explanation": "Extract keeps only the members of the first union that are assignable to the second. It acts as a filter, retaining only matching members."
+        },
+        {
+          "title": "NonNullable for Stripping Nullish Types",
+          "code": "type MaybeString = string | null | undefined;\ntype DefiniteString = NonNullable<MaybeString>;\n// string\n\ninterface ApiResponse {\n  data: string | null;\n  error: string | null;\n  metadata: { timestamp: number } | undefined;\n}\n\nfunction processData(response: ApiResponse): string {\n  const data: NonNullable<ApiResponse[\"data\"]> | \"empty\" =\n    response.data ?? \"empty\";\n  return `Data: ${data}`;\n}\n\nconsole.log(processData({ data: \"hello\", error: null, metadata: undefined }));\nconsole.log(processData({ data: null, error: \"fail\", metadata: undefined }));",
+          "output": "Data: hello\nData: empty",
+          "explanation": "NonNullable strips null and undefined from the type. Combined with the nullish coalescing operator (??), it provides both type safety and a runtime fallback."
+        }
+      ],
+      "notes": [
+        "All three utilities are distributive conditional types — they process each member of a union independently.",
+        "`Exclude` and `Extract` work on any union types, not just string literals. You can use them with object types, interfaces, and more.",
+        "`NonNullable<T>` is simply `Exclude<T, null | undefined>` and is the most commonly used of the three."
+      ],
+      "commonPitfalls": [
+        "Confusing `Exclude` and `Omit`. `Exclude` operates on union members, `Omit` operates on object properties. They serve different purposes.",
+        "Using `Extract` with a type that has no overlap with the filter produces `never`, which may cause confusing errors downstream."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "exclude-extract-nonnullable-ex1",
+        "title": "Permission System with Exclude",
+        "description": "Define a type `Permission = 'read' | 'write' | 'delete' | 'admin'`. Create `BasicPermission` by excluding `'admin'`. Write a function that takes a BasicPermission and returns a description. Log results for each basic permission.",
+        "starterCode": "// Define types and function here\n\ntype Permission = \"read\" | \"write\" | \"delete\" | \"admin\";\n\nconst basicPerms: BasicPermission[] = [\"read\", \"write\", \"delete\"];\nbasicPerms.forEach(p => console.log(describePermission(p)));",
+        "solution": "type Permission = \"read\" | \"write\" | \"delete\" | \"admin\";\ntype BasicPermission = Exclude<Permission, \"admin\">;\n\nfunction describePermission(perm: BasicPermission): string {\n  switch (perm) {\n    case \"read\":\n      return \"Can read resources\";\n    case \"write\":\n      return \"Can write resources\";\n    case \"delete\":\n      return \"Can delete resources\";\n  }\n}\n\nconst basicPerms: BasicPermission[] = [\"read\", \"write\", \"delete\"];\nbasicPerms.forEach(p => console.log(describePermission(p)));",
+        "expectedOutput": "Can read resources\nCan write resources\nCan delete resources",
+        "hints": [
+          "Use `Exclude<Permission, 'admin'>` to create the BasicPermission type without the admin variant.",
+          "The switch statement only needs to handle three cases since 'admin' has been excluded from the type."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "exclude-extract-nonnullable-ex2",
+        "title": "Safe Config Reader with NonNullable",
+        "description": "Create an interface `AppConfig` where all properties are nullable: `apiUrl: string | null`, `port: number | null`, `debug: boolean | null`. Write a function `getConfigValue<K extends keyof AppConfig>(config: AppConfig, key: K, fallback: NonNullable<AppConfig[K]>): NonNullable<AppConfig[K]>` that returns the value or fallback. Log results.",
+        "starterCode": "interface AppConfig {\n  apiUrl: string | null;\n  port: number | null;\n  debug: boolean | null;\n}\n\n// Write the getConfigValue function here\n\nconst config: AppConfig = { apiUrl: \"https://api.com\", port: null, debug: null };\n\nconsole.log(getConfigValue(config, \"apiUrl\", \"https://default.com\"));\nconsole.log(getConfigValue(config, \"port\", 3000));\nconsole.log(getConfigValue(config, \"debug\", false));",
+        "solution": "interface AppConfig {\n  apiUrl: string | null;\n  port: number | null;\n  debug: boolean | null;\n}\n\nfunction getConfigValue<K extends keyof AppConfig>(\n  config: AppConfig,\n  key: K,\n  fallback: NonNullable<AppConfig[K]>\n): NonNullable<AppConfig[K]> {\n  const value = config[key];\n  return (value !== null ? value : fallback) as NonNullable<AppConfig[K]>;\n}\n\nconst config: AppConfig = { apiUrl: \"https://api.com\", port: null, debug: null };\n\nconsole.log(getConfigValue(config, \"apiUrl\", \"https://default.com\"));\nconsole.log(getConfigValue(config, \"port\", 3000));\nconsole.log(getConfigValue(config, \"debug\", false));",
+        "expectedOutput": "https://api.com\n3000\nfalse",
+        "hints": [
+          "The function should check if `config[key]` is not null, and if so, return it. Otherwise, return the fallback.",
+          "Use `NonNullable<AppConfig[K]>` for both the fallback parameter type and the return type to ensure null is excluded."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "return-type-parameters",
+    "sectionId": "utility-types",
+    "orderIndex": 3,
+    "title": "ReturnType, Parameters & ConstructorParameters",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["ReturnType<T>", "Parameters<T>", "ConstructorParameters<T>", "InstanceType<T>", "function type inference"],
+    "content": {
+      "explanation": "`ReturnType<T>` extracts the return type from a function type `T`. It uses the conditional type `T extends (...args: any) => infer R ? R : any` to infer `R`, the return type. This is invaluable when you need to type a variable based on what a function returns, especially when working with third-party libraries where you do not control the function's type definition.\n\n`Parameters<T>` extracts the parameter types from a function type as a tuple. Its definition is `T extends (...args: infer P) => any ? P : never`. The result is a tuple type where each element corresponds to a parameter. You can access individual parameters using indexed access: `Parameters<typeof fn>[0]` gives you the type of the first parameter.\n\n`ConstructorParameters<T>` is similar to `Parameters` but works on class constructor types. It extracts the tuple of parameter types from a constructor function. `InstanceType<T>` complements it by extracting the instance type that a constructor produces. These are useful for factory functions, dependency injection, and other patterns that work with class constructors generically.\n\nThese utility types are particularly powerful when combined with `typeof`. Since `typeof myFunction` gives you the function's type, you can write `ReturnType<typeof myFunction>` without needing to explicitly define or export the function's return type. This creates a coupling between the function and the variable — if the function's return type changes, the variable type updates automatically.",
+      "codeExamples": [
+        {
+          "title": "ReturnType in Practice",
+          "code": "function createUser(name: string, age: number) {\n  return {\n    id: Math.random().toString(36).slice(2),\n    name,\n    age,\n    createdAt: new Date().toISOString()\n  };\n}\n\ntype User = ReturnType<typeof createUser>;\n\nfunction displayUser(user: User): string {\n  return `${user.name} (${user.age}) created at ${user.createdAt}`;\n}\n\nconst user = createUser(\"Alice\", 30);\nconsole.log(displayUser(user));\n\n// Also works with async functions\nasync function fetchData(): Promise<string[]> {\n  return [\"a\", \"b\", \"c\"];\n}\n\ntype FetchResult = ReturnType<typeof fetchData>;\n// Promise<string[]>\nconsole.log(\"FetchResult is a Promise type\");",
+          "output": "Alice (30) created at 2025-06-15T00:00:00.000Z\nFetchResult is a Promise type",
+          "explanation": "ReturnType<typeof createUser> extracts the return type without needing an explicit interface. Changes to createUser's return value automatically update the User type."
+        },
+        {
+          "title": "Parameters for Function Wrappers",
+          "code": "function greet(name: string, greeting: string = \"Hello\"): string {\n  return `${greeting}, ${name}!`;\n}\n\ntype GreetParams = Parameters<typeof greet>;\n// [name: string, greeting?: string]\n\nfunction loggedGreet(...args: GreetParams): string {\n  console.log(`Calling greet with: ${args[0]}`);\n  return greet(...args);\n}\n\nconsole.log(loggedGreet(\"Alice\"));\nconsole.log(loggedGreet(\"Bob\", \"Hi\"));",
+          "output": "Calling greet with: Alice\nHello, Alice!\nCalling greet with: Bob\nHi, Bob!",
+          "explanation": "Parameters<typeof greet> gives the exact parameter tuple, so loggedGreet accepts the same arguments as greet. This is the foundation of wrapper/decorator patterns."
+        },
+        {
+          "title": "ConstructorParameters and InstanceType",
+          "code": "class Database {\n  constructor(\n    public host: string,\n    public port: number,\n    public name: string\n  ) {}\n\n  connect(): string {\n    return `Connected to ${this.name} at ${this.host}:${this.port}`;\n  }\n}\n\ntype DbParams = ConstructorParameters<typeof Database>;\n// [host: string, port: number, name: string]\n\ntype DbInstance = InstanceType<typeof Database>;\n// Database\n\nfunction createDatabase(...args: DbParams): DbInstance {\n  return new Database(...args);\n}\n\nconst db = createDatabase(\"localhost\", 5432, \"myapp\");\nconsole.log(db.connect());\n\n// Access individual parameter types\ntype HostType = DbParams[0]; // string\ntype PortType = DbParams[1]; // number\nconsole.log(`Types extracted successfully`);",
+          "output": "Connected to myapp at localhost:5432\nTypes extracted successfully",
+          "explanation": "ConstructorParameters extracts the constructor's parameter types as a tuple. InstanceType extracts the type of instances the constructor creates. Together they enable generic factory functions."
+        }
+      ],
+      "notes": [
+        "`ReturnType` with async functions gives `Promise<T>`. Use `Awaited<ReturnType<typeof fn>>` to get the unwrapped type `T`.",
+        "`Parameters` returns a tuple type. Use indexed access (`Parameters<typeof fn>[0]`) to get individual parameter types.",
+        "These utilities all use `infer` in conditional types internally — understanding how `infer` works helps you create custom versions."
+      ],
+      "commonPitfalls": [
+        "Using `ReturnType<myFunction>` instead of `ReturnType<typeof myFunction>`. ReturnType expects a type, not a value — use `typeof` to get the function's type.",
+        "Forgetting that `ReturnType` of an async function returns `Promise<T>`, not `T`. Wrap with `Awaited` if you need the resolved value type."
+      ],
+      "interviewTips": [
+        "Interviewers may ask you to implement ReturnType from scratch. The answer is: `type MyReturnType<T extends (...args: any) => any> = T extends (...args: any) => infer R ? R : any`.",
+        "Be prepared to explain when to use `ReturnType<typeof fn>` vs defining an explicit return type interface. ReturnType is better for single-use types that should stay in sync with the function; explicit interfaces are better for public API contracts."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "return-type-parameters-ex1",
+        "title": "Function Wrapper with Parameters",
+        "description": "Create a `withLogging` wrapper function that takes any function and returns a new function with the same signature that logs the arguments before calling the original. Use `Parameters` and `ReturnType` to type it correctly. Log results.",
+        "starterCode": "// Write the withLogging function here\n\nfunction add(a: number, b: number): number {\n  return a + b;\n}\n\nfunction greet(name: string): string {\n  return `Hello, ${name}!`;\n}\n\nconst loggedAdd = withLogging(add);\nconst loggedGreet = withLogging(greet);\n\nconsole.log(loggedAdd(3, 4));\nconsole.log(loggedGreet(\"Alice\"));",
+        "solution": "function withLogging<T extends (...args: any[]) => any>(\n  fn: T\n): (...args: Parameters<T>) => ReturnType<T> {\n  return (...args: Parameters<T>): ReturnType<T> => {\n    console.log(`Args: ${args.join(\", \")}`);\n    return fn(...args);\n  };\n}\n\nfunction add(a: number, b: number): number {\n  return a + b;\n}\n\nfunction greet(name: string): string {\n  return `Hello, ${name}!`;\n}\n\nconst loggedAdd = withLogging(add);\nconst loggedGreet = withLogging(greet);\n\nconsole.log(loggedAdd(3, 4));\nconsole.log(loggedGreet(\"Alice\"));",
+        "expectedOutput": "Args: 3, 4\n7\nArgs: Alice\nHello, Alice!",
+        "hints": [
+          "The wrapper function's generic type T should extend `(...args: any[]) => any`. Use `Parameters<T>` for args and `ReturnType<T>` for the return.",
+          "Inside the wrapper, log the arguments with `args.join(', ')`, then call and return `fn(...args)`."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "return-type-parameters-ex2",
+        "title": "Generic Factory with ConstructorParameters",
+        "description": "Write a generic `createInstance` factory function that takes a class constructor and its arguments, and returns a new instance. Use `ConstructorParameters` to type the arguments. Test with two different classes and log results.",
+        "starterCode": "// Write the createInstance function here\n\nclass Point {\n  constructor(public x: number, public y: number) {}\n  toString(): string {\n    return `(${this.x}, ${this.y})`;\n  }\n}\n\nclass Color {\n  constructor(public name: string, public hex: string) {}\n  toString(): string {\n    return `${this.name}: ${this.hex}`;\n  }\n}\n\nconst point = createInstance(Point, 10, 20);\nconst color = createInstance(Color, \"Red\", \"#ff0000\");\n\nconsole.log(point.toString());\nconsole.log(color.toString());",
+        "solution": "function createInstance<T extends new (...args: any[]) => any>(\n  ctor: T,\n  ...args: ConstructorParameters<T>\n): InstanceType<T> {\n  return new ctor(...args);\n}\n\nclass Point {\n  constructor(public x: number, public y: number) {}\n  toString(): string {\n    return `(${this.x}, ${this.y})`;\n  }\n}\n\nclass Color {\n  constructor(public name: string, public hex: string) {}\n  toString(): string {\n    return `${this.name}: ${this.hex}`;\n  }\n}\n\nconst point = createInstance(Point, 10, 20);\nconst color = createInstance(Color, \"Red\", \"#ff0000\");\n\nconsole.log(point.toString());\nconsole.log(color.toString());",
+        "expectedOutput": "(10, 20)\nRed: #ff0000",
+        "hints": [
+          "The generic T should extend `new (...args: any[]) => any` to constrain it to constructor types.",
+          "Use `ConstructorParameters<T>` for the rest parameter and `InstanceType<T>` for the return type."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  },
+  {
+    "id": "building-custom-utilities",
+    "sectionId": "utility-types",
+    "orderIndex": 4,
+    "title": "Building Custom Utility Types",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["custom utility types", "combining utilities", "recursive types", "generic constraints", "type-level programming"],
+    "content": {
+      "explanation": "Once you understand the built-in utility types, you can combine and extend them to build custom utilities tailored to your application's needs. Custom utility types follow the same patterns: mapped types for transforming object properties, conditional types for type-level logic, template literal types for string manipulation, and recursive types for nested structures.\n\nA common pattern is composing built-in utilities to create application-specific types. For example, `DeepReadonly<T>` recursively applies `Readonly` to all nested objects. `PartialBy<T, K>` makes only specific keys optional while keeping the rest required. `Mutable<T>` removes `readonly` from all properties. These composites solve real problems that the built-in utilities alone cannot.\n\nRecursive utility types are powerful but should be used with care. TypeScript has a recursion depth limit (usually around 100 levels), and deeply recursive types can slow down the compiler. Practical recursive types include `DeepPartial<T>` (makes all nested properties optional), `DeepReadonly<T>` (makes all nested properties readonly), and `Flatten<T>` (flattens nested object types).\n\nWhen building custom utilities, start with the simplest version that works and add complexity only as needed. Document your utility types well, as they can be difficult to read. Consider whether a simpler approach (like explicit interfaces) would be more maintainable. Utility types shine when they eliminate large amounts of duplication, but overusing them can make a codebase harder to understand.",
+      "codeExamples": [
+        {
+          "title": "DeepReadonly and DeepPartial",
+          "code": "type DeepReadonly<T> = {\n  readonly [K in keyof T]: T[K] extends object\n    ? T[K] extends Function\n      ? T[K]\n      : DeepReadonly<T[K]>\n    : T[K];\n};\n\ntype DeepPartial<T> = {\n  [K in keyof T]?: T[K] extends object\n    ? T[K] extends Function\n      ? T[K]\n      : DeepPartial<T[K]>\n    : T[K];\n};\n\ninterface Config {\n  db: { host: string; port: number };\n  cache: { ttl: number; enabled: boolean };\n}\n\nconst config: DeepReadonly<Config> = {\n  db: { host: \"localhost\", port: 5432 },\n  cache: { ttl: 3600, enabled: true }\n};\n\n// config.db.host = \"remote\"; // Error: readonly\nconsole.log(config.db.host);\nconsole.log(config.cache.ttl);\n\nconst partial: DeepPartial<Config> = { db: { host: \"remote\" } };\nconsole.log(partial.db?.host);",
+          "output": "localhost\n3600\nremote",
+          "explanation": "DeepReadonly recursively makes all properties readonly, including nested objects. DeepPartial recursively makes all properties optional. Both skip Function types to preserve method signatures."
+        },
+        {
+          "title": "PartialBy and RequiredBy",
+          "code": "type PartialBy<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;\ntype RequiredBy<T, K extends keyof T> = Omit<T, K> & Required<Pick<T, K>>;\n\ninterface User {\n  id: string;\n  name: string;\n  email?: string;\n  phone?: string;\n}\n\n// Only id is optional for creation\ntype CreateUser = PartialBy<User, \"id\">;\n// Email is required for verified users\ntype VerifiedUser = RequiredBy<User, \"email\">;\n\nfunction createUser(data: CreateUser): User {\n  return {\n    id: data.id || Math.random().toString(36).slice(2, 8),\n    name: data.name,\n    email: data.email,\n    phone: data.phone\n  };\n}\n\nconst user = createUser({ name: \"Alice\", email: \"alice@test.com\" });\nconsole.log(`${user.name}: ${user.email}`);\n\nconst user2 = createUser({ id: \"custom-id\", name: \"Bob\" });\nconsole.log(`${user2.id}: ${user2.name}`);",
+          "output": "Alice: alice@test.com\ncustom-id: Bob",
+          "explanation": "PartialBy makes specific keys optional by combining Omit and Partial<Pick>. RequiredBy does the inverse. These are more precise than blanket Partial or Required."
+        },
+        {
+          "title": "Combining Utilities for API Types",
+          "code": "type ApiResponse<T> = {\n  data: T;\n  status: number;\n  timestamp: string;\n};\n\ntype Paginated<T> = {\n  items: T[];\n  total: number;\n  page: number;\n  pageSize: number;\n};\n\ntype PaginatedResponse<T> = ApiResponse<Paginated<T>>;\n\ninterface Product {\n  id: string;\n  name: string;\n  price: number;\n}\n\nfunction createResponse<T>(data: T): ApiResponse<T> {\n  return { data, status: 200, timestamp: new Date().toISOString() };\n}\n\nconst response: PaginatedResponse<Product> = createResponse({\n  items: [\n    { id: \"p1\", name: \"Widget\", price: 9.99 },\n    { id: \"p2\", name: \"Gadget\", price: 19.99 }\n  ],\n  total: 50,\n  page: 1,\n  pageSize: 10\n});\n\nconsole.log(`Page ${response.data.page}: ${response.data.items.length} items`);\nconsole.log(`Total: ${response.data.total}, Status: ${response.status}`);",
+          "output": "Page 1: 2 items\nTotal: 50, Status: 200",
+          "explanation": "PaginatedResponse composes ApiResponse and Paginated generics to create a precise type for paginated API endpoints. Each utility type handles one concern."
+        }
+      ],
+      "notes": [
+        "Custom utility types should be well-documented since they can be hard to understand at a glance. Use JSDoc comments to explain their purpose.",
+        "Recursive utility types have a depth limit in TypeScript. If you hit it, consider flattening your data structures or using a non-recursive approach.",
+        "Prefer composing built-in utilities before writing custom mapped or conditional types. Built-in types are well-tested and familiar to other developers."
+      ],
+      "commonPitfalls": [
+        "Creating overly complex utility types that are harder to understand than the duplication they eliminate. If a type requires a paragraph of explanation, consider simpler alternatives.",
+        "Recursive types that do not handle edge cases like arrays, functions, or primitives can produce unexpected results. Always include base cases for non-object types."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "building-custom-utilities-ex1",
+        "title": "Create a Nullable Utility",
+        "description": "Create a utility type `Nullable<T>` that makes all properties of T accept their original type OR null. Also create `UndefinedOptional<T>` that converts all `undefined`-accepting properties to optional. Demonstrate both with a User type and log results.",
+        "starterCode": "// Define Nullable<T> utility type here\n\ninterface User {\n  name: string;\n  age: number;\n  email: string;\n}\n\ntype NullableUser = Nullable<User>;\n\nconst user: NullableUser = { name: \"Alice\", age: null, email: \"alice@test.com\" };\nconsole.log(user.name);\nconsole.log(user.age);\nconsole.log(user.email);",
+        "solution": "type Nullable<T> = { [K in keyof T]: T[K] | null };\n\ninterface User {\n  name: string;\n  age: number;\n  email: string;\n}\n\ntype NullableUser = Nullable<User>;\n\nconst user: NullableUser = { name: \"Alice\", age: null, email: \"alice@test.com\" };\nconsole.log(user.name);\nconsole.log(user.age);\nconsole.log(user.email);",
+        "expectedOutput": "Alice\nnull\nalice@test.com",
+        "hints": [
+          "Nullable<T> is a mapped type: `{ [K in keyof T]: T[K] | null }` — it adds `| null` to each property's type.",
+          "This is similar to how Partial adds `?` to each property, but instead you are adding `| null` to the value type."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "building-custom-utilities-ex2",
+        "title": "Create a PickByType Utility",
+        "description": "Create a utility type `PickByType<T, V>` that picks only the properties from T whose values are assignable to V. For example, `PickByType<{ a: string; b: number; c: string }, string>` should produce `{ a: string; c: string }`. Demonstrate and log results.",
+        "starterCode": "// Define PickByType<T, V> utility type here\n\ninterface Mixed {\n  name: string;\n  age: number;\n  email: string;\n  active: boolean;\n  score: number;\n}\n\ntype StringFields = PickByType<Mixed, string>;\ntype NumberFields = PickByType<Mixed, number>;\n\nconst strings: StringFields = { name: \"Alice\", email: \"alice@test.com\" };\nconst numbers: NumberFields = { age: 30, score: 95 };\n\nconsole.log(`${strings.name}, ${strings.email}`);\nconsole.log(`${numbers.age}, ${numbers.score}`);",
+        "solution": "type PickByType<T, V> = {\n  [K in keyof T as T[K] extends V ? K : never]: T[K];\n};\n\ninterface Mixed {\n  name: string;\n  age: number;\n  email: string;\n  active: boolean;\n  score: number;\n}\n\ntype StringFields = PickByType<Mixed, string>;\ntype NumberFields = PickByType<Mixed, number>;\n\nconst strings: StringFields = { name: \"Alice\", email: \"alice@test.com\" };\nconst numbers: NumberFields = { age: 30, score: 95 };\n\nconsole.log(`${strings.name}, ${strings.email}`);\nconsole.log(`${numbers.age}, ${numbers.score}`);",
+        "expectedOutput": "Alice, alice@test.com\n30, 95",
+        "hints": [
+          "Use key remapping with a conditional: `[K in keyof T as T[K] extends V ? K : never]` filters out properties whose type does not extend V.",
+          "When the key remaps to `never`, it is removed from the resulting type, effectively filtering the properties."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

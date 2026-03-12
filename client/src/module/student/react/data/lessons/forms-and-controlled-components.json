@@ -1,0 +1,352 @@
+[
+  {
+    "id": "controlled-components",
+    "sectionId": "forms-and-controlled-components",
+    "orderIndex": 0,
+    "title": "Controlled Components",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["controlled components", "value prop", "onChange handler", "single source of truth", "form state"],
+    "content": {
+      "explanation": "In React, a controlled component is a form element whose value is driven by React state. The component's displayed value comes from a state variable (via the value prop), and every change to the input is handled by an onChange callback that updates that state. This creates a unidirectional data flow: state determines what the input displays, and user interactions update the state, which in turn updates the input.\n\nThe pattern is simple: bind the input's value attribute to a state variable, and bind its onChange to a handler that calls setState with the new value. For text inputs, the event handler typically reads event.target.value. For checkboxes, it reads event.target.checked. For select elements, it reads event.target.value from the selected option. The key is that React state is the single source of truth — the DOM input merely reflects what's in state.\n\nControlled components give you full programmatic control over form data. You can validate input on every keystroke, transform values (e.g., force uppercase), conditionally prevent changes, synchronize multiple fields, and implement complex form logic. This level of control is not possible with uncontrolled components where the DOM owns the value.\n\nThe trade-off is verbosity. Every form element needs a state variable and an onChange handler. For a form with many fields, this means many useState calls and handlers. This boilerplate can be reduced with patterns like a single state object for all fields, a generic handleChange function, or form libraries. But the core pattern remains the same.\n\nControlled components are the recommended approach in React for most form use cases. They make it straightforward to validate on change, disable the submit button until the form is valid, enforce input formats, and reset form fields. The React documentation explicitly recommends controlled components as the default approach for handling form data.",
+      "codeExamples": [
+        {
+          "title": "Basic controlled input",
+          "code": "function ControlledInput() {\n  const [name, setName] = React.useState('');\n\n  const handleChange = (event) => {\n    setName(event.target.value);\n    console.log('Input changed to:', event.target.value);\n  };\n\n  console.log('Current state:', JSON.stringify(name));\n  console.log('Input value equals state: true');\n\n  // In JSX: <input value={name} onChange={handleChange} />\n  // Simulating a change event:\n  handleChange({ target: { value: 'Alice' } });\n\n  return null;\n}\n\nControlledInput();",
+          "output": "Current state: \"\"\nInput value equals state: true\nInput changed to: Alice",
+          "explanation": "The input's value is always equal to the state. The onChange handler updates state, which causes a re-render, which updates the input's displayed value. React state is the single source of truth."
+        },
+        {
+          "title": "Controlled select and checkbox",
+          "code": "function FormControls() {\n  const [color, setColor] = React.useState('blue');\n  const [agreed, setAgreed] = React.useState(false);\n\n  const handleColorChange = (e) => {\n    setColor(e.target.value);\n  };\n\n  const handleCheckboxChange = (e) => {\n    setAgreed(e.target.checked);\n  };\n\n  console.log('Selected color:', color);\n  console.log('Agreed:', agreed);\n\n  // Simulate interactions\n  handleColorChange({ target: { value: 'red' } });\n  handleCheckboxChange({ target: { checked: true } });\n\n  console.log('After changes - color: red, agreed: true');\n  return null;\n}\n\nFormControls();",
+          "output": "Selected color: blue\nAgreed: false\nAfter changes - color: red, agreed: true",
+          "explanation": "Select elements use value and onChange like text inputs. Checkboxes use checked instead of value, and event.target.checked instead of event.target.value. Both follow the controlled pattern."
+        },
+        {
+          "title": "Input transformation in controlled component",
+          "code": "function UpperCaseInput() {\n  const [text, setText] = React.useState('');\n\n  const handleChange = (e) => {\n    // Transform: force uppercase\n    const upper = e.target.value.toUpperCase();\n    setText(upper);\n    console.log('Transformed input:', upper);\n  };\n\n  console.log('State:', JSON.stringify(text));\n\n  // Simulate typing 'hello'\n  handleChange({ target: { value: 'hello' } });\n\n  return null;\n}\n\nUpperCaseInput();",
+          "output": "State: \"\"\nTransformed input: HELLO",
+          "explanation": "Because we control the value, we can transform user input before storing it. The input always shows the transformed value. This is only possible with controlled components."
+        }
+      ],
+      "notes": [
+        "A controlled component requires both value (or checked) and onChange. Setting value without onChange makes the input read-only — React will warn in the console.",
+        "The single source of truth principle means you never need to query the DOM to get the form value. The state always has the current value.",
+        "For controlled components, the initial state determines the initial value of the input. There is no need for defaultValue when using the value prop."
+      ],
+      "commonPitfalls": [
+        "Setting value to undefined or null accidentally. If value becomes undefined, the input becomes uncontrolled (editable without onChange), causing inconsistent behavior. Always initialize state to a valid value (empty string for text inputs).",
+        "Forgetting onChange when setting value. React will make the input read-only and show a warning. Every controlled input needs both value and onChange to be interactive."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "controlled-components-ex1",
+        "title": "Controlled Text Input",
+        "description": "Create a controlled component pattern with a state variable and change handler. Simulate a user typing.",
+        "starterCode": "function NameInput() {\n  // TODO:\n  // 1. Create state 'name' initialized to ''\n  // 2. Create handleChange(e) that sets name to e.target.value\n  //    and logs \"Changed: <value>\"\n  // 3. Log \"Name: <name>\"\n  // 4. Simulate: handleChange({ target: { value: 'React' } })\n\n  return null;\n}\n\nNameInput();",
+        "solution": "function NameInput() {\n  const [name, setName] = React.useState('');\n\n  const handleChange = (e) => {\n    setName(e.target.value);\n    console.log('Changed: ' + e.target.value);\n  };\n\n  console.log('Name: ' + name);\n  handleChange({ target: { value: 'React' } });\n\n  return null;\n}\n\nNameInput();",
+        "expectedOutput": "Name: \nChanged: React",
+        "hints": [
+          "Initialize state with an empty string: useState('').",
+          "The onChange handler receives an event object. Access the new value via event.target.value."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "controlled-components-ex2",
+        "title": "Controlled with Transformation",
+        "description": "Create a controlled input that transforms all input to lowercase before storing in state.",
+        "starterCode": "function LowerCaseInput() {\n  // TODO:\n  // 1. Create state 'text' initialized to ''\n  // 2. Create handleChange(e) that:\n  //    - Converts e.target.value to lowercase\n  //    - Sets state to the lowercase value\n  //    - Logs \"Stored: <lowercaseValue>\"\n  // 3. Log \"Text: <text>\"\n  // 4. Simulate: handleChange({ target: { value: 'HELLO World' } })\n\n  return null;\n}\n\nLowerCaseInput();",
+        "solution": "function LowerCaseInput() {\n  const [text, setText] = React.useState('');\n\n  const handleChange = (e) => {\n    const lower = e.target.value.toLowerCase();\n    setText(lower);\n    console.log('Stored: ' + lower);\n  };\n\n  console.log('Text: ' + text);\n  handleChange({ target: { value: 'HELLO World' } });\n\n  return null;\n}\n\nLowerCaseInput();",
+        "expectedOutput": "Text: \nStored: hello world",
+        "hints": [
+          "Use String.toLowerCase() to transform the input value before storing it in state.",
+          "The transformation happens in the onChange handler, before calling setState."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "uncontrolled-components",
+    "sectionId": "forms-and-controlled-components",
+    "orderIndex": 1,
+    "title": "Uncontrolled Components",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["uncontrolled components", "useRef", "defaultValue", "DOM as source of truth", "form submission"],
+    "content": {
+      "explanation": "Uncontrolled components are form elements that manage their own state internally through the DOM, rather than through React state. Instead of binding value and onChange, you use a ref to access the DOM element's current value when you need it — typically on form submission. The DOM itself is the source of truth for the input's value, not React state.\n\nTo create an uncontrolled component, you use useRef to create a reference and attach it to the input via the ref attribute. You use defaultValue (instead of value) to set the initial value. After that, the input manages its own state internally. When you need the current value (e.g., on form submit), you read it from ref.current.value.\n\nUncontrolled components have legitimate use cases. They are simpler for basic forms where you only need the value on submission, not on every keystroke. They integrate more easily with non-React code and third-party DOM libraries. They can have minor performance advantages for forms with many fields, since they don't trigger React re-renders on every input change. And file inputs (<input type=\"file\">) are always uncontrolled in React because their value is read-only and can only be set by user interaction.\n\nThe key difference from controlled components is when and how you access the value. Controlled: state is always current, updated on every change. Uncontrolled: you pull the value from the DOM when needed. This means you cannot easily validate on every keystroke, transform input in real-time, or conditionally prevent changes with uncontrolled components.\n\nIn practice, controlled components are the recommended default for most React applications. Uncontrolled components are reserved for specific scenarios: integrating with non-React libraries, working with file inputs, rapid prototyping, and very simple forms where real-time validation isn't needed.",
+      "codeExamples": [
+        {
+          "title": "Basic uncontrolled component with ref",
+          "code": "function UncontrolledForm() {\n  const nameRef = React.useRef(null);\n  const emailRef = React.useRef(null);\n\n  const handleSubmit = () => {\n    // Read values from DOM via refs\n    const name = nameRef.current ? nameRef.current.value : 'John';\n    const email = emailRef.current ? emailRef.current.value : 'john@test.com';\n    console.log('Submitted name:', name);\n    console.log('Submitted email:', email);\n  };\n\n  // Simulate refs being attached to inputs with values\n  nameRef.current = { value: 'John' };\n  emailRef.current = { value: 'john@test.com' };\n\n  console.log('Form rendered (no re-renders on typing)');\n  handleSubmit();\n  return null;\n}\n\nUncontrolledForm();",
+          "output": "Form rendered (no re-renders on typing)\nSubmitted name: John\nSubmitted email: john@test.com",
+          "explanation": "Refs are used to access DOM values only when needed (on submit). The component doesn't re-render as the user types because no state is being updated."
+        },
+        {
+          "title": "defaultValue vs value",
+          "code": "function DefaultValueDemo() {\n  // Uncontrolled: uses defaultValue\n  // <input defaultValue=\"initial\" ref={inputRef} />\n  // The DOM manages the current value; React only sets the initial\n\n  // Controlled: uses value\n  // <input value={state} onChange={handler} />\n  // React manages the current value through state\n\n  const initialValue = 'initial text';\n  console.log('defaultValue sets initial DOM value:', initialValue);\n  console.log('After that, DOM manages its own state');\n  console.log('value prop keeps input synced with React state');\n  console.log('defaultValue is for uncontrolled, value is for controlled');\n  return null;\n}\n\nDefaultValueDemo();",
+          "output": "defaultValue sets initial DOM value: initial text\nAfter that, DOM manages its own state\nvalue prop keeps input synced with React state\ndefaultValue is for uncontrolled, value is for controlled",
+          "explanation": "defaultValue sets the initial value and then hands control to the DOM. value keeps the input perpetually controlled by React state. Using both simultaneously is a mistake."
+        },
+        {
+          "title": "File input (always uncontrolled)",
+          "code": "function FileUpload() {\n  const fileRef = React.useRef(null);\n\n  const handleUpload = () => {\n    // Simulate file ref\n    const files = fileRef.current ? fileRef.current.files : [];\n    console.log('Files selected:', files.length);\n  };\n\n  // Simulate a file input ref\n  fileRef.current = { files: [{ name: 'document.pdf' }] };\n\n  console.log('File inputs are always uncontrolled');\n  console.log('Their value is read-only in HTML');\n  handleUpload();\n  return null;\n}\n\nFileUpload();",
+          "output": "File inputs are always uncontrolled\nTheir value is read-only in HTML\nFiles selected: 1",
+          "explanation": "File inputs cannot be controlled in React because their value is read-only for security reasons. You must use a ref to access the selected files."
+        }
+      ],
+      "notes": [
+        "Use defaultValue for uncontrolled text inputs and defaultChecked for uncontrolled checkboxes/radio buttons. Never use value or checked on uncontrolled components.",
+        "File inputs (<input type='file'>) are always uncontrolled in React. Use refs to access the FileList on submission.",
+        "Uncontrolled components don't trigger re-renders on input changes, which can be a performance benefit for forms with many fields and no real-time validation requirements."
+      ],
+      "commonPitfalls": [
+        "Mixing controlled and uncontrolled patterns on the same input. An input should be either controlled (value + onChange) or uncontrolled (defaultValue + ref), never both.",
+        "Trying to read ref.current.value during render. The ref might be null before the DOM mounts. Always access ref values in event handlers or effects."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "uncontrolled-components-ex1",
+        "title": "Uncontrolled Form Submission",
+        "description": "Create an uncontrolled form that reads values from refs on submission.",
+        "starterCode": "function SimpleForm() {\n  // TODO:\n  // 1. Create a ref for username\n  // 2. Simulate the ref being attached: usernameRef.current = { value: 'Alice' }\n  // 3. Create handleSubmit() that reads ref.current.value\n  //    and logs \"Submitted: <value>\"\n  // 4. Log \"Form ready\"\n  // 5. Call handleSubmit()\n\n  return null;\n}\n\nSimpleForm();",
+        "solution": "function SimpleForm() {\n  const usernameRef = React.useRef(null);\n  usernameRef.current = { value: 'Alice' };\n\n  const handleSubmit = () => {\n    console.log('Submitted: ' + usernameRef.current.value);\n  };\n\n  console.log('Form ready');\n  handleSubmit();\n  return null;\n}\n\nSimpleForm();",
+        "expectedOutput": "Form ready\nSubmitted: Alice",
+        "hints": [
+          "Create a ref with React.useRef(null) and simulate the DOM attachment by setting ref.current to an object with a value property.",
+          "Read the value in the submit handler via ref.current.value."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "uncontrolled-components-ex2",
+        "title": "Multiple Uncontrolled Inputs",
+        "description": "Create an uncontrolled form with multiple refs and log all values on submit.",
+        "starterCode": "function RegistrationForm() {\n  // TODO:\n  // 1. Create refs for name, email, and age\n  // 2. Simulate refs:\n  //    nameRef.current = { value: 'Bob' }\n  //    emailRef.current = { value: 'bob@test.com' }\n  //    ageRef.current = { value: '25' }\n  // 3. Create handleSubmit() that logs:\n  //    \"Name: <name>\"\n  //    \"Email: <email>\"\n  //    \"Age: <age>\"\n  // 4. Call handleSubmit()\n\n  return null;\n}\n\nRegistrationForm();",
+        "solution": "function RegistrationForm() {\n  const nameRef = React.useRef(null);\n  const emailRef = React.useRef(null);\n  const ageRef = React.useRef(null);\n\n  nameRef.current = { value: 'Bob' };\n  emailRef.current = { value: 'bob@test.com' };\n  ageRef.current = { value: '25' };\n\n  const handleSubmit = () => {\n    console.log('Name: ' + nameRef.current.value);\n    console.log('Email: ' + emailRef.current.value);\n    console.log('Age: ' + ageRef.current.value);\n  };\n\n  handleSubmit();\n  return null;\n}\n\nRegistrationForm();",
+        "expectedOutput": "Name: Bob\nEmail: bob@test.com\nAge: 25",
+        "hints": [
+          "Create one useRef for each input field in the form.",
+          "Access each field's value through its ref: nameRef.current.value, emailRef.current.value, etc."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "form-validation",
+    "sectionId": "forms-and-controlled-components",
+    "orderIndex": 2,
+    "title": "Form Validation",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["client-side validation", "error states", "form submission", "validation patterns", "error messages"],
+    "content": {
+      "explanation": "Form validation ensures user input meets expected criteria before submission. In React, client-side validation is typically implemented with controlled components, where the state contains both the form values and any validation errors. Validation can occur on change (as the user types), on blur (when the user leaves a field), or on submit (when the form is submitted). Each timing has different user experience implications.\n\nValidation on change provides immediate feedback but can be annoying for incomplete input (showing 'invalid email' before the user finishes typing). Validation on blur is a good middle ground — it waits until the user moves to the next field before checking. Validation on submit is the simplest but provides the latest feedback, requiring the user to submit before seeing any errors. Many forms combine these: validate on blur for individual fields and validate all fields on submit.\n\nThe typical validation pattern uses an errors object alongside the form values in state. Each key in the errors object corresponds to a form field, and its value is the error message (or an empty string / undefined for valid fields). A field is considered invalid when its error value is truthy. The submit handler checks all fields and either proceeds with submission or updates the errors state.\n\nValidation functions should be pure and reusable. A common pattern is to create a validate function that takes the entire form state and returns an errors object. This makes validation logic easy to test in isolation and reuse across similar forms. For complex validation (interdependent fields, async validation like checking username availability), the validate function can return promises.\n\nPreventing submission while the form is invalid is straightforward: check the errors object before proceeding. You can disable the submit button when errors exist, show a summary of all errors at the top of the form, or highlight individual fields with their specific error messages. Good form validation provides clear, specific error messages and highlights the problematic fields.",
+      "codeExamples": [
+        {
+          "title": "Basic form validation",
+          "code": "function validateForm(values) {\n  const errors = {};\n\n  if (!values.name) {\n    errors.name = 'Name is required';\n  } else if (values.name.length < 2) {\n    errors.name = 'Name must be at least 2 characters';\n  }\n\n  if (!values.email) {\n    errors.email = 'Email is required';\n  } else if (!values.email.includes('@')) {\n    errors.email = 'Email must contain @';\n  }\n\n  return errors;\n}\n\n// Test valid input\nlet errors = validateForm({ name: 'Alice', email: 'alice@test.com' });\nconsole.log('Valid form errors:', JSON.stringify(errors));\nconsole.log('Is valid:', Object.keys(errors).length === 0);\n\n// Test invalid input\nerrors = validateForm({ name: '', email: 'invalid' });\nconsole.log('Invalid form errors:', JSON.stringify(errors));\nconsole.log('Is valid:', Object.keys(errors).length === 0);",
+          "output": "Valid form errors: {}\nIs valid: true\nInvalid form errors: {\"name\":\"Name is required\",\"email\":\"Email must contain @\"}\nIs valid: false",
+          "explanation": "The validate function takes form values and returns an errors object. An empty errors object means the form is valid. Each key maps to a field name and the value is the error message."
+        },
+        {
+          "title": "Validation on submit",
+          "code": "function LoginForm() {\n  const [values, setValues] = React.useState({ email: '', password: '' });\n  const [errors, setErrors] = React.useState({});\n\n  const validate = (vals) => {\n    const errs = {};\n    if (!vals.email) errs.email = 'Email required';\n    if (!vals.password) errs.password = 'Password required';\n    else if (vals.password.length < 6) errs.password = 'Min 6 characters';\n    return errs;\n  };\n\n  const handleSubmit = (formValues) => {\n    const validationErrors = validate(formValues);\n    setErrors(validationErrors);\n\n    if (Object.keys(validationErrors).length === 0) {\n      console.log('Form submitted successfully');\n    } else {\n      console.log('Validation failed:', JSON.stringify(validationErrors));\n    }\n  };\n\n  // Test with invalid data\n  console.log('Submitting empty form...');\n  handleSubmit({ email: '', password: '123' });\n\n  // Test with valid data\n  console.log('Submitting valid form...');\n  handleSubmit({ email: 'user@test.com', password: 'secure123' });\n\n  return null;\n}\n\nLoginForm();",
+          "output": "Submitting empty form...\nValidation failed: {\"email\":\"Email required\",\"password\":\"Min 6 characters\"}\nSubmitting valid form...\nForm submitted successfully",
+          "explanation": "The submit handler validates all fields before proceeding. If errors exist, they are stored in state and displayed to the user. Only when all fields are valid does the submission proceed."
+        },
+        {
+          "title": "Field-level validation on blur",
+          "code": "function validateField(name, value) {\n  switch (name) {\n    case 'username':\n      if (!value) return 'Username is required';\n      if (value.length < 3) return 'Username must be at least 3 characters';\n      return '';\n    case 'age':\n      if (!value) return 'Age is required';\n      if (isNaN(Number(value))) return 'Age must be a number';\n      if (Number(value) < 18) return 'Must be at least 18';\n      return '';\n    default:\n      return '';\n  }\n}\n\n// Simulate blur events\nconsole.log('Blur username empty:', validateField('username', ''));\nconsole.log('Blur username short:', validateField('username', 'ab'));\nconsole.log('Blur username valid:', validateField('username', 'alice'));\nconsole.log('Blur age invalid:', validateField('age', 'abc'));\nconsole.log('Blur age young:', validateField('age', '15'));\nconsole.log('Blur age valid:', validateField('age', '25'));",
+          "output": "Blur username empty: Username is required\nBlur username short: Username must be at least 3 characters\nBlur username valid: \nBlur age invalid: Age must be a number\nBlur age young: Must be at least 18\nBlur age valid: ",
+          "explanation": "Field-level validation runs when the user leaves a field (blur event). Each field has its own validation rules. An empty string return means the field is valid."
+        }
+      ],
+      "notes": [
+        "Keep validation functions pure and separate from component logic. This makes them easy to test and reuse across forms.",
+        "Validation on blur provides the best user experience for most forms — it does not interrupt typing but catches errors before submission.",
+        "Always validate on the server as well. Client-side validation improves UX but can be bypassed. Server validation is the security boundary."
+      ],
+      "commonPitfalls": [
+        "Only validating on submit without field-level feedback. Users get frustrated when they fill out a long form and only see errors after submitting. Combine on-blur and on-submit validation for the best experience.",
+        "Showing validation errors before the user has interacted with a field. Use a 'touched' state to track which fields the user has visited, and only show errors for touched fields."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "form-validation-ex1",
+        "title": "Email Validator",
+        "description": "Create a validation function that checks email format and test it with valid and invalid inputs.",
+        "starterCode": "// TODO:\n// 1. Create validateEmail(email) that returns:\n//    'Email is required' if empty\n//    'Email must contain @' if no @ symbol\n//    'Email must contain a domain' if nothing after @\n//    '' (empty string) if valid\n// 2. Test with these inputs and log \"<input>: <result>\":\n//    '' (empty)\n//    'hello' (no @)\n//    'hello@' (no domain)\n//    'hello@test.com' (valid)\n",
+        "solution": "function validateEmail(email) {\n  if (!email) return 'Email is required';\n  if (!email.includes('@')) return 'Email must contain @';\n  if (email.split('@')[1] === '') return 'Email must contain a domain';\n  return '';\n}\n\nconsole.log('\\'\\': ' + validateEmail(''));\nconsole.log('\\'hello\\': ' + validateEmail('hello'));\nconsole.log('\\'hello@\\': ' + validateEmail('hello@'));\nconsole.log('\\'hello@test.com\\': ' + validateEmail('hello@test.com'));",
+        "expectedOutput": "'': Email is required\n'hello': Email must contain @\n'hello@': Email must contain a domain\n'hello@test.com': ",
+        "hints": [
+          "Check conditions in order: empty first, then missing @, then missing domain after @.",
+          "Use String.includes('@') to check for the @ symbol and String.split('@')[1] to check the domain part."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "form-validation-ex2",
+        "title": "Form Validation with Error Object",
+        "description": "Create a validate function that checks multiple fields and returns an errors object. Test with valid and invalid inputs.",
+        "starterCode": "// TODO:\n// 1. Create validate(values) that checks:\n//    - values.name: required, min 2 chars\n//    - values.age: required, must be a number, min 18\n//    Returns an errors object (empty = valid)\n// 2. Test with invalid: { name: '', age: '15' }\n//    Log \"Errors: <JSON>\"\n//    Log \"Valid: <boolean>\"\n// 3. Test with valid: { name: 'Alice', age: '25' }\n//    Log \"Errors: <JSON>\"\n//    Log \"Valid: <boolean>\"\n",
+        "solution": "function validate(values) {\n  const errors = {};\n  if (!values.name) {\n    errors.name = 'Name is required';\n  } else if (values.name.length < 2) {\n    errors.name = 'Name must be at least 2 characters';\n  }\n  if (!values.age) {\n    errors.age = 'Age is required';\n  } else if (isNaN(Number(values.age))) {\n    errors.age = 'Age must be a number';\n  } else if (Number(values.age) < 18) {\n    errors.age = 'Must be at least 18';\n  }\n  return errors;\n}\n\nlet errors = validate({ name: '', age: '15' });\nconsole.log('Errors: ' + JSON.stringify(errors));\nconsole.log('Valid: ' + (Object.keys(errors).length === 0));\n\nerrors = validate({ name: 'Alice', age: '25' });\nconsole.log('Errors: ' + JSON.stringify(errors));\nconsole.log('Valid: ' + (Object.keys(errors).length === 0));",
+        "expectedOutput": "Errors: {\"name\":\"Name is required\",\"age\":\"Must be at least 18\"}\nValid: false\nErrors: {}\nValid: true",
+        "hints": [
+          "Build an errors object by adding keys for each invalid field. Return the object at the end.",
+          "Check Object.keys(errors).length === 0 to determine if the form is valid (no error keys)."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "multi-field-forms",
+    "sectionId": "forms-and-controlled-components",
+    "orderIndex": 3,
+    "title": "Multi-Field Forms",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["form state objects", "computed property names", "generic change handlers", "complex forms", "state management"],
+    "content": {
+      "explanation": "When forms have more than a couple of fields, managing a separate useState for each field becomes verbose and repetitive. A better pattern is to use a single state object that holds all form values, with a generic onChange handler that updates the correct field using computed property names. This pattern scales well to forms of any size.\n\nThe generic handler pattern uses the input's name attribute to determine which state property to update. The handler reads event.target.name and event.target.value, then updates the state using the computed property syntax: setForm(prev => ({ ...prev, [name]: value })). This single handler works for any number of text inputs, selects, and textareas, as long as each has a unique name attribute matching its key in state.\n\nFor checkboxes, the handler needs to check whether the input type is a checkbox and use event.target.checked instead of event.target.value. A common approach is: const value = type === 'checkbox' ? checked : targetValue. This makes the generic handler work with all standard form element types.\n\nUsing a single state object also makes form reset, form population (from API data), and form comparison easier. To reset the form, set state back to the initial object. To populate from an API response, set state to the response data. To check if the form has been modified, compare the current state with the initial state using JSON.stringify or a deep comparison.\n\nFor very complex forms with many interdependent fields, validation states, and submission logic, useReducer can replace useState. The reducer centralizes all state transitions (field updates, validation, submission, reset) in one place. This is especially valuable when field changes trigger cascading updates to other fields — the reducer can handle all related changes in a single dispatch.",
+      "codeExamples": [
+        {
+          "title": "Single state object for form",
+          "code": "function ContactForm() {\n  const [form, setForm] = React.useState({\n    name: '',\n    email: '',\n    message: ''\n  });\n\n  const handleChange = (e) => {\n    const { name, value } = e.target;\n    setForm(prev => ({ ...prev, [name]: value }));\n    console.log('Updated ' + name + ':', value);\n  };\n\n  // Simulate filling out the form\n  handleChange({ target: { name: 'name', value: 'Alice' } });\n  handleChange({ target: { name: 'email', value: 'alice@test.com' } });\n  handleChange({ target: { name: 'message', value: 'Hello!' } });\n\n  console.log('Form fields:', Object.keys(form).length);\n  return null;\n}\n\nContactForm();",
+          "output": "Updated name: Alice\nUpdated email: alice@test.com\nUpdated message: Hello!\nForm fields: 3",
+          "explanation": "A single state object holds all form values. The generic handleChange uses computed property names ([name]: value) to update the correct field. One handler works for all text-like inputs."
+        },
+        {
+          "title": "Generic handler with different input types",
+          "code": "function SettingsForm() {\n  const [settings, setSettings] = React.useState({\n    username: '',\n    notifications: false,\n    theme: 'light'\n  });\n\n  const handleChange = (e) => {\n    const { name, value, type, checked } = e.target;\n    const fieldValue = type === 'checkbox' ? checked : value;\n    setSettings(prev => ({ ...prev, [name]: fieldValue }));\n    console.log(name + ':', fieldValue);\n  };\n\n  // Simulate different input types\n  handleChange({ target: { name: 'username', value: 'bob', type: 'text', checked: false } });\n  handleChange({ target: { name: 'notifications', value: '', type: 'checkbox', checked: true } });\n  handleChange({ target: { name: 'theme', value: 'dark', type: 'select-one', checked: false } });\n\n  return null;\n}\n\nSettingsForm();",
+          "output": "username: bob\nnotifications: true\ntheme: dark",
+          "explanation": "The handler checks the input type. For checkboxes it uses event.target.checked, for everything else it uses event.target.value. This single handler works with text inputs, checkboxes, selects, and more."
+        },
+        {
+          "title": "Form reset and dirty checking",
+          "code": "const initialValues = {\n  firstName: 'John',\n  lastName: 'Doe',\n  email: 'john@test.com'\n};\n\nfunction EditProfile() {\n  const [form, setForm] = React.useState(initialValues);\n\n  const isDirty = JSON.stringify(form) !== JSON.stringify(initialValues);\n\n  const handleReset = () => {\n    setForm(initialValues);\n    console.log('Form reset to initial values');\n  };\n\n  console.log('Is dirty:', isDirty);\n\n  // Simulate editing\n  setForm(prev => ({ ...prev, firstName: 'Jane' }));\n  const afterEdit = { ...form, firstName: 'Jane' };\n  const dirtyAfterEdit = JSON.stringify(afterEdit) !== JSON.stringify(initialValues);\n  console.log('After edit, is dirty:', dirtyAfterEdit);\n\n  // Reset\n  handleReset();\n\n  return null;\n}\n\nEditProfile();",
+          "output": "Is dirty: false\nAfter edit, is dirty: true\nForm reset to initial values",
+          "explanation": "Using a single state object makes dirty checking straightforward — compare current state with initial values. Reset is also simple — just set state back to the initial object."
+        }
+      ],
+      "notes": [
+        "Always give each input a name attribute that matches its key in the state object. This enables the generic handleChange pattern.",
+        "Use the spread operator to create a new state object: { ...prev, [name]: value }. Never mutate the existing state object directly.",
+        "For complex forms with interdependent fields or complex validation, consider useReducer instead of useState for cleaner state management."
+      ],
+      "commonPitfalls": [
+        "Forgetting to spread the previous state when updating a field. Writing setForm({ [name]: value }) replaces the entire state object, losing all other fields.",
+        "Using the same name attribute on multiple inputs. Each input must have a unique name that corresponds to its key in the state object, otherwise changes will overwrite each other."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "multi-field-forms-ex1",
+        "title": "Generic Change Handler",
+        "description": "Create a form with a single state object and a generic handleChange that updates fields by name.",
+        "starterCode": "// TODO:\n// 1. Create state object: { name: '', email: '', city: '' }\n// 2. Create handleChange(e) that updates the field matching e.target.name\n//    Log \"Set <name> = <value>\" for each change\n// 3. Simulate changes:\n//    name -> 'Alice'\n//    email -> 'alice@test.com'\n//    city -> 'NYC'\n// 4. Log \"Fields: 3\"\n\nfunction ProfileForm() {\n  // Implement here\n\n  return null;\n}\n\nProfileForm();",
+        "solution": "function ProfileForm() {\n  const [form, setForm] = React.useState({ name: '', email: '', city: '' });\n\n  const handleChange = (e) => {\n    const { name, value } = e.target;\n    setForm(prev => ({ ...prev, [name]: value }));\n    console.log('Set ' + name + ' = ' + value);\n  };\n\n  handleChange({ target: { name: 'name', value: 'Alice' } });\n  handleChange({ target: { name: 'email', value: 'alice@test.com' } });\n  handleChange({ target: { name: 'city', value: 'NYC' } });\n  console.log('Fields: ' + Object.keys(form).length);\n\n  return null;\n}\n\nProfileForm();",
+        "expectedOutput": "Set name = Alice\nSet email = alice@test.com\nSet city = NYC\nFields: 3",
+        "hints": [
+          "Destructure name and value from e.target in the handler.",
+          "Use computed property names: { ...prev, [name]: value } to update only the matching field."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "multi-field-forms-ex2",
+        "title": "Form with Mixed Input Types",
+        "description": "Create a generic handler that works with both text inputs and checkboxes.",
+        "starterCode": "// TODO:\n// 1. Create state: { username: '', darkMode: false, role: 'user' }\n// 2. Create handleChange(e) that:\n//    - Checks if type is 'checkbox' -> use checked, else use value\n//    - Updates the matching field\n//    - Logs \"<name>: <fieldValue>\"\n// 3. Simulate:\n//    username (text) -> 'admin'\n//    darkMode (checkbox) -> true\n//    role (select) -> 'editor'\n\nfunction SettingsForm() {\n  // Implement here\n\n  return null;\n}\n\nSettingsForm();",
+        "solution": "function SettingsForm() {\n  const [form, setForm] = React.useState({ username: '', darkMode: false, role: 'user' });\n\n  const handleChange = (e) => {\n    const { name, value, type, checked } = e.target;\n    const fieldValue = type === 'checkbox' ? checked : value;\n    setForm(prev => ({ ...prev, [name]: fieldValue }));\n    console.log(name + ': ' + fieldValue);\n  };\n\n  handleChange({ target: { name: 'username', value: 'admin', type: 'text', checked: false } });\n  handleChange({ target: { name: 'darkMode', value: '', type: 'checkbox', checked: true } });\n  handleChange({ target: { name: 'role', value: 'editor', type: 'select-one', checked: false } });\n\n  return null;\n}\n\nSettingsForm();",
+        "expectedOutput": "username: admin\ndarkMode: true\nrole: editor",
+        "hints": [
+          "Destructure name, value, type, and checked from e.target.",
+          "Use a ternary: const fieldValue = type === 'checkbox' ? checked : value to handle both input types."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "controlled-vs-uncontrolled",
+    "sectionId": "forms-and-controlled-components",
+    "orderIndex": 4,
+    "title": "Controlled vs Uncontrolled Components",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": true,
+    "concepts": ["controlled vs uncontrolled", "trade-offs", "performance", "use cases", "form patterns"],
+    "content": {
+      "explanation": "The choice between controlled and uncontrolled components is one of the most common React design decisions. Controlled components bind form values to React state, giving you full control over the data at every moment. Uncontrolled components let the DOM manage form values, and you read them only when needed (typically on submit). Each approach has clear trade-offs in terms of control, simplicity, and performance.\n\nControlled components are the recommended default for most React applications. They enable real-time validation (validate on every keystroke), input transformation (force formatting), conditional field behavior (enable/disable fields based on other values), and programmatic value changes (reset, populate from API). The trade-off is verbosity — every input needs state and an onChange handler — and performance — every keystroke triggers a re-render of the component.\n\nUncontrolled components are simpler for basic forms. They require less code (just a ref and defaultValue), don't cause re-renders on input, and integrate more naturally with non-React code. They're the right choice for file inputs (always uncontrolled), simple forms with no validation requirements, forms in performance-critical contexts, and integration with third-party DOM libraries.\n\nPerformance differences are usually negligible for small to medium forms. React's rendering is fast, and a re-render on every keystroke is typically imperceptible. However, for forms with many fields (50+) or components with expensive rendering logic, the difference can be noticeable. In such cases, uncontrolled components or debounced updates can help. React's concurrent features and automatic batching in React 18+ further reduce the performance impact of controlled components.\n\nA practical rule of thumb: start with controlled components. Switch to uncontrolled only when you have a specific reason — file inputs, third-party library integration, measured performance problems, or very simple forms where the control is unnecessary. In an interview, demonstrate that you understand both patterns, their trade-offs, and when to choose each.",
+      "codeExamples": [
+        {
+          "title": "Side-by-side comparison",
+          "code": "// CONTROLLED: React state owns the value\nfunction ControlledExample() {\n  const [value, setValue] = React.useState('initial');\n  console.log('[Controlled] Current value:', value);\n  console.log('[Controlled] Re-renders on every change: yes');\n  console.log('[Controlled] Can validate on change: yes');\n  console.log('[Controlled] Can transform input: yes');\n  return null;\n}\n\n// UNCONTROLLED: DOM owns the value\nfunction UncontrolledExample() {\n  const ref = React.useRef(null);\n  ref.current = { value: 'initial' };\n  console.log('[Uncontrolled] Current value:', ref.current.value);\n  console.log('[Uncontrolled] Re-renders on every change: no');\n  console.log('[Uncontrolled] Can validate on change: no');\n  console.log('[Uncontrolled] Can transform input: no');\n  return null;\n}\n\nControlledExample();\nUncontrolledExample();",
+          "output": "[Controlled] Current value: initial\n[Controlled] Re-renders on every change: yes\n[Controlled] Can validate on change: yes\n[Controlled] Can transform input: yes\n[Uncontrolled] Current value: initial\n[Uncontrolled] Re-renders on every change: no\n[Uncontrolled] Can validate on change: no\n[Uncontrolled] Can transform input: no",
+          "explanation": "Controlled components trade simplicity for control. Uncontrolled components trade control for simplicity. The choice depends on your form's requirements."
+        },
+        {
+          "title": "When to use each approach",
+          "code": "function DecisionGuide() {\n  const scenarios = [\n    { need: 'Real-time validation', approach: 'Controlled' },\n    { need: 'Input formatting/masking', approach: 'Controlled' },\n    { need: 'Conditional field logic', approach: 'Controlled' },\n    { need: 'Simple submit-only form', approach: 'Uncontrolled' },\n    { need: 'File upload input', approach: 'Uncontrolled' },\n    { need: 'Third-party DOM library', approach: 'Uncontrolled' }\n  ];\n\n  scenarios.forEach(s => {\n    console.log(s.need + ' -> ' + s.approach);\n  });\n\n  return null;\n}\n\nDecisionGuide();",
+          "output": "Real-time validation -> Controlled\nInput formatting/masking -> Controlled\nConditional field logic -> Controlled\nSimple submit-only form -> Uncontrolled\nFile upload input -> Uncontrolled\nThird-party DOM library -> Uncontrolled",
+          "explanation": "The decision depends on what features you need. If you need real-time feedback or input control, use controlled. If you just need the value on submit, uncontrolled is simpler."
+        },
+        {
+          "title": "Feature comparison table",
+          "code": "const features = {\n  'Value access': { controlled: 'Anytime (from state)', uncontrolled: 'On demand (from ref)' },\n  'Validation timing': { controlled: 'onChange, onBlur, onSubmit', uncontrolled: 'onSubmit only' },\n  'Re-renders': { controlled: 'Every input change', uncontrolled: 'None from input' },\n  'Initial value': { controlled: 'useState(initial)', uncontrolled: 'defaultValue prop' },\n  'Programmatic update': { controlled: 'setState(newValue)', uncontrolled: 'ref.current.value = x' }\n};\n\nObject.entries(features).forEach(([feature, comparison]) => {\n  console.log(feature + ':');\n  console.log('  Controlled: ' + comparison.controlled);\n  console.log('  Uncontrolled: ' + comparison.uncontrolled);\n});",
+          "output": "Value access:\n  Controlled: Anytime (from state)\n  Uncontrolled: On demand (from ref)\nValidation timing:\n  Controlled: onChange, onBlur, onSubmit\n  Uncontrolled: onSubmit only\nRe-renders:\n  Controlled: Every input change\n  Uncontrolled: None from input\nInitial value:\n  Controlled: useState(initial)\n  Uncontrolled: defaultValue prop\nProgrammatic update:\n  Controlled: setState(newValue)\n  Uncontrolled: ref.current.value = x",
+          "explanation": "This comparison highlights the fundamental differences. Controlled gives more power at the cost of more code and re-renders. Uncontrolled is simpler but limited."
+        }
+      ],
+      "notes": [
+        "Controlled components are the React-recommended default. Start with controlled and only switch to uncontrolled when you have a specific reason.",
+        "File inputs are always uncontrolled in React because their value attribute is read-only for security reasons. Use a ref to access the selected files.",
+        "You can mix controlled and uncontrolled inputs in the same form if different fields have different requirements."
+      ],
+      "commonPitfalls": [
+        "Switching an input between controlled and uncontrolled. If value goes from a string to undefined, the input switches from controlled to uncontrolled. React warns about this because it leads to unpredictable behavior.",
+        "Assuming uncontrolled components can't be validated. You can validate on submit — you just can't validate on every keystroke. For many forms, submit-time validation is perfectly adequate."
+      ],
+      "interviewTips": [
+        "Structure your answer around the three dimensions: control (what can you do), simplicity (how much code), and performance (re-render cost). Controlled wins on control, uncontrolled wins on simplicity and performance.",
+        "Give concrete examples of when each is appropriate: controlled for a credit card input with formatting, uncontrolled for a simple search box with submit button, always uncontrolled for file uploads.",
+        "Mention that React recommends controlled components as the default. The React docs explicitly state this. But also show you understand uncontrolled components have valid use cases."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "controlled-vs-uncontrolled-ex1",
+        "title": "Identify the Pattern",
+        "description": "Create two functions that demonstrate the controlled and uncontrolled patterns, logging key characteristics of each.",
+        "starterCode": "// TODO:\n// 1. Create showControlled() that logs:\n//    \"Pattern: Controlled\"\n//    \"State drives value: true\"\n//    \"Re-renders on change: true\"\n//    \"Can validate on keystroke: true\"\n//\n// 2. Create showUncontrolled() that logs:\n//    \"Pattern: Uncontrolled\"\n//    \"DOM drives value: true\"\n//    \"Re-renders on change: false\"\n//    \"Can validate on keystroke: false\"\n//\n// 3. Call both functions\n",
+        "solution": "function showControlled() {\n  console.log('Pattern: Controlled');\n  console.log('State drives value: true');\n  console.log('Re-renders on change: true');\n  console.log('Can validate on keystroke: true');\n}\n\nfunction showUncontrolled() {\n  console.log('Pattern: Uncontrolled');\n  console.log('DOM drives value: true');\n  console.log('Re-renders on change: false');\n  console.log('Can validate on keystroke: false');\n}\n\nshowControlled();\nshowUncontrolled();",
+        "expectedOutput": "Pattern: Controlled\nState drives value: true\nRe-renders on change: true\nCan validate on keystroke: true\nPattern: Uncontrolled\nDOM drives value: true\nRe-renders on change: false\nCan validate on keystroke: false",
+        "hints": [
+          "Controlled components use React state as the source of truth. Uncontrolled components use the DOM.",
+          "The key differences are: who owns the value (state vs DOM), whether inputs cause re-renders, and when you can validate."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "controlled-vs-uncontrolled-ex2",
+        "title": "Choose the Right Pattern",
+        "description": "Given a list of scenarios, determine whether controlled or uncontrolled is the better choice and explain why.",
+        "starterCode": "// TODO: For each scenario, log the scenario name,\n// whether to use controlled or uncontrolled, and a brief reason.\n// Format: \"<scenario> -> <pattern>: <reason>\"\n//\n// Scenarios:\n// 1. Credit card input with live formatting\n// 2. File upload form\n// 3. Search with autocomplete suggestions\n// 4. Simple contact form (name/email/message, validate on submit)\n",
+        "solution": "console.log('Credit card with formatting -> Controlled: need to transform input on every keystroke');\nconsole.log('File upload -> Uncontrolled: file inputs are always uncontrolled in React');\nconsole.log('Search with autocomplete -> Controlled: need real-time access to input value');\nconsole.log('Simple contact form -> Uncontrolled: only need values on submit, no real-time validation');",
+        "expectedOutput": "Credit card with formatting -> Controlled: need to transform input on every keystroke\nFile upload -> Uncontrolled: file inputs are always uncontrolled in React\nSearch with autocomplete -> Controlled: need real-time access to input value\nSimple contact form -> Uncontrolled: only need values on submit, no real-time validation",
+        "hints": [
+          "Ask: does this feature need real-time access to the input value? If yes, controlled. If only on submit, uncontrolled may suffice.",
+          "File inputs are always uncontrolled because their value is read-only in HTML for security reasons."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

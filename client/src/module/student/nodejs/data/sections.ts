@@ -1,0 +1,88 @@
+import type { NodeSection } from "./types";
+
+export const nodeSections: NodeSection[] = [
+  {
+    id: "node-fundamentals",
+    title: "Node.js Fundamentals",
+    description: "What Node.js is, the V8 engine, event loop, REPL, and global objects.",
+    orderIndex: 0,
+    level: "Beginner",
+  },
+  {
+    id: "modules-and-packages",
+    title: "Modules & npm",
+    description: "CommonJS, ES modules, creating packages, npm scripts, and semantic versioning.",
+    orderIndex: 1,
+    level: "Beginner",
+  },
+  {
+    id: "file-system",
+    title: "File System",
+    description: "Reading, writing, and watching files, paths, directories, and fs promises.",
+    orderIndex: 2,
+    level: "Beginner",
+  },
+  {
+    id: "events-and-streams",
+    title: "Events & Streams",
+    description: "EventEmitter, readable and writable streams, piping, and backpressure.",
+    orderIndex: 3,
+    level: "Intermediate",
+  },
+  {
+    id: "http-and-networking",
+    title: "HTTP & Networking",
+    description: "HTTP module, creating servers, handling requests, URLs, and query strings.",
+    orderIndex: 4,
+    level: "Intermediate",
+  },
+  {
+    id: "express-fundamentals",
+    title: "Express Fundamentals",
+    description: "Setting up Express, app structure, request lifecycle, and serving static files.",
+    orderIndex: 5,
+    level: "Beginner",
+  },
+  {
+    id: "routing-and-middleware",
+    title: "Routing & Middleware",
+    description: "Route parameters, Router, middleware chain, built-in and third-party middleware.",
+    orderIndex: 6,
+    level: "Intermediate",
+  },
+  {
+    id: "request-and-response",
+    title: "Request & Response Handling",
+    description: "Parsing bodies, query params, headers, cookies, file uploads, and response methods.",
+    orderIndex: 7,
+    level: "Intermediate",
+  },
+  {
+    id: "authentication",
+    title: "Authentication & Security",
+    description: "JWT, sessions, bcrypt, CORS, helmet, rate limiting, and input validation.",
+    orderIndex: 8,
+    level: "Intermediate",
+  },
+  {
+    id: "databases",
+    title: "Databases & ORMs",
+    description: "Connecting to MongoDB and PostgreSQL, Mongoose, Prisma, migrations, and queries.",
+    orderIndex: 9,
+    level: "Intermediate",
+  },
+  {
+    id: "error-handling-and-debugging",
+    title: "Error Handling & Debugging",
+    description: "Error middleware, async error handling, logging, debugging tools, and testing.",
+    orderIndex: 10,
+    level: "Advanced",
+  },
+  {
+    id: "deployment-and-interview",
+    title: "Deployment & Interview Essentials",
+    description: "Environment variables, PM2, Docker basics, common interview questions, and best practices.",
+    orderIndex: 11,
+    level: "Advanced",
+  },
+];

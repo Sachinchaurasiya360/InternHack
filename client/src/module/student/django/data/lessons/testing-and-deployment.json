@@ -1,0 +1,279 @@
+[
+  {
+    "id": "django-testcase",
+    "sectionId": "testing-and-deployment",
+    "orderIndex": 0,
+    "title": "Django TestCase",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["TestCase", "Client", "setUp", "assertions", "SimpleTestCase", "TransactionTestCase"],
+    "content": {
+      "explanation": "Django's test framework is built on Python's unittest module and provides additional features for testing web applications. The primary class is django.test.TestCase, which wraps each test in a database transaction and rolls it back after the test completes, ensuring tests are isolated and do not affect each other.\n\nDjango provides several test classes. SimpleTestCase is for tests that do not need database access (testing utilities, template rendering, URL resolving). TestCase is the most common — it provides database access with transaction rollback for isolation. TransactionTestCase actually commits transactions to the database, required for testing transaction-related behavior. LiveServerTestCase starts a real Django server for testing with browser automation tools like Selenium.\n\nThe test client (self.client) simulates a web browser, allowing you to make GET, POST, PUT, and DELETE requests without running a real server. It handles cookies, sessions, and redirects. The response object contains status_code, content (raw bytes), context (template context), and other attributes for assertions.\n\nDjango's TestCase provides enhanced assertions beyond unittest: assertContains (checks response content), assertNotContains, assertRedirects (checks redirect chain), assertTemplateUsed (checks which template was rendered), assertFormError (checks form validation errors), assertQuerysetEqual (compares QuerySets), and assertNumQueries (checks the number of database queries).\n\nThe setUp() method runs before each test method, creating fresh test data. setUpTestData() is a class method that runs once per test class — use it for data that is not modified by tests, as it is more efficient. tearDown() runs after each test for cleanup, though transaction rollback usually handles database cleanup automatically.\n\nTest discovery is automatic: Django finds all files matching test*.py in each app. You can organize tests into a tests/ directory with separate files like test_models.py, test_views.py, test_forms.py. Run tests with 'python manage.py test', which creates a temporary test database, runs migrations, executes tests, and destroys the database.",
+      "codeExamples": [
+        {
+          "title": "Model Tests",
+          "code": "from django.test import TestCase\nfrom django.contrib.auth import get_user_model\nfrom .models import Article, Category\n\nUser = get_user_model()\n\nclass ArticleModelTest(TestCase):\n    @classmethod\n    def setUpTestData(cls):\n        \"\"\"Set up data for the whole test class (runs once).\"\"\"\n        cls.user = User.objects.create_user(\n            username='testuser',\n            password='testpass123',\n        )\n        cls.category = Category.objects.create(name='Python')\n\n    def test_create_article(self):\n        article = Article.objects.create(\n            title='Test Article',\n            content='Test content',\n            author=self.user,\n            category=self.category,\n        )\n        self.assertEqual(article.title, 'Test Article')\n        self.assertEqual(article.author, self.user)\n        self.assertFalse(article.is_published)\n\n    def test_str_representation(self):\n        article = Article.objects.create(\n            title='My Article',\n            content='Content',\n            author=self.user,\n        )\n        self.assertEqual(str(article), 'My Article')\n\n    def test_slug_auto_generation(self):\n        article = Article.objects.create(\n            title='Hello World Article',\n            content='Content',\n            author=self.user,\n        )\n        self.assertEqual(article.slug, 'hello-world-article')\n\n    def test_article_ordering(self):\n        a1 = Article.objects.create(title='First', content='c', author=self.user)\n        a2 = Article.objects.create(title='Second', content='c', author=self.user)\n        articles = list(Article.objects.all())\n        self.assertEqual(articles[0], a2)  # Newest first",
+          "explanation": "setUpTestData creates shared data once for all tests in the class. Each test method tests one specific behavior. assertEqual, assertFalse, and other assertions verify expected outcomes."
+        },
+        {
+          "title": "View Tests",
+          "code": "from django.test import TestCase\nfrom django.urls import reverse\nfrom django.contrib.auth import get_user_model\nfrom .models import Article\n\nUser = get_user_model()\n\nclass ArticleViewTest(TestCase):\n    def setUp(self):\n        self.user = User.objects.create_user(\n            username='testuser', password='testpass123'\n        )\n        self.article = Article.objects.create(\n            title='Test Article',\n            content='Test content',\n            author=self.user,\n            is_published=True,\n        )\n\n    def test_article_list_view(self):\n        url = reverse('blog:article-list')\n        response = self.client.get(url)\n        self.assertEqual(response.status_code, 200)\n        self.assertTemplateUsed(response, 'blog/article_list.html')\n        self.assertContains(response, 'Test Article')\n        self.assertEqual(len(response.context['articles']), 1)\n\n    def test_article_detail_view(self):\n        url = reverse('blog:article-detail', kwargs={'pk': self.article.pk})\n        response = self.client.get(url)\n        self.assertEqual(response.status_code, 200)\n        self.assertContains(response, 'Test Article')\n\n    def test_article_detail_404(self):\n        url = reverse('blog:article-detail', kwargs={'pk': 9999})\n        response = self.client.get(url)\n        self.assertEqual(response.status_code, 404)\n\n    def test_create_requires_login(self):\n        url = reverse('blog:article-create')\n        response = self.client.get(url)\n        self.assertRedirects(response, f'/accounts/login/?next={url}')\n\n    def test_create_article(self):\n        self.client.login(username='testuser', password='testpass123')\n        url = reverse('blog:article-create')\n        data = {'title': 'New Article', 'content': 'New content'}\n        response = self.client.post(url, data)\n        self.assertEqual(response.status_code, 302)\n        self.assertTrue(Article.objects.filter(title='New Article').exists())",
+          "explanation": "self.client simulates HTTP requests. reverse() generates URLs from names. assertTemplateUsed checks the template. assertContains checks response content. self.client.login() authenticates for protected views."
+        },
+        {
+          "title": "Form Tests",
+          "code": "from django.test import TestCase\nfrom .forms import ArticleForm, RegistrationForm\n\nclass ArticleFormTest(TestCase):\n    def test_valid_form(self):\n        data = {\n            'title': 'Test Article',\n            'content': 'This is test content for the article.',\n            'category': self.category.pk,\n        }\n        form = ArticleForm(data=data)\n        self.assertTrue(form.is_valid())\n\n    def test_blank_title(self):\n        data = {'title': '', 'content': 'Content'}\n        form = ArticleForm(data=data)\n        self.assertFalse(form.is_valid())\n        self.assertIn('title', form.errors)\n\n    def test_title_max_length(self):\n        data = {'title': 'x' * 201, 'content': 'Content'}\n        form = ArticleForm(data=data)\n        self.assertFalse(form.is_valid())\n\nclass RegistrationFormTest(TestCase):\n    def test_password_mismatch(self):\n        data = {\n            'username': 'newuser',\n            'email': 'new@example.com',\n            'password': 'securepass123',\n            'confirm_password': 'differentpass',\n        }\n        form = RegistrationForm(data=data)\n        self.assertFalse(form.is_valid())\n        self.assertIn('Passwords do not match', str(form.errors))",
+          "explanation": "Form tests verify validation logic. Create a form with data, call is_valid(), and check the result and errors. Test both valid and invalid inputs, including edge cases like blank required fields and maximum lengths."
+        },
+        {
+          "title": "Running Tests",
+          "code": "# Run all tests\n# python manage.py test\n\n# Run tests for a specific app\n# python manage.py test blog\n\n# Run a specific test class\n# python manage.py test blog.tests.ArticleModelTest\n\n# Run a specific test method\n# python manage.py test blog.tests.ArticleModelTest.test_create_article\n\n# Run with verbosity\n# python manage.py test -v 2\n\n# Run with parallel execution\n# python manage.py test --parallel\n\n# Keep the test database for faster re-runs\n# python manage.py test --keepdb\n\n# Test directory structure:\n# blog/\n#     tests/\n#         __init__.py\n#         test_models.py\n#         test_views.py\n#         test_forms.py\n#         test_api.py",
+          "explanation": "Django's test runner discovers test*.py files automatically. You can run all tests or narrow down to specific apps, classes, or methods. --parallel speeds up test execution. --keepdb reuses the test database."
+        }
+      ],
+      "notes": [
+        "TestCase wraps each test in a transaction for isolation. setUpTestData runs once per class for efficiency.",
+        "self.client simulates HTTP requests without running a server.",
+        "Use assertContains, assertRedirects, assertTemplateUsed for Django-specific assertions.",
+        "Organize tests in a tests/ directory with separate files per concern."
+      ],
+      "interviewTips": [
+        "Explain the difference between TestCase (transaction rollback), SimpleTestCase (no DB), and TransactionTestCase (real commits).",
+        "Describe how the test client works: simulates requests, handles cookies and sessions.",
+        "Mention setUpTestData for efficient shared data and setUp for per-test data."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "test-ex1",
+        "title": "Write Model Tests",
+        "description": "Write a test class for a Product model. Test that: creating a product works, the __str__ method returns the product name, and the default value of is_active is True.",
+        "starterCode": "from django.test import TestCase\nfrom .models import Product\n\nclass ProductModelTest(TestCase):\n    pass\n",
+        "solution": "from django.test import TestCase\nfrom .models import Product\n\nclass ProductModelTest(TestCase):\n    def setUp(self):\n        self.product = Product.objects.create(\n            name='Test Product',\n            price=29.99,\n            description='A test product',\n        )\n\n    def test_product_creation(self):\n        self.assertEqual(self.product.name, 'Test Product')\n        self.assertEqual(float(self.product.price), 29.99)\n\n    def test_str_representation(self):\n        self.assertEqual(str(self.product), 'Test Product')\n\n    def test_default_is_active(self):\n        self.assertTrue(self.product.is_active)",
+        "hints": [
+          "Use setUp to create test data for each test",
+          "Each test method should test one specific behavior",
+          "Use assertEqual for exact matches, assertTrue for boolean checks"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "test-ex2",
+        "title": "Write View Tests",
+        "description": "Write tests for a product list view: test that it returns 200, uses the correct template, and contains the product name in the response.",
+        "starterCode": "from django.test import TestCase\nfrom django.urls import reverse\nfrom .models import Product\n\nclass ProductViewTest(TestCase):\n    pass\n",
+        "solution": "from django.test import TestCase\nfrom django.urls import reverse\nfrom .models import Product\n\nclass ProductViewTest(TestCase):\n    def setUp(self):\n        self.product = Product.objects.create(\n            name='Test Product',\n            price=29.99,\n        )\n\n    def test_list_view_status(self):\n        response = self.client.get(reverse('products:product-list'))\n        self.assertEqual(response.status_code, 200)\n\n    def test_list_view_template(self):\n        response = self.client.get(reverse('products:product-list'))\n        self.assertTemplateUsed(response, 'products/product_list.html')\n\n    def test_list_view_content(self):\n        response = self.client.get(reverse('products:product-list'))\n        self.assertContains(response, 'Test Product')",
+        "hints": [
+          "Use self.client.get() to make GET requests",
+          "reverse() converts URL names to URL strings",
+          "assertTemplateUsed checks the template, assertContains checks the response body"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "test-fixtures-and-factories",
+    "sectionId": "testing-and-deployment",
+    "orderIndex": 1,
+    "title": "Test Fixtures & Factories",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Fixtures", "Factory Boy", "Faker", "setUp", "Test Data", "Coverage"],
+    "content": {
+      "explanation": "Test data management is crucial for maintainable tests. Django provides fixtures (JSON/YAML files loaded into the database) and the community provides factory libraries (Factory Boy) for generating test data programmatically.\n\nDjango fixtures are JSON, XML, or YAML files that contain serialized model data. You create them with 'python manage.py dumpdata appname > fixture.json' and load them with 'python manage.py loaddata fixture.json'. In tests, add a 'fixtures' class attribute to load fixtures automatically before each test.\n\nHowever, fixtures have significant drawbacks. They are brittle — any model change requires updating all fixtures. They are opaque — it is hard to see what data a test depends on. They are slow to maintain and do not compose well. For these reasons, most Django projects prefer factory-based test data.\n\nFactory Boy is a popular library for generating test data. Instead of maintaining JSON fixtures, you define factories that know how to create model instances. Factories use sensible defaults and can be customized for specific tests. They integrate with Faker to generate realistic random data.\n\nFactory Boy provides several factory types: Factory is the base class, DjangoModelFactory integrates with Django's ORM, SubFactory creates related objects, LazyAttribute computes values from other attributes, and Sequence generates unique values.\n\nFaker generates realistic fake data: names, emails, addresses, texts, dates, and more. Factory Boy integrates with Faker through the factory.Faker() class. Each test run generates different random data, which can uncover edge cases that static fixtures miss.\n\nCode coverage measures how much of your code is executed during tests. Use 'coverage run manage.py test' followed by 'coverage report' to see which lines are covered. Aim for high coverage on business logic but don't obsess over 100% — focus on testing behavior, not implementation details.",
+      "codeExamples": [
+        {
+          "title": "Django Fixtures",
+          "code": "# Create a fixture from existing data\n# $ python manage.py dumpdata blog.Article --indent 2 > blog/fixtures/articles.json\n\n# blog/fixtures/articles.json\n[\n  {\n    \"model\": \"blog.article\",\n    \"pk\": 1,\n    \"fields\": {\n      \"title\": \"Test Article\",\n      \"content\": \"Test content\",\n      \"author\": 1,\n      \"is_published\": true,\n      \"created_at\": \"2024-01-15T10:30:00Z\"\n    }\n  }\n]\n\n# Using fixtures in tests\nclass ArticleViewTest(TestCase):\n    fixtures = ['articles.json', 'users.json']\n\n    def test_article_list(self):\n        response = self.client.get('/articles/')\n        self.assertEqual(response.status_code, 200)",
+          "explanation": "Fixtures are loaded before each test method. They are useful for small, stable datasets but become hard to maintain as models evolve. Each fixture file can contain data for multiple models."
+        },
+        {
+          "title": "Factory Boy Basics",
+          "code": "# pip install factory-boy\n\n# tests/factories.py\nimport factory\nfrom django.contrib.auth import get_user_model\nfrom blog.models import Article, Category\n\nUser = get_user_model()\n\nclass UserFactory(factory.django.DjangoModelFactory):\n    class Meta:\n        model = User\n\n    username = factory.Sequence(lambda n: f'user{n}')\n    email = factory.LazyAttribute(lambda obj: f'{obj.username}@example.com')\n    password = factory.PostGenerationMethodCall('set_password', 'testpass123')\n\nclass CategoryFactory(factory.django.DjangoModelFactory):\n    class Meta:\n        model = Category\n\n    name = factory.Faker('word')\n    slug = factory.LazyAttribute(lambda obj: obj.name.lower())\n\nclass ArticleFactory(factory.django.DjangoModelFactory):\n    class Meta:\n        model = Article\n\n    title = factory.Faker('sentence', nb_words=5)\n    content = factory.Faker('paragraph', nb_sentences=10)\n    author = factory.SubFactory(UserFactory)\n    category = factory.SubFactory(CategoryFactory)\n    is_published = True",
+          "explanation": "Factories define how to create model instances. Sequence generates unique values. LazyAttribute computes values from other fields. SubFactory creates related objects. Faker generates realistic random data."
+        },
+        {
+          "title": "Using Factories in Tests",
+          "code": "from django.test import TestCase\nfrom django.urls import reverse\nfrom .factories import UserFactory, ArticleFactory\n\nclass ArticleViewTest(TestCase):\n    def test_article_list(self):\n        # Create 5 published articles\n        ArticleFactory.create_batch(5, is_published=True)\n        ArticleFactory.create_batch(3, is_published=False)  # Not published\n\n        response = self.client.get(reverse('blog:article-list'))\n        self.assertEqual(response.status_code, 200)\n        self.assertEqual(len(response.context['articles']), 5)\n\n    def test_article_detail(self):\n        article = ArticleFactory(title='Specific Title')\n        response = self.client.get(\n            reverse('blog:article-detail', kwargs={'pk': article.pk})\n        )\n        self.assertContains(response, 'Specific Title')\n\n    def test_create_requires_auth(self):\n        response = self.client.get(reverse('blog:article-create'))\n        self.assertEqual(response.status_code, 302)  # Redirects to login\n\n    def test_create_article(self):\n        user = UserFactory()\n        self.client.login(username=user.username, password='testpass123')\n\n        data = {\n            'title': 'New Article',\n            'content': 'Article content here',\n        }\n        response = self.client.post(reverse('blog:article-create'), data)\n        self.assertEqual(response.status_code, 302)\n        self.assertTrue(\n            Article.objects.filter(title='New Article', author=user).exists()\n        )",
+          "explanation": "Factories make tests readable and maintainable. create_batch() creates multiple instances. Override factory defaults by passing keyword arguments. Each test creates only the data it needs."
+        },
+        {
+          "title": "Code Coverage",
+          "code": "# Install coverage\n# pip install coverage\n\n# Run tests with coverage\n# coverage run manage.py test\n\n# View coverage report\n# coverage report\n# Name                      Stmts   Miss  Cover\n# -----------------------------------------------\n# blog/models.py               25      3    88%\n# blog/views.py                40      8    80%\n# blog/forms.py                15      2    87%\n# -----------------------------------------------\n# TOTAL                       80     13    84%\n\n# Generate HTML report\n# coverage html\n# Open htmlcov/index.html in browser\n\n# .coveragerc configuration\n# [run]\n# source = .\n# omit =\n#     */migrations/*\n#     */tests/*\n#     manage.py\n#     */wsgi.py\n#     */asgi.py\n# \n# [report]\n# show_missing = True\n# fail_under = 80",
+          "explanation": "coverage measures which lines of code are executed during tests. The report shows statement count, missed lines, and coverage percentage. Set fail_under to enforce minimum coverage. HTML reports highlight uncovered lines."
+        }
+      ],
+      "notes": [
+        "Prefer factories over fixtures — they are more maintainable and explicit.",
+        "Factory Boy + Faker generates realistic, unique test data for each test run.",
+        "Use create_batch() for creating multiple objects, SubFactory for related objects.",
+        "Aim for high test coverage on business logic but focus on testing behavior, not implementation."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "factory-ex1",
+        "title": "Create Test Factories",
+        "description": "Create a UserFactory and a ProductFactory using Factory Boy. UserFactory should generate unique usernames and emails. ProductFactory should have a realistic name, price, and a SubFactory for the creator (User).",
+        "starterCode": "import factory\nfrom django.contrib.auth import get_user_model\nfrom .models import Product\n\nUser = get_user_model()\n\n# Define your factories\n",
+        "solution": "import factory\nfrom django.contrib.auth import get_user_model\nfrom .models import Product\n\nUser = get_user_model()\n\nclass UserFactory(factory.django.DjangoModelFactory):\n    class Meta:\n        model = User\n\n    username = factory.Sequence(lambda n: f'user{n}')\n    email = factory.LazyAttribute(lambda obj: f'{obj.username}@example.com')\n    password = factory.PostGenerationMethodCall('set_password', 'testpass123')\n\nclass ProductFactory(factory.django.DjangoModelFactory):\n    class Meta:\n        model = Product\n\n    name = factory.Faker('catch_phrase')\n    price = factory.Faker('pydecimal', left_digits=3, right_digits=2, positive=True)\n    description = factory.Faker('paragraph')\n    created_by = factory.SubFactory(UserFactory)",
+        "hints": [
+          "Use factory.Sequence for unique values that increment",
+          "Use factory.SubFactory to create related objects",
+          "PostGenerationMethodCall calls methods after instance creation"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "factory-ex2",
+        "title": "Test with Factories",
+        "description": "Using the factories from the previous exercise, write a test that creates 3 products and verifies the product list view returns all of them.",
+        "starterCode": "from django.test import TestCase\nfrom django.urls import reverse\nfrom .factories import ProductFactory\n\nclass ProductListTest(TestCase):\n    pass\n",
+        "solution": "from django.test import TestCase\nfrom django.urls import reverse\nfrom .factories import ProductFactory\n\nclass ProductListTest(TestCase):\n    def test_list_all_products(self):\n        ProductFactory.create_batch(3)\n        response = self.client.get(reverse('products:product-list'))\n        self.assertEqual(response.status_code, 200)\n        self.assertEqual(len(response.context['products']), 3)",
+        "hints": [
+          "create_batch(n) creates n instances at once",
+          "Access template context through response.context",
+          "No setUp needed — create data inline for simple tests"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "static-files-and-media",
+    "sectionId": "testing-and-deployment",
+    "orderIndex": 2,
+    "title": "Static Files & Media",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["STATIC_ROOT", "STATIC_URL", "collectstatic", "MEDIA_ROOT", "Whitenoise", "CDN"],
+    "content": {
+      "explanation": "Django distinguishes between static files (CSS, JavaScript, images that ship with your code) and media files (user-uploaded content like profile pictures and documents). Each has different configuration, storage, and serving strategies.\n\nStatic files are configured with STATIC_URL (the URL prefix, like '/static/') and STATICFILES_DIRS (additional directories to search). Each app can have its own static/ directory. During development, Django's staticfiles app serves files directly. For production, 'python manage.py collectstatic' copies all static files from app directories and STATICFILES_DIRS into STATIC_ROOT — a single directory that a web server can serve efficiently.\n\nWhitenoise is a popular middleware for serving static files in production without a separate web server. It compresses files, adds cache headers, and serves them directly from Python. While not as fast as Nginx, it is simpler to deploy and works well for small to medium applications. Install it with 'pip install whitenoise' and add it to MIDDLEWARE.\n\nMedia files are user-uploaded content stored in MEDIA_ROOT and served at MEDIA_URL. In development, Django can serve media files using the static() helper in urls.py. In production, media files should be served by Nginx, Apache, or a cloud storage service like AWS S3.\n\nFor cloud deployments, django-storages provides backends for AWS S3, Google Cloud Storage, and Azure Blob Storage. This lets Django upload media files directly to cloud storage and serve them through a CDN. This is the recommended approach for production applications because it separates file storage from application servers.\n\nManifest static files storage (ManifestStaticFilesStorage) appends a hash to static file names (e.g., style.abc123.css). This enables aggressive browser caching because the file name changes whenever the content changes, forcing browsers to download the new version. Whitenoise includes its own manifest storage.",
+      "codeExamples": [
+        {
+          "title": "Static Files Configuration",
+          "code": "# settings.py\nimport os\n\n# URL prefix for static files\nSTATIC_URL = '/static/'\n\n# Additional directories for static files (beyond app static/ dirs)\nSTATICFILES_DIRS = [\n    os.path.join(BASE_DIR, 'static'),  # Project-level static files\n]\n\n# Where collectstatic copies files to (production only)\nSTATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')\n\n# Static file finders (default)\nSTATICFILES_FINDERS = [\n    'django.contrib.staticfiles.finders.FileSystemFinder',  # STATICFILES_DIRS\n    'django.contrib.staticfiles.finders.AppDirectoriesFinder',  # App static/ dirs\n]\n\n# Directory structure:\n# project/\n#     static/                  # Project-level (in STATICFILES_DIRS)\n#         css/main.css\n#         js/app.js\n#     blog/\n#         static/              # App-level (found by AppDirectoriesFinder)\n#             blog/\n#                 style.css\n#     staticfiles/             # STATIC_ROOT (created by collectstatic)",
+          "explanation": "STATIC_URL is the URL prefix. STATICFILES_DIRS lists project-level static directories. STATIC_ROOT is where collectstatic copies everything for production. App-level static files go in app/static/appname/."
+        },
+        {
+          "title": "Whitenoise for Production",
+          "code": "# pip install whitenoise\n\n# settings.py\nMIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'whitenoise.middleware.WhiteNoiseMiddleware',  # After SecurityMiddleware\n    # ... rest of middleware\n]\n\n# Use compressed and cached static files\nSTATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'\n\n# Whitenoise automatically:\n# - Serves static files efficiently\n# - Compresses files with gzip and brotli\n# - Adds cache headers (immutable, max-age=1 year)\n# - Hashes file names for cache busting\n\n# Collect static files before deployment:\n# python manage.py collectstatic --noinput",
+          "explanation": "Whitenoise serves static files directly from Python. CompressedManifestStaticFilesStorage adds hashes and compression. Place WhiteNoiseMiddleware right after SecurityMiddleware."
+        },
+        {
+          "title": "Media Files Configuration",
+          "code": "# settings.py\nimport os\n\nMEDIA_URL = '/media/'\nMEDIA_ROOT = os.path.join(BASE_DIR, 'media')\n\n# urls.py (development only)\nfrom django.conf import settings\nfrom django.conf.urls.static import static\n\nurlpatterns = [\n    # ... your URL patterns\n]\n\n# Serve media files in development\nif settings.DEBUG:\n    urlpatterns += static(\n        settings.MEDIA_URL,\n        document_root=settings.MEDIA_ROOT,\n    )\n\n# In templates:\n# <img src=\"{{ product.image.url }}\" alt=\"{{ product.name }}\">\n\n# In models:\n# class Product(models.Model):\n#     image = models.ImageField(upload_to='products/%Y/%m/')",
+          "explanation": "MEDIA_ROOT stores uploaded files on the filesystem. MEDIA_URL is the URL prefix. In development, static() serves files. In production, use Nginx or cloud storage. upload_to can use date-based subdirectories."
+        },
+        {
+          "title": "AWS S3 Storage",
+          "code": "# pip install django-storages boto3\n\n# settings.py\nINSTALLED_APPS = [\n    # ...\n    'storages',\n]\n\n# AWS S3 configuration\nAWS_ACCESS_KEY_ID = os.environ.get('AWS_ACCESS_KEY_ID')\nAWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY')\nAWS_STORAGE_BUCKET_NAME = 'my-project-media'\nAWS_S3_REGION_NAME = 'us-east-1'\nAWS_S3_CUSTOM_DOMAIN = f'{AWS_STORAGE_BUCKET_NAME}.s3.amazonaws.com'\nAWS_DEFAULT_ACL = None\nAWS_S3_OBJECT_PARAMETERS = {\n    'CacheControl': 'max-age=86400',\n}\n\n# Media files storage\nDEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'\nMEDIA_URL = f'https://{AWS_S3_CUSTOM_DOMAIN}/'\n\n# Static files can also use S3\n# STATICFILES_STORAGE = 'storages.backends.s3boto3.S3StaticStorage'",
+          "explanation": "django-storages provides S3, GCS, and Azure storage backends. Media files are uploaded directly to S3. Use environment variables for credentials. AWS_DEFAULT_ACL=None uses the bucket's default policy."
+        }
+      ],
+      "notes": [
+        "Run 'collectstatic' before deploying to gather all static files in STATIC_ROOT.",
+        "Whitenoise is the easiest way to serve static files in production without Nginx.",
+        "Never serve media files with Django in production — use Nginx, a CDN, or cloud storage.",
+        "Use ManifestStaticFilesStorage or Whitenoise for cache-busting with hashed file names."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "static-ex1",
+        "title": "Configure Static Files",
+        "description": "Write the settings.py configuration for static files: set STATIC_URL to '/static/', add a project-level 'static' directory to STATICFILES_DIRS, and set STATIC_ROOT to a 'staticfiles' directory.",
+        "starterCode": "import os\nfrom pathlib import Path\n\nBASE_DIR = Path(__file__).resolve().parent.parent\n\n# Configure static files\n",
+        "solution": "import os\nfrom pathlib import Path\n\nBASE_DIR = Path(__file__).resolve().parent.parent\n\nSTATIC_URL = '/static/'\n\nSTATICFILES_DIRS = [\n    os.path.join(BASE_DIR, 'static'),\n]\n\nSTATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')",
+        "hints": [
+          "STATIC_URL is the URL prefix, always starts and ends with /",
+          "STATICFILES_DIRS lists additional directories to search",
+          "STATIC_ROOT is where collectstatic copies files to"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "static-ex2",
+        "title": "Add Whitenoise",
+        "description": "Write the configuration to add Whitenoise middleware and set up compressed manifest static files storage. Show the correct middleware position.",
+        "starterCode": "# Add Whitenoise configuration\nMIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    # Add Whitenoise here\n]\n\n# Set storage backend\n",
+        "solution": "MIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',\n    'whitenoise.middleware.WhiteNoiseMiddleware',\n    'django.contrib.sessions.middleware.SessionMiddleware',\n    'django.middleware.common.CommonMiddleware',\n    'django.middleware.csrf.CsrfViewMiddleware',\n    'django.contrib.auth.middleware.AuthenticationMiddleware',\n    'django.contrib.messages.middleware.MessageMiddleware',\n    'django.middleware.clickjacking.XFrameOptionsMiddleware',\n]\n\nSTATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'",
+        "hints": [
+          "WhiteNoiseMiddleware goes right after SecurityMiddleware",
+          "CompressedManifestStaticFilesStorage adds hashing and compression",
+          "Run collectstatic after adding Whitenoise"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "docker-and-production",
+    "sectionId": "testing-and-deployment",
+    "orderIndex": 3,
+    "title": "Docker & Production Config",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Docker", "Gunicorn", "Nginx", "Environment Variables", "Production Checklist"],
+    "content": {
+      "explanation": "Deploying Django to production requires several considerations beyond development setup. You need a production-ready WSGI server (Gunicorn or uWSGI), proper environment variable management, security settings, and often containerization with Docker.\n\nGunicorn is the most popular WSGI server for Django. Unlike Django's development server (runserver), Gunicorn is multi-process, handles concurrent requests efficiently, and is designed for production use. Install with 'pip install gunicorn' and run with 'gunicorn myproject.wsgi:application --bind 0.0.0.0:8000 --workers 3'.\n\nThe number of Gunicorn workers should typically be (2 * CPU cores) + 1. Each worker handles requests independently. For I/O-bound applications (like most Django apps), you can also use async workers with 'gunicorn myproject.asgi:application -k uvicorn.workers.UvicornWorker'.\n\nEnvironment variables separate configuration from code. Use python-decouple or django-environ to read environment variables with type casting and defaults. Store sensitive data (SECRET_KEY, database credentials, API keys) in environment variables or .env files that are not committed to version control.\n\nDjango's deployment checklist (accessible via 'python manage.py check --deploy') verifies common security settings. Critical settings include: DEBUG=False, secure SECRET_KEY, ALLOWED_HOSTS configured, HTTPS settings (SECURE_SSL_REDIRECT, SECURE_HSTS_SECONDS), CSRF_COOKIE_SECURE, SESSION_COOKIE_SECURE, and X_FRAME_OPTIONS.\n\nDocker containerizes your application for consistent deployment across environments. A Django Dockerfile typically uses a Python base image, installs dependencies, copies the application code, runs collectstatic, and starts Gunicorn. Docker Compose orchestrates multiple services (Django, PostgreSQL, Redis, Nginx).\n\nNginx is commonly used as a reverse proxy in front of Gunicorn. It handles SSL termination, serves static and media files directly (much faster than Python), provides load balancing, and buffers slow client connections so Gunicorn workers are freed quickly.",
+      "codeExamples": [
+        {
+          "title": "Gunicorn Configuration",
+          "code": "# Install\n# pip install gunicorn\n\n# Basic run\n# gunicorn myproject.wsgi:application --bind 0.0.0.0:8000\n\n# Production run with workers\n# gunicorn myproject.wsgi:application \\\n#   --bind 0.0.0.0:8000 \\\n#   --workers 3 \\\n#   --timeout 120 \\\n#   --access-logfile - \\\n#   --error-logfile -\n\n# gunicorn.conf.py\nimport multiprocessing\n\nbind = '0.0.0.0:8000'\nworkers = multiprocessing.cpu_count() * 2 + 1\ntimeout = 120\naccesslog = '-'\nerrorlog = '-'\nloglevel = 'info'\nworker_class = 'sync'  # or 'uvicorn.workers.UvicornWorker' for async\n\n# Run with config file:\n# gunicorn myproject.wsgi:application -c gunicorn.conf.py",
+          "explanation": "Gunicorn replaces Django's runserver for production. Workers handle concurrent requests. The formula (2 * cores + 1) balances memory usage and concurrency. Logs go to stdout (-) for container environments."
+        },
+        {
+          "title": "Environment Variables",
+          "code": "# pip install python-decouple\n\n# .env file (NOT committed to git)\n# SECRET_KEY=django-insecure-abc123def456\n# DEBUG=False\n# DATABASE_URL=postgres://user:pass@localhost:5432/mydb\n# ALLOWED_HOSTS=myapp.com,www.myapp.com\n# AWS_ACCESS_KEY_ID=AKIA...\n# AWS_SECRET_ACCESS_KEY=...\n\n# settings.py\nfrom decouple import config, Csv\nimport dj_database_url\n\nSECRET_KEY = config('SECRET_KEY')\nDEBUG = config('DEBUG', default=False, cast=bool)\nALLOWED_HOSTS = config('ALLOWED_HOSTS', default='localhost', cast=Csv())\n\nDATABASES = {\n    'default': dj_database_url.config(\n        default='sqlite:///db.sqlite3',\n        conn_max_age=600,\n    )\n}\n\n# .gitignore\n# .env\n# *.pyc\n# db.sqlite3\n# media/\n# staticfiles/",
+          "explanation": "python-decouple reads environment variables with type casting. dj-database-url parses database URLs into Django's DATABASES format. Never commit .env files or secrets to version control."
+        },
+        {
+          "title": "Dockerfile",
+          "code": "# Dockerfile\nFROM python:3.12-slim\n\n# Set environment variables\nENV PYTHONDONTWRITEBYTECODE=1\nENV PYTHONUNBUFFERED=1\n\n# Set work directory\nWORKDIR /app\n\n# Install system dependencies\nRUN apt-get update && apt-get install -y \\\n    libpq-dev \\\n    && rm -rf /var/lib/apt/lists/*\n\n# Install Python dependencies\nCOPY requirements.txt .\nRUN pip install --no-cache-dir -r requirements.txt\n\n# Copy project\nCOPY . .\n\n# Collect static files\nRUN python manage.py collectstatic --noinput\n\n# Run Gunicorn\nCMD [\"gunicorn\", \"myproject.wsgi:application\", \\\n     \"--bind\", \"0.0.0.0:8000\", \\\n     \"--workers\", \"3\"]\n\n# docker-compose.yml\n# services:\n#   web:\n#     build: .\n#     ports:\n#       - \"8000:8000\"\n#     env_file: .env\n#     depends_on:\n#       - db\n#       - redis\n#   db:\n#     image: postgres:16\n#     environment:\n#       POSTGRES_DB: mydb\n#       POSTGRES_USER: myuser\n#       POSTGRES_PASSWORD: mypass\n#     volumes:\n#       - postgres_data:/var/lib/postgresql/data\n#   redis:\n#     image: redis:7-alpine\n# volumes:\n#   postgres_data:",
+          "explanation": "The Dockerfile uses a slim Python image, installs dependencies, copies code, runs collectstatic, and starts Gunicorn. Docker Compose orchestrates the web app, PostgreSQL database, and Redis cache as linked services."
+        },
+        {
+          "title": "Production Security Checklist",
+          "code": "# settings/production.py\nfrom .base import *\n\nDEBUG = False\n\n# Security\nSECRET_KEY = config('SECRET_KEY')\nALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())\n\n# HTTPS settings\nSECURE_SSL_REDIRECT = True\nSECURE_HSTS_SECONDS = 31536000  # 1 year\nSECURE_HSTS_INCLUDE_SUBDOMAINS = True\nSECURE_HSTS_PRELOAD = True\nSECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')\n\n# Cookie security\nCSRF_COOKIE_SECURE = True\nSESSION_COOKIE_SECURE = True\nSECURE_BROWSER_XSS_FILTER = True\nSECURE_CONTENT_TYPE_NOSNIFF = True\nX_FRAME_OPTIONS = 'DENY'\n\n# Run the deployment check:\n# python manage.py check --deploy\n#\n# This checks for:\n# - DEBUG is False\n# - SECRET_KEY is not default\n# - ALLOWED_HOSTS is set\n# - Security middleware is configured\n# - HTTPS settings are enabled\n# - Cookie security is configured",
+          "explanation": "Production settings disable DEBUG, enforce HTTPS, secure cookies, and add HSTS headers. 'manage.py check --deploy' verifies these settings. Use separate settings files for development and production."
+        }
+      ],
+      "notes": [
+        "Never use runserver in production. Use Gunicorn or uWSGI behind Nginx.",
+        "Store secrets in environment variables, never in code or version control.",
+        "Run 'manage.py check --deploy' to verify production security settings.",
+        "Docker ensures consistent environments from development to production."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "deploy-ex1",
+        "title": "Production Settings",
+        "description": "Write a production settings snippet that reads SECRET_KEY and DEBUG from environment variables, sets ALLOWED_HOSTS, enables HTTPS redirect, and secures cookies.",
+        "starterCode": "from decouple import config, Csv\n\n# Write production security settings\n",
+        "solution": "from decouple import config, Csv\n\nSECRET_KEY = config('SECRET_KEY')\nDEBUG = config('DEBUG', default=False, cast=bool)\nALLOWED_HOSTS = config('ALLOWED_HOSTS', cast=Csv())\n\nSECURE_SSL_REDIRECT = True\nSECURE_HSTS_SECONDS = 31536000\nCSRF_COOKIE_SECURE = True\nSESSION_COOKIE_SECURE = True\nX_FRAME_OPTIONS = 'DENY'",
+        "hints": [
+          "Use config() with cast parameter for type conversion",
+          "SECURE_SSL_REDIRECT redirects HTTP to HTTPS",
+          "SECURE_HSTS_SECONDS tells browsers to always use HTTPS"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "deploy-ex2",
+        "title": "Gunicorn Config",
+        "description": "Write a gunicorn.conf.py file that binds to 0.0.0.0:8000, calculates workers based on CPU count, sets timeout to 120 seconds, and logs to stdout.",
+        "starterCode": "import multiprocessing\n\n# Write Gunicorn configuration\n",
+        "solution": "import multiprocessing\n\nbind = '0.0.0.0:8000'\nworkers = multiprocessing.cpu_count() * 2 + 1\ntimeout = 120\naccesslog = '-'\nerrorlog = '-'\nloglevel = 'info'",
+        "hints": [
+          "Workers formula: (2 * CPU count) + 1",
+          "'-' for log files means stdout/stderr",
+          "bind specifies the address and port"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

@@ -1,0 +1,351 @@
+[
+  {
+    "id": "understanding-props",
+    "sectionId": "props-and-state",
+    "orderIndex": 0,
+    "title": "Understanding Props",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["props", "passing props", "reading props", "props are read-only", "unidirectional data flow"],
+    "content": {
+      "explanation": "Props (short for properties) are the mechanism React uses to pass data from a parent component to a child component. Think of props as the arguments you pass to a function — because that is exactly what they are. When you write `<UserCard name=\"Alice\" age={25} />`, React calls the UserCard function with `{ name: 'Alice', age: 25 }` as its first argument. The child component reads these values from the props object to render its UI.\n\nProps flow in one direction only: from parent to child. This is called unidirectional data flow and is a core principle of React. A child component cannot directly modify the props it receives; it can only read them. If a child needs to communicate back to a parent, the parent passes down a callback function as a prop, and the child calls that function. This one-way flow makes your application predictable and easier to debug because you always know where data comes from.\n\nYou can pass any JavaScript value as a prop: strings, numbers, booleans, arrays, objects, functions, and even other React elements. Strings can be passed with quotes (`name=\"Alice\"`), while all other types require curly braces (`age={25}`, `items={[1,2,3]}`, `onClick={handleClick}`). There is no limit to how many props you can pass, but if a component needs many props, it may be a sign that it should be broken into smaller components.\n\nProps are read-only — this is a strict rule in React. A component must never modify its own props. If you try to do `props.name = 'Bob'` inside a component, React will not prevent it at the language level, but it violates the React contract and will cause bugs. If a value needs to change over time, it should be state (managed with useState), not a prop. Props are for values that the parent controls.\n\nA useful mental model is to think of components as pure functions with respect to their props. Given the same props, a component should always return the same output. This predictability is what allows React to optimize re-rendering and makes your components easy to test. You can render a component with specific props and assert what it outputs, without worrying about hidden internal state affecting the result.",
+      "codeExamples": [
+        {
+          "title": "Passing and Reading Props",
+          "code": "function Greeting(props) {\n  return 'Hello, ' + props.name + '! You are ' + props.age + ' years old.';\n}\n\n// Parent passes props to child\nconst result1 = Greeting({ name: 'Alice', age: 25 });\nconst result2 = Greeting({ name: 'Bob', age: 30 });\n\nconsole.log(result1);\nconsole.log(result2);",
+          "output": "Hello, Alice! You are 25 years old.\nHello, Bob! You are 30 years old.",
+          "explanation": "The parent decides what data to pass, and the child reads it from the props object. The same component can render different output based on different props."
+        },
+        {
+          "title": "Passing Different Types as Props",
+          "code": "function UserProfile(props) {\n  const status = props.isActive ? 'Active' : 'Inactive';\n  const skills = props.skills.join(', ');\n  return props.name + ' | ' + status + ' | Skills: ' + skills;\n}\n\nconst profile = UserProfile({\n  name: 'Charlie',         // string\n  isActive: true,           // boolean\n  skills: ['React', 'JS'], // array\n});\n\nconsole.log(profile);\n\n// Functions as props\nfunction ActionButton(props) {\n  const message = props.onClick();\n  return 'Button: ' + props.label + ' -> ' + message;\n}\n\nconst btn = ActionButton({\n  label: 'Save',\n  onClick: () => 'Saved!'\n});\nconsole.log(btn);",
+          "output": "Charlie | Active | Skills: React, JS\nButton: Save -> Saved!",
+          "explanation": "Props can be any JavaScript value: strings, booleans, arrays, objects, or functions. Functions as props enable child-to-parent communication."
+        },
+        {
+          "title": "Props Are Read-Only",
+          "code": "function Display(props) {\n  // WRONG: Never mutate props!\n  // props.value = 'modified'; // Don't do this!\n\n  // RIGHT: Use props as read-only data\n  const formatted = props.value.toUpperCase();\n  return formatted;\n}\n\nconst original = { value: 'hello' };\nconst result = Display(original);\n\n// The original object is unchanged\nconsole.log('Displayed: ' + result);\nconsole.log('Original: ' + original.value);\nconsole.log('Props unchanged: ' + (original.value === 'hello'));",
+          "output": "Displayed: HELLO\nOriginal: hello\nProps unchanged: true",
+          "explanation": "Components must treat props as read-only. Transform prop values into local variables instead of mutating the props object directly."
+        }
+      ],
+      "notes": [
+        "Props are the primary way to customize components. A well-designed component exposes a clear set of props that control its behavior and appearance.",
+        "If a child needs to send data to its parent, the parent should pass a callback function as a prop. The child calls this function with data as arguments.",
+        "Every component receives a `children` prop automatically when content is placed between its opening and closing tags."
+      ],
+      "commonPitfalls": [
+        "Mutating props inside a child component — this breaks React's unidirectional data flow and can cause subtle bugs. Always treat props as immutable.",
+        "Passing too many props to a single component (sometimes called 'prop explosion'). If a component takes more than 5-6 props, consider refactoring it into smaller components or using composition."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "props-basic-exercise",
+        "title": "Reading and Using Props",
+        "description": "Create a `formatUser` function that takes a props object with name, email, and role, and returns a formatted string.",
+        "starterCode": "// Create a formatUser function that takes props: { name, email, role }\n// Return: 'name (role) - email'\n\n// your code here\n\nconsole.log(formatUser({ name: 'Alice', email: 'alice@test.com', role: 'Admin' }));\nconsole.log(formatUser({ name: 'Bob', email: 'bob@test.com', role: 'User' }));",
+        "solution": "function formatUser(props) {\n  return props.name + ' (' + props.role + ') - ' + props.email;\n}\n\nconsole.log(formatUser({ name: 'Alice', email: 'alice@test.com', role: 'Admin' }));\nconsole.log(formatUser({ name: 'Bob', email: 'bob@test.com', role: 'User' }));",
+        "expectedOutput": "Alice (Admin) - alice@test.com\nBob (User) - bob@test.com",
+        "hints": [
+          "The function takes a single object (props) and reads properties from it using dot notation.",
+          "Use string concatenation to combine name, role, and email in the specified format."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "props-callback-exercise",
+        "title": "Callback Props Pattern",
+        "description": "Simulate the pattern of passing a callback function as a prop. Create a child function that calls a parent-provided callback with data.",
+        "starterCode": "// Simulate a child component that calls an onSubmit callback prop\nfunction Form(props) {\n  const data = { username: 'alice', password: '1234' };\n  // Call the onSubmit callback with the data\n  // Return the result from the callback\n\n  // your code here\n}\n\n// Simulate a parent that provides the callback\nfunction handleSubmit(formData) {\n  return 'Submitted: ' + formData.username;\n}\n\nconst result = Form({ onSubmit: handleSubmit });\nconsole.log(result);\n\n// Test with a different callback\nconst result2 = Form({\n  onSubmit: (data) => 'Validated: ' + data.username + ' (password length: ' + data.password.length + ')'\n});\nconsole.log(result2);",
+        "solution": "function Form(props) {\n  const data = { username: 'alice', password: '1234' };\n  return props.onSubmit(data);\n}\n\nfunction handleSubmit(formData) {\n  return 'Submitted: ' + formData.username;\n}\n\nconst result = Form({ onSubmit: handleSubmit });\nconsole.log(result);\n\nconst result2 = Form({\n  onSubmit: (data) => 'Validated: ' + data.username + ' (password length: ' + data.password.length + ')'\n});\nconsole.log(result2);",
+        "expectedOutput": "Submitted: alice\nValidated: alice (password length: 4)",
+        "hints": [
+          "The onSubmit prop is a function — call it with `props.onSubmit(data)` and return the result.",
+          "This pattern is how React children communicate back to parents: the parent passes a function, and the child calls it with relevant data."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "prop-types-and-defaults",
+    "sectionId": "props-and-state",
+    "orderIndex": 1,
+    "title": "Prop Types and Default Values",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["PropTypes", "default props", "destructuring props", "type checking", "optional props"],
+    "content": {
+      "explanation": "When building React components, it is important to document and validate the props a component expects. PropTypes is a runtime type-checking library that was originally part of React and is now a separate package (`prop-types`). It lets you define the expected types for each prop, and React will log warnings in development when a prop of the wrong type is passed. While TypeScript has largely replaced PropTypes for type safety, understanding PropTypes is still valuable for many codebases.\n\nPropTypes are defined as a static property on the component function. You specify each prop name and its expected type using validators like `PropTypes.string`, `PropTypes.number`, `PropTypes.bool`, `PropTypes.func`, `PropTypes.array`, `PropTypes.object`, and more. Appending `.isRequired` makes the prop mandatory — React will warn if it is not provided. PropTypes only run in development mode and are stripped in production builds for performance.\n\nDefault prop values ensure your component works gracefully when optional props are not provided. There are two ways to set defaults. The older pattern uses a `defaultProps` static property on the component. The modern and preferred approach is to use JavaScript default parameter syntax directly in the function signature: `function Button({ variant = 'primary', size = 'medium' })`. This is cleaner, works with TypeScript, and is the approach the React team recommends.\n\nDestructuring props is a pattern where you extract specific properties from the props object directly in the function parameters. Instead of writing `function Button(props)` and accessing `props.variant`, you write `function Button({ variant, size, onClick })`. This makes the component's API visible at a glance and allows you to set default values inline. Destructuring is used in virtually all modern React codebases.\n\nFor TypeScript projects, you define prop types using interfaces or type aliases instead of PropTypes. This provides compile-time type checking, better IDE support, and does not add any runtime overhead. The pattern is: `interface ButtonProps { variant?: 'primary' | 'secondary'; onClick: () => void; }` followed by `function Button({ variant = 'primary', onClick }: ButtonProps)`. This is considered the best practice in the React ecosystem today.",
+      "codeExamples": [
+        {
+          "title": "Destructuring Props with Defaults",
+          "code": "// Modern pattern: destructure props with default values\nfunction Button({ label, variant = 'primary', size = 'medium', disabled = false }) {\n  return {\n    label,\n    variant,\n    size,\n    disabled\n  };\n}\n\n// All defaults applied\nconst btn1 = Button({ label: 'Click Me' });\nconsole.log(btn1.label + ' | ' + btn1.variant + ' | ' + btn1.size + ' | ' + btn1.disabled);\n\n// Override some defaults\nconst btn2 = Button({ label: 'Delete', variant: 'danger', size: 'large' });\nconsole.log(btn2.label + ' | ' + btn2.variant + ' | ' + btn2.size + ' | ' + btn2.disabled);",
+          "output": "Click Me | primary | medium | false\nDelete | danger | large | false",
+          "explanation": "Destructuring in the function signature makes the component API visible at a glance. Default values ensure missing props don't cause errors."
+        },
+        {
+          "title": "PropTypes Validation (Conceptual)",
+          "code": "// Simulating PropTypes validation\nfunction validateProps(props, propTypes) {\n  const errors = [];\n  for (const [key, validator] of Object.entries(propTypes)) {\n    const value = props[key];\n    const expectedType = validator.type;\n    const isRequired = validator.required;\n\n    if (value === undefined && isRequired) {\n      errors.push(key + ' is required');\n    } else if (value !== undefined && typeof value !== expectedType) {\n      errors.push(key + ' expected ' + expectedType + ', got ' + typeof value);\n    }\n  }\n  return errors;\n}\n\nconst propTypes = {\n  name: { type: 'string', required: true },\n  age: { type: 'number', required: false },\n  onSave: { type: 'function', required: true }\n};\n\nconst errors1 = validateProps({ name: 'Alice', onSave: () => {} }, propTypes);\nconsole.log('Valid: ' + (errors1.length === 0));\n\nconst errors2 = validateProps({ name: 42, age: 'old' }, propTypes);\nerrors2.forEach(e => console.log('Error: ' + e));",
+          "output": "Valid: true\nError: name expected string, got number\nError: age expected number, got string\nError: onSave is required",
+          "explanation": "PropTypes validate props at runtime during development. They catch type mismatches and missing required props, logging warnings to the console."
+        },
+        {
+          "title": "Rest and Spread with Props",
+          "code": "// Destructure known props, collect the rest\nfunction Input({ label, type = 'text', ...restProps }) {\n  return {\n    label,\n    inputProps: { type, ...restProps }\n  };\n}\n\nconst field = Input({\n  label: 'Email',\n  type: 'email',\n  placeholder: 'Enter email',\n  required: true,\n  autoComplete: 'email'\n});\n\nconsole.log('Label: ' + field.label);\nconsole.log('Type: ' + field.inputProps.type);\nconsole.log('Placeholder: ' + field.inputProps.placeholder);\nconsole.log('Required: ' + field.inputProps.required);",
+          "output": "Label: Email\nType: email\nPlaceholder: Enter email\nRequired: true",
+          "explanation": "The rest operator (...restProps) collects all props not explicitly destructured. This is useful for forwarding unknown props to child elements."
+        }
+      ],
+      "notes": [
+        "Prefer destructuring props in the function signature over accessing `props.x` — it is more readable and lets you set defaults inline.",
+        "PropTypes only run in development mode. For production type safety, use TypeScript instead.",
+        "The rest/spread pattern (`{ known, ...rest }`) is very useful for creating wrapper components that forward extra props to child elements."
+      ],
+      "commonPitfalls": [
+        "Setting a default value for a prop that is also marked as required in PropTypes — this is contradictory. Required props should not have defaults since they must always be provided.",
+        "Using `defaultProps` on functional components — while it still works, it is considered legacy. Use JavaScript default parameters in the destructuring pattern instead."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "destructuring-exercise",
+        "title": "Destructure and Default Props",
+        "description": "Create a `createNotification` function that destructures its props with sensible defaults. It should handle type, message, duration, and dismissible properties.",
+        "starterCode": "// Create createNotification with destructured props:\n// - type: default 'info'\n// - message: required (no default)\n// - duration: default 5000\n// - dismissible: default true\n// Return a formatted string: '[TYPE] message (duration ms, dismissible: true/false)'\n\n// your code here\n\nconsole.log(createNotification({ message: 'File saved' }));\nconsole.log(createNotification({ type: 'error', message: 'Failed!', duration: 10000, dismissible: false }));\nconsole.log(createNotification({ type: 'success', message: 'Done!' }));",
+        "solution": "function createNotification({ type = 'info', message, duration = 5000, dismissible = true }) {\n  return '[' + type.toUpperCase() + '] ' + message + ' (' + duration + 'ms, dismissible: ' + dismissible + ')';\n}\n\nconsole.log(createNotification({ message: 'File saved' }));\nconsole.log(createNotification({ type: 'error', message: 'Failed!', duration: 10000, dismissible: false }));\nconsole.log(createNotification({ type: 'success', message: 'Done!' }));",
+        "expectedOutput": "[INFO] File saved (5000ms, dismissible: true)\n[ERROR] Failed! (10000ms, dismissible: false)\n[SUCCESS] Done! (5000ms, dismissible: true)",
+        "hints": [
+          "Destructure the props object directly in the function parameter list: `function createNotification({ type = 'info', message, ... })`",
+          "Use `.toUpperCase()` on the type string and concatenate all values into the expected format."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "rest-spread-exercise",
+        "title": "Props Forwarding with Rest/Spread",
+        "description": "Create a function that separates known configuration props from extra props using the rest operator, then merges them into a final config object.",
+        "starterCode": "// Create a buildConfig function that:\n// 1. Destructures 'theme' (default: 'light') and 'language' (default: 'en')\n// 2. Collects all other props with ...rest\n// 3. Returns an object: { settings: { theme, language }, extra: rest }\n\n// your code here\n\nconst config = buildConfig({ theme: 'dark', language: 'fr', debug: true, version: '2.0' });\nconsole.log('Theme: ' + config.settings.theme);\nconsole.log('Language: ' + config.settings.language);\nconsole.log('Debug: ' + config.extra.debug);\nconsole.log('Version: ' + config.extra.version);\n\nconst defaultConfig = buildConfig({});\nconsole.log('Default theme: ' + defaultConfig.settings.theme);\nconsole.log('Default language: ' + defaultConfig.settings.language);\nconsole.log('Extra keys: ' + Object.keys(defaultConfig.extra).length);",
+        "solution": "function buildConfig({ theme = 'light', language = 'en', ...rest }) {\n  return {\n    settings: { theme, language },\n    extra: rest\n  };\n}\n\nconst config = buildConfig({ theme: 'dark', language: 'fr', debug: true, version: '2.0' });\nconsole.log('Theme: ' + config.settings.theme);\nconsole.log('Language: ' + config.settings.language);\nconsole.log('Debug: ' + config.extra.debug);\nconsole.log('Version: ' + config.extra.version);\n\nconst defaultConfig = buildConfig({});\nconsole.log('Default theme: ' + defaultConfig.settings.theme);\nconsole.log('Default language: ' + defaultConfig.settings.language);\nconsole.log('Extra keys: ' + Object.keys(defaultConfig.extra).length);",
+        "expectedOutput": "Theme: dark\nLanguage: fr\nDebug: true\nVersion: 2.0\nDefault theme: light\nDefault language: en\nExtra keys: 0",
+        "hints": [
+          "Use destructuring with defaults for known props and the rest operator (...rest) for everything else: `{ theme = 'light', language = 'en', ...rest }`",
+          "Return an object with two keys: settings (containing theme and language) and extra (containing the rest of the props)."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "intro-to-state",
+    "sectionId": "props-and-state",
+    "orderIndex": 2,
+    "title": "Introduction to State (useState)",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["useState", "state updates", "re-rendering", "state vs props", "initial state"],
+    "content": {
+      "explanation": "State is data that a component manages internally and can change over time. While props come from a parent and are read-only, state is owned by the component itself and can be updated. When state changes, React automatically re-renders the component to reflect the new data. This is what makes React interfaces interactive — user actions trigger state changes, which trigger re-renders, which update the UI.\n\nThe `useState` hook is the primary way to add state to a functional component. It takes an initial value as its argument and returns an array with exactly two elements: the current state value and a function to update it. By convention, these are destructured as `[value, setValue]`. For example, `const [count, setCount] = useState(0)` creates a state variable `count` starting at 0 and a function `setCount` to update it.\n\nState updates in React are asynchronous and batched. When you call `setCount(5)`, the component does not re-render immediately. React batches multiple state updates together and processes them in a single re-render for performance. This means if you call `setCount(count + 1)` twice in a row, you will not get count + 2 because both calls see the same value of count. To handle this, use the functional update form: `setCount(prev => prev + 1)`, which always receives the latest state value.\n\nThe initial value you pass to useState is only used on the first render. On subsequent re-renders, React remembers the current state and ignores the initial value. If computing the initial value is expensive (e.g., reading from localStorage), you can pass a function: `useState(() => JSON.parse(localStorage.getItem('data')))`. This lazy initialization function only runs once on mount.\n\nUnderstanding the difference between props and state is crucial. Props are passed in from outside and the component cannot change them. State is internal and the component controls it. A value should be state if it changes over time and those changes should cause the UI to update. If a value is computed from props or other state, it should be a derived value (a regular variable), not additional state. Keeping your state minimal avoids bugs and unnecessary complexity.",
+      "codeExamples": [
+        {
+          "title": "Basic useState Pattern",
+          "code": "// Simulating useState behavior\nfunction createState(initialValue) {\n  let state = initialValue;\n  const getState = () => state;\n  const setState = (newValue) => {\n    if (typeof newValue === 'function') {\n      state = newValue(state);\n    } else {\n      state = newValue;\n    }\n  };\n  return [getState, setState];\n}\n\nconst [getCount, setCount] = createState(0);\n\nconsole.log('Initial: ' + getCount());\n\nsetCount(5);\nconsole.log('After setCount(5): ' + getCount());\n\nsetCount(prev => prev + 1);\nconsole.log('After increment: ' + getCount());",
+          "output": "Initial: 0\nAfter setCount(5): 5\nAfter increment: 6",
+          "explanation": "useState returns a value and a setter. The setter can take a direct value or a function that receives the previous state and returns the new state."
+        },
+        {
+          "title": "State vs Props",
+          "code": "// Props: passed from parent, read-only\n// State: managed internally, changeable\n\nfunction simulateComponent(props) {\n  // State is local — component owns it\n  let state = { clicks: 0 };\n\n  function handleClick() {\n    state = { clicks: state.clicks + 1 };\n  }\n\n  // Initial render\n  console.log(props.label + ' - Clicks: ' + state.clicks);\n\n  // Simulate user clicks\n  handleClick();\n  handleClick();\n  handleClick();\n\n  // After state changes\n  console.log(props.label + ' - Clicks: ' + state.clicks);\n\n  // Props are still unchanged\n  console.log('Prop label unchanged: ' + props.label);\n}\n\nsimulateComponent({ label: 'Submit Button' });",
+          "output": "Submit Button - Clicks: 0\nSubmit Button - Clicks: 3\nProp label unchanged: Submit Button",
+          "explanation": "Props come from outside and don't change. State is internal and changes in response to user interaction, causing re-renders."
+        },
+        {
+          "title": "Functional Updates (Avoiding Stale State)",
+          "code": "// Problem: multiple direct updates use stale state\nfunction directUpdates() {\n  let count = 0;\n  // These all see count as 0\n  count = count + 1;  // 0 + 1 = 1\n  count = 0 + 1;      // stale! still reads original 0\n  count = 0 + 1;      // stale! still reads original 0\n  return count;\n}\n\n// Solution: functional updates always get latest state\nfunction functionalUpdates() {\n  let count = 0;\n  const update = (fn) => { count = fn(count); };\n  update(prev => prev + 1);  // 0 -> 1\n  update(prev => prev + 1);  // 1 -> 2\n  update(prev => prev + 1);  // 2 -> 3\n  return count;\n}\n\nconsole.log('Direct (stale): ' + directUpdates());\nconsole.log('Functional (correct): ' + functionalUpdates());",
+          "output": "Direct (stale): 1\nFunctional (correct): 3",
+          "explanation": "When you need to update state based on the previous value, always use the functional form (prev => prev + 1) to avoid stale state bugs."
+        }
+      ],
+      "notes": [
+        "State updates are asynchronous — the new value is not available immediately after calling the setter. The component re-renders with the new value.",
+        "Always use the functional update form (prev => prev + 1) when the new state depends on the previous state value.",
+        "Keep state minimal. If a value can be computed from existing props or state, derive it in the render instead of storing it as separate state."
+      ],
+      "commonPitfalls": [
+        "Calling the state setter multiple times with a direct value expecting each call to build on the previous: `setCount(count + 1); setCount(count + 1);` only increments by 1, not 2. Use `setCount(prev => prev + 1)` instead.",
+        "Initializing state with a prop and expecting it to stay in sync: `const [name, setName] = useState(props.name)` captures the initial value only. If props.name changes, the state will not update automatically."
+      ],
+      "interviewTips": [
+        "Be able to explain the difference between props and state: props are external and read-only; state is internal and mutable via setState. State changes trigger re-renders.",
+        "Explain why React batches state updates and how the functional updater pattern (prev => newValue) solves the stale closure problem."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "usestate-basic-exercise",
+        "title": "Simulate useState",
+        "description": "Create a simple `useState` simulation that returns a getter and setter. The setter should support both direct values and updater functions.",
+        "starterCode": "// Create a useState simulation\n// It should return [getter, setter]\n// The setter should accept either a value or a function (prev => newValue)\n\nfunction useState(initial) {\n  // your code here\n}\n\nconst [getName, setName] = useState('Alice');\nconsole.log(getName());\n\nsetName('Bob');\nconsole.log(getName());\n\nsetName(prev => prev + ' Smith');\nconsole.log(getName());",
+        "solution": "function useState(initial) {\n  let state = initial;\n  const getState = () => state;\n  const setState = (valueOrFn) => {\n    if (typeof valueOrFn === 'function') {\n      state = valueOrFn(state);\n    } else {\n      state = valueOrFn;\n    }\n  };\n  return [getState, setState];\n}\n\nconst [getName, setName] = useState('Alice');\nconsole.log(getName());\n\nsetName('Bob');\nconsole.log(getName());\n\nsetName(prev => prev + ' Smith');\nconsole.log(getName());",
+        "expectedOutput": "Alice\nBob\nBob Smith",
+        "hints": [
+          "Use a closure to keep the state variable private. Return a getter function and a setter function.",
+          "In the setter, check if the argument is a function using `typeof valueOrFn === 'function'`. If so, call it with the current state."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "usestate-counter-exercise",
+        "title": "Counter with Functional Updates",
+        "description": "Simulate a counter component that uses functional state updates to correctly handle multiple increments.",
+        "starterCode": "function useState(initial) {\n  let state = initial;\n  return [\n    () => state,\n    (valOrFn) => {\n      state = typeof valOrFn === 'function' ? valOrFn(state) : valOrFn;\n    }\n  ];\n}\n\n// Create a counter that starts at 0\n// Implement increment() that adds 1 using functional update\n// Implement decrement() that subtracts 1 using functional update\n// Implement reset() that sets the counter back to 0\n\nconst [getCount, setCount] = useState(0);\n\n// your code here: define increment, decrement, reset\n\nincrement();\nincrement();\nincrement();\nconsole.log('After 3 increments: ' + getCount());\n\ndecrement();\nconsole.log('After 1 decrement: ' + getCount());\n\nreset();\nconsole.log('After reset: ' + getCount());",
+        "solution": "function useState(initial) {\n  let state = initial;\n  return [\n    () => state,\n    (valOrFn) => {\n      state = typeof valOrFn === 'function' ? valOrFn(state) : valOrFn;\n    }\n  ];\n}\n\nconst [getCount, setCount] = useState(0);\n\nfunction increment() {\n  setCount(prev => prev + 1);\n}\n\nfunction decrement() {\n  setCount(prev => prev - 1);\n}\n\nfunction reset() {\n  setCount(0);\n}\n\nincrement();\nincrement();\nincrement();\nconsole.log('After 3 increments: ' + getCount());\n\ndecrement();\nconsole.log('After 1 decrement: ' + getCount());\n\nreset();\nconsole.log('After reset: ' + getCount());",
+        "expectedOutput": "After 3 increments: 3\nAfter 1 decrement: 2\nAfter reset: 0",
+        "hints": [
+          "Use functional updates for increment and decrement: `setCount(prev => prev + 1)` and `setCount(prev => prev - 1)`.",
+          "For reset, pass a direct value: `setCount(0)` since you don't need the previous value."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "state-immutability",
+    "sectionId": "props-and-state",
+    "orderIndex": 3,
+    "title": "State Immutability",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["immutability", "updating objects in state", "updating arrays in state", "spread operator", "shallow copy"],
+    "content": {
+      "explanation": "Immutability means never modifying existing data directly. Instead, you create a new copy with the changes applied. In React, this is not just a best practice — it is a requirement. React determines whether to re-render a component by comparing the previous state reference with the new state reference. If you mutate an object in place, the reference stays the same, and React will not detect the change. Your UI will be out of sync with your data.\n\nWhen updating objects in state, you must create a new object with the spread operator and override the properties that changed. For example, if state is `{ name: 'Alice', age: 25 }`, updating the age looks like `setState({ ...prev, age: 26 })`. The spread copies all existing properties, and the `age: 26` at the end overrides the old value. You should never do `state.age = 26` — this mutates the existing object.\n\nUpdating nested objects requires spreading at every level of nesting. If state is `{ user: { name: 'Alice', address: { city: 'NYC' } } }`, updating the city requires: `setState({ ...prev, user: { ...prev.user, address: { ...prev.user.address, city: 'LA' } } })`. This can get verbose with deeply nested structures, which is why libraries like Immer exist to simplify immutable updates.\n\nArrays in state must also be updated immutably. Instead of `push`, use spread or `concat` to add items: `[...prev, newItem]`. Instead of `splice`, use `filter` to remove items: `prev.filter(item => item.id !== removeId)`. Instead of direct index assignment, use `map` to update items: `prev.map(item => item.id === updateId ? { ...item, done: true } : item)`. These operations all return new arrays without modifying the original.\n\nUnderstanding shallow vs deep copying is important. The spread operator creates a shallow copy — it copies the top-level properties, but nested objects still reference the same memory. This is usually fine for React because you spread at each level of nesting that you modify. Deep cloning (e.g., `structuredClone`) is rarely needed and can be expensive. The key rule is: create new references for every object you modify in the path from root to the changed value.",
+      "codeExamples": [
+        {
+          "title": "Immutable Object Updates",
+          "code": "// WRONG: Mutating state directly\nconst user = { name: 'Alice', age: 25, role: 'developer' };\n\n// Don't do this:\n// user.age = 26;  // Mutation!\n\n// RIGHT: Create a new object with spread\nconst updatedUser = { ...user, age: 26 };\n\nconsole.log('Original age: ' + user.age);\nconsole.log('Updated age: ' + updatedUser.age);\nconsole.log('Same object? ' + (user === updatedUser));\nconsole.log('Name preserved: ' + updatedUser.name);",
+          "output": "Original age: 25\nUpdated age: 26\nSame object? false\nName preserved: Alice",
+          "explanation": "The spread operator creates a new object with all properties copied. Overriding a property after the spread updates only that property. The original object is untouched."
+        },
+        {
+          "title": "Immutable Array Updates",
+          "code": "const todos = [\n  { id: 1, text: 'Learn React', done: false },\n  { id: 2, text: 'Build app', done: false }\n];\n\n// ADD: spread existing + new item\nconst added = [...todos, { id: 3, text: 'Deploy', done: false }];\nconsole.log('After add: ' + added.length + ' items');\n\n// REMOVE: filter out the item\nconst removed = todos.filter(t => t.id !== 1);\nconsole.log('After remove: ' + removed.map(t => t.text).join(', '));\n\n// UPDATE: map and replace the matching item\nconst toggled = todos.map(t =>\n  t.id === 1 ? { ...t, done: true } : t\n);\nconsole.log('After toggle: ' + toggled[0].text + ' done=' + toggled[0].done);\nconsole.log('Original unchanged: ' + todos[0].done);",
+          "output": "After add: 3 items\nAfter remove: Build app\nAfter toggle: Learn React done=true\nOriginal unchanged: false",
+          "explanation": "Use spread to add, filter to remove, and map to update items in arrays. Each operation returns a new array without modifying the original."
+        },
+        {
+          "title": "Updating Nested State",
+          "code": "const state = {\n  user: {\n    name: 'Alice',\n    preferences: {\n      theme: 'light',\n      language: 'en'\n    }\n  }\n};\n\n// Update deeply nested property immutably\nconst newState = {\n  ...state,\n  user: {\n    ...state.user,\n    preferences: {\n      ...state.user.preferences,\n      theme: 'dark'\n    }\n  }\n};\n\nconsole.log('Old theme: ' + state.user.preferences.theme);\nconsole.log('New theme: ' + newState.user.preferences.theme);\nconsole.log('Language preserved: ' + newState.user.preferences.language);\nconsole.log('Name preserved: ' + newState.user.name);",
+          "output": "Old theme: light\nNew theme: dark\nLanguage preserved: en\nName preserved: Alice",
+          "explanation": "For nested updates, spread at every level in the path to the changed value. This creates new references only for the modified branch of the object tree."
+        }
+      ],
+      "notes": [
+        "React uses reference equality (===) to detect state changes. If you mutate an object, the reference stays the same and React will skip the re-render.",
+        "For arrays: use spread/concat to add, filter to remove, and map to update. Never use push, pop, splice, or direct index assignment on state arrays.",
+        "If immutable updates become too verbose with deeply nested state, consider flattening your state structure or using a library like Immer."
+      ],
+      "commonPitfalls": [
+        "Mutating state directly with push, splice, or property assignment — the UI will not update because React does not detect the change. Always create new objects and arrays.",
+        "Forgetting to spread at every nested level — if you only spread the top level, nested objects still share references, and changes to them affect both old and new state."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "immutable-object-exercise",
+        "title": "Immutable Object Updates",
+        "description": "Write a function that immutably updates a user profile object. It should accept the current state and an updates object, returning a new object with the updates applied.",
+        "starterCode": "function updateProfile(profile, updates) {\n  // Return a new object with updates applied immutably\n  // Do NOT mutate the original profile\n\n  // your code here\n}\n\nconst profile = { name: 'Alice', age: 25, email: 'alice@test.com' };\n\nconst updated = updateProfile(profile, { age: 26, email: 'alice@new.com' });\nconsole.log(updated.name + ' | ' + updated.age + ' | ' + updated.email);\nconsole.log('Original unchanged: ' + profile.age + ' | ' + profile.email);\nconsole.log('Different objects: ' + (profile !== updated));",
+        "solution": "function updateProfile(profile, updates) {\n  return { ...profile, ...updates };\n}\n\nconst profile = { name: 'Alice', age: 25, email: 'alice@test.com' };\n\nconst updated = updateProfile(profile, { age: 26, email: 'alice@new.com' });\nconsole.log(updated.name + ' | ' + updated.age + ' | ' + updated.email);\nconsole.log('Original unchanged: ' + profile.age + ' | ' + profile.email);\nconsole.log('Different objects: ' + (profile !== updated));",
+        "expectedOutput": "Alice | 26 | alice@new.com\nOriginal unchanged: 25 | alice@test.com\nDifferent objects: true",
+        "hints": [
+          "Use the spread operator to copy all properties from the original and then override with the updates: `{ ...original, ...updates }`.",
+          "Properties listed after the spread override matching properties from the spread. This is how you update specific fields."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "immutable-array-exercise",
+        "title": "Immutable Array Operations",
+        "description": "Implement three functions — addItem, removeItem, and toggleItem — that modify an array of todo items immutably.",
+        "starterCode": "const todos = [\n  { id: 1, text: 'Learn React', done: false },\n  { id: 2, text: 'Practice hooks', done: false }\n];\n\n// Implement these three functions:\n// addItem(arr, newItem) - returns new array with newItem appended\n// removeItem(arr, id) - returns new array without the item with that id\n// toggleItem(arr, id) - returns new array with the item's done status flipped\n\n// your code here\n\nconst added = addItem(todos, { id: 3, text: 'Build project', done: false });\nconsole.log('Added: ' + added.map(t => t.text).join(', '));\n\nconst removed = removeItem(todos, 1);\nconsole.log('Removed: ' + removed.map(t => t.text).join(', '));\n\nconst toggled = toggleItem(todos, 2);\nconsole.log('Toggled: ' + toggled[1].text + ' done=' + toggled[1].done);\n\nconsole.log('Original intact: ' + todos.length + ' items, todo2 done=' + todos[1].done);",
+        "solution": "const todos = [\n  { id: 1, text: 'Learn React', done: false },\n  { id: 2, text: 'Practice hooks', done: false }\n];\n\nfunction addItem(arr, newItem) {\n  return [...arr, newItem];\n}\n\nfunction removeItem(arr, id) {\n  return arr.filter(item => item.id !== id);\n}\n\nfunction toggleItem(arr, id) {\n  return arr.map(item =>\n    item.id === id ? { ...item, done: !item.done } : item\n  );\n}\n\nconst added = addItem(todos, { id: 3, text: 'Build project', done: false });\nconsole.log('Added: ' + added.map(t => t.text).join(', '));\n\nconst removed = removeItem(todos, 1);\nconsole.log('Removed: ' + removed.map(t => t.text).join(', '));\n\nconst toggled = toggleItem(todos, 2);\nconsole.log('Toggled: ' + toggled[1].text + ' done=' + toggled[1].done);\n\nconsole.log('Original intact: ' + todos.length + ' items, todo2 done=' + todos[1].done);",
+        "expectedOutput": "Added: Learn React, Practice hooks, Build project\nRemoved: Practice hooks\nToggled: Practice hooks done=true\nOriginal intact: 2 items, todo2 done=false",
+        "hints": [
+          "For addItem, use spread: `[...arr, newItem]`. For removeItem, use filter: `arr.filter(item => item.id !== id)`.",
+          "For toggleItem, use map with a conditional: `arr.map(item => item.id === id ? { ...item, done: !item.done } : item)`."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "lifting-state-up",
+    "sectionId": "props-and-state",
+    "orderIndex": 4,
+    "title": "Lifting State Up",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["lifting state", "shared state", "inverse data flow", "single source of truth", "state management patterns"],
+    "content": {
+      "explanation": "Lifting state up is a pattern where you move state from a child component to their closest common parent so that multiple children can share and synchronize the same data. This is necessary because React's data flow is unidirectional — data only flows downward from parent to child via props. When two sibling components need to reflect the same changing data, the state must live in their parent.\n\nConsider a temperature converter with Celsius and Fahrenheit inputs. If each input manages its own state independently, they cannot stay in sync. The solution is to lift the temperature state up to the parent component. The parent holds the single source of truth and passes the current value down to both inputs as props. When either input changes, it calls a callback prop (like onChange) that the parent provided, and the parent updates the state, causing both inputs to re-render with the new synchronized value.\n\nThe 'inverse data flow' part of this pattern refers to the child-to-parent communication. Since children cannot modify parent state directly, the parent passes a callback function as a prop. The child calls this function when something changes (like a user typing in an input). The parent's callback updates the parent's state, which flows back down as props. This completes the cycle: state flows down as props, events flow up as callbacks.\n\nDeciding where state should live follows a simple process: identify every component that renders something based on that state. Find their closest common ancestor — that is where the state should live. If no common ancestor makes sense, you can create a new component solely to hold the state and place it above the others. This principle is called the 'single source of truth' — each piece of state should be owned by exactly one component.\n\nLifting state has a cost: the parent component becomes more complex, and you end up passing props through more layers. If lifting state leads to prop drilling (passing props through many intermediate components that do not use them), consider using React Context or a state management library. However, for most cases involving a few closely related components, lifting state up is the simplest and most appropriate pattern.",
+      "codeExamples": [
+        {
+          "title": "Lifting State to Share Between Siblings",
+          "code": "// Two children need to share the same count\nfunction DisplayCount(props) {\n  return 'Count is: ' + props.count;\n}\n\nfunction Controls(props) {\n  // Child communicates up via callback\n  props.onIncrement();\n  return 'Incremented!';\n}\n\n// Parent holds the shared state\nfunction App() {\n  let count = 0;\n  const increment = () => { count += 1; };\n\n  // Before interaction\n  console.log(DisplayCount({ count }));\n\n  // Child triggers state change\n  console.log(Controls({ onIncrement: increment }));\n\n  // After interaction — state is shared\n  console.log(DisplayCount({ count }));\n}\n\nApp();",
+          "output": "Count is: 0\nIncremented!\nCount is: 1",
+          "explanation": "The parent App holds the count state. DisplayCount reads it via props, and Controls updates it via a callback prop. Both siblings see the same data."
+        },
+        {
+          "title": "Temperature Converter Pattern",
+          "code": "function toCelsius(f) { return ((f - 32) * 5) / 9; }\nfunction toFahrenheit(c) { return (c * 9) / 5 + 32; }\n\n// Parent holds the single source of truth\nfunction TemperatureConverter() {\n  let temperature = 0;\n  let scale = 'c';\n\n  function handleCelsiusChange(value) {\n    temperature = value;\n    scale = 'c';\n  }\n\n  function handleFahrenheitChange(value) {\n    temperature = value;\n    scale = 'f';\n  }\n\n  // Simulate user entering 100 celsius\n  handleCelsiusChange(100);\n\n  const celsius = scale === 'c' ? temperature : toCelsius(temperature);\n  const fahrenheit = scale === 'f' ? temperature : toFahrenheit(temperature);\n\n  console.log('Celsius: ' + celsius);\n  console.log('Fahrenheit: ' + fahrenheit);\n\n  // Simulate user entering 32 fahrenheit\n  handleFahrenheitChange(32);\n\n  const c2 = scale === 'c' ? temperature : toCelsius(temperature);\n  const f2 = scale === 'f' ? temperature : toFahrenheit(temperature);\n\n  console.log('Celsius: ' + c2);\n  console.log('Fahrenheit: ' + f2);\n}\n\nTemperatureConverter();",
+          "output": "Celsius: 100\nFahrenheit: 212\nCelsius: 0\nFahrenheit: 32",
+          "explanation": "The parent stores the temperature and scale as state. Both inputs derive their display value from this single source of truth. Changing one input updates both."
+        },
+        {
+          "title": "Finding the Right Component for State",
+          "code": "// Scenario: SearchBar and ResultsList both need the search query\n\nfunction SearchBar(props) {\n  // Calls parent's onSearch when user types\n  return 'SearchBar: query=\"' + props.query + '\"';\n}\n\nfunction ResultsList(props) {\n  const filtered = props.items.filter(item =>\n    item.toLowerCase().includes(props.query.toLowerCase())\n  );\n  return 'Results: ' + filtered.join(', ');\n}\n\n// Parent holds query state — the closest common ancestor\nfunction SearchPage() {\n  const items = ['React', 'Redux', 'Router', 'Angular', 'Vue'];\n  let query = '';\n\n  function handleSearch(newQuery) {\n    query = newQuery;\n  }\n\n  // Simulate typing 'Re'\n  handleSearch('Re');\n\n  console.log(SearchBar({ query }));\n  console.log(ResultsList({ items, query }));\n}\n\nSearchPage();",
+          "output": "SearchBar: query=\"Re\"\nResults: React, Redux",
+          "explanation": "The search query state lives in SearchPage because both SearchBar (to show current value) and ResultsList (to filter) need access to it."
+        }
+      ],
+      "notes": [
+        "If two components need to share state, find their closest common ancestor and lift the state there. Pass the state down as props and an updater function as a callback prop.",
+        "Each piece of data should have a single source of truth — one component that owns and manages it. Other components receive it via props.",
+        "Lifting state up is the simplest state sharing pattern. Use Context or state management libraries only when prop drilling becomes unwieldy."
+      ],
+      "commonPitfalls": [
+        "Duplicating state in multiple components instead of lifting it up — this leads to state getting out of sync and is a very common source of bugs.",
+        "Lifting state too high in the component tree — this causes unnecessary re-renders of components that do not use the state. Lift only to the closest common ancestor that needs it."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "lifting-basic-exercise",
+        "title": "Share State Between Siblings",
+        "description": "Implement a parent function that holds shared state and provides it to two child functions. One child displays the value, the other modifies it.",
+        "starterCode": "function Display(props) {\n  return 'Value: ' + props.value;\n}\n\nfunction Editor(props) {\n  props.onChange(props.newValue);\n  return 'Changed!';\n}\n\n// Create a Parent function that:\n// 1. Holds a 'text' variable starting as 'Hello'\n// 2. Creates a handleChange function to update text\n// 3. Logs Display result, then Editor result, then Display result again\n\n// your code here\n\nParent();",
+        "solution": "function Display(props) {\n  return 'Value: ' + props.value;\n}\n\nfunction Editor(props) {\n  props.onChange(props.newValue);\n  return 'Changed!';\n}\n\nfunction Parent() {\n  let text = 'Hello';\n\n  function handleChange(newValue) {\n    text = newValue;\n  }\n\n  console.log(Display({ value: text }));\n  console.log(Editor({ onChange: handleChange, newValue: 'World' }));\n  console.log(Display({ value: text }));\n}\n\nParent();",
+        "expectedOutput": "Value: Hello\nChanged!\nValue: World",
+        "hints": [
+          "The Parent function owns the state (a local variable). It passes the value to Display and a callback to Editor.",
+          "When Editor calls props.onChange with the new value, it updates the parent's local variable, which is then passed to Display again."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "lifting-sync-exercise",
+        "title": "Synchronized Inputs",
+        "description": "Create a parent function that keeps two inputs in sync. When one input changes, the other should reflect the converted value (like a unit converter).",
+        "starterCode": "function kmToMiles(km) { return km * 0.621371; }\nfunction milesToKm(miles) { return miles / 0.621371; }\n\nfunction KmInput(props) {\n  return 'KM: ' + props.value.toFixed(2);\n}\n\nfunction MilesInput(props) {\n  return 'Miles: ' + props.value.toFixed(2);\n}\n\n// Create a Converter function that:\n// 1. Holds distance and unit state\n// 2. Has handleKmChange and handleMilesChange functions\n// 3. Computes both km and miles values from the single state\n// 4. Simulates entering 100 km, then 50 miles\n\n// your code here\n\nConverter();",
+        "solution": "function kmToMiles(km) { return km * 0.621371; }\nfunction milesToKm(miles) { return miles / 0.621371; }\n\nfunction KmInput(props) {\n  return 'KM: ' + props.value.toFixed(2);\n}\n\nfunction MilesInput(props) {\n  return 'Miles: ' + props.value.toFixed(2);\n}\n\nfunction Converter() {\n  let distance = 0;\n  let unit = 'km';\n\n  function handleKmChange(value) {\n    distance = value;\n    unit = 'km';\n  }\n\n  function handleMilesChange(value) {\n    distance = value;\n    unit = 'miles';\n  }\n\n  // Enter 100 km\n  handleKmChange(100);\n  let km = unit === 'km' ? distance : milesToKm(distance);\n  let miles = unit === 'miles' ? distance : kmToMiles(distance);\n  console.log(KmInput({ value: km }));\n  console.log(MilesInput({ value: miles }));\n\n  // Enter 50 miles\n  handleMilesChange(50);\n  km = unit === 'km' ? distance : milesToKm(distance);\n  miles = unit === 'miles' ? distance : kmToMiles(distance);\n  console.log(KmInput({ value: km }));\n  console.log(MilesInput({ value: miles }));\n}\n\nConverter();",
+        "expectedOutput": "KM: 100.00\nMiles: 62.14\nKM: 80.47\nMiles: 50.00",
+        "hints": [
+          "Store the distance and which unit was last entered. Derive the other unit's value through conversion. This is the single source of truth pattern.",
+          "When km changes, store the value with unit='km'. When miles changes, store with unit='miles'. Then compute both display values from the stored data."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

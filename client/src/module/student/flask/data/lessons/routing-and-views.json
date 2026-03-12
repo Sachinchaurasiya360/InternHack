@@ -1,0 +1,301 @@
+[
+  {
+    "id": "url-rules",
+    "sectionId": "routing-and-views",
+    "orderIndex": 0,
+    "title": "URL Rules",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["URL Rules", "Route Decorator", "Endpoint", "Static Routes", "Trailing Slashes"],
+    "content": {
+      "explanation": "URL routing is the mechanism that maps URLs to view functions in Flask. When a user visits a URL, Flask's routing system determines which Python function should handle that request. Understanding URL rules is fundamental to building any Flask application.\n\nFlask uses Werkzeug's routing system under the hood. When you use the @app.route() decorator, you are registering a URL rule that associates a URL pattern with a view function. Each URL rule has three components: the URL pattern (or rule), the endpoint name, and the view function.\n\nThe URL pattern is the string you pass to @app.route(). It can be a static path like '/about' or contain variable parts like '/user/<username>'. Flask matches incoming request URLs against these patterns from most specific to least specific.\n\nThe endpoint is a unique identifier for the route, defaulting to the view function's name. It is used internally by Flask and is the key you use with url_for() to generate URLs. You can override the endpoint name by passing the endpoint parameter to @app.route().\n\nFlask has an important behavior regarding trailing slashes. If a route is defined as '/about/' (with trailing slash) and a user visits '/about' (without it), Flask will redirect them to '/about/' with a 308 redirect. However, if a route is defined as '/about' (without trailing slash) and a user visits '/about/', Flask will return a 404 error. The convention is to use trailing slashes for routes that represent 'folders' or collections, and no trailing slash for routes that represent individual resources.\n\nYou can register multiple URL rules for the same view function by stacking decorators. This is useful when you want the same handler for different URLs. You can also bypass the decorator syntax entirely and use app.add_url_rule() directly, which is the method that @app.route() calls internally.\n\nFlask matches routes based on the order of specificity, not the order of definition. Static routes take priority over variable routes. For example, '/user/admin' will match before '/user/<username>'. This lets you define special-case routes alongside generic patterns.\n\nEach view function name must be unique across your application (or within a blueprint). If you define two functions with the same name, even on different routes, Flask will raise an AssertionError. If you need the same function on multiple routes, stack decorators or use add_url_rule with different endpoint names.",
+      "codeExamples": [
+        {
+          "title": "Basic URL Rules",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\n# Static routes\n@app.route('/')\ndef index():\n    return 'Home Page'\n\n@app.route('/about')\ndef about():\n    return 'About Page'\n\n@app.route('/contact/')\ndef contact():\n    # Trailing slash: /contact redirects to /contact/\n    return 'Contact Page'\n\n# Multiple decorators on one function\n@app.route('/faq')\n@app.route('/help')\ndef faq():\n    return 'FAQ / Help Page'",
+          "explanation": "Static routes match exact URL paths. The trailing slash on '/contact/' means Flask will redirect '/contact' to '/contact/'. Multiple decorators let one function handle different URLs."
+        },
+        {
+          "title": "Endpoints and url_for()",
+          "code": "from flask import Flask, url_for\n\napp = Flask(__name__)\n\n@app.route('/')\ndef index():\n    return 'Home'\n\n@app.route('/user/<name>')\ndef profile(name):\n    return f'Profile: {name}'\n\n@app.route('/admin', endpoint='admin_panel')\ndef admin():\n    return 'Admin'\n\nwith app.test_request_context():\n    print(url_for('index'))           # /\n    print(url_for('profile', name='alice'))  # /user/alice\n    print(url_for('admin_panel'))     # /admin",
+          "output": "/\n/user/alice\n/admin",
+          "explanation": "Endpoints default to the function name. Use url_for() with the endpoint name to generate URLs. This decouples your code from the actual URL paths, so you can change URLs without updating every reference."
+        },
+        {
+          "title": "Using add_url_rule()",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\ndef home():\n    return 'Home Page'\n\ndef about():\n    return 'About Page'\n\n# Register routes without decorators\napp.add_url_rule('/', 'home', home)\napp.add_url_rule('/about', 'about', about)\n\n# This is exactly what @app.route() does internally:\n# @app.route('/about')  ==  app.add_url_rule('/about', 'about', about_func)",
+          "explanation": "app.add_url_rule() is the low-level method that @app.route() calls. It is useful when defining routes dynamically, in class-based views, or when you want to keep route registration separate from view function definitions."
+        },
+        {
+          "title": "Listing All Routes",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/')\ndef index():\n    return 'Home'\n\n@app.route('/api/users')\ndef users():\n    return 'Users'\n\n@app.route('/api/posts')\ndef posts():\n    return 'Posts'\n\n# Print all registered routes\nwith app.app_context():\n    for rule in app.url_map.iter_rules():\n        print(f'{rule.endpoint:20s} {rule.methods} {rule.rule}')",
+          "output": "index                {'GET', 'HEAD', 'OPTIONS'} /\nusers                {'GET', 'HEAD', 'OPTIONS'} /api/users\nposts                {'GET', 'HEAD', 'OPTIONS'} /api/posts\nstatic               {'GET', 'HEAD', 'OPTIONS'} /static/<path:filename>",
+          "explanation": "app.url_map contains all registered URL rules. Iterating it shows you every route, its endpoint, allowed methods, and URL pattern. Flask automatically registers a /static/ route for serving static files."
+        }
+      ],
+      "notes": [
+        "Routes with a trailing slash ('/about/') redirect requests without the slash. Routes without a trailing slash ('/about') return 404 for URLs with trailing slashes.",
+        "Endpoint names default to the function name and must be unique. Use the endpoint parameter to override.",
+        "Use url_for() to generate URLs instead of hardcoding paths. This makes your code resilient to URL changes.",
+        "Flask automatically registers a '/static/<path:filename>' route for serving static files."
+      ],
+      "commonPitfalls": [
+        "Defining two view functions with the same name causes an AssertionError, even if they handle different routes.",
+        "Forgetting the trailing slash behavior: '/api' will 404 on '/api/' but '/api/' will redirect '/api' to '/api/'.",
+        "Hardcoding URLs instead of using url_for(). If you change a route path, hardcoded URLs break silently."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "url-rules-ex1",
+        "title": "Create a Route Map",
+        "description": "Create a Flask app with the following routes:\n- '/' maps to an 'index' function returning 'Home'\n- '/dashboard/' maps to a 'dashboard' function returning 'Dashboard' (note the trailing slash)\n- Both '/help' and '/support' map to the same 'help_page' function returning 'Help Center'",
+        "starterCode": "from flask import Flask\n\napp = Flask(__name__)\n\n# Define your routes\n",
+        "solution": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/')\ndef index():\n    return 'Home'\n\n@app.route('/dashboard/')\ndef dashboard():\n    return 'Dashboard'\n\n@app.route('/help')\n@app.route('/support')\ndef help_page():\n    return 'Help Center'\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Stack multiple @app.route() decorators on one function for multiple URLs",
+          "Include the trailing slash in '/dashboard/' to enable automatic redirect",
+          "Each function name must be unique"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "url-rules-ex2",
+        "title": "Use add_url_rule",
+        "description": "Register the following routes using app.add_url_rule() (not decorators):\n- '/' with endpoint 'home' mapped to a home function returning 'Home'\n- '/api/health' with endpoint 'health_check' mapped to a health function returning a dict {'status': 'ok'}",
+        "starterCode": "from flask import Flask\n\napp = Flask(__name__)\n\ndef home():\n    return 'Home'\n\ndef health():\n    return {'status': 'ok'}\n\n# Register routes using add_url_rule\n",
+        "solution": "from flask import Flask\n\napp = Flask(__name__)\n\ndef home():\n    return 'Home'\n\ndef health():\n    return {'status': 'ok'}\n\napp.add_url_rule('/', 'home', home)\napp.add_url_rule('/api/health', 'health_check', health)\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "add_url_rule takes three arguments: URL rule, endpoint name, and view function",
+          "The endpoint name is the second argument and is used with url_for()"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "http-methods-views",
+    "sectionId": "routing-and-views",
+    "orderIndex": 1,
+    "title": "HTTP Methods & View Functions",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["GET", "POST", "PUT", "DELETE", "PATCH", "methods Parameter", "Class-Based Views"],
+    "content": {
+      "explanation": "HTTP methods (also called HTTP verbs) indicate the desired action to be performed on a resource. Flask routes handle GET requests by default, but you can configure them to respond to any HTTP method. Understanding HTTP methods is essential for building REST APIs and handling form submissions.\n\nThe most common HTTP methods are GET, POST, PUT, PATCH, and DELETE. GET requests retrieve data and should not modify server state. POST requests submit data to create a resource. PUT requests replace an entire resource. PATCH requests partially update a resource. DELETE requests remove a resource. Flask also handles HEAD (like GET but without the response body) and OPTIONS (returns supported methods) automatically.\n\nBy default, a Flask route only responds to GET requests (and HEAD and OPTIONS, which Flask handles automatically). To allow other methods, pass the methods parameter to @app.route(). This parameter accepts a list of method strings. If a client sends a request with an unsupported method, Flask returns a 405 Method Not Allowed response.\n\nInside a view function, you can check which HTTP method was used via request.method. This is useful when a single route handles both GET (display a form) and POST (process the form submission). This pattern is common in traditional web applications where form pages handle both displaying and processing.\n\nFlask also supports class-based views through the MethodView class from flask.views. With MethodView, you define separate methods for each HTTP verb (get, post, put, delete), and Flask dispatches to the correct method based on the request. This can be cleaner than a single function with if/elif blocks for each method. Class-based views are registered using app.add_url_rule() with the as_view() class method.\n\nFor REST APIs, it is common to have routes that support multiple methods with different behaviors. A '/api/users' route might support GET (list all users) and POST (create a user), while '/api/users/<id>' supports GET (get one user), PUT (update a user), and DELETE (delete a user). Flask's routing system makes this pattern straightforward.\n\nFlask 2.0 introduced shortcut decorators: @app.get(), @app.post(), @app.put(), @app.delete(), and @app.patch(). These are syntactic sugar for @app.route(methods=['GET']), etc. They make route definitions more readable and explicit about which HTTP method a route handles.",
+      "codeExamples": [
+        {
+          "title": "Handling Multiple HTTP Methods",
+          "code": "from flask import Flask, request\n\napp = Flask(__name__)\n\n@app.route('/login', methods=['GET', 'POST'])\ndef login():\n    if request.method == 'POST':\n        username = request.form.get('username')\n        password = request.form.get('password')\n        # Validate credentials...\n        return f'Logging in {username}'\n    # GET request - show login form\n    return '''\n        <form method=\"POST\">\n            <input name=\"username\" placeholder=\"Username\">\n            <input name=\"password\" type=\"password\" placeholder=\"Password\">\n            <button type=\"submit\">Login</button>\n        </form>\n    '''",
+          "explanation": "This route handles both GET and POST. GET displays the login form, POST processes the submission. The request.method attribute tells you which HTTP method was used."
+        },
+        {
+          "title": "Shortcut Method Decorators (Flask 2.0+)",
+          "code": "from flask import Flask, request\n\napp = Flask(__name__)\n\n@app.get('/items')\ndef list_items():\n    return {'items': ['apple', 'banana', 'cherry']}\n\n@app.post('/items')\ndef create_item():\n    data = request.get_json()\n    return {'created': data['name']}, 201\n\n@app.delete('/items/<int:item_id>')\ndef delete_item(item_id):\n    return {'deleted': item_id}\n\n@app.put('/items/<int:item_id>')\ndef update_item(item_id):\n    data = request.get_json()\n    return {'updated': item_id, 'data': data}",
+          "explanation": "Flask 2.0+ provides @app.get(), @app.post(), @app.put(), @app.delete(), and @app.patch() as shortcuts. They are clearer than using methods=['GET'] and make the HTTP method obvious at a glance."
+        },
+        {
+          "title": "Class-Based Views with MethodView",
+          "code": "from flask import Flask, request\nfrom flask.views import MethodView\n\napp = Flask(__name__)\n\nclass UserAPI(MethodView):\n    def get(self, user_id=None):\n        if user_id is None:\n            return {'users': ['alice', 'bob']}\n        return {'user': f'user_{user_id}'}\n\n    def post(self):\n        data = request.get_json()\n        return {'created': data}, 201\n\n    def put(self, user_id):\n        data = request.get_json()\n        return {'updated': user_id, 'data': data}\n\n    def delete(self, user_id):\n        return {'deleted': user_id}\n\n# Register the class-based view\nuser_view = UserAPI.as_view('user_api')\napp.add_url_rule('/api/users', view_func=user_view, methods=['GET', 'POST'], defaults={'user_id': None})\napp.add_url_rule('/api/users/<int:user_id>', view_func=user_view, methods=['GET', 'PUT', 'DELETE'])",
+          "explanation": "MethodView dispatches to get(), post(), put(), delete() methods based on the HTTP method. You register it with as_view() and add_url_rule(). This keeps method handling organized in a class instead of if/elif chains."
+        }
+      ],
+      "notes": [
+        "Flask routes default to GET (plus HEAD and OPTIONS). Pass methods=['GET','POST'] to allow other methods.",
+        "HEAD requests are handled automatically — Flask runs the GET handler but strips the response body.",
+        "OPTIONS requests return the allowed methods for the URL, useful for CORS preflight requests.",
+        "Flask 2.0+ shortcut decorators (@app.get, @app.post, etc.) improve readability."
+      ],
+      "commonPitfalls": [
+        "Forgetting to add 'POST' to the methods list when handling form submissions, resulting in a 405 error.",
+        "Using GET requests for operations that modify data. GET should be safe and idempotent.",
+        "Not checking request.method in a multi-method route, accidentally running creation logic on a GET request."
+      ],
+      "interviewTips": [
+        "Explain the semantics: GET is safe and idempotent, POST creates, PUT replaces, PATCH updates partially, DELETE removes.",
+        "Mention that Flask returns 405 Method Not Allowed when a client uses an unsupported method on a route.",
+        "Describe both function-based views with methods parameter and class-based views with MethodView."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "http-methods-ex1",
+        "title": "Build a CRUD Route",
+        "description": "Create a Flask app with a '/api/notes' route that handles GET (return a list of notes) and POST (create a note from JSON body). Use the shortcut decorators (@app.get, @app.post).",
+        "starterCode": "from flask import Flask, request\n\napp = Flask(__name__)\n\nnotes = ['Buy groceries', 'Read a book']\n\n# Add GET and POST routes for /api/notes\n",
+        "solution": "from flask import Flask, request\n\napp = Flask(__name__)\n\nnotes = ['Buy groceries', 'Read a book']\n\n@app.get('/api/notes')\ndef get_notes():\n    return {'notes': notes}\n\n@app.post('/api/notes')\ndef create_note():\n    data = request.get_json()\n    notes.append(data['text'])\n    return {'created': data['text']}, 201\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Use @app.get() and @app.post() decorators",
+          "Use request.get_json() to parse the JSON request body",
+          "Return a 201 status code for successful creation"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "http-methods-ex2",
+        "title": "MethodView for a Resource",
+        "description": "Create a MethodView class called BookAPI with get() and post() methods. GET returns {'books': []}. POST reads JSON and returns {'created': title} with 201 status. Register it at '/api/books'.",
+        "starterCode": "from flask import Flask, request\nfrom flask.views import MethodView\n\napp = Flask(__name__)\n\n# Create BookAPI MethodView and register it\n",
+        "solution": "from flask import Flask, request\nfrom flask.views import MethodView\n\napp = Flask(__name__)\n\nclass BookAPI(MethodView):\n    def get(self):\n        return {'books': []}\n\n    def post(self):\n        data = request.get_json()\n        return {'created': data['title']}, 201\n\napp.add_url_rule('/api/books', view_func=BookAPI.as_view('book_api'))\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "MethodView methods are named after HTTP verbs in lowercase: get, post, put, delete",
+          "Use BookAPI.as_view('book_api') to create the view function",
+          "Register with app.add_url_rule() since MethodView does not use decorators"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "variable-rules-converters",
+    "sectionId": "routing-and-views",
+    "orderIndex": 2,
+    "title": "Variable Rules & Converters",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Variable Rules", "Type Converters", "string", "int", "float", "path", "uuid"],
+    "content": {
+      "explanation": "Variable rules allow you to capture parts of a URL and pass them as arguments to your view function. This is how Flask handles dynamic URLs like user profiles, blog posts, and API resources where the URL contains an identifier.\n\nVariable sections in URL rules are marked with angle brackets: <variable_name>. When Flask matches a URL, it extracts the value and passes it to the view function as a keyword argument. By default, variables are captured as strings.\n\nFlask provides built-in converters that validate and convert URL variables to specific types. You use them with the syntax <converter:variable_name>. The built-in converters are:\n\n- string (default): Accepts any text without slashes. This is used if no converter is specified.\n- int: Accepts positive integers. The value is passed to the function as a Python int.\n- float: Accepts positive floating-point numbers. Passed as a Python float.\n- path: Like string but also accepts slashes. Useful for file paths.\n- uuid: Accepts UUID strings in the format xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx.\n- any: Matches one of a given set of strings. Useful for selecting from a fixed list.\n\nThe int and float converters are particularly useful because they handle type validation for you. If someone visits '/user/abc' on a route defined as '/user/<int:id>', Flask returns a 404 instead of passing 'abc' to your function and letting it crash when you try to use it as a number.\n\nYou can have multiple variables in a single URL rule. For example, '/api/<version>/users/<int:user_id>/posts/<int:post_id>' captures three variables. Each variable becomes a keyword argument to the view function, so the function must accept all of them.\n\nFlask also supports custom converters if the built-in ones do not meet your needs. You create a class that inherits from werkzeug.routing.BaseConverter, define the to_python() method (converts the URL string to a Python value) and the to_url() method (converts a Python value back to a URL string for url_for). Then you register it with app.url_map.converters.\n\nThe path converter deserves special attention. Normally, URL variables do not capture slashes, so '/files/<filename>' would match '/files/report.pdf' but not '/files/docs/report.pdf'. The path converter matches slashes too, so '/files/<path:filepath>' matches '/files/docs/2024/report.pdf' with filepath = 'docs/2024/report.pdf'.",
+      "codeExamples": [
+        {
+          "title": "Basic Variable Rules",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/user/<username>')\ndef user_profile(username):\n    return f'Profile page of {username}'\n\n@app.route('/post/<int:post_id>')\ndef show_post(post_id):\n    return f'Post #{post_id} (type: {type(post_id).__name__})'\n\n@app.route('/price/<float:amount>')\ndef show_price(amount):\n    return f'Price: ${amount:.2f}'",
+          "output": "/user/alice -> Profile page of alice\n/post/42 -> Post #42 (type: int)\n/price/19.99 -> Price: $19.99",
+          "explanation": "Without a converter, variables are strings. The int converter ensures post_id is an integer (and returns 404 for non-integers). The float converter captures decimal numbers."
+        },
+        {
+          "title": "Path and UUID Converters",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/files/<path:filepath>')\ndef serve_file(filepath):\n    return f'Serving file: {filepath}'\n\n@app.route('/item/<uuid:item_id>')\ndef get_item(item_id):\n    return f'Item ID: {item_id} (type: {type(item_id).__name__})'\n\n# The 'any' converter matches from a fixed set\n@app.route('/lang/<any(en, fr, de, es):language>')\ndef set_language(language):\n    return f'Language set to: {language}'",
+          "output": "/files/docs/2024/report.pdf -> Serving file: docs/2024/report.pdf\n/item/550e8400-e29b-41d4-a716-446655440000 -> Item ID: 550e8400-... (type: UUID)\n/lang/fr -> Language set to: fr\n/lang/ja -> 404 Not Found",
+          "explanation": "The path converter captures slashes, so it can match nested paths. The uuid converter validates UUID format and returns a Python UUID object. The any converter restricts values to a predefined set."
+        },
+        {
+          "title": "Multiple Variables in One Route",
+          "code": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/api/<version>/users/<int:user_id>')\ndef get_user(version, user_id):\n    return {\n        'api_version': version,\n        'user_id': user_id,\n        'user': f'User {user_id}'\n    }\n\n@app.route('/blog/<int:year>/<int:month>/<slug>')\ndef blog_post(year, month, slug):\n    return f'Blog: {year}/{month:02d}/{slug}'",
+          "output": "/api/v2/users/42 -> {\"api_version\":\"v2\",\"user_id\":42,\"user\":\"User 42\"}\n/blog/2024/3/hello-world -> Blog: 2024/03/hello-world",
+          "explanation": "You can combine multiple variable rules in a single URL pattern. Each variable becomes a parameter of the view function. The function signature must include all variables defined in the URL rule."
+        },
+        {
+          "title": "Custom URL Converter",
+          "code": "from flask import Flask\nfrom werkzeug.routing import BaseConverter\n\nclass ListConverter(BaseConverter):\n    \"\"\"Matches comma-separated values in URL.\"\"\"\n    def to_python(self, value):\n        return value.split(',')\n\n    def to_url(self, values):\n        return ','.join(values)\n\napp = Flask(__name__)\napp.url_map.converters['list'] = ListConverter\n\n@app.route('/tags/<list:tags>')\ndef filter_by_tags(tags):\n    return {'tags': tags, 'count': len(tags)}\n\n# /tags/python,flask,web -> {\"tags\":[\"python\",\"flask\",\"web\"],\"count\":3}",
+          "output": "/tags/python,flask,web -> {\"tags\":[\"python\",\"flask\",\"web\"],\"count\":3}",
+          "explanation": "Custom converters extend BaseConverter. to_python() converts the URL segment to a Python object. to_url() converts back for url_for(). Register the converter on app.url_map.converters."
+        }
+      ],
+      "notes": [
+        "Default variable type is string (no slashes). Use int, float, path, uuid, or any for other types.",
+        "Type converters validate input: <int:id> returns 404 for non-integer values instead of passing bad data.",
+        "The path converter is essential for file paths because it captures slashes.",
+        "Custom converters let you define your own URL parsing logic."
+      ],
+      "commonPitfalls": [
+        "Forgetting that the default string converter does not match slashes. Use path converter for URLs containing slashes.",
+        "Defining a route parameter name that shadows a Python builtin (like 'id' or 'type'). Use descriptive names like 'user_id' instead.",
+        "Not matching the function parameter names to the URL variable names exactly. They must be identical."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "var-rules-ex1",
+        "title": "User Profile Routes",
+        "description": "Create routes for:\n- '/user/<username>' that returns 'Profile: {username}'\n- '/user/<int:user_id>/posts/<int:post_id>' that returns a JSON dict with 'user_id' and 'post_id' keys",
+        "starterCode": "from flask import Flask\n\napp = Flask(__name__)\n\n# Add your routes\n",
+        "solution": "from flask import Flask\n\napp = Flask(__name__)\n\n@app.route('/user/<username>')\ndef user_profile(username):\n    return f'Profile: {username}'\n\n@app.route('/user/<int:user_id>/posts/<int:post_id>')\ndef user_post(user_id, post_id):\n    return {'user_id': user_id, 'post_id': post_id}\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Use <int:user_id> for integer conversion",
+          "The function parameters must match the variable names in the URL",
+          "Returning a dict from a view automatically creates a JSON response"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "var-rules-ex2",
+        "title": "File Server Route",
+        "description": "Create a route '/files/<path:filepath>' that returns a JSON response with the filepath and filename (last segment) extracted from the path.",
+        "starterCode": "from flask import Flask\nimport os\n\napp = Flask(__name__)\n\n# Create the file server route\n",
+        "solution": "from flask import Flask\nimport os\n\napp = Flask(__name__)\n\n@app.route('/files/<path:filepath>')\ndef serve_file(filepath):\n    filename = os.path.basename(filepath)\n    return {'filepath': filepath, 'filename': filename}\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "The path converter captures slashes, matching nested directory paths",
+          "Use os.path.basename() to extract the filename from a path",
+          "Return a dict for automatic JSON serialization"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "url-building",
+    "sectionId": "routing-and-views",
+    "orderIndex": 3,
+    "title": "URL Building",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["url_for", "Static Files", "External URLs", "Redirect", "Anchor"],
+    "content": {
+      "explanation": "URL building with url_for() is one of Flask's most important features. Instead of hardcoding URLs throughout your templates and code, url_for() generates URLs dynamically based on the endpoint name. This makes your application resilient to URL changes and prevents broken links.\n\nThe url_for() function takes an endpoint name as its first argument and any number of keyword arguments for URL variables. It returns the URL path as a string. If the route has variable rules, you must pass the corresponding values as keyword arguments. Any keyword arguments that do not match URL variables are appended as query string parameters.\n\nUsing url_for() has several advantages over hardcoded URLs. First, if you change a URL pattern, all url_for() calls automatically generate the correct new URL. Second, url_for() properly escapes special characters in URLs. Third, it handles the application's root path (SCRIPT_NAME) correctly when your app is mounted at a sub-path behind a reverse proxy. Fourth, it generates absolute URLs when needed (useful for emails and API responses).\n\nTo generate absolute URLs (including the scheme and host), pass _external=True to url_for(). This produces URLs like 'http://localhost:5000/about' instead of just '/about'. This is essential when generating URLs for email content, API responses, or any context where the URL will be used outside the browser's relative URL resolution.\n\nurl_for() also handles static files through the special 'static' endpoint. Flask automatically registers a route for serving files from the 'static' directory. You generate URLs to static files with url_for('static', filename='css/style.css'), which produces '/static/css/style.css'. In templates, this is how you link to CSS, JavaScript, and image files.\n\nThe redirect() function works hand-in-hand with url_for(). When you need to send the user to a different page (after form submission, after login, etc.), you call redirect(url_for('endpoint_name')). This sends a 302 redirect response. You can also specify a different status code like 301 for permanent redirects.\n\nIn Jinja2 templates, url_for() is available as a global function. You use it in href attributes, form actions, script src attributes, and anywhere else you need URLs. The pattern {{ url_for('endpoint', key=value) }} is used extensively in Flask templates.\n\nurl_for() raises a BuildError if the endpoint does not exist or if required URL variables are missing. This is actually a feature: it catches broken links at render time rather than letting them fail silently. In production, you should handle BuildError for user-generated content that might reference invalid endpoints.",
+      "codeExamples": [
+        {
+          "title": "Basic url_for() Usage",
+          "code": "from flask import Flask, url_for, redirect\n\napp = Flask(__name__)\n\n@app.route('/')\ndef index():\n    return f'''\n        <a href=\"{url_for('about')}\">About</a>\n        <a href=\"{url_for('profile', username='alice')}\">Alice</a>\n        <a href=\"{url_for('search', q='flask', page=1)}\">Search</a>\n    '''\n\n@app.route('/about')\ndef about():\n    return 'About page'\n\n@app.route('/user/<username>')\ndef profile(username):\n    return f'Profile: {username}'\n\n@app.route('/search')\ndef search():\n    return 'Search results'",
+          "output": "<a href=\"/about\">About</a>\n<a href=\"/user/alice\">Alice</a>\n<a href=\"/search?q=flask&page=1\">Search</a>",
+          "explanation": "url_for('about') generates '/about'. url_for('profile', username='alice') fills the variable rule to produce '/user/alice'. Extra keyword arguments like q and page are appended as query parameters."
+        },
+        {
+          "title": "Static File URLs and External URLs",
+          "code": "from flask import Flask, url_for\n\napp = Flask(__name__)\n\n@app.route('/')\ndef index():\n    # Static file URLs\n    css = url_for('static', filename='css/style.css')\n    js = url_for('static', filename='js/app.js')\n    img = url_for('static', filename='images/logo.png')\n\n    # External (absolute) URL\n    ext = url_for('index', _external=True)\n\n    return f'''\n        <link rel=\"stylesheet\" href=\"{css}\">\n        <img src=\"{img}\" alt=\"Logo\">\n        <p>Absolute URL: {ext}</p>\n        <script src=\"{js}\"></script>\n    '''",
+          "output": "css = /static/css/style.css\njs = /static/js/app.js\nimg = /static/images/logo.png\next = http://127.0.0.1:5000/",
+          "explanation": "The 'static' endpoint is automatically registered. url_for('static', filename='...') generates paths to your static directory. The _external=True parameter generates full absolute URLs including scheme and host."
+        },
+        {
+          "title": "Redirects with url_for()",
+          "code": "from flask import Flask, url_for, redirect, request\n\napp = Flask(__name__)\n\n@app.route('/login', methods=['GET', 'POST'])\ndef login():\n    if request.method == 'POST':\n        # After successful login, redirect to dashboard\n        return redirect(url_for('dashboard'))\n    return '<form method=\"POST\"><button>Login</button></form>'\n\n@app.route('/dashboard')\ndef dashboard():\n    return 'Welcome to your dashboard!'\n\n@app.route('/old-page')\ndef old_page():\n    # Permanent redirect (301) to new page\n    return redirect(url_for('new_page'), code=301)\n\n@app.route('/new-page')\ndef new_page():\n    return 'This is the new page'",
+          "explanation": "redirect() sends a 302 (temporary) redirect by default. Use code=301 for permanent redirects. Always combine redirect() with url_for() instead of hardcoding the target URL."
+        },
+        {
+          "title": "url_for() in Jinja2 Templates",
+          "code": "<!-- templates/base.html -->\n<!DOCTYPE html>\n<html>\n<head>\n    <link rel=\"stylesheet\" href=\"{{ url_for('static', filename='css/style.css') }}\">\n</head>\n<body>\n    <nav>\n        <a href=\"{{ url_for('index') }}\">Home</a>\n        <a href=\"{{ url_for('about') }}\">About</a>\n        <a href=\"{{ url_for('profile', username='me') }}\">Profile</a>\n    </nav>\n\n    {% block content %}{% endblock %}\n\n    <script src=\"{{ url_for('static', filename='js/app.js') }}\"></script>\n</body>\n</html>",
+          "explanation": "url_for() is available in Jinja2 templates as a global function. Use it for all links, form actions, static file references, and any URL. The double curly braces {{ }} output the result into the HTML."
+        }
+      ],
+      "notes": [
+        "Always use url_for() instead of hardcoding URLs. It handles URL changes, escaping, and sub-path mounting.",
+        "Extra keyword arguments to url_for() that do not match URL variables become query parameters.",
+        "Use _external=True to generate absolute URLs (for emails, APIs, redirects to external services).",
+        "url_for('static', filename='...') generates URLs for files in the static/ directory."
+      ],
+      "commonPitfalls": [
+        "Using the function name when the endpoint has been overridden. Always use the endpoint name, not the function name.",
+        "Forgetting to pass required URL variables to url_for(), causing a BuildError at runtime.",
+        "Not using url_for() for static files, leading to broken paths when deploying behind a reverse proxy."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "url-building-ex1",
+        "title": "Generate Navigation URLs",
+        "description": "Create a Flask app with routes for '/' (index), '/about' (about), and '/user/<username>' (profile). The index route should return an HTML string with links to '/about' and '/user/john', using url_for() to generate the URLs.",
+        "starterCode": "from flask import Flask, url_for\n\napp = Flask(__name__)\n\n# Create routes and use url_for\n",
+        "solution": "from flask import Flask, url_for\n\napp = Flask(__name__)\n\n@app.route('/')\ndef index():\n    about_url = url_for('about')\n    profile_url = url_for('profile', username='john')\n    return f'<a href=\"{about_url}\">About</a> | <a href=\"{profile_url}\">John</a>'\n\n@app.route('/about')\ndef about():\n    return 'About page'\n\n@app.route('/user/<username>')\ndef profile(username):\n    return f'Profile: {username}'\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "url_for('about') generates the URL for the about endpoint",
+          "url_for('profile', username='john') fills in the variable rule",
+          "Use f-strings to embed the URLs in HTML"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "url-building-ex2",
+        "title": "Post-Login Redirect",
+        "description": "Create a login route at '/login' that accepts GET and POST. On GET, return a form. On POST, redirect to a '/dashboard' route using url_for(). The dashboard should return 'Welcome!'.",
+        "starterCode": "from flask import Flask, request, redirect, url_for\n\napp = Flask(__name__)\n\n# Create login and dashboard routes\n",
+        "solution": "from flask import Flask, request, redirect, url_for\n\napp = Flask(__name__)\n\n@app.route('/login', methods=['GET', 'POST'])\ndef login():\n    if request.method == 'POST':\n        return redirect(url_for('dashboard'))\n    return '<form method=\"POST\"><button>Login</button></form>'\n\n@app.route('/dashboard')\ndef dashboard():\n    return 'Welcome!'\n\nif __name__ == '__main__':\n    app.run(debug=True)",
+        "hints": [
+          "Use redirect(url_for('dashboard')) to redirect after POST",
+          "Check request.method to differentiate GET and POST",
+          "The form must have method=\"POST\" to trigger a POST request"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

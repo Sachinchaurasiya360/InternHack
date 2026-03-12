@@ -30,6 +30,15 @@ export const createRoundSchema = z.object({
   instructions: z.string().optional(),
   customFields: z.array(customFieldDefinitionSchema).default([]),
   evaluationCriteria: z.array(evaluationCriterionSchema).default([]),
+  assessmentQuestions: z.array(z.object({
+    question: z.string().min(1),
+    options: z.array(z.string().min(1)).min(2).max(6),
+    correctIndex: z.number().int().min(0),
+    explanation: z.string().optional(),
+    points: z.number().positive().default(1),
+  })).default([]),
+  timeLimitSecs: z.number().int().positive().nullable().optional(),
+  autoGrade: z.boolean().default(false),
 });
 
 export const updateRoundSchema = z.object({
@@ -38,6 +47,15 @@ export const updateRoundSchema = z.object({
   instructions: z.string().nullable().optional(),
   customFields: z.array(customFieldDefinitionSchema).optional(),
   evaluationCriteria: z.array(evaluationCriterionSchema).optional(),
+  assessmentQuestions: z.array(z.object({
+    question: z.string().min(1),
+    options: z.array(z.string().min(1)).min(2).max(6),
+    correctIndex: z.number().int().min(0),
+    explanation: z.string().optional(),
+    points: z.number().positive().default(1),
+  })).optional(),
+  timeLimitSecs: z.number().int().positive().nullable().optional(),
+  autoGrade: z.boolean().optional(),
 });
 
 export const reorderRoundsSchema = z.object({
@@ -79,4 +97,21 @@ export const talentSearchSchema = z.object({
   location: z.string().optional(),
   search: z.string().optional(),
   jobStatus: z.string().optional(),
+});
+
+// ==================== TALENT POOL ====================
+
+export const createTalentPoolSchema = z.object({
+  name: z.string().min(1).max(100),
+  description: z.string().max(500).optional(),
+});
+
+export const updateTalentPoolSchema = z.object({
+  name: z.string().min(1).max(100).optional(),
+  description: z.string().max(500).optional(),
+});
+
+export const addPoolMemberSchema = z.object({
+  studentId: z.number().int().positive(),
+  notes: z.string().max(500).optional(),
 });

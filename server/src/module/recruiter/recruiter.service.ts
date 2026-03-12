@@ -22,6 +22,9 @@ interface CreateRoundData {
   instructions?: string | null | undefined;
   customFields?: unknown[] | undefined;
   evaluationCriteria?: unknown[] | undefined;
+  assessmentQuestions?: unknown[] | undefined;
+  timeLimitSecs?: number | null | undefined;
+  autoGrade?: boolean | undefined;
 }
 
 interface ApplicationFilter {
@@ -53,6 +56,9 @@ export class RecruiterService {
         instructions: data.instructions ?? null,
         customFields: data.customFields ? JSON.parse(JSON.stringify(data.customFields)) : [],
         evaluationCriteria: data.evaluationCriteria ? JSON.parse(JSON.stringify(data.evaluationCriteria)) : [],
+        assessmentQuestions: data.assessmentQuestions ? JSON.parse(JSON.stringify(data.assessmentQuestions)) : [],
+        timeLimitSecs: data.timeLimitSecs ?? null,
+        autoGrade: data.autoGrade ?? false,
       },
     });
   }
@@ -87,6 +93,9 @@ export class RecruiterService {
         ...(data.instructions !== undefined && { instructions: data.instructions }),
         ...(data.customFields !== undefined && { customFields: JSON.parse(JSON.stringify(data.customFields)) }),
         ...(data.evaluationCriteria !== undefined && { evaluationCriteria: JSON.parse(JSON.stringify(data.evaluationCriteria)) }),
+        ...(data.assessmentQuestions !== undefined && { assessmentQuestions: JSON.parse(JSON.stringify(data.assessmentQuestions)) }),
+        ...(data.timeLimitSecs !== undefined && { timeLimitSecs: data.timeLimitSecs }),
+        ...(data.autoGrade !== undefined && { autoGrade: data.autoGrade }),
       },
     });
   }
@@ -558,5 +567,121 @@ export class RecruiterService {
         totalPages: Math.ceil(total / filter.limit),
       },
     };
+  }
+
+  // ==================== TALENT POOLS ====================
+
+  async createTalentPool(recruiterId: number, data: { name: string; description?: string }) {
+    return prisma.talentPool.create({
+      data: {
+        recruiterId,
+        name: data.name,
+        description: data.description ?? null,
+      },
+    });
+  }
+
+  async getTalentPools(recruiterId: number) {
+    return prisma.talentPool.findMany({
+      where: { recruiterId },
+      orderBy: { createdAt: "desc" },
+      include: {
+        _count: { select: { members: true } },
+      },
+    });
+  }
+
+  async getTalentPoolById(poolId: number, recruiterId: number) {
+    const pool = await prisma.talentPool.findUnique({
+      where: { id: poolId },
+      include: {
+        members: {
+          include: {
+            student: {
+              select: {
+                id: true,
+                name: true,
+                email: true,
+                college: true,
+                skills: true,
+                profilePic: true,
+              },
+            },
+          },
+          orderBy: { addedAt: "desc" },
+        },
+      },
+    });
+
+    if (!pool) throw new Error("Talent pool not found");
+    if (pool.recruiterId !== recruiterId) throw new Error("Not authorized");
+
+    return pool;
+  }
+
+  async updateTalentPool(poolId: number, recruiterId: number, data: { name?: string; description?: string }) {
+    const pool = await prisma.talentPool.findUnique({ where: { id: poolId } });
+    if (!pool) throw new Error("Talent pool not found");
+    if (pool.recruiterId !== recruiterId) throw new Error("Not authorized");
+
+    return prisma.talentPool.update({
+      where: { id: poolId },
+      data: {
+        ...(data.name !== undefined && { name: data.name }),
+        ...(data.description !== undefined && { description: data.description }),
+      },
+    });
+  }
+
+  async deleteTalentPool(poolId: number, recruiterId: number) {
+    const pool = await prisma.talentPool.findUnique({ where: { id: poolId } });
+    if (!pool) throw new Error("Talent pool not found");
+    if (pool.recruiterId !== recruiterId) throw new Error("Not authorized");
+
+    await prisma.talentPool.delete({ where: { id: poolId } });
+  }
+
+  async addPoolMember(poolId: number, recruiterId: number, studentId: number, notes?: string) {
+    const pool = await prisma.talentPool.findUnique({ where: { id: poolId } });
+    if (!pool) throw new Error("Talent pool not found");
+    if (pool.recruiterId !== recruiterId) throw new Error("Not authorized");
+
+    const student = await prisma.user.findUnique({ where: { id: studentId } });
+    if (!student || student.role !== "STUDENT") throw new Error("Student not found");
+
+    return prisma.talentPoolMember.create({
+      data: {
+        poolId,
+        studentId,
+        notes: notes ?? null,
+      },
+      include: {
+        student: {
+          select: {
+            id: true,
+            name: true,
+            email: true,
+            college: true,
+            skills: true,
+            profilePic: true,
+          },
+        },
+      },
+    });
+  }
+
+  async removePoolMember(poolId: number, recruiterId: number, studentId: number) {
+    const pool = await prisma.talentPool.findUnique({ where: { id: poolId } });
+    if (!pool) throw new Error("Talent pool not found");
+    if (pool.recruiterId !== recruiterId) throw new Error("Not authorized");
+
+    const member = await prisma.talentPoolMember.findUnique({
+      where: { poolId_studentId: { poolId, studentId } },
+    });
+    if (!member) throw new Error("Member not found in pool");
+
+    await prisma.talentPoolMember.delete({
+      where: { poolId_studentId: { poolId, studentId } },
+    });
   }
 }

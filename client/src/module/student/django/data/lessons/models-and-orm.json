@@ -1,0 +1,295 @@
+[
+  {
+    "id": "model-fields-and-types",
+    "sectionId": "models-and-orm",
+    "orderIndex": 0,
+    "title": "Model Fields & Types",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": false,
+    "concepts": ["Model", "Fields", "CharField", "TextField", "IntegerField", "Meta"],
+    "content": {
+      "explanation": "Django models are Python classes that define the structure of your database tables. Each model class inherits from django.db.models.Model, and each class attribute represents a database column. Django's ORM (Object-Relational Mapper) handles the translation between Python objects and SQL database operations, so you write Python code instead of raw SQL.\n\nDjango provides a rich set of field types that map to database column types. CharField stores short text and requires a max_length argument. TextField stores unlimited text and is ideal for large content like article bodies or descriptions. IntegerField stores integers, while FloatField and DecimalField store decimal numbers (DecimalField is preferred for financial data because it avoids floating-point precision issues). BooleanField stores True/False values. DateField and DateTimeField store date and date-time values respectively.\n\nEvery field accepts common keyword arguments. 'blank=True' means the field can be left empty in forms (validation level). 'null=True' means the database column allows NULL values (database level). For string fields, Django convention is to use blank=True without null=True, because Django stores empty strings rather than NULL for text fields. 'default' sets a default value. 'unique=True' enforces uniqueness at the database level. 'choices' limits the field to a predefined set of values.\n\nThe 'choices' parameter is powerful for fields with a fixed set of options. You define choices as a sequence of two-tuples where the first element is the value stored in the database and the second is the human-readable label. Django provides the get_FOO_display() method on model instances to retrieve the human-readable label for a choices field.\n\nSpecialized fields include EmailField (validates email format), URLField (validates URL format), SlugField (for URL-friendly strings), FileField and ImageField (for file uploads), UUIDField (for universally unique identifiers), JSONField (for storing JSON data), and IPAddressField/GenericIPAddressField (for IP addresses). These fields provide both database storage and validation.\n\nThe inner Meta class configures model-level options. 'ordering' sets the default sort order for QuerySets. 'verbose_name' and 'verbose_name_plural' set human-readable names for the admin. 'db_table' overrides the auto-generated table name. 'unique_together' (or UniqueConstraint) enforces multi-column uniqueness. 'indexes' defines database indexes for query performance.\n\nEvery model should define a __str__() method that returns a meaningful string representation. This is used in the admin interface, the shell, and debugging output. Without it, your objects will display as unhelpful strings like 'Product object (1)'.",
+      "codeExamples": [
+        {
+          "title": "Common Field Types",
+          "code": "from django.db import models\n\nclass Product(models.Model):\n    # Text fields\n    name = models.CharField(max_length=200)\n    description = models.TextField(blank=True)\n    slug = models.SlugField(unique=True)\n\n    # Numeric fields\n    price = models.DecimalField(max_digits=10, decimal_places=2)\n    stock = models.IntegerField(default=0)\n    weight = models.FloatField(null=True, blank=True)\n\n    # Boolean field\n    is_active = models.BooleanField(default=True)\n\n    # Date fields\n    created_at = models.DateTimeField(auto_now_add=True)\n    updated_at = models.DateTimeField(auto_now=True)\n\n    # File fields\n    image = models.ImageField(upload_to='products/', blank=True)\n\n    def __str__(self):\n        return self.name",
+          "explanation": "This model demonstrates the most common field types. auto_now_add=True sets the date when the object is first created. auto_now=True updates the date every time the object is saved. DecimalField is used for price to avoid floating-point issues."
+        },
+        {
+          "title": "Choices Field",
+          "code": "from django.db import models\n\nclass Order(models.Model):\n    class Status(models.TextChoices):\n        PENDING = 'pending', 'Pending'\n        PROCESSING = 'processing', 'Processing'\n        SHIPPED = 'shipped', 'Shipped'\n        DELIVERED = 'delivered', 'Delivered'\n        CANCELLED = 'cancelled', 'Cancelled'\n\n    status = models.CharField(\n        max_length=20,\n        choices=Status.choices,\n        default=Status.PENDING,\n    )\n    total = models.DecimalField(max_digits=10, decimal_places=2)\n    created_at = models.DateTimeField(auto_now_add=True)\n\n    def __str__(self):\n        return f'Order #{self.pk} - {self.get_status_display()}'",
+          "explanation": "TextChoices provides an enum-like syntax for defining choices. The first value in each choice is stored in the database, the second is the display label. Use get_status_display() to get the human-readable label."
+        },
+        {
+          "title": "Meta Class Options",
+          "code": "from django.db import models\n\nclass Article(models.Model):\n    title = models.CharField(max_length=200)\n    slug = models.SlugField(max_length=200)\n    content = models.TextField()\n    author = models.CharField(max_length=100)\n    published_at = models.DateTimeField()\n    category = models.CharField(max_length=50)\n\n    class Meta:\n        ordering = ['-published_at']  # Default sort: newest first\n        verbose_name = 'Article'\n        verbose_name_plural = 'Articles'\n        unique_together = ['slug', 'category']  # Composite unique\n        indexes = [\n            models.Index(fields=['published_at']),\n            models.Index(fields=['category', 'published_at']),\n        ]\n\n    def __str__(self):\n        return self.title",
+          "explanation": "The Meta class controls model behavior. ordering sets default QuerySet ordering. unique_together enforces uniqueness across multiple columns. indexes improve query performance for frequently searched fields."
+        },
+        {
+          "title": "Specialized Fields",
+          "code": "import uuid\nfrom django.db import models\n\nclass UserProfile(models.Model):\n    id = models.UUIDField(\n        primary_key=True,\n        default=uuid.uuid4,\n        editable=False,\n    )\n    email = models.EmailField(unique=True)\n    website = models.URLField(blank=True)\n    bio = models.TextField(max_length=500, blank=True)\n    metadata = models.JSONField(default=dict, blank=True)\n    ip_address = models.GenericIPAddressField(null=True, blank=True)\n\n    def __str__(self):\n        return self.email",
+          "explanation": "UUIDField with primary_key=True replaces the auto-incrementing integer ID. EmailField and URLField add validation. JSONField stores arbitrary JSON data. GenericIPAddressField supports both IPv4 and IPv6."
+        }
+      ],
+      "notes": [
+        "Always define __str__() on your models for readable string representations in admin and shell.",
+        "Use DecimalField for money/currency, never FloatField, to avoid floating-point precision errors.",
+        "For text fields, use blank=True without null=True. Django convention is to store empty strings, not NULL, for text.",
+        "auto_now_add sets the value on creation only; auto_now updates it on every save."
+      ],
+      "commonPitfalls": [
+        "Using FloatField for monetary values. Floating-point arithmetic causes precision issues (0.1 + 0.2 != 0.3). Always use DecimalField for money.",
+        "Setting null=True on CharField/TextField. Django stores empty strings for text, so null=True creates two possible empty values (NULL and empty string).",
+        "Forgetting max_length on CharField. It is a required argument and will raise an error if omitted."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "fields-ex1",
+        "title": "Create a Blog Post Model",
+        "description": "Create a BlogPost model with: title (max 200 chars), slug (unique), content (unlimited text), excerpt (max 500 chars, optional), is_published (boolean, default False), views_count (integer, default 0), created_at (auto-set on creation), updated_at (auto-set on save). Include a Meta class with ordering by -created_at and a __str__ method.",
+        "starterCode": "from django.db import models\n\nclass BlogPost(models.Model):\n    # Define your fields here\n    pass\n",
+        "solution": "from django.db import models\n\nclass BlogPost(models.Model):\n    title = models.CharField(max_length=200)\n    slug = models.SlugField(unique=True)\n    content = models.TextField()\n    excerpt = models.CharField(max_length=500, blank=True)\n    is_published = models.BooleanField(default=False)\n    views_count = models.IntegerField(default=0)\n    created_at = models.DateTimeField(auto_now_add=True)\n    updated_at = models.DateTimeField(auto_now=True)\n\n    class Meta:\n        ordering = ['-created_at']\n\n    def __str__(self):\n        return self.title",
+        "hints": [
+          "Use SlugField for URL-friendly text with unique=True",
+          "Use blank=True for optional text fields",
+          "auto_now_add=True for creation timestamp, auto_now=True for update timestamp"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "fields-ex2",
+        "title": "Model with Choices",
+        "description": "Create a Ticket model for a support system with: subject (max 200 chars), description (text), priority (choices: low/medium/high/critical, default medium), status (choices: open/in_progress/resolved/closed, default open), created_at (auto). Use TextChoices enums.",
+        "starterCode": "from django.db import models\n\nclass Ticket(models.Model):\n    # Define choices and fields\n    pass\n",
+        "solution": "from django.db import models\n\nclass Ticket(models.Model):\n    class Priority(models.TextChoices):\n        LOW = 'low', 'Low'\n        MEDIUM = 'medium', 'Medium'\n        HIGH = 'high', 'High'\n        CRITICAL = 'critical', 'Critical'\n\n    class Status(models.TextChoices):\n        OPEN = 'open', 'Open'\n        IN_PROGRESS = 'in_progress', 'In Progress'\n        RESOLVED = 'resolved', 'Resolved'\n        CLOSED = 'closed', 'Closed'\n\n    subject = models.CharField(max_length=200)\n    description = models.TextField()\n    priority = models.CharField(\n        max_length=20,\n        choices=Priority.choices,\n        default=Priority.MEDIUM,\n    )\n    status = models.CharField(\n        max_length=20,\n        choices=Status.choices,\n        default=Status.OPEN,\n    )\n    created_at = models.DateTimeField(auto_now_add=True)\n\n    def __str__(self):\n        return f'{self.subject} ({self.get_priority_display()})'",
+        "hints": [
+          "Use models.TextChoices to define enum-like choices",
+          "Set max_length to accommodate the longest choice value",
+          "Use the enum member for default, e.g., default=Priority.MEDIUM"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "relationships",
+    "sectionId": "models-and-orm",
+    "orderIndex": 1,
+    "title": "Relationships",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["ForeignKey", "OneToOneField", "ManyToManyField", "on_delete", "related_name"],
+    "content": {
+      "explanation": "Database relationships are fundamental to modeling real-world data. Django provides three field types for defining relationships between models: ForeignKey for one-to-many, OneToOneField for one-to-one, and ManyToManyField for many-to-many relationships.\n\nForeignKey defines a one-to-many (or many-to-one) relationship. When you add a ForeignKey field to a model, each instance of that model points to exactly one instance of the related model, but the related model can be pointed to by many instances. For example, many blog posts belong to one author, and one author has many blog posts. In the database, Django creates a column with the suffix '_id' (e.g., author_id) that stores the primary key of the related object.\n\nThe on_delete parameter on ForeignKey is required and determines what happens when the referenced object is deleted. CASCADE deletes the related objects (if the author is deleted, their posts are also deleted). PROTECT prevents deletion if related objects exist. SET_NULL sets the foreign key to NULL (requires null=True). SET_DEFAULT sets it to the field's default value. DO_NOTHING does nothing (risky, may cause database integrity errors). In most cases, CASCADE is the right choice, but PROTECT is useful when you want to prevent accidental data loss.\n\nOneToOneField is like ForeignKey with unique=True. It creates a one-to-one relationship where each instance of the model is related to exactly one instance of the related model, and vice versa. Common use cases include extending the User model with a Profile, or splitting a model into two tables for organizational purposes. In the database, it creates a column with a unique constraint.\n\nManyToManyField defines a many-to-many relationship. Under the hood, Django creates an intermediate junction table (also called a pivot or through table) to manage the relationship. For example, a Student can enroll in many Courses, and a Course can have many Students. You only define ManyToManyField on one of the models — Django handles both sides automatically.\n\nThe related_name argument customizes the reverse relationship accessor. By default, Django creates a reverse accessor named 'modelname_set' (e.g., author.post_set.all()). Setting related_name='posts' lets you write author.posts.all() instead, which is more readable. If you have multiple relationships to the same model, related_name is required to avoid naming conflicts.\n\nFor complex many-to-many relationships that need extra data on the relationship itself, use a 'through' model. For example, if you want to track when a student enrolled in a course, you create an Enrollment model with extra fields (like enrolled_date and grade) and reference it with the 'through' parameter on ManyToManyField.\n\nSelf-referential relationships are also common. A model can have a ForeignKey or ManyToManyField pointing to 'self'. This is useful for tree structures (like comments with replies), social networks (followers), or organizational hierarchies (employees with managers).",
+      "codeExamples": [
+        {
+          "title": "ForeignKey (One-to-Many)",
+          "code": "from django.db import models\nfrom django.conf import settings\n\nclass Category(models.Model):\n    name = models.CharField(max_length=100)\n\n    def __str__(self):\n        return self.name\n\nclass Post(models.Model):\n    title = models.CharField(max_length=200)\n    content = models.TextField()\n    author = models.ForeignKey(\n        settings.AUTH_USER_MODEL,\n        on_delete=models.CASCADE,\n        related_name='posts',\n    )\n    category = models.ForeignKey(\n        Category,\n        on_delete=models.SET_NULL,\n        null=True,\n        blank=True,\n        related_name='posts',\n    )\n\n# Usage:\n# post.author          -> returns the User object\n# post.category        -> returns the Category object\n# user.posts.all()     -> returns all posts by this user\n# category.posts.all() -> returns all posts in this category",
+          "explanation": "author uses CASCADE (delete posts when user is deleted). category uses SET_NULL (keep posts but set category to NULL when category is deleted). related_name='posts' enables clean reverse lookups like user.posts.all()."
+        },
+        {
+          "title": "OneToOneField",
+          "code": "from django.db import models\nfrom django.conf import settings\n\nclass Profile(models.Model):\n    user = models.OneToOneField(\n        settings.AUTH_USER_MODEL,\n        on_delete=models.CASCADE,\n        related_name='profile',\n    )\n    bio = models.TextField(blank=True)\n    avatar = models.ImageField(upload_to='avatars/', blank=True)\n    date_of_birth = models.DateField(null=True, blank=True)\n    phone = models.CharField(max_length=20, blank=True)\n\n    def __str__(self):\n        return f'Profile of {self.user.username}'\n\n# Usage:\n# profile.user          -> returns the User object\n# user.profile          -> returns the Profile object (no _set)\n# user.profile.bio      -> access profile fields through user",
+          "explanation": "OneToOneField creates a unique relationship. Unlike ForeignKey, the reverse accessor is singular (user.profile, not user.profile_set) because there can only be one profile per user."
+        },
+        {
+          "title": "ManyToManyField",
+          "code": "from django.db import models\n\nclass Tag(models.Model):\n    name = models.CharField(max_length=50, unique=True)\n\n    def __str__(self):\n        return self.name\n\nclass Article(models.Model):\n    title = models.CharField(max_length=200)\n    tags = models.ManyToManyField(Tag, related_name='articles', blank=True)\n\n    def __str__(self):\n        return self.title\n\n# Usage:\n# article.tags.all()          -> all tags for this article\n# article.tags.add(tag1, tag2) -> add tags to article\n# article.tags.remove(tag1)   -> remove a tag\n# article.tags.clear()        -> remove all tags\n# tag.articles.all()          -> all articles with this tag\n# tag.articles.count()        -> count of articles",
+          "explanation": "ManyToManyField creates a junction table automatically. You can add, remove, and query related objects from both sides. Only define the field on one model — Django creates the reverse accessor automatically."
+        },
+        {
+          "title": "Through Model (Extra M2M Data)",
+          "code": "from django.db import models\nfrom django.conf import settings\n\nclass Course(models.Model):\n    title = models.CharField(max_length=200)\n    students = models.ManyToManyField(\n        settings.AUTH_USER_MODEL,\n        through='Enrollment',\n        related_name='courses',\n    )\n\nclass Enrollment(models.Model):\n    student = models.ForeignKey(\n        settings.AUTH_USER_MODEL,\n        on_delete=models.CASCADE,\n    )\n    course = models.ForeignKey(Course, on_delete=models.CASCADE)\n    enrolled_at = models.DateTimeField(auto_now_add=True)\n    grade = models.CharField(max_length=2, blank=True)\n\n    class Meta:\n        unique_together = ['student', 'course']\n\n# Usage:\n# Enrollment.objects.create(student=user, course=course)\n# enrollment.grade = 'A+'\n# enrollment.save()",
+          "explanation": "A through model lets you store extra data on the many-to-many relationship itself. Here, Enrollment tracks when a student enrolled and their grade. With through models, you create relationships via the through model, not the M2M field directly."
+        }
+      ],
+      "notes": [
+        "ForeignKey creates a one-to-many relationship. The field goes on the 'many' side.",
+        "on_delete is required on ForeignKey and OneToOneField. CASCADE is the most common choice.",
+        "Always set related_name for cleaner reverse lookups and to avoid conflicts with multiple FK to the same model.",
+        "Use a through model when you need extra fields on a many-to-many relationship."
+      ],
+      "interviewTips": [
+        "Know the on_delete options: CASCADE, PROTECT, SET_NULL, SET_DEFAULT, DO_NOTHING — and when to use each.",
+        "Explain the difference between ForeignKey (one-to-many), OneToOneField (one-to-one), and ManyToManyField (many-to-many).",
+        "Mention that ManyToManyField creates a junction table behind the scenes, and 'through' models add extra relationship data."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "relationships-ex1",
+        "title": "E-Commerce Relationships",
+        "description": "Create models for an e-commerce system: a Customer model (name, email), a Product model (name, price), and an Order model that connects a customer to multiple products. Use a through model called OrderItem that stores the quantity of each product in the order.",
+        "starterCode": "from django.db import models\n\n# Define Customer, Product, Order, and OrderItem models\n",
+        "solution": "from django.db import models\n\nclass Customer(models.Model):\n    name = models.CharField(max_length=200)\n    email = models.EmailField(unique=True)\n\n    def __str__(self):\n        return self.name\n\nclass Product(models.Model):\n    name = models.CharField(max_length=200)\n    price = models.DecimalField(max_digits=10, decimal_places=2)\n\n    def __str__(self):\n        return self.name\n\nclass Order(models.Model):\n    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, related_name='orders')\n    products = models.ManyToManyField(Product, through='OrderItem', related_name='orders')\n    created_at = models.DateTimeField(auto_now_add=True)\n\n    def __str__(self):\n        return f'Order #{self.pk} by {self.customer.name}'\n\nclass OrderItem(models.Model):\n    order = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='items')\n    product = models.ForeignKey(Product, on_delete=models.CASCADE)\n    quantity = models.PositiveIntegerField(default=1)\n\n    class Meta:\n        unique_together = ['order', 'product']",
+        "hints": [
+          "Order has a ForeignKey to Customer (one customer, many orders)",
+          "Order has a ManyToManyField to Product with through='OrderItem'",
+          "OrderItem stores the extra data: quantity for each product in the order"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "relationships-ex2",
+        "title": "Self-Referential Relationship",
+        "description": "Create an Employee model with name, position, and a self-referential ForeignKey called 'manager' that allows employees to have a manager (who is also an Employee). The manager field should be optional, and deleting a manager should set the field to NULL.",
+        "starterCode": "from django.db import models\n\nclass Employee(models.Model):\n    # Define your fields here\n    pass\n",
+        "solution": "from django.db import models\n\nclass Employee(models.Model):\n    name = models.CharField(max_length=200)\n    position = models.CharField(max_length=100)\n    manager = models.ForeignKey(\n        'self',\n        on_delete=models.SET_NULL,\n        null=True,\n        blank=True,\n        related_name='subordinates',\n    )\n\n    def __str__(self):\n        return f'{self.name} ({self.position})'",
+        "hints": [
+          "Use 'self' as the first argument to ForeignKey for self-referential relationships",
+          "Use on_delete=models.SET_NULL with null=True so deleting a manager doesn't delete subordinates",
+          "Set related_name='subordinates' so you can access manager.subordinates.all()"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "migrations",
+    "sectionId": "models-and-orm",
+    "orderIndex": 2,
+    "title": "Migrations",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["makemigrations", "migrate", "Migration Files", "Schema Changes", "Data Migrations"],
+    "content": {
+      "explanation": "Migrations are Django's way of propagating changes you make to your models (adding a field, deleting a model, etc.) into the database schema. They are designed to be mostly automatic: Django can detect model changes and generate migration files, and then apply those files to update the database.\n\nThe migration workflow involves two commands. 'python manage.py makemigrations' examines your models, compares them to the current migration files, and generates new migration files for any changes detected. 'python manage.py migrate' applies pending migration files to the database, executing the necessary SQL statements.\n\nMigration files are Python scripts stored in each app's migrations/ directory. They are named with a sequential number prefix (0001_initial.py, 0002_add_slug_field.py, etc.) and contain a list of operations that describe the changes. Operations include CreateModel, AddField, RemoveField, AlterField, RenameField, RenameModel, and more. Each migration file also records its dependencies — which migrations must be applied before it.\n\nDjango tracks which migrations have been applied in a special database table called django_migrations. When you run 'migrate', Django checks this table to determine which migrations are pending and applies only those. This is why you should never manually modify or delete migration files after they have been applied to a shared database — it can cause the migration state to become inconsistent.\n\nThe 'showmigrations' command displays the status of all migrations. Each migration is listed with an [X] if applied or [ ] if pending. This is useful for debugging migration issues. The 'sqlmigrate' command shows the raw SQL that a migration will execute, which is helpful for understanding what Django will do to your database.\n\nData migrations are a special type of migration that modifies data rather than schema. You create them with 'python manage.py makemigrations --empty appname' and then write Python code to transform existing data. This is useful when you need to backfill a new field, convert data formats, or merge records.\n\nSquashing migrations reduces the number of migration files by combining multiple sequential migrations into one. Run 'python manage.py squashmigrations appname 0001 0010' to squash migrations 0001 through 0010. This improves performance for large projects with many migrations and makes the migration history cleaner.\n\nIn team environments, migration conflicts can occur when two developers create migrations independently. Django detects this and will prompt you to resolve the conflict, usually by running 'makemigrations --merge' which creates a merge migration that depends on both conflicting migrations.",
+      "codeExamples": [
+        {
+          "title": "Basic Migration Workflow",
+          "code": "# 1. Make changes to your model\n# models.py\nclass Article(models.Model):\n    title = models.CharField(max_length=200)\n    content = models.TextField()\n    # NEW: added slug field\n    slug = models.SlugField(unique=True, default='')\n\n# 2. Generate migration file\n# $ python manage.py makemigrations\n# Migrations for 'blog':\n#   blog/migrations/0002_article_slug.py\n#     - Add field slug to article\n\n# 3. Review the migration SQL (optional)\n# $ python manage.py sqlmigrate blog 0002\n# ALTER TABLE \"blog_article\" ADD COLUMN \"slug\" varchar(50) ...\n\n# 4. Apply the migration\n# $ python manage.py migrate\n# Applying blog.0002_article_slug... OK\n\n# 5. Check migration status\n# $ python manage.py showmigrations blog\n# blog\n#  [X] 0001_initial\n#  [X] 0002_article_slug",
+          "explanation": "This shows the standard workflow: change your model, generate a migration with makemigrations, optionally review the SQL with sqlmigrate, apply with migrate, and verify with showmigrations."
+        },
+        {
+          "title": "Migration File Anatomy",
+          "code": "# blog/migrations/0002_article_slug.py\nfrom django.db import migrations, models\n\nclass Migration(migrations.Migration):\n\n    dependencies = [\n        ('blog', '0001_initial'),  # Depends on previous migration\n    ]\n\n    operations = [\n        migrations.AddField(\n            model_name='article',\n            name='slug',\n            field=models.SlugField(default='', unique=True),\n        ),\n    ]",
+          "explanation": "Migration files are Python classes with two key attributes: dependencies (which migrations must run first) and operations (what changes to make). Django generates these automatically — you rarely need to edit them manually."
+        },
+        {
+          "title": "Data Migration",
+          "code": "# Create an empty migration:\n# $ python manage.py makemigrations blog --empty -n populate_slugs\n\n# blog/migrations/0003_populate_slugs.py\nfrom django.db import migrations\nfrom django.utils.text import slugify\n\ndef populate_slugs(apps, schema_editor):\n    Article = apps.get_model('blog', 'Article')\n    for article in Article.objects.all():\n        article.slug = slugify(article.title)\n        article.save(update_fields=['slug'])\n\ndef reverse_slugs(apps, schema_editor):\n    Article = apps.get_model('blog', 'Article')\n    Article.objects.all().update(slug='')\n\nclass Migration(migrations.Migration):\n    dependencies = [\n        ('blog', '0002_article_slug'),\n    ]\n\n    operations = [\n        migrations.RunPython(populate_slugs, reverse_slugs),\n    ]",
+          "explanation": "Data migrations use RunPython to execute custom Python code. Always provide a reverse function so the migration can be reversed. Use apps.get_model() to access models (not direct imports) because the model state may differ from the current code."
+        },
+        {
+          "title": "Useful Migration Commands",
+          "code": "# Generate migrations for all apps\npython manage.py makemigrations\n\n# Generate migration for a specific app\npython manage.py makemigrations blog\n\n# Apply all pending migrations\npython manage.py migrate\n\n# Apply migrations for a specific app\npython manage.py migrate blog\n\n# Roll back to a specific migration\npython manage.py migrate blog 0001\n\n# Roll back all migrations for an app\npython manage.py migrate blog zero\n\n# Show migration status\npython manage.py showmigrations\n\n# Show SQL for a migration\npython manage.py sqlmigrate blog 0002\n\n# Merge conflicting migrations\npython manage.py makemigrations --merge",
+          "explanation": "These are the essential migration commands. Rolling back with 'migrate blog 0001' unapplies all migrations after 0001. 'migrate blog zero' unapplies all migrations for the app. --merge resolves branch conflicts."
+        }
+      ],
+      "notes": [
+        "Always run makemigrations before migrate. makemigrations generates files; migrate applies them.",
+        "Migration files should be committed to version control. They are part of your project's history.",
+        "Never manually edit migration files after they have been applied to a shared database.",
+        "Use data migrations (RunPython) when you need to transform existing data, not just change the schema."
+      ],
+      "interviewTips": [
+        "Explain the difference between makemigrations (generates migration files) and migrate (applies them to the database).",
+        "Mention that Django tracks applied migrations in the django_migrations table.",
+        "Know about data migrations using RunPython for transforming existing data."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "migrations-ex1",
+        "title": "Write a Data Migration",
+        "description": "Write a data migration function that takes all existing Product objects and sets their slug field based on their name using slugify(). Include a reverse function that clears the slug field.",
+        "starterCode": "from django.db import migrations\nfrom django.utils.text import slugify\n\ndef populate_product_slugs(apps, schema_editor):\n    # Get the Product model and update slugs\n    pass\n\ndef reverse_product_slugs(apps, schema_editor):\n    # Clear all slug fields\n    pass\n",
+        "solution": "from django.db import migrations\nfrom django.utils.text import slugify\n\ndef populate_product_slugs(apps, schema_editor):\n    Product = apps.get_model('products', 'Product')\n    for product in Product.objects.all():\n        product.slug = slugify(product.name)\n        product.save(update_fields=['slug'])\n\ndef reverse_product_slugs(apps, schema_editor):\n    Product = apps.get_model('products', 'Product')\n    Product.objects.all().update(slug='')",
+        "hints": [
+          "Use apps.get_model('appname', 'ModelName') to get the model class inside migrations",
+          "slugify() converts 'My Product Name' to 'my-product-name'",
+          "The reverse function should undo the changes, typically by clearing or resetting the field"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "migrations-ex2",
+        "title": "Migration Commands Quiz",
+        "description": "Write the correct Django management commands for each scenario as Python string variables:\n1. Generate a migration for the 'orders' app\n2. Apply all pending migrations\n3. Roll back the 'orders' app to migration 0003\n4. Show all migration statuses\n5. View the SQL for migration 0005 in the 'orders' app",
+        "starterCode": "# Write the command for each scenario\ncmd_1 = ''  # Generate migration for orders app\ncmd_2 = ''  # Apply all pending migrations\ncmd_3 = ''  # Roll back orders to 0003\ncmd_4 = ''  # Show all migration statuses\ncmd_5 = ''  # View SQL for orders 0005\n",
+        "solution": "cmd_1 = 'python manage.py makemigrations orders'\ncmd_2 = 'python manage.py migrate'\ncmd_3 = 'python manage.py migrate orders 0003'\ncmd_4 = 'python manage.py showmigrations'\ncmd_5 = 'python manage.py sqlmigrate orders 0005'\n\nfor i, cmd in enumerate([cmd_1, cmd_2, cmd_3, cmd_4, cmd_5], 1):\n    print(f'{i}. {cmd}')",
+        "hints": [
+          "makemigrations generates files, migrate applies them",
+          "Rolling back uses: migrate appname migration_number",
+          "sqlmigrate takes the app name and migration number"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "querysets-and-managers",
+    "sectionId": "models-and-orm",
+    "orderIndex": 3,
+    "title": "QuerySets & Managers",
+    "difficulty": "Beginner",
+    "isInterviewQuestion": true,
+    "concepts": ["QuerySet", "Manager", "filter", "exclude", "Q Objects", "F Expressions", "Aggregation"],
+    "content": {
+      "explanation": "QuerySets are the primary way you retrieve data from the database in Django. A QuerySet represents a collection of objects from the database and can be filtered, sliced, and chained. The most important thing to understand about QuerySets is that they are lazy — they do not hit the database until you actually evaluate them (by iterating, slicing, calling len(), etc.).\n\nEvery model has at least one Manager, accessible via the 'objects' attribute. The default manager provides the initial QuerySet for database operations. Model.objects.all() returns a QuerySet of all objects. Model.objects.filter() returns objects matching the given criteria. Model.objects.exclude() returns objects NOT matching the criteria. Model.objects.get() returns a single object (raises DoesNotExist if not found, MultipleObjectsReturned if multiple match).\n\nField lookups are the heart of filtering. You pass them as keyword arguments using double-underscore syntax. 'name__exact' does an exact match. 'name__iexact' does case-insensitive matching. 'name__contains' checks if the field contains the value. 'price__gt', 'price__gte', 'price__lt', 'price__lte' do numeric comparisons. 'date__year', 'date__month' extract date parts. 'status__in' checks membership in a list. 'bio__isnull' checks for NULL values.\n\nQuerySets are chainable — each filter/exclude/order_by call returns a new QuerySet, allowing you to build complex queries incrementally. Because they are lazy, chaining does not execute multiple queries. Django builds the complete SQL query and executes it only when the QuerySet is evaluated.\n\nQ objects enable complex lookups with OR, AND, and NOT operations. By default, filter() arguments are ANDed together. To use OR logic, wrap conditions in Q() objects and combine them with the | operator. The ~ operator negates a Q object (NOT). Q objects can be combined with & (AND) and | (OR) to build arbitrarily complex queries.\n\nF expressions reference model field values in queries without loading them into Python. They enable database-level operations like incrementing a counter, comparing two fields on the same model, or performing arithmetic between fields. F expressions are efficient because the operations happen entirely in the database.\n\nAggregation functions (Count, Sum, Avg, Max, Min) compute summary values across QuerySets. Use aggregate() for a single summary value (returns a dictionary) or annotate() to add computed values to each object in the QuerySet. Annotations are powerful for adding computed fields like comment counts, average ratings, or total sales to query results.\n\nCustom managers let you encapsulate common queries. You create a custom manager by subclassing models.Manager and adding methods that return filtered QuerySets. This keeps view code clean and business logic centralized in the model layer.",
+      "codeExamples": [
+        {
+          "title": "Basic QuerySet Operations",
+          "code": "from myapp.models import Product\n\n# Retrieve all products\nall_products = Product.objects.all()\n\n# Filter products\ncheap = Product.objects.filter(price__lt=10.00)\nactive = Product.objects.filter(is_active=True)\nelectronics = Product.objects.filter(category__name='Electronics')\n\n# Chain filters (AND)\ncheap_active = Product.objects.filter(price__lt=10).filter(is_active=True)\n# Same as:\ncheap_active = Product.objects.filter(price__lt=10, is_active=True)\n\n# Exclude\nnot_cheap = Product.objects.exclude(price__lt=10)\n\n# Get single object (raises exception if 0 or 2+ results)\ntry:\n    product = Product.objects.get(slug='django-book')\nexcept Product.DoesNotExist:\n    print('Product not found')\nexcept Product.MultipleObjectsReturned:\n    print('Multiple products found')\n\n# Ordering\nby_price = Product.objects.order_by('price')         # ascending\nby_price_desc = Product.objects.order_by('-price')   # descending\n\n# Slicing (LIMIT/OFFSET)\nfirst_five = Product.objects.all()[:5]\npage_two = Product.objects.all()[5:10]",
+          "explanation": "QuerySets are lazy — none of these lines execute SQL until the QuerySet is evaluated (iterated, converted to list, etc.). Chaining filters creates AND conditions. get() should only be used when you expect exactly one result."
+        },
+        {
+          "title": "Field Lookups",
+          "code": "from myapp.models import Article\n\n# Text lookups\nArticle.objects.filter(title__exact='Django Guide')      # exact match\nArticle.objects.filter(title__iexact='django guide')     # case-insensitive\nArticle.objects.filter(title__contains='Django')         # SQL LIKE %Django%\nArticle.objects.filter(title__icontains='django')        # case-insensitive contains\nArticle.objects.filter(title__startswith='How')          # starts with\nArticle.objects.filter(title__endswith='?')              # ends with\n\n# Numeric lookups\nArticle.objects.filter(views__gt=1000)                   # greater than\nArticle.objects.filter(views__gte=1000)                  # greater than or equal\nArticle.objects.filter(views__lt=100)                    # less than\nArticle.objects.filter(views__range=(100, 1000))         # between 100 and 1000\n\n# Date lookups\nArticle.objects.filter(published__year=2024)\nArticle.objects.filter(published__month=6)\nArticle.objects.filter(published__date__gt='2024-01-01')\n\n# Membership & null checks\nArticle.objects.filter(status__in=['draft', 'review'])\nArticle.objects.filter(category__isnull=True)\n\n# Related model lookups (spanning relationships)\nArticle.objects.filter(author__username='admin')\nArticle.objects.filter(tags__name='python')",
+          "explanation": "Field lookups use double-underscore syntax. They translate to SQL WHERE clauses. You can span relationships with double underscores too — author__username traverses the ForeignKey to the User model."
+        },
+        {
+          "title": "Q Objects and F Expressions",
+          "code": "from django.db.models import Q, F\nfrom myapp.models import Product\n\n# Q objects for complex lookups\n# OR: products that are cheap OR on sale\nProduct.objects.filter(\n    Q(price__lt=10) | Q(on_sale=True)\n)\n\n# AND with OR: active AND (cheap OR on sale)\nProduct.objects.filter(\n    Q(is_active=True) & (Q(price__lt=10) | Q(on_sale=True))\n)\n\n# NOT: products that are NOT in electronics\nProduct.objects.filter(~Q(category__name='Electronics'))\n\n# F expressions for field references\n# Products where sale_price < original_price\nProduct.objects.filter(sale_price__lt=F('original_price'))\n\n# Increment a field without loading the object\nProduct.objects.filter(pk=1).update(stock=F('stock') - 1)\n\n# Arithmetic between fields\nProduct.objects.annotate(\n    discount=F('original_price') - F('sale_price')\n)",
+          "explanation": "Q objects enable OR logic that is not possible with keyword arguments alone. F expressions reference field values at the database level, avoiding race conditions and enabling efficient field comparisons and updates."
+        },
+        {
+          "title": "Aggregation and Custom Managers",
+          "code": "from django.db.models import Count, Avg, Sum, Max, Min\nfrom myapp.models import Order, Product\n\n# aggregate() returns a dictionary\nstats = Order.objects.aggregate(\n    total_revenue=Sum('total'),\n    avg_order=Avg('total'),\n    max_order=Max('total'),\n    order_count=Count('id'),\n)\n# {'total_revenue': Decimal('50000'), 'avg_order': Decimal('125'), ...}\n\n# annotate() adds computed fields to each object\npopular_products = Product.objects.annotate(\n    order_count=Count('orderitem'),\n    avg_rating=Avg('review__rating'),\n).order_by('-order_count')\n\nfor product in popular_products:\n    print(f'{product.name}: {product.order_count} orders, {product.avg_rating} avg rating')\n\n# Custom Manager\nclass PublishedManager(models.Manager):\n    def get_queryset(self):\n        return super().get_queryset().filter(status='published')\n\nclass Article(models.Model):\n    title = models.CharField(max_length=200)\n    status = models.CharField(max_length=20)\n\n    objects = models.Manager()           # default manager\n    published = PublishedManager()       # custom manager\n\n# Usage: Article.published.all()  -> only published articles",
+          "explanation": "aggregate() returns a single dictionary of summary values. annotate() adds computed fields to each object in the QuerySet. Custom managers encapsulate common filters so you can write Article.published.all() instead of Article.objects.filter(status='published') everywhere."
+        }
+      ],
+      "notes": [
+        "QuerySets are lazy — they don't execute SQL until evaluated (iterated, sliced, etc.).",
+        "Use get() only when you expect exactly one result. It raises exceptions for 0 or 2+ results.",
+        "Q objects enable OR logic. F expressions reference field values for database-level operations.",
+        "aggregate() returns a summary dictionary; annotate() adds computed fields to each object."
+      ],
+      "interviewTips": [
+        "Explain QuerySet laziness — queries are only executed when the result is needed.",
+        "Know the difference between filter() (AND) and Q objects (OR, NOT).",
+        "Explain when to use aggregate() vs annotate() — single summary vs per-object computed values.",
+        "Mention that F expressions prevent race conditions by doing operations at the database level."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "querysets-ex1",
+        "title": "Build Complex Queries",
+        "description": "Write QuerySet expressions for:\n1. Get all products with price between 10 and 50\n2. Get all products that are either in 'Electronics' category OR have price less than 5\n3. Get all products ordered by price descending, showing only the first 10\n4. Count total products and calculate average price",
+        "starterCode": "from django.db.models import Q, Avg, Count\n# Assume Product model exists with: name, price, category (FK)\n\n# 1. Products with price between 10 and 50\nquery_1 = None\n\n# 2. Electronics OR price < 5\nquery_2 = None\n\n# 3. Top 10 most expensive\nquery_3 = None\n\n# 4. Count and average price\nquery_4 = None\n",
+        "solution": "from django.db.models import Q, Avg, Count\nfrom myapp.models import Product\n\n# 1. Products with price between 10 and 50\nquery_1 = Product.objects.filter(price__range=(10, 50))\n\n# 2. Electronics OR price < 5\nquery_2 = Product.objects.filter(\n    Q(category__name='Electronics') | Q(price__lt=5)\n)\n\n# 3. Top 10 most expensive\nquery_3 = Product.objects.order_by('-price')[:10]\n\n# 4. Count and average price\nquery_4 = Product.objects.aggregate(\n    total=Count('id'),\n    avg_price=Avg('price'),\n)",
+        "hints": [
+          "Use price__range=(low, high) for between queries",
+          "Wrap OR conditions in Q() objects joined with |",
+          "Slicing a QuerySet applies LIMIT in SQL"
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "querysets-ex2",
+        "title": "Custom Manager",
+        "description": "Create a custom manager called ActiveManager that filters only active products (is_active=True). Then add it to a Product model alongside the default manager.",
+        "starterCode": "from django.db import models\n\n# Define the custom manager and model\n",
+        "solution": "from django.db import models\n\nclass ActiveManager(models.Manager):\n    def get_queryset(self):\n        return super().get_queryset().filter(is_active=True)\n\nclass Product(models.Model):\n    name = models.CharField(max_length=200)\n    price = models.DecimalField(max_digits=10, decimal_places=2)\n    is_active = models.BooleanField(default=True)\n\n    objects = models.Manager()      # default manager\n    active = ActiveManager()        # custom manager\n\n    def __str__(self):\n        return self.name\n\n# Usage:\n# Product.objects.all()   -> all products\n# Product.active.all()    -> only active products",
+        "hints": [
+          "Subclass models.Manager and override get_queryset()",
+          "Call super().get_queryset() to get the base QuerySet, then apply your filter",
+          "Add both managers to the model: objects for default, active for filtered"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

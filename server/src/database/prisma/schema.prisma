@@ -97,6 +97,27 @@ enum SubscriptionStatus {
   CANCELLED
 }
 
+enum BadgeCategory {
+  CAREER
+  QUIZ
+  SKILL
+  CONTRIBUTION
+  MILESTONE
+}
+
+enum CampusDriveStatus {
+  DRAFT
+  OPEN
+  CLOSED
+  COMPLETED
+}
+
+enum CampusRegistrationStatus {
+  REGISTERED
+  SHORTLISTED
+  REJECTED
+}
+
 // ============================================================
 // USER MODEL
 // ============================================================
@@ -108,6 +129,11 @@ model user {
   password    String
   role        UserRole @default(STUDENT)
   isActive    Boolean  @default(true)
+  isVerified        Boolean  @default(false)
+  verificationOtp   String?
+  otpExpiresAt      DateTime?
+  resetPasswordOtp  String?
+  resetOtpExpiresAt DateTime?
   contactNo   String?
   profilePic  String?
   coverImage  String?
@@ -168,6 +194,17 @@ model user {
 
   // ── Usage tracking ──
   usageLogs usageLog[] @relation("UserUsageLogs")
+
+  // ── Badges ──
+  studentBadges studentBadge[] @relation("StudentBadges")
+
+  // ── Talent pools (recruiter) ──
+  talentPools           talentPool[]         @relation("RecruiterTalentPools")
+  talentPoolMemberships talentPoolMember[]   @relation("TalentPoolMemberships")
+
+  // ── Campus drives ──
+  campusDrives        campusDrive[]              @relation("RecruiterCampusDrives")
+  campusRegistrations campusDriveRegistration[]  @relation("StudentCampusRegistrations")
 
   @@index([role])
   @@index([role, isActive])
@@ -253,6 +290,11 @@ model round {
   instructions       String?
   customFields       Json    @default("[]")
   evaluationCriteria Json    @default("[]")
+
+  // ── Assessment builder fields ──
+  assessmentQuestions Json    @default("[]")
+  timeLimitSecs      Int?
+  autoGrade          Boolean @default(false)
 
   roundSubmissions roundSubmission[]
 
@@ -1212,4 +1254,114 @@ model govInternship {
   createdAt   DateTime @default(now())
 
   @@index([category])
+}
+
+// ============================================================
+// BADGE MODELS
+// ============================================================
+
+model badge {
+  id          Int           @id @default(autoincrement())
+  name        String
+  slug        String        @unique
+  description String
+  iconUrl     String?
+  category    BadgeCategory
+  criteria    Json          @default("{}")
+  isActive    Boolean       @default(true)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  studentBadges studentBadge[]
+
+  @@index([category])
+  @@index([isActive])
+}
+
+model studentBadge {
+  id        Int      @id @default(autoincrement())
+  studentId Int
+  student   user     @relation("StudentBadges", fields: [studentId], references: [id], onDelete: Cascade)
+  badgeId   Int
+  badge     badge    @relation(fields: [badgeId], references: [id], onDelete: Cascade)
+  earnedAt  DateTime @default(now())
+
+  @@unique([studentId, badgeId])
+  @@index([studentId])
+  @@index([badgeId])
+}
+
+// ============================================================
+// TALENT POOL MODELS
+// ============================================================
+
+model talentPool {
+  id          Int                @id @default(autoincrement())
+  recruiterId Int
+  recruiter   user               @relation("RecruiterTalentPools", fields: [recruiterId], references: [id], onDelete: Cascade)
+  name        String
+  description String?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  members talentPoolMember[]
+
+  @@index([recruiterId])
+}
+
+model talentPoolMember {
+  id        Int        @id @default(autoincrement())
+  poolId    Int
+  pool      talentPool @relation(fields: [poolId], references: [id], onDelete: Cascade)
+  studentId Int
+  student   user       @relation("TalentPoolMemberships", fields: [studentId], references: [id], onDelete: Cascade)
+  notes     String?
+  addedAt   DateTime   @default(now())
+
+  @@unique([poolId, studentId])
+  @@index([poolId])
+  @@index([studentId])
+}
+
+// ============================================================
+// CAMPUS DRIVE MODELS
+// ============================================================
+
+model campusDrive {
+  id                      Int                      @id @default(autoincrement())
+  recruiterId             Int
+  recruiter               user                     @relation("RecruiterCampusDrives", fields: [recruiterId], references: [id], onDelete: Cascade)
+  title                   String
+  description             String
+  company                 String
+  targetColleges          String[]                 @default([])
+  eligibleBranches        String[]                 @default([])
+  minCGPA                 Float?
+  eligibleGraduationYears Int[]                    @default([])
+  registrationDeadline    DateTime
+  driveDate               DateTime?
+  status                  CampusDriveStatus        @default(DRAFT)
+  jobIds                  Int[]                    @default([])
+  createdAt               DateTime                 @default(now())
+  updatedAt               DateTime                 @updatedAt
+
+  registrations campusDriveRegistration[]
+
+  @@index([recruiterId])
+  @@index([status])
+  @@index([registrationDeadline])
+}
+
+model campusDriveRegistration {
+  id           Int                      @id @default(autoincrement())
+  driveId      Int
+  drive        campusDrive              @relation(fields: [driveId], references: [id], onDelete: Cascade)
+  studentId    Int
+  student      user                     @relation("StudentCampusRegistrations", fields: [studentId], references: [id], onDelete: Cascade)
+  status       CampusRegistrationStatus @default(REGISTERED)
+  registeredAt DateTime                 @default(now())
+
+  @@unique([driveId, studentId])
+  @@index([driveId])
+  @@index([studentId])
 }

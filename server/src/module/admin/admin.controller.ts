@@ -19,9 +19,6 @@ import {
   createRepoSchema,
   updateRepoSchema,
   repoQuerySchema,
-  adminCollegeQuerySchema,
-  adminCollegeReviewQuerySchema,
-  updateCollegeReviewStatusSchema,
   dsaTopicQuerySchema,
   createDsaTopicSchema,
   updateDsaTopicSchema,
@@ -595,79 +592,6 @@ export class AdminController {
       res.json({ message: "Repository deleted" });
     } catch (err) {
       if (err instanceof Error && err.message === "Repository not found") {
-        res.status(404).json({ message: err.message }); return;
-      }
-      next(err);
-    }
-  }
-
-  // ==================== COLLEGE MANAGEMENT ====================
-
-  async listColleges(req: Request, res: Response, next: NextFunction) {
-    try {
-      const query = adminCollegeQuerySchema.parse(req.query);
-      const data = await this.adminService.listAllColleges(query);
-      res.json(data);
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async approveCollege(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = parseInt(String(req.params["id"]), 10);
-      if (isNaN(id)) { res.status(400).json({ message: "Invalid college ID" }); return; }
-
-      const college = await this.adminService.approveCollege(id);
-      res.json({ message: "College approved", college });
-    } catch (err) {
-      if (err instanceof Error && err.message === "College not found") {
-        res.status(404).json({ message: err.message }); return;
-      }
-      next(err);
-    }
-  }
-
-  async deleteCollege(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = parseInt(String(req.params["id"]), 10);
-      if (isNaN(id)) { res.status(400).json({ message: "Invalid college ID" }); return; }
-
-      await this.adminService.deleteCollege(id);
-      res.json({ message: "College deleted" });
-    } catch (err) {
-      if (err instanceof Error && err.message === "College not found") {
-        res.status(404).json({ message: err.message }); return;
-      }
-      next(err);
-    }
-  }
-
-  async listCollegeReviews(req: Request, res: Response, next: NextFunction) {
-    try {
-      const query = adminCollegeReviewQuerySchema.parse(req.query);
-      const data = await this.adminService.listCollegeReviews(query.status, query.page, query.limit);
-      res.json(data);
-    } catch (err) {
-      next(err);
-    }
-  }
-
-  async updateCollegeReviewStatus(req: Request, res: Response, next: NextFunction) {
-    try {
-      const id = parseInt(String(req.params["id"]), 10);
-      if (isNaN(id)) { res.status(400).json({ message: "Invalid review ID" }); return; }
-
-      const result = updateCollegeReviewStatusSchema.safeParse(req.body);
-      if (!result.success) {
-        res.status(400).json({ message: "Validation failed", errors: result.error.flatten() });
-        return;
-      }
-
-      const review = await this.adminService.updateCollegeReviewStatus(id, result.data.status);
-      res.json({ message: `College review ${result.data.status.toLowerCase()}`, review });
-    } catch (err) {
-      if (err instanceof Error && err.message === "College review not found") {
         res.status(404).json({ message: err.message }); return;
       }
       next(err);

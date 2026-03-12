@@ -117,16 +117,7 @@ export default function BlogListPage() {
         />
 
         <div className="relative z-10 max-w-4xl mx-auto text-center">
-          <motion.div
-            custom={0}
-            initial="hidden"
-            animate="visible"
-            variants={fadeInUp}
-            className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white dark:bg-gray-900 border border-black/10 dark:border-gray-700 shadow-sm text-sm text-gray-600 dark:text-gray-400 mb-8"
-          >
-            <Sparkles className="w-4 h-4 text-blue-500" />
-            <span>Insights & Resources</span>
-          </motion.div>
+          
 
           <motion.h1
             custom={1}

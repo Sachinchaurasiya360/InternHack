@@ -1,0 +1,362 @@
+[
+  {
+    "id": "virtual-dom",
+    "sectionId": "react-interview-essentials",
+    "orderIndex": 0,
+    "title": "Virtual DOM and Reconciliation",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["virtual DOM", "reconciliation", "diffing algorithm", "fiber architecture", "batching", "React elements"],
+    "content": {
+      "explanation": "The Virtual DOM is a lightweight JavaScript representation of the actual browser DOM. When you write JSX, React creates a tree of plain JavaScript objects (React elements) that describe what the UI should look like. This virtual tree is much cheaper to create and manipulate than actual DOM nodes, because the real DOM carries a massive amount of internal state (styles, event listeners, layout calculations).\n\nWhen state changes, React creates a new virtual DOM tree and compares it with the previous one. This comparison process is called reconciliation, and the algorithm that performs it is called the diffing algorithm. React identifies the minimal set of changes needed and applies only those changes to the real DOM. This batched approach is far more efficient than directly manipulating the DOM for every state change.\n\nReact's diffing algorithm makes two key assumptions to achieve O(n) time complexity instead of the theoretical O(n^3) for generic tree diffing. First, elements of different types produce entirely different subtrees — if a <div> changes to a <span>, React tears down the entire old subtree and builds a new one instead of trying to morph it. Second, developers provide key props to hint which children remain stable across renders, allowing React to match and reuse existing elements.\n\nThe Fiber architecture (introduced in React 16) is the internal engine that performs reconciliation. Each component instance is represented as a Fiber node in a linked-list tree. Fiber enables incremental rendering — React can pause work on one part of the tree, handle a higher-priority update (like user input), and resume later. This is the foundation of concurrent features like Suspense, transitions, and automatic batching.\n\nA common misconception is that the Virtual DOM is always faster than direct DOM manipulation. It is not. The Virtual DOM adds overhead (creating the virtual tree, diffing). Its advantage is that it provides a declarative programming model — you describe what the UI should look like, and React figures out the minimal DOM operations. The performance benefit comes from batching multiple updates into a single DOM write and from the developer not having to manually track what changed.",
+      "codeExamples": [
+        {
+          "title": "JSX compiles to React.createElement (virtual DOM objects)",
+          "code": "// This JSX:\n<div className=\"card\">\n  <h1>Hello</h1>\n  <p>World</p>\n</div>\n\n// Compiles to:\nReact.createElement('div', { className: 'card' },\n  React.createElement('h1', null, 'Hello'),\n  React.createElement('p', null, 'World')\n);\n\n// Which produces this virtual DOM object:\n{\n  type: 'div',\n  props: {\n    className: 'card',\n    children: [\n      { type: 'h1', props: { children: 'Hello' } },\n      { type: 'p', props: { children: 'World' } }\n    ]\n  }\n}",
+          "explanation": "React elements are plain objects with type and props. This tree is the virtual DOM. React diffs this tree against the previous one to find changes."
+        },
+        {
+          "title": "Diffing algorithm in action",
+          "code": "// Render 1: User is logged out\n<div>\n  <LoginButton />\n  <p>Please log in</p>\n</div>\n\n// Render 2: User logs in\n<div>\n  <UserAvatar name=\"Alice\" />\n  <p>Welcome back!</p>\n</div>\n\n// Diffing result:\n// 1. <div> same type -> keep DOM node, diff children\n// 2. <LoginButton> vs <UserAvatar> -> different type!\n//    -> Unmount LoginButton, mount UserAvatar (full replacement)\n// 3. <p> same type -> keep DOM node\n//    -> Text changed: 'Please log in' -> 'Welcome back!'\n//    -> Update only the text content (minimal DOM operation)",
+          "explanation": "React walks the tree top-down. Same type = update props. Different type = destroy and rebuild. Text nodes are updated in place. Only the actual changes hit the real DOM."
+        },
+        {
+          "title": "Why keys matter for list reconciliation",
+          "code": "// Without keys — React matches by position\n// Old:  [A, B, C]\n// New:  [C, A, B]\n// React thinks: position 0 changed A->C, position 1 changed B->A, position 2 changed C->B\n// Result: 3 updates (inefficient!)\n\n// With keys — React matches by identity\n// Old:  [key:a A, key:b B, key:c C]\n// New:  [key:c C, key:a A, key:b B]\n// React knows: C moved to front, A and B shifted\n// Result: move operations only, no content updates\n\n// In code:\n{items.map(item => (\n  <ListItem key={item.id} data={item} />\n  // key={item.id} tells React which element is which across renders\n))}",
+          "explanation": "Keys let React identify which items moved, were added, or were removed. Without keys, React falls back to index-based matching, which causes unnecessary unmounting and remounting when order changes."
+        }
+      ],
+      "notes": [
+        "The Virtual DOM is not faster than manual DOM manipulation — it provides a declarative API that batches updates and minimises DOM writes automatically.",
+        "React's diffing is O(n) because it compares elements level-by-level and assumes different types produce different trees.",
+        "Fiber architecture enables concurrent rendering — React can pause, abort, and resume rendering work, which is the basis for Suspense and transitions."
+      ],
+      "commonPitfalls": [
+        "Claiming that the Virtual DOM makes React fast. The real performance win is batching and the declarative model, not the virtual tree itself.",
+        "Confusing React elements (virtual DOM objects) with component instances or DOM nodes. Elements are cheap, disposable descriptions of what to render."
+      ],
+      "interviewTips": [
+        "Start by explaining what the Virtual DOM IS: a JavaScript object tree that mirrors the DOM structure. Then explain reconciliation as the process of diffing two trees.",
+        "Mention the two heuristics: same-type elements are updated, different-type elements are replaced; and keys enable efficient list diffing.",
+        "Bring up Fiber to show deeper knowledge: it enables incremental rendering, priority-based scheduling, and is the foundation for concurrent features.",
+        "If asked 'Is the Virtual DOM faster?', give a nuanced answer: it is not inherently faster than targeted DOM manipulation, but it provides a declarative API that makes it easier to write performant UIs at scale."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "virtual-dom-ex1",
+        "title": "Build a Simple Virtual DOM Differ",
+        "description": "Implement a simple diff function that compares two virtual DOM trees (plain objects with type and props). It should detect: same type (update), different type (replace), and text changes. Log the operations needed.",
+        "starterCode": "// Implement a simple differ for virtual DOM nodes\n// Each node: { type: string, props: { children?: string | node[] } }\n// Detect: UPDATE (same type), REPLACE (different type), TEXT_CHANGE\n\nfunction diff(oldNode, newNode) {\n  // TODO: compare nodes and log operations\n}\n\n// Test cases",
+        "solution": "function diff(oldNode, newNode, path) {\n  path = path || 'root';\n\n  if (!oldNode && newNode) {\n    console.log(path + ': ADD ' + newNode.type);\n    return;\n  }\n  if (oldNode && !newNode) {\n    console.log(path + ': REMOVE ' + oldNode.type);\n    return;\n  }\n  if (typeof oldNode === 'string' && typeof newNode === 'string') {\n    if (oldNode !== newNode) {\n      console.log(path + ': TEXT_CHANGE \"' + oldNode + '\" -> \"' + newNode + '\"');\n    }\n    return;\n  }\n  if (oldNode.type !== newNode.type) {\n    console.log(path + ': REPLACE ' + oldNode.type + ' -> ' + newNode.type);\n    return;\n  }\n  console.log(path + ': UPDATE ' + oldNode.type);\n\n  // Diff children\n  const oldChildren = Array.isArray(oldNode.props.children) ? oldNode.props.children : [oldNode.props.children].filter(Boolean);\n  const newChildren = Array.isArray(newNode.props.children) ? newNode.props.children : [newNode.props.children].filter(Boolean);\n  const maxLen = Math.max(oldChildren.length, newChildren.length);\n  for (let i = 0; i < maxLen; i++) {\n    diff(oldChildren[i], newChildren[i], path + '/' + (newChildren[i]?.type || oldChildren[i]?.type || 'text') + '[' + i + ']');\n  }\n}\n\nconst oldTree = {\n  type: 'div', props: { children: [\n    { type: 'h1', props: { children: 'Hello' } },\n    { type: 'p', props: { children: 'World' } }\n  ]}\n};\n\nconst newTree = {\n  type: 'div', props: { children: [\n    { type: 'h1', props: { children: 'Hi' } },\n    { type: 'span', props: { children: 'World' } }\n  ]}\n};\n\ndiff(oldTree, newTree);",
+        "expectedOutput": "root: UPDATE div\nroot/h1[0]: UPDATE h1\nroot/text[0]: TEXT_CHANGE \"Hello\" -> \"Hi\"\nroot/span[1]: REPLACE p -> span",
+        "hints": [
+          "Compare types first: if they differ, it's a REPLACE. If the same, it's an UPDATE and you should recurse into children.",
+          "Handle string children as text nodes. If both are strings but different, it's a TEXT_CHANGE."
+        ],
+        "difficulty": "Hard"
+      },
+      {
+        "id": "virtual-dom-ex2",
+        "title": "Reconciliation with Keys",
+        "description": "Demonstrate how keys improve list reconciliation. Simulate two approaches: index-based matching (no keys) and key-based matching. Show the difference in operations needed when items are reordered.",
+        "starterCode": "// Compare index-based vs key-based reconciliation\n// Old list: [A, B, C, D]\n// New list: [D, A, B, C] (D moved to front)\n\n// Without keys: match by index -> many unnecessary updates\n// With keys: match by identity -> just a move\n\nfunction reconcileByIndex(oldList, newList) {\n  // TODO\n}\n\nfunction reconcileByKey(oldList, newList) {\n  // TODO\n}",
+        "solution": "function reconcileByIndex(oldList, newList) {\n  console.log('Index-based reconciliation:');\n  let ops = 0;\n  for (let i = 0; i < Math.max(oldList.length, newList.length); i++) {\n    if (i >= oldList.length) {\n      console.log('  [' + i + '] ADD: ' + newList[i].value);\n      ops++;\n    } else if (i >= newList.length) {\n      console.log('  [' + i + '] REMOVE: ' + oldList[i].value);\n      ops++;\n    } else if (oldList[i].value !== newList[i].value) {\n      console.log('  [' + i + '] UPDATE: ' + oldList[i].value + ' -> ' + newList[i].value);\n      ops++;\n    } else {\n      console.log('  [' + i + '] KEEP: ' + oldList[i].value);\n    }\n  }\n  console.log('  Total operations: ' + ops);\n}\n\nfunction reconcileByKey(oldList, newList) {\n  console.log('Key-based reconciliation:');\n  let ops = 0;\n  const oldMap = {};\n  oldList.forEach((item, i) => { oldMap[item.key] = { ...item, index: i }; });\n\n  newList.forEach((item, newIndex) => {\n    const old = oldMap[item.key];\n    if (!old) {\n      console.log('  [' + newIndex + '] ADD: ' + item.value);\n      ops++;\n    } else if (old.index !== newIndex) {\n      console.log('  [' + newIndex + '] MOVE: ' + item.value + ' (from index ' + old.index + ')');\n      ops++;\n    } else {\n      console.log('  [' + newIndex + '] KEEP: ' + item.value);\n    }\n  });\n  console.log('  Total operations: ' + ops);\n}\n\nconst oldList = [\n  { key: 'a', value: 'A' },\n  { key: 'b', value: 'B' },\n  { key: 'c', value: 'C' },\n  { key: 'd', value: 'D' }\n];\n\nconst newList = [\n  { key: 'd', value: 'D' },\n  { key: 'a', value: 'A' },\n  { key: 'b', value: 'B' },\n  { key: 'c', value: 'C' }\n];\n\nreconcileByIndex(oldList, newList);\nconsole.log('');\nreconcileByKey(oldList, newList);",
+        "expectedOutput": "Index-based reconciliation:\n  [0] UPDATE: A -> D\n  [1] UPDATE: B -> A\n  [2] UPDATE: C -> B\n  [3] UPDATE: D -> C\n  Total operations: 4\n\nKey-based reconciliation:\n  [0] MOVE: D (from index 3)\n  [1] MOVE: A (from index 0)\n  [2] MOVE: B (from index 1)\n  [3] MOVE: C (from index 2)\n  Total operations: 4",
+        "hints": [
+          "Index-based: compare old[i] with new[i] by position. Key-based: look up each new item's key in the old list to find where it came from.",
+          "The key insight: index-based thinks every item changed content. Key-based knows items just moved, preserving their internal state."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "component-lifecycle",
+    "sectionId": "react-interview-essentials",
+    "orderIndex": 1,
+    "title": "Component Lifecycle",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["mounting", "updating", "unmounting", "useEffect lifecycle", "cleanup function", "dependency array"],
+    "content": {
+      "explanation": "Every React component goes through three phases during its existence: mounting (being inserted into the DOM for the first time), updating (re-rendering due to state or prop changes), and unmounting (being removed from the DOM). Understanding these phases is crucial for managing side effects, subscriptions, and resource cleanup.\n\nIn class components, these phases map to explicit lifecycle methods: componentDidMount (after first render), componentDidUpdate (after re-renders), and componentWillUnmount (before removal). In function components, the useEffect hook consolidates all three. The mapping is: useEffect with [] runs on mount, useEffect with dependencies runs on mount and on updates when dependencies change, and the cleanup function returned from useEffect runs before the next effect and on unmount.\n\nThe dependency array is the most critical concept. An empty array [] means the effect runs only once on mount — equivalent to componentDidMount. Including specific values [count, userId] means the effect runs on mount and whenever those values change — similar to componentDidUpdate with a condition. Omitting the array entirely means the effect runs after every render, which is rarely what you want and is a common source of bugs.\n\nThe cleanup function handles resource deallocation. If you subscribe to an event listener, start a timer, or open a WebSocket connection in an effect, the cleanup function should unsubscribe, clear the timer, or close the connection. React calls the cleanup before running the next effect (to clean up the previous one) and before unmounting. This prevents memory leaks and zombie subscriptions.\n\nA subtle point: effects run after the browser paints. React renders the component, the browser paints the new DOM, and then effects execute. This is different from useLayoutEffect, which runs synchronously after the DOM mutation but before the paint. Use useLayoutEffect only when you need to measure or modify the DOM before the user sees the update (e.g., measuring element dimensions for positioning).",
+      "codeExamples": [
+        {
+          "title": "useEffect as lifecycle — mount, update, unmount",
+          "code": "function UserProfile({ userId }) {\n  const [user, setUser] = React.useState(null);\n\n  // Mount + Update: runs when userId changes\n  React.useEffect(() => {\n    console.log('Effect: Fetching user', userId);\n    fetchUser(userId).then(setUser);\n\n    // Cleanup: runs before next effect and on unmount\n    return () => {\n      console.log('Cleanup: Cancelling fetch for', userId);\n    };\n  }, [userId]);\n\n  // Mount only: runs once\n  React.useEffect(() => {\n    console.log('Mounted: UserProfile');\n    return () => console.log('Unmounted: UserProfile');\n  }, []);\n\n  return user ? <h1>{user.name}</h1> : <p>Loading...</p>;\n}\n\n// Timeline:\n// 1. Component mounts -> both effects run\n// 2. userId changes -> first effect cleanup runs, then first effect runs again\n// 3. Component unmounts -> both cleanup functions run",
+          "explanation": "The first effect syncs with userId — its cleanup cancels stale fetches. The second effect with [] handles one-time mount/unmount logic. React guarantees all cleanups run before unmounting."
+        },
+        {
+          "title": "Class lifecycle to hooks mapping",
+          "code": "// Class component lifecycle:\nclass MyComponent extends React.Component {\n  componentDidMount() {\n    // After first render\n    this.subscription = eventBus.subscribe(this.handleEvent);\n  }\n  componentDidUpdate(prevProps) {\n    // After re-renders\n    if (prevProps.id !== this.props.id) {\n      this.fetchData(this.props.id);\n    }\n  }\n  componentWillUnmount() {\n    // Before removal\n    this.subscription.unsubscribe();\n  }\n}\n\n// Equivalent hooks:\nfunction MyComponent({ id }) {\n  // componentDidMount + componentWillUnmount\n  React.useEffect(() => {\n    const sub = eventBus.subscribe(handleEvent);\n    return () => sub.unsubscribe();\n  }, []);\n\n  // componentDidMount + componentDidUpdate (for id)\n  React.useEffect(() => {\n    fetchData(id);\n  }, [id]);\n}",
+          "explanation": "Hooks split lifecycle by concern (subscription vs data fetching) rather than by timing (mount vs update). This leads to better code organization and fewer bugs."
+        },
+        {
+          "title": "Common cleanup patterns",
+          "code": "function TimerComponent() {\n  React.useEffect(() => {\n    // Setup: start interval\n    const id = setInterval(() => console.log('tick'), 1000);\n    // Cleanup: clear interval\n    return () => clearInterval(id);\n  }, []);\n}\n\nfunction ResizeWatcher() {\n  React.useEffect(() => {\n    // Setup: add listener\n    const handler = () => console.log(window.innerWidth);\n    window.addEventListener('resize', handler);\n    // Cleanup: remove listener\n    return () => window.removeEventListener('resize', handler);\n  }, []);\n}\n\nfunction WebSocketChat({ roomId }) {\n  React.useEffect(() => {\n    // Setup: connect\n    const ws = new WebSocket(`/ws/rooms/${roomId}`);\n    ws.onmessage = (e) => console.log('Message:', e.data);\n    // Cleanup: disconnect\n    return () => ws.close();\n  }, [roomId]); // Reconnect when room changes\n}",
+          "explanation": "Every setup should have a matching cleanup. Timers need clearInterval, listeners need removeEventListener, connections need close. React calls cleanup before the next effect execution and on unmount."
+        }
+      ],
+      "notes": [
+        "Effects run after the browser paint, not during render. If you need to measure DOM before paint, use useLayoutEffect.",
+        "The cleanup function runs both when the component unmounts AND before the effect re-runs with new dependencies. It cleans up the previous effect, not the current one.",
+        "In Strict Mode (development only), React mounts, unmounts, and remounts components to help you find missing cleanup functions. This is intentional."
+      ],
+      "commonPitfalls": [
+        "Forgetting the dependency array entirely, causing the effect to run after every single render instead of when specific values change.",
+        "Not returning a cleanup function for subscriptions and timers, causing memory leaks when the component unmounts."
+      ],
+      "interviewTips": [
+        "Map the three phases clearly: mount (componentDidMount / useEffect with []), update (componentDidUpdate / useEffect with deps), unmount (componentWillUnmount / cleanup function).",
+        "Emphasize that hooks organize code by concern (data fetching in one effect, subscriptions in another) rather than by lifecycle phase (all mount logic in one method).",
+        "Explain the cleanup function's dual role: it runs before re-execution of the effect (cleaning up the previous run) AND on unmount.",
+        "Mention useLayoutEffect as a bonus: it runs synchronously after DOM mutations but before paint, useful for measurements and DOM reads that affect layout."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "component-lifecycle-ex1",
+        "title": "Lifecycle Simulation",
+        "description": "Simulate the complete lifecycle of a component: mount, multiple updates, and unmount. Log each lifecycle phase. Include a 'useEffect' that sets up a subscription on mount and cleans it up on unmount, and another that runs on dependency change.",
+        "starterCode": "// Simulate component lifecycle\n// Mount -> Update (x2) -> Unmount\n// Effect 1: subscription (mount/unmount)\n// Effect 2: data fetch (on userId change)\n\nfunction simulateLifecycle() {\n  // TODO\n}",
+        "solution": "function simulateLifecycle() {\n  let mounted = false;\n  let subscription = null;\n  let prevUserId = null;\n\n  function mount(userId) {\n    mounted = true;\n    console.log('--- MOUNT ---');\n    console.log('Render: userId=' + userId);\n\n    // Effect 1: subscription (mount only)\n    subscription = 'EventBus-sub-' + Date.now();\n    console.log('Effect 1: Subscribed (' + subscription + ')');\n\n    // Effect 2: fetch (depends on userId)\n    console.log('Effect 2: Fetching user ' + userId);\n    prevUserId = userId;\n  }\n\n  function update(userId) {\n    console.log('--- UPDATE ---');\n    console.log('Render: userId=' + userId);\n\n    // Effect 2: cleanup previous, then run\n    if (userId !== prevUserId) {\n      console.log('Effect 2 cleanup: Cancel fetch for user ' + prevUserId);\n      console.log('Effect 2: Fetching user ' + userId);\n      prevUserId = userId;\n    } else {\n      console.log('Effect 2: Skipped (userId unchanged)');\n    }\n  }\n\n  function unmount() {\n    console.log('--- UNMOUNT ---');\n    // All cleanups run\n    console.log('Effect 1 cleanup: Unsubscribed (' + subscription + ')');\n    console.log('Effect 2 cleanup: Cancel fetch for user ' + prevUserId);\n    mounted = false;\n    subscription = null;\n  }\n\n  mount(1);\n  update(1);\n  update(2);\n  unmount();\n}\n\nsimulateLifecycle();",
+        "expectedOutput": "--- MOUNT ---\nRender: userId=1\nEffect 1: Subscribed (EventBus-sub-1)\nEffect 2: Fetching user 1\n--- UPDATE ---\nRender: userId=1\nEffect 2: Skipped (userId unchanged)\n--- UPDATE ---\nRender: userId=2\nEffect 2 cleanup: Cancel fetch for user 1\nEffect 2: Fetching user 2\n--- UNMOUNT ---\nEffect 1 cleanup: Unsubscribed (EventBus-sub-1)\nEffect 2 cleanup: Cancel fetch for user 2",
+        "hints": [
+          "Track prevUserId to simulate dependency comparison. Effect 2 only re-runs when userId changes.",
+          "On unmount, ALL cleanup functions run — both the subscription cleanup and the fetch cleanup."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "component-lifecycle-ex2",
+        "title": "Effect Dependency Behavior",
+        "description": "Demonstrate three useEffect patterns: no dependencies (runs every render), empty array (runs once), and specific dependencies (runs when deps change). Simulate 3 renders and log which effects run on each.",
+        "starterCode": "// Simulate three useEffect patterns across 3 renders\n// Effect A: no deps (every render)\n// Effect B: [] (mount only)\n// Effect C: [count] (when count changes)\n\nfunction simulateEffects() {\n  // TODO: simulate 3 renders with count = 0, 0, 1\n}",
+        "solution": "function simulateEffects() {\n  let effectBRan = false;\n  let prevCount = undefined;\n\n  function render(renderNum, count) {\n    console.log('=== Render ' + renderNum + ' (count=' + count + ') ===');\n\n    // Effect A: no deps — runs every render\n    console.log('  Effect A: ran (no deps - every render)');\n\n    // Effect B: [] — mount only\n    if (!effectBRan) {\n      console.log('  Effect B: ran (mount only)');\n      effectBRan = true;\n    } else {\n      console.log('  Effect B: skipped (already mounted)');\n    }\n\n    // Effect C: [count] — when count changes\n    if (prevCount !== count) {\n      if (prevCount !== undefined) {\n        console.log('  Effect C cleanup: cleaned up for count=' + prevCount);\n      }\n      console.log('  Effect C: ran (count changed to ' + count + ')');\n      prevCount = count;\n    } else {\n      console.log('  Effect C: skipped (count unchanged)');\n    }\n  }\n\n  render(1, 0);  // Mount\n  render(2, 0);  // Update, count unchanged\n  render(3, 1);  // Update, count changed\n\n  // Unmount\n  console.log('=== Unmount ===');\n  console.log('  Effect A cleanup: ran');\n  console.log('  Effect B cleanup: ran');\n  console.log('  Effect C cleanup: cleaned up for count=' + prevCount);\n}\n\nsimulateEffects();",
+        "expectedOutput": "=== Render 1 (count=0) ===\n  Effect A: ran (no deps - every render)\n  Effect B: ran (mount only)\n  Effect C: ran (count changed to 0)\n=== Render 2 (count=0) ===\n  Effect A: ran (no deps - every render)\n  Effect B: skipped (already mounted)\n  Effect C: skipped (count unchanged)\n=== Render 3 (count=1) ===\n  Effect A: ran (no deps - every render)\n  Effect B: skipped (already mounted)\n  Effect C cleanup: cleaned up for count=0\n  Effect C: ran (count changed to 1)\n=== Unmount ===\n  Effect A cleanup: ran\n  Effect B cleanup: ran\n  Effect C cleanup: cleaned up for count=1",
+        "hints": [
+          "Effect A (no deps) runs on every render. Effect B (empty deps) runs only on the first render. Effect C runs when count differs from the previous value.",
+          "Effect C's cleanup runs BEFORE the new effect when count changes, and again on unmount."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "key-prop-deep-dive",
+    "sectionId": "react-interview-essentials",
+    "orderIndex": 2,
+    "title": "The Key Prop Deep Dive",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["key prop", "reconciliation", "list rendering", "index as key", "key reset pattern", "component identity"],
+    "content": {
+      "explanation": "The key prop is a special attribute in React that helps the reconciliation algorithm identify which elements in a list have changed, been added, or been removed. When React renders a list of elements, it needs a way to match elements between the old and new render. Without keys, React matches by position (index). With keys, React matches by identity, which is far more efficient and correct when items can be reordered, inserted, or deleted.\n\nWhen you use index as a key and items are reordered, React thinks the element at index 0 changed its content (because a different item is now at index 0). It updates the DOM content but keeps the same component instance and its internal state. This causes subtle bugs: input fields retain values from the wrong item, animations break, and effects fire incorrectly. With a stable unique key (like item.id), React recognizes the component moved and reorders the DOM nodes without resetting state.\n\nUsing index as a key is only safe when three conditions are ALL true: (1) the list is static (items never reorder or get inserted/removed in the middle), (2) items have no internal state (no input fields, no animations), and (3) the list is never filtered or sorted. In all other cases, use a unique identifier from your data.\n\nAn advanced technique is using the key prop to force a component to reset its internal state. When you change a component's key, React treats it as a completely different component — it unmounts the old instance and mounts a new one. This is useful when you need to reset a form when switching between items, or when you want to restart animations. For example, <UserForm key={selectedUserId} /> remounts the form whenever the user changes, clearing all field values.\n\nKeys must be unique among siblings — not globally unique. Two separate lists can use the same key values. Also, keys should be stable (not change between renders) and predictable (not random). Using Math.random() as a key forces a remount on every render, destroying all internal state and defeating the purpose of React's reconciliation.",
+      "codeExamples": [
+        {
+          "title": "Index as key bug — state gets attached to wrong item",
+          "code": "// BAD: Using index as key with a sortable list\nfunction TodoList() {\n  const [todos, setTodos] = React.useState([\n    { id: 'a', text: 'Buy milk' },\n    { id: 'b', text: 'Walk dog' },\n    { id: 'c', text: 'Read book' },\n  ]);\n\n  const reverse = () => setTodos([...todos].reverse());\n\n  return (\n    <div>\n      <button onClick={reverse}>Reverse</button>\n      {todos.map((todo, index) => (\n        // BUG: key={index} — checkbox state sticks to position, not item\n        <div key={index}>\n          <input type=\"checkbox\" /> {todo.text}\n        </div>\n      ))}\n    </div>\n  );\n}\n// If user checks 'Buy milk' then clicks Reverse,\n// 'Read book' will be checked instead! (checkbox stays at index 0)\n\n// FIX: Use key={todo.id}\n{todos.map(todo => (\n  <div key={todo.id}>\n    <input type=\"checkbox\" /> {todo.text}\n  </div>\n))}",
+          "explanation": "With index as key, React thinks the component at index 0 just changed its text prop. The checkbox state (internal to the DOM element) stays at index 0. With todo.id as key, React knows the component moved and moves the DOM node with its state."
+        },
+        {
+          "title": "Key prop to reset component state",
+          "code": "function EditUserForm({ user }) {\n  // Internal state resets when key changes\n  const [name, setName] = React.useState(user.name);\n  const [email, setEmail] = React.useState(user.email);\n\n  return (\n    <form>\n      <input value={name} onChange={e => setName(e.target.value)} />\n      <input value={email} onChange={e => setEmail(e.target.value)} />\n    </form>\n  );\n}\n\n// Parent uses key to force reset when user changes\nfunction UserEditor({ selectedUser }) {\n  return (\n    <EditUserForm\n      key={selectedUser.id}  // New key = new component instance\n      user={selectedUser}\n    />\n  );\n}",
+          "explanation": "When selectedUser changes, the key changes, React unmounts the old EditUserForm and mounts a new one. All internal state (name, email) resets to the new user's values."
+        },
+        {
+          "title": "When index as key is acceptable",
+          "code": "// SAFE: Static list that never reorders\nfunction NavigationMenu() {\n  const links = ['Home', 'About', 'Contact']; // Never changes\n\n  return (\n    <nav>\n      {links.map((link, index) => (\n        <a key={index} href={`/${link.toLowerCase()}`}>\n          {link}\n        </a>\n      ))}\n    </nav>\n  );\n}\n// Index is fine here because:\n// 1. List never reorders\n// 2. Items have no internal state\n// 3. List is never filtered\n\n// UNSAFE: Dynamic list with user actions\nfunction DynamicList({ items, onRemove }) {\n  return items.map((item, index) => (\n    // BAD: key={index} — removing middle item shifts all keys\n    <div key={index}>\n      {item.name}\n      <button onClick={() => onRemove(item.id)}>Remove</button>\n    </div>\n  ));\n}",
+          "explanation": "The static navigation menu is safe with index keys because nothing can reorder or remove items. The dynamic list is unsafe because removing an item shifts all subsequent indices."
+        }
+      ],
+      "notes": [
+        "Keys must be unique among siblings, not globally. Two separate lists can reuse the same key values.",
+        "Never use Math.random() or Date.now() as keys — they create new keys every render, forcing full remounts.",
+        "The key-reset pattern (changing a component's key to force a remount) is a legitimate and useful technique for resetting internal state."
+      ],
+      "commonPitfalls": [
+        "Using array index as key for lists that can be reordered, filtered, or have items added/removed in the middle — this causes state to attach to the wrong item.",
+        "Using unstable keys like Math.random() — this creates a new component instance on every render, destroying all internal state and hurting performance."
+      ],
+      "interviewTips": [
+        "Explain keys in terms of component identity: keys tell React 'this is the same component as before' or 'this is a new component'. Without keys, React uses position.",
+        "Give the checkbox-in-reversed-list example to illustrate the index-as-key bug concretely — interviewers love real-world scenarios.",
+        "Mention the key-reset pattern as an advanced technique — it shows you understand that changing a key forces a full remount.",
+        "Know the three conditions where index-as-key is safe: static list, no internal state, no reordering. If any condition is false, use a stable unique ID."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "key-prop-ex1",
+        "title": "Index vs ID Key Reconciliation",
+        "description": "Simulate how React reconciles a list with index keys vs ID keys when an item is removed from the middle. Show that with index keys, state gets mismatched, while with ID keys, the correct items are preserved.",
+        "starterCode": "// Simulate list reconciliation when removing an item from the middle\n// List: [A, B, C] -> remove B -> [A, C]\n// Show what happens with index keys vs ID keys\n\nfunction reconcileWithIndex(oldList, newList) {\n  // TODO\n}\n\nfunction reconcileWithKeys(oldList, newList) {\n  // TODO\n}",
+        "solution": "function reconcileWithIndex(oldList, newList) {\n  console.log('=== Index-based keys ===');\n  console.log('Old: [' + oldList.map(i => i.value).join(', ') + ']');\n  console.log('New: [' + newList.map(i => i.value).join(', ') + ']');\n\n  for (let i = 0; i < Math.max(oldList.length, newList.length); i++) {\n    if (i >= newList.length) {\n      console.log('  key=' + i + ': REMOVE (was ' + oldList[i].value + ')');\n    } else if (i >= oldList.length) {\n      console.log('  key=' + i + ': ADD ' + newList[i].value);\n    } else if (oldList[i].value !== newList[i].value) {\n      console.log('  key=' + i + ': UPDATE ' + oldList[i].value + ' -> ' + newList[i].value + ' (state from ' + oldList[i].value + ' leaks to ' + newList[i].value + '!)');\n    } else {\n      console.log('  key=' + i + ': KEEP ' + oldList[i].value);\n    }\n  }\n}\n\nfunction reconcileWithKeys(oldList, newList) {\n  console.log('=== ID-based keys ===');\n  console.log('Old: [' + oldList.map(i => i.value).join(', ') + ']');\n  console.log('New: [' + newList.map(i => i.value).join(', ') + ']');\n\n  const oldMap = {};\n  oldList.forEach(item => { oldMap[item.id] = item; });\n\n  const newIds = new Set(newList.map(i => i.id));\n\n  // Check for removed items\n  oldList.forEach(item => {\n    if (!newIds.has(item.id)) {\n      console.log('  key=' + item.id + ': REMOVE ' + item.value);\n    }\n  });\n\n  // Check remaining items\n  newList.forEach(item => {\n    if (oldMap[item.id]) {\n      console.log('  key=' + item.id + ': KEEP ' + item.value + ' (state preserved correctly)');\n    } else {\n      console.log('  key=' + item.id + ': ADD ' + item.value);\n    }\n  });\n}\n\nconst oldList = [\n  { id: 'a', value: 'A' },\n  { id: 'b', value: 'B' },\n  { id: 'c', value: 'C' }\n];\n\nconst newList = [\n  { id: 'a', value: 'A' },\n  { id: 'c', value: 'C' }\n];\n\nreconcileWithIndex(oldList, newList);\nconsole.log('');\nreconcileWithKeys(oldList, newList);",
+        "expectedOutput": "=== Index-based keys ===\nOld: [A, B, C]\nNew: [A, C]\n  key=0: KEEP A\n  key=1: UPDATE B -> C (state from B leaks to C!)\n  key=2: REMOVE (was C)\n\n=== ID-based keys ===\nOld: [A, B, C]\nNew: [A, C]\n  key=b: REMOVE B\n  key=a: KEEP A (state preserved correctly)\n  key=c: KEEP C (state preserved correctly)",
+        "hints": [
+          "With index keys, removing B causes C to take index 1 (B's old position). React thinks B turned into C and removes the last item.",
+          "With ID keys, React knows B was removed and A and C are unchanged. No state leakage occurs."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "key-prop-ex2",
+        "title": "Key Reset Pattern",
+        "description": "Demonstrate the key-reset pattern. Simulate a component with internal state. Show that changing the key creates a brand new instance with fresh state, while keeping the same key preserves state.",
+        "starterCode": "// Simulate the key-reset pattern\n// A form component has internal state (draft text)\n// Changing the key should reset the state\n// Keeping the key should preserve the state\n\nfunction simulateKeyReset() {\n  // TODO\n}",
+        "solution": "function createFormInstance(key, initialValue) {\n  let draft = initialValue;\n  console.log('MOUNT form (key=' + key + ') with initial: \"' + initialValue + '\"');\n\n  return {\n    key,\n    edit: (newDraft) => {\n      draft = newDraft;\n      console.log('EDIT form (key=' + key + '): draft = \"' + draft + '\"');\n    },\n    getDraft: () => draft,\n    unmount: () => console.log('UNMOUNT form (key=' + key + ')')\n  };\n}\n\nfunction simulateKeyReset() {\n  console.log('--- Same key: state preserved ---');\n  let form = createFormInstance('user-1', 'Alice');\n  form.edit('Alice Smith');\n  // Re-render with same key: keep instance\n  console.log('Re-render with same key: draft = \"' + form.getDraft() + '\" (preserved)');\n\n  console.log('');\n  console.log('--- Different key: state reset ---');\n  form.edit('Alice Smith Jr.');\n  console.log('Current draft: \"' + form.getDraft() + '\"');\n  // Key changes: unmount old, mount new\n  form.unmount();\n  form = createFormInstance('user-2', 'Bob');\n  console.log('After key change: draft = \"' + form.getDraft() + '\" (reset!)');\n}\n\nsimulateKeyReset();",
+        "expectedOutput": "--- Same key: state preserved ---\nMOUNT form (key=user-1) with initial: \"Alice\"\nEDIT form (key=user-1): draft = \"Alice Smith\"\nRe-render with same key: draft = \"Alice Smith\" (preserved)\n\n--- Different key: state reset ---\nEDIT form (key=user-1): draft = \"Alice Smith Jr.\"\nCurrent draft: \"Alice Smith Jr.\"\nUNMOUNT form (key=user-1)\nMOUNT form (key=user-2) with initial: \"Bob\"\nAfter key change: draft = \"Bob\" (reset!)",
+        "hints": [
+          "Same key = same component instance = state preserved. Different key = new instance = fresh state.",
+          "Simulate the key change by unmounting the old form and creating a new one with the new key and initial value."
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "react-patterns",
+    "sectionId": "react-interview-essentials",
+    "orderIndex": 3,
+    "title": "Advanced React Patterns",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["higher-order components", "render props", "compound components", "custom hooks", "composition patterns"],
+    "content": {
+      "explanation": "React patterns are reusable solutions for sharing logic and behavior between components. Over the years, the React community has developed several patterns, each suited to different situations. Understanding these patterns — and how they evolved — is essential for interviews and for writing maintainable React code.\n\nHigher-Order Components (HOCs) are functions that take a component and return a new component with added behavior. The classic example is withAuth(Component) which wraps a component to check authentication before rendering. HOCs were the primary pattern for logic reuse before hooks. They work by injecting props into the wrapped component. While still used (React.memo is technically an HOC), they have downsides: prop name collisions, wrapper hell in DevTools, and static composition (cannot change which HOCs apply at runtime).\n\nRender Props is a pattern where a component accepts a function as a prop (often called render or children) and calls that function to determine what to render. The function receives the shared state/behavior as arguments. This inverts control — the consumer decides what to render with the provided data. Render props solved HOC problems (no prop collisions, clear data flow) but introduced their own issue: callback nesting (render prop hell) when composing multiple behaviors.\n\nCompound Components use React Context to create a group of components that work together implicitly. Think of <Select> and <Option> — Option doesn't work outside Select because Select provides the shared context. This pattern creates expressive, declarative APIs where the consumer arranges child components and the parent coordinates behavior behind the scenes.\n\nCustom hooks are the modern standard for logic reuse. They extract stateful logic into reusable functions that any component can call. Unlike HOCs and render props, hooks compose naturally with no nesting, no prop collisions, and clear data flow. The pattern is simple: extract useState, useEffect, and other hooks into a named function starting with 'use'. Most new React code uses custom hooks for logic sharing, with compound components for UI composition.",
+      "codeExamples": [
+        {
+          "title": "Higher-Order Component (HOC)",
+          "code": "// HOC that adds loading behavior\nfunction withLoading(WrappedComponent) {\n  return function WithLoadingComponent({ isLoading, ...props }) {\n    if (isLoading) return <div>Loading...</div>;\n    return <WrappedComponent {...props} />;\n  };\n}\n\n// HOC that adds authentication check\nfunction withAuth(WrappedComponent) {\n  return function WithAuthComponent(props) {\n    const { user } = useAuth();\n    if (!user) return <Navigate to=\"/login\" />;\n    return <WrappedComponent {...props} user={user} />;\n  };\n}\n\n// Usage: compose HOCs\nconst ProtectedDashboard = withAuth(withLoading(Dashboard));\n// <ProtectedDashboard isLoading={false} />",
+          "explanation": "Each HOC wraps the component with additional behavior. The downside: Dashboard is now wrapped in two layers, making debugging harder in DevTools."
+        },
+        {
+          "title": "Render Props pattern",
+          "code": "// Mouse position tracker using render props\nfunction MouseTracker({ render }) {\n  const [position, setPosition] = React.useState({ x: 0, y: 0 });\n\n  React.useEffect(() => {\n    const handleMove = (e) => setPosition({ x: e.clientX, y: e.clientY });\n    window.addEventListener('mousemove', handleMove);\n    return () => window.removeEventListener('mousemove', handleMove);\n  }, []);\n\n  return render(position);\n}\n\n// Usage: consumer decides what to render\n<MouseTracker render={({ x, y }) => (\n  <div>\n    <p>Mouse at ({x}, {y})</p>\n    <div style={{ position: 'absolute', left: x, top: y }}>Cursor</div>\n  </div>\n)} />\n\n// Alternative: children as render prop\n<MouseTracker>\n  {({ x, y }) => <p>Position: {x}, {y}</p>}\n</MouseTracker>",
+          "explanation": "MouseTracker manages the logic. The consumer provides a render function that receives the position and decides the UI. This is more flexible than HOCs because the consumer has full control."
+        },
+        {
+          "title": "Custom Hook (modern standard)",
+          "code": "// Custom hook: replaces both the HOC and render prop patterns\nfunction useMousePosition() {\n  const [position, setPosition] = React.useState({ x: 0, y: 0 });\n\n  React.useEffect(() => {\n    const handleMove = (e) => setPosition({ x: e.clientX, y: e.clientY });\n    window.addEventListener('mousemove', handleMove);\n    return () => window.removeEventListener('mousemove', handleMove);\n  }, []);\n\n  return position;\n}\n\n// Usage: simple, composable, no nesting\nfunction CursorTracker() {\n  const { x, y } = useMousePosition();\n  const isOnline = useOnlineStatus();\n  const { user } = useAuth();\n\n  return (\n    <div>\n      <p>Mouse: ({x}, {y})</p>\n      <p>Status: {isOnline ? 'Online' : 'Offline'}</p>\n      <p>User: {user?.name}</p>\n    </div>\n  );\n}",
+          "explanation": "Custom hooks compose naturally — just call multiple hooks in sequence. No wrapper hell, no prop collisions, and data flow is explicit. This is why hooks largely replaced HOCs and render props."
+        }
+      ],
+      "notes": [
+        "Custom hooks are the preferred pattern for logic reuse in modern React. Use HOCs and render props only when they fit the specific use case better.",
+        "Compound components (using Context internally) are excellent for creating component libraries with expressive APIs like tabs, accordions, and dropdowns.",
+        "HOCs are still used: React.memo, React.forwardRef, and connect() from Redux are all HOCs. Understanding the pattern is important even if you write custom hooks."
+      ],
+      "commonPitfalls": [
+        "Nesting too many HOCs, making it impossible to trace which props come from where and creating 'wrapper hell' in React DevTools.",
+        "Creating a custom hook that is too specific to one component. Good custom hooks are generic enough to be reused but focused enough to have a clear purpose."
+      ],
+      "interviewTips": [
+        "Present the evolution: HOCs (older) -> Render Props (mid) -> Custom Hooks (modern). Explain why each successor improved on the previous pattern.",
+        "For compound components, use the Select/Option or Tabs/Tab analogy — interviewers immediately understand the pattern when framed this way.",
+        "Show that you know when each pattern is still appropriate: HOCs for wrapping entire routes with auth, render props for headless UI libraries, custom hooks for shared stateful logic, compound components for UI kits.",
+        "Mention that hooks compose linearly (no nesting) while HOCs and render props compose by wrapping (nesting). Linear composition is simpler to read and debug."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "react-patterns-ex1",
+        "title": "HOC vs Custom Hook",
+        "description": "Implement the same logic (a timer that counts seconds) as both an HOC pattern and a custom hook pattern. Show how the custom hook version is simpler and more composable.",
+        "starterCode": "// Implement a seconds timer as:\n// 1. HOC: withTimer(Component) injects 'seconds' prop\n// 2. Custom hook: useTimer() returns seconds\n// Log the seconds at each tick for both patterns\n\nfunction withTimer(component) {\n  // TODO: HOC pattern\n}\n\nfunction useTimer() {\n  // TODO: hook pattern\n}",
+        "solution": "// HOC Pattern\nfunction withTimer(componentFn) {\n  let seconds = 0;\n\n  function tick() {\n    seconds++;\n    componentFn({ seconds });\n  }\n\n  return { start: () => {\n    componentFn({ seconds });\n    tick();\n    tick();\n  }};\n}\n\n// Custom Hook Pattern\nfunction useTimer() {\n  let seconds = 0;\n  return {\n    tick: () => { seconds++; return seconds; },\n    getSeconds: () => seconds\n  };\n}\n\nconsole.log('=== HOC Pattern ===');\nconst TimerDisplay = withTimer((props) => {\n  console.log('HOC Display: ' + props.seconds + 's');\n});\nTimerDisplay.start();\n\nconsole.log('');\nconsole.log('=== Custom Hook Pattern ===');\nconst timer = useTimer();\nconsole.log('Hook Display: ' + timer.getSeconds() + 's');\nconsole.log('Hook Display: ' + timer.tick() + 's');\nconsole.log('Hook Display: ' + timer.tick() + 's');\n\nconsole.log('');\nconsole.log('=== Hook Composition (2 hooks) ===');\nconst timer1 = useTimer();\nconst timer2 = useTimer();\ntimer1.tick();\ntimer1.tick();\ntimer2.tick();\nconsole.log('Timer1: ' + timer1.getSeconds() + 's, Timer2: ' + timer2.getSeconds() + 's');",
+        "expectedOutput": "=== HOC Pattern ===\nHOC Display: 0s\nHOC Display: 1s\nHOC Display: 2s\n\n=== Custom Hook Pattern ===\nHook Display: 0s\nHook Display: 1s\nHook Display: 2s\n\n=== Hook Composition (2 hooks) ===\nTimer1: 2s, Timer2: 1s",
+        "hints": [
+          "The HOC wraps the display function and injects seconds as a prop. The custom hook returns the timer state directly.",
+          "The composition example shows that two independent hooks work without any nesting or prop collision."
+        ],
+        "difficulty": "Medium"
+      },
+      {
+        "id": "react-patterns-ex2",
+        "title": "Compound Component Simulation",
+        "description": "Simulate a compound component pattern (like Tabs/Tab). Create a Tabs container that manages the active tab and Tab children that register themselves. Only the active tab's content should be rendered.",
+        "starterCode": "// Simulate compound components: Tabs + Tab\n// Tabs manages active state\n// Tab components register and render based on parent state\n\nfunction createTabs() {\n  // TODO: return { addTab, setActive, render }\n}\n\n// Add 3 tabs, set active, render to show only active content",
+        "solution": "function createTabs() {\n  const tabs = [];\n  let activeId = null;\n\n  return {\n    addTab: (id, label, content) => {\n      tabs.push({ id, label, content });\n      if (!activeId) activeId = id;\n    },\n    setActive: (id) => {\n      const prev = activeId;\n      activeId = id;\n      console.log('Tab changed: ' + prev + ' -> ' + activeId);\n    },\n    render: () => {\n      console.log('Tabs: [' + tabs.map(t => (t.id === activeId ? '*' + t.label + '*' : t.label)).join(' | ') + ']');\n      const active = tabs.find(t => t.id === activeId);\n      if (active) {\n        console.log('Content: ' + active.content);\n      }\n    }\n  };\n}\n\nconst tabs = createTabs();\ntabs.addTab('home', 'Home', 'Welcome to the home page');\ntabs.addTab('profile', 'Profile', 'Your profile information');\ntabs.addTab('settings', 'Settings', 'App settings and preferences');\n\nconsole.log('--- Initial render ---');\ntabs.render();\n\nconsole.log('--- Switch to Profile ---');\ntabs.setActive('profile');\ntabs.render();\n\nconsole.log('--- Switch to Settings ---');\ntabs.setActive('settings');\ntabs.render();",
+        "expectedOutput": "--- Initial render ---\nTabs: [*Home* | Profile | Settings]\nContent: Welcome to the home page\n--- Switch to Profile ---\nTab changed: home -> profile\nTabs: [Home | *Profile* | Settings]\nContent: Your profile information\n--- Switch to Settings ---\nTab changed: profile -> settings\nTabs: [Home | Profile | *Settings*]\nContent: App settings and preferences",
+        "hints": [
+          "Tabs acts as the parent that owns the active state. Each tab registers itself (id, label, content) with the parent.",
+          "On render, iterate tabs to build the tab bar (marking the active one) and display only the active tab's content."
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "common-interview-questions",
+    "sectionId": "react-interview-essentials",
+    "orderIndex": 4,
+    "title": "Common React Interview Questions",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["controlled vs uncontrolled", "class vs function components", "rules of hooks", "synthetic events", "strict mode"],
+    "content": {
+      "explanation": "This lesson covers the most frequently asked React interview questions. These topics appear in almost every React interview and having crisp, confident answers will set you apart. We cover controlled vs uncontrolled components, class vs function components, the rules of hooks, React's synthetic event system, and Strict Mode.\n\nControlled components have their form values driven by React state. The input's value is set from state, and onChange updates state. React is the single source of truth. Uncontrolled components let the DOM manage the form state, and you read values with refs. Controlled components give you full control (validation on every keystroke, conditional disabling, formatting), but they require more code. Uncontrolled components are simpler for basic forms and are useful when integrating with non-React code. The default recommendation is controlled components.\n\nClass components and function components can both express any React UI. Class components use this.state, this.setState, and lifecycle methods. Function components use hooks (useState, useEffect, etc.). Function components are now the standard because they are simpler, compose better with hooks, and avoid the confusing 'this' binding issues of classes. Class components are still needed for error boundaries (componentDidCatch has no hook equivalent). In interviews, you should be comfortable with both but explain that function components with hooks are the modern standard.\n\nThe rules of hooks exist because hooks rely on the order in which they are called. React tracks hooks by their call order in a linked list. Rule 1: Only call hooks at the top level — never inside loops, conditions, or nested functions, because this would change the call order between renders. Rule 2: Only call hooks from React function components or custom hooks — not from regular JavaScript functions, because React needs to associate the hook with a component instance.\n\nReact's synthetic event system wraps native browser events in a cross-browser wrapper called SyntheticEvent. It normalizes event behavior across browsers (consistent properties, consistent bubbling). Events are delegated to the root — React listens at the root DOM node and dispatches to the correct component handler. In React 17+, events are attached to the root container instead of document, improving compatibility with multiple React roots.",
+      "codeExamples": [
+        {
+          "title": "Controlled vs Uncontrolled components",
+          "code": "// CONTROLLED: React state drives the input\nfunction ControlledForm() {\n  const [email, setEmail] = React.useState('');\n  const [error, setError] = React.useState('');\n\n  const handleChange = (e) => {\n    const val = e.target.value;\n    setEmail(val);\n    setError(val.includes('@') ? '' : 'Invalid email');\n  };\n\n  return (\n    <div>\n      <input value={email} onChange={handleChange} />\n      {error && <span className=\"text-red-600\">{error}</span>}\n    </div>\n  );\n}\n\n// UNCONTROLLED: DOM manages the value, read with ref\nfunction UncontrolledForm() {\n  const emailRef = React.useRef();\n\n  const handleSubmit = (e) => {\n    e.preventDefault();\n    console.log('Email:', emailRef.current.value);\n  };\n\n  return (\n    <form onSubmit={handleSubmit}>\n      <input ref={emailRef} defaultValue=\"\" />\n      <button type=\"submit\">Submit</button>\n    </form>\n  );\n}",
+          "explanation": "Controlled: value + onChange. You can validate on every keystroke. Uncontrolled: defaultValue + ref. You read the value on submit. Controlled is preferred for most cases because it gives React full control over the form state."
+        },
+        {
+          "title": "Rules of hooks — why order matters",
+          "code": "// CORRECT: hooks always called in the same order\nfunction UserProfile({ userId }) {\n  const [user, setUser] = React.useState(null);        // Hook 1\n  const [loading, setLoading] = React.useState(true);   // Hook 2\n\n  React.useEffect(() => {                               // Hook 3\n    fetchUser(userId).then(setUser);\n  }, [userId]);\n\n  return loading ? <p>Loading...</p> : <h1>{user.name}</h1>;\n}\n\n// WRONG: hook inside a condition — order changes between renders!\nfunction BadComponent({ showExtra }) {\n  const [name, setName] = React.useState('');  // Hook 1\n\n  if (showExtra) {\n    // This hook only runs sometimes — React loses track!\n    const [extra, setExtra] = React.useState('');  // Sometimes Hook 2\n  }\n\n  // React thinks this is Hook 2, but it might be Hook 3\n  React.useEffect(() => {}, []);  // Hook 2 or 3??\n}",
+          "explanation": "React stores hooks in a linked list indexed by call order. If a hook is conditionally skipped, all subsequent hooks shift by one, causing React to read the wrong state for each hook."
+        },
+        {
+          "title": "Strict Mode behavior",
+          "code": "import React from 'react';\nimport ReactDOM from 'react-dom/client';\n\nconst root = ReactDOM.createRoot(document.getElementById('root'));\nroot.render(\n  <React.StrictMode>\n    <App />\n  </React.StrictMode>\n);\n\n// StrictMode in development:\n// 1. Double-invokes render functions (to detect impure renders)\n// 2. Double-invokes effects (mount -> unmount -> mount) to find missing cleanups\n// 3. Warns about deprecated APIs (findDOMNode, legacy context, string refs)\n// 4. No effect in production — zero runtime cost\n\n// Example: effect runs twice in dev\nfunction MyComponent() {\n  React.useEffect(() => {\n    console.log('Effect ran');      // Logs twice in dev, once in prod\n    return () => console.log('Cleanup'); // Also runs in between\n  }, []);\n}",
+          "explanation": "Strict Mode intentionally double-renders and double-fires effects in development to help you find bugs: impure render functions, missing cleanup, and side effects in render. It has zero cost in production."
+        }
+      ],
+      "notes": [
+        "Controlled components: value + onChange. Uncontrolled: defaultValue + ref. Controlled is the default recommendation.",
+        "The rules of hooks exist because React tracks hooks by call order. Never call hooks conditionally or in loops.",
+        "Strict Mode only affects development. The double-rendering and double-effects are intentional debugging aids, not bugs."
+      ],
+      "commonPitfalls": [
+        "Mixing controlled and uncontrolled patterns (providing both value and defaultValue on the same input). React will warn about switching between controlled and uncontrolled.",
+        "Thinking Strict Mode's double-rendering is a bug. It is intentional and only happens in development to help catch side effects in render functions."
+      ],
+      "interviewTips": [
+        "For controlled vs uncontrolled: explain the tradeoff — controlled gives validation and formatting power at the cost of more code. Then recommend controlled as the default.",
+        "For class vs function: acknowledge that both work, but explain hooks solved three class problems: logic reuse (replaced HOCs), related logic splitting (effects group by concern), and confusing 'this' binding.",
+        "For rules of hooks: explain the linked-list call-order mechanism. This shows deep understanding beyond just memorizing the rules.",
+        "Be ready to explain React.StrictMode: what it does (double-render, double-effects), why (find bugs), and that it has zero production cost. This is a surprisingly common interview question."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "common-interview-ex1",
+        "title": "Controlled vs Uncontrolled Simulation",
+        "description": "Simulate both controlled and uncontrolled form patterns. The controlled version should validate on every 'keystroke'. The uncontrolled version should only read the value on 'submit'. Log the behavior difference.",
+        "starterCode": "// Simulate controlled vs uncontrolled input behavior\n\nfunction simulateControlled(keystrokes) {\n  // TODO: validate on every keystroke\n}\n\nfunction simulateUncontrolled(keystrokes) {\n  // TODO: only read value on submit\n}\n\n// Simulate typing 'a', '@', 'b' into an email field",
+        "solution": "function simulateControlled(keystrokes) {\n  console.log('=== Controlled ===');\n  let state = '';\n\n  keystrokes.forEach(key => {\n    state += key;\n    const isValid = state.includes('@');\n    console.log('Keystroke: \"' + key + '\" | State: \"' + state + '\" | Valid: ' + isValid);\n  });\n\n  console.log('Final state: \"' + state + '\"');\n}\n\nfunction simulateUncontrolled(keystrokes) {\n  console.log('=== Uncontrolled ===');\n  let domValue = '';\n\n  keystrokes.forEach(key => {\n    domValue += key;\n    console.log('Keystroke: \"' + key + '\" | DOM value: \"' + domValue + '\" | React knows: nothing');\n  });\n\n  // Only on submit do we read the value\n  console.log('Submit! Reading ref: \"' + domValue + '\"');\n  const isValid = domValue.includes('@');\n  console.log('Valid: ' + isValid);\n}\n\nsimulateControlled(['a', '@', 'b']);\nconsole.log('');\nsimulateUncontrolled(['a', '@', 'b']);",
+        "expectedOutput": "=== Controlled ===\nKeystroke: \"a\" | State: \"a\" | Valid: false\nKeystroke: \"@\" | State: \"a@\" | Valid: true\nKeystroke: \"b\" | State: \"a@b\" | Valid: true\nFinal state: \"a@b\"\n\n=== Uncontrolled ===\nKeystroke: \"a\" | DOM value: \"a\" | React knows: nothing\nKeystroke: \"@\" | DOM value: \"a@\" | React knows: nothing\nKeystroke: \"b\" | DOM value: \"a@b\" | React knows: nothing\nSubmit! Reading ref: \"a@b\"\nValid: true",
+        "hints": [
+          "Controlled: React state updates on every keystroke, validation runs every time. Uncontrolled: React doesn't track the value until submit.",
+          "The key difference: controlled validates at every step, uncontrolled only validates when you explicitly read the value."
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "common-interview-ex2",
+        "title": "Rules of Hooks Violation Detector",
+        "description": "Build a simple hooks system that detects rule violations. Track hook calls by order. If hooks are called in a different order between 'renders', detect and report the violation.",
+        "starterCode": "// Build a hooks system that detects order violations\n// First render establishes the hook order\n// Second render must match the same order\n\nfunction createHooksSystem() {\n  // TODO: return { useState, runRender, reset }\n}\n\n// Render 1: useState('A'), useState('B')\n// Render 2: useState('A'), useState('B')  -> OK\n// Render 3: useState('B')  -> VIOLATION (different order/count)",
+        "solution": "function createHooksSystem() {\n  let hookOrder = [];\n  let currentIndex = 0;\n  let isFirstRender = true;\n\n  return {\n    useState: (label) => {\n      if (isFirstRender) {\n        hookOrder.push(label);\n        console.log('  Hook ' + currentIndex + ': useState(\"' + label + '\") - registered');\n      } else {\n        if (currentIndex >= hookOrder.length) {\n          console.log('  Hook ' + currentIndex + ': useState(\"' + label + '\") - VIOLATION! More hooks than first render');\n        } else if (hookOrder[currentIndex] !== label) {\n          console.log('  Hook ' + currentIndex + ': useState(\"' + label + '\") - VIOLATION! Expected \"' + hookOrder[currentIndex] + '\"');\n        } else {\n          console.log('  Hook ' + currentIndex + ': useState(\"' + label + '\") - OK');\n        }\n      }\n      currentIndex++;\n    },\n    endRender: () => {\n      if (!isFirstRender && currentIndex < hookOrder.length) {\n        console.log('  VIOLATION! Fewer hooks (' + currentIndex + ') than first render (' + hookOrder.length + ')');\n      }\n      isFirstRender = false;\n      currentIndex = 0;\n    }\n  };\n}\n\nconst hooks = createHooksSystem();\n\nconsole.log('Render 1 (establishes order):');\nhooks.useState('name');\nhooks.useState('email');\nhooks.endRender();\n\nconsole.log('Render 2 (same order - OK):');\nhooks.useState('name');\nhooks.useState('email');\nhooks.endRender();\n\nconsole.log('Render 3 (wrong order - violation):');\nhooks.useState('email');\nhooks.useState('name');\nhooks.endRender();\n\nconsole.log('Render 4 (missing hook - violation):');\nhooks.useState('name');\nhooks.endRender();",
+        "expectedOutput": "Render 1 (establishes order):\n  Hook 0: useState(\"name\") - registered\n  Hook 1: useState(\"email\") - registered\nRender 2 (same order - OK):\n  Hook 0: useState(\"name\") - OK\n  Hook 1: useState(\"email\") - OK\nRender 3 (wrong order - violation):\n  Hook 0: useState(\"email\") - VIOLATION! Expected \"name\"\n  Hook 1: useState(\"name\") - VIOLATION! Expected \"email\"\nRender 4 (missing hook - violation):\n  Hook 0: useState(\"name\") - OK\n  VIOLATION! Fewer hooks (1) than first render (2)",
+        "hints": [
+          "First render: record the label of each hook in order. Subsequent renders: compare each hook call against the recorded order.",
+          "Check both wrong order (label mismatch) and wrong count (more or fewer hooks than first render)."
+        ],
+        "difficulty": "Hard"
+      }
+    ]
+  }
+]

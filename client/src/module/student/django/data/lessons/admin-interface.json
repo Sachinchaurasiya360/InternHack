@@ -1,0 +1,279 @@
+[
+  {
+    "id": "admin-site-setup",
+    "sectionId": "admin-interface",
+    "orderIndex": 0,
+    "title": "Admin Site Setup",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["admin.site", "register", "superuser", "createsuperuser", "Admin URL"],
+    "content": {
+      "explanation": "Django's admin interface is one of its most celebrated features. It automatically generates a web-based administration interface for your models, giving you a fully functional CRUD (Create, Read, Update, Delete) interface with minimal configuration. The admin is designed for site administrators and content managers, not for end users.\n\nThe admin site is provided by django.contrib.admin, which is included in INSTALLED_APPS by default. The admin URL is configured in your root urls.py with path('admin/', admin.site.urls). To access the admin, you need a superuser account, created with 'python manage.py createsuperuser'.\n\nTo make a model appear in the admin, you register it in the app's admin.py file. The simplest approach is admin.site.register(Model), which creates a basic admin interface with default settings. For customization, you create a ModelAdmin class and register it with the model using the @admin.register decorator or admin.site.register(Model, ModelAdminClass).\n\nThe admin automatically discovers admin.py files in all installed apps through the autodiscover mechanism. When Django starts, it imports admin.py from each app in INSTALLED_APPS, executing the registration code. This is why you define your admin configurations in admin.py — Django knows to look there.\n\nThe admin dashboard shows all registered models grouped by app. Each model gets list, add, change, and delete views automatically. The list view shows all objects in a table. The add/change views display a form generated from the model's fields. The admin respects model field types, choices, and validators to generate appropriate form widgets.\n\nYou can customize the admin site itself by modifying admin.site attributes: admin.site.site_header changes the header text, admin.site.site_title changes the browser title, admin.site.index_title changes the dashboard title, and admin.site.site_url changes the 'View Site' link.",
+      "codeExamples": [
+        {
+          "title": "Basic Model Registration",
+          "code": "# blog/admin.py\nfrom django.contrib import admin\nfrom .models import Article, Category, Tag\n\n# Simplest registration\nadmin.site.register(Category)\nadmin.site.register(Tag)\n\n# Using decorator (recommended)\n@admin.register(Article)\nclass ArticleAdmin(admin.ModelAdmin):\n    pass  # Default admin interface\n\n# Or without decorator:\n# admin.site.register(Article, ArticleAdmin)",
+          "explanation": "admin.site.register() makes a model available in the admin. The @admin.register decorator is the preferred syntax. A ModelAdmin class with no customization gives you the default interface."
+        },
+        {
+          "title": "Creating a Superuser",
+          "code": "# Create a superuser for admin access\n# $ python manage.py createsuperuser\n# Username: admin\n# Email: admin@example.com\n# Password: ********\n# Password (again): ********\n# Superuser created successfully.\n\n# Or create programmatically (e.g., in a data migration)\nfrom django.contrib.auth.models import User\n\nUser.objects.create_superuser(\n    username='admin',\n    email='admin@example.com',\n    password='securepassword123',\n)",
+          "explanation": "Superusers have all permissions and can access the admin site. Create one with createsuperuser management command or programmatically using create_superuser(). Never commit passwords to version control."
+        },
+        {
+          "title": "Customizing the Admin Site",
+          "code": "# project/admin.py or any app's admin.py\nfrom django.contrib import admin\n\nadmin.site.site_header = 'My Project Admin'\nadmin.site.site_title = 'My Project Admin Portal'\nadmin.site.index_title = 'Welcome to the Admin Dashboard'\nadmin.site.site_url = 'https://myproject.com'\n\n# You can also set these in urls.py:\n# from django.contrib import admin\n# admin.site.site_header = 'My Project Admin'\n# urlpatterns = [\n#     path('admin/', admin.site.urls),\n# ]",
+          "explanation": "Customize the admin site appearance with admin.site attributes. site_header appears at the top of every page, site_title appears in the browser tab, index_title is the dashboard heading."
+        },
+        {
+          "title": "Admin URL Configuration",
+          "code": "# project/urls.py\nfrom django.contrib import admin\nfrom django.urls import path, include\n\nurlpatterns = [\n    # Default admin URL\n    path('admin/', admin.site.urls),\n\n    # Custom admin URL for security through obscurity\n    # path('secret-dashboard/', admin.site.urls),\n\n    # App URLs\n    path('blog/', include('blog.urls')),\n]\n\n# Access the admin at: http://127.0.0.1:8000/admin/\n# Login with superuser credentials\n# The admin provides:\n# - Dashboard with all registered models\n# - List view with search, filter, and pagination\n# - Add/Edit forms with validation\n# - Delete confirmation\n# - Action dropdowns for bulk operations\n# - History/audit log for changes",
+          "explanation": "The admin is mounted at whatever URL you configure. Some teams change the admin URL path for basic security hardening. The admin provides a complete CRUD interface with built-in features like search, filtering, and bulk actions."
+        }
+      ],
+      "notes": [
+        "Register models in admin.py using @admin.register(Model) decorator or admin.site.register().",
+        "Create a superuser with 'python manage.py createsuperuser' to access the admin.",
+        "The admin auto-discovers admin.py files in all INSTALLED_APPS.",
+        "Customize the admin site header, title, and URL through admin.site attributes."
+      ],
+      "commonPitfalls": [
+        "Forgetting to run createsuperuser. You cannot access the admin without a superuser account.",
+        "Not registering models in admin.py. Unregistered models do not appear in the admin dashboard.",
+        "Using the admin as a user-facing interface. The admin is designed for internal use by trusted staff members."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "admin-setup-ex1",
+        "title": "Register Models",
+        "description": "Write admin.py code that registers three models (Product, Category, Order) using the @admin.register decorator. The Product admin should have list_display showing name and price. The others can use defaults.",
+        "starterCode": "from django.contrib import admin\nfrom .models import Product, Category, Order\n\n# Register your models\n",
+        "solution": "from django.contrib import admin\nfrom .models import Product, Category, Order\n\n@admin.register(Product)\nclass ProductAdmin(admin.ModelAdmin):\n    list_display = ['name', 'price']\n\n@admin.register(Category)\nclass CategoryAdmin(admin.ModelAdmin):\n    pass\n\n@admin.register(Order)\nclass OrderAdmin(admin.ModelAdmin):\n    pass",
+        "hints": [
+          "Use @admin.register(ModelName) as a decorator on ModelAdmin classes",
+          "list_display takes a list of field names to show in the list view",
+          "An empty ModelAdmin class gives the default admin interface"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "admin-setup-ex2",
+        "title": "Customize Admin Site",
+        "description": "Write code to customize the admin site with: site_header='TechStore Admin', site_title='TechStore', and index_title='Store Management'.",
+        "starterCode": "from django.contrib import admin\n\n# Customize the admin site\n",
+        "solution": "from django.contrib import admin\n\nadmin.site.site_header = 'TechStore Admin'\nadmin.site.site_title = 'TechStore'\nadmin.site.index_title = 'Store Management'",
+        "hints": [
+          "Set admin.site.site_header for the top header",
+          "Set admin.site.site_title for the browser tab title",
+          "Set admin.site.index_title for the dashboard heading"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "modeladmin-customization",
+    "sectionId": "admin-interface",
+    "orderIndex": 1,
+    "title": "ModelAdmin Customization",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["list_display", "list_filter", "search_fields", "readonly_fields", "fieldsets"],
+    "content": {
+      "explanation": "The ModelAdmin class provides extensive customization options for how models appear in the admin. By overriding class attributes and methods, you can create a polished, efficient admin interface tailored to your data management needs.\n\nlist_display controls which columns appear in the list view. It accepts a list of field names, callable attributes, or method names. You can include model methods and ModelAdmin methods to display computed values. For foreign keys, you can use double-underscore syntax indirectly by creating a method that accesses the related object's field.\n\nlist_filter adds a sidebar with filter options. It accepts a list of field names that become clickable filters. Django automatically creates appropriate filter widgets based on field type — date fields get date hierarchy filters, boolean fields get Yes/No filters, and foreign keys get dropdown filters. Custom filters can be created by subclassing admin.SimpleListFilter.\n\nsearch_fields enables a search box that queries the specified fields. Use double-underscore syntax to search across related models: 'author__username' searches the author's username field. The search supports multiple terms (ANDed) and can search across multiple fields (ORed within each term).\n\nfieldsets organize the edit form into collapsible sections. Each fieldset is a tuple of (name, options_dict). The options dict contains 'fields' (which fields to include) and optional 'classes' (CSS classes like 'collapse' for collapsible sections) and 'description' (help text for the section).\n\nreadonly_fields prevents specific fields from being edited. date_hierarchy adds a date-based drill-down navigation. ordering overrides the default sort order. list_per_page controls pagination. list_editable makes fields editable directly in the list view. prepopulated_fields auto-fills fields (like slug from title) using JavaScript.",
+      "codeExamples": [
+        {
+          "title": "Comprehensive ModelAdmin",
+          "code": "from django.contrib import admin\nfrom .models import Article\n\n@admin.register(Article)\nclass ArticleAdmin(admin.ModelAdmin):\n    # List view configuration\n    list_display = ['title', 'author', 'category', 'status', 'published_at', 'view_count']\n    list_filter = ['status', 'category', 'published_at', 'author']\n    search_fields = ['title', 'content', 'author__username']\n    list_editable = ['status']  # Edit status directly in list view\n    list_per_page = 25\n    date_hierarchy = 'published_at'\n    ordering = ['-published_at']\n\n    # Form configuration\n    prepopulated_fields = {'slug': ('title',)}\n    readonly_fields = ['view_count', 'created_at', 'updated_at']\n    autocomplete_fields = ['author', 'category']\n\n    # Fieldsets organize the edit form\n    fieldsets = [\n        (None, {\n            'fields': ('title', 'slug', 'author', 'category'),\n        }),\n        ('Content', {\n            'fields': ('content', 'excerpt', 'featured_image'),\n        }),\n        ('Publishing', {\n            'fields': ('status', 'published_at'),\n            'classes': ('collapse',),\n        }),\n        ('Metadata', {\n            'fields': ('view_count', 'created_at', 'updated_at'),\n            'classes': ('collapse',),\n            'description': 'Auto-generated metadata fields.',\n        }),\n    ]",
+          "explanation": "This comprehensive admin configuration customizes both list and edit views. list_display shows key columns, list_filter adds sidebar filters, fieldsets organize the form into sections, and prepopulated_fields auto-fills slug from title."
+        },
+        {
+          "title": "Custom List Display Methods",
+          "code": "from django.contrib import admin\nfrom django.utils.html import format_html\nfrom .models import Product\n\n@admin.register(Product)\nclass ProductAdmin(admin.ModelAdmin):\n    list_display = ['name', 'colored_price', 'stock_status', 'image_preview']\n\n    @admin.display(description='Price', ordering='price')\n    def colored_price(self, obj):\n        color = 'green' if obj.price < 50 else 'red'\n        return format_html(\n            '<span style=\"color: {};\">${}</span>',\n            color,\n            obj.price,\n        )\n\n    @admin.display(description='Stock', boolean=True)\n    def stock_status(self, obj):\n        return obj.stock > 0\n\n    @admin.display(description='Image')\n    def image_preview(self, obj):\n        if obj.image:\n            return format_html(\n                '<img src=\"{}\" style=\"max-height: 50px;\" />',\n                obj.image.url,\n            )\n        return '-'",
+          "explanation": "Custom methods in ModelAdmin display computed values. @admin.display sets metadata like description (column header), ordering (enables sorting), and boolean (shows checkmark icons). format_html safely renders HTML in the admin."
+        },
+        {
+          "title": "Custom Filters",
+          "code": "from django.contrib import admin\nfrom django.utils import timezone\nfrom .models import Article\n\nclass PublishedRecentlyFilter(admin.SimpleListFilter):\n    title = 'published recently'\n    parameter_name = 'recent'\n\n    def lookups(self, request, model_admin):\n        return [\n            ('today', 'Today'),\n            ('week', 'This week'),\n            ('month', 'This month'),\n        ]\n\n    def queryset(self, request, queryset):\n        now = timezone.now()\n        if self.value() == 'today':\n            return queryset.filter(published_at__date=now.date())\n        elif self.value() == 'week':\n            return queryset.filter(\n                published_at__gte=now - timezone.timedelta(days=7)\n            )\n        elif self.value() == 'month':\n            return queryset.filter(\n                published_at__gte=now - timezone.timedelta(days=30)\n            )\n        return queryset\n\n@admin.register(Article)\nclass ArticleAdmin(admin.ModelAdmin):\n    list_filter = ['status', 'category', PublishedRecentlyFilter]",
+          "explanation": "Custom filters extend SimpleListFilter. lookups() returns the filter options. queryset() applies the selected filter. The custom filter appears alongside standard filters in the sidebar."
+        },
+        {
+          "title": "Override save_model and get_queryset",
+          "code": "from django.contrib import admin\nfrom .models import Article\n\n@admin.register(Article)\nclass ArticleAdmin(admin.ModelAdmin):\n    list_display = ['title', 'author', 'status']\n\n    def save_model(self, request, obj, form, change):\n        \"\"\"Auto-set author on creation.\"\"\"\n        if not change:  # Creating, not editing\n            obj.author = request.user\n        super().save_model(request, obj, form, change)\n\n    def get_queryset(self, request):\n        \"\"\"Non-superusers only see their own articles.\"\"\"\n        qs = super().get_queryset(request)\n        if request.user.is_superuser:\n            return qs\n        return qs.filter(author=request.user)\n\n    def get_readonly_fields(self, request, obj=None):\n        \"\"\"Make author readonly for non-superusers.\"\"\"\n        if not request.user.is_superuser:\n            return ['author', 'status']\n        return []",
+          "explanation": "Override save_model() to set fields automatically. Override get_queryset() to filter visible objects per user. Override get_readonly_fields() for dynamic read-only fields based on user permissions."
+        }
+      ],
+      "notes": [
+        "list_display, list_filter, and search_fields are the most important customization options.",
+        "Use @admin.display decorator to set column headers, sorting, and boolean display on custom methods.",
+        "fieldsets organize the edit form into logical, collapsible sections.",
+        "Override save_model() and get_queryset() for permission-based customization."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "modeladmin-ex1",
+        "title": "Customize Product Admin",
+        "description": "Create a ProductAdmin with: list_display (name, price, category, is_active), list_filter (category, is_active), search_fields (name, description), prepopulated_fields (slug from name), and ordering (-created_at).",
+        "starterCode": "from django.contrib import admin\nfrom .models import Product\n\n@admin.register(Product)\nclass ProductAdmin(admin.ModelAdmin):\n    pass\n",
+        "solution": "from django.contrib import admin\nfrom .models import Product\n\n@admin.register(Product)\nclass ProductAdmin(admin.ModelAdmin):\n    list_display = ['name', 'price', 'category', 'is_active']\n    list_filter = ['category', 'is_active']\n    search_fields = ['name', 'description']\n    prepopulated_fields = {'slug': ('name',)}\n    ordering = ['-created_at']",
+        "hints": [
+          "list_display takes a list of field names to show as columns",
+          "prepopulated_fields is a dictionary mapping target field to source fields",
+          "Prefix with - for descending order"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "modeladmin-ex2",
+        "title": "Custom Display Method",
+        "description": "Add a custom method to ProductAdmin that displays price with a green color if under $50 and red if $50 or above. Use format_html and the @admin.display decorator.",
+        "starterCode": "from django.contrib import admin\nfrom django.utils.html import format_html\nfrom .models import Product\n\n@admin.register(Product)\nclass ProductAdmin(admin.ModelAdmin):\n    list_display = ['name', 'colored_price']\n\n    # Add your custom method here\n",
+        "solution": "from django.contrib import admin\nfrom django.utils.html import format_html\nfrom .models import Product\n\n@admin.register(Product)\nclass ProductAdmin(admin.ModelAdmin):\n    list_display = ['name', 'colored_price']\n\n    @admin.display(description='Price', ordering='price')\n    def colored_price(self, obj):\n        color = 'green' if obj.price < 50 else 'red'\n        return format_html(\n            '<span style=\"color: {};\">${:.2f}</span>',\n            color,\n            obj.price,\n        )",
+        "hints": [
+          "Use @admin.display to set description and ordering",
+          "format_html safely renders HTML with variable substitution",
+          "The method takes self and obj (the model instance)"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "inline-models",
+    "sectionId": "admin-interface",
+    "orderIndex": 2,
+    "title": "Inline Models",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["TabularInline", "StackedInline", "inlines", "extra", "ForeignKey Inline"],
+    "content": {
+      "explanation": "Inline models allow you to edit related objects on the same page as their parent object. Instead of navigating to a separate page to add or edit related items, you see them inline within the parent's edit form. This is especially useful for one-to-many relationships where the child objects are closely tied to the parent.\n\nDjango provides two inline classes: TabularInline displays related objects in a compact table format (one row per object), and StackedInline displays them in a stacked format (one block per object, similar to the standard edit form). TabularInline is better for objects with few fields, while StackedInline is better for objects with many fields.\n\nTo use inlines, create a class that inherits from admin.TabularInline or admin.StackedInline, set the 'model' attribute to the related model, and add the inline class to the parent ModelAdmin's 'inlines' list. The related model must have a ForeignKey pointing to the parent model.\n\nThe 'extra' attribute controls how many empty forms appear for adding new related objects (default is 3). Set extra=0 if you do not want empty forms by default. 'min_num' sets the minimum number of inline forms. 'max_num' limits the total number of inline forms. 'show_change_link' adds a link to the full change form for each inline object.\n\nYou can customize inline fields using the same attributes as ModelAdmin: fields, exclude, readonly_fields, and custom methods. You can also override get_queryset() to filter which related objects appear, and formfield_for_foreignkey() to customize dropdown fields.",
+      "codeExamples": [
+        {
+          "title": "TabularInline Example",
+          "code": "from django.contrib import admin\nfrom .models import Order, OrderItem\n\nclass OrderItemInline(admin.TabularInline):\n    model = OrderItem\n    extra = 1\n    min_num = 1\n    fields = ['product', 'quantity', 'unit_price', 'line_total']\n    readonly_fields = ['line_total']\n\n    @admin.display(description='Line Total')\n    def line_total(self, obj):\n        if obj.pk:\n            return f'${obj.quantity * obj.unit_price:.2f}'\n        return '-'\n\n@admin.register(Order)\nclass OrderAdmin(admin.ModelAdmin):\n    list_display = ['id', 'customer', 'status', 'total', 'created_at']\n    inlines = [OrderItemInline]",
+          "explanation": "TabularInline shows OrderItems as rows in a table within the Order edit page. extra=1 shows one empty row for adding items. readonly_fields and custom methods work like in ModelAdmin."
+        },
+        {
+          "title": "StackedInline Example",
+          "code": "from django.contrib import admin\nfrom .models import Article, Comment\n\nclass CommentInline(admin.StackedInline):\n    model = Comment\n    extra = 0  # No empty forms\n    fields = ['author', 'content', 'is_approved', 'created_at']\n    readonly_fields = ['created_at']\n    show_change_link = True\n\n    def get_queryset(self, request):\n        \"\"\"Show only recent comments.\"\"\"\n        qs = super().get_queryset(request)\n        return qs.order_by('-created_at')[:20]\n\n@admin.register(Article)\nclass ArticleAdmin(admin.ModelAdmin):\n    list_display = ['title', 'author', 'comment_count']\n    inlines = [CommentInline]\n\n    @admin.display(description='Comments')\n    def comment_count(self, obj):\n        return obj.comments.count()",
+          "explanation": "StackedInline displays each comment as a block with full field layout. extra=0 means no empty forms appear. show_change_link adds a link to each comment's full edit page. get_queryset limits to recent comments."
+        },
+        {
+          "title": "Multiple Inlines",
+          "code": "from django.contrib import admin\nfrom .models import Product, ProductImage, ProductReview, ProductVariant\n\nclass ProductImageInline(admin.TabularInline):\n    model = ProductImage\n    extra = 1\n    max_num = 10\n\nclass ProductVariantInline(admin.TabularInline):\n    model = ProductVariant\n    extra = 0\n    fields = ['size', 'color', 'sku', 'stock']\n\nclass ProductReviewInline(admin.StackedInline):\n    model = ProductReview\n    extra = 0\n    readonly_fields = ['author', 'rating', 'content', 'created_at']\n    can_delete = False  # Prevent deleting reviews from product page\n\n@admin.register(Product)\nclass ProductAdmin(admin.ModelAdmin):\n    list_display = ['name', 'price', 'is_active']\n    inlines = [ProductImageInline, ProductVariantInline, ProductReviewInline]",
+          "explanation": "A single parent ModelAdmin can have multiple inlines. Here, the Product edit page shows images (tabular), variants (tabular), and reviews (stacked). can_delete=False prevents deletion of reviews from the inline."
+        },
+        {
+          "title": "GenericTabularInline for Generic Relations",
+          "code": "from django.contrib import admin\nfrom django.contrib.contenttypes.admin import GenericTabularInline\nfrom .models import Article, Product, Tag\n\nclass TagInline(GenericTabularInline):\n    model = Tag\n    extra = 1\n\n@admin.register(Article)\nclass ArticleAdmin(admin.ModelAdmin):\n    inlines = [TagInline]\n\n@admin.register(Product)\nclass ProductAdmin(admin.ModelAdmin):\n    inlines = [TagInline]  # Same inline reused for different models",
+          "explanation": "GenericTabularInline works with models using Django's contenttypes framework for generic foreign keys. The same Tag inline can be reused across Article and Product admin pages."
+        }
+      ],
+      "notes": [
+        "TabularInline is compact (table rows); StackedInline is verbose (form blocks).",
+        "Set extra=0 if you do not want empty forms for new related objects.",
+        "Multiple inlines can be added to a single ModelAdmin.",
+        "Use can_delete=False to prevent inline objects from being deleted."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "inline-ex1",
+        "title": "Create Order Inlines",
+        "description": "Create a TabularInline for OrderItem (showing product, quantity, price) and add it to an OrderAdmin. Set extra=0 and make the price field readonly.",
+        "starterCode": "from django.contrib import admin\nfrom .models import Order, OrderItem\n\n# Create inline and admin classes\n",
+        "solution": "from django.contrib import admin\nfrom .models import Order, OrderItem\n\nclass OrderItemInline(admin.TabularInline):\n    model = OrderItem\n    extra = 0\n    fields = ['product', 'quantity', 'price']\n    readonly_fields = ['price']\n\n@admin.register(Order)\nclass OrderAdmin(admin.ModelAdmin):\n    list_display = ['id', 'customer', 'created_at']\n    inlines = [OrderItemInline]",
+        "hints": [
+          "Inherit from admin.TabularInline and set model = OrderItem",
+          "Add the inline class to OrderAdmin's inlines list",
+          "readonly_fields prevents editing specific fields"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "inline-ex2",
+        "title": "Multiple Inlines",
+        "description": "Create two inlines for an AuthorAdmin: a TabularInline for Book (title, year, extra=1) and a StackedInline for Biography (content, extra=0). Add both to the AuthorAdmin.",
+        "starterCode": "from django.contrib import admin\nfrom .models import Author, Book, Biography\n\n# Create two inlines and the author admin\n",
+        "solution": "from django.contrib import admin\nfrom .models import Author, Book, Biography\n\nclass BookInline(admin.TabularInline):\n    model = Book\n    extra = 1\n    fields = ['title', 'year']\n\nclass BiographyInline(admin.StackedInline):\n    model = Biography\n    extra = 0\n    fields = ['content']\n\n@admin.register(Author)\nclass AuthorAdmin(admin.ModelAdmin):\n    list_display = ['name']\n    inlines = [BookInline, BiographyInline]",
+        "hints": [
+          "TabularInline for compact data (Book), StackedInline for long content (Biography)",
+          "List both inlines in the parent admin's inlines attribute",
+          "Set extra to control the number of empty forms"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "custom-admin-actions",
+    "sectionId": "admin-interface",
+    "orderIndex": 3,
+    "title": "Custom Admin Actions",
+    "difficulty": "Intermediate",
+    "isInterviewQuestion": false,
+    "concepts": ["actions", "action Decorator", "Bulk Operations", "Message Framework", "Confirmation"],
+    "content": {
+      "explanation": "Admin actions allow you to perform bulk operations on selected objects from the list view. Django includes a built-in 'Delete selected' action, and you can create custom actions for any operation — publishing articles, approving comments, exporting data, sending notifications, and more.\n\nAn action is a function that takes three arguments: the ModelAdmin instance, the request, and a QuerySet of selected objects. You register it by adding it to the ModelAdmin's 'actions' list. The @admin.action decorator lets you set the action's description (the text shown in the dropdown).\n\nActions appear in a dropdown above the list view. Users select objects using checkboxes, choose an action from the dropdown, and click 'Go'. Django passes the selected objects as a QuerySet to your action function, which processes them and optionally returns a message.\n\nThe Django messages framework integrates with admin actions to provide feedback. Use self.message_user() to display success, warning, or error messages after an action completes. Messages appear at the top of the page after the action redirects back to the list view.\n\nFor destructive actions, you can add a confirmation step by returning an intermediate page instead of performing the action immediately. This prevents accidental bulk operations. You can also restrict actions to specific users by checking permissions in the action function.\n\nYou can also define actions as methods on the ModelAdmin class, which gives them access to the admin instance (self) for more complex operations. The @admin.action decorator sets the description and permissions required for the action.",
+      "codeExamples": [
+        {
+          "title": "Basic Admin Actions",
+          "code": "from django.contrib import admin\nfrom .models import Article\n\n@admin.register(Article)\nclass ArticleAdmin(admin.ModelAdmin):\n    list_display = ['title', 'status', 'published_at']\n    actions = ['publish_articles', 'unpublish_articles', 'mark_as_featured']\n\n    @admin.action(description='Publish selected articles')\n    def publish_articles(self, request, queryset):\n        count = queryset.update(status='published')\n        self.message_user(\n            request,\n            f'{count} article(s) published successfully.',\n        )\n\n    @admin.action(description='Unpublish selected articles')\n    def unpublish_articles(self, request, queryset):\n        count = queryset.update(status='draft')\n        self.message_user(\n            request,\n            f'{count} article(s) set to draft.',\n        )\n\n    @admin.action(description='Mark selected as featured')\n    def mark_as_featured(self, request, queryset):\n        queryset.update(is_featured=True)",
+          "explanation": "Actions are methods on ModelAdmin listed in the actions attribute. @admin.action sets the dropdown text. queryset.update() performs bulk updates efficiently. message_user() shows feedback to the admin."
+        },
+        {
+          "title": "Action with Messages and Permissions",
+          "code": "from django.contrib import admin, messages\nfrom .models import Order\n\n@admin.register(Order)\nclass OrderAdmin(admin.ModelAdmin):\n    list_display = ['id', 'customer', 'status', 'total']\n    actions = ['mark_shipped', 'cancel_orders']\n\n    @admin.action(\n        description='Mark selected orders as shipped',\n        permissions=['change'],\n    )\n    def mark_shipped(self, request, queryset):\n        pending = queryset.filter(status='processing')\n        count = pending.update(status='shipped')\n        skipped = queryset.count() - count\n\n        self.message_user(\n            request,\n            f'{count} order(s) marked as shipped.',\n            messages.SUCCESS,\n        )\n        if skipped:\n            self.message_user(\n                request,\n                f'{skipped} order(s) skipped (not in processing state).',\n                messages.WARNING,\n            )\n\n    @admin.action(\n        description='Cancel selected orders',\n        permissions=['delete'],\n    )\n    def cancel_orders(self, request, queryset):\n        active = queryset.exclude(status__in=['cancelled', 'delivered'])\n        count = active.update(status='cancelled')\n        self.message_user(\n            request,\n            f'{count} order(s) cancelled.',\n            messages.SUCCESS,\n        )",
+          "explanation": "Actions can check order status before updating and report different message levels (SUCCESS, WARNING). The permissions parameter restricts the action to users with specific model permissions."
+        },
+        {
+          "title": "Export to CSV Action",
+          "code": "import csv\nfrom django.contrib import admin\nfrom django.http import HttpResponse\nfrom .models import Product\n\n@admin.register(Product)\nclass ProductAdmin(admin.ModelAdmin):\n    list_display = ['name', 'price', 'stock', 'category']\n    actions = ['export_to_csv']\n\n    @admin.action(description='Export selected to CSV')\n    def export_to_csv(self, request, queryset):\n        response = HttpResponse(content_type='text/csv')\n        response['Content-Disposition'] = 'attachment; filename=\"products.csv\"'\n\n        writer = csv.writer(response)\n        writer.writerow(['Name', 'Price', 'Stock', 'Category'])\n\n        for product in queryset:\n            writer.writerow([\n                product.name,\n                product.price,\n                product.stock,\n                product.category.name if product.category else '',\n            ])\n\n        self.message_user(\n            request,\n            f'Exported {queryset.count()} products to CSV.',\n        )\n        return response",
+          "explanation": "Actions can return HttpResponse objects. This CSV export action creates a downloadable file from selected products. The Content-Disposition header triggers a file download in the browser."
+        },
+        {
+          "title": "Standalone Action Functions",
+          "code": "from django.contrib import admin\nfrom .models import Comment\n\n# Standalone function (not a method)\n@admin.action(description='Approve selected comments')\ndef approve_comments(modeladmin, request, queryset):\n    queryset.update(is_approved=True)\n    modeladmin.message_user(\n        request,\n        f'{queryset.count()} comment(s) approved.',\n    )\n\n@admin.action(description='Reject selected comments')\ndef reject_comments(modeladmin, request, queryset):\n    queryset.update(is_approved=False)\n\n@admin.register(Comment)\nclass CommentAdmin(admin.ModelAdmin):\n    list_display = ['content_preview', 'author', 'is_approved']\n    actions = [approve_comments, reject_comments]\n\n    @admin.display(description='Comment')\n    def content_preview(self, obj):\n        return obj.content[:100]",
+          "explanation": "Actions can be standalone functions defined outside the ModelAdmin. The first argument is modeladmin (the admin instance), not self. This is useful for reusable actions shared across multiple ModelAdmin classes."
+        }
+      ],
+      "notes": [
+        "Actions appear as a dropdown in the list view for bulk operations on selected objects.",
+        "Use queryset.update() for efficient bulk updates without loading objects into Python.",
+        "message_user() provides feedback with SUCCESS, WARNING, ERROR, and INFO levels.",
+        "Actions can return HttpResponse for file downloads or custom responses."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "actions-ex1",
+        "title": "Approval Action",
+        "description": "Create an admin action called 'approve_reviews' that sets is_approved=True on selected Review objects and displays a success message with the count of approved reviews.",
+        "starterCode": "from django.contrib import admin\nfrom .models import Review\n\n@admin.register(Review)\nclass ReviewAdmin(admin.ModelAdmin):\n    list_display = ['product', 'author', 'rating', 'is_approved']\n    actions = []  # Add your action here\n\n    # Define the action\n",
+        "solution": "from django.contrib import admin\nfrom .models import Review\n\n@admin.register(Review)\nclass ReviewAdmin(admin.ModelAdmin):\n    list_display = ['product', 'author', 'rating', 'is_approved']\n    actions = ['approve_reviews']\n\n    @admin.action(description='Approve selected reviews')\n    def approve_reviews(self, request, queryset):\n        count = queryset.update(is_approved=True)\n        self.message_user(request, f'{count} review(s) approved.')",
+        "hints": [
+          "Use @admin.action(description='...') to set the dropdown label",
+          "queryset.update() returns the number of updated rows",
+          "self.message_user() shows a success banner"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "actions-ex2",
+        "title": "CSV Export Action",
+        "description": "Create an admin action that exports selected orders to CSV with columns: order ID, customer name, total, and status. Return the CSV as a downloadable file.",
+        "starterCode": "import csv\nfrom django.contrib import admin\nfrom django.http import HttpResponse\nfrom .models import Order\n\n@admin.register(Order)\nclass OrderAdmin(admin.ModelAdmin):\n    list_display = ['id', 'customer', 'total', 'status']\n    actions = []  # Add your export action\n\n    # Define the export action\n",
+        "solution": "import csv\nfrom django.contrib import admin\nfrom django.http import HttpResponse\nfrom .models import Order\n\n@admin.register(Order)\nclass OrderAdmin(admin.ModelAdmin):\n    list_display = ['id', 'customer', 'total', 'status']\n    actions = ['export_csv']\n\n    @admin.action(description='Export selected orders to CSV')\n    def export_csv(self, request, queryset):\n        response = HttpResponse(content_type='text/csv')\n        response['Content-Disposition'] = 'attachment; filename=\"orders.csv\"'\n\n        writer = csv.writer(response)\n        writer.writerow(['Order ID', 'Customer', 'Total', 'Status'])\n\n        for order in queryset:\n            writer.writerow([order.id, order.customer.name, order.total, order.status])\n\n        return response",
+        "hints": [
+          "Create an HttpResponse with content_type='text/csv'",
+          "Set Content-Disposition header for file download",
+          "Use csv.writer to write rows to the response"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  }
+]

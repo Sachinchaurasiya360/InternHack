@@ -1,0 +1,284 @@
+[
+  {
+    "id": "understanding-middleware",
+    "sectionId": "middleware-and-signals",
+    "orderIndex": 0,
+    "title": "Understanding Middleware",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Middleware", "Request Processing", "Response Processing", "MIDDLEWARE Setting", "Order"],
+    "content": {
+      "explanation": "Middleware is a framework of hooks into Django's request/response processing. Each middleware component is a callable that processes every request before it reaches the view and every response before it returns to the client. Middleware forms a layered architecture — like an onion, requests pass through middleware layers inward to the view, and responses pass back outward.\n\nDjango's MIDDLEWARE setting is a list of middleware classes. The order matters significantly: during request processing, middleware is executed top to bottom. During response processing, it is executed bottom to top. This means the first middleware in the list is the outermost layer — it processes the request first and the response last.\n\nDjango ships with several essential middleware. SecurityMiddleware handles HTTPS redirects and security headers. SessionMiddleware enables session support. CommonMiddleware handles URL trailing slashes and static file serving. CsrfViewMiddleware provides CSRF protection. AuthenticationMiddleware attaches request.user. MessageMiddleware enables the messages framework.\n\nEach middleware component can perform actions at several points in the request/response cycle. process_request (called before the view) can modify the request or return an early response. process_view (called just before the view function) receives the view function and its arguments. process_response (called after the view) can modify the response. process_exception (called when the view raises an exception) can handle errors.\n\nMiddleware ordering is critical. AuthenticationMiddleware must come after SessionMiddleware because it depends on session data. CsrfViewMiddleware should come before any middleware that modifies the response body. SecurityMiddleware should be first to apply security headers to all responses. Misarranging middleware can cause subtle bugs or security vulnerabilities.\n\nMiddleware is ideal for cross-cutting concerns — functionality that applies to many or all requests regardless of the specific view. Examples include logging, timing, authentication, CORS headers, rate limiting, request ID tracking, and content compression. If something needs to happen on every request, middleware is the right tool.",
+      "codeExamples": [
+        {
+          "title": "Default Middleware Stack",
+          "code": "# settings.py\nMIDDLEWARE = [\n    'django.middleware.security.SecurityMiddleware',       # Security headers\n    'django.contrib.sessions.middleware.SessionMiddleware', # Session support\n    'django.middleware.common.CommonMiddleware',           # URL normalization\n    'django.middleware.csrf.CsrfViewMiddleware',           # CSRF protection\n    'django.contrib.auth.middleware.AuthenticationMiddleware', # request.user\n    'django.contrib.messages.middleware.MessageMiddleware',   # Messages\n    'django.middleware.clickjacking.XFrameOptionsMiddleware', # Clickjacking\n]\n\n# Processing order:\n# Request:  Security -> Session -> Common -> CSRF -> Auth -> Messages -> XFrame -> View\n# Response: View -> XFrame -> Messages -> Auth -> CSRF -> Common -> Session -> Security",
+          "explanation": "Middleware processes requests top-to-bottom and responses bottom-to-top. Security is first/last because it needs to add headers to every response and can redirect HTTP to HTTPS before anything else runs."
+        },
+        {
+          "title": "Middleware Architecture",
+          "code": "# How middleware wraps around the view:\n#\n# Request arrives\n#   |\n#   v\n# SecurityMiddleware.process_request()\n#   |\n#   v\n# SessionMiddleware.process_request()\n#   |\n#   v\n# AuthenticationMiddleware.process_request()\n#   |\n#   v\n# CsrfViewMiddleware.process_view()\n#   |\n#   v\n# ==== VIEW FUNCTION ====\n#   |\n#   v\n# CsrfViewMiddleware.process_response()\n#   |\n#   v\n# AuthenticationMiddleware.process_response()\n#   |\n#   v\n# SessionMiddleware.process_response()\n#   |\n#   v\n# SecurityMiddleware.process_response()\n#   |\n#   v\n# Response sent to client",
+          "explanation": "The middleware stack forms an onion pattern. Each layer can short-circuit by returning a response early, skipping inner layers. This is how authentication middleware redirects unauthenticated users before the view runs."
+        },
+        {
+          "title": "New-Style Middleware Class",
+          "code": "import time\nimport logging\n\nlogger = logging.getLogger(__name__)\n\nclass RequestTimingMiddleware:\n    \"\"\"Log the time taken to process each request.\"\"\"\n\n    def __init__(self, get_response):\n        self.get_response = get_response\n        # One-time setup code goes here\n\n    def __call__(self, request):\n        # Code before the view (and later middleware)\n        start_time = time.time()\n\n        # Get the response from the next middleware or view\n        response = self.get_response(request)\n\n        # Code after the view (and earlier middleware)\n        duration = time.time() - start_time\n        logger.info(\n            f'{request.method} {request.path} - {response.status_code} '\n            f'({duration:.3f}s)'\n        )\n\n        return response",
+          "explanation": "New-style middleware uses __init__ and __call__. __init__ receives get_response (the next middleware or view). __call__ runs on every request — code before get_response runs before the view, code after runs after the view."
+        },
+        {
+          "title": "Middleware with Hooks",
+          "code": "from django.http import HttpResponseForbidden\nimport logging\n\nlogger = logging.getLogger(__name__)\n\nclass AdvancedMiddleware:\n    def __init__(self, get_response):\n        self.get_response = get_response\n\n    def __call__(self, request):\n        response = self.get_response(request)\n        return response\n\n    def process_view(self, request, view_func, view_args, view_kwargs):\n        \"\"\"Called just before the view.\"\"\"\n        logger.info(f'Calling view: {view_func.__name__}')\n        # Return None to continue, or HttpResponse to short-circuit\n        return None\n\n    def process_exception(self, request, exception):\n        \"\"\"Called when the view raises an exception.\"\"\"\n        logger.error(f'Exception in {request.path}: {exception}')\n        # Return None to use default exception handling\n        # Return HttpResponse to handle the exception\n        return None\n\n    def process_template_response(self, request, response):\n        \"\"\"Called for TemplateResponse objects.\"\"\"\n        response.context_data['middleware_message'] = 'Added by middleware'\n        return response",
+          "explanation": "Middleware can define hook methods for specific points in the cycle. process_view runs before the view with access to the view function. process_exception handles view exceptions. process_template_response modifies template context."
+        }
+      ],
+      "notes": [
+        "Middleware processes requests top-to-bottom and responses bottom-to-top.",
+        "Middleware order matters: AuthenticationMiddleware must come after SessionMiddleware.",
+        "Use middleware for cross-cutting concerns: logging, timing, authentication, headers.",
+        "New-style middleware uses __init__(get_response) and __call__(request)."
+      ],
+      "interviewTips": [
+        "Explain the onion model: requests go inward, responses go outward through middleware layers.",
+        "Know the default middleware and why their order matters.",
+        "Describe scenarios where middleware is better than view decorators (cross-cutting concerns)."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "middleware-ex1",
+        "title": "Request Logging Middleware",
+        "description": "Write a middleware class that logs the HTTP method, path, and response status code for every request. Use Python's logging module.",
+        "starterCode": "import logging\n\nlogger = logging.getLogger(__name__)\n\nclass RequestLoggingMiddleware:\n    pass\n",
+        "solution": "import logging\n\nlogger = logging.getLogger(__name__)\n\nclass RequestLoggingMiddleware:\n    def __init__(self, get_response):\n        self.get_response = get_response\n\n    def __call__(self, request):\n        response = self.get_response(request)\n        logger.info(f'{request.method} {request.path} -> {response.status_code}')\n        return response",
+        "hints": [
+          "__init__ receives get_response and stores it",
+          "__call__ processes the request and response",
+          "Log after calling self.get_response to have access to the status code"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "middleware-ex2",
+        "title": "IP Blocking Middleware",
+        "description": "Write middleware that blocks requests from a list of banned IP addresses. Return a 403 Forbidden response for blocked IPs.",
+        "starterCode": "from django.http import HttpResponseForbidden\n\nBANNED_IPS = ['192.168.1.100', '10.0.0.50']\n\nclass IPBlockMiddleware:\n    pass\n",
+        "solution": "from django.http import HttpResponseForbidden\n\nBANNED_IPS = ['192.168.1.100', '10.0.0.50']\n\nclass IPBlockMiddleware:\n    def __init__(self, get_response):\n        self.get_response = get_response\n\n    def __call__(self, request):\n        ip = request.META.get('REMOTE_ADDR', '')\n        if ip in BANNED_IPS:\n            return HttpResponseForbidden('Access denied.')\n        return self.get_response(request)",
+        "hints": [
+          "Get the client IP from request.META['REMOTE_ADDR']",
+          "Return HttpResponseForbidden to block the request before it reaches the view",
+          "Only call self.get_response if the IP is not banned"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "custom-middleware",
+    "sectionId": "middleware-and-signals",
+    "orderIndex": 1,
+    "title": "Custom Middleware",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["CORS", "Rate Limiting", "Request ID", "Maintenance Mode", "Error Handling"],
+    "content": {
+      "explanation": "Custom middleware allows you to add functionality that runs on every request or response. This is perfect for cross-cutting concerns that do not belong in individual views. Common custom middleware includes CORS handling, rate limiting, request ID tracking, maintenance mode, and custom error pages.\n\nCORS (Cross-Origin Resource Sharing) middleware adds headers that allow or deny requests from different domains. While the django-cors-headers package handles this in production, understanding CORS middleware helps you understand both the concept and the middleware pattern. CORS headers like Access-Control-Allow-Origin and Access-Control-Allow-Methods tell browsers whether to allow cross-origin requests.\n\nRequest ID middleware generates a unique identifier for each request and attaches it to the request object and response headers. This is invaluable for debugging — you can trace a specific request through your logs, from the initial HTTP request through middleware, views, database queries, and back to the response.\n\nMaintenance mode middleware checks a flag (from settings, database, or file) and returns a maintenance page for all requests when enabled. It typically excludes admin URLs and health check endpoints so administrators can still access the site.\n\nCustom error handling middleware catches exceptions and returns appropriate error responses. While Django has built-in error handling (handler404, handler500), middleware provides more flexibility — you can log errors to external services, add context information, or transform errors into JSON for API endpoints.\n\nWhen writing middleware, keep it lightweight. Middleware runs on every request, so expensive operations (like database queries) should be avoided or cached. If your middleware only applies to certain URLs or views, consider using a view decorator instead.",
+      "codeExamples": [
+        {
+          "title": "CORS Middleware",
+          "code": "class CORSMiddleware:\n    \"\"\"Add CORS headers to responses.\"\"\"\n\n    ALLOWED_ORIGINS = [\n        'http://localhost:3000',\n        'https://myapp.com',\n    ]\n\n    def __init__(self, get_response):\n        self.get_response = get_response\n\n    def __call__(self, request):\n        # Handle preflight requests\n        if request.method == 'OPTIONS':\n            response = HttpResponse()\n            self._add_cors_headers(request, response)\n            return response\n\n        response = self.get_response(request)\n        self._add_cors_headers(request, response)\n        return response\n\n    def _add_cors_headers(self, request, response):\n        origin = request.META.get('HTTP_ORIGIN', '')\n        if origin in self.ALLOWED_ORIGINS:\n            response['Access-Control-Allow-Origin'] = origin\n            response['Access-Control-Allow-Methods'] = 'GET, POST, PUT, DELETE, OPTIONS'\n            response['Access-Control-Allow-Headers'] = 'Content-Type, Authorization'\n            response['Access-Control-Max-Age'] = '86400'",
+          "explanation": "CORS middleware adds Access-Control headers to responses. Preflight (OPTIONS) requests are handled separately with an empty response plus headers. In production, use the django-cors-headers package instead of rolling your own."
+        },
+        {
+          "title": "Request ID Middleware",
+          "code": "import uuid\nimport logging\n\nlogger = logging.getLogger(__name__)\n\nclass RequestIDMiddleware:\n    \"\"\"Attach a unique ID to each request for tracing.\"\"\"\n\n    def __init__(self, get_response):\n        self.get_response = get_response\n\n    def __call__(self, request):\n        # Check for incoming request ID or generate one\n        request_id = request.META.get(\n            'HTTP_X_REQUEST_ID',\n            str(uuid.uuid4())\n        )\n        request.request_id = request_id\n\n        # Add to logging context\n        logger.info(\n            f'[{request_id}] {request.method} {request.path}'\n        )\n\n        response = self.get_response(request)\n\n        # Add request ID to response headers\n        response['X-Request-ID'] = request_id\n\n        logger.info(\n            f'[{request_id}] Response: {response.status_code}'\n        )\n\n        return response",
+          "explanation": "Each request gets a unique UUID. If the client sends an X-Request-ID header, we reuse it (for tracing across microservices). The ID is attached to the request object, logged, and included in the response header."
+        },
+        {
+          "title": "Maintenance Mode Middleware",
+          "code": "from django.conf import settings\nfrom django.http import HttpResponse\nfrom django.template.loader import render_to_string\n\nclass MaintenanceModeMiddleware:\n    \"\"\"Return a maintenance page when enabled.\"\"\"\n\n    EXEMPT_URLS = ['/admin/', '/health/']\n\n    def __init__(self, get_response):\n        self.get_response = get_response\n\n    def __call__(self, request):\n        if getattr(settings, 'MAINTENANCE_MODE', False):\n            # Allow admin and health check URLs\n            for url in self.EXEMPT_URLS:\n                if request.path.startswith(url):\n                    return self.get_response(request)\n\n            html = render_to_string('maintenance.html')\n            return HttpResponse(html, status=503)\n\n        return self.get_response(request)\n\n# settings.py\n# MAINTENANCE_MODE = True   # Set to True to enable",
+          "explanation": "When MAINTENANCE_MODE is True, all non-exempt requests get a 503 Service Unavailable response. Admin and health check URLs are exempt so administrators can still manage the site."
+        },
+        {
+          "title": "JSON Error Handling Middleware",
+          "code": "import json\nimport logging\nimport traceback\nfrom django.http import JsonResponse\n\nlogger = logging.getLogger(__name__)\n\nclass JSONErrorMiddleware:\n    \"\"\"Convert exceptions to JSON responses for API endpoints.\"\"\"\n\n    def __init__(self, get_response):\n        self.get_response = get_response\n\n    def __call__(self, request):\n        response = self.get_response(request)\n        return response\n\n    def process_exception(self, request, exception):\n        # Only handle API requests\n        if not request.path.startswith('/api/'):\n            return None\n\n        logger.error(\n            f'API Error: {exception}',\n            exc_info=True,\n        )\n\n        return JsonResponse(\n            {\n                'error': str(exception),\n                'type': exception.__class__.__name__,\n            },\n            status=500,\n        )",
+          "explanation": "process_exception catches unhandled view exceptions. This middleware only handles API endpoints (paths starting with /api/) and returns JSON error responses. Non-API errors use Django's default handling."
+        }
+      ],
+      "notes": [
+        "Keep middleware lightweight — it runs on every request.",
+        "Use django-cors-headers in production instead of custom CORS middleware.",
+        "Request ID middleware is invaluable for debugging distributed systems.",
+        "Consider using view decorators instead of middleware for logic that applies to specific views only."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "custom-mw-ex1",
+        "title": "Response Header Middleware",
+        "description": "Write middleware that adds a custom header 'X-Powered-By: Django' to every response.",
+        "starterCode": "class PoweredByMiddleware:\n    pass\n",
+        "solution": "class PoweredByMiddleware:\n    def __init__(self, get_response):\n        self.get_response = get_response\n\n    def __call__(self, request):\n        response = self.get_response(request)\n        response['X-Powered-By'] = 'Django'\n        return response",
+        "hints": [
+          "Modify the response after calling self.get_response()",
+          "Set response headers using dictionary syntax: response['Header-Name'] = 'value'",
+          "Always return the response from __call__"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "custom-mw-ex2",
+        "title": "Request Timing Middleware",
+        "description": "Write middleware that measures request processing time and adds it as an X-Request-Time header (in milliseconds) to the response.",
+        "starterCode": "import time\n\nclass TimingMiddleware:\n    pass\n",
+        "solution": "import time\n\nclass TimingMiddleware:\n    def __init__(self, get_response):\n        self.get_response = get_response\n\n    def __call__(self, request):\n        start = time.time()\n        response = self.get_response(request)\n        duration_ms = (time.time() - start) * 1000\n        response['X-Request-Time'] = f'{duration_ms:.2f}ms'\n        return response",
+        "hints": [
+          "Record time.time() before calling get_response",
+          "Calculate duration after get_response returns",
+          "Convert seconds to milliseconds by multiplying by 1000"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  },
+  {
+    "id": "signals",
+    "sectionId": "middleware-and-signals",
+    "orderIndex": 2,
+    "title": "Signals",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": true,
+    "concepts": ["Signal", "receiver", "pre_save", "post_save", "m2m_changed", "Custom Signals"],
+    "content": {
+      "explanation": "Django signals allow decoupled applications to get notified when certain actions occur. Signals are a form of the observer pattern — senders emit signals, and receivers (callback functions) respond to them. This allows one part of your application to react to events in another part without direct coupling.\n\nDjango provides several built-in signals. pre_save and post_save fire before and after a model's save() method. pre_delete and post_delete fire before and after deletion. m2m_changed fires when a ManyToManyField is modified. request_started and request_finished fire at the beginning and end of HTTP requests. user_logged_in, user_logged_out, and user_login_failed fire during authentication events.\n\nReceivers are functions decorated with @receiver that respond to signals. The receiver function receives the signal sender (the model class), the instance being saved/deleted, and additional keyword arguments depending on the signal. For post_save, the 'created' argument indicates whether the instance is new (True) or being updated (False).\n\nSignal receivers should be imported when the app is ready. The standard pattern is to define receivers in a signals.py file in your app and import it in the app's AppConfig.ready() method. This ensures signals are connected when Django starts up.\n\nCommon use cases for signals include: creating related objects automatically (e.g., creating a Profile when a User is created), sending notifications (email when an order status changes), updating denormalized data (recalculating totals when order items change), logging changes, and invalidating caches.\n\nSignals have trade-offs. They decouple code but can make the flow harder to follow — when you save a model, it is not obvious from the view code that signal receivers will also run. Overusing signals can lead to hidden side effects and debugging difficulties. Consider using explicit method calls or model method overrides for critical business logic, and reserve signals for truly decoupled concerns.",
+      "codeExamples": [
+        {
+          "title": "post_save Signal - Auto-Create Profile",
+          "code": "# accounts/signals.py\nfrom django.db.models.signals import post_save\nfrom django.dispatch import receiver\nfrom django.conf import settings\nfrom .models import Profile\n\n@receiver(post_save, sender=settings.AUTH_USER_MODEL)\ndef create_user_profile(sender, instance, created, **kwargs):\n    \"\"\"Create a Profile when a new User is created.\"\"\"\n    if created:\n        Profile.objects.create(user=instance)\n\n@receiver(post_save, sender=settings.AUTH_USER_MODEL)\ndef save_user_profile(sender, instance, **kwargs):\n    \"\"\"Save the Profile whenever the User is saved.\"\"\"\n    instance.profile.save()\n\n# accounts/apps.py\nfrom django.apps import AppConfig\n\nclass AccountsConfig(AppConfig):\n    default_auto_field = 'django.db.models.BigAutoField'\n    name = 'accounts'\n\n    def ready(self):\n        import accounts.signals  # noqa: F401",
+          "explanation": "post_save fires after a model is saved. 'created=True' means a new object was created (INSERT), False means an update. Import signals in AppConfig.ready() to ensure they are connected when Django starts."
+        },
+        {
+          "title": "pre_save Signal - Auto-Generate Slug",
+          "code": "from django.db.models.signals import pre_save\nfrom django.dispatch import receiver\nfrom django.utils.text import slugify\nfrom .models import Article\n\n@receiver(pre_save, sender=Article)\ndef auto_slug(sender, instance, **kwargs):\n    \"\"\"Generate slug from title if not set.\"\"\"\n    if not instance.slug:\n        instance.slug = slugify(instance.title)\n        # Ensure uniqueness\n        original_slug = instance.slug\n        counter = 1\n        while Article.objects.filter(slug=instance.slug).exclude(pk=instance.pk).exists():\n            instance.slug = f'{original_slug}-{counter}'\n            counter += 1",
+          "explanation": "pre_save fires before saving, so you can modify the instance before it hits the database. This signal auto-generates a unique slug from the title. The while loop handles duplicate slugs by appending a counter."
+        },
+        {
+          "title": "Custom Signals",
+          "code": "# orders/signals.py\nimport django.dispatch\n\n# Define custom signal\norder_completed = django.dispatch.Signal()\n\n# Emit the signal in a view or model method\n# orders/views.py\nfrom .signals import order_completed\n\ndef complete_order(request, pk):\n    order = get_object_or_404(Order, pk=pk)\n    order.status = 'completed'\n    order.save()\n\n    # Emit the signal\n    order_completed.send(\n        sender=Order,\n        order=order,\n        user=request.user,\n    )\n    return redirect('order-detail', pk=pk)\n\n# notifications/signals.py\nfrom django.dispatch import receiver\nfrom orders.signals import order_completed\n\n@receiver(order_completed)\ndef send_order_confirmation(sender, order, user, **kwargs):\n    \"\"\"Send confirmation email when order is completed.\"\"\"\n    send_mail(\n        subject=f'Order #{order.pk} Confirmed',\n        message=f'Your order has been completed.',\n        from_email='noreply@example.com',\n        recipient_list=[user.email],\n    )\n\n@receiver(order_completed)\ndef update_inventory(sender, order, **kwargs):\n    \"\"\"Update inventory when order is completed.\"\"\"\n    for item in order.items.all():\n        item.product.stock -= item.quantity\n        item.product.save()",
+          "explanation": "Custom signals decouple modules. The orders app emits order_completed without knowing who listens. The notifications app and inventory system independently react. Multiple receivers can respond to the same signal."
+        },
+        {
+          "title": "post_delete and m2m_changed",
+          "code": "from django.db.models.signals import post_delete, m2m_changed\nfrom django.dispatch import receiver\nfrom .models import Article, ProductImage\nimport os\n\n@receiver(post_delete, sender=ProductImage)\ndef delete_image_file(sender, instance, **kwargs):\n    \"\"\"Delete the physical file when a ProductImage is deleted.\"\"\"\n    if instance.image:\n        if os.path.isfile(instance.image.path):\n            os.remove(instance.image.path)\n\n@receiver(m2m_changed, sender=Article.tags.through)\ndef tags_changed(sender, instance, action, pk_set, **kwargs):\n    \"\"\"Log when tags are added or removed from an article.\"\"\"\n    if action == 'post_add':\n        print(f'Tags {pk_set} added to \"{instance.title}\"')\n    elif action == 'post_remove':\n        print(f'Tags {pk_set} removed from \"{instance.title}\"')\n    elif action == 'post_clear':\n        print(f'All tags cleared from \"{instance.title}\"')",
+          "explanation": "post_delete is useful for cleaning up files or related resources. m2m_changed fires when ManyToManyField relationships change, with action indicating what happened: pre_add, post_add, pre_remove, post_remove, pre_clear, post_clear."
+        }
+      ],
+      "notes": [
+        "Import signals in AppConfig.ready() to ensure they are connected on startup.",
+        "post_save 'created' argument distinguishes INSERT (True) from UPDATE (False).",
+        "Signal receivers should be lightweight — avoid expensive operations or use async tasks.",
+        "Overusing signals makes code flow hard to trace. Use them for decoupled, cross-app concerns."
+      ],
+      "interviewTips": [
+        "Explain signals as the observer pattern: senders emit events, receivers respond.",
+        "Know the common signals: pre_save, post_save, pre_delete, post_delete, m2m_changed.",
+        "Discuss trade-offs: signals decouple code but can hide side effects and make debugging harder."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "signals-ex1",
+        "title": "Auto-Create Profile Signal",
+        "description": "Write a post_save signal receiver that creates a UserProfile when a new User is created. Only create the profile when created=True.",
+        "starterCode": "from django.db.models.signals import post_save\nfrom django.dispatch import receiver\nfrom django.conf import settings\nfrom .models import UserProfile\n\n# Write the signal receiver\n",
+        "solution": "from django.db.models.signals import post_save\nfrom django.dispatch import receiver\nfrom django.conf import settings\nfrom .models import UserProfile\n\n@receiver(post_save, sender=settings.AUTH_USER_MODEL)\ndef create_profile(sender, instance, created, **kwargs):\n    if created:\n        UserProfile.objects.create(user=instance)",
+        "hints": [
+          "Use @receiver(post_save, sender=settings.AUTH_USER_MODEL)",
+          "Check the 'created' parameter to only create profiles for new users",
+          "Use settings.AUTH_USER_MODEL to support custom user models"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "signals-ex2",
+        "title": "Custom Signal",
+        "description": "Define a custom signal called 'payment_received'. Write a sender that emits the signal with order and amount data. Write a receiver that logs the payment.",
+        "starterCode": "import django.dispatch\nfrom django.dispatch import receiver\nimport logging\n\nlogger = logging.getLogger(__name__)\n\n# Define signal, sender code, and receiver\n",
+        "solution": "import django.dispatch\nfrom django.dispatch import receiver\nimport logging\n\nlogger = logging.getLogger(__name__)\n\n# Define the signal\npayment_received = django.dispatch.Signal()\n\n# Receiver\n@receiver(payment_received)\ndef log_payment(sender, order, amount, **kwargs):\n    logger.info(f'Payment of ${amount} received for Order #{order.pk}')\n\n# Sender code (in a view or service):\n# payment_received.send(\n#     sender=Order,\n#     order=order,\n#     amount=100.00,\n# )",
+        "hints": [
+          "Create the signal with django.dispatch.Signal()",
+          "Emit with signal.send(sender=ModelClass, key=value)",
+          "Receivers use @receiver(signal_name) decorator"
+        ],
+        "difficulty": "Medium"
+      }
+    ]
+  },
+  {
+    "id": "caching-and-sessions",
+    "sectionId": "middleware-and-signals",
+    "orderIndex": 3,
+    "title": "Caching & Sessions",
+    "difficulty": "Advanced",
+    "isInterviewQuestion": false,
+    "concepts": ["Cache Framework", "Memcached", "Redis", "Session", "cache_page", "Template Cache"],
+    "content": {
+      "explanation": "Django's caching framework provides a way to store computed data so expensive operations do not need to be repeated. Caching is one of the most effective ways to improve Django application performance. Django supports several cache backends: in-memory (LocMemCache), file-based, database, Memcached, and Redis.\n\nThe cache framework operates at multiple levels. Per-site caching caches every page for anonymous users. Per-view caching uses the @cache_page decorator to cache specific views. Template fragment caching uses the {% cache %} tag to cache parts of templates. Low-level caching uses cache.get() and cache.set() for manual control.\n\nRedis and Memcached are the recommended backends for production. Redis (via django-redis) is the most popular choice because it supports data structures, persistence, and pub/sub in addition to key-value caching. Memcached is simpler but faster for pure key-value operations.\n\nThe low-level cache API provides full control: cache.set(key, value, timeout) stores a value, cache.get(key, default) retrieves it, cache.delete(key) removes it, and cache.get_or_set(key, callable, timeout) returns the cached value or computes and stores it. The timeout is in seconds (None means cache forever).\n\nDjango sessions store data between requests for individual users. By default, sessions are stored in the database. For better performance, you can use cache-based sessions (SESSION_ENGINE = 'django.contrib.sessions.backends.cache') or cached database sessions (which cache sessions but fall back to the database). Sessions are accessed through request.session, which behaves like a dictionary.\n\nSession data is tied to a session ID stored in a cookie (sessionid by default). Django handles session creation, serialization, and expiration automatically. You can set SESSION_COOKIE_AGE (in seconds) to control how long sessions last, SESSION_EXPIRE_AT_BROWSER_CLOSE to expire on browser close, and SESSION_COOKIE_SECURE to require HTTPS.",
+      "codeExamples": [
+        {
+          "title": "Cache Configuration",
+          "code": "# settings.py\n\n# Development: in-memory cache\nCACHES = {\n    'default': {\n        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',\n    }\n}\n\n# Production: Redis cache (requires django-redis)\nCACHES = {\n    'default': {\n        'BACKEND': 'django_redis.cache.RedisCache',\n        'LOCATION': 'redis://127.0.0.1:6379/1',\n        'OPTIONS': {\n            'CLIENT_CLASS': 'django_redis.client.DefaultClient',\n        },\n        'TIMEOUT': 300,  # Default timeout: 5 minutes\n    }\n}\n\n# Production: Memcached\nCACHES = {\n    'default': {\n        'BACKEND': 'django.core.cache.backends.memcached.PyMemcacheCache',\n        'LOCATION': '127.0.0.1:11211',\n    }\n}",
+          "explanation": "LocMemCache is fine for development and single-process deployments. Redis is the most popular production choice, supporting data structures and persistence. Memcached is simpler but lacks Redis features."
+        },
+        {
+          "title": "View and Template Caching",
+          "code": "from django.views.decorators.cache import cache_page\nfrom django.views.decorators.vary import vary_on_cookie\n\n# Cache entire view for 15 minutes\n@cache_page(60 * 15)\ndef article_list(request):\n    articles = Article.objects.filter(is_published=True)\n    return render(request, 'blog/article_list.html', {'articles': articles})\n\n# Cache per user (vary by cookie)\n@cache_page(60 * 15)\n@vary_on_cookie\ndef dashboard(request):\n    return render(request, 'dashboard.html')\n\n# Template fragment caching\n# {% load cache %}\n# {% cache 600 sidebar request.user.id %}\n#   <div class=\"sidebar\">\n#     {% for item in expensive_query %}\n#       <p>{{ item.name }}</p>\n#     {% endfor %}\n#   </div>\n# {% endcache %}",
+          "explanation": "@cache_page caches the entire response. @vary_on_cookie creates separate caches per user. Template {% cache %} caches specific fragments. The cache tag arguments are: timeout (seconds), fragment name, and vary-on keys."
+        },
+        {
+          "title": "Low-Level Cache API",
+          "code": "from django.core.cache import cache\n\n# Basic operations\ncache.set('my_key', 'my_value', timeout=300)  # 5 minutes\nvalue = cache.get('my_key')  # 'my_value'\nvalue = cache.get('missing_key', 'default')  # 'default'\ncache.delete('my_key')\n\n# get_or_set: compute only if not cached\ndef get_expensive_data():\n    return Article.objects.aggregate(\n        total=Count('id'),\n        avg_views=Avg('views'),\n    )\n\nstats = cache.get_or_set('article_stats', get_expensive_data, 600)\n\n# Practical example in a view\ndef article_list(request):\n    cache_key = 'published_articles'\n    articles = cache.get(cache_key)\n\n    if articles is None:\n        articles = list(Article.objects.filter(\n            is_published=True\n        ).select_related('author', 'category'))\n        cache.set(cache_key, articles, 300)\n\n    return render(request, 'articles.html', {'articles': articles})\n\n# Invalidate cache when data changes\n@receiver(post_save, sender=Article)\ndef invalidate_article_cache(sender, **kwargs):\n    cache.delete('published_articles')",
+          "explanation": "The low-level cache API gives full control. cache.get_or_set is the most convenient pattern — it returns cached data or computes and stores it. Invalidate the cache when underlying data changes using signals."
+        },
+        {
+          "title": "Sessions",
+          "code": "# settings.py\nSESSION_ENGINE = 'django.contrib.sessions.backends.cached_db'\nSESSION_CACHE_ALIAS = 'default'\nSESSION_COOKIE_AGE = 1209600  # 2 weeks in seconds\nSESSION_COOKIE_SECURE = True   # HTTPS only in production\n\n# Using sessions in views\ndef set_preferences(request):\n    request.session['theme'] = 'dark'\n    request.session['language'] = 'en'\n    request.session.set_expiry(3600)  # 1 hour\n    return redirect('home')\n\ndef get_preferences(request):\n    theme = request.session.get('theme', 'light')\n    language = request.session.get('language', 'en')\n    return render(request, 'settings.html', {\n        'theme': theme,\n        'language': language,\n    })\n\ndef clear_session(request):\n    request.session.flush()  # Delete session data and cookie\n    return redirect('home')\n\n# Check if session has data\nif 'cart' in request.session:\n    cart = request.session['cart']\n\n# Modify mutable session data\ncart = request.session.get('cart', [])\ncart.append({'product_id': 1, 'quantity': 2})\nrequest.session['cart'] = cart  # Re-assign to trigger save\nrequest.session.modified = True  # Or set this flag",
+          "explanation": "Sessions store per-user data between requests. cached_db backend caches sessions in Redis/Memcached with database fallback. Use request.session like a dictionary. Re-assign or set modified=True when changing mutable objects."
+        }
+      ],
+      "notes": [
+        "Use Redis or Memcached for production caching. LocMemCache is for development only.",
+        "Cache invalidation is one of the hardest problems — invalidate caches when underlying data changes.",
+        "@cache_page caches entire views. {% cache %} caches template fragments. cache.get/set is manual.",
+        "For sessions with mutable data (lists, dicts), set request.session.modified = True after changes."
+      ]
+    },
+    "exercises": [
+      {
+        "id": "cache-ex1",
+        "title": "Cache Expensive Query",
+        "description": "Write a view function that caches the result of an expensive query (all published articles) for 10 minutes. Use the low-level cache API with get_or_set.",
+        "starterCode": "from django.core.cache import cache\nfrom django.shortcuts import render\nfrom .models import Article\n\ndef article_list(request):\n    pass\n",
+        "solution": "from django.core.cache import cache\nfrom django.shortcuts import render\nfrom .models import Article\n\ndef article_list(request):\n    articles = cache.get_or_set(\n        'published_articles',\n        lambda: list(Article.objects.filter(is_published=True).order_by('-created_at')),\n        600,  # 10 minutes\n    )\n    return render(request, 'articles.html', {'articles': articles})",
+        "hints": [
+          "cache.get_or_set takes a key, callable, and timeout",
+          "Wrap the queryset in list() to evaluate it before caching",
+          "Timeout is in seconds: 10 minutes = 600 seconds"
+        ],
+        "difficulty": "Easy"
+      },
+      {
+        "id": "cache-ex2",
+        "title": "Shopping Cart Session",
+        "description": "Write two view functions: 'add_to_cart' that adds a product ID and quantity to a session-based cart (list of dicts), and 'view_cart' that displays the cart contents.",
+        "starterCode": "from django.shortcuts import render, redirect\n\ndef add_to_cart(request, product_id):\n    pass\n\ndef view_cart(request):\n    pass\n",
+        "solution": "from django.shortcuts import render, redirect\n\ndef add_to_cart(request, product_id):\n    cart = request.session.get('cart', [])\n    cart.append({\n        'product_id': product_id,\n        'quantity': int(request.POST.get('quantity', 1)),\n    })\n    request.session['cart'] = cart\n    return redirect('view-cart')\n\ndef view_cart(request):\n    cart = request.session.get('cart', [])\n    return render(request, 'cart.html', {'cart': cart})",
+        "hints": [
+          "Use request.session.get('cart', []) to get the cart or an empty list",
+          "Re-assign the list to request.session['cart'] to trigger a save",
+          "Session data persists across requests for the same user"
+        ],
+        "difficulty": "Easy"
+      }
+    ]
+  }
+]

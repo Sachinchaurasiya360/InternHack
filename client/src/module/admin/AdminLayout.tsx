@@ -1,5 +1,5 @@
 import { NavLink, Outlet } from "react-router";
-import { LayoutDashboard, Users, Briefcase, ScrollText, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, Compass, BookOpen, GraduationCap, Code2, Brain, BadgeCheck, Trophy } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, ScrollText, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, Compass, BookOpen, Code2, Brain, BadgeCheck, Trophy, Award } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useNavigate } from "react-router";
 import { SEO } from "../../components/SEO";
@@ -68,14 +68,6 @@ export default function AdminLayout() {
             <Compass className="w-4 h-4" />
             Careers
           </NavLink>
-          <NavLink to="/admin/colleges" className={linkClass}>
-            <GraduationCap className="w-4 h-4" />
-            Colleges
-          </NavLink>
-          <NavLink to="/admin/college-reviews" className={linkClass}>
-            <MessageSquare className="w-4 h-4" />
-            College Reviews
-          </NavLink>
           <NavLink to="/admin/dsa" className={linkClass}>
             <Code2 className="w-4 h-4" />
             DSA Topics
@@ -91,6 +83,10 @@ export default function AdminLayout() {
           <NavLink to="/admin/hackathons" className={linkClass}>
             <Trophy className="w-4 h-4" />
             Hackathons
+          </NavLink>
+          <NavLink to="/admin/badges" className={linkClass}>
+            <Award className="w-4 h-4" />
+            Badges
           </NavLink>
           <NavLink to="/admin/blog" className={linkClass}>
             <BookOpen className="w-4 h-4" />
