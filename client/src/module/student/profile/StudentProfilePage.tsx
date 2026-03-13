@@ -189,8 +189,8 @@ export default function StudentProfilePage() {
     collegeTimerRef.current = setTimeout(async () => {
       setCollegeLoading(true);
       try {
-        const res = await fetch(`https://universities.hipolabs.com/search?name=${encodeURIComponent(query)}`);
-        const data: Array<{ name: string; country: string; "state-province": string | null }> = await res.json();
+        const res = await api.get<Array<{ name: string; country: string; "state-province": string | null }>>(`/universities/search`, { params: { name: query } });
+        const data = res.data;
         // Deduplicate by name and take first 8
         const seen = new Set<string>();
         const suggestions: CollegeSuggestion[] = [];
@@ -1013,7 +1013,7 @@ export default function StudentProfilePage() {
           <motion.div custom={7} variants={fadeInUp} initial="hidden" animate="visible">
             <ContributionGraphs
               githubUsername={form.githubUrl ? form.githubUrl.split("github.com/").pop()?.replace(/\/$/,"") : undefined}
-              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("leetcode.com/").pop()?.replace(/\/$/,"") : undefined}
+              leetcodeUsername={form.leetcodeUrl ? form.leetcodeUrl.split("leetcode.com/").pop()?.replace(/^\/?u\//, "").replace(/\/$/,"") : undefined}
               showPrompts
             />
           </motion.div>

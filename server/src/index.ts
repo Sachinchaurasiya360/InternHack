@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import helmet from "helmet";
+import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { jobRouter } from "./module/job/job.routes.js";
@@ -35,6 +36,7 @@ import { internshipRouter } from "./module/internship/internship.routes.js";
 import { campusDriveRouter } from "./module/campus-drive/campus-drive.routes.js";
 import { badgeRouter } from "./module/badge/badge.routes.js";
 import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
+import { universityRouter } from "./module/university/university.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 import { initServiceProviders } from "./lib/ai-provider-registry.js";
@@ -110,6 +112,11 @@ app.use((req, _res, next) => {
   next();
 });
 
+// ── HTTP request logging (dev only) ──
+if (process.env["NODE_ENV"] !== "production") {
+  app.use(morgan("dev"));
+}
+
 // ── Rate limiters ──
 const globalLimiter = rateLimit({
   windowMs: 15 * 60 * 1000,
@@ -163,6 +170,7 @@ app.use("/api/internships", internshipRouter);
 app.use("/api/campus-drives", campusDriveRouter);
 app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
+app.use("/api/universities", universityRouter);
 
 // Public external jobs endpoint (no auth)
 const publicAdminController = new AdminController(new AdminService());
