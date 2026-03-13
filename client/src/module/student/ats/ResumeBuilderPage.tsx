@@ -19,9 +19,6 @@ import {
   Palette,
   ScanSearch,
   CheckCircle,
-  History,
-  Mail,
-  ChevronRight,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 import type {

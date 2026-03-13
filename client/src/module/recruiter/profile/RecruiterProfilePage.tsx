@@ -247,10 +247,10 @@ export default function RecruiterProfilePage() {
       {/* Image Crop Modal */}
       {cropSrc && (
         <ImageCropModal
-          src={cropSrc}
+          imageSrc={cropSrc}
           aspect={1}
-          onComplete={handleCropComplete}
-          onCancel={() => setCropSrc(null)}
+          onCrop={handleCropComplete}
+          onClose={() => setCropSrc(null)}
         />
       )}
     </div>

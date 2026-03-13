@@ -1,6 +1,6 @@
 import { useParams, Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, DollarSign, Clock, Users, CheckCircle, ArrowRight, Send, Briefcase, Check, Building2, CalendarDays, Tag } from "lucide-react";
+import { ArrowLeft, MapPin, DollarSign, Users, CheckCircle, ArrowRight, Send, Check, Building2, CalendarDays, Tag } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";

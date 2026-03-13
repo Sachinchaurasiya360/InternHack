@@ -38,6 +38,7 @@ import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 import { initServiceProviders } from "./lib/ai-provider-registry.js";
+import { startFollowUpCron } from "./cron/scheduled-emails.js";
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -200,4 +201,7 @@ app.listen(PORT, async () => {
   // Start the job scraper cron (every 6 hours)
   const cronSchedule = process.env["SCRAPER_CRON"] || "0 */6 * * *";
   scraperController.getService().startCron(cronSchedule);
+
+  // Start the 10-day follow-up email cron (daily at 9 AM)
+  startFollowUpCron();
 });

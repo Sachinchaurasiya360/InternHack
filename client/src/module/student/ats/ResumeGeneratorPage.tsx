@@ -14,8 +14,6 @@ import {
   Code2,
   MessageSquare,
   ScanSearch,
-  PenTool,
-  Mail,
   ChevronRight,
   User,
   GraduationCap,
