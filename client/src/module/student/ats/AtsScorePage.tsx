@@ -7,7 +7,6 @@ import {
   FileText,
   CheckCircle,
   AlertCircle,
-  History,
   Target,
   X,
   BarChart2,
@@ -19,12 +18,8 @@ import {
   AlignLeft,
   Loader2,
   Zap,
-  PenTool,
-  Code2,
-  Mail,
   ArrowRight,
   Award,
-  ChevronRight,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";

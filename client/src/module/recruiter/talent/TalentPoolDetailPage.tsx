@@ -11,7 +11,6 @@ import {
   Save,
   Pencil,
   X,
-  CheckCircle,
   StickyNote,
 } from "lucide-react";
 import toast from "react-hot-toast";

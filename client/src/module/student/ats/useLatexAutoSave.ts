@@ -30,7 +30,7 @@ export function useLatexAutoSave(defaultTemplate: string) {
 
   const codeRef = useRef(code);
   const filesRef = useRef(supportingFiles);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const flush = useCallback(() => {
     try {

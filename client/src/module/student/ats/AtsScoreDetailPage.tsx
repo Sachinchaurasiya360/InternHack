@@ -9,11 +9,6 @@ import {
   FileText,
   Lightbulb,
   Tag,
-  ScanSearch,
-  PenTool,
-  Code2,
-  Mail,
-  ChevronRight,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import api from "../../../lib/axios";

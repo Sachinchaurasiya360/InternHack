@@ -119,7 +119,7 @@ export default function AdminBadgesPage() {
   // ── Queries ──
 
   const { data, isLoading } = useQuery({
-    queryKey: queryKeys.badges.admin({ page, limit, category: categoryFilter === "ALL" ? undefined : categoryFilter }),
+    queryKey: queryKeys.badges.admin({ page, limit, ...(categoryFilter !== "ALL" && { category: categoryFilter }) }),
     queryFn: async () => {
       const params: Record<string, string | number> = { page, limit };
       if (categoryFilter !== "ALL") params.category = categoryFilter;
