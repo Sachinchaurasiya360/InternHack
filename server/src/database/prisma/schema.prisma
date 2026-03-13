@@ -172,6 +172,7 @@ model user {
   linkedinUrl    String?
   githubUrl      String?
   portfolioUrl   String?
+  leetcodeUrl    String?
   location       String?
   jobStatus      String?
   projects       Json     @default("[]")

@@ -17,6 +17,16 @@ interface LeetCodeData {
   calendar: Activity[];
 }
 
+function emptyYearCalendar(): Activity[] {
+  const now = new Date();
+  const start = new Date(now.getFullYear(), 0, 1);
+  const entries: Activity[] = [];
+  for (let d = new Date(start); d <= now; d.setDate(d.getDate() + 1)) {
+    entries.push({ date: d.toISOString().split("T")[0]!, count: 0, level: 0 });
+  }
+  return entries;
+}
+
 interface Props {
   githubUsername?: string;
   leetcodeUsername?: string;
@@ -122,7 +132,7 @@ export default function ContributionGraphs({ githubUsername, leetcodeUsername, s
               <>
                 <div className="overflow-x-auto pb-2">
                   <ActivityCalendar
-                    data={leetcodeData.calendar}
+                    data={leetcodeData.calendar.length > 0 ? leetcodeData.calendar : emptyYearCalendar()}
                     colorScheme="light"
                     fontSize={11}
                     blockSize={10}
