@@ -261,6 +261,7 @@ export class AuthService {
     linkedinUrl: true,
     githubUrl: true,
     portfolioUrl: true,
+    leetcodeUrl: true,
     jobStatus: true,
     isProfilePublic: true,
     projects: true,
