@@ -3,6 +3,7 @@ import type { LatexChatService } from "./latex-chat.service.js";
 import { latexChatSchema, latexJDOptimizeSchema } from "./latex-chat.validation.js";
 import { prisma } from "../../database/db.js";
 import type { UsageAction } from "@prisma/client";
+import { getPlanTier } from "../../config/usage-limits.js";
 
 export class LatexChatController {
   constructor(private readonly chatService: LatexChatService) {}
@@ -76,12 +77,9 @@ export class LatexChatController {
   private async checkPremium(userId: number): Promise<boolean> {
     const user = await prisma.user.findUnique({
       where: { id: userId },
-      select: { subscriptionPlan: true, subscriptionStatus: true },
+      select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
     });
     if (!user) return false;
-    return (
-      (user.subscriptionPlan === "MONTHLY" || user.subscriptionPlan === "YEARLY") &&
-      user.subscriptionStatus === "ACTIVE"
-    );
+    return getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate) === "PREMIUM";
   }
 }

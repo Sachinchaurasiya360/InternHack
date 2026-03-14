@@ -97,7 +97,7 @@ export class AtsController {
 
       const user = await prisma.user.findUnique({
         where: { id: req.user.id },
-        select: { subscriptionPlan: true, subscriptionStatus: true },
+        select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
       });
 
       if (!user) {
@@ -105,7 +105,7 @@ export class AtsController {
         return;
       }
 
-      const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus);
+      const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
 
       const startOfDay = new Date();
       startOfDay.setHours(0, 0, 0, 0);

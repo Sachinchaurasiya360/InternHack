@@ -1,7 +1,8 @@
 import { useState } from "react";
-import { NavLink, Outlet, useNavigate } from "react-router";
-import { LayoutDashboard, Briefcase, PlusCircle, Search, LogOut, ChevronsLeft, ChevronsRight, Home, Users, School, User, Menu, X } from "lucide-react";
+import { NavLink, Link, Outlet, useNavigate } from "react-router";
+import { LayoutDashboard, Briefcase, PlusCircle, Search, LogOut, ChevronsLeft, ChevronsRight, Home, Users, School, User, Menu, X, Sun, Moon } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
+import { useThemeStore } from "../../lib/theme.store";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
 
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
 
 export default function RecruiterLayout() {
   const { user, logout } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("recruiter-sidebar-collapsed") === "true";
@@ -48,14 +50,30 @@ export default function RecruiterLayout() {
       </div>
 
       {/* Mobile top bar */}
-      <div className="fixed top-0 left-0 right-0 z-40 lg:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
-        <button
-          onClick={() => setMobileOpen(true)}
-          className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-        <span className="text-sm font-bold text-gray-900 dark:text-white truncate">{user?.company || "Recruiter"}</span>
+      <div className="fixed top-0 left-0 right-0 z-40 lg:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <Link to="/" className="flex items-center gap-2 no-underline">
+            <img src="/logo.png" alt="InternHack" className="h-7 w-7 rounded-lg object-contain" />
+            <span className="text-base font-bold text-gray-950 dark:text-white">InternHack</span>
+          </Link>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+          <div className="w-8 h-8 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-sm font-bold">
+            {user?.name?.charAt(0)?.toUpperCase() ?? "R"}
+          </div>
+        </div>
       </div>
 
       {/* Mobile overlay */}

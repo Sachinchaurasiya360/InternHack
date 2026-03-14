@@ -493,42 +493,42 @@ export default function CompanyListPage() {
           transition={{ duration: 0.5, delay: 0.1 }}
           className="mb-6 flex items-center justify-center"
         >
-        <div className="flex items-center gap-1 bg-white dark:bg-gray-900 rounded-xl p-1 border border-gray-100 dark:border-gray-800 shadow-sm">
+        <div className="flex items-center gap-1 bg-white dark:bg-gray-900 rounded-xl p-1 border border-gray-100 dark:border-gray-800 shadow-sm overflow-x-auto">
           <button
             onClick={() => setActiveTab("all")}
-            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
               activeTab === "all"
                 ? "bg-white dark:bg-gray-900 text-gray-900 dark:text-white shadow-sm"
                 : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
-            <Building2 className="w-4 h-4" />
-            All Companies
+            <Building2 className="w-4 h-4 shrink-0" />
+            Companies
           </button>
           <button
             onClick={() => setActiveTab("yc")}
-            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
               activeTab === "yc"
                 ? "bg-white dark:bg-gray-900 text-orange-700 dark:text-orange-400 shadow-sm"
                 : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
-            <Rocket className="w-4 h-4" />
-            YC Companies
+            <Rocket className="w-4 h-4 shrink-0" />
+            YC
             <span className="px-1.5 py-0.5 bg-orange-50 dark:bg-orange-900/30 text-orange-600 dark:text-orange-400 text-[10px] font-bold rounded-full border border-orange-100 dark:border-orange-800">
               {ycStats?.total ?? "..."}
             </span>
           </button>
           <button
             onClick={() => setActiveTab("professors")}
-            className={`flex items-center gap-2 px-5 py-2 rounded-lg text-sm font-medium transition-all ${
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
               activeTab === "professors"
                 ? "bg-white dark:bg-gray-900 text-indigo-700 dark:text-indigo-400 shadow-sm"
                 : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
             }`}
           >
-            <GraduationCap className="w-4 h-4" />
-            IIT Professors
+            <GraduationCap className="w-4 h-4 shrink-0" />
+            Professors
             <span className="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded-full border border-indigo-100 dark:border-indigo-800">
               {profStats?.total ?? "..."}
             </span>

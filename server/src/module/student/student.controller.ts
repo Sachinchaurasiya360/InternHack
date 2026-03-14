@@ -46,7 +46,7 @@ export class StudentController {
       const [user, used] = await Promise.all([
         prisma.user.findUnique({
           where: { id: req.user.id },
-          select: { subscriptionPlan: true, subscriptionStatus: true },
+          select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
         }),
         prisma.usageLog.count({
           where: { userId: req.user.id, action: "MOCK_INTERVIEW", createdAt: { gte: startOfMonth } },
@@ -54,7 +54,7 @@ export class StudentController {
       ]);
       if (!user) return res.status(401).json({ message: "User not found" });
 
-      const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus);
+      const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
 
       if (tier === "FREE") {
         return res.json({ allowed: false, tier, calendlyUrl: null, used: 0, limit: 0 });
@@ -84,7 +84,7 @@ export class StudentController {
       const [user, used] = await Promise.all([
         prisma.user.findUnique({
           where: { id: req.user.id },
-          select: { subscriptionPlan: true, subscriptionStatus: true },
+          select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
         }),
         prisma.usageLog.count({
           where: { userId: req.user.id, action: "MOCK_INTERVIEW", createdAt: { gte: startOfMonth } },
@@ -92,7 +92,7 @@ export class StudentController {
       ]);
       if (!user) return res.status(401).json({ message: "User not found" });
 
-      const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus);
+      const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
       if (tier === "FREE") return res.status(403).json({ message: "Upgrade to Premium to book mock interviews." });
 
       if (used >= 1) return res.status(429).json({ message: "Monthly mock interview limit reached.", used, limit: 1 });

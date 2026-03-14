@@ -25,9 +25,9 @@ export class CompanyController {
       if (req.user) {
         const user = await prisma.user.findUnique({
           where: { id: req.user.id },
-          select: { subscriptionPlan: true, subscriptionStatus: true },
+          select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
         });
-        if (user) tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus);
+        if (user) tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
       }
 
       const data = await this.companyService.listCompanies(
