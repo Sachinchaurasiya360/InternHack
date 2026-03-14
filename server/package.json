@@ -19,7 +19,8 @@
     "seed:dsa": "tsx src/database/seed-dsa.ts",
     "seed:skill-tests": "tsx src/database/seed-skill-tests.ts",
     "seed:careers": "tsx src/module/career/career.seed.ts",
-    "seed:all": "tsx src/database/seed.ts && tsx src/database/seed-admin.ts && tsx src/database/seed-jobs.ts && tsx src/database/seed-gsoc.ts && tsx src/database/seed-yc.ts && tsx src/database/seed-opensource.ts && tsx src/database/seed-pune-companies.ts && tsx src/database/seed-aptitude.ts && tsx src/database/seed-dsa.ts && tsx src/database/seed-skill-tests.ts",
+    "seed:internships": "tsx src/database/seed-internships.ts",
+    "seed:all": "tsx src/database/seed.ts && tsx src/database/seed-admin.ts && tsx src/database/seed-jobs.ts && tsx src/database/seed-gsoc.ts && tsx src/database/seed-yc.ts && tsx src/database/seed-opensource.ts && tsx src/database/seed-pune-companies.ts && tsx src/database/seed-aptitude.ts && tsx src/database/seed-dsa.ts && tsx src/database/seed-skill-tests.ts && tsx src/database/seed-internships.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],

@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X } from "lucide-react";
+import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X, Sun, Moon } from "lucide-react";
 import { useAuthStore } from "../lib/auth.store";
+import { useThemeStore } from "../lib/theme.store";
 
 const NAV_ITEMS = [
   { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
@@ -19,6 +20,7 @@ const NAV_ITEMS = [
 
 export function useStudentSidebar() {
   const { user, logout } = useAuthStore();
+  const { theme, toggleTheme } = useThemeStore();
   const isPremium = user?.subscriptionStatus === "ACTIVE" && user.subscriptionPlan !== "FREE";
   const navigate = useNavigate();
   const [collapsed, setCollapsed] = useState(() => {
@@ -46,17 +48,36 @@ export function useStudentSidebar() {
   const sidebar = (
     <>
       {/* Mobile top bar */}
-      <div className="fixed top-0 left-0 right-0 z-40 lg:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
-        <button
-          onClick={() => setMobileOpen(true)}
-          className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
-        >
-          <Menu className="w-5 h-5" />
-        </button>
-        <Link to="/" className="flex items-center gap-2 no-underline">
-          <img src="/logo.png" alt="InternHack" className="h-7 w-7 rounded-lg object-contain" />
-          <span className="text-base font-bold text-gray-950 dark:text-white">InternHack</span>
-        </Link>
+      <div className="fixed top-0 left-0 right-0 z-40 lg:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setMobileOpen(true)}
+            className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+          <Link to="/" className="flex items-center gap-2 no-underline">
+            <img src="/logo.png" alt="InternHack" className="h-7 w-7 rounded-lg object-contain" />
+            <span className="text-base font-bold text-gray-950 dark:text-white">InternHack</span>
+          </Link>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={toggleTheme}
+            className="p-2 text-gray-500 dark:text-gray-400 hover:text-gray-950 dark:hover:text-white hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
+          >
+            {theme === "dark" ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
+          </button>
+          <Link to="/student/profile" className="no-underline">
+            {user?.profilePic && !imgError ? (
+              <img src={user.profilePic} alt={user.name} className="w-8 h-8 rounded-full object-cover" onError={() => setImgError(true)} />
+            ) : (
+              <div className="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
+                <User className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              </div>
+            )}
+          </Link>
+        </div>
       </div>
 
       {/* Mobile overlay */}

@@ -77,6 +77,69 @@ export class PaymentService {
     };
   }
 
+  // ── Handle Razorpay webhook event ──────────────────────────
+  async handleWebhook(rawBody: string, signature: string) {
+    const secret = process.env["RAZORPAY_WEBHOOK_SECRET"] || process.env["RAZORPAY_KEY_SECRET"]!;
+    const expectedSig = crypto
+      .createHmac("sha256", secret)
+      .update(rawBody)
+      .digest("hex");
+
+    const expectedBuf = Buffer.from(expectedSig, "hex");
+    const providedBuf = Buffer.from(signature, "hex");
+    if (expectedBuf.length !== providedBuf.length || !crypto.timingSafeEqual(expectedBuf, providedBuf)) {
+      throw new Error("Invalid webhook signature");
+    }
+
+    const event = JSON.parse(rawBody);
+    const eventType: string = event.event;
+
+    if (eventType === "payment.captured") {
+      const rpPayment = event.payload.payment.entity;
+      const orderId: string = rpPayment.order_id;
+
+      const payment = await prisma.payment.findUnique({ where: { razorpayOrderId: orderId } });
+      if (!payment || payment.status === "SUCCESS") return { status: "already_processed" };
+
+      // Verify amount matches
+      if (Number(rpPayment.amount) !== payment.amount) {
+        await prisma.payment.update({
+          where: { razorpayOrderId: orderId },
+          data: { razorpayPaymentId: rpPayment.id, status: "FAILED" },
+        });
+        throw new Error("Payment amount mismatch");
+      }
+
+      const now = new Date();
+      const endDate = new Date(now);
+      if (payment.billing === "yearly") {
+        endDate.setFullYear(endDate.getFullYear() + 1);
+      } else {
+        endDate.setMonth(endDate.getMonth() + 1);
+      }
+
+      await prisma.$transaction([
+        prisma.payment.update({
+          where: { razorpayOrderId: orderId },
+          data: { razorpayPaymentId: rpPayment.id, status: "SUCCESS" },
+        }),
+        prisma.user.update({
+          where: { id: payment.userId },
+          data: {
+            subscriptionPlan: payment.plan,
+            subscriptionStatus: "ACTIVE",
+            subscriptionStartDate: now,
+            subscriptionEndDate: endDate,
+          },
+        }),
+      ]);
+
+      return { status: "activated" };
+    }
+
+    return { status: "ignored", event: eventType };
+  }
+
   // ── Verify payment signature (HMAC-SHA256) ──────────────────
   async verifyPayment(
     razorpayOrderId: string,

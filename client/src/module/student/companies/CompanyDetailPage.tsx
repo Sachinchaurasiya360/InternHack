@@ -105,7 +105,7 @@ export default function CompanyDetailPage() {
       {/* Hero Header */}
       <div className="relative pt-24 pb-0 overflow-hidden">
         {/* Background gradient */}
-        <div className={`absolute inset-0 bg-gradient-to-br ${gradient} opacity-[0.06] dark:opacity-[0.12]`} />
+        <div className={`absolute inset-0 bg-linear-to-br ${gradient} opacity-[0.06] dark:opacity-[0.12]`} />
         <div
           className="absolute inset-0 opacity-[0.02]"
           style={{
@@ -114,7 +114,7 @@ export default function CompanyDetailPage() {
           }}
         />
 
-        <div className="relative z-10 max-w-5xl mx-auto px-6">
+        <div className="relative z-10 max-w-5xl mx-auto px-4 sm:px-6">
           {/* Breadcrumb */}
           <motion.div
             initial={{ opacity: 0, y: 10 }}
@@ -131,21 +131,21 @@ export default function CompanyDetailPage() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.1 }}
-            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-8 mb-8"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-xl shadow-gray-200/50 dark:shadow-gray-900/50 p-5 sm:p-8 mb-8"
           >
             <div className="flex flex-col md:flex-row items-start gap-6">
               {/* Logo */}
               {company.logo ? (
-                <img src={`${SERVER_URL}${company.logo}`} alt={company.name} className="w-24 h-24 rounded-2xl object-cover border border-gray-100 dark:border-gray-800 shadow-sm" />
+                <img src={`${SERVER_URL}${company.logo}`} alt={company.name} className="w-16 h-16 sm:w-24 sm:h-24 rounded-2xl object-cover border border-gray-100 dark:border-gray-800 shadow-sm" />
               ) : (
-                <div className={`w-24 h-24 rounded-2xl bg-gradient-to-br ${gradient} flex items-center justify-center shrink-0 shadow-sm`}>
-                  <Building2 className="w-10 h-10 text-white" />
+                <div className={`w-16 h-16 sm:w-24 sm:h-24 rounded-2xl bg-linear-to-br ${gradient} flex items-center justify-center shrink-0 shadow-sm`}>
+                  <Building2 className="w-7 h-7 sm:w-10 sm:h-10 text-white" />
                 </div>
               )}
 
               <div className="flex-1 min-w-0">
                 <div className="flex flex-wrap items-center gap-3 mb-2">
-                  <h1 className="font-display text-3xl md:text-4xl font-bold text-gray-950 dark:text-white tracking-tight">{company.name}</h1>
+                  <h1 className="font-display text-2xl sm:text-3xl md:text-4xl font-bold text-gray-950 dark:text-white tracking-tight">{company.name}</h1>
                   {company.hiringStatus && (
                     <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 text-sm font-medium rounded-full border border-emerald-200 dark:border-emerald-800">
                       <span className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse" />
@@ -163,7 +163,7 @@ export default function CompanyDetailPage() {
                   {company.foundedYear && <span className="flex items-center gap-1.5"><Calendar className="w-4 h-4" />Founded {company.foundedYear}</span>}
                 </div>
 
-                <div className="flex flex-wrap items-center gap-4 mt-4">
+                <div className="flex flex-col sm:flex-row sm:items-center gap-3 sm:gap-4 mt-4">
                   <div className="flex items-center gap-2">
                     <StarRating rating={Math.round(company.avgRating)} size="sm" />
                     <span className="text-sm font-semibold text-gray-800 dark:text-gray-200">{company.avgRating > 0 ? company.avgRating.toFixed(1) : "No ratings"}</span>
@@ -171,13 +171,13 @@ export default function CompanyDetailPage() {
                   </div>
 
                   {/* Quick action buttons */}
-                  <div className="flex items-center gap-2 ml-auto">
-                    {company.website && (
+                  {company.website && (
+                    <div className="flex items-center gap-2 sm:ml-auto">
                       <a href={company.website} target="_blank" rel="noopener noreferrer" className="inline-flex items-center gap-2 px-4 py-2 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-all shadow-sm no-underline">
                         <Globe className="w-4 h-4" /> Visit Website
                       </a>
-                    )}
-                  </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
@@ -186,7 +186,7 @@ export default function CompanyDetailPage() {
       </div>
 
       {/* Content */}
-      <div className="max-w-5xl mx-auto px-6 pb-16">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pb-16">
         <div className="grid md:grid-cols-3 gap-6">
           {/* Main Content - Left 2 cols */}
           <div className="md:col-span-2 space-y-6">
@@ -195,7 +195,7 @@ export default function CompanyDetailPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-6"
             >
               <h2 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-3">About</h2>
               <p className="text-sm text-gray-600 dark:text-gray-400 leading-relaxed whitespace-pre-line">{company.description}</p>
@@ -213,7 +213,7 @@ export default function CompanyDetailPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.25 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-6"
               >
                 <h2 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-4">Tech Stack</h2>
                 <div className="flex flex-wrap gap-2">
@@ -230,7 +230,7 @@ export default function CompanyDetailPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-6"
               >
                 <h2 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-4">Photos</h2>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
@@ -246,28 +246,28 @@ export default function CompanyDetailPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.35 }}
-              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6"
+              className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-6"
             >
-              <div className="flex items-center justify-between mb-5">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-5">
                 <h2 className="font-display text-lg font-bold text-gray-900 dark:text-white flex items-center gap-2">
-                  <Star className="w-5 h-5 text-amber-500" /> Reviews ({reviews.length})
+                  <Star className="w-5 h-5 text-amber-500 shrink-0" /> Reviews ({reviews.length})
                 </h2>
-                <div className="flex items-center gap-3">
+                <div className="flex items-center gap-2 sm:gap-3">
                   <select
                     value={sortBy}
                     onChange={(e) => setSortBy(e.target.value)}
                     className="px-3 py-1.5 border border-gray-200 dark:border-gray-700 rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/10 dark:bg-gray-800 dark:text-white"
                   >
                     <option value="latest">Latest</option>
-                    <option value="highest">Highest Rating</option>
-                    <option value="lowest">Lowest Rating</option>
+                    <option value="highest">Highest</option>
+                    <option value="lowest">Lowest</option>
                   </select>
                   {isAuthenticated && user?.role === "STUDENT" && (
                     <button
                       onClick={() => setShowReviewForm(true)}
-                      className="flex items-center gap-2 px-4 py-2 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-sm"
+                      className="flex items-center gap-2 px-3 sm:px-4 py-2 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-semibold rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors shadow-sm whitespace-nowrap"
                     >
-                      <MessageSquarePlus className="w-4 h-4" /> Write Review
+                      <MessageSquarePlus className="w-4 h-4" /> <span className="hidden sm:inline">Write</span> Review
                     </button>
                   )}
                 </div>
@@ -296,7 +296,7 @@ export default function CompanyDetailPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-6"
               >
                 <h2 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-4">Links</h2>
                 <div className="space-y-2">
@@ -324,7 +324,7 @@ export default function CompanyDetailPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.25 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-6"
               >
                 <h2 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-4">Key People</h2>
                 <div className="space-y-4">
@@ -361,7 +361,7 @@ export default function CompanyDetailPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.5, delay: 0.3 }}
-                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6"
+                className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4 sm:p-6"
               >
                 <h2 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-2">Contribute</h2>
                 <p className="text-xs text-gray-500 dark:text-gray-500 mb-4">Help keep information accurate</p>

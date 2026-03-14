@@ -1,6 +1,7 @@
 import type { Request, Response, NextFunction } from "express";
 import { ProfessorService } from "./professor.service.js";
 import { prisma } from "../../database/db.js";
+import { getPlanTier } from "../../config/usage-limits.js";
 
 const service = new ProfessorService();
 
@@ -20,14 +21,8 @@ export class ProfessorController {
           where: { id: req.user.id },
           select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
         });
-        if (
-          user &&
-          user.subscriptionPlan !== "FREE" &&
-          user.subscriptionStatus === "ACTIVE" &&
-          user.subscriptionEndDate &&
-          user.subscriptionEndDate > new Date()
-        ) {
-          isPremium = true;
+        if (user) {
+          isPremium = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate) === "PREMIUM";
         }
       }
 

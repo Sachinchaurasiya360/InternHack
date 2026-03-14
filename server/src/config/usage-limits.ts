@@ -13,10 +13,13 @@ export const DAILY_LIMITS: Record<UsageAction, Record<PlanTier, number>> = {
 export function getPlanTier(
   subscriptionPlan: string,
   subscriptionStatus: string,
+  subscriptionEndDate?: Date | null,
 ): PlanTier {
   if (
     (subscriptionPlan === "MONTHLY" || subscriptionPlan === "YEARLY") &&
-    subscriptionStatus === "ACTIVE"
+    subscriptionStatus === "ACTIVE" &&
+    subscriptionEndDate != null &&
+    subscriptionEndDate > new Date()
   ) {
     return "PREMIUM";
   }

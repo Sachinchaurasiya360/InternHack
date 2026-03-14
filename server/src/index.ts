@@ -41,6 +41,7 @@ import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 import { initServiceProviders } from "./lib/ai-provider-registry.js";
 import { startFollowUpCron } from "./cron/scheduled-emails.js";
+import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -218,4 +219,7 @@ app.listen(PORT, async () => {
 
   // Start the 10-day follow-up email cron (daily at 9 AM)
   startFollowUpCron();
+
+  // Start subscription expiry cron (daily at midnight)
+  startSubscriptionExpiryCron();
 });

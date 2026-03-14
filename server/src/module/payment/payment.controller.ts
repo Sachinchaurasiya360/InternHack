@@ -1,5 +1,6 @@
 import type { Request, Response, NextFunction } from "express";
 import type { PaymentService } from "./payment.service.js";
+import { createOrderSchema, verifyPaymentSchema } from "./payment.validation.js";
 
 export class PaymentController {
   constructor(private readonly paymentService: PaymentService) {}
@@ -11,20 +12,13 @@ export class PaymentController {
         return;
       }
 
-      const { plan, billing } = req.body;
-
-      // Validate plan
-      if (!plan || !["pro", "premium"].includes(plan)) {
-        res.status(400).json({ message: "Invalid plan. Must be 'pro' or 'premium'" });
+      const parsed = createOrderSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ message: parsed.error.issues[0]?.message ?? "Invalid request body" });
         return;
       }
 
-      // Validate billing
-      if (!billing || !["monthly", "yearly"].includes(billing)) {
-        res.status(400).json({ message: "Invalid billing. Must be 'monthly' or 'yearly'" });
-        return;
-      }
-
+      const { plan, billing } = parsed.data;
       const order = await this.paymentService.createOrder(req.user.id, plan, billing);
       res.json(order);
     } catch (err) {
@@ -39,12 +33,13 @@ export class PaymentController {
         return;
       }
 
-      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = req.body;
-
-      if (!razorpay_order_id || !razorpay_payment_id || !razorpay_signature) {
-        res.status(400).json({ message: "Missing payment verification fields" });
+      const parsed = verifyPaymentSchema.safeParse(req.body);
+      if (!parsed.success) {
+        res.status(400).json({ message: parsed.error.issues[0]?.message ?? "Missing payment verification fields" });
         return;
       }
+
+      const { razorpay_order_id, razorpay_payment_id, razorpay_signature } = parsed.data;
 
       const result = await this.paymentService.verifyPayment(
         razorpay_order_id,
@@ -74,6 +69,28 @@ export class PaymentController {
         }
       }
       next(err);
+    }
+  }
+
+  async handleWebhook(req: Request, res: Response) {
+    try {
+      const signature = req.headers["x-razorpay-signature"] as string | undefined;
+      if (!signature) {
+        res.status(400).json({ message: "Missing x-razorpay-signature header" });
+        return;
+      }
+
+      // req.body is the raw string when express.raw() is used on this route
+      const rawBody = typeof req.body === "string" ? req.body : JSON.stringify(req.body);
+      const result = await this.paymentService.handleWebhook(rawBody, signature);
+      res.json(result);
+    } catch (err) {
+      if (err instanceof Error && err.message === "Invalid webhook signature") {
+        res.status(400).json({ message: err.message });
+        return;
+      }
+      console.error("[Webhook] Error:", err);
+      res.status(500).json({ message: "Webhook processing failed" });
     }
   }
 }

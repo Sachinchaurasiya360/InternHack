@@ -26,10 +26,14 @@ function StudentLearnLayout() {
 
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
-      <Navbar sidebarOffset={sidebarWidth} />
+      <div className="hidden lg:block">
+        <Navbar sidebarOffset={sidebarWidth} />
+      </div>
       {sidebar}
       <main
-        className={`${collapsed ? "ml-18" : "ml-64"} pt-24 p-8 transition-all duration-300 overflow-auto`}
+        className={`pt-16 lg:pt-24 px-4 pb-8 sm:px-6 lg:px-8 transition-all duration-300 overflow-auto ${
+          collapsed ? "lg:ml-18" : "lg:ml-64"
+        }`}
       >
         <Outlet />
       </main>
