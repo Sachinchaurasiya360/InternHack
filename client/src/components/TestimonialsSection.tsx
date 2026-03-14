@@ -84,8 +84,8 @@ export function TestimonialsSection() {
         >
           <BounceCards
             images={bounceImages}
-            containerWidth={500}
-            containerHeight={250}
+            containerWidth={320}
+            containerHeight={180}
             animationDelay={0.3}
             animationStagger={0.06}
             easeType="elastic.out(1, 0.8)"

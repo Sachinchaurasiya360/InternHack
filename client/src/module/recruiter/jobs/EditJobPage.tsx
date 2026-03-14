@@ -86,7 +86,7 @@ export default function EditJobPage() {
           <textarea value={form.description} onChange={(e) => setForm({ ...form, description: e.target.value })}
             className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 min-h-[120px] dark:bg-gray-800 dark:text-white" />
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Location</label>
             <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
@@ -98,7 +98,7 @@ export default function EditJobPage() {
               className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 dark:bg-gray-800 dark:text-white" />
           </div>
         </div>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Company</label>
             <input type="text" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })}

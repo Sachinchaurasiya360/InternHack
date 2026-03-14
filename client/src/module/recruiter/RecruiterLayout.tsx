@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Outlet, useNavigate } from "react-router";
-import { LayoutDashboard, Briefcase, PlusCircle, Search, LogOut, ChevronsLeft, ChevronsRight, Home, Users, School, User } from "lucide-react";
+import { LayoutDashboard, Briefcase, PlusCircle, Search, LogOut, ChevronsLeft, ChevronsRight, Home, Users, School, User, Menu, X } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
@@ -22,6 +22,7 @@ export default function RecruiterLayout() {
   const [collapsed, setCollapsed] = useState(() => {
     return localStorage.getItem("recruiter-sidebar-collapsed") === "true";
   });
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   const toggleSidebar = () => {
     setCollapsed((prev) => {
@@ -40,23 +41,54 @@ export default function RecruiterLayout() {
   return (
     <div className="min-h-screen bg-gray-50 dark:bg-gray-950">
       <SEO title="Recruiter Dashboard" noIndex />
-      <Navbar sidebarOffset={sidebarWidth} />
+
+      {/* Navbar — hidden on mobile, mobile top bar replaces it */}
+      <div className="hidden lg:block">
+        <Navbar sidebarOffset={sidebarWidth} />
+      </div>
+
+      {/* Mobile top bar */}
+      <div className="fixed top-0 left-0 right-0 z-40 lg:hidden bg-white dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 px-4 py-3 flex items-center gap-3">
+        <button
+          onClick={() => setMobileOpen(true)}
+          className="p-1.5 rounded-lg text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors"
+        >
+          <Menu className="w-5 h-5" />
+        </button>
+        <span className="text-sm font-bold text-gray-900 dark:text-white truncate">{user?.company || "Recruiter"}</span>
+      </div>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          className="fixed inset-0 z-40 bg-black/50 lg:hidden"
+          onClick={() => setMobileOpen(false)}
+        />
+      )}
 
       {/* Sidebar */}
       <aside
-        className={`${
+        className={`fixed top-0 left-0 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 z-50 ${
           collapsed ? "w-18" : "w-64"
-        } fixed top-0 left-0 h-screen bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-all duration-300 z-30`}
+        } ${mobileOpen ? "translate-x-0" : "-translate-x-full"} lg:translate-x-0`}
       >
         {/* Toggle + User */}
         <div className={`${collapsed ? "px-3 pt-2 pb-1" : "px-5 pt-3 pb-1"}`}>
-          <button
-            onClick={toggleSidebar}
-            className="w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors mb-2"
-            title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
-          >
-            {collapsed ? <ChevronsRight className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
-          </button>
+          <div className="flex items-center justify-between mb-2">
+            <button
+              onClick={toggleSidebar}
+              className="hidden lg:flex w-8 h-8 rounded-lg border border-gray-200 dark:border-gray-700 items-center justify-center text-gray-400 dark:text-gray-500 hover:bg-gray-50 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+              title={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+            >
+              {collapsed ? <ChevronsRight className="w-4 h-4" /> : <ChevronsLeft className="w-4 h-4" />}
+            </button>
+            <button
+              onClick={() => setMobileOpen(false)}
+              className="lg:hidden p-1 rounded-lg text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 transition-colors"
+            >
+              <X className="w-5 h-5" />
+            </button>
+          </div>
 
           {collapsed ? (
             <div className="w-9 h-9 rounded-full bg-gray-900 dark:bg-white text-white dark:text-gray-900 flex items-center justify-center text-sm font-bold mx-auto mb-2">
@@ -78,6 +110,7 @@ export default function RecruiterLayout() {
               to={item.to}
               end={item.end}
               title={collapsed ? item.label : undefined}
+              onClick={() => setMobileOpen(false)}
               className={({ isActive }) =>
                 `flex items-center gap-3 rounded-lg text-sm font-medium transition-colors ${
                   collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
@@ -111,7 +144,9 @@ export default function RecruiterLayout() {
 
       {/* Main Content */}
       <main
-        className={`${collapsed ? "ml-18" : "ml-64"} pt-24 p-8 transition-all duration-300 overflow-auto`}
+        className={`pt-16 lg:pt-24 px-4 pb-8 sm:px-6 lg:px-8 transition-all duration-300 overflow-auto ${
+          collapsed ? "lg:ml-18" : "lg:ml-64"
+        }`}
       >
         <Outlet />
       </main>

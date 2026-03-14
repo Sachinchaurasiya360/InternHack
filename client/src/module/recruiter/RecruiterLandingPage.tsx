@@ -123,7 +123,7 @@ export default function RecruiterLandingPage() {
             initial="hidden"
             animate="visible"
             variants={fadeInUp}
-            className="font-display text-5xl sm:text-7xl md:text-[5.5rem] font-bold leading-[1.05] tracking-tight text-gray-950 dark:text-white mb-6"
+            className="font-display text-3xl sm:text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight text-gray-950 dark:text-white mb-6"
           >
             Hire smarter,
             <br />
@@ -174,7 +174,7 @@ export default function RecruiterLandingPage() {
       {/* ════════ Stats ════════ */}
       <section className="relative py-16 bg-white dark:bg-gray-900 border-y border-gray-100 dark:border-gray-800">
         <div className="max-w-5xl mx-auto px-6">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 sm:gap-8">
             {stats.map((item, i) => (
               <motion.div
                 key={i}

@@ -50,7 +50,7 @@ export default function JobAnalyticsPage() {
       {/* Status Breakdown */}
       <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm mb-6">
         <h2 className="text-lg font-semibold mb-4 dark:text-white">Application Status</h2>
-        <div className="grid grid-cols-3 md:grid-cols-6 gap-3">
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3">
           {Object.entries(data.statusBreakdown).map(([status, count]) => (
             <div key={status} className="text-center p-3 bg-gray-50 dark:bg-gray-950 rounded-lg">
               <p className="text-2xl font-bold text-gray-900 dark:text-white">{count}</p>
@@ -97,7 +97,7 @@ export default function JobAnalyticsPage() {
                       <TrendingDown className="w-3 h-3" /> {dropRate}%
                     </span>
                   </div>
-                  <div className="ml-44 flex gap-4 text-xs text-gray-400 dark:text-gray-500 mt-1">
+                  <div className="sm:ml-44 flex flex-wrap gap-2 sm:gap-4 text-xs text-gray-400 dark:text-gray-500 mt-1">
                     <span>{round.completed} completed</span>
                     <span>{round.inProgress} in progress</span>
                     <span>{round.pending} pending</span>
@@ -112,17 +112,17 @@ export default function JobAnalyticsPage() {
       {/* Conversion Rate */}
       <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm">
         <h2 className="text-lg font-semibold mb-4 dark:text-white">Key Metrics</h2>
-        <div className="grid grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div className="text-center">
-            <p className="text-3xl font-bold text-gray-900 dark:text-white">{data.totalApplications}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{data.totalApplications}</p>
             <p className="text-sm text-gray-500 dark:text-gray-500">Total Applicants</p>
           </div>
           <div className="text-center">
-            <p className="text-3xl font-bold text-gray-900 dark:text-white">{data.statusBreakdown["HIRED"] || 0}</p>
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">{data.statusBreakdown["HIRED"] || 0}</p>
             <p className="text-sm text-gray-500 dark:text-gray-500">Hired</p>
           </div>
           <div className="text-center">
-            <p className="text-3xl font-bold text-gray-900 dark:text-white">
+            <p className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-white">
               {data.totalApplications > 0 ? ((data.statusBreakdown["HIRED"] || 0) / data.totalApplications * 100).toFixed(1) : "0"}%
             </p>
             <p className="text-sm text-gray-500 dark:text-gray-500">Conversion Rate</p>

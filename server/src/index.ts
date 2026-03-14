@@ -172,8 +172,9 @@ app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
 app.use("/api/universities", universityRouter);
 
-// Public external jobs endpoint (no auth)
+// Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
+app.get("/api/external-jobs/:slug", (req, res) => publicAdminController.getPublicExternalJobBySlug(req, res));
 app.get("/api/external-jobs", (req, res) => publicAdminController.getPublicExternalJobs(req, res));
 
 // ── Static files (public folder) ──

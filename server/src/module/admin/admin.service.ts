@@ -61,6 +61,7 @@ export class AdminService {
         name: user.name,
         email: user.email,
         role: user.role,
+        isVerified: true,
         company: user.company,
         designation: user.designation,
       },
@@ -1739,13 +1740,22 @@ export class AdminService {
 
   // ==================== ADMIN EXTERNAL JOBS ====================
 
+  private generateSlug(company?: string, role?: string): string {
+    const base = [company, role].filter(Boolean).join(" ") || "job";
+    const slug = base.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+    const suffix = Math.random().toString(36).slice(2, 6);
+    return `${slug}-${suffix}`;
+  }
+
   async createExternalJob(data: {
     company?: string; role?: string; description?: string;
     salary?: string; location?: string; applyLink?: string; tags?: string[];
   }) {
     const expiresAt = new Date(Date.now() + 10 * 24 * 60 * 60 * 1000); // 10 days
+    const slug = this.generateSlug(data.company, data.role);
     return prisma.adminJob.create({
       data: {
+        slug,
         company: data.company || null,
         role: data.role || null,
         description: data.description || null,
@@ -1809,7 +1819,7 @@ export class AdminService {
         skip: (query.page - 1) * query.limit,
         take: query.limit,
         select: {
-          id: true, company: true, role: true, description: true,
+          id: true, slug: true, company: true, role: true, description: true,
           salary: true, location: true, applyLink: true, tags: true,
           expiresAt: true, createdAt: true,
         },
@@ -1817,5 +1827,17 @@ export class AdminService {
       prisma.adminJob.count({ where }),
     ]);
     return { jobs, total, totalPages: Math.ceil(total / query.limit), page: query.page };
+  }
+
+  async getPublicExternalJobBySlug(slug: string) {
+    const now = new Date();
+    return prisma.adminJob.findFirst({
+      where: { slug, isActive: true, expiresAt: { gt: now } },
+      select: {
+        id: true, slug: true, company: true, role: true, description: true,
+        salary: true, location: true, applyLink: true, tags: true,
+        expiresAt: true, createdAt: true,
+      },
+    });
   }
 }

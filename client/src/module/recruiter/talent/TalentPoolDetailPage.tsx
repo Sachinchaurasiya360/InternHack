@@ -296,6 +296,7 @@ export default function TalentPoolDetailPage() {
                     src={member.student.profilePic}
                     alt={member.student.name}
                     className="w-12 h-12 rounded-full object-cover flex-shrink-0"
+                    onError={(e) => { e.currentTarget.style.display = "none"; }}
                   />
                 ) : (
                   <div className="w-12 h-12 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center flex-shrink-0">

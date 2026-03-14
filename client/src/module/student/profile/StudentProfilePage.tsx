@@ -509,8 +509,10 @@ export default function StudentProfilePage() {
               <div className="relative group mb-3">
                 <div className="w-24 h-24 rounded-2xl bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-900 shadow-lg text-gray-900 dark:text-white flex items-center justify-center text-3xl font-bold overflow-hidden">
                   {form.profilePic ? (
-                    <img src={form.profilePic} alt={form.name} className="w-24 h-24 rounded-2xl object-cover" />
-                  ) : (form.name.charAt(0).toUpperCase())}
+                    <img src={form.profilePic} alt={form.name} className="w-24 h-24 rounded-2xl object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+                  ) : (
+                    <User className="w-10 h-10 text-gray-400 dark:text-gray-500" />
+                  )}
                 </div>
                 <button type="button" onClick={() => picInputRef.current?.click()} disabled={uploadingPic}
                   className="absolute inset-0 w-24 h-24 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">

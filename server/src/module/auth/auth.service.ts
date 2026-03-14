@@ -6,6 +6,7 @@ import { generateToken } from "../../utils/jwt.utils.js";
 import { BadgeService } from "../badge/badge.service.js";
 
 const badgeService = new BadgeService();
+import { signUrls } from "../../utils/s3.utils.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { welcomeEmailHtml, otpEmailHtml, resetPasswordEmailHtml } from "../../utils/email-templates.js";
 import type { UserRole } from "@prisma/client";
@@ -37,6 +38,7 @@ interface UpdateProfileInput {
   jobStatus?: string | null;
   projects?: { id: string; title: string; description: string; techStack: string[]; liveUrl?: string; repoUrl?: string }[];
   achievements?: { id: string; title: string; description: string; date?: string }[];
+  isProfilePublic?: boolean;
 }
 
 interface LoginInput {
@@ -282,6 +284,10 @@ export class AuthService {
       throw new Error("User not found");
     }
 
+    if (user.resumes.length > 0) {
+      (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
+    }
+
     return user;
   }
 
@@ -307,6 +313,9 @@ export class AuthService {
     if ("achievements" in data) {
       updateData.achievements = Array.isArray(data.achievements) ? data.achievements : [];
     }
+    if ("isProfilePublic" in data) {
+      updateData.isProfilePublic = !!data.isProfilePublic;
+    }
 
     const user = await prisma.user.update({
       where: { id: userId },
@@ -316,6 +325,10 @@ export class AuthService {
 
     // Check profile_complete badge (fire-and-forget)
     badgeService.checkAndAwardBadges(userId, "profile_complete").catch(() => {});
+
+    if (user.resumes.length > 0) {
+      (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
+    }
 
     return user;
   }
@@ -341,6 +354,9 @@ export class AuthService {
     }
 
     const { atsScores, ...rest } = user;
+    if (rest.resumes.length > 0) {
+      (rest as Record<string, unknown>).resumes = await signUrls(rest.resumes);
+    }
     return {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,

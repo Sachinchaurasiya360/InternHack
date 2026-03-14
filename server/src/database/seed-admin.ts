@@ -3,9 +3,9 @@ import { prisma } from "./db.js";
 import { hashPassword } from "../utils/password.utils.js";
 
 async function seedAdmin() {
-  const email = process.env["ADMIN_EMAIL"] || "1mrsachinchaurasiya@gmail.com";
-  const password = process.env["ADMIN_PASSWORD"] || "Admin@123";
-  const name = process.env["ADMIN_NAME"] || "Super Admin";
+  const email = process.env["ADMIN_EMAIL"] || "mrsachinchaurasiya@gmail.com";
+  const password = process.env["ADMIN_PASSWORD"] || "Sachin@321";
+  const name = process.env["ADMIN_NAME"] || "Sachin Chaurasiya";
 
   const existing = await prisma.user.findUnique({ where: { email } });
   if (existing) {
@@ -44,7 +44,7 @@ async function seedAdmin() {
 
   // ── Seed Recruiter ──
   const recruiterEmail = "recruiter@internhack.xyz";
-  const recruiterPassword = "Recruiter@123";
+  const recruiterPassword = "Sachin@321";
 
   const existingRecruiter = await prisma.user.findUnique({ where: { email: recruiterEmail } });
   if (existingRecruiter) {

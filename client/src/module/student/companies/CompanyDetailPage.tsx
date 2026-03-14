@@ -233,7 +233,7 @@ export default function CompanyDetailPage() {
                 className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-6"
               >
                 <h2 className="font-display text-lg font-bold text-gray-900 dark:text-white mb-4">Photos</h2>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                   {company.photos.map((photo, i) => (
                     <img key={i} src={`${SERVER_URL}${photo}`} alt="" className="w-full h-40 object-cover rounded-xl" />
                   ))}

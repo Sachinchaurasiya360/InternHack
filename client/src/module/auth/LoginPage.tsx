@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
 import {  Eye, EyeOff } from "lucide-react";
 import { GoogleLogin } from "@react-oauth/google";
@@ -10,6 +10,8 @@ import { SEO } from "../../components/SEO";
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const returnTo = searchParams.get("from");
   const login = useAuthStore((s) => s.login);
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
@@ -24,7 +26,9 @@ export default function LoginPage() {
         credential: credentialResponse.credential,
       });
       login(data.user);
-      if (data.user.role === "ADMIN") {
+      if (returnTo) {
+        navigate(returnTo);
+      } else if (data.user.role === "ADMIN") {
         navigate("/admin");
       } else if (data.user.role === "RECRUITER") {
         navigate("/recruiters");
@@ -47,7 +51,9 @@ export default function LoginPage() {
     try {
       const { data } = await api.post("/auth/login", form);
       login(data.user);
-      if (data.user.role === "ADMIN") {
+      if (returnTo) {
+        navigate(returnTo);
+      } else if (data.user.role === "ADMIN") {
         navigate("/admin");
       } else if (data.user.role === "RECRUITER") {
         navigate("/recruiters");
