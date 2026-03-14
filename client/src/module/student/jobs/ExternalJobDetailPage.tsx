@@ -1,6 +1,6 @@
 import { useParams, Link, useNavigate, useLocation } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, DollarSign, Building2, CalendarDays, Tag, ExternalLink } from "lucide-react";
+import { ArrowLeft, MapPin, IndianRupee, Building2, CalendarDays, Tag, ExternalLink } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
@@ -65,7 +65,7 @@ export default function ExternalJobDetailPage() {
     <>
       <SEO title={`${job.role || "Job"} at ${job.company || "Company"}`} description={job.description?.slice(0, 160) || ""} />
       <Navbar />
-      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 py-8 px-4">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-950 pt-24 pb-8 px-4">
         <motion.div initial="hidden" animate="show" variants={{ show: { transition: { staggerChildren: 0.07 } } }}
           className="max-w-3xl mx-auto">
 
@@ -98,7 +98,7 @@ export default function ExternalJobDetailPage() {
                 )}
                 {job.salary && (
                   <span className="flex items-center gap-1.5">
-                    <DollarSign className="w-4 h-4" /> {job.salary}
+                    <IndianRupee className="w-4 h-4" /> {job.salary}
                   </span>
                 )}
                 {job.company && (
