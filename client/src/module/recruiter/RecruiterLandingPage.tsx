@@ -148,7 +148,7 @@ export default function RecruiterLandingPage() {
             variants={fadeInUp}
             className="flex flex-col sm:flex-row gap-4 justify-center items-center"
           >
-            <Link to="/register?role=RECRUITER" className="no-underline">
+            <Link to="/recruiter/register" className="no-underline">
               <motion.button
                 whileHover={{ scale: 1.03, y: -2 }}
                 whileTap={{ scale: 0.98 }}
@@ -349,7 +349,7 @@ export default function RecruiterLandingPage() {
                 pipelines, and hire top student talent.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link to="/register?role=RECRUITER" className="no-underline">
+                <Link to="/recruiter/register" className="no-underline">
                   <motion.button
                     whileHover={{ scale: 1.03, y: -2 }}
                     whileTap={{ scale: 0.98 }}

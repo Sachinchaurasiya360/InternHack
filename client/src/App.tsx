@@ -1,4 +1,4 @@
-import { lazy, Suspense } from "react";
+import { lazy, Suspense, type ComponentType } from "react";
 import { BrowserRouter, Navigate, Route, Routes, useParams } from "react-router";
 import { useAuthStore } from "./lib/auth.store";
 import { Toaster } from "react-hot-toast";
@@ -6,145 +6,164 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import { ErrorBoundary } from "./components/ErrorBoundary";
 import { LoadingScreen } from "./components/LoadingScreen";
 
+function lazyWithRetry(factory: () => Promise<{ default: ComponentType<unknown> }>) {
+  return lazy(() =>
+    factory().catch((err: unknown) => {
+      const key = "chunk_reload";
+      if (!sessionStorage.getItem(key)) {
+        sessionStorage.setItem(key, "1");
+        window.location.reload();
+        return new Promise(() => {}); // never resolves — page is reloading
+      }
+      sessionStorage.removeItem(key);
+      throw err;
+    }),
+  );
+}
+
 // Public pages
-const LandingPage = lazy(() => import("./module/LandingPage/landingPage"));
-const LoginPage = lazy(() => import("./module/auth/LoginPage"));
-const RegisterPage = lazy(() => import("./module/auth/RegisterPage"));
-const VerifyEmailPage = lazy(() => import("./module/auth/VerifyEmailPage"));
-const ForgotPasswordPage = lazy(() => import("./module/auth/ForgotPasswordPage"));
-const JobBrowsePage = lazy(() => import("./module/student/jobs/JobBrowsePage"));
-const JobDetailPage = lazy(() => import("./module/student/jobs/JobDetailPage"));
-const ScrapedJobsPage = lazy(() => import("./module/scraped-jobs/ScrapedJobsPage"));
-const ScrapedJobDetailPage = lazy(() => import("./module/scraped-jobs/ScrapedJobDetailPage"));
-const CompanyListPage = lazy(() => import("./module/student/companies/CompanyListPage"));
-const CompanyDetailPage = lazy(() => import("./module/student/companies/CompanyDetailPage"));
-const PublicAtsPage = lazy(() => import("./module/student/ats/PublicAtsPage"));
-const GrantsPage = lazy(() => import("./module/student/grants/GrantsPage"));
-const PublicOpenSourcePage = lazy(() => import("./module/student/opensource/PublicOpenSourcePage"));
-const BlogListPage = lazy(() => import("./module/blog/BlogListPage"));
-const BlogPostPage = lazy(() => import("./module/blog/BlogPostPage"));
-const RecruiterLandingPage = lazy(() => import("./module/recruiter/RecruiterLandingPage"));
-const AptitudeCategoriesPage = lazy(() => import("./module/student/aptitude/AptitudeCategoriesPage"));
-const AptitudeTopicPage = lazy(() => import("./module/student/aptitude/AptitudeTopicPage"));
-const AptitudeCompaniesPage = lazy(() => import("./module/student/aptitude/AptitudeCompaniesPage"));
-const DsaTopicsPage = lazy(() => import("./module/student/dsa/DsaTopicsPage"));
-const DsaTopicDetailPage = lazy(() => import("./module/student/dsa/DsaTopicDetailPage"));
-const DsaCompaniesPage = lazy(() => import("./module/student/dsa/DsaCompaniesPage"));
-const DsaPatternsPage = lazy(() => import("./module/student/dsa/DsaPatternsPage"));
-const DsaBookmarksPage = lazy(() => import("./module/student/dsa/DsaBookmarksPage"));
-const YCCompanyDetailPage = lazy(() => import("./module/student/companies/YCCompanyDetailPage"));
-const GovInternshipsPage = lazy(() => import("./module/student/jobs/GovInternshipsPage"));
-const ExternalJobDetailPage = lazy(() => import("./module/student/jobs/ExternalJobDetailPage"));
+const LandingPage = lazyWithRetry(() => import("./module/LandingPage/landingPage"));
+const LoginPage = lazyWithRetry(() => import("./module/auth/LoginPage"));
+const RegisterPage = lazyWithRetry(() => import("./module/auth/RegisterPage"));
+const VerifyEmailPage = lazyWithRetry(() => import("./module/auth/VerifyEmailPage"));
+const ForgotPasswordPage = lazyWithRetry(() => import("./module/auth/ForgotPasswordPage"));
+const JobBrowsePage = lazyWithRetry(() => import("./module/student/jobs/JobBrowsePage"));
+const JobDetailPage = lazyWithRetry(() => import("./module/student/jobs/JobDetailPage"));
+const ScrapedJobsPage = lazyWithRetry(() => import("./module/scraped-jobs/ScrapedJobsPage"));
+const ScrapedJobDetailPage = lazyWithRetry(() => import("./module/scraped-jobs/ScrapedJobDetailPage"));
+const CompanyListPage = lazyWithRetry(() => import("./module/student/companies/CompanyListPage"));
+const CompanyDetailPage = lazyWithRetry(() => import("./module/student/companies/CompanyDetailPage"));
+const PublicAtsPage = lazyWithRetry(() => import("./module/student/ats/PublicAtsPage"));
+const GrantsPage = lazyWithRetry(() => import("./module/student/grants/GrantsPage"));
+const PublicOpenSourcePage = lazyWithRetry(() => import("./module/student/opensource/PublicOpenSourcePage"));
+const BlogListPage = lazyWithRetry(() => import("./module/blog/BlogListPage"));
+const BlogPostPage = lazyWithRetry(() => import("./module/blog/BlogPostPage"));
+const RecruiterLandingPage = lazyWithRetry(() => import("./module/recruiter/RecruiterLandingPage"));
+const AptitudeCategoriesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCategoriesPage"));
+const AptitudeTopicPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTopicPage"));
+const AptitudeCompaniesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCompaniesPage"));
+const DsaTopicsPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicsPage"));
+const DsaTopicDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicDetailPage"));
+const DsaCompaniesPage = lazyWithRetry(() => import("./module/student/dsa/DsaCompaniesPage"));
+const DsaPatternsPage = lazyWithRetry(() => import("./module/student/dsa/DsaPatternsPage"));
+const DsaBookmarksPage = lazyWithRetry(() => import("./module/student/dsa/DsaBookmarksPage"));
+const YCCompanyDetailPage = lazyWithRetry(() => import("./module/student/companies/YCCompanyDetailPage"));
+const GovInternshipsPage = lazyWithRetry(() => import("./module/student/jobs/GovInternshipsPage"));
+const ExternalJobDetailPage = lazyWithRetry(() => import("./module/student/jobs/ExternalJobDetailPage"));
 
 // Student pages
-const ApplyPage = lazy(() => import("./module/student/applications/ApplyPage"));
-const StudentLayout = lazy(() => import("./module/student/StudentLayout"));
-const MyApplicationsPage = lazy(() => import("./module/student/applications/MyApplicationsPage"));
-const ApplicationProgressPage = lazy(() => import("./module/student/applications/ApplicationProgressPage"));
-const AtsLandingPage = lazy(() => import("./module/student/ats/AtsLandingPage"));
-const AtsScorePage = lazy(() => import("./module/student/ats/AtsScorePage"));
-const AtsHistoryPage = lazy(() => import("./module/student/ats/AtsHistoryPage"));
-const AtsScoreDetailPage = lazy(() => import("./module/student/ats/AtsScoreDetailPage"));
-const ResumeBuilderPage = lazy(() => import("./module/student/ats/ResumeBuilderPage"));
-const CoverLetterPage = lazy(() => import("./module/student/ats/CoverLetterPage"));
-const LatexResumeEditor = lazy(() => import("./module/student/ats/LatexResumeEditor"));
-const ResumeGeneratorPage = lazy(() => import("./module/student/ats/ResumeGeneratorPage"));
-const AddCompanyPage = lazy(() => import("./module/student/companies/AddCompanyPage"));
-const StudentProfilePage = lazy(() => import("./module/student/profile/StudentProfilePage"));
-const PublicProfilePage = lazy(() => import("./module/student/profile/PublicProfilePage"));
-const RepoDiscoveryPage = lazy(() => import("./module/student/opensource/RepoDiscoveryPage"));
-const GSoCReposPage = lazy(() => import("./module/student/opensource/GSoCReposPage"));
-const ProgramTrackerPage = lazy(() => import("./module/student/opensource/ProgramTrackerPage"));
-const FirstPRRoadmapPage = lazy(() => import("./module/student/opensource/FirstPRRoadmapPage"));
-const FirstPRSectionPage = lazy(() => import("./module/student/opensource/FirstPRSectionPage"));
-const GSoCProposalPage = lazy(() => import("./module/student/opensource/GSoCProposalPage"));
-const GSoCProposalStepPage = lazy(() => import("./module/student/opensource/GSoCProposalStepPage"));
-const OpenSourceAnalyticsPage = lazy(() => import("./module/student/opensource/OpenSourceAnalyticsPage"));
-const GrantTrackerPage = lazy(() => import("./module/student/grants/GrantTrackerPage"));
-const HackathonCalendarPage = lazy(() => import("./module/student/grants/HackathonCalendarPage"));
-const ProjectIdeasPage = lazy(() => import("./module/student/grants/ProjectIdeasPage"));
-const CheckoutPage = lazy(() => import("./module/student/checkout/CheckoutPage"));
-const SqlPracticePage = lazy(() => import("./module/student/sql/SqlPracticePage"));
-const SkillVerificationPage = lazy(() => import("./module/student/skill-verification/SkillVerificationPage"));
-const SkillTestPage = lazy(() => import("./module/student/skill-verification/SkillTestPage"));
-const SqlExercisePage = lazy(() => import("./module/student/sql/SqlExercisePage"));
-const SqlPlaygroundPage = lazy(() => import("./module/student/sql/SqlPlaygroundPage"));
-const MockInterviewPage = lazy(() => import("./module/student/mock-interview/MockInterviewPage"));
-const LearnLayout = lazy(() => import("./module/student/learn/LearnLayout"));
-const LearnHubPage = lazy(() => import("./module/student/learn/LearnHubPage"));
-const JsLessonsPage = lazy(() => import("./module/student/javascript/JsLessonsPage"));
-const JsSectionPage = lazy(() => import("./module/student/javascript/JsSectionPage"));
-const JsLessonDetailPage = lazy(() => import("./module/student/javascript/JsLessonDetailPage"));
-const HtmlLessonsPage = lazy(() => import("./module/student/html/HtmlLessonsPage"));
-const HtmlSectionPage = lazy(() => import("./module/student/html/HtmlSectionPage"));
-const HtmlLessonDetailPage = lazy(() => import("./module/student/html/HtmlLessonDetailPage"));
-const CssLessonsPage = lazy(() => import("./module/student/css/CssLessonsPage"));
-const CssSectionPage = lazy(() => import("./module/student/css/CssSectionPage"));
-const CssLessonDetailPage = lazy(() => import("./module/student/css/CssLessonDetailPage"));
-const TsLessonsPage = lazy(() => import("./module/student/typescript/TsLessonsPage"));
-const TsSectionPage = lazy(() => import("./module/student/typescript/TsSectionPage"));
-const TsLessonDetailPage = lazy(() => import("./module/student/typescript/TsLessonDetailPage"));
-const ReactLessonsPage = lazy(() => import("./module/student/react/ReactLessonsPage"));
-const ReactSectionPage = lazy(() => import("./module/student/react/ReactSectionPage"));
-const ReactLessonDetailPage = lazy(() => import("./module/student/react/ReactLessonDetailPage"));
-const FastApiLessonsPage = lazy(() => import("./module/student/fastapi/FastApiLessonsPage"));
-const FastApiSectionPage = lazy(() => import("./module/student/fastapi/FastApiSectionPage"));
-const FastApiLessonDetailPage = lazy(() => import("./module/student/fastapi/FastApiLessonDetailPage"));
-const FlaskLessonsPage = lazy(() => import("./module/student/flask/FlaskLessonsPage"));
-const FlaskSectionPage = lazy(() => import("./module/student/flask/FlaskSectionPage"));
-const FlaskLessonDetailPage = lazy(() => import("./module/student/flask/FlaskLessonDetailPage"));
-const DjangoLessonsPage = lazy(() => import("./module/student/django/DjangoLessonsPage"));
-const DjangoSectionPage = lazy(() => import("./module/student/django/DjangoSectionPage"));
-const DjangoLessonDetailPage = lazy(() => import("./module/student/django/DjangoLessonDetailPage"));
-const NodeLessonsPage = lazy(() => import("./module/student/nodejs/NodeLessonsPage"));
-const NodeSectionPage = lazy(() => import("./module/student/nodejs/NodeSectionPage"));
-const NodeLessonDetailPage = lazy(() => import("./module/student/nodejs/NodeLessonDetailPage"));
-const PythonLessonsPage = lazy(() => import("./module/student/python/PythonLessonsPage"));
-const PythonSectionPage = lazy(() => import("./module/student/python/PythonSectionPage"));
-const PythonLessonDetailPage = lazy(() => import("./module/student/python/PythonLessonDetailPage"));
+const ApplyPage = lazyWithRetry(() => import("./module/student/applications/ApplyPage"));
+const StudentLayout = lazyWithRetry(() => import("./module/student/StudentLayout"));
+const MyApplicationsPage = lazyWithRetry(() => import("./module/student/applications/MyApplicationsPage"));
+const ApplicationProgressPage = lazyWithRetry(() => import("./module/student/applications/ApplicationProgressPage"));
+const AtsLandingPage = lazyWithRetry(() => import("./module/student/ats/AtsLandingPage"));
+const AtsScorePage = lazyWithRetry(() => import("./module/student/ats/AtsScorePage"));
+const AtsHistoryPage = lazyWithRetry(() => import("./module/student/ats/AtsHistoryPage"));
+const AtsScoreDetailPage = lazyWithRetry(() => import("./module/student/ats/AtsScoreDetailPage"));
+const ResumeBuilderPage = lazyWithRetry(() => import("./module/student/ats/ResumeBuilderPage"));
+const CoverLetterPage = lazyWithRetry(() => import("./module/student/ats/CoverLetterPage"));
+const LatexResumeEditor = lazyWithRetry(() => import("./module/student/ats/LatexResumeEditor"));
+const ResumeGeneratorPage = lazyWithRetry(() => import("./module/student/ats/ResumeGeneratorPage"));
+const AddCompanyPage = lazyWithRetry(() => import("./module/student/companies/AddCompanyPage"));
+const StudentProfilePage = lazyWithRetry(() => import("./module/student/profile/StudentProfilePage"));
+const PublicProfilePage = lazyWithRetry(() => import("./module/student/profile/PublicProfilePage"));
+const RepoDiscoveryPage = lazyWithRetry(() => import("./module/student/opensource/RepoDiscoveryPage"));
+const GSoCReposPage = lazyWithRetry(() => import("./module/student/opensource/GSoCReposPage"));
+const ProgramTrackerPage = lazyWithRetry(() => import("./module/student/opensource/ProgramTrackerPage"));
+const FirstPRRoadmapPage = lazyWithRetry(() => import("./module/student/opensource/FirstPRRoadmapPage"));
+const FirstPRSectionPage = lazyWithRetry(() => import("./module/student/opensource/FirstPRSectionPage"));
+const GSoCProposalPage = lazyWithRetry(() => import("./module/student/opensource/GSoCProposalPage"));
+const GSoCProposalStepPage = lazyWithRetry(() => import("./module/student/opensource/GSoCProposalStepPage"));
+const OpenSourceAnalyticsPage = lazyWithRetry(() => import("./module/student/opensource/OpenSourceAnalyticsPage"));
+const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
+const HackathonCalendarPage = lazyWithRetry(() => import("./module/student/grants/HackathonCalendarPage"));
+const ProjectIdeasPage = lazyWithRetry(() => import("./module/student/grants/ProjectIdeasPage"));
+const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
+const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
+const SkillVerificationPage = lazyWithRetry(() => import("./module/student/skill-verification/SkillVerificationPage"));
+const SkillTestPage = lazyWithRetry(() => import("./module/student/skill-verification/SkillTestPage"));
+const SqlExercisePage = lazyWithRetry(() => import("./module/student/sql/SqlExercisePage"));
+const SqlPlaygroundPage = lazyWithRetry(() => import("./module/student/sql/SqlPlaygroundPage"));
+const MockInterviewPage = lazyWithRetry(() => import("./module/student/mock-interview/MockInterviewPage"));
+const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayout"));
+const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
+const JsLessonsPage = lazyWithRetry(() => import("./module/student/javascript/JsLessonsPage"));
+const JsSectionPage = lazyWithRetry(() => import("./module/student/javascript/JsSectionPage"));
+const JsLessonDetailPage = lazyWithRetry(() => import("./module/student/javascript/JsLessonDetailPage"));
+const HtmlLessonsPage = lazyWithRetry(() => import("./module/student/html/HtmlLessonsPage"));
+const HtmlSectionPage = lazyWithRetry(() => import("./module/student/html/HtmlSectionPage"));
+const HtmlLessonDetailPage = lazyWithRetry(() => import("./module/student/html/HtmlLessonDetailPage"));
+const CssLessonsPage = lazyWithRetry(() => import("./module/student/css/CssLessonsPage"));
+const CssSectionPage = lazyWithRetry(() => import("./module/student/css/CssSectionPage"));
+const CssLessonDetailPage = lazyWithRetry(() => import("./module/student/css/CssLessonDetailPage"));
+const TsLessonsPage = lazyWithRetry(() => import("./module/student/typescript/TsLessonsPage"));
+const TsSectionPage = lazyWithRetry(() => import("./module/student/typescript/TsSectionPage"));
+const TsLessonDetailPage = lazyWithRetry(() => import("./module/student/typescript/TsLessonDetailPage"));
+const ReactLessonsPage = lazyWithRetry(() => import("./module/student/react/ReactLessonsPage"));
+const ReactSectionPage = lazyWithRetry(() => import("./module/student/react/ReactSectionPage"));
+const ReactLessonDetailPage = lazyWithRetry(() => import("./module/student/react/ReactLessonDetailPage"));
+const FastApiLessonsPage = lazyWithRetry(() => import("./module/student/fastapi/FastApiLessonsPage"));
+const FastApiSectionPage = lazyWithRetry(() => import("./module/student/fastapi/FastApiSectionPage"));
+const FastApiLessonDetailPage = lazyWithRetry(() => import("./module/student/fastapi/FastApiLessonDetailPage"));
+const FlaskLessonsPage = lazyWithRetry(() => import("./module/student/flask/FlaskLessonsPage"));
+const FlaskSectionPage = lazyWithRetry(() => import("./module/student/flask/FlaskSectionPage"));
+const FlaskLessonDetailPage = lazyWithRetry(() => import("./module/student/flask/FlaskLessonDetailPage"));
+const DjangoLessonsPage = lazyWithRetry(() => import("./module/student/django/DjangoLessonsPage"));
+const DjangoSectionPage = lazyWithRetry(() => import("./module/student/django/DjangoSectionPage"));
+const DjangoLessonDetailPage = lazyWithRetry(() => import("./module/student/django/DjangoLessonDetailPage"));
+const NodeLessonsPage = lazyWithRetry(() => import("./module/student/nodejs/NodeLessonsPage"));
+const NodeSectionPage = lazyWithRetry(() => import("./module/student/nodejs/NodeSectionPage"));
+const NodeLessonDetailPage = lazyWithRetry(() => import("./module/student/nodejs/NodeLessonDetailPage"));
+const PythonLessonsPage = lazyWithRetry(() => import("./module/student/python/PythonLessonsPage"));
+const PythonSectionPage = lazyWithRetry(() => import("./module/student/python/PythonSectionPage"));
+const PythonLessonDetailPage = lazyWithRetry(() => import("./module/student/python/PythonLessonDetailPage"));
+
+// Recruiter auth pages
+const RecruiterLoginPage = lazyWithRetry(() => import("./module/recruiter/auth/RecruiterLoginPage"));
+const RecruiterRegisterPage = lazyWithRetry(() => import("./module/recruiter/auth/RecruiterRegisterPage"));
 
 // Recruiter pages
-const RecruiterLayout = lazy(() => import("./module/recruiter/RecruiterLayout"));
-const RecruiterDashboard = lazy(() => import("./module/recruiter/RecruiterDashboard"));
-const RecruiterJobsList = lazy(() => import("./module/recruiter/jobs/RecruiterJobsList"));
-const CreateJobPage = lazy(() => import("./module/recruiter/jobs/CreateJobPage"));
-const EditJobPage = lazy(() => import("./module/recruiter/jobs/EditJobPage"));
-const ApplicationsList = lazy(() => import("./module/recruiter/applications/ApplicationsList"));
-const ApplicationDetail = lazy(() => import("./module/recruiter/applications/ApplicationDetail"));
-const JobAnalyticsPage = lazy(() => import("./module/recruiter/analytics/JobAnalyticsPage"));
-const TalentSearchPage = lazy(() => import("./module/recruiter/talent/TalentSearchPage"));
-const TalentPoolsPage = lazy(() => import("./module/recruiter/talent/TalentPoolsPage"));
-const TalentPoolDetailPage = lazy(() => import("./module/recruiter/talent/TalentPoolDetailPage"));
-const DrivesListPage = lazy(() => import("./module/recruiter/drives/DrivesListPage"));
-const CreateDrivePage = lazy(() => import("./module/recruiter/drives/CreateDrivePage"));
-const DriveDetailPage = lazy(() => import("./module/recruiter/drives/DriveDetailPage"));
-const RecruiterProfilePage = lazy(() => import("./module/recruiter/profile/RecruiterProfilePage"));
+const RecruiterLayout = lazyWithRetry(() => import("./module/recruiter/RecruiterLayout"));
+const RecruiterDashboard = lazyWithRetry(() => import("./module/recruiter/RecruiterDashboard"));
+const RecruiterJobsList = lazyWithRetry(() => import("./module/recruiter/jobs/RecruiterJobsList"));
+const CreateJobPage = lazyWithRetry(() => import("./module/recruiter/jobs/CreateJobPage"));
+const EditJobPage = lazyWithRetry(() => import("./module/recruiter/jobs/EditJobPage"));
+const ApplicationsList = lazyWithRetry(() => import("./module/recruiter/applications/ApplicationsList"));
+const ApplicationDetail = lazyWithRetry(() => import("./module/recruiter/applications/ApplicationDetail"));
+const JobAnalyticsPage = lazyWithRetry(() => import("./module/recruiter/analytics/JobAnalyticsPage"));
+const TalentSearchPage = lazyWithRetry(() => import("./module/recruiter/talent/TalentSearchPage"));
+const TalentPoolsPage = lazyWithRetry(() => import("./module/recruiter/talent/TalentPoolsPage"));
+const TalentPoolDetailPage = lazyWithRetry(() => import("./module/recruiter/talent/TalentPoolDetailPage"));
+const DrivesListPage = lazyWithRetry(() => import("./module/recruiter/drives/DrivesListPage"));
+const CreateDrivePage = lazyWithRetry(() => import("./module/recruiter/drives/CreateDrivePage"));
+const DriveDetailPage = lazyWithRetry(() => import("./module/recruiter/drives/DriveDetailPage"));
+const RecruiterProfilePage = lazyWithRetry(() => import("./module/recruiter/profile/RecruiterProfilePage"));
 
 // Student new feature pages
-const CampusDrivesPage = lazy(() => import("./module/student/campus/CampusDrivesPage"));
-const CampusDriveDetailPage = lazy(() => import("./module/student/campus/CampusDriveDetailPage"));
+const CampusDrivesPage = lazyWithRetry(() => import("./module/student/campus/CampusDrivesPage"));
+const CampusDriveDetailPage = lazyWithRetry(() => import("./module/student/campus/CampusDriveDetailPage"));
 
 // Admin pages
-const AdminLoginPage = lazy(() => import("./module/admin/AdminLoginPage"));
-const AdminLayout = lazy(() => import("./module/admin/AdminLayout"));
-const AdminDashboard = lazy(() => import("./module/admin/AdminDashboard"));
-const UsersListPage = lazy(() => import("./module/admin/users/UsersListPage"));
-const UserDetailPage = lazy(() => import("./module/admin/users/UserDetailPage"));
-const AdminJobsListPage = lazy(() => import("./module/admin/jobs/AdminJobsListPage"));
-const ActivityLogsPage = lazy(() => import("./module/admin/activity/ActivityLogsPage"));
-const AdminCompaniesPage = lazy(() => import("./module/admin/companies/AdminCompaniesPage"));
-const AdminReviewsPage = lazy(() => import("./module/admin/reviews/AdminReviewsPage"));
-const AdminContributionsPage = lazy(() => import("./module/admin/contributions/AdminContributionsPage"));
-const AdminSubscribersPage = lazy(() => import("./module/admin/AdminSubscribersPage"));
-const AdminBlogPage = lazy(() => import("./module/admin/blog/AdminBlogPage"));
-const AdminBlogEditor = lazy(() => import("./module/admin/blog/AdminBlogEditor"));
-const AdminDsaPage = lazy(() => import("./module/admin/dsa/AdminDsaPage"));
-const AdminAptitudePage = lazy(() => import("./module/admin/aptitude/AdminAptitudePage"));
-const AdminSkillTestsPage = lazy(() => import("./module/admin/skill-tests/AdminSkillTestsPage"));
-const AdminHackathonsPage = lazy(() => import("./module/admin/hackathons/AdminHackathonsPage"));
-const AdminBadgesPage = lazy(() => import("./module/admin/AdminBadgesPage"));
-const AdminAIProvidersPage = lazy(() => import("./module/admin/ai/AdminAIProvidersPage"));
-const AdminExternalJobsPage = lazy(() => import("./module/admin/external-jobs/AdminExternalJobsPage"));
+const AdminLoginPage = lazyWithRetry(() => import("./module/admin/AdminLoginPage"));
+const AdminLayout = lazyWithRetry(() => import("./module/admin/AdminLayout"));
+const AdminDashboard = lazyWithRetry(() => import("./module/admin/AdminDashboard"));
+const UsersListPage = lazyWithRetry(() => import("./module/admin/users/UsersListPage"));
+const UserDetailPage = lazyWithRetry(() => import("./module/admin/users/UserDetailPage"));
+const AdminJobsListPage = lazyWithRetry(() => import("./module/admin/jobs/AdminJobsListPage"));
+const ActivityLogsPage = lazyWithRetry(() => import("./module/admin/activity/ActivityLogsPage"));
+const AdminCompaniesPage = lazyWithRetry(() => import("./module/admin/companies/AdminCompaniesPage"));
+const AdminReviewsPage = lazyWithRetry(() => import("./module/admin/reviews/AdminReviewsPage"));
+const AdminContributionsPage = lazyWithRetry(() => import("./module/admin/contributions/AdminContributionsPage"));
+const AdminSubscribersPage = lazyWithRetry(() => import("./module/admin/AdminSubscribersPage"));
+const AdminBlogPage = lazyWithRetry(() => import("./module/admin/blog/AdminBlogPage"));
+const AdminBlogEditor = lazyWithRetry(() => import("./module/admin/blog/AdminBlogEditor"));
+const AdminDsaPage = lazyWithRetry(() => import("./module/admin/dsa/AdminDsaPage"));
+const AdminAptitudePage = lazyWithRetry(() => import("./module/admin/aptitude/AdminAptitudePage"));
+const AdminSkillTestsPage = lazyWithRetry(() => import("./module/admin/skill-tests/AdminSkillTestsPage"));
+const AdminHackathonsPage = lazyWithRetry(() => import("./module/admin/hackathons/AdminHackathonsPage"));
+const AdminBadgesPage = lazyWithRetry(() => import("./module/admin/AdminBadgesPage"));
+const AdminAIProvidersPage = lazyWithRetry(() => import("./module/admin/ai/AdminAIProvidersPage"));
+const AdminExternalJobsPage = lazyWithRetry(() => import("./module/admin/external-jobs/AdminExternalJobsPage"));
 
 function JobDetailOrRedirect() {
   const { isAuthenticated, user } = useAuthStore();
@@ -192,6 +211,8 @@ function App() {
           <Route path="/ats-score" element={<PublicAtsPage />} />
           <Route path="/grants" element={<GrantsPage />} />
           <Route path="/for-recruiters" element={<RecruiterLandingPage />} />
+          <Route path="/recruiter/login" element={<RecruiterLoginPage />} />
+          <Route path="/recruiter/register" element={<RecruiterRegisterPage />} />
           <Route path="/opensource" element={<PublicOpenSourcePage />} />
           <Route path="/blog" element={<BlogListPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
