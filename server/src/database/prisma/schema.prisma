@@ -1238,6 +1238,7 @@ model aiRequestLog {
 
 model adminJob {
   id          Int       @id @default(autoincrement())
+  slug        String?   @unique
   company     String?
   role        String?
   description String?

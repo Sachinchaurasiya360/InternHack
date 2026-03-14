@@ -34,6 +34,7 @@ const DsaPatternsPage = lazy(() => import("./module/student/dsa/DsaPatternsPage"
 const DsaBookmarksPage = lazy(() => import("./module/student/dsa/DsaBookmarksPage"));
 const YCCompanyDetailPage = lazy(() => import("./module/student/companies/YCCompanyDetailPage"));
 const GovInternshipsPage = lazy(() => import("./module/student/jobs/GovInternshipsPage"));
+const ExternalJobDetailPage = lazy(() => import("./module/student/jobs/ExternalJobDetailPage"));
 
 // Student pages
 const ApplyPage = lazy(() => import("./module/student/applications/ApplyPage"));
@@ -181,6 +182,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/jobs" element={<JobBrowsePage />} />
           <Route path="/jobs/:id" element={<JobDetailOrRedirect />} />
+          <Route path="/jobs/ext/:slug" element={<ExternalJobDetailPage />} />
           <Route path="/internships" element={<GovInternshipsPage />} />
           <Route path="/external-jobs" element={<ScrapedJobsPage />} />
           <Route path="/external-jobs/:id" element={<ScrapedJobDetailPage />} />

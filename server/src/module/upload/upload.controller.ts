@@ -2,7 +2,7 @@ import type { Request, Response } from "express";
 import path from "path";
 import fs from "fs";
 import { fileURLToPath } from "url";
-import { uploadToS3, deleteFromS3, getS3KeyFromUrl } from "../../utils/s3.utils.js";
+import { uploadToS3, deleteFromS3, getS3KeyFromUrl, signUrls } from "../../utils/s3.utils.js";
 import { prisma } from "../../database/db.js";
 import { validateOrReject } from "../../utils/file-validation.utils.js";
 
@@ -200,9 +200,10 @@ export class UploadController {
         select: { id: true, name: true, email: true, role: true, contactNo: true, profilePic: true, resumes: true, company: true, designation: true, createdAt: true },
       });
 
+      const signedResumes = await signUrls(user.resumes);
       return res.status(200).json({
         message: "Resume uploaded",
-        user,
+        user: { ...user, resumes: signedResumes },
         file: { url, originalName: req.file.originalname, size: req.file.size, mimeType: req.file.mimetype },
       });
     } catch (error) {
@@ -216,8 +217,11 @@ export class UploadController {
     try {
       if (!req.user) return res.status(401).json({ message: "Authentication required" });
 
-      const { url } = req.body as { url?: string };
-      if (!url) return res.status(400).json({ message: "Resume URL is required" });
+      const { url: rawUrl } = req.body as { url?: string };
+      if (!rawUrl) return res.status(400).json({ message: "Resume URL is required" });
+
+      // Strip query params (signed URLs have ?X-Amz-... params)
+      const url = rawUrl.split("?")[0]!;
 
       const userId = req.user.id;
       const current = await prisma.user.findUnique({ where: { id: userId }, select: { resumes: true } });
@@ -235,7 +239,8 @@ export class UploadController {
 
       deleteFile(url);
 
-      return res.status(200).json({ message: "Resume deleted", user });
+      const signedResumes = await signUrls(user.resumes);
+      return res.status(200).json({ message: "Resume deleted", user: { ...user, resumes: signedResumes } });
     } catch (error) {
       console.error(error);
       return res.status(500).json({ message: "Internal Server Error" });

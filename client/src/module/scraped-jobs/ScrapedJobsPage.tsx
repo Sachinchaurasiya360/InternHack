@@ -71,7 +71,7 @@ export default function ScrapedJobsPage() {
 
         {/* Search & Filters */}
         <div className="flex flex-wrap items-center gap-3 mb-8">
-          <div className="flex-1 min-w-[200px] relative">
+          <div className="flex-1 min-w-0 relative">
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400 dark:text-gray-500" />
             <input type="text" value={search} onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && fetchJobs()}
@@ -82,13 +82,13 @@ export default function ScrapedJobsPage() {
             <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
             <input type="text" value={location} onChange={(e) => setLocation(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && fetchJobs()}
-              className="pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm w-44 dark:bg-gray-800 dark:text-white"
+              className="pl-10 pr-4 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm w-full sm:w-44 dark:bg-gray-800 dark:text-white"
               placeholder="Location" />
           </div>
           <div className="relative">
             <Filter className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
             <select value={source} onChange={(e) => { setSource(e.target.value); setPage(1); }}
-              className="pl-10 pr-8 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm appearance-none bg-white dark:bg-gray-800 dark:text-white w-44">
+              className="pl-10 pr-8 py-3 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 text-sm appearance-none bg-white dark:bg-gray-800 dark:text-white w-full sm:w-44">
               <option value="">All Sources</option>
               {sources.map((s) => (
                 <option key={s.id} value={s.id}>{s.name}</option>

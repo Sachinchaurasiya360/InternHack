@@ -117,7 +117,7 @@ export default function RecruiterDashboard() {
             initial={{ opacity: 0, y: 24 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="text-5xl md:text-6xl font-bold mb-5 leading-tight tracking-tight text-gray-950 dark:text-white"
+            className="text-3xl sm:text-5xl md:text-6xl font-bold mb-5 leading-tight tracking-tight text-gray-950 dark:text-white"
           >
             Your Hiring{" "}
             <span className="bg-gradient-to-r from-purple-600 via-violet-600 to-indigo-600 bg-clip-text text-transparent">
@@ -135,7 +135,7 @@ export default function RecruiterDashboard() {
           </motion.p>
 
           {/* Stats Cards */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
             {stats.map((stat, i) => (
               <motion.div
                 key={stat.label}
@@ -149,7 +149,7 @@ export default function RecruiterDashboard() {
                 >
                   <stat.icon className="w-5 h-5" />
                 </div>
-                <p className="text-3xl font-bold text-gray-950 dark:text-white tabular-nums">
+                <p className="text-2xl sm:text-3xl font-bold text-gray-950 dark:text-white tabular-nums">
                   {stat.value}
                 </p>
                 <p className="text-xs text-gray-400 dark:text-gray-500 mt-1 font-medium">
@@ -163,7 +163,7 @@ export default function RecruiterDashboard() {
 
       {/* ── Content ── */}
       <div className="relative bg-white dark:bg-gray-900">
-        <div className="max-w-6xl mx-auto px-8 py-12">
+        <div className="max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
           {/* Section heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -283,7 +283,7 @@ export default function RecruiterDashboard() {
             backgroundSize: "48px 48px",
           }}
         />
-        <div className="relative z-10 max-w-6xl mx-auto px-8 py-12">
+        <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-8 py-8 sm:py-12">
           {/* Section heading */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}

@@ -11,7 +11,7 @@ export function CTASection() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="relative rounded-3xl bg-gray-950 p-10 md:p-16 text-center overflow-hidden"
+          className="relative rounded-3xl bg-gray-950 p-6 sm:p-10 md:p-16 text-center overflow-hidden"
         >
           {/* Background decoration - inside dark bg, no dark variants needed */}
           <div className="absolute inset-0 overflow-hidden pointer-events-none">
@@ -42,7 +42,7 @@ export function CTASection() {
                 <motion.button
                   whileHover={{ scale: 1.03, y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  className="px-8 py-4 bg-white text-gray-950 text-base font-semibold rounded-2xl hover:bg-gray-100 transition-all shadow-lg flex items-center gap-2"
+                  className="px-6 py-3 sm:px-8 sm:py-4 bg-white text-gray-950 text-base font-semibold rounded-2xl hover:bg-gray-100 transition-all shadow-lg flex items-center gap-2"
                 >
                   Create Free Account
                   <ArrowRight className="w-4 h-4" />
@@ -52,7 +52,7 @@ export function CTASection() {
                 <motion.button
                   whileHover={{ scale: 1.03, y: -2 }}
                   whileTap={{ scale: 0.98 }}
-                  className="px-8 py-4 bg-white/10 text-white text-base font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all"
+                  className="px-6 py-3 sm:px-8 sm:py-4 bg-white/10 text-white text-base font-semibold rounded-2xl border border-white/20 hover:bg-white/20 transition-all"
                 >
                   Explore Roadmaps
                 </motion.button>

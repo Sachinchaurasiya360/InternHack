@@ -197,7 +197,7 @@ export default function TalentSearchPage() {
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               transition={{ delay: 0.6 }}
-              className="grid grid-cols-3 gap-8 mt-12 pt-8 border-t border-gray-200/60 dark:border-gray-700/60 max-w-md mx-auto"
+              className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-8 mt-12 pt-8 border-t border-gray-200/60 dark:border-gray-700/60 max-w-md mx-auto"
             >
               <div>
                 <div className="text-3xl font-bold text-gray-950 dark:text-white tabular-nums">{pagination.total}</div>

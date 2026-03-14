@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, ExternalLink, X, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ExternalLink, X, Loader2, Link2 } from "lucide-react";
 import api from "../../../lib/axios";
 import toast from "react-hot-toast";
 
 interface AdminJob {
   id: number;
+  slug: string | null;
   company: string | null;
   role: string | null;
   description: string | null;
@@ -56,9 +57,18 @@ export default function AdminExternalJobsPage() {
       }
       return api.post("/admin/external-jobs", payload);
     },
-    onSuccess: () => {
-      toast.success(editingId ? "Job updated" : "Job created");
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["admin-external-jobs"] });
+      if (!editingId && res.data?.job?.slug) {
+        const link = `${window.location.origin}/jobs/ext/${res.data.job.slug}`;
+        navigator.clipboard.writeText(link).then(() => {
+          toast.success("Job created — link copied to clipboard!");
+        }).catch(() => {
+          toast.success("Job created!");
+        });
+      } else {
+        toast.success(editingId ? "Job updated" : "Job created");
+      }
       closeForm();
     },
     onError: () => toast.error("Failed to save job"),
@@ -199,6 +209,18 @@ export default function AdminExternalJobsPage() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
+                        {job.slug && (
+                          <button
+                            onClick={() => {
+                              const link = `${window.location.origin}/jobs/ext/${job.slug}`;
+                              navigator.clipboard.writeText(link).then(() => toast.success("Link copied!"));
+                            }}
+                            className="p-1.5 text-gray-400 hover:text-indigo-600"
+                            title="Copy shareable link"
+                          >
+                            <Link2 className="w-4 h-4" />
+                          </button>
+                        )}
                         {job.applyLink && (
                           <a href={job.applyLink} target="_blank" rel="noopener noreferrer" className="p-1.5 text-gray-400 hover:text-blue-600">
                             <ExternalLink className="w-4 h-4" />
