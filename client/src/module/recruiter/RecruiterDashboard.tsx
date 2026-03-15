@@ -131,7 +131,7 @@ export default function RecruiterDashboard() {
             transition={{ delay: 0.3 }}
             className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto mb-12 leading-relaxed"
           >
-            Track your jobs, monitor applications, and discover top talent — all in one place.
+            Track your jobs, monitor applications, and discover top talent, all in one place.
           </motion.p>
 
           {/* Stats Cards */}

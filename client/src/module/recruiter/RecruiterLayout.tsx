@@ -1,18 +1,38 @@
 import { useState } from "react";
-import { NavLink, Link, Outlet, useNavigate } from "react-router";
-import { LayoutDashboard, Briefcase, PlusCircle, Search, LogOut, ChevronsLeft, ChevronsRight, Home, Users, School, User, Menu, X, Sun, Moon } from "lucide-react";
+import { NavLink, Link, Outlet, useNavigate, useLocation } from "react-router";
+import { LayoutDashboard, Briefcase, PlusCircle, Search, LogOut, ChevronsLeft, ChevronsRight, Home, Users, School, User, Menu, X, Sun, Moon, ChevronDown, BarChart3, Building2, CalendarDays, Clock, Video, CheckSquare, Award, Wallet, Receipt, UserPlus, ShieldCheck, GitBranch, Key } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useThemeStore } from "../../lib/theme.store";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
 
-const NAV_ITEMS = [
+const RECRUITMENT_ITEMS = [
   { to: "/recruiters", icon: LayoutDashboard, label: "Dashboard", end: true },
   { to: "/recruiters/jobs", icon: Briefcase, label: "My Jobs" },
   { to: "/recruiters/talent-search", icon: Search, label: "Talent Search" },
   { to: "/recruiters/talent-pools", icon: Users, label: "Talent Pools" },
   { to: "/recruiters/campus-drives", icon: School, label: "Campus Drives" },
   { to: "/recruiters/jobs/create", icon: PlusCircle, label: "Create Job" },
+];
+
+const HR_ITEMS = [
+  { to: "/recruiters/hr", icon: BarChart3, label: "HR Dashboard", end: true },
+  { to: "/recruiters/hr/employees", icon: Users, label: "Employees" },
+  { to: "/recruiters/hr/departments", icon: Building2, label: "Departments" },
+  { to: "/recruiters/hr/leave", icon: CalendarDays, label: "Leave" },
+  { to: "/recruiters/hr/attendance", icon: Clock, label: "Attendance" },
+  { to: "/recruiters/hr/interviews", icon: Video, label: "Interviews" },
+  { to: "/recruiters/hr/tasks", icon: CheckSquare, label: "Tasks" },
+  { to: "/recruiters/hr/performance", icon: Award, label: "Performance" },
+  { to: "/recruiters/hr/payroll", icon: Wallet, label: "Payroll" },
+  { to: "/recruiters/hr/reimbursements", icon: Receipt, label: "Reimbursements" },
+  { to: "/recruiters/hr/onboarding", icon: UserPlus, label: "Onboarding" },
+  { to: "/recruiters/hr/compliance", icon: ShieldCheck, label: "Compliance" },
+  { to: "/recruiters/hr/workflows", icon: GitBranch, label: "Workflows" },
+  { to: "/recruiters/hr/roles", icon: Key, label: "Roles & Access" },
+];
+
+const BOTTOM_ITEMS = [
   { to: "/recruiters/profile", icon: User, label: "Profile" },
   { to: "/", icon: Home, label: "Home" },
 ];
@@ -25,6 +45,17 @@ export default function RecruiterLayout() {
     return localStorage.getItem("recruiter-sidebar-collapsed") === "true";
   });
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [hrExpanded, setHrExpanded] = useState(() => localStorage.getItem("recruiter-hr-expanded") !== "false");
+  const location = useLocation();
+
+  const isHRActive = location.pathname.startsWith("/recruiters/hr");
+
+  const toggleHR = () => {
+    setHrExpanded((prev) => {
+      localStorage.setItem("recruiter-hr-expanded", String(!prev));
+      return !prev;
+    });
+  };
 
   const toggleSidebar = () => {
     setCollapsed((prev) => {
@@ -121,28 +152,105 @@ export default function RecruiterLayout() {
         </div>
 
         {/* Nav */}
-        <nav className={`flex-1 space-y-0.5 ${collapsed ? "px-2" : "px-3"} overflow-y-auto`}>
-          {NAV_ITEMS.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              end={item.end}
-              title={collapsed ? item.label : undefined}
-              onClick={() => setMobileOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-lg text-sm font-medium transition-colors ${
-                  collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
-                } ${
-                  isActive
-                    ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white"
-                }`
-              }
+        <nav className={`flex-1 ${collapsed ? "px-2" : "px-3"} overflow-y-auto`}>
+          {/* Recruitment section */}
+          {!collapsed && <p className="text-[10px] font-semibold uppercase tracking-widest text-gray-400 dark:text-gray-500 px-3 pt-2 pb-1">Recruitment</p>}
+          <div className="space-y-0.5">
+            {RECRUITMENT_ITEMS.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                end={item.end}
+                title={collapsed ? item.label : undefined}
+                onClick={() => setMobileOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-lg text-sm font-medium transition-colors ${
+                    collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
+                  } ${
+                    isActive
+                      ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white"
+                  }`
+                }
+              >
+                <item.icon className="w-4 h-4 shrink-0" />
+                {!collapsed && <span className="truncate">{item.label}</span>}
+              </NavLink>
+            ))}
+          </div>
+
+          {/* Divider */}
+          <div className="my-2 border-t border-gray-100 dark:border-gray-800" />
+
+          {/* HR Management section */}
+          {!collapsed ? (
+            <button
+              onClick={toggleHR}
+              className={`flex items-center justify-between w-full px-3 py-1.5 text-[10px] font-semibold uppercase tracking-widest transition-colors ${
+                isHRActive ? "text-gray-900 dark:text-white" : "text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
+              }`}
             >
-              <item.icon className="w-4 h-4 shrink-0" />
-              {!collapsed && <span className="truncate">{item.label}</span>}
-            </NavLink>
-          ))}
+              HR Management
+              <ChevronDown className={`w-3 h-3 transition-transform ${hrExpanded ? "" : "-rotate-90"}`} />
+            </button>
+          ) : (
+            <div className="flex justify-center py-1">
+              <div className="w-6 border-t border-gray-200 dark:border-gray-700" />
+            </div>
+          )}
+
+          {(hrExpanded || collapsed) && (
+            <div className="space-y-0.5">
+              {HR_ITEMS.map((item) => (
+                <NavLink
+                  key={item.to}
+                  to={item.to}
+                  end={item.end}
+                  title={collapsed ? item.label : undefined}
+                  onClick={() => setMobileOpen(false)}
+                  className={({ isActive }) =>
+                    `flex items-center gap-3 rounded-lg text-sm font-medium transition-colors ${
+                      collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
+                    } ${
+                      isActive
+                        ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white"
+                    }`
+                  }
+                >
+                  <item.icon className="w-4 h-4 shrink-0" />
+                  {!collapsed && <span className="truncate">{item.label}</span>}
+                </NavLink>
+              ))}
+            </div>
+          )}
+
+          {/* Divider */}
+          <div className="my-2 border-t border-gray-100 dark:border-gray-800" />
+
+          {/* Bottom items */}
+          <div className="space-y-0.5">
+            {BOTTOM_ITEMS.map((item) => (
+              <NavLink
+                key={item.to}
+                to={item.to}
+                title={collapsed ? item.label : undefined}
+                onClick={() => setMobileOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-lg text-sm font-medium transition-colors ${
+                    collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
+                  } ${
+                    isActive
+                      ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white"
+                  }`
+                }
+              >
+                <item.icon className="w-4 h-4 shrink-0" />
+                {!collapsed && <span className="truncate">{item.label}</span>}
+              </NavLink>
+            ))}
+          </div>
         </nav>
 
         {/* Logout */}

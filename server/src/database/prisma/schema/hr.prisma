@@ -1,0 +1,606 @@
+// ============================================================
+// HR SYSTEM — ENUMS
+// ============================================================
+
+enum EmploymentStatus {
+  ONBOARDING
+  ACTIVE
+  ON_LEAVE
+  ON_PROBATION
+  NOTICE_PERIOD
+  EXITED
+  ALUMNI
+}
+
+enum EmploymentType {
+  FULL_TIME
+  PART_TIME
+  CONTRACT
+  INTERN
+  FREELANCER
+}
+
+enum LeaveType {
+  CASUAL
+  SICK
+  EARNED
+  MATERNITY
+  PATERNITY
+  COMPENSATORY
+  UNPAID
+  BEREAVEMENT
+}
+
+enum LeaveRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  CANCELLED
+}
+
+enum AttendanceStatus {
+  PRESENT
+  ABSENT
+  HALF_DAY
+  ON_LEAVE
+  HOLIDAY
+  WEEKEND
+  WORK_FROM_HOME
+}
+
+enum PayrollStatus {
+  DRAFT
+  PROCESSING
+  APPROVED
+  PAID
+  CANCELLED
+}
+
+enum ReviewCycle {
+  QUARTERLY
+  HALF_YEARLY
+  ANNUAL
+}
+
+enum HRReviewStatus {
+  DRAFT
+  SELF_REVIEW
+  MANAGER_REVIEW
+  CALIBRATION
+  COMPLETED
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+  URGENT
+}
+
+enum TaskStatus {
+  TODO
+  IN_PROGRESS
+  IN_REVIEW
+  DONE
+  CANCELLED
+}
+
+enum InterviewType {
+  PHONE
+  VIDEO
+  IN_PERSON
+  PANEL
+  TECHNICAL
+  HR
+}
+
+enum InterviewStatus {
+  SCHEDULED
+  CONFIRMED
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+  RESCHEDULED
+}
+
+enum OnboardingItemStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  COMPLETED
+  OVERDUE
+}
+
+enum ReimbursementStatus {
+  DRAFT
+  SUBMITTED
+  MANAGER_APPROVED
+  FINANCE_APPROVED
+  PAID
+  REJECTED
+}
+
+enum WorkflowStatus {
+  ACTIVE
+  PAUSED
+  COMPLETED
+  CANCELLED
+}
+
+// ============================================================
+// DEPARTMENT & ORG STRUCTURE
+// ============================================================
+
+model department {
+  id          Int          @id @default(autoincrement())
+  name        String       @unique
+  slug        String       @unique
+  description String?
+  parentId    Int?
+  parent      department?  @relation("DepartmentHierarchy", fields: [parentId], references: [id])
+  children    department[] @relation("DepartmentHierarchy")
+  headId      Int?
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+
+  employees        employee[]
+  leavePolicies    departmentLeavePolicy[]
+
+  @@index([parentId])
+  @@index([isActive])
+}
+
+// ============================================================
+// EMPLOYEE MODEL
+// ============================================================
+
+model employee {
+  id               Int              @id @default(autoincrement())
+  userId           Int?             @unique
+  user             user?            @relation("EmployeeUser", fields: [userId], references: [id])
+  employeeCode     String           @unique
+  firstName        String
+  lastName         String
+  email            String           @unique
+  phone            String?
+  dateOfBirth      DateTime?
+  gender           String?
+  bloodGroup       String?
+  profilePic       String?
+
+  // Employment details
+  departmentId     Int
+  department       department       @relation(fields: [departmentId], references: [id])
+  designation      String
+  employmentType   EmploymentType   @default(FULL_TIME)
+  status           EmploymentStatus @default(ONBOARDING)
+  joiningDate      DateTime
+  confirmationDate DateTime?
+  exitDate         DateTime?
+  reportingManagerId Int?
+  reportingManager employee?        @relation("ManagerReports", fields: [reportingManagerId], references: [id])
+  directReports    employee[]       @relation("ManagerReports")
+
+  // Personal details (JSON blobs)
+  address          Json?
+  emergencyContact Json?
+  bankDetails      Json?
+  documents        Json             @default("[]")
+
+  // Compensation
+  currentSalary    Json?
+
+  // Relations
+  leaveRequests       leaveRequest[]       @relation("EmployeeLeaves")
+  leaveBalances       leaveBalance[]       @relation("EmployeeLeaveBalances")
+  attendanceRecords   attendanceRecord[]   @relation("EmployeeAttendance")
+  payrollRecords      payrollRecord[]      @relation("EmployeePayroll")
+  performanceReviews  performanceReview[]  @relation("EmployeeReviews")
+  reviewsAsReviewer   performanceReview[]  @relation("ReviewerReviews")
+  assignedTasks       hrTask[]             @relation("TaskAssignee")
+  createdTasks        hrTask[]             @relation("TaskCreator")
+  reimbursements      reimbursement[]      @relation("EmployeeReimbursements")
+  onboardingChecklist onboardingChecklist? @relation("EmployeeOnboarding")
+  approvedLeaves      leaveRequest[]       @relation("LeaveApprover")
+  contractorPayments  contractorPayment[]  @relation("ContractorPayments")
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([departmentId])
+  @@index([status])
+  @@index([reportingManagerId])
+  @@index([employmentType])
+  @@index([joiningDate])
+}
+
+// ============================================================
+// CUSTOM RBAC
+// ============================================================
+
+model customRole {
+  id          Int                @id @default(autoincrement())
+  name        String             @unique
+  description String?
+  permissions String[]           @default([])
+  isSystem    Boolean            @default(false)
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  userRoles userCustomRole[]
+}
+
+model userCustomRole {
+  id         Int        @id @default(autoincrement())
+  userId     Int
+  user       user       @relation("UserCustomRoles", fields: [userId], references: [id], onDelete: Cascade)
+  roleId     Int
+  role       customRole @relation(fields: [roleId], references: [id], onDelete: Cascade)
+  assignedAt DateTime   @default(now())
+
+  @@unique([userId, roleId])
+  @@index([userId])
+  @@index([roleId])
+}
+
+// ============================================================
+// LEAVE MANAGEMENT
+// ============================================================
+
+model leavePolicy {
+  id                 Int       @id @default(autoincrement())
+  leaveType          LeaveType @unique
+  name               String
+  annualAllocation   Int
+  maxCarryForward    Int       @default(0)
+  minConsecutiveDays Int       @default(1)
+  maxConsecutiveDays Int?
+  requiresApproval   Boolean   @default(true)
+  isActive           Boolean   @default(true)
+  createdAt          DateTime  @default(now())
+  updatedAt          DateTime  @updatedAt
+
+  departmentPolicies departmentLeavePolicy[]
+}
+
+model departmentLeavePolicy {
+  id                 Int         @id @default(autoincrement())
+  departmentId       Int
+  department         department  @relation(fields: [departmentId], references: [id], onDelete: Cascade)
+  policyId           Int
+  policy             leavePolicy @relation(fields: [policyId], references: [id], onDelete: Cascade)
+  overrideAllocation Int?
+
+  @@unique([departmentId, policyId])
+}
+
+model leaveBalance {
+  id           Int       @id @default(autoincrement())
+  employeeId   Int
+  employee     employee  @relation("EmployeeLeaveBalances", fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType    LeaveType
+  year         Int
+  allocated    Int
+  used         Int       @default(0)
+  pending      Int       @default(0)
+  carryForward Int       @default(0)
+
+  @@unique([employeeId, leaveType, year])
+  @@index([employeeId])
+}
+
+model leaveRequest {
+  id           Int                @id @default(autoincrement())
+  employeeId   Int
+  employee     employee           @relation("EmployeeLeaves", fields: [employeeId], references: [id], onDelete: Cascade)
+  leaveType    LeaveType
+  startDate    DateTime
+  endDate      DateTime
+  totalDays    Float
+  reason       String
+  status       LeaveRequestStatus @default(PENDING)
+  approverId   Int?
+  approver     employee?          @relation("LeaveApprover", fields: [approverId], references: [id])
+  approverNote String?
+  approvedAt   DateTime?
+  createdAt    DateTime           @default(now())
+  updatedAt    DateTime           @updatedAt
+
+  @@index([employeeId])
+  @@index([status])
+  @@index([startDate, endDate])
+  @@index([approverId])
+}
+
+// ============================================================
+// ATTENDANCE
+// ============================================================
+
+model attendanceRecord {
+  id            Int              @id @default(autoincrement())
+  employeeId    Int
+  employee      employee         @relation("EmployeeAttendance", fields: [employeeId], references: [id], onDelete: Cascade)
+  date          DateTime         @db.Date
+  status        AttendanceStatus @default(PRESENT)
+  checkIn       DateTime?
+  checkOut      DateTime?
+  workHours     Float?
+  overtime      Float?
+  isLate        Boolean          @default(false)
+  lateMinutes   Int?
+  notes         String?
+  isRegularized Boolean          @default(false)
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+
+  @@unique([employeeId, date])
+  @@index([employeeId])
+  @@index([date])
+  @@index([status])
+}
+
+// ============================================================
+// PAYROLL
+// ============================================================
+
+model payrollRecord {
+  id              Int           @id @default(autoincrement())
+  employeeId      Int
+  employee        employee      @relation("EmployeePayroll", fields: [employeeId], references: [id], onDelete: Cascade)
+  month           Int
+  year            Int
+  status          PayrollStatus @default(DRAFT)
+
+  // Earnings
+  basicSalary     Float
+  hra             Float         @default(0)
+  da              Float         @default(0)
+  specialAllow    Float         @default(0)
+  bonus           Float         @default(0)
+  otherEarnings   Float         @default(0)
+  grossEarnings   Float
+
+  // Deductions
+  pf              Float         @default(0)
+  esi             Float         @default(0)
+  profTax         Float         @default(0)
+  tds             Float         @default(0)
+  loanEmi         Float         @default(0)
+  otherDeduct     Float         @default(0)
+  totalDeductions Float
+
+  netPay          Float
+  payslipUrl      String?
+  paidAt          DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@unique([employeeId, month, year])
+  @@index([employeeId])
+  @@index([month, year])
+  @@index([status])
+}
+
+model contractorPayment {
+  id            Int           @id @default(autoincrement())
+  employeeId    Int
+  employee      employee      @relation("ContractorPayments", fields: [employeeId], references: [id], onDelete: Cascade)
+  invoiceNumber String?
+  amount        Float
+  currency      String        @default("INR")
+  description   String
+  periodStart   DateTime
+  periodEnd     DateTime
+  status        PayrollStatus @default(DRAFT)
+  invoiceUrl    String?
+  paidAt        DateTime?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@index([employeeId])
+  @@index([status])
+}
+
+// ============================================================
+// PERFORMANCE MANAGEMENT
+// ============================================================
+
+model performanceReview {
+  id                   Int            @id @default(autoincrement())
+  employeeId           Int
+  employee             employee       @relation("EmployeeReviews", fields: [employeeId], references: [id], onDelete: Cascade)
+  reviewerId           Int
+  reviewer             employee       @relation("ReviewerReviews", fields: [reviewerId], references: [id])
+  cycle                ReviewCycle
+  period               String
+  status               HRReviewStatus @default(DRAFT)
+
+  selfRating           Float?
+  managerRating        Float?
+  finalRating          Float?
+  selfComments         String?
+  managerComments      String?
+  goals                Json           @default("[]")
+  strengths            String?
+  improvements         String?
+  promotionRecommended Boolean        @default(false)
+
+  completedAt          DateTime?
+  createdAt            DateTime       @default(now())
+  updatedAt            DateTime       @updatedAt
+
+  @@index([employeeId])
+  @@index([reviewerId])
+  @@index([cycle, period])
+  @@index([status])
+}
+
+// ============================================================
+// TASK MANAGEMENT
+// ============================================================
+
+model hrTask {
+  id           Int          @id @default(autoincrement())
+  title        String
+  description  String?
+  assigneeId   Int
+  assignee     employee     @relation("TaskAssignee", fields: [assigneeId], references: [id])
+  creatorId    Int
+  creator      employee     @relation("TaskCreator", fields: [creatorId], references: [id])
+  priority     TaskPriority @default(MEDIUM)
+  status       TaskStatus   @default(TODO)
+  dueDate      DateTime?
+  labels       String[]     @default([])
+  parentTaskId Int?
+  parentTask   hrTask?      @relation("SubTasks", fields: [parentTaskId], references: [id])
+  subTasks     hrTask[]     @relation("SubTasks")
+  comments     Json         @default("[]")
+  completedAt  DateTime?
+  createdAt    DateTime     @default(now())
+  updatedAt    DateTime     @updatedAt
+
+  @@index([assigneeId])
+  @@index([creatorId])
+  @@index([status])
+  @@index([priority])
+  @@index([dueDate])
+}
+
+// ============================================================
+// REIMBURSEMENTS
+// ============================================================
+
+model reimbursement {
+  id           Int                 @id @default(autoincrement())
+  employeeId   Int
+  employee     employee            @relation("EmployeeReimbursements", fields: [employeeId], references: [id], onDelete: Cascade)
+  category     String
+  amount       Float
+  currency     String              @default("INR")
+  description  String
+  receiptUrls  String[]            @default([])
+  status       ReimbursementStatus @default(DRAFT)
+  approverNote String?
+  paidAt       DateTime?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@index([employeeId])
+  @@index([status])
+  @@index([createdAt])
+}
+
+// ============================================================
+// INTERVIEW SCHEDULING (Recruiter Extension)
+// ============================================================
+
+model interview {
+  id              Int             @id @default(autoincrement())
+  applicationId   Int
+  application     application     @relation("ApplicationInterviews", fields: [applicationId], references: [id], onDelete: Cascade)
+  type            InterviewType   @default(VIDEO)
+  scheduledAt     DateTime
+  durationMinutes Int             @default(60)
+  meetingLink     String?
+  location        String?
+  status          InterviewStatus @default(SCHEDULED)
+  interviewerIds  Int[]           @default([])
+  feedback        Json            @default("[]")
+  candidateNotes  String?
+  cancelReason    String?
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+
+  @@index([applicationId])
+  @@index([scheduledAt])
+  @@index([status])
+}
+
+// ============================================================
+// ONBOARDING
+// ============================================================
+
+model onboardingChecklist {
+  id          Int                @id @default(autoincrement())
+  employeeId  Int                @unique
+  employee    employee           @relation("EmployeeOnboarding", fields: [employeeId], references: [id], onDelete: Cascade)
+  status      OnboardingItemStatus @default(NOT_STARTED)
+  items       Json               @default("[]")
+  startDate   DateTime           @default(now())
+  targetDate  DateTime
+  completedAt DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+}
+
+// ============================================================
+// COMPLIANCE
+// ============================================================
+
+model complianceDocument {
+  id             Int      @id @default(autoincrement())
+  name           String
+  category       String
+  description    String?
+  documentUrl    String?
+  expiryDate     DateTime?
+  isRequired     Boolean  @default(true)
+  assignedTo     Int[]    @default([])
+  acknowledgedBy Int[]    @default([])
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  @@index([category])
+  @@index([expiryDate])
+}
+
+// ============================================================
+// HR WORKFLOW ENGINE
+// ============================================================
+
+model workflowDefinition {
+  id           Int      @id @default(autoincrement())
+  name         String   @unique
+  description  String?
+  triggerEvent String
+  steps        Json
+  isActive     Boolean  @default(true)
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  instances workflowInstance[]
+}
+
+model workflowInstance {
+  id             Int                @id @default(autoincrement())
+  definitionId   Int
+  definition     workflowDefinition @relation(fields: [definitionId], references: [id])
+  entityType     String
+  entityId       Int
+  currentStep    Int                @default(0)
+  status         WorkflowStatus     @default(ACTIVE)
+  stepHistory    Json               @default("[]")
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  @@index([entityType, entityId])
+  @@index([status])
+}
+
+// ============================================================
+// HOLIDAY CALENDAR
+// ============================================================
+
+model holiday {
+  id         Int      @id @default(autoincrement())
+  name       String
+  date       DateTime @db.Date
+  isOptional Boolean  @default(false)
+  location   String?
+  year       Int
+  createdAt  DateTime @default(now())
+
+  @@unique([name, date])
+  @@index([year])
+  @@index([date])
+}

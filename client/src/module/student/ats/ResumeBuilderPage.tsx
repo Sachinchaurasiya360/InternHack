@@ -39,7 +39,16 @@ const TEMPLATE_KEY = "internhack-resume-template";
 function loadSaved(): ResumeData {
   try {
     const saved = localStorage.getItem(STORAGE_KEY);
-    return saved ? JSON.parse(saved) : defaultResumeData;
+    if (!saved) return defaultResumeData;
+    const parsed = JSON.parse(saved) as ResumeData;
+    // If saved data is essentially empty, use the prefilled defaults
+    const isEmpty =
+      !parsed.personalInfo?.fullName &&
+      !parsed.summary &&
+      parsed.experience?.length === 0 &&
+      parsed.education?.length === 0 &&
+      parsed.skills?.length === 0;
+    return isEmpty ? defaultResumeData : parsed;
   } catch {
     return defaultResumeData;
   }

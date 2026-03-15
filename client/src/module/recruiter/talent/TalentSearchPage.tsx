@@ -164,7 +164,7 @@ export default function TalentSearchPage() {
             transition={{ delay: 0.3 }}
             className="text-gray-500 dark:text-gray-400 text-lg max-w-2xl mx-auto mb-10 leading-relaxed"
           >
-            Discover skilled students, filter by verified skills, ATS scores, and location — connect with the best candidates for your team.
+            Discover skilled students, filter by verified skills, ATS scores, and location. Connect with the best candidates for your team.
           </motion.p>
 
           {/* Search Bar */}
