@@ -37,6 +37,21 @@ import { campusDriveRouter } from "./module/campus-drive/campus-drive.routes.js"
 import { badgeRouter } from "./module/badge/badge.routes.js";
 import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
 import { universityRouter } from "./module/university/university.routes.js";
+// ── HR Modules ──
+import { rbacRouter } from "./module/rbac/rbac.routes.js";
+import { departmentRouter } from "./module/department/department.routes.js";
+import { employeeRouter } from "./module/employee/employee.routes.js";
+import { leaveRouter } from "./module/leave/leave.routes.js";
+import { attendanceRouter } from "./module/attendance/attendance.routes.js";
+import { interviewRouter } from "./module/interview/interview.routes.js";
+import { hrTaskRouter } from "./module/hr-task/hr-task.routes.js";
+import { performanceRouter } from "./module/performance/performance.routes.js";
+import { payrollRouter } from "./module/payroll/payroll.routes.js";
+import { reimbursementRouter } from "./module/reimbursement/reimbursement.routes.js";
+import { onboardingRouter } from "./module/onboarding/onboarding.routes.js";
+import { complianceRouter } from "./module/compliance/compliance.routes.js";
+import { workflowRouter } from "./module/workflow/workflow.routes.js";
+import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 import { initServiceProviders } from "./lib/ai-provider-registry.js";
@@ -172,6 +187,22 @@ app.use("/api/campus-drives", campusDriveRouter);
 app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
 app.use("/api/universities", universityRouter);
+
+// ── HR Routes ──
+app.use("/api/hr/rbac", rbacRouter);
+app.use("/api/hr/departments", departmentRouter);
+app.use("/api/hr/employees", employeeRouter);
+app.use("/api/hr/leave", leaveRouter);
+app.use("/api/hr/attendance", attendanceRouter);
+app.use("/api/hr/interviews", interviewRouter);
+app.use("/api/hr/tasks", hrTaskRouter);
+app.use("/api/hr/performance", performanceRouter);
+app.use("/api/hr/payroll", payrollRouter);
+app.use("/api/hr/reimbursements", reimbursementRouter);
+app.use("/api/hr/onboarding", onboardingRouter);
+app.use("/api/hr/compliance", complianceRouter);
+app.use("/api/hr/workflows", workflowRouter);
+app.use("/api/hr/analytics", hrAnalyticsRouter);
 
 // Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());

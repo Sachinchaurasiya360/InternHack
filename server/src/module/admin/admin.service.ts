@@ -1,6 +1,7 @@
 import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
+import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { switchServiceProvider } from "../../lib/ai-provider-registry.js";
 import type { Prisma, UserRole, JobStatus, AdminTier, AIServiceType, AIProviderType } from "@prisma/client";
 
@@ -49,10 +50,19 @@ export class AdminService {
     if (!adminProfile || !adminProfile.isActive)
       throw new Error("Admin account is inactive");
 
+    // Increment tokenVersion to invalidate all previous sessions (single-device enforcement)
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { tokenVersion: { increment: 1 } },
+      select: { tokenVersion: true },
+    });
+    invalidateVersionCache(user.id);
+
     const token = generateToken({
       id: user.id,
       email: user.email,
       role: user.role,
+      tokenVersion: updatedUser.tokenVersion,
     });
 
     return {

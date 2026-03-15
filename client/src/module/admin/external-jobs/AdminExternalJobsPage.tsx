@@ -58,7 +58,7 @@ export default function AdminExternalJobsPage() {
       });
       toast.success("Fields populated from JSON");
     } catch {
-      setJsonError("Invalid JSON — check syntax");
+      setJsonError("Invalid JSON, check syntax");
     }
   }, []);
 
@@ -93,7 +93,7 @@ export default function AdminExternalJobsPage() {
       if (!editingId && res.data?.job?.slug) {
         const link = `${window.location.origin}/jobs/ext/${res.data.job.slug}`;
         navigator.clipboard.writeText(link).then(() => {
-          toast.success("Job created — link copied to clipboard!");
+          toast.success("Job created, link copied to clipboard!");
         }).catch(() => {
           toast.success("Job created!");
         });
@@ -247,9 +247,9 @@ export default function AdminExternalJobsPage() {
                 const expired = isExpired(job.expiresAt);
                 return (
                   <tr key={job.id} className={`border-b border-gray-50 dark:border-gray-800 ${expired ? "opacity-50" : ""}`}>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">{job.company || "—"}</td>
-                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{job.role || "—"}</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{job.salary || "—"}</td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">{job.company || "-"}</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{job.role || "-"}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{job.salary || "-"}</td>
                     <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">
                       {new Date(job.expiresAt).toLocaleDateString()}
                     </td>

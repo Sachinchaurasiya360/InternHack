@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { Link, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
 import {
   Download,
@@ -19,6 +20,7 @@ import {
   ChevronDown,
   Undo2,
   Redo2,
+  LayoutGrid,
 } from "lucide-react";
 import CodeMirror from "@uiw/react-codemirror";
 import AtsToolsNav from "./AtsToolsNav";
@@ -28,6 +30,7 @@ import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { useLatexAutoSave } from "./useLatexAutoSave";
+import { getLatexTemplate } from "./latex-templates.data";
 
 // ── Default LaTeX Template ──
 
@@ -94,7 +97,26 @@ Experienced software engineer with 5+ years building scalable web applications. 
 // ── Component ──
 
 export default function LatexResumeEditor() {
-  const { code, setCode, supportingFiles, setSupportingFiles } = useLatexAutoSave(DEFAULT_TEMPLATE);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const templateId = searchParams.get("template");
+
+  const templateOverride = useMemo(() => {
+    if (!templateId) return null;
+    const tmpl = getLatexTemplate(templateId);
+    if (!tmpl) return null;
+    return { code: tmpl.source, files: tmpl.supportingFiles };
+  }, [templateId]);
+
+  const { code, setCode, supportingFiles, setSupportingFiles } = useLatexAutoSave(
+    DEFAULT_TEMPLATE,
+    templateOverride,
+  );
+
+  // Clear query param after mount so refresh loads from localStorage
+  useEffect(() => {
+    if (templateId) setSearchParams({}, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [copied, setCopied] = useState(false);
   const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
   const [chatOpen, setChatOpen] = useState(false);
@@ -166,6 +188,27 @@ export default function LatexResumeEditor() {
       if (prevBlobUrl.current) URL.revokeObjectURL(prevBlobUrl.current);
     };
   }, []);
+
+  // Auto-compile on mount so the preview shows immediately
+  const hasAutoCompiled = useRef(false);
+  useEffect(() => {
+    if (hasAutoCompiled.current || !code) return;
+    hasAutoCompiled.current = true;
+    setCompiling(true);
+    setPreviewError(null);
+    api
+      .post("/latex/compile", { source: code, supportingFiles }, { responseType: "blob" })
+      .then((res) => {
+        if (prevBlobUrl.current) URL.revokeObjectURL(prevBlobUrl.current);
+        const url = URL.createObjectURL(res.data as Blob);
+        prevBlobUrl.current = url;
+        setPdfUrl(url);
+      })
+      .catch(() => {
+        // Silent fail on auto-compile — user can manually retry
+      })
+      .finally(() => setCompiling(false));
+  }, [code, supportingFiles]);
 
   const handleCopyLatex = async () => {
     await navigator.clipboard.writeText(code);
@@ -353,6 +396,14 @@ export default function LatexResumeEditor() {
             </button>
 
             <div className="ml-auto flex items-center gap-2">
+              <Link
+                to="/student/ats/latex-templates"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs font-medium rounded-xl border text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors no-underline"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Templates</span>
+              </Link>
+
               <button
                 onClick={() => setFilesOpen(!filesOpen)}
                 title="Supporting files"
@@ -548,7 +599,7 @@ export default function LatexResumeEditor() {
         transition={{ duration: 0.5, delay: 0.25 }}
         className="px-4 sm:px-6"
       >
-        <div className="flex flex-col lg:flex-row gap-4 h-[70vh] lg:h-[calc(100vh-180px)] min-h-80">
+        <div className="flex flex-col lg:flex-row gap-4 h-[85vh] lg:h-[calc(100vh-80px)] min-h-120">
           {/* Editor Panel */}
           <div
             className={`lg:w-1/2 flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden min-h-0 ${

@@ -63,6 +63,7 @@ const AtsScoreDetailPage = lazyWithRetry(() => import("./module/student/ats/AtsS
 const ResumeBuilderPage = lazyWithRetry(() => import("./module/student/ats/ResumeBuilderPage"));
 const CoverLetterPage = lazyWithRetry(() => import("./module/student/ats/CoverLetterPage"));
 const LatexResumeEditor = lazyWithRetry(() => import("./module/student/ats/LatexResumeEditor"));
+const LatexTemplatesGallery = lazyWithRetry(() => import("./module/student/ats/LatexTemplatesGallery"));
 const ResumeGeneratorPage = lazyWithRetry(() => import("./module/student/ats/ResumeGeneratorPage"));
 const AddCompanyPage = lazyWithRetry(() => import("./module/student/companies/AddCompanyPage"));
 const StudentProfilePage = lazyWithRetry(() => import("./module/student/profile/StudentProfilePage"));
@@ -77,7 +78,6 @@ const GSoCProposalStepPage = lazyWithRetry(() => import("./module/student/openso
 const OpenSourceAnalyticsPage = lazyWithRetry(() => import("./module/student/opensource/OpenSourceAnalyticsPage"));
 const GrantTrackerPage = lazyWithRetry(() => import("./module/student/grants/GrantTrackerPage"));
 const HackathonCalendarPage = lazyWithRetry(() => import("./module/student/grants/HackathonCalendarPage"));
-const ProjectIdeasPage = lazyWithRetry(() => import("./module/student/grants/ProjectIdeasPage"));
 const CheckoutPage = lazyWithRetry(() => import("./module/student/checkout/CheckoutPage"));
 const SqlPracticePage = lazyWithRetry(() => import("./module/student/sql/SqlPracticePage"));
 const SkillVerificationPage = lazyWithRetry(() => import("./module/student/skill-verification/SkillVerificationPage"));
@@ -117,6 +117,9 @@ const NodeLessonDetailPage = lazyWithRetry(() => import("./module/student/nodejs
 const PythonLessonsPage = lazyWithRetry(() => import("./module/student/python/PythonLessonsPage"));
 const PythonSectionPage = lazyWithRetry(() => import("./module/student/python/PythonSectionPage"));
 const PythonLessonDetailPage = lazyWithRetry(() => import("./module/student/python/PythonLessonDetailPage"));
+const BlockchainLessonsPage = lazyWithRetry(() => import("./module/student/blockchain/BlockchainLessonsPage"));
+const BlockchainSectionPage = lazyWithRetry(() => import("./module/student/blockchain/BlockchainSectionPage"));
+const BlockchainLessonDetailPage = lazyWithRetry(() => import("./module/student/blockchain/BlockchainLessonDetailPage"));
 
 // Recruiter auth pages
 const RecruiterLoginPage = lazyWithRetry(() => import("./module/recruiter/auth/RecruiterLoginPage"));
@@ -138,6 +141,23 @@ const DrivesListPage = lazyWithRetry(() => import("./module/recruiter/drives/Dri
 const CreateDrivePage = lazyWithRetry(() => import("./module/recruiter/drives/CreateDrivePage"));
 const DriveDetailPage = lazyWithRetry(() => import("./module/recruiter/drives/DriveDetailPage"));
 const RecruiterProfilePage = lazyWithRetry(() => import("./module/recruiter/profile/RecruiterProfilePage"));
+
+// HR Management pages
+const HRDashboardPage = lazyWithRetry(() => import("./module/recruiter/hr/HRDashboardPage"));
+const EmployeesPage = lazyWithRetry(() => import("./module/recruiter/hr/EmployeesPage"));
+const EmployeeDetailPage = lazyWithRetry(() => import("./module/recruiter/hr/EmployeeDetailPage"));
+const DepartmentsPage = lazyWithRetry(() => import("./module/recruiter/hr/DepartmentsPage"));
+const LeavePage = lazyWithRetry(() => import("./module/recruiter/hr/LeavePage"));
+const AttendancePage = lazyWithRetry(() => import("./module/recruiter/hr/AttendancePage"));
+const HRInterviewsPage = lazyWithRetry(() => import("./module/recruiter/hr/InterviewsPage"));
+const TasksPage = lazyWithRetry(() => import("./module/recruiter/hr/TasksPage"));
+const PerformancePage = lazyWithRetry(() => import("./module/recruiter/hr/PerformancePage"));
+const PayrollPage = lazyWithRetry(() => import("./module/recruiter/hr/PayrollPage"));
+const ReimbursementsPage = lazyWithRetry(() => import("./module/recruiter/hr/ReimbursementsPage"));
+const OnboardingPage = lazyWithRetry(() => import("./module/recruiter/hr/OnboardingPage"));
+const CompliancePage = lazyWithRetry(() => import("./module/recruiter/hr/CompliancePage"));
+const WorkflowsPage = lazyWithRetry(() => import("./module/recruiter/hr/WorkflowsPage"));
+const RolesPage = lazyWithRetry(() => import("./module/recruiter/hr/RolesPage"));
 
 // Student new feature pages
 const CampusDrivesPage = lazyWithRetry(() => import("./module/student/campus/CampusDrivesPage"));
@@ -261,7 +281,9 @@ function App() {
             <Route path="aptitude" element={<AptitudeCategoriesPage />} />
             <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
             <Route path="aptitude/:slug" element={<AptitudeTopicPage />} />
-            <Route path="blockchain" element={<ProjectIdeasPage />} />
+            <Route path="blockchain" element={<BlockchainLessonsPage />} />
+            <Route path="blockchain/:sectionSlug" element={<BlockchainSectionPage />} />
+            <Route path="blockchain/:sectionSlug/:lessonId" element={<BlockchainLessonDetailPage />} />
           </Route>
 
           {/* Legacy redirects */}
@@ -312,6 +334,7 @@ function App() {
             <Route path="ats/templates" element={<ResumeBuilderPage />} />
             <Route path="ats/cover-letter" element={<CoverLetterPage />} />
             <Route path="ats/latex-editor" element={<LatexResumeEditor />} />
+            <Route path="ats/latex-templates" element={<LatexTemplatesGallery />} />
             <Route path="skill-verification" element={<SkillVerificationPage />} />
             <Route path="mock-interview" element={<MockInterviewPage />} />
             <Route path="companies/add" element={<AddCompanyPage />} />
@@ -349,6 +372,22 @@ function App() {
             <Route path="campus-drives/:id" element={<DriveDetailPage />} />
             <Route path="profile" element={<RecruiterProfilePage />} />
             <Route path="profile/:id" element={<PublicProfilePage />} />
+            {/* HR Management */}
+            <Route path="hr" element={<HRDashboardPage />} />
+            <Route path="hr/employees" element={<EmployeesPage />} />
+            <Route path="hr/employees/:id" element={<EmployeeDetailPage />} />
+            <Route path="hr/departments" element={<DepartmentsPage />} />
+            <Route path="hr/leave" element={<LeavePage />} />
+            <Route path="hr/attendance" element={<AttendancePage />} />
+            <Route path="hr/interviews" element={<HRInterviewsPage />} />
+            <Route path="hr/tasks" element={<TasksPage />} />
+            <Route path="hr/performance" element={<PerformancePage />} />
+            <Route path="hr/payroll" element={<PayrollPage />} />
+            <Route path="hr/reimbursements" element={<ReimbursementsPage />} />
+            <Route path="hr/onboarding" element={<OnboardingPage />} />
+            <Route path="hr/compliance" element={<CompliancePage />} />
+            <Route path="hr/workflows" element={<WorkflowsPage />} />
+            <Route path="hr/roles" element={<RolesPage />} />
           </Route>
 
           {/* Profile view redirect → recruiter layout */}

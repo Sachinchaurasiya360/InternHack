@@ -24,7 +24,7 @@ function titleCase(str: string): string {
 }
 
 async function main() {
-  const xlsxPath = path.resolve(__dirname, "../../../.claude/1584 Professors IIT.xlsx");
+  const xlsxPath = path.resolve(__dirname, "../../../.claude/Professors IIT.xlsx");
   const workbook = XLSX.readFile(xlsxPath);
   const sheet = workbook.Sheets[workbook.SheetNames[0]!]!;
   const rows = XLSX.utils.sheet_to_json<{
