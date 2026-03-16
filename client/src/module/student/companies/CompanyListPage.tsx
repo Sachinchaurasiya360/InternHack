@@ -24,6 +24,7 @@ import {
 import { SEO } from "../../../components/SEO";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
+import EmailCampaignTab from "./EmailCampaignTab";
 import api, { SERVER_URL } from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type {
@@ -288,8 +289,70 @@ function ProfessorCard({ professor }: { professor: Professor }) {
   );
 }
 
+// ─── HR Contact types ─────────────────────────────────────
+interface HRContact {
+  id: number;
+  name: string;
+  email: string | null;
+  company: string | null;
+  designation: string | null;
+  linkedinUrl: string | null;
+}
+
+interface HRContactStats {
+  total: number;
+  companies: { name: string; count: number }[];
+}
+
+function HRContactCard({ contact }: { contact: HRContact }) {
+  return (
+    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-teal-200 dark:hover:border-teal-800 transition-all duration-300 p-5">
+      <div className="flex items-start gap-3">
+        <div className="w-11 h-11 rounded-lg bg-teal-50 dark:bg-teal-900/30 flex items-center justify-center shrink-0">
+          <span className="text-teal-600 dark:text-teal-400 font-bold text-sm">
+            {contact.name.charAt(0)}
+          </span>
+        </div>
+        <div className="min-w-0 flex-1">
+          <h4 className="text-sm font-semibold text-gray-900 dark:text-white truncate">
+            {contact.name}
+          </h4>
+          {contact.designation && (
+            <p className="text-xs text-gray-500 dark:text-gray-500 truncate">
+              {contact.designation}
+            </p>
+          )}
+        </div>
+      </div>
+      {contact.company && (
+        <div className="mt-3 flex items-center gap-1.5 text-xs text-teal-600 dark:text-teal-400">
+          <Building2 className="w-3 h-3 shrink-0" />
+          <span className="truncate">{contact.company}</span>
+        </div>
+      )}
+      <div className="mt-3 flex items-center gap-3">
+        {contact.linkedinUrl && (
+          <a href={contact.linkedinUrl} target="_blank" rel="noopener noreferrer"
+            className="text-xs text-gray-400 hover:text-blue-600 transition-colors"
+            onClick={(e) => e.stopPropagation()}>
+            <ExternalLink className="w-3.5 h-3.5" />
+          </a>
+        )}
+        {contact.email && (
+          <a href={`mailto:${contact.email}`}
+            className="flex items-center gap-1.5 text-xs text-gray-400 dark:text-gray-500 hover:text-teal-600 dark:hover:text-teal-400 transition-colors truncate"
+            onClick={(e) => e.stopPropagation()}>
+            <Mail className="w-3 h-3 shrink-0" />
+            {contact.email}
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
 // ─── Tab type ─────────────────────────────────────────────
-type Tab = "all" | "yc" | "professors";
+type Tab = "all" | "yc" | "professors" | "hr" | "email";
 
 export default function CompanyListPage() {
   const isInsideLayout = useLocation().pathname.startsWith("/student/");
@@ -328,6 +391,12 @@ export default function CompanyListPage() {
     return () => clearTimeout(timer);
   }, [ycSearchInput]);
 
+  // HR contact filters (local state)
+  const [hrSearchInput, setHrSearchInput] = useState("");
+  const [hrSearch, setHrSearch] = useState("");
+  const [hrCompany, setHrCompany] = useState("");
+  const [hrPage, setHrPage] = useState(1);
+
   // Debounce professor search
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -336,6 +405,15 @@ export default function CompanyListPage() {
     }, 400);
     return () => clearTimeout(timer);
   }, [profSearchInput]);
+
+  // Debounce HR search
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setHrSearch(hrSearchInput);
+      setHrPage(1);
+    }, 400);
+    return () => clearTimeout(timer);
+  }, [hrSearchInput]);
 
   const selectedCity = searchParams.get("city") || "";
   const search = searchParams.get("search") || "";
@@ -448,6 +526,31 @@ export default function CompanyListPage() {
   const professors = profData?.professors ?? [];
   const profPagination = profData?.pagination ?? null;
 
+  // ── HR Contact Stats query ──
+  const { data: hrStats } = useQuery<HRContactStats>({
+    queryKey: queryKeys.hrContacts.stats(),
+    queryFn: () => api.get("/hr-contacts/stats").then((r) => r.data),
+    staleTime: 5 * 60 * 1000,
+  });
+
+  // ── HR Contact list query ──
+  const hrQueryParams: Record<string, string | number> = { page: hrPage, limit: 24 };
+  if (hrSearch) hrQueryParams["search"] = hrSearch;
+  if (hrCompany) hrQueryParams["company"] = hrCompany;
+
+  const { data: hrData, isLoading: hrLoading } = useQuery<{
+    contacts: HRContact[];
+    pagination: Pagination;
+    premiumRequired?: boolean;
+  }>({
+    queryKey: queryKeys.hrContacts.list(hrQueryParams),
+    queryFn: () => api.get("/hr-contacts", { params: hrQueryParams }).then((r) => r.data),
+    enabled: activeTab === "hr",
+  });
+
+  const hrContacts = hrData?.contacts ?? [];
+  const hrPagination = hrData?.pagination ?? null;
+
   return (
     <div className="relative min-h-screen bg-white/50 dark:bg-gray-950">
       {/* Atmospheric background */}
@@ -532,6 +635,31 @@ export default function CompanyListPage() {
             <span className="px-1.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 text-[10px] font-bold rounded-full border border-indigo-100 dark:border-indigo-800">
               {profStats?.total ?? "..."}
             </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("hr")}
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
+              activeTab === "hr"
+                ? "bg-white dark:bg-gray-900 text-teal-700 dark:text-teal-400 shadow-sm"
+                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            }`}
+          >
+            <Users className="w-4 h-4 shrink-0" />
+            HR Contacts
+            <span className="px-1.5 py-0.5 bg-teal-50 dark:bg-teal-900/30 text-teal-600 dark:text-teal-400 text-[10px] font-bold rounded-full border border-teal-100 dark:border-teal-800">
+              {hrStats?.total ?? "..."}
+            </span>
+          </button>
+          <button
+            onClick={() => setActiveTab("email")}
+            className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-5 py-2 rounded-lg text-xs sm:text-sm font-medium transition-all whitespace-nowrap ${
+              activeTab === "email"
+                ? "bg-white dark:bg-gray-900 text-purple-700 dark:text-purple-400 shadow-sm"
+                : "text-gray-500 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300"
+            }`}
+          >
+            <Mail className="w-4 h-4 shrink-0" />
+            Email Outreach
           </button>
         </div>
         </motion.div>
@@ -723,26 +851,53 @@ export default function CompanyListPage() {
                 )}
 
                 {/* Pagination */}
-                {pagination && pagination.totalPages > 1 && (
-                  <div className="flex items-center justify-center gap-2 mt-8">
-                    {Array.from(
-                      { length: pagination.totalPages },
-                      (_, i) => i + 1,
-                    ).map((p) => (
+                {pagination && pagination.totalPages > 1 && (() => {
+                  const current = pagination.page;
+                  const total = pagination.totalPages;
+                  const pages: (number | "...")[] = [];
+                  pages.push(1);
+                  if (current > 3) pages.push("...");
+                  for (let i = Math.max(2, current - 1); i <= Math.min(total - 1, current + 1); i++) {
+                    pages.push(i);
+                  }
+                  if (current < total - 2) pages.push("...");
+                  if (total > 1) pages.push(total);
+                  return (
+                    <div className="flex items-center justify-center gap-1.5 mt-8">
                       <button
-                        key={p}
-                        onClick={() => updateParam("page", String(p))}
-                        className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
-                          p === pagination.page
-                            ? "bg-black dark:bg-white text-white dark:text-gray-950"
-                            : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
-                        }`}
+                        onClick={() => updateParam("page", String(current - 1))}
+                        disabled={current <= 1}
+                        className="px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
                       >
-                        {p}
+                        <ChevronLeft className="w-4 h-4" /> Prev
                       </button>
-                    ))}
-                  </div>
-                )}
+                      {pages.map((p, i) =>
+                        p === "..." ? (
+                          <span key={`dots-${i}`} className="px-2 text-gray-400">...</span>
+                        ) : (
+                          <button
+                            key={p}
+                            onClick={() => updateParam("page", String(p))}
+                            className={`w-10 h-10 rounded-lg text-sm font-medium transition-colors ${
+                              p === current
+                                ? "bg-black dark:bg-white text-white dark:text-gray-950"
+                                : "bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700"
+                            }`}
+                          >
+                            {p}
+                          </button>
+                        ),
+                      )}
+                      <button
+                        onClick={() => updateParam("page", String(current + 1))}
+                        disabled={current >= total}
+                        className="px-3 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1"
+                      >
+                        Next <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
+                  );
+                })()}
               </>
             )}
           </>
@@ -1083,6 +1238,145 @@ export default function CompanyListPage() {
             )}
           </>
         )}
+
+        {/* ── TAB: HR Contacts ────────────────────────── */}
+        {activeTab === "hr" && (
+          <>
+            <div className="flex flex-col sm:flex-row gap-3 mb-6">
+              <div className="relative flex-1 max-w-md">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 dark:text-gray-500" />
+                <input
+                  type="text"
+                  value={hrSearchInput}
+                  onChange={(e) => setHrSearchInput(e.target.value)}
+                  placeholder="Search by name, company, designation..."
+                  className="w-full pl-10 pr-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-300 dark:bg-gray-800 dark:text-white dark:placeholder-gray-500"
+                />
+              </div>
+
+              <div className="relative group">
+                <button className="flex items-center gap-2 px-4 py-2.5 border border-gray-200 dark:border-gray-700 rounded-lg text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800 transition-colors">
+                  <Building2 className="w-4 h-4" />
+                  Company:{" "}
+                  <span className="font-medium text-gray-900 dark:text-white truncate max-w-25">
+                    {hrCompany || "All"}
+                  </span>
+                  <ChevronDown className="w-3.5 h-3.5" />
+                </button>
+                <div className="absolute left-0 top-full z-20 mt-1 hidden min-w-[200px] max-h-[280px] overflow-y-auto rounded-xl border border-gray-100 dark:border-gray-800 bg-white dark:bg-gray-900 p-1 shadow-xl group-hover:block">
+                  <button
+                    onClick={() => { setHrCompany(""); setHrPage(1); }}
+                    className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                      !hrCompany
+                        ? "bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 font-medium"
+                        : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                    }`}
+                  >
+                    All
+                  </button>
+                  {(hrStats?.companies ?? []).slice(0, 50).map((c) => (
+                    <button
+                      key={c.name}
+                      onClick={() => { setHrCompany(c.name); setHrPage(1); }}
+                      className={`block w-full rounded-lg px-3 py-2 text-left text-sm transition ${
+                        hrCompany === c.name
+                          ? "bg-teal-50 dark:bg-teal-900/30 text-teal-700 dark:text-teal-400 font-medium"
+                          : "text-gray-600 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-800"
+                      }`}
+                    >
+                      {c.name} ({c.count})
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {(hrSearch || hrCompany) && (
+                <button
+                  onClick={() => { setHrSearchInput(""); setHrSearch(""); setHrCompany(""); setHrPage(1); }}
+                  className="flex items-center gap-1 px-3 py-2.5 text-sm text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/30 rounded-lg"
+                >
+                  <X className="w-4 h-4" /> Clear
+                </button>
+              )}
+            </div>
+
+            {hrLoading ? (
+              <LoadingScreen compact />
+            ) : hrContacts.length === 0 ? (
+              <div className="flex flex-col items-center justify-center text-center p-14 bg-white dark:bg-gray-900 rounded-2xl border border-gray-200/80 dark:border-gray-800 shadow-sm">
+                <div className="w-20 h-20 bg-gray-100 dark:bg-gray-800 rounded-2xl flex items-center justify-center mb-5">
+                  <Users className="w-9 h-9 text-teal-400" />
+                </div>
+                <h3 className="text-gray-800 dark:text-gray-200 font-bold text-lg mb-2">
+                  No HR contacts found
+                </h3>
+                <p className="text-gray-400 dark:text-gray-500 text-sm max-w-xs leading-relaxed mx-auto">
+                  Try adjusting your search or filters
+                </p>
+              </div>
+            ) : (
+              <>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {hrContacts.map((contact, i) => (
+                    <motion.div
+                      key={contact.id}
+                      initial={{ opacity: 0, y: 12 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ delay: i * 0.04, duration: 0.35 }}
+                    >
+                      <HRContactCard contact={contact} />
+                    </motion.div>
+                  ))}
+                </div>
+
+                {hrData?.premiumRequired && (
+                  <div className="mt-6 flex items-center gap-3 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+                    <Lock className="w-5 h-5 text-amber-600 dark:text-amber-400 shrink-0" />
+                    <div className="flex-1">
+                      <p className="text-sm font-medium text-amber-800 dark:text-amber-300">
+                        First 100 contacts are free
+                      </p>
+                      <p className="text-xs text-amber-600 dark:text-amber-400 mt-0.5">
+                        Upgrade to Premium to access all {hrStats?.total ?? 0} HR contacts.
+                      </p>
+                    </div>
+                    <Link
+                      to="/pricing"
+                      className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors no-underline"
+                    >
+                      Upgrade
+                    </Link>
+                  </div>
+                )}
+
+                {hrPagination && hrPagination.totalPages > 1 && (
+                  <div className="flex items-center justify-center gap-3 mt-8">
+                    <button
+                      onClick={() => setHrPage((p) => Math.max(1, p - 1))}
+                      disabled={hrPage <= 1}
+                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft className="w-4 h-4" /> Prev
+                    </button>
+                    <span className="text-sm text-gray-500 dark:text-gray-500">
+                      Page {hrPagination.page} of {hrPagination.totalPages}
+                    </span>
+                    <button
+                      onClick={() => setHrPage((p) => Math.min(hrPagination.totalPages, p + 1))}
+                      disabled={hrPage >= hrPagination.totalPages}
+                      className="flex items-center gap-1 px-4 py-2 rounded-lg text-sm font-medium bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                    >
+                      Next <ChevronRight className="w-4 h-4" />
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
+          </>
+        )}
+
+        {/* ── TAB: Email Outreach ─────────────────────── */}
+        {activeTab === "email" && <EmailCampaignTab />}
       </div>
       {!isInsideLayout && <Footer />}
     </div>

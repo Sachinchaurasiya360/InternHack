@@ -130,6 +130,7 @@ enum AIServiceType {
   COVER_LETTER
   RESUME_GEN
   LATEX_CHAT
+  EMAIL_CHAT
 }
 
 // ============================================================
@@ -176,6 +177,7 @@ model user {
   githubUrl      String?
   portfolioUrl   String?
   leetcodeUrl    String?
+  appPassword    String?
   location       String?
   jobStatus      String?
   projects       Json     @default("[]")
@@ -224,6 +226,9 @@ model user {
   // ── HR relations ──
   employeeProfile   employee?          @relation("EmployeeUser")
   customRoles       userCustomRole[]   @relation("UserCustomRoles")
+
+  // ── Email campaigns ──
+  emailCampaigns    emailCampaign[]    @relation("UserEmailCampaigns")
 
   @@index([role])
   @@index([role, isActive])
@@ -1262,4 +1267,86 @@ model adminJob {
   updatedAt   DateTime  @updatedAt
 
   @@index([isActive, expiresAt])
+}
+
+// ============================================================
+// IT HR CONTACT MODEL
+// ============================================================
+
+model itHrContact {
+  id          Int      @id @default(autoincrement())
+  name        String
+  email       String?
+  company     String?
+  designation String?
+  phone       String?
+  linkedinUrl String?
+  source      String   @default("PDF")
+  createdAt   DateTime @default(now())
+
+  @@index([company])
+  @@index([name])
+}
+
+// ============================================================
+// EMAIL CAMPAIGN MODELS
+// ============================================================
+
+enum EmailCampaignStatus {
+  DRAFT
+  QUEUED
+  SENDING
+  PAUSED
+  COMPLETED
+  FAILED
+}
+
+enum EmailLogStatus {
+  PENDING
+  SENT
+  FAILED
+}
+
+model emailCampaign {
+  id              Int                 @id @default(autoincrement())
+  userId          Int
+  user            user                @relation("UserEmailCampaigns", fields: [userId], references: [id], onDelete: Cascade)
+  name            String
+  chatHistory     Json                @default("[]")
+  emailSubject    String?
+  emailTemplate   String?
+  contactType     String
+  filters         Json                @default("{}")
+  intervalSeconds Int                 @default(60)
+  totalEmails     Int                 @default(0)
+  sentCount       Int                 @default(0)
+  failedCount     Int                 @default(0)
+  status          EmailCampaignStatus @default(DRAFT)
+  startedAt       DateTime?
+  completedAt     DateTime?
+  errorMessage    String?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  emailLogs emailLog[] @relation("CampaignEmailLogs")
+
+  @@index([userId])
+  @@index([status])
+}
+
+model emailLog {
+  id             Int            @id @default(autoincrement())
+  campaignId     Int
+  campaign       emailCampaign  @relation("CampaignEmailLogs", fields: [campaignId], references: [id], onDelete: Cascade)
+  recipientName  String
+  recipientEmail String
+  subject        String
+  body           String
+  status         EmailLogStatus @default(PENDING)
+  sentAt         DateTime?
+  errorMessage   String?
+  createdAt      DateTime       @default(now())
+
+  @@index([campaignId])
+  @@index([status])
 }

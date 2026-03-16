@@ -1,9 +1,45 @@
 import { Link } from "react-router";
 import { motion } from "framer-motion";
-import { Code2, Database, ArrowRight, BookOpen, Brain, FileCode2, Palette, Zap, Coffee, Layers, Server, Terminal, Blocks } from "lucide-react";
+import { Code2, Database, ArrowRight, BookOpen, Brain, FileCode2, Palette, Zap, Coffee, Layers, Server, Terminal, Blocks, GraduationCap } from "lucide-react";
 import { SEO } from "../../../components/SEO";
 
-const TRACKS = [
+const PRACTICE_TRACKS = [
+  {
+    id: "interview",
+    title: "Interview Preparation",
+    description: "Curated interview questions - JS, React, Node, Python, SQL, system design, behavioral & more.",
+    icon: GraduationCap,
+    color: "text-violet-500",
+    bgColor: "bg-violet-50 dark:bg-violet-900/30",
+    borderHover: "hover:border-violet-200 dark:hover:border-violet-800",
+    path: "interview",
+    stat: "300 Questions",
+  },
+  {
+    id: "dsa",
+    title: "DSA",
+    description: "Data structures and algorithms - arrays, trees, graphs, dynamic programming, and company-wise problems.",
+    icon: BookOpen,
+    color: "text-indigo-500",
+    bgColor: "bg-indigo-50 dark:bg-indigo-900/30",
+    borderHover: "hover:border-indigo-200 dark:hover:border-indigo-800",
+    path: "dsa",
+    stat: "Topic-wise",
+  },
+  {
+    id: "aptitude",
+    title: "Aptitude",
+    description: "Quantitative, logical reasoning, and verbal ability - company-wise question banks and practice sets.",
+    icon: Brain,
+    color: "text-purple-500",
+    bgColor: "bg-purple-50 dark:bg-purple-900/30",
+    borderHover: "hover:border-purple-200 dark:hover:border-purple-800",
+    path: "aptitude",
+    stat: "Topic-wise",
+  },
+];
+
+const LESSON_TRACKS = [
   {
     id: "javascript",
     title: "JavaScript",
@@ -136,28 +172,6 @@ const TRACKS = [
     path: "blockchain",
     stat: "35 Projects",
   },
-  {
-    id: "dsa",
-    title: "DSA",
-    description: "Data structures and algorithms - arrays, trees, graphs, dynamic programming, and company-wise problems.",
-    icon: BookOpen,
-    color: "text-indigo-500",
-    bgColor: "bg-indigo-50 dark:bg-indigo-900/30",
-    borderHover: "hover:border-indigo-200 dark:hover:border-indigo-800",
-    path: "dsa",
-    stat: "Topic-wise",
-  },
-  {
-    id: "aptitude",
-    title: "Aptitude",
-    description: "Quantitative, logical reasoning, and verbal ability - company-wise question banks and practice sets.",
-    icon: Brain,
-    color: "text-purple-500",
-    bgColor: "bg-purple-50 dark:bg-purple-900/30",
-    borderHover: "hover:border-purple-200 dark:hover:border-purple-800",
-    path: "aptitude",
-    stat: "Topic-wise",
-  },
 ];
 
 export default function LearnHubPage() {
@@ -193,14 +207,52 @@ export default function LearnHubPage() {
         </p>
       </motion.div>
 
-      {/* Track cards */}
+      {/* Practice tracks (DSA & Aptitude) */}
       <div className="space-y-4">
-        {TRACKS.map((track, idx) => (
+        {PRACTICE_TRACKS.map((track, idx) => (
           <motion.div
             key={track.id}
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 + idx * 0.08, duration: 0.5 }}
+          >
+            <Link
+              to={`/learn/${track.path}`}
+              className={`group flex items-center gap-5 bg-white dark:bg-gray-900 px-6 py-6 rounded-2xl border border-gray-100 dark:border-gray-800 ${track.borderHover} hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300 no-underline`}
+            >
+              <div className={`w-14 h-14 rounded-xl ${track.bgColor} flex items-center justify-center shrink-0`}>
+                <track.icon className={`w-7 h-7 ${track.color}`} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-3 mb-1">
+                  <h3 className="text-lg font-bold text-gray-950 dark:text-white">
+                    {track.title}
+                  </h3>
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-gray-100 dark:bg-gray-800 text-gray-500 dark:text-gray-400">
+                    {track.stat}
+                  </span>
+                </div>
+                <p className="text-sm text-gray-500 dark:text-gray-500 leading-relaxed">
+                  {track.description}
+                </p>
+              </div>
+              <ArrowRight className="w-5 h-5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 dark:group-hover:text-gray-400 group-hover:translate-x-1 transition-all shrink-0" />
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Divider */}
+      <div className="my-8 border-t border-gray-200 dark:border-gray-800" />
+
+      {/* Lesson tracks */}
+      <div className="space-y-4">
+        {LESSON_TRACKS.map((track, idx) => (
+          <motion.div
+            key={track.id}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35 + idx * 0.08, duration: 0.5 }}
           >
             <Link
               to={`/learn/${track.path}`}

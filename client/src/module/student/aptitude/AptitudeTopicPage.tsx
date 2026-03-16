@@ -126,10 +126,10 @@ export default function AptitudeTopicPage() {
         className="text-center mb-8 mt-6"
       >
         <Link
-          to={basePath}
+          to={`${basePath}/${slug}`}
           className="inline-flex items-center gap-1.5 text-gray-400 dark:text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 text-sm mb-6 no-underline transition-colors"
         >
-          <ArrowLeft className="w-4 h-4" /> Back to {topic.categoryName}
+          <ArrowLeft className="w-4 h-4" /> Back to Theory
         </Link>
         <h1 className="font-display text-3xl sm:text-4xl font-bold tracking-tight text-gray-950 dark:text-white mb-2">
           {topic.name}

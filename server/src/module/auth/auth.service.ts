@@ -10,6 +10,7 @@ const badgeService = new BadgeService();
 import { signUrls } from "../../utils/s3.utils.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { welcomeEmailHtml, otpEmailHtml, resetPasswordEmailHtml } from "../../utils/email-templates.js";
+import { encrypt as encryptAppPassword } from "../../utils/crypto.utils.js";
 import type { UserRole } from "@prisma/client";
 
 interface RegisterInput {
@@ -289,7 +290,15 @@ export class AuthService {
     subscriptionPlan: true,
     subscriptionStatus: true,
     subscriptionEndDate: true,
+    appPassword: true,
   } as const;
+
+  private stripAppPassword(user: Record<string, unknown>) {
+    const hasAppPassword = !!user.appPassword;
+    delete user.appPassword;
+    user.hasAppPassword = hasAppPassword;
+    return user;
+  }
 
   async getProfile(userId: number) {
     const user = await prisma.user.findUnique({
@@ -305,7 +314,7 @@ export class AuthService {
       (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
     }
 
-    return user;
+    return this.stripAppPassword(user as Record<string, unknown>);
   }
 
   async updateProfile(userId: number, data: UpdateProfileInput) {
@@ -333,6 +342,10 @@ export class AuthService {
     if ("isProfilePublic" in data) {
       updateData.isProfilePublic = !!data.isProfilePublic;
     }
+    if ("appPassword" in data) {
+      const val = (data as Record<string, unknown>).appPassword as string | null | undefined;
+      updateData.appPassword = val?.trim() ? encryptAppPassword(val.trim()) : null;
+    }
 
     const user = await prisma.user.update({
       where: { id: userId },
@@ -347,7 +360,7 @@ export class AuthService {
       (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
     }
 
-    return user;
+    return this.stripAppPassword(user as Record<string, unknown>);
   }
 
   async getPublicProfile(userId: number) {
