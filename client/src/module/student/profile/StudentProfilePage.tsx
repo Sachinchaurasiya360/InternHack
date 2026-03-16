@@ -36,6 +36,7 @@ interface ProfileData {
   githubUrl: string;
   portfolioUrl: string;
   leetcodeUrl: string;
+  appPassword: string;
   jobStatus: string | null;
   isProfilePublic: boolean;
   projects: ProjectItem[];
@@ -93,11 +94,12 @@ export default function StudentProfilePage() {
     name: "", email: "", contactNo: "", company: "", designation: "",
     resumes: [], profilePic: "", coverImage: "", bio: "", college: "",
     graduationYear: null, skills: [], location: "",
-    linkedinUrl: "", githubUrl: "", portfolioUrl: "", leetcodeUrl: "",
+    linkedinUrl: "", githubUrl: "", portfolioUrl: "", leetcodeUrl: "", appPassword: "",
     jobStatus: null, isProfilePublic: false, projects: [], achievements: [],
   });
   const [memberSince, setMemberSince] = useState<string | null>(null);
   const [skillInput, setSkillInput] = useState("");
+  const [hasAppPassword, setHasAppPassword] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploadingPic, setUploadingPic] = useState(false);
@@ -106,7 +108,7 @@ export default function StudentProfilePage() {
   const [deletingResume, setDeletingResume] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    basic: true, education: true, skills: true, projects: true, achievements: true, links: false, resumes: true,
+    basic: true, education: true, skills: true, projects: true, achievements: true, links: false, email: false, resumes: true,
   });
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [cropType, setCropType] = useState<"profile" | "cover" | null>(null);
@@ -149,10 +151,11 @@ export default function StudentProfilePage() {
           graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
           location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
           githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
-          leetcodeUrl: u.leetcodeUrl ?? "",
+          leetcodeUrl: u.leetcodeUrl ?? "", appPassword: "",
           jobStatus: u.jobStatus ?? null, isProfilePublic: u.isProfilePublic ?? false,
           projects: u.projects ?? [], achievements: u.achievements ?? [],
         });
+        setHasAppPassword(!!u.hasAppPassword);
         setMemberSince(u.createdAt ?? null);
       })
       .catch(() => toast.error("Failed to load profile"))
@@ -278,6 +281,7 @@ export default function StudentProfilePage() {
         location: form.location.trim(), linkedinUrl: form.linkedinUrl.trim(),
         githubUrl: form.githubUrl.trim(), portfolioUrl: form.portfolioUrl.trim(),
         leetcodeUrl: form.leetcodeUrl.trim(),
+        appPassword: form.appPassword.trim() || null,
         jobStatus: form.jobStatus || null, isProfilePublic: form.isProfilePublic,
         projects: form.projects, achievements: form.achievements,
       });
@@ -289,11 +293,12 @@ export default function StudentProfilePage() {
         graduationYear: u.graduationYear ?? null, skills: u.skills ?? [],
         location: u.location ?? "", linkedinUrl: u.linkedinUrl ?? "",
         githubUrl: u.githubUrl ?? "", portfolioUrl: u.portfolioUrl ?? "",
-        leetcodeUrl: u.leetcodeUrl ?? "",
+        leetcodeUrl: u.leetcodeUrl ?? "", appPassword: "",
         jobStatus: u.jobStatus ?? null, isProfilePublic: u.isProfilePublic ?? false,
         projects: u.projects ?? [], achievements: u.achievements ?? [],
       };
       setForm(updated);
+      setHasAppPassword(!!u.hasAppPassword);
       syncUser(updated);
       toast.success("Profile updated!");
     } catch (err: unknown) {
@@ -962,6 +967,46 @@ export default function StudentProfilePage() {
                 <div>
                   <label className={labelClass}><ExternalLink className="w-4 h-4 text-gray-400" /> LeetCode</label>
                   <input type="url" value={form.leetcodeUrl} onChange={(e) => handleChange("leetcodeUrl", e.target.value)} className={inputClass} placeholder="https://leetcode.com/yourname" />
+                </div>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Email Settings */}
+          <motion.div custom={6} variants={fadeInUp} initial="hidden" animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
+            <button type="button" onClick={() => toggleSection("email")}
+              className="w-full flex items-center justify-between px-6 py-4 text-left">
+              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
+                  <Mail className="w-4 h-4 text-white dark:text-gray-900" />
+                </div>
+                Email Settings
+                {hasAppPassword && (
+                  <span className="flex items-center gap-1 text-xs font-normal text-emerald-600 dark:text-emerald-400">
+                    <CheckCircle className="w-3.5 h-3.5" /> Configured
+                  </span>
+                )}
+              </h3>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.email ? "rotate-180" : ""}`} />
+            </button>
+            {openSections.email && (
+              <div className="px-6 pb-6 space-y-4 border-t border-gray-50 dark:border-gray-800 pt-4">
+                <div>
+                  <label className={labelClass}><Shield className="w-4 h-4 text-gray-400" /> Gmail App Password</label>
+                  <input
+                    type="password"
+                    value={form.appPassword}
+                    onChange={(e) => handleChange("appPassword", e.target.value)}
+                    className={inputClass}
+                    placeholder={hasAppPassword ? "••••••••••••••••" : "Enter your Gmail App Password"}
+                  />
+                  <p className="mt-1.5 text-xs text-gray-400 dark:text-gray-500">
+                    Required for email outreach. Generate one at{" "}
+                    <a href="https://myaccount.google.com/apppasswords" target="_blank" rel="noopener noreferrer" className="text-blue-500 hover:underline">
+                      myaccount.google.com/apppasswords
+                    </a>
+                  </p>
                 </div>
               </div>
             )}

@@ -7,7 +7,7 @@ import AtsToolsNav from "./AtsToolsNav";
 import api from "../../../lib/axios";
 import { LATEX_TEMPLATES, type LatexTemplate } from "./latex-templates.data";
 
-const CACHE_VERSION = "v2";
+const CACHE_VERSION = "v3";
 const CACHE_PREFIX = `latex-tpl-pdf-${CACHE_VERSION}-`;
 
 const CATEGORIES = [

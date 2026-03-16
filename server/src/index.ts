@@ -32,6 +32,8 @@ import { latexRouter } from "./module/latex/latex.routes.js";
 import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
 import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { professorRouter } from "./module/professor/professor.routes.js";
+import { hrContactRouter } from "./module/hr-contact/hr-contact.routes.js";
+import { emailCampaignRouter } from "./module/email-campaign/email-campaign.routes.js";
 import { internshipRouter } from "./module/internship/internship.routes.js";
 import { campusDriveRouter } from "./module/campus-drive/campus-drive.routes.js";
 import { badgeRouter } from "./module/badge/badge.routes.js";
@@ -57,6 +59,7 @@ import { prisma } from "./database/db.js";
 import { initServiceProviders } from "./lib/ai-provider-registry.js";
 import { startFollowUpCron } from "./cron/scheduled-emails.js";
 import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
+import { recoverActiveCampaigns } from "./module/email-campaign/email-campaign.worker.js";
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -182,6 +185,8 @@ app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
 app.use("/api/hackathons", hackathonRouter);
 app.use("/api/professors", professorRouter);
+app.use("/api/hr-contacts", hrContactRouter);
+app.use("/api/email-campaigns", emailCampaignRouter);
 app.use("/api/internships", internshipRouter);
 app.use("/api/campus-drives", campusDriveRouter);
 app.use("/api/badges", badgeRouter);
@@ -253,4 +258,7 @@ app.listen(PORT, async () => {
 
   // Start subscription expiry cron (daily at midnight)
   startSubscriptionExpiryCron();
+
+  // Resume any in-progress email campaigns
+  recoverActiveCampaigns().catch((err) => console.error("[EmailCampaign] Recovery failed:", err));
 });

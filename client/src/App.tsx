@@ -41,6 +41,7 @@ const BlogPostPage = lazyWithRetry(() => import("./module/blog/BlogPostPage"));
 const RecruiterLandingPage = lazyWithRetry(() => import("./module/recruiter/RecruiterLandingPage"));
 const AptitudeCategoriesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCategoriesPage"));
 const AptitudeTopicPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTopicPage"));
+const AptitudeTheoryPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeTheoryPage"));
 const AptitudeCompaniesPage = lazyWithRetry(() => import("./module/student/aptitude/AptitudeCompaniesPage"));
 const DsaTopicsPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicsPage"));
 const DsaTopicDetailPage = lazyWithRetry(() => import("./module/student/dsa/DsaTopicDetailPage"));
@@ -87,6 +88,9 @@ const SqlPlaygroundPage = lazyWithRetry(() => import("./module/student/sql/SqlPl
 const MockInterviewPage = lazyWithRetry(() => import("./module/student/mock-interview/MockInterviewPage"));
 const LearnLayout = lazyWithRetry(() => import("./module/student/learn/LearnLayout"));
 const LearnHubPage = lazyWithRetry(() => import("./module/student/learn/LearnHubPage"));
+const InterviewLessonsPage = lazyWithRetry(() => import("./module/student/interview-prep/InterviewLessonsPage"));
+const InterviewSectionPage = lazyWithRetry(() => import("./module/student/interview-prep/InterviewSectionPage"));
+const InterviewQuestionPage = lazyWithRetry(() => import("./module/student/interview-prep/InterviewQuestionPage"));
 const JsLessonsPage = lazyWithRetry(() => import("./module/student/javascript/JsLessonsPage"));
 const JsSectionPage = lazyWithRetry(() => import("./module/student/javascript/JsSectionPage"));
 const JsLessonDetailPage = lazyWithRetry(() => import("./module/student/javascript/JsLessonDetailPage"));
@@ -280,10 +284,14 @@ function App() {
             <Route path="dsa/:slug" element={<DsaTopicDetailPage />} />
             <Route path="aptitude" element={<AptitudeCategoriesPage />} />
             <Route path="aptitude/companies" element={<AptitudeCompaniesPage />} />
-            <Route path="aptitude/:slug" element={<AptitudeTopicPage />} />
+            <Route path="aptitude/:slug" element={<AptitudeTheoryPage />} />
+            <Route path="aptitude/:slug/practice" element={<AptitudeTopicPage />} />
             <Route path="blockchain" element={<BlockchainLessonsPage />} />
             <Route path="blockchain/:sectionSlug" element={<BlockchainSectionPage />} />
             <Route path="blockchain/:sectionSlug/:lessonId" element={<BlockchainLessonDetailPage />} />
+            <Route path="interview" element={<InterviewLessonsPage />} />
+            <Route path="interview/:sectionSlug" element={<InterviewSectionPage />} />
+            <Route path="interview/:sectionSlug/:questionId" element={<InterviewQuestionPage />} />
           </Route>
 
           {/* Legacy redirects */}

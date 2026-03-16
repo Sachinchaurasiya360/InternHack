@@ -1,0 +1,1389 @@
+[
+  {
+    "id": "node-event-loop",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 0,
+    "title": "Node.js Event Loop & Architecture",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Event Loop", "libuv", "Non-blocking I/O", "Single Thread", "Worker Threads"],
+    "content": {
+      "question": "How does the Node.js event loop work? How is it different from the browser event loop?",
+      "answer": "Node.js uses a single-threaded event loop powered by libuv for non-blocking I/O. While the main thread is single, I/O operations (file, network, DNS) are offloaded to libuv's thread pool or OS async mechanisms.\n\nNode.js event loop phases:\n1. Timers: setTimeout, setInterval callbacks\n2. Pending callbacks: deferred I/O callbacks\n3. Idle/Prepare: internal use\n4. Poll: retrieve new I/O events, execute I/O callbacks\n5. Check: setImmediate callbacks\n6. Close callbacks: socket.on('close')\n\nMicrotasks (process.nextTick, Promise callbacks) run between each phase.",
+      "codeExamples": [
+        {
+          "title": "Node.js Event Loop Order",
+          "code": "console.log('1: sync');\n\nsetTimeout(() => console.log('2: setTimeout'), 0);\n\nsetImmediate(() => console.log('3: setImmediate'));\n\nprocess.nextTick(() => console.log('4: nextTick'));\n\nPromise.resolve().then(() => console.log('5: promise'));\n\nconsole.log('6: sync');",
+          "output": "1: sync\n6: sync\n4: nextTick\n5: promise\n2: setTimeout\n3: setImmediate",
+          "explanation": "Sync first, then nextTick (highest priority microtask), then Promise microtask, then timer macrotask, then setImmediate (check phase)."
+        },
+        {
+          "title": "Blocking the Event Loop (Anti-Pattern)",
+          "code": "const express = require('express');\nconst app = express();\n\n// BAD: blocks the event loop for ALL users\napp.get('/hash', (req, res) => {\n  const crypto = require('crypto');\n  // This takes ~500ms and blocks everything\n  const hash = crypto.pbkdf2Sync(\n    'password', 'salt', 100000, 64, 'sha512'\n  );\n  res.json({ hash: hash.toString('hex') });\n});\n\n// GOOD: non-blocking with async version\napp.get('/hash-async', async (req, res) => {\n  const crypto = require('crypto');\n  const hash = await new Promise((resolve, reject) => {\n    crypto.pbkdf2(\n      'password', 'salt', 100000, 64, 'sha512',\n      (err, key) => err ? reject(err) : resolve(key)\n    );\n  });\n  res.json({ hash: hash.toString('hex') });\n});",
+          "explanation": "Sync crypto blocks the event loop, making the server unresponsive. The async version offloads to the thread pool."
+        },
+        {
+          "title": "Worker Threads for CPU-Intensive Work",
+          "code": "// main.js\nconst { Worker } = require('worker_threads');\n\nfunction runWorker(data) {\n  return new Promise((resolve, reject) => {\n    const worker = new Worker('./worker.js', {\n      workerData: data,\n    });\n    worker.on('message', resolve);\n    worker.on('error', reject);\n  });\n}\n\n// worker.js\nconst { workerData, parentPort } = require('worker_threads');\n\n// CPU-heavy computation runs in separate thread\nfunction fibonacci(n) {\n  if (n <= 1) return n;\n  return fibonacci(n - 1) + fibonacci(n - 2);\n}\n\nconst result = fibonacci(workerData);\nparentPort.postMessage(result);",
+          "explanation": "Worker threads run JavaScript in parallel threads - ideal for CPU-intensive work without blocking the main event loop."
+        }
+      ],
+      "notes": [
+        "process.nextTick runs before Promise callbacks (higher priority)",
+        "setImmediate runs after I/O callbacks, setTimeout runs in the timer phase",
+        "libuv's default thread pool size is 4 (configurable via UV_THREADPOOL_SIZE)"
+      ],
+      "followUps": [
+        "What is the difference between process.nextTick and setImmediate?",
+        "How would you prevent event loop blocking in a production app?",
+        "When would you use Worker Threads vs child_process?"
+      ],
+      "interviewTips": [
+        "Know the 6 phases of the Node event loop and which callbacks go where",
+        "Always mention that Node is NOT single-threaded for I/O - only the main loop is",
+        "Show awareness of real production issues: blocking, memory leaks, uncaught exceptions"
+      ]
+    }
+  },
+  {
+    "id": "node-streams-buffers",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 1,
+    "title": "Streams & Buffers",
+    "difficulty": "Advanced",
+    "type": "Coding",
+    "concepts": ["Readable Stream", "Writable Stream", "Transform Stream", "Pipe", "Buffer", "Backpressure"],
+    "content": {
+      "question": "Explain Node.js streams. Why are they important for handling large files?",
+      "answer": "Streams process data piece by piece (chunks) instead of loading everything into memory. This is essential for handling large files, network data, or real-time processing.\n\nStream types:\n1. Readable: source of data (fs.createReadStream, http request)\n2. Writable: destination (fs.createWriteStream, http response)\n3. Duplex: both readable and writable (TCP socket)\n4. Transform: modify data as it passes through (zlib.createGzip)\n\nKey advantage: A 10GB file can be processed with ~64KB of memory using streams.",
+      "codeExamples": [
+        {
+          "title": "Reading Large Files: Buffer vs Stream",
+          "code": "const fs = require('fs');\n\n// BAD: loads entire file into memory\n// For a 2GB file, this uses 2GB+ RAM\nfs.readFile('huge.csv', 'utf8', (err, data) => {\n  const lines = data.split('\\n');\n  console.log(`Lines: ${lines.length}`);\n});\n\n// GOOD: stream processes line by line\n// Uses only a few KB of memory\nconst readline = require('readline');\nconst rl = readline.createInterface({\n  input: fs.createReadStream('huge.csv'),\n});\n\nlet count = 0;\nrl.on('line', (line) => {\n  count++;\n});\nrl.on('close', () => {\n  console.log(`Lines: ${count}`);\n});",
+          "explanation": "fs.readFile loads the entire file. Streams process it chunk by chunk, keeping memory usage constant regardless of file size."
+        },
+        {
+          "title": "Pipe Chain: Read → Transform → Write",
+          "code": "const fs = require('fs');\nconst zlib = require('zlib');\n\n// Compress a file using pipe\nfs.createReadStream('input.txt')\n  .pipe(zlib.createGzip())\n  .pipe(fs.createWriteStream('input.txt.gz'))\n  .on('finish', () => console.log('Compressed!'));\n\n// HTTP response streaming\nconst http = require('http');\nhttp.createServer((req, res) => {\n  const stream = fs.createReadStream('bigfile.mp4');\n  // Pipe directly to response - no memory buildup\n  stream.pipe(res);\n}).listen(3000);",
+          "explanation": "pipe() connects streams together and handles backpressure automatically. Data flows through the chain without buffering the entire content."
+        },
+        {
+          "title": "Custom Transform Stream",
+          "code": "const { Transform } = require('stream');\n\n// Transform that converts text to uppercase\nconst upperCase = new Transform({\n  transform(chunk, encoding, callback) {\n    const upper = chunk.toString().toUpperCase();\n    callback(null, upper);\n  },\n});\n\n// Usage\nprocess.stdin\n  .pipe(upperCase)\n  .pipe(process.stdout);\n\n// Or with file\nfs.createReadStream('input.txt')\n  .pipe(upperCase)\n  .pipe(fs.createWriteStream('output.txt'));",
+          "explanation": "Transform streams let you process and modify data in transit. The callback(null, data) pattern passes transformed data to the next stream."
+        }
+      ],
+      "notes": [
+        "Backpressure: when the writable stream can't keep up, the readable stream automatically pauses",
+        "pipe() handles backpressure automatically - use it instead of manual event handling",
+        "In Express/Koa, req and res are streams - you can pipe directly to/from them"
+      ],
+      "followUps": [
+        "What is backpressure and how does pipe handle it?",
+        "How would you implement a CSV parser as a Transform stream?",
+        "What is the difference between flowing and paused mode?"
+      ],
+      "interviewTips": [
+        "Always mention the memory advantage - this is the key selling point",
+        "Give a concrete example: 'A 10GB file can be processed with 64KB of memory'",
+        "Know that HTTP requests and responses are streams in Node.js"
+      ]
+    }
+  },
+  {
+    "id": "node-rest-api-design",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 2,
+    "title": "REST API Design & Middleware",
+    "difficulty": "Intermediate",
+    "type": "Experience",
+    "concepts": ["REST", "Middleware", "Error Handling", "Validation", "Authentication"],
+    "content": {
+      "question": "How do you design a production-ready REST API in Node.js? Explain middleware, error handling, and validation patterns.",
+      "answer": "A production REST API needs: proper routing, input validation, authentication, error handling, logging, and rate limiting.\n\nMiddleware pattern: Functions that execute in order on each request. They can modify req/res, end the request, or call next() to pass control.\n\nKey patterns:\n1. Route → Validation middleware → Auth middleware → Controller → Service\n2. Global error handler catches all errors\n3. Zod/Joi for request validation\n4. JWT for stateless authentication",
+      "codeExamples": [
+        {
+          "title": "Express Middleware Chain",
+          "code": "const express = require('express');\nconst app = express();\n\n// 1. Global middleware\napp.use(express.json()); // parse JSON body\napp.use(cors());         // enable CORS\napp.use(morgan('dev'));  // request logging\n\n// 2. Route-specific middleware chain\napp.post('/api/users',\n  validateBody(createUserSchema),  // validation\n  authenticate,                     // auth check\n  authorize('admin'),               // role check\n  userController.create             // handler\n);\n\n// 3. Middleware function anatomy\nfunction authenticate(req, res, next) {\n  const token = req.headers.authorization?.split(' ')[1];\n  if (!token) return res.status(401).json({ error: 'No token' });\n\n  try {\n    req.user = jwt.verify(token, SECRET);\n    next(); // pass to next middleware\n  } catch {\n    res.status(401).json({ error: 'Invalid token' });\n  }\n}",
+          "explanation": "Each middleware does one thing. If it calls next(), the chain continues. If it sends a response, the chain stops."
+        },
+        {
+          "title": "Global Error Handler",
+          "code": "// Custom error class\nclass AppError extends Error {\n  constructor(message, statusCode) {\n    super(message);\n    this.statusCode = statusCode;\n    this.isOperational = true;\n  }\n}\n\n// In controllers/services - throw AppError\nasync function getUser(req, res, next) {\n  try {\n    const user = await User.findById(req.params.id);\n    if (!user) throw new AppError('User not found', 404);\n    res.json(user);\n  } catch (err) {\n    next(err); // pass to error handler\n  }\n}\n\n// Global error handler (4 params = error middleware)\napp.use((err, req, res, next) => {\n  const status = err.statusCode || 500;\n  const message = err.isOperational\n    ? err.message\n    : 'Internal server error';\n\n  console.error(err.stack);\n  res.status(status).json({ error: message });\n});",
+          "explanation": "Express recognizes error middleware by the 4 parameters (err, req, res, next). Always distinguish operational errors (expected) from programming errors (bugs)."
+        },
+        {
+          "title": "Request Validation with Zod",
+          "code": "const { z } = require('zod');\n\nconst createUserSchema = z.object({\n  body: z.object({\n    email: z.string().email('Invalid email'),\n    password: z.string().min(8, 'Min 8 characters'),\n    name: z.string().min(2).max(50),\n    role: z.enum(['user', 'admin']).default('user'),\n  }),\n});\n\n// Validation middleware factory\nfunction validateBody(schema) {\n  return (req, res, next) => {\n    try {\n      schema.parse({ body: req.body });\n      next();\n    } catch (err) {\n      res.status(400).json({\n        error: 'Validation failed',\n        details: err.errors,\n      });\n    }\n  };\n}",
+          "explanation": "Zod provides type-safe validation with clear error messages. The middleware factory pattern lets you reuse the validation logic for any schema."
+        }
+      ],
+      "notes": [
+        "Always validate input at the API boundary - never trust client data",
+        "Use async/await with try/catch in controllers, or express-async-errors package",
+        "Rate limiting and helmet (security headers) are essential for production"
+      ],
+      "followUps": [
+        "How do you handle file uploads in Express?",
+        "What is the difference between app.use() and app.get()?",
+        "How would you implement API versioning?"
+      ],
+      "interviewTips": [
+        "Describe the middleware chain pattern clearly - it shows architectural thinking",
+        "Mention security: helmet, CORS, rate limiting, input sanitization",
+        "Talk about your actual API design experience - what worked, what you'd change"
+      ]
+    }
+  },
+  {
+    "id": "node-basics-runtime",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 3,
+    "title": "Node.js Basics & Runtime",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["V8 Engine", "Runtime", "Global Objects", "process"],
+    "content": {
+      "question": "What is Node.js and how does it differ from browser JavaScript? Explain the key global objects available in Node.js.",
+      "answer": "Node.js is a JavaScript runtime built on Chrome's V8 engine that allows JavaScript to run outside the browser. It provides access to the file system, network, OS, and other system-level APIs that browsers restrict for security.\n\nUnlike browser JS, Node.js has no window or document objects. Instead it provides global objects like process (current process info, env vars, stdin/stdout), __dirname and __filename (current file paths), Buffer (binary data), and module/require (module system).\n\nThe process object is especially important. It gives access to environment variables via process.env, command line arguments via process.argv, and methods like process.exit() and process.cwd(). It also emits events like 'uncaughtException' and 'unhandledRejection' for error handling.\n\nNode.js uses an event-driven, non-blocking I/O model which makes it efficient for I/O-heavy workloads like web servers, APIs, and real-time applications. However, it is not ideal for CPU-intensive tasks without worker threads.",
+      "codeExamples": [
+        {
+          "title": "Key Global Objects in Node.js",
+          "code": "// process object - info about current Node process\nconsole.log('Node version:', process.version);\nconsole.log('Platform:', process.platform);\nconsole.log('PID:', process.pid);\nconsole.log('CWD:', process.cwd());\nconsole.log('Memory:', process.memoryUsage());\n\n// Environment variables\nconsole.log('NODE_ENV:', process.env.NODE_ENV);\n\n// Command line arguments\n// node app.js --port 3000\nconsole.log('Args:', process.argv);\n// ['node', '/path/app.js', '--port', '3000']\n\n// __dirname and __filename (CommonJS only)\nconsole.log('Directory:', __dirname);\nconsole.log('File:', __filename);",
+          "output": "Node version: v20.11.0\nPlatform: linux\nPID: 12345\nCWD: /home/user/project\nMemory: { rss: 30M, heapTotal: 6M, heapUsed: 4M ... }\nNODE_ENV: development\nArgs: ['node', '/path/app.js', '--port', '3000']\nDirectory: /home/user/project\nFile: /home/user/project/app.js",
+          "explanation": "These global objects give Node.js programs access to system information that browser JavaScript cannot reach."
+        },
+        {
+          "title": "Browser JS vs Node.js",
+          "code": "// Browser-only APIs (NOT available in Node)\n// window, document, localStorage, fetch (built-in since Node 18)\n// alert(), confirm(), DOM manipulation\n\n// Node-only APIs (NOT available in browser)\nconst fs = require('fs');       // File system\nconst path = require('path');   // Path utilities\nconst os = require('os');       // OS information\nconst http = require('http');   // HTTP server\nconst crypto = require('crypto'); // Cryptography\n\n// Both environments\nconsole.log('Works everywhere');\nsetTimeout(() => {}, 1000);\nJSON.parse('{}');\nPromise.resolve();\n\n// globalThis works in both (ES2020+)\nconsole.log(globalThis === global); // true in Node\n// console.log(globalThis === window); // true in browser",
+          "output": "Works everywhere\ntrue",
+          "explanation": "Node.js provides system-level modules while browsers provide DOM and Web APIs. globalThis is the universal way to access the global object."
+        },
+        {
+          "title": "Process Event Handling",
+          "code": "// Handle uncaught exceptions\nprocess.on('uncaughtException', (err) => {\n  console.error('Uncaught:', err.message);\n  // Log, cleanup, then exit\n  process.exit(1);\n});\n\n// Handle unhandled promise rejections\nprocess.on('unhandledRejection', (reason, promise) => {\n  console.error('Unhandled Rejection:', reason);\n});\n\n// Graceful shutdown on SIGTERM\nprocess.on('SIGTERM', () => {\n  console.log('SIGTERM received. Shutting down...');\n  server.close(() => process.exit(0));\n});\n\n// Exit event\nprocess.on('exit', (code) => {\n  console.log('Process exiting with code:', code);\n});",
+          "explanation": "Process events let you handle crashes and signals gracefully. Always log uncaught exceptions and exit cleanly in production."
+        }
+      ],
+      "notes": [
+        "Node.js runs on V8 (same engine as Chrome) but adds C++ bindings for system access",
+        "Since Node 18, fetch() is available natively without packages like node-fetch",
+        "process.env values are always strings - parse numbers and booleans explicitly",
+        "Use process.exitCode instead of process.exit() when possible to allow async cleanup"
+      ],
+      "followUps": [
+        "What is the difference between global and globalThis?",
+        "How do you handle environment variables securely in Node.js?"
+      ],
+      "interviewTips": [
+        "Clearly distinguish Node.js runtime from browser runtime",
+        "Mention V8 engine and libuv as the two pillars of Node.js",
+        "Show you understand when Node.js is a good choice (I/O) vs bad choice (CPU)"
+      ]
+    }
+  },
+  {
+    "id": "node-module-system",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 4,
+    "title": "Module System (CJS vs ESM)",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["CommonJS", "ES Modules", "require", "import/export"],
+    "content": {
+      "question": "Explain the difference between CommonJS and ES Modules in Node.js. When would you use each?",
+      "answer": "Node.js supports two module systems: CommonJS (CJS) and ES Modules (ESM). CommonJS uses require() and module.exports, is synchronous, and has been the default since Node.js was created. ES Modules use import/export syntax, are asynchronous, support static analysis and tree-shaking, and are the modern standard.\n\nCommonJS loads modules synchronously at runtime, meaning require() can be called conditionally inside functions. ES Modules are parsed statically before execution, enabling tools to determine imports and exports at build time for optimizations like tree-shaking.\n\nTo use ESM in Node.js, either set \"type\": \"module\" in package.json or use the .mjs extension. For CJS in an ESM project, use the .cjs extension. You can import CJS modules from ESM, but not easily import ESM from CJS (requires dynamic import).\n\nMost modern Node.js projects and frameworks use ESM. TypeScript projects often compile to CJS but the ecosystem is steadily moving toward ESM as the default.",
+      "codeExamples": [
+        {
+          "title": "CommonJS Module Pattern",
+          "code": "// math.js - exporting\nfunction add(a, b) { return a + b; }\nfunction multiply(a, b) { return a * b; }\n\nmodule.exports = { add, multiply };\n// or: exports.add = add;\n\n// app.js - importing\nconst { add, multiply } = require('./math');\nconsole.log(add(2, 3));\n\n// Conditional require (CJS only)\nif (process.env.NODE_ENV === 'development') {\n  const debug = require('./debug-tools');\n  debug.enable();\n}\n\n// require.cache - modules are cached after first load\nconsole.log(Object.keys(require.cache));",
+          "output": "5\n['/path/to/app.js', '/path/to/math.js']",
+          "explanation": "CJS is synchronous and cached. require() can be called anywhere, including conditionally. Modules are singletons - loaded once and cached."
+        },
+        {
+          "title": "ES Modules Pattern",
+          "code": "// math.mjs (or .js with \"type\": \"module\" in package.json)\nexport function add(a, b) { return a + b; }\nexport function multiply(a, b) { return a * b; }\nexport default class Calculator { /* ... */ }\n\n// app.mjs - importing\nimport Calculator, { add, multiply } from './math.mjs';\nimport { readFile } from 'fs/promises';\nimport { fileURLToPath } from 'url';\nimport { dirname } from 'path';\n\n// __dirname equivalent in ESM\nconst __filename = fileURLToPath(import.meta.url);\nconst __dirname = dirname(__filename);\n\n// Dynamic import (works in both CJS and ESM)\nconst module = await import('./dynamic-module.mjs');\n\nconsole.log(add(2, 3));",
+          "output": "5",
+          "explanation": "ESM uses static import/export. Note __dirname is not available in ESM - you must derive it from import.meta.url."
+        },
+        {
+          "title": "package.json Module Configuration",
+          "code": "// package.json for ESM project\n{\n  \"name\": \"my-app\",\n  \"type\": \"module\",\n  \"exports\": {\n    \".\": {\n      \"import\": \"./dist/index.mjs\",\n      \"require\": \"./dist/index.cjs\"\n    }\n  }\n}\n\n// Dual package support\n// index.mjs - ESM entry\nexport function greet(name) {\n  return `Hello, ${name}!`;\n}\n\n// index.cjs - CJS entry\nmodule.exports.greet = function(name) {\n  return `Hello, ${name}!`;\n};",
+          "explanation": "The exports field in package.json lets you provide both CJS and ESM entry points. This is how libraries support both module systems."
+        }
+      ],
+      "notes": [
+        "CJS: synchronous, runtime-resolved, uses require()/module.exports",
+        "ESM: asynchronous, statically analyzed, uses import/export, supports top-level await",
+        "__dirname and __filename are not available in ESM - use import.meta.url instead",
+        "Modules are cached in both systems - a module's code runs only once"
+      ],
+      "followUps": [
+        "How does circular dependency handling differ between CJS and ESM?",
+        "What is tree-shaking and why does it only work with ESM?"
+      ],
+      "interviewTips": [
+        "Know the practical differences: static vs dynamic, sync vs async loading",
+        "Mention that the ecosystem is migrating to ESM but CJS is still widely used",
+        "Be prepared to explain how to configure each in package.json"
+      ]
+    }
+  },
+  {
+    "id": "node-fs-operations",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 5,
+    "title": "File System Operations",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["fs module", "Promises API", "readFile", "writeFile", "directory operations"],
+    "content": {
+      "question": "How do you perform file system operations in Node.js? Show the difference between callback, sync, and promise-based approaches.",
+      "answer": "The fs module provides three APIs for file operations: callback-based (fs.readFile), synchronous (fs.readFileSync), and promise-based (fs/promises). The promise-based API is the modern recommended approach as it works cleanly with async/await.\n\nCommon operations include reading files, writing files, appending data, creating directories, listing directory contents, checking if files exist, and watching for file changes. Each has callback, sync, and promise variants.\n\nThe synchronous API blocks the event loop and should only be used during startup or in CLI scripts. The callback API is the original Node.js pattern. The promise API (fs/promises) introduced in Node 10+ is now the preferred approach for application code.\n\nAlways handle errors when working with the file system. Files may not exist, permissions may be wrong, or the disk may be full. Use try/catch with async/await or .catch() with promises.",
+      "codeExamples": [
+        {
+          "title": "Three File Reading Approaches",
+          "code": "const fs = require('fs');\nconst fsPromises = require('fs/promises');\n\n// 1. Callback (old pattern)\nfs.readFile('data.txt', 'utf8', (err, data) => {\n  if (err) {\n    console.error('Error:', err.message);\n    return;\n  }\n  console.log('Callback:', data);\n});\n\n// 2. Synchronous (blocks event loop!)\ntry {\n  const data = fs.readFileSync('data.txt', 'utf8');\n  console.log('Sync:', data);\n} catch (err) {\n  console.error('Error:', err.message);\n}\n\n// 3. Promise-based (recommended)\nasync function readData() {\n  try {\n    const data = await fsPromises.readFile('data.txt', 'utf8');\n    console.log('Async:', data);\n  } catch (err) {\n    console.error('Error:', err.message);\n  }\n}\nreadData();",
+          "output": "Callback: Hello World\nSync: Hello World\nAsync: Hello World",
+          "explanation": "Promise-based fs is cleanest with async/await. Sync blocks the loop. Callbacks lead to nesting. Always specify encoding for text files."
+        },
+        {
+          "title": "Writing Files and Directory Operations",
+          "code": "const fs = require('fs/promises');\nconst path = require('path');\n\nasync function fileOperations() {\n  const dir = path.join(__dirname, 'output');\n\n  // Create directory (recursive handles nested paths)\n  await fs.mkdir(dir, { recursive: true });\n\n  // Write file (creates or overwrites)\n  await fs.writeFile(\n    path.join(dir, 'report.json'),\n    JSON.stringify({ status: 'ok', count: 42 }, null, 2)\n  );\n\n  // Append to file\n  await fs.appendFile(\n    path.join(dir, 'log.txt'),\n    `[${new Date().toISOString()}] Server started\\n`\n  );\n\n  // List directory contents\n  const files = await fs.readdir(dir);\n  console.log('Files:', files);\n\n  // Get file info\n  const stats = await fs.stat(path.join(dir, 'report.json'));\n  console.log('Size:', stats.size, 'bytes');\n  console.log('Is file:', stats.isFile());\n}\nfileOperations();",
+          "output": "Files: ['log.txt', 'report.json']\nSize: 36 bytes\nIs file: true",
+          "explanation": "mkdir with recursive: true is like mkdir -p. writeFile overwrites, appendFile adds to end. stat gives file metadata."
+        },
+        {
+          "title": "File Existence Check and Copy",
+          "code": "const fs = require('fs/promises');\nconst { constants } = require('fs');\n\nasync function safeFileCopy(src, dest) {\n  // Check if source exists and is readable\n  try {\n    await fs.access(src, constants.R_OK);\n  } catch {\n    throw new Error(`Source file not readable: ${src}`);\n  }\n\n  // Check if destination already exists\n  try {\n    await fs.access(dest);\n    console.log('Destination exists, will overwrite');\n  } catch {\n    // File doesn't exist - that's fine\n  }\n\n  // Copy the file\n  await fs.copyFile(src, dest);\n  console.log(`Copied ${src} -> ${dest}`);\n\n  // Rename/move a file\n  await fs.rename(dest, dest + '.bak');\n\n  // Delete a file\n  await fs.unlink(dest + '.bak');\n}\nsafeFileCopy('input.txt', 'output.txt');",
+          "output": "Copied input.txt -> output.txt",
+          "explanation": "Use fs.access() to check permissions, not fs.exists() (deprecated). copyFile, rename, and unlink are the core file manipulation operations."
+        }
+      ],
+      "notes": [
+        "Always use fs/promises for new code - it works best with async/await",
+        "Specify 'utf8' encoding for text files; omit it for binary data (returns Buffer)",
+        "fs.existsSync is acceptable for startup checks; use fs.access() for async checks",
+        "Use path.join() to build paths - never concatenate with '/' directly"
+      ],
+      "followUps": [
+        "When would you use fs.readFileSync vs fs.readFile?",
+        "How do you watch a file or directory for changes?"
+      ],
+      "interviewTips": [
+        "Always recommend the promise-based API and explain why",
+        "Mention error handling - file operations are one of the most common error sources",
+        "Show awareness of the encoding parameter and Buffer for binary files"
+      ]
+    }
+  },
+  {
+    "id": "node-path-os",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 6,
+    "title": "Path & OS Modules",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["path module", "os module", "cross-platform", "path.join"],
+    "content": {
+      "question": "How do you handle file paths and OS information in Node.js? Why is the path module important for cross-platform code?",
+      "answer": "The path module provides utilities for working with file and directory paths in a cross-platform way. Different operating systems use different path separators (/ on Unix, \\ on Windows), and the path module abstracts these differences.\n\npath.join() combines path segments using the correct separator. path.resolve() creates absolute paths. path.basename(), path.dirname(), and path.extname() extract parts of a path. Never use string concatenation for paths.\n\nThe os module provides operating system information like CPU architecture, total memory, network interfaces, hostname, and the current user's home directory. It is useful for system monitoring, generating system reports, and writing platform-aware code.\n\nBoth modules are built-in and require no installation. They are fundamental to any Node.js application that deals with files or needs to adapt behavior based on the host system.",
+      "codeExamples": [
+        {
+          "title": "Path Module Essentials",
+          "code": "const path = require('path');\n\n// Join path segments (handles separators)\nconst filePath = path.join('/users', 'john', 'docs', 'report.pdf');\nconsole.log(filePath);\n\n// Resolve to absolute path\nconst abs = path.resolve('src', 'utils', 'helper.js');\nconsole.log(abs);\n\n// Extract path components\nconsole.log(path.basename('/users/john/photo.png'));     // photo.png\nconsole.log(path.basename('/users/john/photo.png', '.png')); // photo\nconsole.log(path.dirname('/users/john/photo.png'));      // /users/john\nconsole.log(path.extname('/users/john/photo.png'));      // .png\n\n// Parse a full path\nconst parsed = path.parse('/users/john/photo.png');\nconsole.log(parsed);",
+          "output": "/users/john/docs/report.pdf\n/home/user/project/src/utils/helper.js\nphoto.png\nphoto\n/users/john\n.png\n{ root: '/', dir: '/users/john', base: 'photo.png', ext: '.png', name: 'photo' }",
+          "explanation": "path.join handles separators correctly across OS. path.resolve creates absolute paths from the current directory. parse() breaks a path into all its components."
+        },
+        {
+          "title": "OS Module for System Information",
+          "code": "const os = require('os');\n\nconsole.log('Platform:', os.platform());   // linux, darwin, win32\nconsole.log('Architecture:', os.arch());   // x64, arm64\nconsole.log('CPUs:', os.cpus().length);\nconsole.log('Total Memory:', (os.totalmem() / 1024 / 1024 / 1024).toFixed(1) + ' GB');\nconsole.log('Free Memory:', (os.freemem() / 1024 / 1024 / 1024).toFixed(1) + ' GB');\nconsole.log('Home Dir:', os.homedir());\nconsole.log('Temp Dir:', os.tmpdir());\nconsole.log('Hostname:', os.hostname());\nconsole.log('Uptime:', (os.uptime() / 3600).toFixed(1) + ' hours');\n\n// Network interfaces\nconst nets = os.networkInterfaces();\nfor (const [name, addrs] of Object.entries(nets)) {\n  for (const addr of addrs) {\n    if (addr.family === 'IPv4' && !addr.internal) {\n      console.log(`${name}: ${addr.address}`);\n    }\n  }\n}",
+          "output": "Platform: linux\nArchitecture: x64\nCPUs: 8\nTotal Memory: 16.0 GB\nFree Memory: 8.2 GB\nHome Dir: /home/user\nTemp Dir: /tmp\nHostname: dev-server\nUptime: 72.5 hours\neth0: 192.168.1.100",
+          "explanation": "The os module is useful for health checks, monitoring dashboards, and making platform-specific decisions in your application."
+        },
+        {
+          "title": "Cross-Platform Path Handling",
+          "code": "const path = require('path');\n\n// BAD: hardcoded separator - breaks on Windows\nconst bad = '/users/' + username + '/config.json';\n\n// GOOD: path.join handles OS differences\nconst good = path.join('/users', username, 'config.json');\n\n// Normalize messy paths\nconsole.log(path.normalize('/users//john/../jane/docs'));\n// Output: /users/jane/docs\n\n// Check if path is absolute\nconsole.log(path.isAbsolute('/etc/config'));  // true\nconsole.log(path.isAbsolute('./config'));     // false\n\n// Relative path between two locations\nconsole.log(path.relative(\n  '/users/john/projects',\n  '/users/john/documents/report.pdf'\n));\n// Output: ../documents/report.pdf\n\n// Common pattern: resolve from project root\nconst projectRoot = path.resolve(__dirname, '..');\nconst configPath = path.join(projectRoot, 'config', 'default.json');",
+          "output": "/users/jane/docs\ntrue\nfalse\n../documents/report.pdf",
+          "explanation": "Always use path methods instead of string concatenation. normalize cleans up double slashes and resolves .. segments."
+        }
+      ],
+      "notes": [
+        "Never concatenate paths with + and '/' - always use path.join()",
+        "path.resolve() returns an absolute path; path.join() preserves relativity",
+        "os.cpus().length is commonly used to determine worker/cluster count",
+        "On Windows, path.sep is '\\\\' while on Unix it is '/'"
+      ],
+      "followUps": [
+        "How does path.resolve differ from path.join?",
+        "How would you use os.cpus() to optimize a Node.js application?"
+      ],
+      "interviewTips": [
+        "Emphasize cross-platform compatibility as the main reason to use the path module",
+        "Mention path.join vs path.resolve - interviewers often ask the difference",
+        "Show practical usage like building config paths or determining system resources"
+      ]
+    }
+  },
+  {
+    "id": "node-http-server",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 7,
+    "title": "HTTP Module & Server Creation",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["http module", "createServer", "request", "response", "routing"],
+    "content": {
+      "question": "How do you create an HTTP server in Node.js without any framework? Explain the request and response objects.",
+      "answer": "The http module is Node.js's built-in module for creating HTTP servers and making HTTP requests. http.createServer() takes a callback with request (IncomingMessage) and response (ServerResponse) objects.\n\nThe request object contains information about the incoming request: URL, method, headers, and the request body (which must be read as a stream). The response object is used to send data back: set status codes, headers, and write the response body.\n\nUnderstanding the raw http module is important even if you use Express or other frameworks, because they are built on top of it. Express's req and res are enhanced versions of the native objects.\n\nThe http module also provides http.request() and http.get() for making outgoing HTTP requests, though most developers now use the built-in fetch() API (Node 18+) or libraries like axios for this purpose.",
+      "codeExamples": [
+        {
+          "title": "Basic HTTP Server",
+          "code": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  // Request info\n  console.log(`${req.method} ${req.url}`);\n  console.log('Headers:', req.headers);\n\n  // Simple routing\n  if (req.method === 'GET' && req.url === '/') {\n    res.writeHead(200, { 'Content-Type': 'text/html' });\n    res.end('<h1>Home Page</h1>');\n  } else if (req.method === 'GET' && req.url === '/api/health') {\n    res.writeHead(200, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify({ status: 'ok', uptime: process.uptime() }));\n  } else {\n    res.writeHead(404, { 'Content-Type': 'application/json' });\n    res.end(JSON.stringify({ error: 'Not found' }));\n  }\n});\n\nserver.listen(3000, () => {\n  console.log('Server running on http://localhost:3000');\n});",
+          "output": "Server running on http://localhost:3000\nGET /\nHeaders: { host: 'localhost:3000', ... }",
+          "explanation": "createServer callback runs for every request. writeHead sets status and headers. end() sends the response body and finishes the response."
+        },
+        {
+          "title": "Parsing Request Body (POST)",
+          "code": "const http = require('http');\n\nconst server = http.createServer((req, res) => {\n  if (req.method === 'POST' && req.url === '/api/users') {\n    let body = '';\n\n    // Request body comes as a stream\n    req.on('data', (chunk) => {\n      body += chunk.toString();\n    });\n\n    req.on('end', () => {\n      try {\n        const user = JSON.parse(body);\n        console.log('Received:', user);\n\n        res.writeHead(201, { 'Content-Type': 'application/json' });\n        res.end(JSON.stringify({\n          message: 'User created',\n          data: { id: 1, ...user }\n        }));\n      } catch (err) {\n        res.writeHead(400, { 'Content-Type': 'application/json' });\n        res.end(JSON.stringify({ error: 'Invalid JSON' }));\n      }\n    });\n  }\n});\n\nserver.listen(3000);",
+          "output": "Received: { name: 'John', email: 'john@example.com' }",
+          "explanation": "The request body must be collected from the stream using data/end events. This is what Express's express.json() middleware does internally."
+        },
+        {
+          "title": "Making HTTP Requests (Client)",
+          "code": "// Modern approach: fetch (Node 18+)\nasync function fetchData() {\n  const response = await fetch('https://api.example.com/users');\n  const data = await response.json();\n  console.log(data);\n}\n\n// Using http module (lower level)\nconst http = require('http');\n\nhttp.get('http://api.example.com/users', (res) => {\n  let data = '';\n  res.on('data', (chunk) => { data += chunk; });\n  res.on('end', () => {\n    console.log(JSON.parse(data));\n  });\n}).on('error', (err) => {\n  console.error('Request failed:', err.message);\n});\n\n// POST request with http module\nconst options = {\n  hostname: 'api.example.com',\n  path: '/users',\n  method: 'POST',\n  headers: { 'Content-Type': 'application/json' }\n};\n\nconst req = http.request(options, (res) => {\n  // handle response\n});\nreq.write(JSON.stringify({ name: 'John' }));\nreq.end();",
+          "explanation": "fetch() is the modern approach for HTTP clients in Node 18+. The http module works for older versions but requires manual stream handling."
+        }
+      ],
+      "notes": [
+        "The request body is a stream - you must collect chunks and parse manually without middleware",
+        "Always set Content-Type header to tell the client what format the response is in",
+        "res.end() must be called to finish the response - otherwise the client hangs",
+        "Express, Fastify, and Koa are all built on top of the http module"
+      ],
+      "followUps": [
+        "What happens if you forget to call res.end()?",
+        "How does Express enhance the native request and response objects?"
+      ],
+      "interviewTips": [
+        "Show you understand what frameworks abstract away by knowing the raw http module",
+        "Mention that req is a Readable stream and res is a Writable stream",
+        "Know the difference between res.write() (partial) and res.end() (final)"
+      ]
+    }
+  },
+  {
+    "id": "node-express-fundamentals",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 8,
+    "title": "Express.js Fundamentals",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["Express", "app.use", "Router", "Request", "Response"],
+    "content": {
+      "question": "What is Express.js and why is it the most popular Node.js framework? Show the basic setup and key features.",
+      "answer": "Express.js is a minimal, unopinionated web framework for Node.js that provides a thin layer of fundamental features on top of the http module. It simplifies routing, middleware handling, request/response processing, and template rendering.\n\nExpress enhances the native req and res objects with helper methods like req.params, req.query, req.body (with middleware), res.json(), res.status(), res.send(), and res.redirect(). These save significant boilerplate compared to the raw http module.\n\nThe framework follows a middleware-based architecture where each request passes through a pipeline of functions. This makes it easy to add features like body parsing, authentication, logging, and error handling as composable layers.\n\nExpress Router allows you to organize routes into modular groups. Each router acts as a mini-application with its own middleware and routes, which can be mounted at a specific path prefix. This is how large applications stay organized.",
+      "codeExamples": [
+        {
+          "title": "Basic Express Application Setup",
+          "code": "const express = require('express');\nconst app = express();\n\n// Built-in middleware\napp.use(express.json());               // Parse JSON bodies\napp.use(express.urlencoded({ extended: true })); // Parse form data\napp.use(express.static('public'));      // Serve static files\n\n// Route handlers\napp.get('/', (req, res) => {\n  res.send('Hello World!');\n});\n\napp.get('/api/users', (req, res) => {\n  // req.query contains URL parameters: /api/users?page=2&limit=10\n  const { page = 1, limit = 10 } = req.query;\n  res.json({\n    page: Number(page),\n    limit: Number(limit),\n    users: [{ id: 1, name: 'Alice' }]\n  });\n});\n\napp.post('/api/users', (req, res) => {\n  // req.body available thanks to express.json()\n  const { name, email } = req.body;\n  res.status(201).json({ id: 1, name, email });\n});\n\napp.listen(3000, () => console.log('Server on port 3000'));",
+          "output": "Server on port 3000",
+          "explanation": "express.json() parses request bodies. Route methods match HTTP verbs. res.json() automatically sets Content-Type and stringifies."
+        },
+        {
+          "title": "Express Router for Modular Routes",
+          "code": "// routes/users.js\nconst express = require('express');\nconst router = express.Router();\n\n// Routes are relative to the mount point\nrouter.get('/', (req, res) => {\n  res.json({ users: [] });\n});\n\nrouter.get('/:id', (req, res) => {\n  res.json({ user: { id: req.params.id } });\n});\n\nrouter.post('/', (req, res) => {\n  res.status(201).json({ user: req.body });\n});\n\nrouter.put('/:id', (req, res) => {\n  res.json({ updated: req.params.id });\n});\n\nrouter.delete('/:id', (req, res) => {\n  res.status(204).end();\n});\n\nmodule.exports = router;\n\n// index.js\nconst userRoutes = require('./routes/users');\nconst productRoutes = require('./routes/products');\n\napp.use('/api/users', userRoutes);\napp.use('/api/products', productRoutes);",
+          "explanation": "Routers group related endpoints. Each router only defines paths relative to its mount point. This is the standard pattern for organizing Express apps."
+        },
+        {
+          "title": "Response Helper Methods",
+          "code": "const express = require('express');\nconst app = express();\n\napp.get('/examples', (req, res) => {\n  // Send JSON\n  res.json({ key: 'value' });\n\n  // Set status + JSON\n  res.status(404).json({ error: 'Not found' });\n\n  // Send text/HTML\n  res.send('<h1>Hello</h1>');\n\n  // Send file\n  res.sendFile('/path/to/file.pdf');\n\n  // Redirect\n  res.redirect(301, '/new-location');\n\n  // Set custom headers\n  res.set('X-Custom-Header', 'value');\n\n  // Send status only\n  res.sendStatus(204); // No Content\n\n  // Download\n  res.download('/path/to/file.pdf', 'report.pdf');\n});\n\n// Chaining\napp.get('/chain', (req, res) => {\n  res\n    .status(200)\n    .set('Cache-Control', 'public, max-age=3600')\n    .json({ cached: true });\n});",
+          "explanation": "Express provides many response helpers. res.json() handles serialization. res.status() is chainable. res.sendFile() handles streaming and headers automatically."
+        }
+      ],
+      "notes": [
+        "Express 5 (latest) supports async route handlers with automatic error forwarding",
+        "app.use() matches all HTTP methods; app.get()/post() match specific methods",
+        "express.static() serves files from a directory with proper MIME types and caching",
+        "The order of middleware registration matters - first match wins for route handlers"
+      ],
+      "followUps": [
+        "What is the difference between app.use() and app.get()?",
+        "How does Express 5 handle async errors differently from Express 4?"
+      ],
+      "interviewTips": [
+        "Show familiarity with Router pattern for organizing large applications",
+        "Know the difference between res.send(), res.json(), and res.end()",
+        "Mention that Express is minimal by design - features are added via middleware"
+      ]
+    }
+  },
+  {
+    "id": "node-routing-params",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 9,
+    "title": "Routing & Route Parameters",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["Route Parameters", "Query Strings", "Route Patterns", "req.params"],
+    "content": {
+      "question": "How does routing work in Express? Explain route parameters, query strings, and route patterns.",
+      "answer": "Express routing maps HTTP methods and URL patterns to handler functions. Routes are matched in the order they are defined, and the first match wins. Express supports static paths, parameterized paths with :param syntax, and regex patterns.\n\nRoute parameters (req.params) capture dynamic segments from the URL path. For example, /users/:id captures the id value. Query strings (req.query) capture key-value pairs after the ? in the URL. They are automatically parsed by Express.\n\nRoute patterns support wildcards, optional parameters with ?, and even regular expressions for complex matching. The router.param() method lets you add middleware that runs when a specific parameter is present.\n\nProper route ordering is crucial. More specific routes should come before general ones. A catch-all route should always be last, and 404 handlers should be defined after all other routes.",
+      "codeExamples": [
+        {
+          "title": "Route Parameters and Query Strings",
+          "code": "const express = require('express');\nconst app = express();\n\n// Static route\napp.get('/api/users', (req, res) => {\n  // Query strings: /api/users?role=admin&page=2\n  const { role, page = 1, limit = 10 } = req.query;\n  res.json({ role, page: Number(page), limit: Number(limit) });\n});\n\n// Route parameter\napp.get('/api/users/:id', (req, res) => {\n  // /api/users/42 -> req.params.id = '42'\n  const { id } = req.params;\n  res.json({ userId: Number(id) });\n});\n\n// Multiple parameters\napp.get('/api/users/:userId/posts/:postId', (req, res) => {\n  const { userId, postId } = req.params;\n  res.json({ userId, postId });\n});\n\n// Optional parameter (Express 5)\napp.get('/api/archive/:year/:month?', (req, res) => {\n  const { year, month } = req.params;\n  res.json({ year, month: month || 'all' });\n});",
+          "output": "GET /api/users?role=admin -> { role: 'admin', page: 1, limit: 10 }\nGET /api/users/42 -> { userId: 42 }\nGET /api/users/1/posts/5 -> { userId: '1', postId: '5' }\nGET /api/archive/2024 -> { year: '2024', month: 'all' }",
+          "explanation": "Parameters are always strings - cast them when needed. Query params come after ? and are parsed automatically. Route params are part of the URL path."
+        },
+        {
+          "title": "Route Ordering and Catch-All",
+          "code": "const express = require('express');\nconst app = express();\n\n// Order matters! Specific routes before general ones\n\n// 1. Exact match first\napp.get('/api/users/me', (req, res) => {\n  res.json({ user: 'current user profile' });\n});\n\n// 2. Then parameterized route\napp.get('/api/users/:id', (req, res) => {\n  res.json({ user: req.params.id });\n});\n\n// 3. Grouped by method\napp.route('/api/posts')\n  .get((req, res) => res.json({ posts: [] }))\n  .post((req, res) => res.status(201).json(req.body))\n  .put((req, res) => res.status(405).json({ error: 'Method not allowed' }));\n\n// 4. Catch-all 404 (must be LAST)\napp.use('*', (req, res) => {\n  res.status(404).json({\n    error: 'Route not found',\n    path: req.originalUrl,\n    method: req.method\n  });\n});",
+          "explanation": "If /api/users/:id came before /api/users/me, the word 'me' would be captured as an id. Specific routes must come first."
+        },
+        {
+          "title": "Router-Level Param Middleware",
+          "code": "const express = require('express');\nconst router = express.Router();\n\n// Runs whenever :userId appears in any route\nrouter.param('userId', async (req, res, next, id) => {\n  try {\n    const user = await db.users.findById(Number(id));\n    if (!user) {\n      return res.status(404).json({ error: 'User not found' });\n    }\n    req.user = user; // Attach to request\n    next();\n  } catch (err) {\n    next(err);\n  }\n});\n\n// These routes all get req.user populated automatically\nrouter.get('/:userId', (req, res) => {\n  res.json(req.user);\n});\n\nrouter.get('/:userId/posts', (req, res) => {\n  res.json({ user: req.user.name, posts: req.user.posts });\n});\n\nrouter.delete('/:userId', (req, res) => {\n  // req.user is already loaded\n  res.json({ deleted: req.user.id });\n});",
+          "explanation": "router.param() is middleware that triggers on a specific parameter. It avoids repeating the user lookup in every route handler."
+        }
+      ],
+      "notes": [
+        "req.params values are always strings - Number() or parseInt() for numeric IDs",
+        "Route order matters: specific routes before parameterized, catch-all last",
+        "app.route() groups multiple methods on the same path to avoid repetition",
+        "router.param() is DRY middleware that runs when a named parameter is present"
+      ],
+      "followUps": [
+        "How would you implement API versioning with route prefixes?",
+        "What is the difference between req.params, req.query, and req.body?"
+      ],
+      "interviewTips": [
+        "Demonstrate awareness of route ordering pitfalls",
+        "Know the difference between path params (required, part of URL) and query strings (optional, after ?)",
+        "Mention router.param() as a DRY pattern for resource loading"
+      ]
+    }
+  },
+  {
+    "id": "node-middleware-deep-dive",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 10,
+    "title": "Middleware Deep Dive",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Middleware Pattern", "Application-Level", "Router-Level", "Error Middleware", "Third-Party"],
+    "content": {
+      "question": "Explain the middleware pattern in Express in depth. What are the different types of middleware and how does the execution flow work?",
+      "answer": "Middleware functions are the backbone of Express. Every function that has access to req, res, and next is middleware. They execute sequentially in the order they are registered, forming a pipeline that each request flows through.\n\nThere are five types: application-level (app.use), router-level (router.use), error-handling (4 parameters), built-in (express.json, express.static), and third-party (cors, helmet, morgan). Each serves a different purpose but follows the same pattern.\n\nThe execution flow is: request enters -> global middleware runs in order -> matching route middleware runs -> handler executes -> response sent. If any middleware calls next(error) or throws, Express skips to the nearest error-handling middleware.\n\nMiddleware can end the request-response cycle by sending a response, or pass control to the next middleware by calling next(). If a middleware neither sends a response nor calls next(), the request hangs indefinitely. This is a common bug.",
+      "codeExamples": [
+        {
+          "title": "Middleware Types and Execution Order",
+          "code": "const express = require('express');\nconst app = express();\n\n// 1. Application-level middleware (runs on ALL requests)\napp.use((req, res, next) => {\n  req.requestTime = Date.now();\n  console.log(`[${req.method}] ${req.url}`);\n  next(); // MUST call next() or send response\n});\n\n// 2. Built-in middleware\napp.use(express.json());\n\n// 3. Third-party middleware\napp.use(cors());\napp.use(helmet());\n\n// 4. Path-specific middleware\napp.use('/api', (req, res, next) => {\n  console.log('API request');\n  next();\n});\n\n// 5. Route-level middleware chain\napp.get('/api/admin',\n  authenticate,      // middleware 1\n  authorize('admin'), // middleware 2\n  (req, res) => {     // final handler\n    res.json({ admin: true });\n  }\n);\n\n// 6. Error-handling middleware (4 params - MUST be last)\napp.use((err, req, res, next) => {\n  console.error(err.stack);\n  res.status(500).json({ error: err.message });\n});",
+          "explanation": "Middleware runs in registration order. Error middleware has 4 params and catches any next(err) calls. It must be registered after all routes."
+        },
+        {
+          "title": "Custom Middleware Factory Pattern",
+          "code": "// Middleware factory - returns middleware with custom config\nfunction rateLimit({ windowMs, max }) {\n  const requests = new Map();\n\n  return (req, res, next) => {\n    const ip = req.ip;\n    const now = Date.now();\n    const windowStart = now - windowMs;\n\n    // Clean old entries\n    const hits = (requests.get(ip) || []).filter(t => t > windowStart);\n    hits.push(now);\n    requests.set(ip, hits);\n\n    if (hits.length > max) {\n      return res.status(429).json({\n        error: 'Too many requests',\n        retryAfter: Math.ceil(windowMs / 1000)\n      });\n    }\n\n    res.set('X-RateLimit-Limit', max);\n    res.set('X-RateLimit-Remaining', max - hits.length);\n    next();\n  };\n}\n\n// Usage\napp.use('/api', rateLimit({ windowMs: 60000, max: 100 }));",
+          "explanation": "Factory functions return configured middleware. This pattern is used by almost all third-party middleware: cors(), helmet(), morgan('dev')."
+        },
+        {
+          "title": "Async Middleware and Error Forwarding",
+          "code": "// Express 5: async errors are caught automatically\napp.get('/users/:id', async (req, res) => {\n  // If this throws, Express 5 catches it\n  const user = await db.users.findById(req.params.id);\n  if (!user) throw new AppError('User not found', 404);\n  res.json(user);\n});\n\n// Express 4: must wrap async handlers manually\nfunction asyncHandler(fn) {\n  return (req, res, next) => {\n    Promise.resolve(fn(req, res, next)).catch(next);\n  };\n}\n\napp.get('/users/:id', asyncHandler(async (req, res) => {\n  const user = await db.users.findById(req.params.id);\n  if (!user) throw new AppError('User not found', 404);\n  res.json(user);\n}));\n\n// next() with error skips to error middleware\napp.use((req, res, next) => {\n  if (!req.headers.authorization) {\n    return next(new AppError('Unauthorized', 401));\n  }\n  next();\n});",
+          "explanation": "Express 5 natively catches async errors. In Express 4, wrap async handlers or use express-async-errors. next(error) jumps straight to error middleware."
+        }
+      ],
+      "notes": [
+        "Middleware that does not call next() or send a response causes the request to hang",
+        "Error middleware MUST have exactly 4 parameters (err, req, res, next) to be recognized",
+        "Express 5 automatically catches rejected promises in async route handlers",
+        "Middleware order matters: auth before routes, error handler after everything"
+      ],
+      "followUps": [
+        "How would you create middleware that logs response time?",
+        "What happens if you call next() after res.send()?"
+      ],
+      "interviewTips": [
+        "Draw the middleware pipeline to show you understand the flow visually",
+        "Mention the Express 4 vs 5 difference in async error handling",
+        "Know the factory pattern - it shows understanding of closures and configuration"
+      ]
+    }
+  },
+  {
+    "id": "node-request-validation",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 11,
+    "title": "Request Validation (Zod/Joi)",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Zod", "Joi", "Schema Validation", "Type Safety", "Input Sanitization"],
+    "content": {
+      "question": "How do you validate incoming request data in a Node.js API? Compare Zod and Joi approaches.",
+      "answer": "Request validation ensures incoming data matches expected shapes before reaching business logic. Never trust client input. Validation libraries like Zod and Joi define schemas that describe the expected structure, types, and constraints of request data.\n\nZod is TypeScript-first and generates TypeScript types from schemas automatically using z.infer. This means your runtime validation and compile-time types are always in sync. Zod is smaller and faster than Joi, making it the preferred choice for modern TypeScript projects.\n\nJoi is an older, battle-tested library with a fluent API. It has more built-in validators and customization options but does not generate TypeScript types natively. It is still widely used in JavaScript projects.\n\nThe standard pattern is a validation middleware factory that takes a schema and returns middleware. The middleware validates req.body, req.params, or req.query against the schema and either calls next() on success or returns a 400 error with details.",
+      "codeExamples": [
+        {
+          "title": "Zod Validation with TypeScript",
+          "code": "import { z } from 'zod';\n\n// Define schema\nconst createUserSchema = z.object({\n  name: z.string().min(2).max(100),\n  email: z.string().email(),\n  password: z.string().min(8).regex(\n    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)/,\n    'Must contain uppercase, lowercase, and number'\n  ),\n  age: z.number().int().min(18).max(120).optional(),\n  role: z.enum(['user', 'admin']).default('user'),\n  tags: z.array(z.string()).max(5).optional(),\n});\n\n// Infer TypeScript type from schema\ntype CreateUserInput = z.infer<typeof createUserSchema>;\n// { name: string; email: string; password: string; age?: number; role: 'user' | 'admin'; tags?: string[] }\n\n// Validate\nconst result = createUserSchema.safeParse(req.body);\nif (!result.success) {\n  return res.status(400).json({\n    error: 'Validation failed',\n    details: result.error.flatten().fieldErrors\n  });\n}\nconst validData: CreateUserInput = result.data;",
+          "output": "// On invalid input:\n{\n  \"error\": \"Validation failed\",\n  \"details\": {\n    \"email\": [\"Invalid email\"],\n    \"password\": [\"Must contain uppercase, lowercase, and number\"]\n  }\n}",
+          "explanation": "Zod's safeParse returns success/failure without throwing. z.infer generates the TypeScript type, keeping validation and types perfectly in sync."
+        },
+        {
+          "title": "Validation Middleware Factory",
+          "code": "import { z, ZodSchema } from 'zod';\nimport { Request, Response, NextFunction } from 'express';\n\n// Generic validation middleware\nfunction validate(schema: ZodSchema) {\n  return (req: Request, res: Response, next: NextFunction) => {\n    const result = schema.safeParse({\n      body: req.body,\n      query: req.query,\n      params: req.params,\n    });\n\n    if (!result.success) {\n      return res.status(400).json({\n        error: 'Validation failed',\n        details: result.error.flatten().fieldErrors,\n      });\n    }\n\n    // Replace with validated data\n    req.body = result.data.body;\n    req.query = result.data.query;\n    req.params = result.data.params;\n    next();\n  };\n}\n\n// Usage in routes\nconst getUserSchema = z.object({\n  params: z.object({ id: z.string().regex(/^\\d+$/) }),\n});\n\nconst createUserSchema = z.object({\n  body: z.object({\n    name: z.string().min(2),\n    email: z.string().email(),\n  }),\n});\n\nrouter.get('/users/:id', validate(getUserSchema), getUser);\nrouter.post('/users', validate(createUserSchema), createUser);",
+          "explanation": "A single validate() factory handles body, params, and query validation for any route. The validated data replaces the raw input on the request object."
+        },
+        {
+          "title": "Complex Schema Patterns",
+          "code": "import { z } from 'zod';\n\n// Nested objects\nconst addressSchema = z.object({\n  street: z.string(),\n  city: z.string(),\n  zipCode: z.string().regex(/^\\d{5}(-\\d{4})?$/),\n});\n\n// Refinements for custom logic\nconst dateRangeSchema = z.object({\n  startDate: z.string().datetime(),\n  endDate: z.string().datetime(),\n}).refine(\n  (data) => new Date(data.endDate) > new Date(data.startDate),\n  { message: 'End date must be after start date' }\n);\n\n// Transform: validate AND transform input\nconst searchSchema = z.object({\n  page: z.string().transform(Number).pipe(z.number().int().positive()),\n  limit: z.string().transform(Number).pipe(z.number().int().max(100)),\n  sort: z.enum(['name', 'date', 'price']).default('date'),\n});\n\n// Union types\nconst paymentSchema = z.discriminatedUnion('type', [\n  z.object({ type: z.literal('card'), cardNumber: z.string() }),\n  z.object({ type: z.literal('bank'), accountId: z.string() }),\n]);",
+          "explanation": "Zod supports refinements for cross-field validation, transforms for coercion, and discriminated unions for polymorphic data."
+        }
+      ],
+      "notes": [
+        "Always validate at the API boundary - never trust raw req.body, req.params, or req.query",
+        "Zod generates TypeScript types with z.infer - no manual type duplication needed",
+        "Use safeParse() instead of parse() to handle errors gracefully without try/catch",
+        "Query string values are always strings - use .transform(Number) or .coerce for conversion"
+      ],
+      "followUps": [
+        "How do you handle validation for file uploads alongside JSON data?",
+        "What is the difference between Zod's parse and safeParse?"
+      ],
+      "interviewTips": [
+        "Emphasize type-safety: Zod keeps runtime validation and TypeScript types in sync",
+        "Show the middleware factory pattern - it demonstrates clean architecture",
+        "Mention sanitization alongside validation: trim strings, escape HTML"
+      ]
+    }
+  },
+  {
+    "id": "node-jwt-auth",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 12,
+    "title": "JWT Authentication",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["JWT", "jsonwebtoken", "Bearer Token", "Access Token", "Refresh Token"],
+    "content": {
+      "question": "How does JWT authentication work in a Node.js API? Implement a complete auth flow with access and refresh tokens.",
+      "answer": "JWT (JSON Web Token) is a stateless authentication mechanism. The server creates a signed token containing user data (payload), sends it to the client, and the client includes it in subsequent requests via the Authorization header.\n\nA JWT has three parts: header (algorithm, type), payload (user data, expiration), and signature (HMAC or RSA). The server verifies the signature on each request without hitting the database, making it very efficient.\n\nThe recommended pattern uses short-lived access tokens (15 min) and long-lived refresh tokens (7 days). When the access token expires, the client uses the refresh token to get a new one without re-entering credentials.\n\nJWTs should be stored in httpOnly cookies (not localStorage) to prevent XSS attacks. The refresh token should be stored in the database so it can be revoked. Never store sensitive data in the JWT payload since it is base64-encoded, not encrypted.",
+      "codeExamples": [
+        {
+          "title": "JWT Token Generation and Verification",
+          "code": "const jwt = require('jsonwebtoken');\n\nconst ACCESS_SECRET = process.env.JWT_ACCESS_SECRET;\nconst REFRESH_SECRET = process.env.JWT_REFRESH_SECRET;\n\n// Generate tokens\nfunction generateTokens(user) {\n  const accessToken = jwt.sign(\n    { id: user.id, email: user.email, role: user.role },\n    ACCESS_SECRET,\n    { expiresIn: '15m' }\n  );\n\n  const refreshToken = jwt.sign(\n    { id: user.id },\n    REFRESH_SECRET,\n    { expiresIn: '7d' }\n  );\n\n  return { accessToken, refreshToken };\n}\n\n// Verify token\nfunction verifyAccessToken(token) {\n  try {\n    return jwt.verify(token, ACCESS_SECRET);\n  } catch (err) {\n    if (err.name === 'TokenExpiredError') {\n      throw new Error('Token expired');\n    }\n    throw new Error('Invalid token');\n  }\n}",
+          "output": "// Access token payload (decoded):\n{\n  \"id\": 1,\n  \"email\": \"user@example.com\",\n  \"role\": \"user\",\n  \"iat\": 1700000000,\n  \"exp\": 1700000900\n}",
+          "explanation": "Access tokens are short-lived with user info. Refresh tokens are long-lived with minimal data. Always use environment variables for secrets."
+        },
+        {
+          "title": "Auth Middleware",
+          "code": "const jwt = require('jsonwebtoken');\n\nfunction authenticate(req, res, next) {\n  const authHeader = req.headers.authorization;\n  if (!authHeader?.startsWith('Bearer ')) {\n    return res.status(401).json({ error: 'No token provided' });\n  }\n\n  const token = authHeader.split(' ')[1];\n\n  try {\n    const decoded = jwt.verify(token, process.env.JWT_ACCESS_SECRET);\n    req.user = decoded; // { id, email, role }\n    next();\n  } catch (err) {\n    if (err.name === 'TokenExpiredError') {\n      return res.status(401).json({ error: 'Token expired' });\n    }\n    return res.status(401).json({ error: 'Invalid token' });\n  }\n}\n\n// Role-based authorization\nfunction authorize(...roles) {\n  return (req, res, next) => {\n    if (!roles.includes(req.user.role)) {\n      return res.status(403).json({ error: 'Insufficient permissions' });\n    }\n    next();\n  };\n}\n\n// Usage\napp.get('/api/admin/users',\n  authenticate,\n  authorize('admin'),\n  adminController.getUsers\n);",
+          "explanation": "The auth middleware extracts the token from the Authorization header, verifies it, and attaches the decoded user to req. The authorize middleware checks roles."
+        },
+        {
+          "title": "Login and Refresh Token Flow",
+          "code": "const bcrypt = require('bcrypt');\n\n// Login endpoint\napp.post('/api/auth/login', async (req, res) => {\n  const { email, password } = req.body;\n  const user = await db.users.findByEmail(email);\n\n  if (!user || !await bcrypt.compare(password, user.password)) {\n    return res.status(401).json({ error: 'Invalid credentials' });\n  }\n\n  const { accessToken, refreshToken } = generateTokens(user);\n\n  // Store refresh token in DB (for revocation)\n  await db.refreshTokens.create({\n    userId: user.id,\n    token: refreshToken,\n    expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)\n  });\n\n  // Set refresh token as httpOnly cookie\n  res.cookie('refreshToken', refreshToken, {\n    httpOnly: true,\n    secure: true,\n    sameSite: 'strict',\n    maxAge: 7 * 24 * 60 * 60 * 1000\n  });\n\n  res.json({ accessToken, user: { id: user.id, email: user.email } });\n});\n\n// Refresh endpoint\napp.post('/api/auth/refresh', async (req, res) => {\n  const { refreshToken } = req.cookies;\n  if (!refreshToken) return res.status(401).json({ error: 'No refresh token' });\n\n  const stored = await db.refreshTokens.findByToken(refreshToken);\n  if (!stored) return res.status(401).json({ error: 'Invalid refresh token' });\n\n  const decoded = jwt.verify(refreshToken, REFRESH_SECRET);\n  const user = await db.users.findById(decoded.id);\n  const { accessToken } = generateTokens(user);\n\n  res.json({ accessToken });\n});",
+          "explanation": "Login returns both tokens. Refresh token is stored in DB and httpOnly cookie. The refresh endpoint issues new access tokens without re-authentication."
+        }
+      ],
+      "notes": [
+        "Store refresh tokens in the database so they can be revoked on logout",
+        "Use httpOnly cookies for tokens to prevent XSS - never localStorage for refresh tokens",
+        "JWT payload is base64-encoded, NOT encrypted - never put secrets in it",
+        "Use different secrets for access and refresh tokens"
+      ],
+      "followUps": [
+        "How would you implement token revocation/blacklisting?",
+        "What are the security differences between JWT and session-based auth?"
+      ],
+      "interviewTips": [
+        "Explain the access/refresh token pattern and why short-lived access tokens matter",
+        "Mention httpOnly cookies and XSS prevention unprompted - it shows security awareness",
+        "Know the JWT structure: header.payload.signature"
+      ]
+    }
+  },
+  {
+    "id": "node-password-hashing",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 13,
+    "title": "Password Hashing (bcrypt)",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["bcrypt", "Salt", "Hashing", "Password Security", "Timing Attacks"],
+    "content": {
+      "question": "How do you securely store and verify passwords in Node.js? Explain hashing, salting, and bcrypt.",
+      "answer": "Passwords must never be stored in plain text. Instead, they are hashed using a one-way function that produces a fixed-length digest. Even if the database is compromised, the original passwords cannot be recovered from the hashes.\n\nBcrypt is the industry standard for password hashing. It automatically generates a random salt (preventing rainbow table attacks), includes the salt in the output, and uses a configurable work factor (salt rounds) that makes brute-force attacks computationally expensive.\n\nThe salt rounds parameter (typically 10-12) controls how many iterations the algorithm performs. Each increment doubles the computation time. This means bcrypt automatically becomes harder to crack as hardware gets faster - you just increase the rounds.\n\nBcrypt's compare function is designed to be constant-time, preventing timing attacks where an attacker measures response times to guess password characters. Always use bcrypt.compare() instead of comparing hashes with === directly.",
+      "codeExamples": [
+        {
+          "title": "Hashing and Verifying Passwords",
+          "code": "const bcrypt = require('bcrypt');\n\nconst SALT_ROUNDS = 12; // ~300ms on modern hardware\n\n// Hash a password\nasync function hashPassword(plainPassword) {\n  const hash = await bcrypt.hash(plainPassword, SALT_ROUNDS);\n  return hash;\n  // Output: $2b$12$LJ3m4ys3Lg...  (60 chars)\n  // Format: $algorithm$rounds$salt+hash\n}\n\n// Verify a password\nasync function verifyPassword(plainPassword, storedHash) {\n  const isMatch = await bcrypt.compare(plainPassword, storedHash);\n  return isMatch;\n}\n\n// Usage\nconst hash = await hashPassword('MySecurePass123');\nconsole.log('Hash:', hash);\nconsole.log('Match:', await verifyPassword('MySecurePass123', hash));\nconsole.log('No match:', await verifyPassword('wrong', hash));",
+          "output": "Hash: $2b$12$LJ3m4ys3LgNq4kJKzG1pXOvNXJ1lS0R6E2hJ8c...\nMatch: true\nNo match: false",
+          "explanation": "bcrypt.hash() generates a unique salt each time, so the same password produces different hashes. bcrypt.compare() extracts the salt from the stored hash to verify."
+        },
+        {
+          "title": "Registration and Login Flow",
+          "code": "const bcrypt = require('bcrypt');\nconst SALT_ROUNDS = 12;\n\n// Registration\napp.post('/api/auth/register', async (req, res) => {\n  const { email, password, name } = req.body;\n\n  // Check if user exists\n  const existing = await prisma.user.findUnique({ where: { email } });\n  if (existing) {\n    return res.status(409).json({ error: 'Email already registered' });\n  }\n\n  // Hash password before storing\n  const hashedPassword = await bcrypt.hash(password, SALT_ROUNDS);\n\n  const user = await prisma.user.create({\n    data: { email, password: hashedPassword, name },\n  });\n\n  res.status(201).json({ id: user.id, email: user.email });\n});\n\n// Login\napp.post('/api/auth/login', async (req, res) => {\n  const { email, password } = req.body;\n\n  const user = await prisma.user.findUnique({ where: { email } });\n\n  // Same error for both cases (prevents email enumeration)\n  if (!user || !await bcrypt.compare(password, user.password)) {\n    return res.status(401).json({ error: 'Invalid credentials' });\n  }\n\n  const token = generateToken(user);\n  res.json({ token, user: { id: user.id, email: user.email } });\n});",
+          "explanation": "Return the same error for missing user and wrong password to prevent email enumeration attacks. Hash on register, compare on login."
+        },
+        {
+          "title": "Why Not Use Plain Crypto Hashing",
+          "code": "const crypto = require('crypto');\nconst bcrypt = require('bcrypt');\n\n// BAD: Simple hash (fast = easy to brute force)\nconst md5 = crypto.createHash('md5').update('password').digest('hex');\n// 5f4dcc3b5aa765d61d8327deb882cf99\n// Can be cracked in milliseconds with rainbow tables\n\n// BAD: SHA256 (still too fast for passwords)\nconst sha = crypto.createHash('sha256').update('password').digest('hex');\n// Billions of hashes per second on GPU\n\n// GOOD: bcrypt (intentionally slow)\nconst hash = await bcrypt.hash('password', 12);\n// ~300ms per hash - makes brute force impractical\n\n// Salt comparison\nconst hash1 = await bcrypt.hash('password', 12);\nconst hash2 = await bcrypt.hash('password', 12);\nconsole.log(hash1 === hash2); // false! Different salts\nconsole.log(await bcrypt.compare('password', hash1)); // true\nconsole.log(await bcrypt.compare('password', hash2)); // true",
+          "output": "false\ntrue\ntrue",
+          "explanation": "MD5/SHA are designed to be fast - bad for passwords. bcrypt is intentionally slow and uses unique salts, so identical passwords produce different hashes."
+        }
+      ],
+      "notes": [
+        "Salt rounds of 10-12 is standard; each increment doubles computation time",
+        "bcrypt includes the salt in the hash output - no separate salt storage needed",
+        "Use the async versions (bcrypt.hash, bcrypt.compare) to avoid blocking the event loop",
+        "Alternatives to bcrypt: scrypt (Node built-in), argon2 (newer, memory-hard)"
+      ],
+      "followUps": [
+        "What is the difference between bcrypt, scrypt, and argon2?",
+        "How do salt rounds affect security vs performance?"
+      ],
+      "interviewTips": [
+        "Explain WHY bcrypt is slow on purpose - it is a feature, not a bug",
+        "Mention that the same password produces different hashes due to random salts",
+        "Show you understand the full flow: hash on register, compare on login"
+      ]
+    }
+  },
+  {
+    "id": "node-cors-security",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 14,
+    "title": "CORS & Security Headers",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["CORS", "Helmet", "Same-Origin Policy", "Security Headers", "XSS"],
+    "content": {
+      "question": "What is CORS and why is it needed? How do you secure a Node.js API with proper headers?",
+      "answer": "CORS (Cross-Origin Resource Sharing) is a browser security mechanism that restricts web pages from making requests to a different domain than the one that served the page. When your React app on localhost:5173 calls your API on localhost:3000, the browser blocks it by default because the origins differ.\n\nThe server must explicitly allow cross-origin requests by setting Access-Control-Allow-Origin and related headers. The cors middleware simplifies this, but understanding the underlying preflight mechanism is important.\n\nBefore a cross-origin request with custom headers or non-simple methods (PUT, DELETE), the browser sends an OPTIONS preflight request. The server must respond with the allowed methods, headers, and origins. Only then does the browser send the actual request.\n\nHelmet is a security middleware that sets various HTTP headers to protect against common attacks: XSS (Content-Security-Policy), clickjacking (X-Frame-Options), MIME sniffing (X-Content-Type-Options), and more. It should be used on every production Express app.",
+      "codeExamples": [
+        {
+          "title": "CORS Configuration",
+          "code": "const cors = require('cors');\nconst express = require('express');\nconst app = express();\n\n// Simple: allow all origins (development only!)\napp.use(cors());\n\n// Production: specific origins\napp.use(cors({\n  origin: ['https://myapp.com', 'https://admin.myapp.com'],\n  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],\n  allowedHeaders: ['Content-Type', 'Authorization'],\n  credentials: true,      // Allow cookies\n  maxAge: 86400,          // Cache preflight for 24 hours\n}));\n\n// Dynamic origin based on whitelist\nconst allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');\napp.use(cors({\n  origin: (origin, callback) => {\n    // Allow requests with no origin (mobile apps, Postman)\n    if (!origin || allowedOrigins.includes(origin)) {\n      callback(null, true);\n    } else {\n      callback(new Error('Not allowed by CORS'));\n    }\n  },\n  credentials: true,\n}));",
+          "explanation": "Never use cors() with no options in production. Whitelist specific origins. Enable credentials only if your app uses cookies or Authorization headers."
+        },
+        {
+          "title": "Helmet Security Headers",
+          "code": "const helmet = require('helmet');\nconst express = require('express');\nconst app = express();\n\n// Apply all default security headers\napp.use(helmet());\n\n// Or configure individually\napp.use(helmet({\n  contentSecurityPolicy: {\n    directives: {\n      defaultSrc: [\"'self'\"],\n      scriptSrc: [\"'self'\", \"'unsafe-inline'\"],\n      styleSrc: [\"'self'\", \"'unsafe-inline'\", 'fonts.googleapis.com'],\n      imgSrc: [\"'self'\", 'data:', '*.amazonaws.com'],\n    },\n  },\n  crossOriginEmbedderPolicy: false, // Needed for loading external images\n}));\n\n// What helmet sets:\n// X-Content-Type-Options: nosniff (prevents MIME sniffing)\n// X-Frame-Options: SAMEORIGIN (prevents clickjacking)\n// X-XSS-Protection: 0 (modern CSP replaces this)\n// Strict-Transport-Security: max-age=... (forces HTTPS)\n// Content-Security-Policy: ... (controls resource loading)\n\nconsole.log('Security headers enabled');",
+          "output": "Security headers enabled",
+          "explanation": "Helmet sets 11+ security headers with sensible defaults. Customize Content-Security-Policy based on your app's needs."
+        },
+        {
+          "title": "Manual CORS Implementation",
+          "code": "const express = require('express');\nconst app = express();\n\n// Understanding what the cors middleware does internally\napp.use((req, res, next) => {\n  const origin = req.headers.origin;\n  const allowed = ['https://myapp.com'];\n\n  if (allowed.includes(origin)) {\n    res.setHeader('Access-Control-Allow-Origin', origin);\n    res.setHeader('Access-Control-Allow-Credentials', 'true');\n  }\n\n  // Handle preflight\n  if (req.method === 'OPTIONS') {\n    res.setHeader('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE');\n    res.setHeader('Access-Control-Allow-Headers', 'Content-Type,Authorization');\n    res.setHeader('Access-Control-Max-Age', '86400');\n    return res.sendStatus(204); // No content\n  }\n\n  next();\n});\n\n// Custom security headers\napp.use((req, res, next) => {\n  res.setHeader('X-Content-Type-Options', 'nosniff');\n  res.setHeader('X-Frame-Options', 'DENY');\n  res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');\n  next();\n});",
+          "explanation": "CORS works by setting response headers. The browser checks these headers to decide whether to allow the response. OPTIONS preflight is handled separately."
+        }
+      ],
+      "notes": [
+        "CORS is enforced by the browser, not the server - Postman and curl ignore it",
+        "credentials: true requires a specific origin, not the wildcard '*'",
+        "Preflight (OPTIONS) requests happen for non-simple requests: custom headers, PUT/DELETE, JSON content-type",
+        "Helmet should be one of the first middleware in your Express app"
+      ],
+      "followUps": [
+        "What is a preflight request and when does the browser send one?",
+        "How does Content-Security-Policy prevent XSS attacks?"
+      ],
+      "interviewTips": [
+        "Explain the preflight mechanism - it shows deep understanding of CORS",
+        "Know that CORS is a browser feature, not a server security measure",
+        "Mention helmet as a must-have for production and list the key headers it sets"
+      ]
+    }
+  },
+  {
+    "id": "node-error-handling",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 15,
+    "title": "Error Handling Patterns",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Error Classes", "Global Handler", "Async Errors", "Operational vs Programmer Errors"],
+    "content": {
+      "question": "What are the best practices for error handling in a Node.js application? Explain operational vs programmer errors.",
+      "answer": "Error handling in Node.js requires distinguishing between operational errors (expected failures like invalid input, network timeouts, file not found) and programmer errors (bugs like undefined references, type errors, logic mistakes).\n\nOperational errors should be caught, logged, and responded to with appropriate HTTP status codes and user-friendly messages. Programmer errors indicate bugs and should crash the process (in production, use PM2 or similar to auto-restart).\n\nThe recommended pattern uses a custom AppError class with status codes and an isOperational flag. All routes use async/await with errors forwarded to a centralized error handler via next(err). The global error handler logs the error and sends a sanitized response.\n\nFor unhandled exceptions and rejections, attach handlers to process.on('uncaughtException') and process.on('unhandledRejection'). In production, log the error, clean up resources, and exit the process. Let your process manager restart it.",
+      "codeExamples": [
+        {
+          "title": "Custom Error Class Hierarchy",
+          "code": "// errors/AppError.js\nclass AppError extends Error {\n  constructor(message, statusCode) {\n    super(message);\n    this.statusCode = statusCode;\n    this.isOperational = true;\n    Error.captureStackTrace(this, this.constructor);\n  }\n}\n\nclass NotFoundError extends AppError {\n  constructor(resource = 'Resource') {\n    super(`${resource} not found`, 404);\n  }\n}\n\nclass ValidationError extends AppError {\n  constructor(details) {\n    super('Validation failed', 400);\n    this.details = details;\n  }\n}\n\nclass UnauthorizedError extends AppError {\n  constructor(message = 'Unauthorized') {\n    super(message, 401);\n  }\n}\n\nclass ForbiddenError extends AppError {\n  constructor(message = 'Forbidden') {\n    super(message, 403);\n  }\n}\n\nmodule.exports = { AppError, NotFoundError, ValidationError, UnauthorizedError, ForbiddenError };",
+          "explanation": "Custom error classes provide semantic meaning. isOperational distinguishes expected failures from bugs. captureStackTrace gives clean stack traces."
+        },
+        {
+          "title": "Centralized Error Handler",
+          "code": "// middleware/errorHandler.js\nfunction errorHandler(err, req, res, next) {\n  // Default values\n  err.statusCode = err.statusCode || 500;\n\n  // Log error\n  if (err.statusCode >= 500) {\n    console.error('SERVER ERROR:', {\n      message: err.message,\n      stack: err.stack,\n      path: req.path,\n      method: req.method,\n    });\n  }\n\n  // Operational error: send details to client\n  if (err.isOperational) {\n    return res.status(err.statusCode).json({\n      error: err.message,\n      ...(err.details && { details: err.details }),\n    });\n  }\n\n  // Programmer error: hide details in production\n  if (process.env.NODE_ENV === 'production') {\n    return res.status(500).json({ error: 'Internal server error' });\n  }\n\n  // Development: show full error\n  res.status(500).json({\n    error: err.message,\n    stack: err.stack,\n  });\n}\n\n// Register AFTER all routes\napp.use(errorHandler);",
+          "explanation": "The centralized handler treats operational and programmer errors differently. In production, internal errors return generic messages to avoid leaking details."
+        },
+        {
+          "title": "Process-Level Error Handling",
+          "code": "// Handle uncaught exceptions (sync bugs)\nprocess.on('uncaughtException', (err) => {\n  console.error('UNCAUGHT EXCEPTION:', err);\n  // Perform cleanup, then exit\n  process.exit(1);\n});\n\n// Handle unhandled promise rejections\nprocess.on('unhandledRejection', (reason, promise) => {\n  console.error('UNHANDLED REJECTION:', reason);\n  // In Node 15+, this crashes by default\n  process.exit(1);\n});\n\n// In services - always throw operational errors\nasync function getUserById(id) {\n  const user = await prisma.user.findUnique({ where: { id } });\n  if (!user) {\n    throw new NotFoundError('User'); // Operational\n  }\n  return user;\n}\n\n// In controllers - errors auto-forward to handler (Express 5)\napp.get('/api/users/:id', async (req, res) => {\n  const user = await getUserById(Number(req.params.id));\n  res.json(user);\n  // If getUserById throws, Express 5 catches it\n  // and forwards to errorHandler\n});",
+          "explanation": "Process handlers catch errors that slip through all other handlers. In production, exit and let PM2 restart. Express 5 auto-catches async throws."
+        }
+      ],
+      "notes": [
+        "Operational errors: invalid input, auth failure, not found - respond gracefully",
+        "Programmer errors: TypeError, ReferenceError, bugs - crash and restart",
+        "Express 5 auto-catches rejected promises; Express 4 requires wrapper or express-async-errors",
+        "Never expose stack traces or internal error details in production responses"
+      ],
+      "followUps": [
+        "How do you handle errors in event emitters and streams?",
+        "What is the difference between process.on('uncaughtException') and domains?"
+      ],
+      "interviewTips": [
+        "The operational vs programmer error distinction is a key concept - explain it clearly",
+        "Show the full error flow: throw in service -> catch in handler -> respond to client",
+        "Mention logging (Winston/Pino) and monitoring (Sentry) alongside error handling"
+      ]
+    }
+  },
+  {
+    "id": "node-database-prisma",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 16,
+    "title": "Database Integration (Prisma/SQL)",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Prisma", "ORM", "Migrations", "Relations", "Raw SQL"],
+    "content": {
+      "question": "How do you integrate a database with a Node.js application using Prisma? Explain the schema, migrations, and query patterns.",
+      "answer": "Prisma is a modern ORM for Node.js and TypeScript that provides type-safe database access, automatic migrations, and a declarative schema language. It replaces raw SQL queries with a fluent, type-safe API.\n\nThe Prisma schema (schema.prisma) defines your data models, relations, and database configuration. From this schema, Prisma generates a typed client with methods like findUnique, findMany, create, update, and delete.\n\nMigrations track database schema changes over time. When you modify the schema, prisma migrate dev generates SQL migration files and applies them. Each migration is versioned and can be applied in sequence on any environment.\n\nPrisma supports relations (one-to-one, one-to-many, many-to-many), nested writes, transactions, raw SQL queries, and connection pooling. The generated types ensure that your queries match your schema at compile time.",
+      "codeExamples": [
+        {
+          "title": "Prisma Schema Definition",
+          "code": "// prisma/schema.prisma\ngenerator client {\n  provider = \"prisma-client-js\"\n}\n\ndatasource db {\n  provider = \"postgresql\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel User {\n  id        Int      @id @default(autoincrement())\n  email     String   @unique\n  name      String\n  password  String\n  role      Role     @default(USER)\n  posts     Post[]\n  profile   Profile?\n  createdAt DateTime @default(now())\n  updatedAt DateTime @updatedAt\n}\n\nmodel Post {\n  id        Int      @id @default(autoincrement())\n  title     String\n  content   String?\n  published Boolean  @default(false)\n  author    User     @relation(fields: [authorId], references: [id])\n  authorId  Int\n  tags      Tag[]\n}\n\nmodel Profile {\n  id     Int    @id @default(autoincrement())\n  bio    String?\n  avatar String?\n  user   User   @relation(fields: [userId], references: [id])\n  userId Int    @unique\n}\n\nmodel Tag {\n  id    Int    @id @default(autoincrement())\n  name  String @unique\n  posts Post[]\n}\n\nenum Role {\n  USER\n  ADMIN\n}",
+          "explanation": "The schema defines models, relations, and constraints. Prisma generates TypeScript types and a query client from this file."
+        },
+        {
+          "title": "CRUD Operations with Prisma Client",
+          "code": "const { PrismaClient } = require('@prisma/client');\nconst prisma = new PrismaClient();\n\n// Create with relation\nconst user = await prisma.user.create({\n  data: {\n    email: 'alice@example.com',\n    name: 'Alice',\n    password: hashedPassword,\n    profile: {\n      create: { bio: 'Developer' }  // Nested create\n    }\n  },\n  include: { profile: true }  // Include relation in response\n});\n\n// Find with filtering and pagination\nconst users = await prisma.user.findMany({\n  where: {\n    role: 'USER',\n    name: { contains: 'ali', mode: 'insensitive' },\n  },\n  select: { id: true, name: true, email: true },\n  orderBy: { createdAt: 'desc' },\n  skip: 0,\n  take: 10,\n});\n\n// Update\nconst updated = await prisma.user.update({\n  where: { id: 1 },\n  data: { name: 'Alice Smith' },\n});\n\n// Delete\nawait prisma.user.delete({ where: { id: 1 } });\n\n// Transaction\nconst [post, count] = await prisma.$transaction([\n  prisma.post.create({ data: { title: 'New Post', authorId: 1 } }),\n  prisma.post.count({ where: { authorId: 1 } }),\n]);",
+          "explanation": "Prisma provides type-safe CRUD with nested operations, filtering, pagination, and transactions. select/include control what data is returned."
+        },
+        {
+          "title": "Advanced Queries and Raw SQL",
+          "code": "const { PrismaClient, Prisma } = require('@prisma/client');\nconst prisma = new PrismaClient();\n\n// Aggregation\nconst stats = await prisma.post.aggregate({\n  _count: true,\n  _avg: { views: true },\n  where: { published: true },\n});\n\n// Group by\nconst byRole = await prisma.user.groupBy({\n  by: ['role'],\n  _count: { id: true },\n});\n\n// Upsert (create if not exists, update if exists)\nconst user = await prisma.user.upsert({\n  where: { email: 'bob@example.com' },\n  update: { name: 'Bob Updated' },\n  create: { email: 'bob@example.com', name: 'Bob', password: hash },\n});\n\n// Raw SQL when needed\nconst result = await prisma.$queryRaw`\n  SELECT u.name, COUNT(p.id) as post_count\n  FROM \"User\" u\n  LEFT JOIN \"Post\" p ON p.\"authorId\" = u.id\n  WHERE u.role = ${Prisma.sql`'USER'`}\n  GROUP BY u.name\n  ORDER BY post_count DESC\n  LIMIT 10\n`;\n\n// Connection cleanup\nprocess.on('beforeExit', async () => {\n  await prisma.$disconnect();\n});",
+          "explanation": "Prisma handles aggregations, group by, and upserts natively. Raw SQL is available for complex queries that the ORM cannot express."
+        }
+      ],
+      "notes": [
+        "Run 'npx prisma migrate dev' from the directory with prisma.config.ts to create migrations",
+        "Use select to return specific fields (exclude password!) and include for relations",
+        "Prisma Client is a singleton - create one instance and reuse it across the app",
+        "Use $transaction for operations that must succeed or fail together"
+      ],
+      "followUps": [
+        "How do you handle database migrations in production?",
+        "What is the N+1 query problem and how does Prisma handle it?"
+      ],
+      "interviewTips": [
+        "Show you understand the schema-first approach and type generation",
+        "Mention the migration workflow and how it enables team collaboration",
+        "Know when to use raw SQL vs the Prisma query API"
+      ]
+    }
+  },
+  {
+    "id": "node-connection-pooling",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 17,
+    "title": "Connection Pooling & N+1 Problem",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Connection Pool", "N+1 Query", "DataLoader", "Query Optimization"],
+    "content": {
+      "question": "What is connection pooling and the N+1 query problem? How do you solve them in a Node.js application?",
+      "answer": "Connection pooling maintains a cache of database connections that are reused across requests instead of creating a new connection for each query. Creating a connection involves TCP handshake, authentication, and TLS negotiation - this overhead is significant at scale.\n\nPrisma uses a built-in connection pool (default 5 connections for each Prisma Client instance). The pool manages acquiring, releasing, and recycling connections automatically. You can configure pool size via the connection string or Prisma config.\n\nThe N+1 problem occurs when you fetch a list of N items, then make N additional queries to fetch related data for each item. For example, fetching 100 users, then querying posts for each user individually results in 101 queries instead of 2.\n\nSolutions include: eager loading (Prisma's include), batch loading (DataLoader pattern), joins (raw SQL), and selecting only needed fields. Prisma's include/select performs efficient JOINs or batched queries automatically.",
+      "codeExamples": [
+        {
+          "title": "N+1 Problem and Solution",
+          "code": "const { PrismaClient } = require('@prisma/client');\nconst prisma = new PrismaClient({ log: ['query'] }); // Log queries\n\n// BAD: N+1 problem - 1 query for users + N queries for posts\nconst users = await prisma.user.findMany();\nfor (const user of users) {\n  // Each iteration = 1 query!\n  const posts = await prisma.post.findMany({\n    where: { authorId: user.id }\n  });\n  user.posts = posts;\n}\n// Result: 101 queries for 100 users!\n\n// GOOD: Eager loading with include - 2 queries total\nconst usersWithPosts = await prisma.user.findMany({\n  include: {\n    posts: {\n      where: { published: true },\n      orderBy: { createdAt: 'desc' },\n      take: 5,\n    },\n  },\n});\n// Prisma runs: SELECT * FROM User; SELECT * FROM Post WHERE authorId IN (...);\n\n// GOOD: Select only needed fields\nconst lightweight = await prisma.user.findMany({\n  select: {\n    id: true,\n    name: true,\n    _count: { select: { posts: true } },\n  },\n});",
+          "explanation": "include causes Prisma to batch-load related records in a single IN query. select limits the fields returned. Both solve N+1 efficiently."
+        },
+        {
+          "title": "Connection Pool Configuration",
+          "code": "// Via connection string\n// postgresql://user:pass@host:5432/db?connection_limit=20&pool_timeout=10\n\n// Via Prisma Client\nconst prisma = new PrismaClient({\n  datasources: {\n    db: {\n      url: process.env.DATABASE_URL + '?connection_limit=20'\n    }\n  }\n});\n\n// Singleton pattern - one client for the entire app\n// db.js\nlet prisma;\n\nif (process.env.NODE_ENV === 'production') {\n  prisma = new PrismaClient();\n} else {\n  // Prevent multiple instances in development (hot reload)\n  if (!global.__prisma) {\n    global.__prisma = new PrismaClient({ log: ['query'] });\n  }\n  prisma = global.__prisma;\n}\n\nmodule.exports = prisma;\n\n// Monitor pool usage\nprisma.$on('query', (e) => {\n  if (e.duration > 1000) {\n    console.warn(`Slow query (${e.duration}ms):`, e.query);\n  }\n});",
+          "explanation": "Use a singleton Prisma client to share the connection pool. In development, store on global to survive hot reloads without creating new pools."
+        },
+        {
+          "title": "DataLoader Pattern for GraphQL/Batch Loading",
+          "code": "const DataLoader = require('dataloader');\nconst prisma = require('./db');\n\n// Batch function: receives array of keys, returns array of results\nasync function batchUsers(ids) {\n  const users = await prisma.user.findMany({\n    where: { id: { in: ids } },\n  });\n  // Must return results in same order as input ids\n  const userMap = new Map(users.map(u => [u.id, u]));\n  return ids.map(id => userMap.get(id) || null);\n}\n\n// Create loader (per request!)\nconst userLoader = new DataLoader(batchUsers);\n\n// Usage: individual loads are batched automatically\nconst user1 = await userLoader.load(1); // Not executed yet\nconst user2 = await userLoader.load(2); // Not executed yet\n// After current tick: single query WHERE id IN (1, 2)\n\n// Results are cached within the request\nconst user1Again = await userLoader.load(1); // Returns cached",
+          "explanation": "DataLoader collects individual load calls within a tick and batches them into a single query. Create a new loader per request to avoid cross-request caching."
+        }
+      ],
+      "notes": [
+        "Default Prisma pool size is num_cpus * 2 + 1; tune based on your workload",
+        "N+1: fetching a list then querying each item individually - watch for loops with DB calls",
+        "Use Prisma's include for eager loading and select for field limiting",
+        "DataLoader is essential for GraphQL but useful in REST APIs with batch endpoints too"
+      ],
+      "followUps": [
+        "How do you monitor and debug slow queries in production?",
+        "What is the difference between lazy loading and eager loading?"
+      ],
+      "interviewTips": [
+        "Identify the N+1 problem in code immediately - it is a very common interview scenario",
+        "Know your ORM's solution: Prisma include, Sequelize eager, TypeORM relations",
+        "Mention connection pool tuning for different environments (dev vs prod)"
+      ]
+    }
+  },
+  {
+    "id": "node-redis-caching",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 18,
+    "title": "Redis Caching",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Redis", "Cache-Aside", "TTL", "Cache Invalidation", "Session Store"],
+    "content": {
+      "question": "How do you implement caching with Redis in a Node.js application? Explain caching strategies and cache invalidation.",
+      "answer": "Redis is an in-memory data store used as a cache, session store, message broker, and rate limiter in Node.js applications. It stores data as key-value pairs with optional expiration (TTL), providing sub-millisecond read times.\n\nThe cache-aside (lazy loading) pattern is the most common: check Redis first, if cache miss then query the database, store the result in Redis with a TTL, and return it. This reduces database load significantly for frequently accessed data.\n\nCache invalidation is the hardest part of caching. Strategies include: TTL-based expiration (simplest), write-through (update cache on every write), and event-based invalidation (invalidate when data changes). Choose based on data freshness requirements.\n\nRedis also supports data structures beyond strings: hashes (object fields), lists (queues), sets (unique collections), sorted sets (leaderboards), and pub/sub for real-time messaging. These make Redis useful far beyond simple caching.",
+      "codeExamples": [
+        {
+          "title": "Redis Setup and Basic Operations",
+          "code": "const Redis = require('ioredis');\n\nconst redis = new Redis({\n  host: process.env.REDIS_HOST || 'localhost',\n  port: Number(process.env.REDIS_PORT) || 6379,\n  password: process.env.REDIS_PASSWORD,\n  retryStrategy: (times) => Math.min(times * 50, 2000),\n});\n\nredis.on('connect', () => console.log('Redis connected'));\nredis.on('error', (err) => console.error('Redis error:', err));\n\n// Basic operations\nawait redis.set('key', 'value');             // Set string\nawait redis.set('key', 'value', 'EX', 3600); // Set with 1hr TTL\nconst val = await redis.get('key');           // Get string\n\n// JSON objects (store as string)\nawait redis.set('user:1', JSON.stringify({ name: 'Alice', role: 'admin' }), 'EX', 600);\nconst user = JSON.parse(await redis.get('user:1'));\n\n// Hash (object fields)\nawait redis.hset('user:2', 'name', 'Bob', 'email', 'bob@test.com');\nconst name = await redis.hget('user:2', 'name');\nconst all = await redis.hgetall('user:2');\n\n// Delete\nawait redis.del('key', 'user:1');",
+          "output": "Redis connected",
+          "explanation": "ioredis is the standard Redis client for Node.js. Store objects as JSON strings with TTL. Use hashes for partial updates without serializing the entire object."
+        },
+        {
+          "title": "Cache-Aside Pattern",
+          "code": "async function getCachedUser(userId) {\n  const cacheKey = `user:${userId}`;\n\n  // 1. Check cache\n  const cached = await redis.get(cacheKey);\n  if (cached) {\n    console.log('Cache HIT');\n    return JSON.parse(cached);\n  }\n\n  // 2. Cache miss - query database\n  console.log('Cache MISS');\n  const user = await prisma.user.findUnique({\n    where: { id: userId },\n    include: { profile: true, posts: { take: 5 } },\n  });\n\n  if (!user) return null;\n\n  // 3. Store in cache with TTL\n  await redis.set(cacheKey, JSON.stringify(user), 'EX', 600); // 10 min\n\n  return user;\n}\n\n// Cache-aside middleware for Express\nfunction cacheMiddleware(keyPrefix, ttl = 300) {\n  return async (req, res, next) => {\n    const key = `${keyPrefix}:${req.originalUrl}`;\n    const cached = await redis.get(key);\n\n    if (cached) {\n      return res.json(JSON.parse(cached));\n    }\n\n    // Override res.json to cache the response\n    const originalJson = res.json.bind(res);\n    res.json = (data) => {\n      redis.set(key, JSON.stringify(data), 'EX', ttl);\n      return originalJson(data);\n    };\n    next();\n  };\n}\n\napp.get('/api/products', cacheMiddleware('products', 120), getProducts);",
+          "explanation": "Cache-aside: check cache first, query DB on miss, store result. The middleware pattern caches entire API responses transparently."
+        },
+        {
+          "title": "Cache Invalidation Strategies",
+          "code": "// Strategy 1: Invalidate on write\nasync function updateUser(userId, data) {\n  const user = await prisma.user.update({\n    where: { id: userId },\n    data,\n  });\n\n  // Invalidate specific cache\n  await redis.del(`user:${userId}`);\n  // Invalidate list caches that might contain this user\n  const keys = await redis.keys('users:list:*');\n  if (keys.length) await redis.del(...keys);\n\n  return user;\n}\n\n// Strategy 2: Write-through (update cache AND db)\nasync function updateUserWriteThrough(userId, data) {\n  const user = await prisma.user.update({\n    where: { id: userId },\n    data,\n  });\n  // Update cache with fresh data\n  await redis.set(`user:${userId}`, JSON.stringify(user), 'EX', 600);\n  return user;\n}\n\n// Strategy 3: Cache tags for bulk invalidation\nasync function invalidateTag(tag) {\n  const keys = await redis.smembers(`tag:${tag}`);\n  if (keys.length) {\n    await redis.del(...keys);\n    await redis.del(`tag:${tag}`);\n  }\n}\n\n// When caching, register the key under a tag\nasync function cacheWithTag(key, value, ttl, tags) {\n  await redis.set(key, JSON.stringify(value), 'EX', ttl);\n  for (const tag of tags) {\n    await redis.sadd(`tag:${tag}`, key);\n  }\n}",
+          "explanation": "Invalidate-on-write deletes stale cache. Write-through updates the cache. Tags let you invalidate groups of related keys efficiently."
+        }
+      ],
+      "notes": [
+        "Cache-aside is the safest pattern: DB is always the source of truth",
+        "Avoid redis.keys() in production (blocks) - use SCAN for pattern matching",
+        "Set appropriate TTLs: short for volatile data, longer for stable data",
+        "Use connection pooling (ioredis handles this automatically)"
+      ],
+      "followUps": [
+        "How do you handle cache stampede (thundering herd) problems?",
+        "When should you use Redis vs in-memory caching (node-cache)?"
+      ],
+      "interviewTips": [
+        "Know the cache-aside pattern cold - it is the most commonly asked caching question",
+        "Discuss cache invalidation challenges honestly - it shows real-world experience",
+        "Mention Redis use cases beyond caching: sessions, rate limiting, pub/sub"
+      ]
+    }
+  },
+  {
+    "id": "node-file-uploads",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 19,
+    "title": "File Uploads (Multer & S3)",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Multer", "AWS S3", "File Validation", "Memory Storage", "Disk Storage"],
+    "content": {
+      "question": "How do you handle file uploads in a Node.js application? Explain Multer configuration and S3 integration.",
+      "answer": "File uploads in Express use the Multer middleware, which processes multipart/form-data (the encoding type for file uploads). Multer can store files to disk or keep them in memory as Buffer objects.\n\nMemory storage is preferred when uploading to cloud services like S3 because the file stays in RAM as a buffer and can be streamed directly to S3 without writing to disk first. Disk storage is useful when files are served locally.\n\nAWS S3 is the standard cloud storage solution. The upload flow is: client sends file -> Multer parses it into req.file -> your code uploads the buffer to S3 -> S3 returns a URL -> you store the URL in the database.\n\nFile validation is critical: check file type (MIME type and magic bytes), file size, and file name. Never trust the client-provided MIME type alone. Validate the actual file content by reading magic bytes to prevent malicious file uploads.",
+      "codeExamples": [
+        {
+          "title": "Multer Configuration",
+          "code": "const multer = require('multer');\nconst path = require('path');\n\n// Memory storage (for S3 uploads)\nconst memoryUpload = multer({\n  storage: multer.memoryStorage(),\n  limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max\n  fileFilter: (req, file, cb) => {\n    const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];\n    if (allowedTypes.includes(file.mimetype)) {\n      cb(null, true);\n    } else {\n      cb(new Error('Invalid file type. Only JPEG, PNG, and WebP allowed.'));\n    }\n  },\n});\n\n// Disk storage (for local files)\nconst diskUpload = multer({\n  storage: multer.diskStorage({\n    destination: (req, file, cb) => cb(null, 'uploads/'),\n    filename: (req, file, cb) => {\n      const uniqueName = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;\n      cb(null, uniqueName + path.extname(file.originalname));\n    },\n  }),\n  limits: { fileSize: 10 * 1024 * 1024 },\n});\n\n// Route usage\napp.post('/api/upload/avatar',\n  memoryUpload.single('avatar'),  // single file, field name 'avatar'\n  uploadController.uploadAvatar\n);\n\napp.post('/api/upload/documents',\n  diskUpload.array('files', 5),   // up to 5 files, field name 'files'\n  uploadController.uploadDocuments\n);",
+          "explanation": "memoryStorage keeps files as Buffer in req.file.buffer (ideal for S3). diskStorage writes to local filesystem. fileFilter validates before accepting."
+        },
+        {
+          "title": "S3 Upload Integration",
+          "code": "const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');\nconst crypto = require('crypto');\n\nconst s3 = new S3Client({\n  region: process.env.AWS_REGION,\n  credentials: {\n    accessKeyId: process.env.AWS_ACCESS_KEY_ID,\n    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY,\n  },\n});\n\nasync function uploadToS3(file, folder = 'uploads') {\n  const fileExtension = path.extname(file.originalname);\n  const key = `${folder}/${crypto.randomUUID()}${fileExtension}`;\n\n  await s3.send(new PutObjectCommand({\n    Bucket: process.env.AWS_BUCKET_NAME,\n    Key: key,\n    Body: file.buffer,\n    ContentType: file.mimetype,\n  }));\n\n  return `https://${process.env.AWS_BUCKET_NAME}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;\n}\n\nasync function deleteFromS3(url) {\n  const key = new URL(url).pathname.slice(1);\n  await s3.send(new DeleteObjectCommand({\n    Bucket: process.env.AWS_BUCKET_NAME,\n    Key: key,\n  }));\n}\n\n// Controller\nasync function uploadAvatar(req, res) {\n  if (!req.file) return res.status(400).json({ error: 'No file' });\n  const url = await uploadToS3(req.file, 'avatars');\n  await prisma.user.update({\n    where: { id: req.user.id },\n    data: { avatar: url },\n  });\n  res.json({ url });\n}",
+          "explanation": "Generate unique keys with randomUUID to prevent collisions. Store the S3 URL in the database. Delete old files when updating."
+        },
+        {
+          "title": "File Validation with Magic Bytes",
+          "code": "// Validate actual file content, not just MIME type\nfunction validateFileContent(buffer, declaredMime) {\n  const signatures = {\n    'image/jpeg': [0xFF, 0xD8, 0xFF],\n    'image/png': [0x89, 0x50, 0x4E, 0x47],\n    'image/webp': null, // Check RIFF header\n    'application/pdf': [0x25, 0x50, 0x44, 0x46], // %PDF\n  };\n\n  const expected = signatures[declaredMime];\n  if (!expected) return false;\n\n  // Compare magic bytes\n  for (let i = 0; i < expected.length; i++) {\n    if (buffer[i] !== expected[i]) return false;\n  }\n  return true;\n}\n\n// Usage in upload middleware\nfunction validateUpload(req, res, next) {\n  if (!req.file) return next();\n\n  const isValid = validateFileContent(\n    req.file.buffer,\n    req.file.mimetype\n  );\n\n  if (!isValid) {\n    return res.status(400).json({\n      error: 'File content does not match declared type'\n    });\n  }\n  next();\n}\n\napp.post('/api/upload',\n  memoryUpload.single('file'),\n  validateUpload,\n  uploadController.handle\n);",
+          "explanation": "Magic bytes are the first few bytes of a file that identify its type. Checking them prevents users from uploading malicious files renamed to .jpg."
+        }
+      ],
+      "notes": [
+        "Memory storage is best for cloud uploads; disk storage for local serving",
+        "Always validate file type with magic bytes, not just the MIME type header",
+        "Generate unique filenames (UUID) to prevent collisions and path traversal",
+        "Set reasonable file size limits to prevent denial-of-service attacks"
+      ],
+      "followUps": [
+        "How would you implement direct-to-S3 uploads using presigned URLs?",
+        "How do you handle large file uploads without running out of memory?"
+      ],
+      "interviewTips": [
+        "Explain the memory vs disk storage tradeoff for Multer",
+        "Mention security: file type validation, size limits, unique names",
+        "Know the full flow: client form -> multer -> validation -> S3 -> DB URL"
+      ]
+    }
+  },
+  {
+    "id": "node-env-config",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 20,
+    "title": "Environment Variables & Config",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["dotenv", "process.env", "Configuration", "Secrets Management"],
+    "content": {
+      "question": "How do you manage environment variables and configuration in a Node.js application?",
+      "answer": "Environment variables store configuration that changes between environments (development, staging, production) and secrets that should never be committed to version control. In Node.js, they are accessed via process.env.\n\nThe dotenv package loads variables from a .env file into process.env during development. In production, variables are set through the hosting platform (Docker, AWS, Heroku). The .env file should be in .gitignore and never committed.\n\nBest practice is to create a config module that reads environment variables, validates them at startup, provides defaults, and exports a typed configuration object. This centralizes all config access and fails fast if required variables are missing.\n\nSensitive values like API keys, database URLs, and JWT secrets must always be environment variables. Never hardcode them. Use different values per environment and rotate secrets regularly.",
+      "codeExamples": [
+        {
+          "title": "dotenv and Config Module",
+          "code": "// .env file (never commit this!)\n// DATABASE_URL=postgresql://user:pass@localhost:5432/mydb\n// JWT_SECRET=super-secret-key-change-in-production\n// PORT=3000\n// NODE_ENV=development\n\n// config.js - centralized configuration\nrequire('dotenv').config();\n\nconst config = {\n  port: parseInt(process.env.PORT, 10) || 3000,\n  nodeEnv: process.env.NODE_ENV || 'development',\n  db: {\n    url: process.env.DATABASE_URL,\n  },\n  jwt: {\n    secret: process.env.JWT_SECRET,\n    expiresIn: process.env.JWT_EXPIRES_IN || '15m',\n  },\n  cors: {\n    origins: (process.env.ALLOWED_ORIGINS || '').split(','),\n  },\n  isDev: process.env.NODE_ENV === 'development',\n  isProd: process.env.NODE_ENV === 'production',\n};\n\nmodule.exports = config;\n\n// Usage\nconst config = require('./config');\napp.listen(config.port);",
+          "output": "Server running on port 3000",
+          "explanation": "A config module provides typed access, defaults, and derived values. All env access goes through this single module."
+        },
+        {
+          "title": "Validation at Startup",
+          "code": "const { z } = require('zod');\nrequire('dotenv').config();\n\nconst envSchema = z.object({\n  DATABASE_URL: z.string().url(),\n  JWT_SECRET: z.string().min(32, 'JWT secret must be at least 32 chars'),\n  PORT: z.string().regex(/^\\d+$/).transform(Number).default('3000'),\n  NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),\n  AWS_BUCKET_NAME: z.string().optional(),\n  REDIS_URL: z.string().url().optional(),\n});\n\nfunction validateEnv() {\n  const result = envSchema.safeParse(process.env);\n\n  if (!result.success) {\n    console.error('Environment validation failed:');\n    console.error(result.error.flatten().fieldErrors);\n    process.exit(1); // Fail fast!\n  }\n\n  return result.data;\n}\n\nconst env = validateEnv();\nmodule.exports = env;\n\n// App starts only if all required env vars are valid\n// Missing DATABASE_URL? -> crash immediately with clear error",
+          "explanation": "Zod validates env vars at startup. If any required variable is missing or invalid, the app crashes immediately with a clear error instead of failing later."
+        },
+        {
+          "title": "Multi-Environment Configuration",
+          "code": "// .env.development\n// DATABASE_URL=postgresql://localhost:5432/myapp_dev\n// LOG_LEVEL=debug\n\n// .env.production\n// DATABASE_URL=postgresql://prod-host:5432/myapp\n// LOG_LEVEL=warn\n\n// .env.example (commit this - documents required vars)\n// DATABASE_URL=postgresql://user:pass@host:5432/dbname\n// JWT_SECRET=change-me-to-a-long-random-string\n// PORT=3000\n\n// Load environment-specific file\nconst dotenv = require('dotenv');\nconst path = require('path');\n\nconst envFile = `.env.${process.env.NODE_ENV || 'development'}`;\ndotenv.config({ path: path.resolve(process.cwd(), envFile) });\ndotenv.config(); // Fallback to .env\n\n// .gitignore\n// .env\n// .env.development\n// .env.production\n// .env.local\n// !.env.example   <-- DO commit this\n\nconsole.log(`Loaded config for: ${process.env.NODE_ENV}`);",
+          "output": "Loaded config for: development",
+          "explanation": "Use .env.{environment} files for per-environment config. Commit .env.example as documentation. Never commit actual .env files."
+        }
+      ],
+      "notes": [
+        "process.env values are always strings - parse numbers and booleans explicitly",
+        "Validate all required env vars at startup to fail fast with clear errors",
+        "Commit .env.example (with placeholder values) but never commit .env",
+        "In production, set env vars through the platform (Docker, cloud provider) not files"
+      ],
+      "followUps": [
+        "How do you manage secrets in a containerized/Kubernetes environment?",
+        "What is the difference between .env and environment-specific config files?"
+      ],
+      "interviewTips": [
+        "Show awareness of security: never commit secrets, rotate keys regularly",
+        "Mention startup validation - it demonstrates production-readiness thinking",
+        "Know the difference between dev (.env file) and prod (platform env vars) workflows"
+      ]
+    }
+  },
+  {
+    "id": "node-logging",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 21,
+    "title": "Logging (Winston/Pino)",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Winston", "Pino", "Log Levels", "Structured Logging", "Transports"],
+    "content": {
+      "question": "How do you implement logging in a production Node.js application? Compare Winston and Pino.",
+      "answer": "Production logging goes far beyond console.log. Structured logging libraries like Winston and Pino provide log levels, multiple output destinations (transports), JSON formatting, context metadata, and log rotation.\n\nLog levels (error, warn, info, debug) let you control verbosity per environment. In production, log at info level and above. In development, include debug. Error logs should include stack traces, request context, and user IDs.\n\nWinston is feature-rich with many transports (console, file, HTTP, cloud services). Pino is the fastest logger for Node.js (5-10x faster than Winston) because it uses asynchronous JSON serialization. For high-throughput APIs, Pino is the better choice.\n\nStructured logging outputs JSON instead of text strings. This makes logs machine-parseable for log aggregation tools like ELK Stack, Datadog, or CloudWatch. Always include correlation IDs (request ID) to trace requests across services.",
+      "codeExamples": [
+        {
+          "title": "Winston Logger Setup",
+          "code": "const winston = require('winston');\n\nconst logger = winston.createLogger({\n  level: process.env.LOG_LEVEL || 'info',\n  format: winston.format.combine(\n    winston.format.timestamp(),\n    winston.format.errors({ stack: true }),\n    winston.format.json()\n  ),\n  defaultMeta: { service: 'my-api' },\n  transports: [\n    // Write errors to error.log\n    new winston.transports.File({\n      filename: 'logs/error.log',\n      level: 'error',\n      maxsize: 5 * 1024 * 1024, // 5MB rotation\n      maxFiles: 5,\n    }),\n    // Write all logs to combined.log\n    new winston.transports.File({\n      filename: 'logs/combined.log',\n    }),\n  ],\n});\n\n// Pretty print in development\nif (process.env.NODE_ENV !== 'production') {\n  logger.add(new winston.transports.Console({\n    format: winston.format.combine(\n      winston.format.colorize(),\n      winston.format.simple()\n    ),\n  }));\n}\n\n// Usage\nlogger.info('Server started', { port: 3000 });\nlogger.error('Database connection failed', { error: err.message });",
+          "output": "{\"level\":\"info\",\"message\":\"Server started\",\"port\":3000,\"service\":\"my-api\",\"timestamp\":\"2024-01-15T10:30:00.000Z\"}",
+          "explanation": "Winston outputs structured JSON with timestamps and metadata. Transports send logs to different destinations. File rotation prevents disk overflow."
+        },
+        {
+          "title": "Pino Logger (High Performance)",
+          "code": "const pino = require('pino');\n\n// Pino is 5-10x faster than Winston\nconst logger = pino({\n  level: process.env.LOG_LEVEL || 'info',\n  transport: process.env.NODE_ENV !== 'production'\n    ? { target: 'pino-pretty', options: { colorize: true } }\n    : undefined,\n  redact: ['req.headers.authorization', 'password'], // Hide sensitive fields\n});\n\n// Express middleware for request logging\nconst pinoHttp = require('pino-http');\napp.use(pinoHttp({ logger }));\n\n// Usage\nlogger.info({ userId: 123 }, 'User logged in');\nlogger.error({ err, requestId: req.id }, 'Payment failed');\nlogger.warn({ remaining: 5 }, 'Rate limit approaching');\n\n// Child logger with persistent context\nconst userLogger = logger.child({ userId: req.user.id });\nuserLogger.info('Profile updated'); // Includes userId automatically\nuserLogger.info('Password changed');",
+          "output": "{\"level\":30,\"time\":1705312200000,\"userId\":123,\"msg\":\"User logged in\"}",
+          "explanation": "Pino uses numeric log levels for speed and JSON output. Child loggers inherit context. redact hides sensitive fields automatically."
+        },
+        {
+          "title": "Request Logging Middleware",
+          "code": "const { v4: uuidv4 } = require('uuid');\n\n// Add request ID for tracing\napp.use((req, res, next) => {\n  req.id = req.headers['x-request-id'] || uuidv4();\n  res.setHeader('X-Request-ID', req.id);\n  next();\n});\n\n// Log request/response\napp.use((req, res, next) => {\n  const start = Date.now();\n\n  // Log when response finishes\n  res.on('finish', () => {\n    const duration = Date.now() - start;\n    const logData = {\n      requestId: req.id,\n      method: req.method,\n      url: req.originalUrl,\n      status: res.statusCode,\n      duration: `${duration}ms`,\n      userAgent: req.headers['user-agent'],\n      ip: req.ip,\n    };\n\n    if (res.statusCode >= 400) {\n      logger.warn(logData, 'Request failed');\n    } else {\n      logger.info(logData, 'Request completed');\n    }\n  });\n\n  next();\n});\n\n// In error handler\napp.use((err, req, res, next) => {\n  logger.error({\n    requestId: req.id,\n    err: { message: err.message, stack: err.stack },\n    path: req.path,\n  }, 'Unhandled error');\n  res.status(500).json({ error: 'Internal server error' });\n});",
+          "explanation": "Request IDs enable tracing a request across logs and services. Log duration, status, and context for every request. Warn on 4xx, error on 5xx."
+        }
+      ],
+      "notes": [
+        "Never use console.log in production - use a structured logger with levels",
+        "Pino is significantly faster than Winston for high-throughput applications",
+        "Always include request IDs for tracing across distributed systems",
+        "Redact sensitive fields (passwords, tokens, credit cards) from logs"
+      ],
+      "followUps": [
+        "How do you aggregate logs from multiple services?",
+        "What is the ELK stack and how does it work with Node.js logging?"
+      ],
+      "interviewTips": [
+        "Mention structured logging (JSON) and why it matters for log aggregation",
+        "Know the performance difference between Winston and Pino",
+        "Show awareness of log levels and environment-specific configuration"
+      ]
+    }
+  },
+  {
+    "id": "node-testing",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 22,
+    "title": "Testing (Jest & Supertest)",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Jest", "Supertest", "Unit Testing", "Integration Testing", "Mocking"],
+    "content": {
+      "question": "How do you test a Node.js API? Explain unit testing, integration testing, and API testing with Jest and Supertest.",
+      "answer": "Testing Node.js applications involves three levels: unit tests (individual functions), integration tests (modules working together), and API/E2E tests (full HTTP request/response cycle).\n\nJest is the most popular test framework for Node.js. It provides test runners, assertions, mocking, code coverage, and snapshot testing out of the box. Supertest is a library for testing HTTP endpoints by simulating requests against your Express app without starting a server.\n\nUnit tests isolate functions by mocking dependencies (database, external APIs). Integration tests verify that multiple modules work together correctly. API tests send real HTTP requests and verify status codes, headers, and response bodies.\n\nThe testing pyramid suggests: many unit tests (fast, isolated), fewer integration tests (medium speed), and few E2E tests (slow, expensive). Mock external dependencies in unit tests but use real databases in integration tests (with test containers or in-memory DBs).",
+      "codeExamples": [
+        {
+          "title": "Unit Testing with Jest",
+          "code": "// utils/math.js\nfunction calculateDiscount(price, percentage) {\n  if (price < 0 || percentage < 0 || percentage > 100) {\n    throw new Error('Invalid input');\n  }\n  return price - (price * percentage / 100);\n}\nmodule.exports = { calculateDiscount };\n\n// utils/math.test.js\nconst { calculateDiscount } = require('./math');\n\ndescribe('calculateDiscount', () => {\n  it('should calculate 20% discount correctly', () => {\n    expect(calculateDiscount(100, 20)).toBe(80);\n  });\n\n  it('should return original price for 0% discount', () => {\n    expect(calculateDiscount(50, 0)).toBe(50);\n  });\n\n  it('should return 0 for 100% discount', () => {\n    expect(calculateDiscount(100, 100)).toBe(0);\n  });\n\n  it('should throw on negative price', () => {\n    expect(() => calculateDiscount(-10, 20)).toThrow('Invalid input');\n  });\n\n  it('should throw on percentage > 100', () => {\n    expect(() => calculateDiscount(100, 150)).toThrow('Invalid input');\n  });\n});",
+          "output": "PASS utils/math.test.js\n  calculateDiscount\n    ✓ should calculate 20% discount correctly (1ms)\n    ✓ should return original price for 0% discount\n    ✓ should return 0 for 100% discount\n    ✓ should throw on negative price (1ms)\n    ✓ should throw on percentage > 100\n5 passed",
+          "explanation": "Unit tests verify pure functions in isolation. Test happy paths, edge cases, and error conditions. Jest's describe/it/expect syntax is clear and readable."
+        },
+        {
+          "title": "API Testing with Supertest",
+          "code": "const request = require('supertest');\nconst app = require('../app'); // Express app (not listening)\n\ndescribe('POST /api/auth/register', () => {\n  it('should register a new user', async () => {\n    const res = await request(app)\n      .post('/api/auth/register')\n      .send({\n        name: 'Test User',\n        email: 'test@example.com',\n        password: 'Password123',\n      })\n      .expect(201)\n      .expect('Content-Type', /json/);\n\n    expect(res.body).toHaveProperty('id');\n    expect(res.body.email).toBe('test@example.com');\n    expect(res.body).not.toHaveProperty('password');\n  });\n\n  it('should reject duplicate email', async () => {\n    const res = await request(app)\n      .post('/api/auth/register')\n      .send({\n        name: 'Duplicate',\n        email: 'test@example.com',\n        password: 'Password123',\n      })\n      .expect(409);\n\n    expect(res.body.error).toMatch(/already/);\n  });\n\n  it('should validate required fields', async () => {\n    const res = await request(app)\n      .post('/api/auth/register')\n      .send({ email: 'bad' })\n      .expect(400);\n\n    expect(res.body).toHaveProperty('details');\n  });\n});",
+          "output": "PASS tests/auth.test.js\n  POST /api/auth/register\n    ✓ should register a new user (45ms)\n    ✓ should reject duplicate email (12ms)\n    ✓ should validate required fields (8ms)\n3 passed",
+          "explanation": "Supertest sends HTTP requests to your Express app without starting a server. Chain .expect() for status codes and .send() for request bodies."
+        },
+        {
+          "title": "Mocking Dependencies",
+          "code": "// service/user.service.test.js\nconst { getUserById } = require('./user.service');\nconst prisma = require('../db');\n\n// Mock the entire Prisma module\njest.mock('../db', () => ({\n  user: {\n    findUnique: jest.fn(),\n    create: jest.fn(),\n  },\n}));\n\ndescribe('getUserById', () => {\n  afterEach(() => jest.clearAllMocks());\n\n  it('should return user when found', async () => {\n    const mockUser = { id: 1, name: 'Alice', email: 'alice@test.com' };\n    prisma.user.findUnique.mockResolvedValue(mockUser);\n\n    const result = await getUserById(1);\n\n    expect(result).toEqual(mockUser);\n    expect(prisma.user.findUnique).toHaveBeenCalledWith({\n      where: { id: 1 },\n    });\n  });\n\n  it('should throw NotFoundError when user missing', async () => {\n    prisma.user.findUnique.mockResolvedValue(null);\n\n    await expect(getUserById(999))\n      .rejects\n      .toThrow('User not found');\n  });\n\n  it('should propagate database errors', async () => {\n    prisma.user.findUnique.mockRejectedValue(\n      new Error('Connection refused')\n    );\n\n    await expect(getUserById(1))\n      .rejects\n      .toThrow('Connection refused');\n  });\n});",
+          "explanation": "jest.mock replaces the real module with mocks. mockResolvedValue simulates async returns. Test both success and error paths."
+        }
+      ],
+      "notes": [
+        "Supertest does not start the server - export your Express app without .listen()",
+        "Use jest.mock() for unit tests to isolate from databases and external APIs",
+        "Clear mocks between tests with afterEach(jest.clearAllMocks) to prevent leaking",
+        "Run tests with --coverage flag to see which code paths are untested"
+      ],
+      "followUps": [
+        "How do you set up a test database for integration tests?",
+        "What is the difference between mocks, stubs, and spies?"
+      ],
+      "interviewTips": [
+        "Show the testing pyramid: many unit tests, fewer integration, fewest E2E",
+        "Demonstrate mocking skills - it is the hardest part of testing",
+        "Mention test setup/teardown: beforeAll, afterAll for database seeding/cleanup"
+      ]
+    }
+  },
+  {
+    "id": "node-rate-limiting",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 23,
+    "title": "Rate Limiting & Throttling",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Rate Limiting", "express-rate-limit", "Sliding Window", "Token Bucket", "Redis Store"],
+    "content": {
+      "question": "How do you implement rate limiting in a Node.js API? Explain different algorithms and production considerations.",
+      "answer": "Rate limiting restricts the number of requests a client can make within a time window. It protects APIs from abuse, brute force attacks, and accidental overload. Without it, a single client can monopolize server resources.\n\nCommon algorithms include: fixed window (simple counter per time window), sliding window (more accurate, counts requests in a rolling window), token bucket (allows bursts), and leaky bucket (smooths traffic). Each has tradeoffs between simplicity, accuracy, and memory usage.\n\nThe express-rate-limit package provides easy in-memory rate limiting for single-server setups. For multi-server deployments, use a Redis-backed store so all instances share the same counters.\n\nDifferent endpoints need different limits: authentication endpoints (strict, e.g., 5 attempts/15 min), API endpoints (moderate, e.g., 100 requests/min), and public pages (lenient, e.g., 1000 requests/min). Always return rate limit headers so clients can adapt.",
+      "codeExamples": [
+        {
+          "title": "express-rate-limit Setup",
+          "code": "const rateLimit = require('express-rate-limit');\n\n// General API limiter\nconst apiLimiter = rateLimit({\n  windowMs: 15 * 60 * 1000, // 15 minutes\n  max: 100,                  // 100 requests per window\n  standardHeaders: true,     // Return rate limit info in headers\n  legacyHeaders: false,\n  message: {\n    error: 'Too many requests, please try again later',\n    retryAfter: '15 minutes',\n  },\n});\n\n// Strict limiter for auth endpoints\nconst authLimiter = rateLimit({\n  windowMs: 15 * 60 * 1000,\n  max: 5,\n  message: { error: 'Too many login attempts. Try again in 15 minutes.' },\n  skipSuccessfulRequests: true, // Only count failed attempts\n});\n\n// Apply limiters\napp.use('/api', apiLimiter);\napp.use('/api/auth/login', authLimiter);\napp.use('/api/auth/register', authLimiter);\n\n// Response headers sent:\n// RateLimit-Limit: 100\n// RateLimit-Remaining: 95\n// RateLimit-Reset: 1705313100",
+          "output": "// After exceeding limit:\n// HTTP 429 Too Many Requests\n// { \"error\": \"Too many requests, please try again later\" }",
+          "explanation": "Different limiters for different routes. skipSuccessfulRequests only counts failures (good for login). Headers tell clients their quota."
+        },
+        {
+          "title": "Redis-Backed Rate Limiting (Multi-Server)",
+          "code": "const rateLimit = require('express-rate-limit');\nconst RedisStore = require('rate-limit-redis');\nconst Redis = require('ioredis');\n\nconst redis = new Redis(process.env.REDIS_URL);\n\nconst limiter = rateLimit({\n  windowMs: 60 * 1000, // 1 minute\n  max: 60,\n  standardHeaders: true,\n  store: new RedisStore({\n    sendCommand: (...args) => redis.call(...args),\n    prefix: 'rl:', // Redis key prefix\n  }),\n  keyGenerator: (req) => {\n    // Rate limit by user ID (authenticated) or IP (anonymous)\n    return req.user?.id?.toString() || req.ip;\n  },\n  skip: (req) => {\n    // Skip rate limiting for admin users\n    return req.user?.role === 'admin';\n  },\n});\n\napp.use('/api', limiter);",
+          "explanation": "Redis store shares rate limit state across all server instances. keyGenerator customizes how clients are identified. skip exempts certain users."
+        },
+        {
+          "title": "Custom Sliding Window Implementation",
+          "code": "const Redis = require('ioredis');\nconst redis = new Redis();\n\n// Sliding window rate limiter using Redis sorted sets\nasync function slidingWindowRateLimit(key, limit, windowSec) {\n  const now = Date.now();\n  const windowStart = now - windowSec * 1000;\n\n  const multi = redis.multi();\n  // Remove old entries outside the window\n  multi.zremrangebyscore(key, 0, windowStart);\n  // Add current request\n  multi.zadd(key, now, `${now}-${Math.random()}`);\n  // Count requests in window\n  multi.zcard(key);\n  // Set expiry on the key\n  multi.expire(key, windowSec);\n\n  const results = await multi.exec();\n  const count = results[2][1];\n\n  return {\n    allowed: count <= limit,\n    remaining: Math.max(0, limit - count),\n    resetAt: new Date(now + windowSec * 1000),\n  };\n}\n\n// Middleware\nfunction rateLimitMiddleware(limit, windowSec) {\n  return async (req, res, next) => {\n    const key = `ratelimit:${req.ip}`;\n    const result = await slidingWindowRateLimit(key, limit, windowSec);\n\n    res.set('X-RateLimit-Limit', limit);\n    res.set('X-RateLimit-Remaining', result.remaining);\n\n    if (!result.allowed) {\n      return res.status(429).json({ error: 'Rate limit exceeded' });\n    }\n    next();\n  };\n}",
+          "explanation": "Sliding window uses Redis sorted sets with timestamps as scores. This is more accurate than fixed windows and prevents burst-at-boundary attacks."
+        }
+      ],
+      "notes": [
+        "In-memory rate limiting only works on a single server; use Redis for multi-instance",
+        "Apply stricter limits on auth endpoints to prevent brute force attacks",
+        "Always return rate limit headers so clients can implement retry logic",
+        "Consider rate limiting by user ID for authenticated routes and by IP for public routes"
+      ],
+      "followUps": [
+        "What is the difference between rate limiting and throttling?",
+        "How do you handle rate limiting behind a load balancer or reverse proxy?"
+      ],
+      "interviewTips": [
+        "Know at least two algorithms: fixed window and sliding window",
+        "Mention Redis for distributed rate limiting across multiple servers",
+        "Discuss per-route limits: strict for auth, moderate for API, lenient for static"
+      ]
+    }
+  },
+  {
+    "id": "node-websocket-realtime",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 24,
+    "title": "WebSocket & Real-Time",
+    "difficulty": "Advanced",
+    "type": "Coding",
+    "concepts": ["WebSocket", "Socket.IO", "Real-Time", "Events", "Rooms"],
+    "content": {
+      "question": "How do you implement real-time communication in Node.js? Explain WebSockets and Socket.IO.",
+      "answer": "WebSockets provide full-duplex, persistent connections between client and server, enabling real-time bidirectional communication. Unlike HTTP (request-response), WebSocket connections stay open, allowing the server to push data to clients instantly.\n\nSocket.IO is the most popular WebSocket library for Node.js. It builds on top of WebSockets with fallback to long-polling, automatic reconnection, rooms/namespaces for grouping connections, and built-in event handling.\n\nCommon real-time use cases include: chat applications, live notifications, collaborative editing, real-time dashboards, gaming, and live location tracking. WebSockets are ideal when you need instant updates without the overhead of repeated HTTP polling.\n\nSocket.IO rooms group connected clients so you can broadcast messages to specific subsets (e.g., all users in a chat room, all admins). Namespaces provide separate communication channels within a single connection (e.g., /chat and /notifications).",
+      "codeExamples": [
+        {
+          "title": "Socket.IO Server Setup",
+          "code": "const express = require('express');\nconst { createServer } = require('http');\nconst { Server } = require('socket.io');\n\nconst app = express();\nconst httpServer = createServer(app);\nconst io = new Server(httpServer, {\n  cors: {\n    origin: 'http://localhost:5173',\n    methods: ['GET', 'POST'],\n  },\n});\n\n// Connection event\nio.on('connection', (socket) => {\n  console.log('User connected:', socket.id);\n\n  // Listen for events from client\n  socket.on('chat:message', (data) => {\n    console.log('Message:', data);\n    // Broadcast to all clients except sender\n    socket.broadcast.emit('chat:message', {\n      user: data.user,\n      text: data.text,\n      timestamp: new Date(),\n    });\n  });\n\n  // Typing indicator\n  socket.on('chat:typing', (user) => {\n    socket.broadcast.emit('chat:typing', user);\n  });\n\n  socket.on('disconnect', (reason) => {\n    console.log('User disconnected:', socket.id, reason);\n  });\n});\n\nhttpServer.listen(3000, () => {\n  console.log('Server with WebSocket on port 3000');\n});",
+          "output": "Server with WebSocket on port 3000\nUser connected: abc123\nMessage: { user: 'Alice', text: 'Hello!' }",
+          "explanation": "Socket.IO wraps the HTTP server. Events are custom-named. broadcast.emit sends to all except the sender. disconnect fires on close."
+        },
+        {
+          "title": "Rooms and Namespaces",
+          "code": "const io = new Server(httpServer);\n\n// Rooms: group clients for targeted broadcasting\nio.on('connection', (socket) => {\n  // Join a room\n  socket.on('room:join', (roomId) => {\n    socket.join(roomId);\n    socket.to(roomId).emit('room:userJoined', {\n      userId: socket.userId,\n      roomId,\n    });\n  });\n\n  // Send message to specific room\n  socket.on('room:message', ({ roomId, text }) => {\n    io.to(roomId).emit('room:message', {\n      user: socket.userId,\n      text,\n      roomId,\n      timestamp: Date.now(),\n    });\n  });\n\n  // Leave room\n  socket.on('room:leave', (roomId) => {\n    socket.leave(roomId);\n  });\n});\n\n// Namespaces: separate communication channels\nconst chatNs = io.of('/chat');\nconst notifNs = io.of('/notifications');\n\nchatNs.on('connection', (socket) => {\n  console.log('Chat connected:', socket.id);\n});\n\nnotifNs.on('connection', (socket) => {\n  console.log('Notifications connected:', socket.id);\n  // Send notification to this user only\n  socket.emit('notification', { text: 'Welcome back!' });\n});",
+          "explanation": "Rooms let you broadcast to subsets of clients. Namespaces are separate connection scopes on the same underlying connection."
+        },
+        {
+          "title": "Authentication and Middleware",
+          "code": "const jwt = require('jsonwebtoken');\n\n// Socket.IO middleware for auth\nio.use((socket, next) => {\n  const token = socket.handshake.auth.token;\n  if (!token) {\n    return next(new Error('Authentication required'));\n  }\n\n  try {\n    const decoded = jwt.verify(token, process.env.JWT_SECRET);\n    socket.userId = decoded.id;\n    socket.userRole = decoded.role;\n    next();\n  } catch (err) {\n    next(new Error('Invalid token'));\n  }\n});\n\n// Now all connections are authenticated\nio.on('connection', (socket) => {\n  console.log('Authenticated user:', socket.userId);\n\n  // Join personal room for targeted notifications\n  socket.join(`user:${socket.userId}`);\n});\n\n// Send notification to specific user from anywhere\nfunction notifyUser(userId, event, data) {\n  io.to(`user:${userId}`).emit(event, data);\n}\n\n// Client-side connection\n// const socket = io('http://localhost:3000', {\n//   auth: { token: localStorage.getItem('accessToken') }\n// });",
+          "explanation": "Socket.IO middleware runs on connection. Attach user data to the socket object. Use personal rooms (user:ID) for targeted notifications."
+        }
+      ],
+      "notes": [
+        "Socket.IO is not a pure WebSocket - it adds protocol overhead but provides reliability features",
+        "For simple WebSocket needs, the 'ws' package is lighter than Socket.IO",
+        "In production with multiple servers, use the Redis adapter for Socket.IO to share state",
+        "Always authenticate WebSocket connections using middleware, not after connection"
+      ],
+      "followUps": [
+        "How do you scale WebSockets across multiple servers?",
+        "What is the difference between Server-Sent Events (SSE) and WebSockets?"
+      ],
+      "interviewTips": [
+        "Know when to use WebSockets vs HTTP polling vs SSE - each has its use case",
+        "Mention the Redis adapter for multi-server Socket.IO deployments",
+        "Show awareness of connection lifecycle: connect, authenticate, join rooms, disconnect"
+      ]
+    }
+  },
+  {
+    "id": "node-cluster-pm2",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 25,
+    "title": "Cluster Module & PM2",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Cluster", "PM2", "Load Balancing", "Multi-Core", "Process Management"],
+    "content": {
+      "question": "How do you utilize multiple CPU cores in Node.js? Explain the cluster module and PM2.",
+      "answer": "Node.js runs on a single thread by default, using only one CPU core. The cluster module allows you to fork multiple worker processes that share the same server port, utilizing all available CPU cores. The master process manages workers and distributes connections.\n\nPM2 is a production process manager that handles clustering, auto-restart on crash, log management, monitoring, and zero-downtime reloads. It is the standard way to run Node.js in production. PM2's cluster mode is simpler than using the cluster module directly.\n\nWith cluster mode, each worker is a separate Node.js process with its own memory space and event loop. They share the TCP port through the OS. The master process distributes incoming connections using round-robin (default on Linux) or OS-level load balancing.\n\nWorkers are independent: if one crashes, others continue serving requests. The master can restart crashed workers automatically. This provides fault tolerance and better resource utilization. However, workers do not share memory, so shared state (sessions, cache) must use Redis or similar external stores.",
+      "codeExamples": [
+        {
+          "title": "Node.js Cluster Module",
+          "code": "const cluster = require('cluster');\nconst os = require('os');\nconst express = require('express');\n\nconst numCPUs = os.cpus().length;\n\nif (cluster.isPrimary) {\n  console.log(`Primary ${process.pid} starting ${numCPUs} workers`);\n\n  // Fork workers\n  for (let i = 0; i < numCPUs; i++) {\n    cluster.fork();\n  }\n\n  // Restart crashed workers\n  cluster.on('exit', (worker, code, signal) => {\n    console.log(`Worker ${worker.process.pid} died (${signal || code})`);\n    console.log('Starting replacement worker...');\n    cluster.fork();\n  });\n\n  // Track workers\n  cluster.on('online', (worker) => {\n    console.log(`Worker ${worker.process.pid} is online`);\n  });\n\n} else {\n  // Workers share the same port\n  const app = express();\n\n  app.get('/', (req, res) => {\n    res.json({\n      pid: process.pid,\n      uptime: process.uptime(),\n    });\n  });\n\n  app.listen(3000, () => {\n    console.log(`Worker ${process.pid} listening on port 3000`);\n  });\n}",
+          "output": "Primary 1234 starting 8 workers\nWorker 1235 is online\nWorker 1236 is online\n...\nWorker 1235 listening on port 3000\nWorker 1236 listening on port 3000",
+          "explanation": "The primary process forks workers equal to CPU count. Each worker runs the Express app. If a worker crashes, the primary forks a replacement."
+        },
+        {
+          "title": "PM2 Configuration and Commands",
+          "code": "// ecosystem.config.js\nmodule.exports = {\n  apps: [{\n    name: 'my-api',\n    script: './dist/index.js',\n    instances: 'max',        // Use all CPU cores\n    exec_mode: 'cluster',    // Enable cluster mode\n    max_memory_restart: '500M',\n    env: {\n      NODE_ENV: 'development',\n      PORT: 3000,\n    },\n    env_production: {\n      NODE_ENV: 'production',\n      PORT: 3000,\n    },\n    // Log configuration\n    error_file: './logs/error.log',\n    out_file: './logs/output.log',\n    merge_logs: true,\n    log_date_format: 'YYYY-MM-DD HH:mm:ss',\n    // Auto-restart\n    watch: false,\n    max_restarts: 10,\n    restart_delay: 4000,\n  }],\n};\n\n// PM2 Commands:\n// pm2 start ecosystem.config.js --env production\n// pm2 reload my-api          # Zero-downtime restart\n// pm2 scale my-api +2        # Add 2 more workers\n// pm2 monit                  # Real-time monitoring\n// pm2 logs my-api            # View logs\n// pm2 save                   # Save process list\n// pm2 startup                # Auto-start on boot",
+          "explanation": "PM2's ecosystem file configures clustering, memory limits, logs, and environment variables. 'reload' provides zero-downtime restarts by restarting workers one at a time."
+        },
+        {
+          "title": "Sticky Sessions and Shared State",
+          "code": "// Problem: workers don't share memory\n// In-memory sessions/cache won't work with clustering\n\n// BAD: in-memory session (each worker has different sessions)\nconst sessions = new Map(); // Only exists in THIS worker's memory\n\n// GOOD: Redis for shared state across workers\nconst session = require('express-session');\nconst RedisStore = require('connect-redis').default;\nconst Redis = require('ioredis');\n\nconst redis = new Redis(process.env.REDIS_URL);\n\napp.use(session({\n  store: new RedisStore({ client: redis }),\n  secret: process.env.SESSION_SECRET,\n  resave: false,\n  saveUninitialized: false,\n  cookie: { secure: true, httpOnly: true, maxAge: 86400000 },\n}));\n\n// For Socket.IO with clustering\nconst { createAdapter } = require('@socket.io/redis-adapter');\nconst pubClient = new Redis(process.env.REDIS_URL);\nconst subClient = pubClient.duplicate();\n\nio.adapter(createAdapter(pubClient, subClient));\n// Now Socket.IO events are shared across all workers",
+          "explanation": "Workers are separate processes with separate memory. Use Redis for sessions, cache, and Socket.IO state to share across workers."
+        }
+      ],
+      "notes": [
+        "Cluster workers share the server port but NOT memory - use Redis for shared state",
+        "PM2 cluster mode is easier than the raw cluster module for production use",
+        "pm2 reload does zero-downtime restarts; pm2 restart causes brief downtime",
+        "Set instances to 'max' for CPU-bound apps, fewer for I/O-bound with high memory per process"
+      ],
+      "followUps": [
+        "What is the difference between cluster module and worker threads?",
+        "How does zero-downtime deployment work with PM2?"
+      ],
+      "interviewTips": [
+        "Know that cluster is for multi-process (separate memory), workers for multi-thread (shared memory)",
+        "Mention PM2 as the production standard and know key commands",
+        "Discuss the shared state problem and Redis as the solution"
+      ]
+    }
+  },
+  {
+    "id": "node-child-process-workers",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 26,
+    "title": "Child Processes & Worker Threads",
+    "difficulty": "Advanced",
+    "type": "Coding",
+    "concepts": ["child_process", "Worker Threads", "exec", "spawn", "fork"],
+    "content": {
+      "question": "When would you use child processes vs worker threads in Node.js? Explain the differences and use cases.",
+      "answer": "Child processes and worker threads are both used to handle CPU-intensive work without blocking the event loop, but they work fundamentally differently.\n\nChild processes (child_process module) spawn entirely new OS processes with their own memory space, V8 instance, and event loop. Communication happens via IPC (Inter-Process Communication) or stdin/stdout. They can run any executable, not just JavaScript.\n\nWorker threads (worker_threads module) create new threads within the same process. They share memory (via SharedArrayBuffer and Atomics) and are lighter than child processes. However, they can only run JavaScript/WASM.\n\nUse child processes when: running external commands (ffmpeg, ImageMagick), isolating untrusted code, or needing full process isolation. Use worker threads when: performing CPU-intensive JavaScript computation (crypto, parsing, compression) and you need shared memory or lower overhead.",
+      "codeExamples": [
+        {
+          "title": "Child Process Methods",
+          "code": "const { exec, execFile, spawn, fork } = require('child_process');\n\n// exec: run shell command, buffer output (small output)\nexec('ls -la /tmp', (error, stdout, stderr) => {\n  if (error) console.error('Error:', error.message);\n  console.log('Output:', stdout);\n});\n\n// execFile: run executable directly (no shell, safer)\nexecFile('node', ['--version'], (error, stdout) => {\n  console.log('Node:', stdout.trim());\n});\n\n// spawn: stream output (large output, long-running)\nconst child = spawn('ffmpeg', [\n  '-i', 'input.mp4',\n  '-codec:v', 'libx264',\n  'output.mp4',\n]);\n\nchild.stdout.on('data', (data) => console.log('stdout:', data.toString()));\nchild.stderr.on('data', (data) => console.log('progress:', data.toString()));\nchild.on('close', (code) => console.log('Exit code:', code));\n\n// fork: spawn Node.js process with IPC channel\nconst worker = fork('./heavy-computation.js');\nworker.send({ numbers: [1, 2, 3, 4, 5] });\nworker.on('message', (result) => {\n  console.log('Result:', result);\n});\n\n// heavy-computation.js\n// process.on('message', (data) => {\n//   const result = heavyWork(data.numbers);\n//   process.send(result);\n// });",
+          "output": "Node: v20.11.0\nResult: { sum: 15, avg: 3 }",
+          "explanation": "exec buffers output (good for small results). spawn streams output (good for large data). fork creates Node.js child with built-in IPC."
+        },
+        {
+          "title": "Worker Threads for CPU Work",
+          "code": "// main.js\nconst { Worker, isMainThread, parentPort, workerData } = require('worker_threads');\n\nif (isMainThread) {\n  // Main thread - create workers\n  function runInWorker(task) {\n    return new Promise((resolve, reject) => {\n      const worker = new Worker(__filename, { workerData: task });\n      worker.on('message', resolve);\n      worker.on('error', reject);\n      worker.on('exit', (code) => {\n        if (code !== 0) reject(new Error(`Worker exited with code ${code}`));\n      });\n    });\n  }\n\n  // Parallel computation\n  async function main() {\n    const results = await Promise.all([\n      runInWorker({ type: 'hash', data: 'password1' }),\n      runInWorker({ type: 'hash', data: 'password2' }),\n      runInWorker({ type: 'hash', data: 'password3' }),\n    ]);\n    console.log('All hashes:', results);\n  }\n  main();\n\n} else {\n  // Worker thread\n  const crypto = require('crypto');\n  const { type, data } = workerData;\n\n  if (type === 'hash') {\n    const hash = crypto.pbkdf2Sync(data, 'salt', 100000, 64, 'sha512');\n    parentPort.postMessage(hash.toString('hex'));\n  }\n}",
+          "output": "All hashes: ['a1b2c3...', 'd4e5f6...', 'g7h8i9...']",
+          "explanation": "Worker threads run in parallel. Using __filename lets the same file act as both main thread and worker. Promise.all runs all workers concurrently."
+        },
+        {
+          "title": "Worker Thread Pool Pattern",
+          "code": "const { Worker } = require('worker_threads');\nconst os = require('os');\n\nclass WorkerPool {\n  constructor(workerScript, poolSize = os.cpus().length) {\n    this.workers = [];\n    this.queue = [];\n\n    for (let i = 0; i < poolSize; i++) {\n      this.workers.push({ busy: false, worker: this.createWorker(workerScript) });\n    }\n  }\n\n  createWorker(script) {\n    const worker = new Worker(script);\n    worker.on('message', (result) => {\n      const entry = this.workers.find(w => w.worker === worker);\n      entry.busy = false;\n      entry.resolve(result);\n      this.processQueue();\n    });\n    return worker;\n  }\n\n  execute(data) {\n    return new Promise((resolve, reject) => {\n      const freeWorker = this.workers.find(w => !w.busy);\n      if (freeWorker) {\n        freeWorker.busy = true;\n        freeWorker.resolve = resolve;\n        freeWorker.worker.postMessage(data);\n      } else {\n        this.queue.push({ data, resolve, reject });\n      }\n    });\n  }\n\n  processQueue() {\n    if (this.queue.length === 0) return;\n    const freeWorker = this.workers.find(w => !w.busy);\n    if (!freeWorker) return;\n    const { data, resolve } = this.queue.shift();\n    freeWorker.busy = true;\n    freeWorker.resolve = resolve;\n    freeWorker.worker.postMessage(data);\n  }\n}\n\n// Usage\nconst pool = new WorkerPool('./compute-worker.js', 4);\nconst result = await pool.execute({ input: 'data' });",
+          "explanation": "A worker pool reuses threads instead of creating new ones for each task. This avoids the overhead of thread creation and limits concurrency."
+        }
+      ],
+      "notes": [
+        "Child processes: separate memory, can run any executable, higher overhead",
+        "Worker threads: shared memory possible, JavaScript only, lower overhead",
+        "Use worker pools to reuse threads and avoid creation overhead",
+        "exec is vulnerable to shell injection - prefer execFile or spawn for user input"
+      ],
+      "followUps": [
+        "How do you share data between worker threads using SharedArrayBuffer?",
+        "What are the security implications of exec vs execFile?"
+      ],
+      "interviewTips": [
+        "Clearly distinguish child processes (separate process) from worker threads (same process, separate thread)",
+        "Know the four child_process methods: exec, execFile, spawn, fork",
+        "Mention the worker pool pattern as a production optimization"
+      ]
+    }
+  },
+  {
+    "id": "node-graceful-shutdown",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 27,
+    "title": "Graceful Shutdown",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["SIGTERM", "SIGINT", "Connection Draining", "Health Checks", "Cleanup"],
+    "content": {
+      "question": "How do you implement graceful shutdown in a Node.js application? Why is it important for production?",
+      "answer": "Graceful shutdown ensures that when a Node.js process receives a termination signal, it finishes processing current requests, closes database connections, flushes logs, and exits cleanly instead of abruptly killing everything mid-request.\n\nWithout graceful shutdown, terminating a server can corrupt data (mid-write database operations), lose responses (clients get connection reset errors), leak resources (open file handles, DB connections), and leave distributed transactions in an inconsistent state.\n\nThe process listens for SIGTERM (from Docker/Kubernetes stop) and SIGINT (from Ctrl+C). On signal, it stops accepting new connections via server.close(), waits for in-flight requests to complete, closes database pools and Redis connections, and finally exits.\n\nIn container environments (Docker, Kubernetes), graceful shutdown is critical. Kubernetes sends SIGTERM and waits a configurable period (default 30s) before forcefully killing the pod. Your app must clean up within this window. Health check endpoints should return unhealthy immediately on shutdown to stop receiving new traffic.",
+      "codeExamples": [
+        {
+          "title": "Complete Graceful Shutdown Implementation",
+          "code": "const express = require('express');\nconst { PrismaClient } = require('@prisma/client');\n\nconst app = express();\nconst prisma = new PrismaClient();\nlet isShuttingDown = false;\n\n// Health check endpoint\napp.get('/health', (req, res) => {\n  if (isShuttingDown) {\n    return res.status(503).json({ status: 'shutting down' });\n  }\n  res.json({ status: 'ok', uptime: process.uptime() });\n});\n\n// Reject new requests during shutdown\napp.use((req, res, next) => {\n  if (isShuttingDown) {\n    res.set('Connection', 'close');\n    return res.status(503).json({ error: 'Server is shutting down' });\n  }\n  next();\n});\n\nconst server = app.listen(3000, () => {\n  console.log('Server started on port 3000');\n});\n\nasync function gracefulShutdown(signal) {\n  console.log(`${signal} received. Starting graceful shutdown...`);\n  isShuttingDown = true;\n\n  // 1. Stop accepting new connections\n  server.close(async () => {\n    console.log('HTTP server closed');\n\n    // 2. Close database connections\n    await prisma.$disconnect();\n    console.log('Database disconnected');\n\n    // 3. Close Redis, message queues, etc.\n    // await redis.quit();\n\n    console.log('Graceful shutdown complete');\n    process.exit(0);\n  });\n\n  // Force shutdown after timeout\n  setTimeout(() => {\n    console.error('Forced shutdown after timeout');\n    process.exit(1);\n  }, 30000); // 30 second timeout\n}\n\nprocess.on('SIGTERM', () => gracefulShutdown('SIGTERM'));\nprocess.on('SIGINT', () => gracefulShutdown('SIGINT'));",
+          "output": "Server started on port 3000\n... (running) ...\nSIGTERM received. Starting graceful shutdown...\nHTTP server closed\nDatabase disconnected\nGraceful shutdown complete",
+          "explanation": "server.close() stops new connections but lets existing ones finish. The forced timeout is a safety net if cleanup takes too long."
+        },
+        {
+          "title": "Docker and Kubernetes Considerations",
+          "code": "// Dockerfile - handle signals properly\n// CMD [\"node\", \"dist/index.js\"]  // GOOD: node gets signals directly\n// CMD node dist/index.js          // BAD: runs in shell, signals don't reach node\n\n// Kubernetes deployment readiness probe\n// spec:\n//   containers:\n//     readinessProbe:\n//       httpGet:\n//         path: /health\n//         port: 3000\n//       periodSeconds: 5\n//     lifecycle:\n//       preStop:\n//         exec:\n//           command: [\"sh\", \"-c\", \"sleep 5\"]  # Allow LB to drain\n\n// Kubernetes terminationGracePeriodSeconds: 60\n\n// Node.js: handle container-specific patterns\nconst server = app.listen(3000);\n\n// Keep-alive connections need to be tracked\nconst connections = new Set();\nserver.on('connection', (conn) => {\n  connections.add(conn);\n  conn.on('close', () => connections.delete(conn));\n});\n\nasync function gracefulShutdown() {\n  isShuttingDown = true;\n\n  // Set a short keep-alive timeout to close idle connections\n  server.keepAliveTimeout = 1;\n  server.headersTimeout = 1;\n\n  server.close(async () => {\n    await prisma.$disconnect();\n    process.exit(0);\n  });\n\n  // Destroy idle connections immediately\n  for (const conn of connections) {\n    conn.end(); // Graceful close\n  }\n\n  setTimeout(() => {\n    for (const conn of connections) {\n      conn.destroy(); // Force close\n    }\n    process.exit(1);\n  }, 30000);\n}",
+          "explanation": "In Docker, use exec form CMD so Node receives signals. Track active connections to close idle ones. Kubernetes needs sleep in preStop to let the load balancer drain."
+        },
+        {
+          "title": "Cleanup with Async Resources",
+          "code": "class Application {\n  constructor() {\n    this.resources = [];\n  }\n\n  // Register cleanup functions\n  registerCleanup(name, fn) {\n    this.resources.push({ name, cleanup: fn });\n  }\n\n  async shutdown(signal) {\n    console.log(`[${signal}] Shutting down...`);\n\n    // Run all cleanup functions in parallel with timeout\n    const cleanupPromises = this.resources.map(async ({ name, cleanup }) => {\n      try {\n        await Promise.race([\n          cleanup(),\n          new Promise((_, reject) =>\n            setTimeout(() => reject(new Error('timeout')), 10000)\n          ),\n        ]);\n        console.log(`[cleanup] ${name}: done`);\n      } catch (err) {\n        console.error(`[cleanup] ${name}: failed - ${err.message}`);\n      }\n    });\n\n    await Promise.allSettled(cleanupPromises);\n    console.log('All cleanup complete');\n    process.exit(0);\n  }\n}\n\n// Usage\nconst app = new Application();\napp.registerCleanup('http-server', () => new Promise(r => server.close(r)));\napp.registerCleanup('database', () => prisma.$disconnect());\napp.registerCleanup('redis', () => redis.quit());\napp.registerCleanup('flush-logs', () => logger.flush());\n\nprocess.on('SIGTERM', () => app.shutdown('SIGTERM'));\nprocess.on('SIGINT', () => app.shutdown('SIGINT'));",
+          "output": "[SIGTERM] Shutting down...\n[cleanup] http-server: done\n[cleanup] database: done\n[cleanup] redis: done\n[cleanup] flush-logs: done\nAll cleanup complete",
+          "explanation": "A cleanup registry pattern makes it easy to add/remove cleanup tasks. Each task runs with a timeout to prevent hanging. Promise.allSettled ensures all tasks run even if some fail."
+        }
+      ],
+      "notes": [
+        "SIGTERM is sent by Docker/Kubernetes; SIGINT is sent by Ctrl+C",
+        "server.close() stops accepting NEW connections but lets existing ones finish",
+        "Always set a forced shutdown timeout as a safety net",
+        "In Docker, use exec form CMD ['node', 'app.js'] so the process receives signals"
+      ],
+      "followUps": [
+        "How does Kubernetes handle pod termination and what is the grace period?",
+        "What happens to WebSocket connections during graceful shutdown?"
+      ],
+      "interviewTips": [
+        "Explain the full shutdown sequence: signal -> stop accepting -> drain -> cleanup -> exit",
+        "Mention the Docker exec form CMD issue - it is a common production gotcha",
+        "Show awareness of why this matters: data integrity, user experience, resource cleanup"
+      ]
+    }
+  },
+  {
+    "id": "node-microservices",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 28,
+    "title": "Microservices Communication",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["REST", "gRPC", "Message Queue", "Event-Driven", "Service Discovery"],
+    "content": {
+      "question": "How do microservices communicate in a Node.js architecture? Compare synchronous and asynchronous patterns.",
+      "answer": "Microservices communicate through two main patterns: synchronous (request-response) and asynchronous (event-driven/messaging). Each has different tradeoffs for latency, coupling, reliability, and complexity.\n\nSynchronous communication uses HTTP/REST or gRPC. The caller waits for a response. This is simple to implement and reason about, but creates tight coupling and cascading failures. If Service B is down, Service A's request fails immediately.\n\nAsynchronous communication uses message queues (RabbitMQ, AWS SQS) or event streaming (Kafka, Redis Pub/Sub). The sender publishes a message and moves on without waiting. This provides loose coupling, better fault tolerance, and natural load leveling, but adds complexity in debugging and ensuring eventual consistency.\n\nIn practice, most architectures use both patterns. Synchronous for queries that need immediate responses (GET user profile). Asynchronous for operations that can be processed later (send email, update search index, generate reports).",
+      "codeExamples": [
+        {
+          "title": "HTTP Communication Between Services",
+          "code": "// Order Service calls User Service via HTTP\nasync function getUserForOrder(userId) {\n  try {\n    const response = await fetch(\n      `http://user-service:3001/api/users/${userId}`,\n      {\n        headers: { 'X-Service': 'order-service' },\n        signal: AbortSignal.timeout(5000), // 5s timeout\n      }\n    );\n\n    if (!response.ok) {\n      throw new Error(`User service returned ${response.status}`);\n    }\n\n    return await response.json();\n  } catch (err) {\n    if (err.name === 'TimeoutError') {\n      console.error('User service timeout');\n    }\n    throw err;\n  }\n}\n\n// Circuit breaker pattern\nclass CircuitBreaker {\n  constructor(fn, { threshold = 5, timeout = 30000 } = {}) {\n    this.fn = fn;\n    this.failures = 0;\n    this.threshold = threshold;\n    this.timeout = timeout;\n    this.state = 'CLOSED'; // CLOSED, OPEN, HALF_OPEN\n    this.nextRetry = 0;\n  }\n\n  async call(...args) {\n    if (this.state === 'OPEN') {\n      if (Date.now() < this.nextRetry) {\n        throw new Error('Circuit breaker is OPEN');\n      }\n      this.state = 'HALF_OPEN';\n    }\n\n    try {\n      const result = await this.fn(...args);\n      this.failures = 0;\n      this.state = 'CLOSED';\n      return result;\n    } catch (err) {\n      this.failures++;\n      if (this.failures >= this.threshold) {\n        this.state = 'OPEN';\n        this.nextRetry = Date.now() + this.timeout;\n      }\n      throw err;\n    }\n  }\n}\n\nconst userService = new CircuitBreaker(getUserForOrder);",
+          "explanation": "HTTP between services is simple but creates coupling. Circuit breakers prevent cascading failures by stopping calls to failing services."
+        },
+        {
+          "title": "Message Queue with RabbitMQ",
+          "code": "const amqp = require('amqplib');\n\n// Publisher (Order Service)\nasync function publishOrderCreated(order) {\n  const connection = await amqp.connect(process.env.RABBITMQ_URL);\n  const channel = await connection.createChannel();\n  const exchange = 'orders';\n\n  await channel.assertExchange(exchange, 'topic', { durable: true });\n  channel.publish(\n    exchange,\n    'order.created',\n    Buffer.from(JSON.stringify(order)),\n    { persistent: true } // Survive broker restart\n  );\n\n  console.log('Published order.created event');\n}\n\n// Consumer (Email Service)\nasync function startEmailConsumer() {\n  const connection = await amqp.connect(process.env.RABBITMQ_URL);\n  const channel = await connection.createChannel();\n  const exchange = 'orders';\n  const queue = 'email-notifications';\n\n  await channel.assertExchange(exchange, 'topic', { durable: true });\n  await channel.assertQueue(queue, { durable: true });\n  await channel.bindQueue(queue, exchange, 'order.*');\n\n  // Prefetch: process one message at a time\n  channel.prefetch(1);\n\n  channel.consume(queue, async (msg) => {\n    try {\n      const order = JSON.parse(msg.content.toString());\n      await sendOrderConfirmationEmail(order);\n      channel.ack(msg); // Acknowledge success\n    } catch (err) {\n      console.error('Failed to process:', err);\n      channel.nack(msg, false, true); // Requeue\n    }\n  });\n}\nstartEmailConsumer();",
+          "explanation": "RabbitMQ decouples services. The order service publishes events. The email service consumes them independently. Messages persist if the consumer is down."
+        },
+        {
+          "title": "Redis Pub/Sub for Real-Time Events",
+          "code": "const Redis = require('ioredis');\n\n// Publisher\nconst publisher = new Redis(process.env.REDIS_URL);\n\nasync function emitEvent(channel, data) {\n  await publisher.publish(channel, JSON.stringify({\n    ...data,\n    timestamp: Date.now(),\n    source: 'order-service',\n  }));\n}\n\n// Emit from order service\nawait emitEvent('order:created', { orderId: 123, userId: 456 });\nawait emitEvent('order:shipped', { orderId: 123, trackingId: 'TRK001' });\n\n// Subscriber (Notification Service)\nconst subscriber = new Redis(process.env.REDIS_URL);\n\nsubscriber.subscribe('order:created', 'order:shipped', (err, count) => {\n  console.log(`Subscribed to ${count} channels`);\n});\n\nsubscriber.on('message', (channel, message) => {\n  const data = JSON.parse(message);\n  console.log(`[${channel}]`, data);\n\n  switch (channel) {\n    case 'order:created':\n      sendPushNotification(data.userId, 'Order confirmed!');\n      break;\n    case 'order:shipped':\n      sendPushNotification(data.userId, `Shipped: ${data.trackingId}`);\n      break;\n  }\n});\n\n// Pattern subscription\nsubscriber.psubscribe('order:*'); // Match all order events",
+          "explanation": "Redis Pub/Sub is fire-and-forget (no persistence). Good for real-time notifications. For reliability, use RabbitMQ or Kafka instead."
+        }
+      ],
+      "notes": [
+        "Synchronous (HTTP/gRPC): simple, immediate response, but tight coupling",
+        "Asynchronous (queues): decoupled, reliable, but eventual consistency complexity",
+        "Circuit breakers prevent one failing service from taking down the entire system",
+        "Redis Pub/Sub is fast but messages are lost if no subscriber is listening"
+      ],
+      "followUps": [
+        "What is the saga pattern and how does it handle distributed transactions?",
+        "When would you choose gRPC over REST for service-to-service communication?"
+      ],
+      "interviewTips": [
+        "Know when to use sync vs async: queries = sync, commands/events = async",
+        "Mention circuit breakers and retries for resilient synchronous communication",
+        "Discuss tradeoffs: message queues add complexity but improve reliability"
+      ]
+    }
+  },
+  {
+    "id": "node-performance-profiling",
+    "sectionId": "nodejs-interview",
+    "orderIndex": 29,
+    "title": "Performance Profiling",
+    "difficulty": "Advanced",
+    "type": "Experience",
+    "concepts": ["Profiling", "Memory Leaks", "CPU Profiling", "Heap Snapshot", "Benchmarking"],
+    "content": {
+      "question": "How do you identify and fix performance bottlenecks in a Node.js application? Describe your profiling workflow.",
+      "answer": "Performance profiling in Node.js involves identifying CPU bottlenecks, memory leaks, slow database queries, and event loop blocking. The process starts with monitoring production metrics, reproducing the issue, profiling to find the root cause, and verifying the fix.\n\nNode.js provides built-in tools: --inspect flag for Chrome DevTools debugging, --prof for V8 profiler output, and process.memoryUsage() for memory tracking. Third-party tools like clinic.js provide flame graphs, event loop analysis, and heap profiling.\n\nMemory leaks are the most common production issue. They occur when objects accumulate in memory and are never garbage collected. Common causes: growing arrays/maps, unclosed event listeners, closures holding references, and global caches without eviction. Heap snapshots taken at intervals can reveal growing object counts.\n\nFor CPU profiling, flame graphs show which functions consume the most time. Look for wide bars (slow functions) and tall stacks (deep call chains). Event loop delay monitoring reveals if synchronous work is blocking the loop. A delay above 100ms typically indicates a problem.",
+      "codeExamples": [
+        {
+          "title": "Memory Leak Detection",
+          "code": "// Monitor memory usage\nfunction logMemory() {\n  const usage = process.memoryUsage();\n  console.log({\n    rss: `${(usage.rss / 1024 / 1024).toFixed(1)}MB`,\n    heapUsed: `${(usage.heapUsed / 1024 / 1024).toFixed(1)}MB`,\n    heapTotal: `${(usage.heapTotal / 1024 / 1024).toFixed(1)}MB`,\n    external: `${(usage.external / 1024 / 1024).toFixed(1)}MB`,\n  });\n}\nsetInterval(logMemory, 10000);\n\n// Common memory leak: growing array\nconst cache = []; // LEAK: grows forever!\napp.get('/api/data', (req, res) => {\n  const data = fetchData();\n  cache.push(data); // Never cleaned up\n  res.json(data);\n});\n\n// Fix: use LRU cache with max size\nconst LRU = require('lru-cache');\nconst cache = new LRU({ max: 1000, ttl: 1000 * 60 * 5 }); // 1000 items, 5min TTL\n\n// Common leak: event listeners\nconst EventEmitter = require('events');\nconst emitter = new EventEmitter();\n\napp.get('/api/stream', (req, res) => {\n  // LEAK: new listener added every request, never removed\n  emitter.on('data', (d) => res.write(d));\n  // FIX: remove listener when request ends\n  const handler = (d) => res.write(d);\n  emitter.on('data', handler);\n  req.on('close', () => emitter.removeListener('data', handler));\n});",
+          "output": "{ rss: '45.2MB', heapUsed: '22.8MB', heapTotal: '30.1MB', external: '1.2MB' }\n{ rss: '47.5MB', heapUsed: '25.1MB', heapTotal: '32.0MB', external: '1.2MB' }",
+          "explanation": "Growing heapUsed over time indicates a memory leak. LRU caches auto-evict old entries. Always remove event listeners when they are no longer needed."
+        },
+        {
+          "title": "CPU Profiling and Event Loop Monitoring",
+          "code": "// Event loop delay monitoring\nconst { monitorEventLoopDelay } = require('perf_hooks');\n\nconst histogram = monitorEventLoopDelay({ resolution: 20 });\nhistogram.enable();\n\nsetInterval(() => {\n  console.log({\n    min: `${(histogram.min / 1e6).toFixed(1)}ms`,\n    max: `${(histogram.max / 1e6).toFixed(1)}ms`,\n    mean: `${(histogram.mean / 1e6).toFixed(1)}ms`,\n    p99: `${(histogram.percentile(99) / 1e6).toFixed(1)}ms`,\n  });\n  histogram.reset();\n}, 5000);\n\n// CPU profiling with --inspect\n// node --inspect src/index.js\n// Open chrome://inspect in Chrome\n// -> Performance tab -> Record -> Run workload -> Stop\n\n// Programmatic CPU profiling\nconst v8Profiler = require('v8-profiler-next');\n\napp.get('/debug/profile', (req, res) => {\n  const title = `profile-${Date.now()}`;\n  v8Profiler.startProfiling(title, true);\n\n  setTimeout(() => {\n    const profile = v8Profiler.stopProfiling(title);\n    profile.export((error, result) => {\n      res.setHeader('Content-Type', 'application/json');\n      res.setHeader('Content-Disposition', `attachment; filename=${title}.cpuprofile`);\n      res.send(result);\n      profile.delete();\n    });\n  }, 10000); // Profile for 10 seconds\n});",
+          "output": "{ min: '0.1ms', max: '2.3ms', mean: '0.5ms', p99: '1.8ms' }",
+          "explanation": "Event loop delay shows if synchronous work is blocking. Values above 100ms indicate problems. CPU profiles can be loaded into Chrome DevTools for analysis."
+        },
+        {
+          "title": "Benchmarking and Load Testing",
+          "code": "// Simple benchmarking with console.time\nconsole.time('db-query');\nconst users = await prisma.user.findMany({ take: 1000 });\nconsole.timeEnd('db-query'); // db-query: 45.2ms\n\n// Performance hooks for detailed measurement\nconst { performance, PerformanceObserver } = require('perf_hooks');\n\n// Measure function execution time\nperformance.mark('start');\nawait heavyOperation();\nperformance.mark('end');\nperformance.measure('heavyOperation', 'start', 'end');\n\nconst observer = new PerformanceObserver((list) => {\n  for (const entry of list.getEntries()) {\n    console.log(`${entry.name}: ${entry.duration.toFixed(1)}ms`);\n  }\n});\nobserver.observe({ entryTypes: ['measure'] });\n\n// Express middleware to track response times\napp.use((req, res, next) => {\n  const start = performance.now();\n  res.on('finish', () => {\n    const duration = performance.now() - start;\n    if (duration > 1000) {\n      console.warn(`SLOW: ${req.method} ${req.path} took ${duration.toFixed(0)}ms`);\n    }\n  });\n  next();\n});\n\n// Load testing with autocannon (CLI)\n// npx autocannon -c 100 -d 30 http://localhost:3000/api/users\n// -c 100: 100 concurrent connections\n// -d 30: run for 30 seconds\n// Output: requests/sec, latency percentiles, throughput",
+          "output": "db-query: 45.2ms\nheavyOperation: 234.5ms\nSLOW: GET /api/reports took 2341ms",
+          "explanation": "Use console.time for quick checks, perf_hooks for detailed measurement, and autocannon for load testing. Track slow routes in production."
+        }
+      ],
+      "notes": [
+        "Monitor event loop delay in production - values above 100ms indicate blocking",
+        "Heap snapshots taken at intervals reveal memory leaks (compare object counts)",
+        "Use clinic.js for automated profiling: clinic doctor, clinic flame, clinic bubbleprof",
+        "Load test with realistic data and concurrent users to find bottlenecks"
+      ],
+      "followUps": [
+        "How do you take and compare heap snapshots to find memory leaks?",
+        "What tools do you use for APM (Application Performance Monitoring) in production?"
+      ],
+      "interviewTips": [
+        "Describe a real performance issue you found and fixed - concrete examples impress",
+        "Know the debugging workflow: monitor -> reproduce -> profile -> fix -> verify",
+        "Mention both Node.js built-in tools and third-party options (clinic.js, 0x, autocannon)"
+      ]
+    }
+  }
+]

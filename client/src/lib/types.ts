@@ -70,6 +70,7 @@ export interface User {
   subscriptionPlan?: "FREE" | "MONTHLY" | "YEARLY";
   subscriptionStatus?: "ACTIVE" | "EXPIRED";
   subscriptionEndDate?: string;
+  hasAppPassword?: boolean;
 }
 
 export interface CustomFieldDefinition {
@@ -974,5 +975,64 @@ export interface BlogPost {
   publishedAt?: string;
   createdAt: string;
   updatedAt: string;
+}
+
+// ── IT HR Contact ──
+export interface ITHRContact {
+  id: number;
+  name: string;
+  email: string | null;
+  company: string | null;
+  designation: string | null;
+  phone: string | null;
+  linkedinUrl: string | null;
+  source: string;
+  createdAt: string;
+}
+
+export interface HRContactStats {
+  total: number;
+  companies: { name: string; count: number }[];
+}
+
+// ── Email Campaign ──
+export type EmailCampaignStatus = "DRAFT" | "QUEUED" | "SENDING" | "PAUSED" | "COMPLETED" | "FAILED";
+export type EmailLogStatus = "PENDING" | "SENT" | "FAILED";
+
+export interface EmailCampaign {
+  id: number;
+  name: string;
+  contactType: string;
+  status: EmailCampaignStatus;
+  totalEmails: number;
+  sentCount: number;
+  failedCount: number;
+  intervalSeconds: number;
+  startedAt: string | null;
+  completedAt: string | null;
+  createdAt: string;
+}
+
+export interface EmailLog {
+  id: number;
+  recipientName: string;
+  recipientEmail: string;
+  subject: string;
+  status: EmailLogStatus;
+  sentAt: string | null;
+  errorMessage: string | null;
+}
+
+export interface EmailCampaignDetail extends EmailCampaign {
+  chatHistory: { role: "user" | "assistant"; content: string }[];
+  emailSubject: string | null;
+  emailTemplate: string | null;
+  filters: Record<string, string>;
+  emailLogs: EmailLog[];
+}
+
+export interface ChatMessage {
+  role: "user" | "assistant";
+  content: string;
 }
 
