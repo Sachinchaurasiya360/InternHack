@@ -1,3 +1,0 @@
--- This migration is a no-op because the resume->resumes change
--- was already applied in migration 20260222180400_s.
--- Kept as empty migration to preserve migration history.

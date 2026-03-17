@@ -137,5 +137,5 @@ cd client && npm run build
 | `/api/stats` | Public platform stats | Public |
 
 
-integrate the s3 bucket where student can upload their resume into the resume section
+
 

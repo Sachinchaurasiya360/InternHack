@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import {
   ArrowLeft, MapPin, GraduationCap, Linkedin, Github, Globe,
   ExternalLink, FileText, ShieldCheck, Trophy, FolderGit2, Briefcase, Calendar,
-  Phone, Mail, Clock,
+  Phone, Mail, Clock, User,
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { LoadingScreen } from "../../../components/LoadingScreen";
@@ -130,8 +130,10 @@ export default function PublicProfilePage() {
           <div className="flex items-end gap-5">
             <div className="w-28 h-28 rounded-2xl bg-white dark:bg-gray-800 border-4 border-white dark:border-gray-900 shadow-lg text-gray-900 dark:text-white flex items-center justify-center text-3xl font-bold overflow-hidden shrink-0">
               {profile.profilePic ? (
-                <img src={profile.profilePic} alt={profile.name} className="w-28 h-28 rounded-2xl object-cover" />
-              ) : (profile.name.charAt(0).toUpperCase())}
+                <img src={profile.profilePic} alt={profile.name} className="w-28 h-28 rounded-2xl object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+              ) : (
+                <User className="w-12 h-12 text-gray-400 dark:text-gray-500" />
+              )}
             </div>
             <div className="pb-1 min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">

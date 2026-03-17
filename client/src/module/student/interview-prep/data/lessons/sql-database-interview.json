@@ -1,0 +1,138 @@
+[
+  {
+    "id": "sql-joins-subqueries",
+    "sectionId": "sql-database-interview",
+    "orderIndex": 0,
+    "title": "Joins & Subqueries",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["INNER JOIN", "LEFT JOIN", "Self Join", "Subquery", "Correlated Subquery"],
+    "content": {
+      "question": "Explain different types of SQL joins. When would you use a subquery vs a join?",
+      "answer": "Joins combine rows from two or more tables based on a related column.\n\nTypes:\n- INNER JOIN: only matching rows from both tables\n- LEFT JOIN: all rows from left table + matching from right (NULL if no match)\n- RIGHT JOIN: all rows from right table + matching from left\n- FULL OUTER JOIN: all rows from both tables\n- CROSS JOIN: cartesian product (every combination)\n- SELF JOIN: table joined with itself\n\nSubquery vs Join:\n- Joins are generally faster and more readable for combining data\n- Subqueries are better for filtering based on aggregates or existence checks",
+      "codeExamples": [
+        {
+          "title": "Join Types Illustrated",
+          "code": "-- Setup:\n-- employees: id, name, department_id\n-- departments: id, name\n\n-- INNER JOIN: only employees WITH a department\nSELECT e.name, d.name AS dept\nFROM employees e\nINNER JOIN departments d ON e.department_id = d.id;\n\n-- LEFT JOIN: ALL employees, even without department\nSELECT e.name, COALESCE(d.name, 'Unassigned') AS dept\nFROM employees e\nLEFT JOIN departments d ON e.department_id = d.id;\n\n-- Find departments with NO employees\nSELECT d.name\nFROM departments d\nLEFT JOIN employees e ON d.id = e.department_id\nWHERE e.id IS NULL;\n\n-- Self join: find employees and their managers\nSELECT e.name AS employee, m.name AS manager\nFROM employees e\nLEFT JOIN employees m ON e.manager_id = m.id;",
+          "explanation": "LEFT JOIN is the most commonly used in real apps because you usually want all rows from the primary table even if related data is missing."
+        },
+        {
+          "title": "Subquery vs JOIN",
+          "code": "-- Find employees earning above average salary\n\n-- Approach 1: Subquery (cleaner for this case)\nSELECT name, salary\nFROM employees\nWHERE salary > (SELECT AVG(salary) FROM employees);\n\n-- Approach 2: JOIN with derived table\nSELECT e.name, e.salary\nFROM employees e\nCROSS JOIN (SELECT AVG(salary) AS avg_sal FROM employees) a\nWHERE e.salary > a.avg_sal;\n\n-- Correlated subquery: salary above dept average\nSELECT e.name, e.salary, e.department_id\nFROM employees e\nWHERE e.salary > (\n  SELECT AVG(e2.salary)\n  FROM employees e2\n  WHERE e2.department_id = e.department_id  -- references outer query\n);",
+          "explanation": "Simple subqueries run once. Correlated subqueries run once per row in the outer query - they can be slow on large tables."
+        },
+        {
+          "title": "EXISTS vs IN",
+          "code": "-- Find customers who have placed orders\n\n-- Using IN (loads all order customer_ids into memory)\nSELECT name FROM customers\nWHERE id IN (SELECT customer_id FROM orders);\n\n-- Using EXISTS (stops at first match - usually faster)\nSELECT name FROM customers c\nWHERE EXISTS (\n  SELECT 1 FROM orders o\n  WHERE o.customer_id = c.id\n);\n\n-- Rule of thumb:\n-- IN: better when subquery returns few rows\n-- EXISTS: better when outer table is small, subquery table is large\n-- EXISTS can short-circuit (stops checking after first match)",
+          "explanation": "EXISTS is generally more efficient for large datasets because it stops scanning as soon as it finds a match. IN must collect all values first."
+        }
+      ],
+      "notes": [
+        "Always visualize joins with a Venn diagram when explaining",
+        "LEFT JOIN + WHERE right.id IS NULL = find missing relationships",
+        "Self joins are common for hierarchical data (employees-managers, categories-subcategories)"
+      ],
+      "followUps": [
+        "What is the performance difference between JOIN and subquery?",
+        "How would you find the Nth highest salary?",
+        "What is a CROSS JOIN and when would you use it?"
+      ],
+      "interviewTips": [
+        "Draw the Venn diagrams - visual explanation is much clearer",
+        "Know the LEFT JOIN + IS NULL pattern for finding missing data",
+        "Practice writing self-joins - they come up frequently in interviews"
+      ]
+    }
+  },
+  {
+    "id": "sql-indexing-optimization",
+    "sectionId": "sql-database-interview",
+    "orderIndex": 1,
+    "title": "Indexing & Query Optimization",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["B-Tree Index", "Composite Index", "EXPLAIN", "Query Plan", "Covering Index"],
+    "content": {
+      "question": "How do database indexes work? When should you add or avoid indexes?",
+      "answer": "An index is a data structure (usually B-tree) that speeds up data retrieval at the cost of slower writes and extra storage.\n\nHow it works: Instead of scanning every row (full table scan), the database looks up the value in the index (like a book's index) and jumps directly to the matching rows.\n\nWhen to index:\n- Columns in WHERE clauses\n- Columns in JOIN conditions\n- Columns in ORDER BY\n- High-cardinality columns (many unique values)\n\nWhen NOT to index:\n- Small tables (full scan is fast enough)\n- Low-cardinality columns (boolean, gender)\n- Tables with heavy write operations\n- Columns rarely used in queries",
+      "codeExamples": [
+        {
+          "title": "Index Basics",
+          "code": "-- Without index: full table scan O(n)\nSELECT * FROM users WHERE email = 'alice@example.com';\n-- Scans all 1M rows\n\n-- Create index\nCREATE INDEX idx_users_email ON users(email);\n\n-- With index: B-tree lookup O(log n)\nSELECT * FROM users WHERE email = 'alice@example.com';\n-- Finds it in ~20 comparisons (log2 of 1M)\n\n-- Composite index (multi-column)\nCREATE INDEX idx_orders_user_date \n  ON orders(user_id, created_at DESC);\n\n-- This index helps with:\nSELECT * FROM orders WHERE user_id = 5;           -- YES\nSELECT * FROM orders WHERE user_id = 5 \n  ORDER BY created_at DESC;                         -- YES\nSELECT * FROM orders WHERE created_at > '2024-01'; -- NO (leftmost prefix rule)\n\n-- Unique index (also enforces uniqueness)\nCREATE UNIQUE INDEX idx_users_email_unique ON users(email);",
+          "explanation": "Composite indexes follow the leftmost prefix rule: the index on (user_id, created_at) can be used for queries on user_id alone, but NOT for created_at alone."
+        },
+        {
+          "title": "Reading EXPLAIN Output",
+          "code": "-- Check how a query will execute\nEXPLAIN ANALYZE\nSELECT u.name, COUNT(o.id) as order_count\nFROM users u\nLEFT JOIN orders o ON u.id = o.user_id\nWHERE u.created_at > '2024-01-01'\nGROUP BY u.id, u.name\nHAVING COUNT(o.id) > 5\nORDER BY order_count DESC;\n\n-- Key things to look for in EXPLAIN:\n-- 1. Seq Scan → full table scan (usually bad for large tables)\n-- 2. Index Scan → using an index (good)\n-- 3. Nested Loop → OK for small tables, bad for large\n-- 4. Hash Join → good for large table joins\n-- 5. Sort → check if an index could avoid this\n-- 6. Rows estimate → is it accurate?\n\n-- Fix: add indexes for the WHERE and JOIN columns\nCREATE INDEX idx_users_created ON users(created_at);\nCREATE INDEX idx_orders_user ON orders(user_id);",
+          "explanation": "EXPLAIN ANALYZE shows the actual execution plan and timing. Use it to identify full table scans, missing indexes, and expensive operations."
+        },
+        {
+          "title": "Common Optimization Patterns",
+          "code": "-- 1. AVOID: functions on indexed columns\n-- BAD: index on created_at can't be used\nSELECT * FROM orders WHERE YEAR(created_at) = 2024;\n-- GOOD: range query uses the index\nSELECT * FROM orders \nWHERE created_at >= '2024-01-01' AND created_at < '2025-01-01';\n\n-- 2. AVOID: wildcard at start of LIKE\n-- BAD: can't use index\nSELECT * FROM users WHERE name LIKE '%smith';\n-- GOOD: can use index\nSELECT * FROM users WHERE name LIKE 'smith%';\n\n-- 3. SELECT only needed columns (covering index)\nCREATE INDEX idx_cover ON orders(user_id, status, total);\n-- This query is answered entirely from the index:\nSELECT status, total FROM orders WHERE user_id = 5;\n-- No table lookup needed = \"index-only scan\"\n\n-- 4. Pagination: avoid OFFSET for large pages\n-- BAD: OFFSET 100000 scans and discards 100K rows\nSELECT * FROM products ORDER BY id LIMIT 20 OFFSET 100000;\n-- GOOD: cursor-based pagination\nSELECT * FROM products WHERE id > 100000 ORDER BY id LIMIT 20;",
+          "explanation": "These patterns can make orders-of-magnitude difference in query performance. The cursor-based pagination alone can turn a 5-second query into 5ms."
+        }
+      ],
+      "notes": [
+        "Each index adds overhead to INSERT/UPDATE/DELETE operations",
+        "PostgreSQL automatically creates an index for PRIMARY KEY and UNIQUE constraints",
+        "Covering indexes avoid the extra table lookup (index-only scan)",
+        "Monitor slow queries in production and add indexes based on real usage patterns"
+      ],
+      "followUps": [
+        "What is a B-tree and how does it enable O(log n) lookups?",
+        "When would you use a hash index vs B-tree index?",
+        "How do you decide which columns to include in a composite index?"
+      ],
+      "interviewTips": [
+        "Know the leftmost prefix rule for composite indexes",
+        "Show you can read and interpret EXPLAIN output",
+        "Mention trade-offs: faster reads vs slower writes and more storage"
+      ]
+    }
+  },
+  {
+    "id": "sql-transactions-acid",
+    "sectionId": "sql-database-interview",
+    "orderIndex": 2,
+    "title": "Transactions & ACID",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": ["ACID", "Transaction", "Isolation Levels", "Deadlock", "Optimistic Locking"],
+    "content": {
+      "question": "Explain ACID properties. What are isolation levels and when would you choose each?",
+      "answer": "ACID properties guarantee reliable database transactions:\n\nA - Atomicity: All operations in a transaction succeed or all fail (no partial updates)\nC - Consistency: Transaction brings DB from one valid state to another\nI - Isolation: Concurrent transactions don't interfere with each other\nD - Durability: Once committed, data survives crashes\n\nIsolation Levels (from least to most strict):\n1. Read Uncommitted: can see uncommitted changes (dirty reads)\n2. Read Committed: only sees committed data (default in PostgreSQL)\n3. Repeatable Read: same query returns same results within transaction\n4. Serializable: transactions execute as if serial (slowest, safest)",
+      "codeExamples": [
+        {
+          "title": "Transaction: Bank Transfer",
+          "code": "-- Without transaction: DANGEROUS\nUPDATE accounts SET balance = balance - 100 WHERE id = 1;\n-- What if the server crashes HERE?\nUPDATE accounts SET balance = balance + 100 WHERE id = 2;\n-- Account 1 lost $100, Account 2 didn't receive it!\n\n-- With transaction: SAFE (atomic)\nBEGIN;\n  UPDATE accounts SET balance = balance - 100 WHERE id = 1;\n  UPDATE accounts SET balance = balance + 100 WHERE id = 2;\n  \n  -- Check invariant: no negative balances\n  DO $$\n  BEGIN\n    IF (SELECT balance FROM accounts WHERE id = 1) < 0 THEN\n      RAISE EXCEPTION 'Insufficient funds';\n    END IF;\n  END $$;\nCOMMIT;\n-- Both updates succeed or both are rolled back",
+          "explanation": "Atomicity ensures the transfer is all-or-nothing. If anything fails between BEGIN and COMMIT, all changes are rolled back."
+        },
+        {
+          "title": "Isolation Level Problems",
+          "code": "-- Dirty Read (Read Uncommitted)\n-- Transaction A: UPDATE balance SET amount = 0 (not committed)\n-- Transaction B: SELECT amount → reads 0 (uncommitted!)\n-- Transaction A: ROLLBACK\n-- Transaction B used incorrect data\n\n-- Non-Repeatable Read (Read Committed)\n-- Transaction A: SELECT balance → 100\n-- Transaction B: UPDATE balance = 50; COMMIT;\n-- Transaction A: SELECT balance → 50 (different!)\n\n-- Phantom Read (Repeatable Read)\n-- Transaction A: SELECT COUNT(*) FROM orders WHERE status='pending' → 5\n-- Transaction B: INSERT INTO orders (status) VALUES ('pending'); COMMIT;\n-- Transaction A: SELECT COUNT(*) → 6 (new row appeared!)\n\n-- Fix: use appropriate isolation level\nSET TRANSACTION ISOLATION LEVEL SERIALIZABLE;\nBEGIN;\n  -- Now fully isolated from concurrent changes\n  SELECT COUNT(*) FROM orders WHERE status = 'pending';\nCOMMIT;",
+          "explanation": "Higher isolation levels prevent more anomalies but reduce concurrency. Most applications use Read Committed (the default) and handle conflicts at the application level."
+        },
+        {
+          "title": "Optimistic vs Pessimistic Locking",
+          "code": "-- Pessimistic Locking: lock the row\n-- Use when conflicts are likely\nBEGIN;\n  SELECT * FROM products WHERE id = 1 FOR UPDATE;\n  -- Row is locked until COMMIT/ROLLBACK\n  -- Other transactions wait\n  UPDATE products SET stock = stock - 1 WHERE id = 1;\nCOMMIT;\n\n-- Optimistic Locking: version check\n-- Use when conflicts are rare\n-- Add a 'version' column to the table\n\n-- Read with version\nSELECT id, name, stock, version FROM products WHERE id = 1;\n-- Returns: id=1, stock=10, version=3\n\n-- Update only if version hasn't changed\nUPDATE products \nSET stock = stock - 1, version = version + 1\nWHERE id = 1 AND version = 3;\n-- If another transaction changed it, this updates 0 rows\n-- Application checks affected rows and retries if needed",
+          "explanation": "Pessimistic locking blocks other transactions (safe but slow). Optimistic locking assumes no conflict and checks at update time (fast but needs retry logic)."
+        }
+      ],
+      "notes": [
+        "PostgreSQL default is Read Committed; MySQL InnoDB default is Repeatable Read",
+        "Serializable is the safest but can cause serialization failures (need retry logic)",
+        "SELECT FOR UPDATE is pessimistic locking at the row level"
+      ],
+      "followUps": [
+        "What is a deadlock and how do you prevent it?",
+        "How does MVCC (Multi-Version Concurrency Control) work?",
+        "When would you choose optimistic vs pessimistic locking?"
+      ],
+      "interviewTips": [
+        "Explain ACID with a real example (bank transfer is perfect)",
+        "Know the tradeoffs between isolation levels - don't just memorize definitions",
+        "Mention that most ORMs (Prisma, Sequelize) handle transactions for you"
+      ]
+    }
+  }
+]

@@ -3,11 +3,14 @@ import { OAuth2Client } from "google-auth-library";
 import { prisma } from "../../database/db.js";
 import { hashPassword, comparePassword } from "../../utils/password.utils.js";
 import { generateToken } from "../../utils/jwt.utils.js";
+import { invalidateVersionCache } from "../../middleware/auth.middleware.js";
 import { BadgeService } from "../badge/badge.service.js";
 
 const badgeService = new BadgeService();
+import { signUrls } from "../../utils/s3.utils.js";
 import { sendEmail } from "../../utils/email.utils.js";
 import { welcomeEmailHtml, otpEmailHtml, resetPasswordEmailHtml } from "../../utils/email-templates.js";
+import { encrypt as encryptAppPassword } from "../../utils/crypto.utils.js";
 import type { UserRole } from "@prisma/client";
 import { PERSONAL_EMAIL_DOMAINS } from "./auth.validation.js";
 
@@ -38,6 +41,7 @@ interface UpdateProfileInput {
   jobStatus?: string | null;
   projects?: { id: string; title: string; description: string; techStack: string[]; liveUrl?: string; repoUrl?: string }[];
   achievements?: { id: string; title: string; description: string; date?: string }[];
+  isProfilePublic?: boolean;
 }
 
 interface LoginInput {
@@ -107,7 +111,7 @@ export class AuthService {
       html: otpEmailHtml(user.name, otp),
     }).catch((err) => console.error("Failed to send OTP email:", err));
 
-    const token = generateToken({ id: user.id, email: user.email, role: user.role });
+    const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: 0 });
 
     return { user, token };
   }
@@ -173,7 +177,15 @@ export class AuthService {
       }).catch((err) => console.error("Failed to send welcome email:", err));
     }
 
-    const token = generateToken({ id: user.id, email: user.email, role: user.role });
+    // Increment tokenVersion to invalidate all previous sessions (single-device enforcement)
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { tokenVersion: { increment: 1 } },
+      select: { tokenVersion: true },
+    });
+    invalidateVersionCache(user.id);
+
+    const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: updatedUser.tokenVersion });
 
     return {
       user: {
@@ -230,7 +242,15 @@ export class AuthService {
       throw new Error("EMAIL_NOT_VERIFIED");
     }
 
-    const token = generateToken({ id: user.id, email: user.email, role: user.role });
+    // Increment tokenVersion to invalidate all previous sessions (single-device enforcement)
+    const updatedUser = await prisma.user.update({
+      where: { id: user.id },
+      data: { tokenVersion: { increment: 1 } },
+      select: { tokenVersion: true },
+    });
+    invalidateVersionCache(user.id);
+
+    const token = generateToken({ id: user.id, email: user.email, role: user.role, tokenVersion: updatedUser.tokenVersion });
 
     return {
       user: {
@@ -270,6 +290,7 @@ export class AuthService {
     linkedinUrl: true,
     githubUrl: true,
     portfolioUrl: true,
+    leetcodeUrl: true,
     jobStatus: true,
     isProfilePublic: true,
     projects: true,
@@ -278,7 +299,15 @@ export class AuthService {
     subscriptionPlan: true,
     subscriptionStatus: true,
     subscriptionEndDate: true,
+    appPassword: true,
   } as const;
+
+  private stripAppPassword(user: Record<string, unknown>) {
+    const hasAppPassword = !!user.appPassword;
+    delete user.appPassword;
+    user.hasAppPassword = hasAppPassword;
+    return user;
+  }
 
   async getProfile(userId: number) {
     const user = await prisma.user.findUnique({
@@ -290,7 +319,11 @@ export class AuthService {
       throw new Error("User not found");
     }
 
-    return user;
+    if (user.resumes.length > 0) {
+      (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
+    }
+
+    return this.stripAppPassword(user as Record<string, unknown>);
   }
 
   async updateProfile(userId: number, data: UpdateProfileInput) {
@@ -315,6 +348,13 @@ export class AuthService {
     if ("achievements" in data) {
       updateData.achievements = Array.isArray(data.achievements) ? data.achievements : [];
     }
+    if ("isProfilePublic" in data) {
+      updateData.isProfilePublic = !!data.isProfilePublic;
+    }
+    if ("appPassword" in data) {
+      const val = (data as Record<string, unknown>).appPassword as string | null | undefined;
+      updateData.appPassword = val?.trim() ? encryptAppPassword(val.trim()) : null;
+    }
 
     const user = await prisma.user.update({
       where: { id: userId },
@@ -325,7 +365,11 @@ export class AuthService {
     // Check profile_complete badge (fire-and-forget)
     badgeService.checkAndAwardBadges(userId, "profile_complete").catch(() => {});
 
-    return user;
+    if (user.resumes.length > 0) {
+      (user as Record<string, unknown>).resumes = await signUrls(user.resumes);
+    }
+
+    return this.stripAppPassword(user as Record<string, unknown>);
   }
 
   async getPublicProfile(userId: number) {
@@ -349,6 +393,9 @@ export class AuthService {
     }
 
     const { atsScores, ...rest } = user;
+    if (rest.resumes.length > 0) {
+      (rest as Record<string, unknown>).resumes = await signUrls(rest.resumes);
+    }
     return {
       ...rest,
       bestAtsScore: atsScores[0]?.overallScore ?? null,
@@ -407,7 +454,15 @@ export class AuthService {
       html: welcomeEmailHtml(user.name),
     }).catch((err) => console.error("Failed to send welcome email:", err));
 
-    const token = generateToken({ id: updated.id, email: updated.email, role: updated.role });
+    // Increment tokenVersion — first real login after email verification
+    const versionUpdate = await prisma.user.update({
+      where: { id: updated.id },
+      data: { tokenVersion: { increment: 1 } },
+      select: { tokenVersion: true },
+    });
+    invalidateVersionCache(updated.id);
+
+    const token = generateToken({ id: updated.id, email: updated.email, role: updated.role, tokenVersion: versionUpdate.tokenVersion });
 
     return { user: updated, token };
   }

@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef, useCallback } from "react";
+import { useState, useEffect, useRef, useCallback, useMemo } from "react";
+import { Link, useSearchParams } from "react-router";
 import { motion } from "framer-motion";
 import {
   Download,
@@ -19,6 +20,7 @@ import {
   ChevronDown,
   Undo2,
   Redo2,
+  LayoutGrid,
 } from "lucide-react";
 import CodeMirror from "@uiw/react-codemirror";
 import AtsToolsNav from "./AtsToolsNav";
@@ -28,6 +30,7 @@ import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { useLatexAutoSave } from "./useLatexAutoSave";
+import { getLatexTemplate } from "./latex-templates.data";
 
 // ── Default LaTeX Template ──
 
@@ -94,7 +97,26 @@ Experienced software engineer with 5+ years building scalable web applications. 
 // ── Component ──
 
 export default function LatexResumeEditor() {
-  const { code, setCode, supportingFiles, setSupportingFiles } = useLatexAutoSave(DEFAULT_TEMPLATE);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const templateId = searchParams.get("template");
+
+  const templateOverride = useMemo(() => {
+    if (!templateId) return null;
+    const tmpl = getLatexTemplate(templateId);
+    if (!tmpl) return null;
+    return { code: tmpl.source, files: tmpl.supportingFiles };
+  }, [templateId]);
+
+  const { code, setCode, supportingFiles, setSupportingFiles } = useLatexAutoSave(
+    DEFAULT_TEMPLATE,
+    templateOverride,
+  );
+
+  // Clear query param after mount so refresh loads from localStorage
+  useEffect(() => {
+    if (templateId) setSearchParams({}, { replace: true });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   const [copied, setCopied] = useState(false);
   const [mobileView, setMobileView] = useState<"editor" | "preview">("editor");
   const [chatOpen, setChatOpen] = useState(false);
@@ -166,6 +188,27 @@ export default function LatexResumeEditor() {
       if (prevBlobUrl.current) URL.revokeObjectURL(prevBlobUrl.current);
     };
   }, []);
+
+  // Auto-compile on mount so the preview shows immediately
+  const hasAutoCompiled = useRef(false);
+  useEffect(() => {
+    if (hasAutoCompiled.current || !code) return;
+    hasAutoCompiled.current = true;
+    setCompiling(true);
+    setPreviewError(null);
+    api
+      .post("/latex/compile", { source: code, supportingFiles }, { responseType: "blob" })
+      .then((res) => {
+        if (prevBlobUrl.current) URL.revokeObjectURL(prevBlobUrl.current);
+        const url = URL.createObjectURL(res.data as Blob);
+        prevBlobUrl.current = url;
+        setPdfUrl(url);
+      })
+      .catch(() => {
+        // Silent fail on auto-compile — user can manually retry
+      })
+      .finally(() => setCompiling(false));
+  }, [code, supportingFiles]);
 
   const handleCopyLatex = async () => {
     await navigator.clipboard.writeText(code);
@@ -260,10 +303,10 @@ export default function LatexResumeEditor() {
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
         className="text-center mb-8 px-4"
       >
-        <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
+        <h1 className="font-display text-2xl sm:text-4xl lg:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-2 sm:mb-3">
           LaTeX <span className="text-gradient-accent">Resume Editor</span>
         </h1>
-        <p className="text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
+        <p className="text-sm sm:text-lg text-gray-500 dark:text-gray-500 max-w-xl mx-auto">
           Write LaTeX, compile to PDF, and download your polished resume
         </p>
       </motion.div>
@@ -277,84 +320,101 @@ export default function LatexResumeEditor() {
         transition={{ duration: 0.5, delay: 0.15 }}
         className="px-4 sm:px-6 mb-5"
       >
-        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-4">
-          <div className="flex items-center gap-2 flex-wrap">
-              {/* Mobile toggle */}
-              <div className="flex lg:hidden bg-gray-100 dark:bg-gray-800 rounded-xl p-0.5">
-                <button
-                  onClick={() => setMobileView("editor")}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                    mobileView === "editor" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 dark:text-gray-400"
-                  }`}
-                >
-                  <FileCode2 className="w-3.5 h-3.5 inline mr-1" />
-                  Editor
-                </button>
-                <button
-                  onClick={() => setMobileView("preview")}
-                  className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
-                    mobileView === "preview" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 dark:text-gray-400"
-                  }`}
-                >
-                  <Eye className="w-3.5 h-3.5 inline mr-1" />
-                  Preview
-                </button>
-              </div>
-
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-3 sm:p-4">
+          {/* Row 1: Mobile view toggle + primary actions */}
+          <div className="flex items-center gap-2">
+            {/* Mobile toggle */}
+            <div className="flex lg:hidden bg-gray-100 dark:bg-gray-800 rounded-xl p-0.5">
               <button
-                onClick={handleCopyLatex}
-                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+                onClick={() => setMobileView("editor")}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                  mobileView === "editor" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 dark:text-gray-400"
+                }`}
               >
-                {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
-                {copied ? "Copied" : "Copy"}
+                <FileCode2 className="w-3.5 h-3.5 inline mr-1" />
+                Editor
               </button>
-
               <button
-                onClick={handleUndo}
-                disabled={historyPosRef.current <= 0}
-                title="Undo"
-                className="inline-flex items-center justify-center w-9 h-9 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                onClick={() => setMobileView("preview")}
+                className={`px-3 py-1.5 text-xs font-medium rounded-lg transition-all ${
+                  mobileView === "preview" ? "bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm" : "text-gray-500 dark:text-gray-400"
+                }`}
               >
-                <Undo2 className="w-3.5 h-3.5" />
+                <Eye className="w-3.5 h-3.5 inline mr-1" />
+                Preview
               </button>
+            </div>
 
-              <button
-                onClick={handleRedo}
-                disabled={historyPosRef.current >= historyRef.current.length - 1}
-                title="Redo"
-                className="inline-flex items-center justify-center w-9 h-9 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-              >
-                <Redo2 className="w-3.5 h-3.5" />
-              </button>
-
+            <div className="ml-auto flex items-center gap-2">
               <button
                 onClick={handleCompile}
                 disabled={compiling}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs font-semibold bg-indigo-600 text-white rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {compiling ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Play className="w-3.5 h-3.5" />}
-                {compiling ? "Compiling..." : "Compile"}
+                <span className="hidden sm:inline">{compiling ? "Compiling..." : "Compile"}</span>
               </button>
 
               <button
                 onClick={handleDownloadPdf}
                 disabled={compiling}
-                className="inline-flex items-center gap-1.5 px-4 py-2 text-xs font-semibold bg-gray-950 dark:bg-white text-white dark:text-gray-950 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                className="inline-flex items-center gap-1.5 px-3 sm:px-4 py-2 text-xs font-semibold bg-gray-950 dark:bg-white text-white dark:text-gray-950 rounded-xl hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <Download className="w-3.5 h-3.5" />
-                Download
+                <span className="hidden sm:inline">Download</span>
               </button>
+            </div>
+          </div>
+
+          {/* Row 2: Secondary actions */}
+          <div className="flex items-center gap-2 mt-2 pt-2 border-t border-gray-100 dark:border-gray-800">
+            <button
+              onClick={handleCopyLatex}
+              title="Copy LaTeX"
+              className="inline-flex items-center justify-center w-8 h-8 sm:w-auto sm:h-auto sm:gap-1.5 sm:px-3 sm:py-2 text-xs font-medium text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors"
+            >
+              {copied ? <Check className="w-3.5 h-3.5 text-green-500" /> : <Copy className="w-3.5 h-3.5" />}
+              <span className="hidden sm:inline">{copied ? "Copied" : "Copy"}</span>
+            </button>
+
+            <button
+              onClick={handleUndo}
+              disabled={historyPosRef.current <= 0}
+              title="Undo"
+              className="inline-flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <Undo2 className="w-3.5 h-3.5" />
+            </button>
+
+            <button
+              onClick={handleRedo}
+              disabled={historyPosRef.current >= historyRef.current.length - 1}
+              title="Redo"
+              className="inline-flex items-center justify-center w-8 h-8 text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+            >
+              <Redo2 className="w-3.5 h-3.5" />
+            </button>
+
+            <div className="ml-auto flex items-center gap-2">
+              <Link
+                to="/student/ats/latex-templates"
+                className="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs font-medium rounded-xl border text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700 transition-colors no-underline"
+              >
+                <LayoutGrid className="w-3.5 h-3.5" />
+                <span className="hidden sm:inline">Templates</span>
+              </Link>
 
               <button
                 onClick={() => setFilesOpen(!filesOpen)}
-                className={`ml-auto inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl border transition-colors ${
+                title="Supporting files"
+                className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs font-medium rounded-xl border transition-colors ${
                   filesOpen
                     ? "bg-violet-50 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400 border-violet-200 dark:border-violet-800"
                     : "text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <FileCog className="w-3.5 h-3.5" />
-                Files
+                <span className="hidden sm:inline">Files</span>
                 {supportingFiles.length > 0 && (
                   <span className="text-[10px] bg-violet-100 dark:bg-violet-900/50 text-violet-600 dark:text-violet-400 px-1.5 rounded-md font-semibold">
                     {supportingFiles.length}
@@ -364,16 +424,18 @@ export default function LatexResumeEditor() {
 
               <button
                 onClick={() => setChatOpen(!chatOpen)}
-                className={`inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium rounded-xl border transition-colors ${
+                title="AI Assistant"
+                className={`inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-2 text-xs font-medium rounded-xl border transition-colors ${
                   chatOpen
                     ? "bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 border-indigo-200 dark:border-indigo-800"
                     : "text-gray-600 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 border-gray-200 dark:border-gray-700 hover:bg-gray-100 dark:hover:bg-gray-700"
                 }`}
               >
                 <MessageSquare className="w-3.5 h-3.5" />
-                AI Assistant
+                <span className="hidden sm:inline">AI Assistant</span>
                 {!isPremium && <Lock className="w-3 h-3 text-amber-500" />}
               </button>
+            </div>
           </div>
         </div>
       </motion.div>
@@ -485,40 +547,42 @@ export default function LatexResumeEditor() {
               }}
             />
 
-            <div className="flex items-center gap-2">
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
               <button
                 onClick={() => fileInputRef.current?.click()}
-                className="inline-flex items-center gap-1.5 px-3 py-2 text-xs font-medium bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors"
+                className="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-medium bg-violet-600 text-white rounded-lg hover:bg-violet-700 transition-colors"
               >
                 <Upload className="w-3 h-3" />
                 Upload File
               </button>
 
-              <span className="text-[11px] text-gray-400 dark:text-gray-500">or</span>
+              <span className="hidden sm:inline text-[11px] text-gray-400 dark:text-gray-500">or</span>
 
-              <input
-                type="text"
-                value={newFileName}
-                onChange={(e) => setNewFileName(e.target.value)}
-                placeholder="resume.cls"
-                className="flex-1 text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 placeholder:text-gray-400 dark:placeholder:text-gray-600 text-gray-700 dark:text-gray-300"
-              />
-              <button
-                onClick={() => {
-                  const name = newFileName.trim();
-                  if (!name || !/\.(cls|sty|bst|bib|tex)$/.test(name)) return;
-                  if (supportingFiles.some((f) => f.filename === name)) return;
-                  const updated = [...supportingFiles, { filename: name, content: "" }];
-                  setSupportingFiles(updated);
-                  setEditingFileIdx(updated.length - 1);
-                  setNewFileName("");
-                }}
-                disabled={!newFileName.trim() || !/\.(cls|sty|bst|bib|tex)$/.test(newFileName.trim())}
-                className="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/50 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
-              >
-                <Plus className="w-3 h-3" />
-                Add Empty
-              </button>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={newFileName}
+                  onChange={(e) => setNewFileName(e.target.value)}
+                  placeholder="resume.cls"
+                  className="flex-1 min-w-0 text-xs bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-violet-500/30 focus:border-violet-400 placeholder:text-gray-400 dark:placeholder:text-gray-600 text-gray-700 dark:text-gray-300"
+                />
+                <button
+                  onClick={() => {
+                    const name = newFileName.trim();
+                    if (!name || !/\.(cls|sty|bst|bib|tex)$/.test(name)) return;
+                    if (supportingFiles.some((f) => f.filename === name)) return;
+                    const updated = [...supportingFiles, { filename: name, content: "" }];
+                    setSupportingFiles(updated);
+                    setEditingFileIdx(updated.length - 1);
+                    setNewFileName("");
+                  }}
+                  disabled={!newFileName.trim() || !/\.(cls|sty|bst|bib|tex)$/.test(newFileName.trim())}
+                  className="inline-flex items-center gap-1 px-3 py-2 text-xs font-medium text-violet-600 dark:text-violet-400 bg-violet-50 dark:bg-violet-900/20 border border-violet-200 dark:border-violet-800/50 rounded-lg hover:bg-violet-100 dark:hover:bg-violet-900/30 transition-colors disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                >
+                  <Plus className="w-3 h-3" />
+                  Add
+                </button>
+              </div>
             </div>
 
             <p className="text-[11px] text-gray-400 dark:text-gray-500 mt-2">
@@ -535,7 +599,7 @@ export default function LatexResumeEditor() {
         transition={{ duration: 0.5, delay: 0.25 }}
         className="px-4 sm:px-6"
       >
-        <div className="flex flex-col lg:flex-row gap-4 h-[calc(100vh-180px)] min-h-96">
+        <div className="flex flex-col lg:flex-row gap-4 h-[85vh] lg:h-[calc(100vh-80px)] min-h-120">
           {/* Editor Panel */}
           <div
             className={`lg:w-1/2 flex flex-col bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm overflow-hidden min-h-0 ${

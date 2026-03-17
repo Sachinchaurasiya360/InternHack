@@ -989,4 +989,19 @@ export class AdminController {
       return res.status(500).json({ message: "Internal Server Error" });
     }
   }
+
+  async getPublicExternalJobBySlug(req: Request, res: Response) {
+    try {
+      const slug = req.params["slug"];
+      if (!slug) return res.status(400).json({ message: "Slug is required" });
+
+      const job = await this.adminService.getPublicExternalJobBySlug(slug);
+      if (!job) return res.status(404).json({ message: "Job not found or expired" });
+
+      return res.status(200).json({ job });
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
 }

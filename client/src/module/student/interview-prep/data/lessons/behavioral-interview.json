@@ -1,0 +1,138 @@
+[
+  {
+    "id": "behavioral-tell-me-about",
+    "sectionId": "behavioral-interview",
+    "orderIndex": 0,
+    "title": "Tell Me About Yourself & Common HR",
+    "difficulty": "Beginner",
+    "type": "Situational",
+    "concepts": ["Self Introduction", "Elevator Pitch", "Strengths", "Weaknesses", "Career Goals"],
+    "content": {
+      "question": "How do you answer 'Tell me about yourself' and other common HR questions?",
+      "answer": "The 'Tell me about yourself' answer should be a 60-90 second elevator pitch following the Present-Past-Future framework:\n\n1. Present: What you're doing now (current role/education, key skills)\n2. Past: Relevant experience that got you here\n3. Future: Why you're excited about this role/company\n\nKey rules:\n- Keep it professional (not personal life story)\n- Tailor to the job you're interviewing for\n- Be specific: mention technologies, achievements, numbers\n- End with why you're interested in THIS role",
+      "codeExamples": [
+        {
+          "title": "Tell Me About Yourself (Fresher Template)",
+          "code": "// GOOD ANSWER (structured, specific, relevant)\n\n\"I'm a final-year Computer Science student at XYZ University,\nfocusing on full-stack web development. Over the past year,\nI've built several projects using React, Node.js, and PostgreSQL\n- including a job portal that handles 500+ daily active users.\n\nI've also completed internships at ABC Company where I worked\non their payment integration module, reducing checkout errors by 30%.\n\nI'm particularly excited about this role at [Company] because\nyour team works on [specific product/tech], which aligns with\nmy experience in [relevant skill]. I'd love to contribute to\n[specific team/project].\"\n\n// BAD ANSWER (vague, unfocused)\n\"Well, my name is John. I'm from Mumbai. I like coding.\nI studied computer science. I know React and Node.\nI want to work at your company because it's a good company.\"",
+          "explanation": "The good answer is structured (Present-Past-Future), specific (numbers, technologies), and tailored (mentions the company). The bad answer is generic and forgettable."
+        },
+        {
+          "title": "Strengths & Weaknesses",
+          "code": "// STRENGTHS: Be specific with evidence\n\n// BAD: \"I'm a hard worker and team player\"\n// GOOD:\n\"My biggest strength is problem-solving under pressure.\nDuring my internship, our production database went down\non a Friday evening. I debugged the connection pooling issue,\nimplemented a fix, and had it deployed in 2 hours.\nThe experience taught me to stay calm and methodical.\"\n\n// WEAKNESSES: Real weakness + how you're improving it\n\n// BAD: \"I'm a perfectionist\" (cliche, not genuine)\n// BAD: \"I don't have any weaknesses\" (not self-aware)\n// GOOD:\n\"I used to struggle with estimating how long tasks would take\n- I'd underestimate complexity and overcommit. I've been\naddressing this by breaking tasks into smaller chunks\nand adding 20% buffer time. In my last project, my estimates\nwere within 10% of actual time for 8 out of 10 tasks.\"",
+          "explanation": "Strengths: back them up with a specific story. Weaknesses: choose something real, show self-awareness, and describe concrete steps you're taking to improve."
+        },
+        {
+          "title": "Why This Company / Why Should We Hire You",
+          "code": "// WHY THIS COMPANY: Show research\n\n// BAD: \"Because it's a great company with good culture\"\n// GOOD:\n\"Three reasons: First, I've been following your engineering blog\nand I'm impressed by how you migrated from monolith to\nmicroservices - that's exactly the architecture challenge\nI want to work on. Second, your open-source contributions\nto [library] show a commitment to the community that\nI value. Third, the growth trajectory from Series B means\nI'd get to solve scaling challenges early in my career.\"\n\n// WHY SHOULD WE HIRE YOU: Match skills to needs\n\n\"Based on the job description, you need someone who can\nbuild React frontends and Node.js APIs. I've done both\nin production - my internship project serves 10K requests/day.\nBut beyond technical skills, I'm the kind of developer who\nwrites tests, documents decisions, and mentors juniors.\nIn my last team, I set up the CI/CD pipeline that reduced\ndeployment time from 45 minutes to 8 minutes.\"",
+          "explanation": "Research the company before the interview. Connect your specific skills and experience to their specific needs."
+        }
+      ],
+      "notes": [
+        "Practice your introduction until it sounds natural, not rehearsed",
+        "Always end your answers with confidence - don't trail off",
+        "Mirror the company's language: if their job post says 'fast-paced', mention your experience in such environments"
+      ],
+      "followUps": [
+        "Where do you see yourself in 5 years?",
+        "Why are you leaving your current role?",
+        "What is your expected salary?"
+      ],
+      "interviewTips": [
+        "Prepare 5-6 stories using STAR method that cover different competencies",
+        "Research the company: products, tech stack, recent news, culture",
+        "Practice with a timer - keep answers to 1-2 minutes"
+      ]
+    }
+  },
+  {
+    "id": "behavioral-star-method",
+    "sectionId": "behavioral-interview",
+    "orderIndex": 1,
+    "title": "STAR Method & Situation Questions",
+    "difficulty": "Beginner",
+    "type": "Situational",
+    "concepts": ["STAR Method", "Conflict Resolution", "Teamwork", "Leadership", "Failure"],
+    "content": {
+      "question": "How do you structure behavioral interview answers? Explain the STAR method with examples.",
+      "answer": "The STAR method structures your answer with:\n\nS - Situation: Set the context (where, when, what project)\nT - Task: What was your specific responsibility\nA - Action: What YOU did (not the team - use 'I', not 'we')\nR - Result: Quantifiable outcome (numbers, percentages, impact)\n\nCommon behavioral questions:\n- Tell me about a time you failed\n- Describe a conflict with a teammate\n- Give an example of a tight deadline\n- When did you go above and beyond",
+      "codeExamples": [
+        {
+          "title": "Example: 'Tell me about a challenging project'",
+          "code": "// SITUATION:\n\"During my internship at XYZ Corp, we had a legacy PHP\napplication that was crashing under load during sales events.\"\n\n// TASK:\n\"I was assigned to identify the bottleneck and propose a fix\nwithin a 2-week sprint before the upcoming holiday sale.\"\n\n// ACTION:\n\"I profiled the application and found that every page load\nmade 47 database queries due to the N+1 query problem.\nI implemented eager loading with Eloquent relationships,\nadded Redis caching for product listings with 5-minute TTL,\nand set up database connection pooling.\nI also wrote load tests using k6 to validate the fix.\"\n\n// RESULT:\n\"Page load time dropped from 4.2 seconds to 380ms.\nThe system handled 3x the previous peak traffic during\nthe holiday sale with zero downtime.\nThe approach was adopted as a standard pattern for the team.\"",
+          "explanation": "Notice: specific numbers (47 queries, 4.2s to 380ms, 3x traffic), clear personal contribution (I, not we), and a measurable result."
+        },
+        {
+          "title": "Example: 'Tell me about a time you failed'",
+          "code": "// SITUATION:\n\"In my third-year group project, I was the tech lead for\na team building a real-time chat application.\"\n\n// TASK:\n\"I was responsible for architecture decisions and\nensuring we met the 6-week deadline.\"\n\n// ACTION:\n\"I chose to build everything from scratch instead of using\nexisting libraries - custom WebSocket handling, custom auth,\ncustom UI components. I was focused on learning but didn't\nconsider the team's timeline.\"\n\n// RESULT:\n\"We missed the deadline by 2 weeks and had to cut features.\nThe lesson was huge: I learned to evaluate build-vs-buy\ndecisions based on project constraints, not personal learning goals.\n\nIn my next project, I used Socket.io instead of raw WebSockets\nand Passport.js for auth. We delivered 1 week early with\nmore features than planned.\"\n\n// KEY: Show what you LEARNED and how you CHANGED",
+          "explanation": "When discussing failure: be genuine, take responsibility (don't blame others), focus on the lesson learned, and show how you applied it going forward."
+        },
+        {
+          "title": "Example: 'Describe a conflict with a teammate'",
+          "code": "// SITUATION:\n\"During a hackathon, my teammate and I disagreed on the\ndatabase choice. He wanted MongoDB, I wanted PostgreSQL.\"\n\n// TASK:\n\"We needed to resolve this quickly as the hackathon\nwas only 48 hours.\"\n\n// ACTION:\n\"Instead of arguing, I suggested we each spend 15 minutes\nlisting the pros and cons for our specific use case -\na food delivery app with user accounts and order history.\n\nAfter comparing, we realized our data was highly relational\n(users → orders → items → restaurants) and needed\ntransactions for payments. We both agreed PostgreSQL\nwas the better fit.\n\nI also acknowledged that his MongoDB suggestion would be\nbetter for the restaurant menu catalog, so we noted that\nas a future optimization.\"\n\n// RESULT:\n\"We resolved the conflict in 30 minutes and won\nsecond place at the hackathon. More importantly,\nwe established a pattern of data-driven decision making\nthat we used for all subsequent technical disagreements.\"",
+          "explanation": "Show maturity: don't bad-mouth the other person. Show how you found a solution through collaboration, data, and compromise."
+        }
+      ],
+      "notes": [
+        "Prepare 6-8 STAR stories that cover: leadership, failure, conflict, deadline, innovation, teamwork",
+        "The same story can be adapted for different questions",
+        "Always include numbers in the Result: 'reduced by 40%', 'saved 10 hours/week', 'served 5K users'"
+      ],
+      "followUps": [
+        "How do you handle disagreements with your manager?",
+        "Describe a time you took initiative",
+        "Tell me about a time you had to learn something quickly"
+      ],
+      "interviewTips": [
+        "Use 'I' not 'we' - interviewers want to know YOUR contribution",
+        "Keep answers under 2 minutes - STAR helps you stay focused",
+        "It's OK to take 10 seconds to think before answering"
+      ]
+    }
+  },
+  {
+    "id": "behavioral-work-style",
+    "sectionId": "behavioral-interview",
+    "orderIndex": 2,
+    "title": "Work Style & Career Questions",
+    "difficulty": "Beginner",
+    "type": "Situational",
+    "concepts": ["Work-Life Balance", "Remote Work", "Career Goals", "Learning", "Salary Negotiation"],
+    "content": {
+      "question": "How do you answer questions about work style, career goals, and salary expectations?",
+      "answer": "These questions assess cultural fit and long-term alignment. Be honest but strategic:\n\n1. Work style: Show you're adaptable and self-aware\n2. Career goals: Align with the company's growth trajectory\n3. Salary: Research market rates, give a range, don't undersell\n4. Learning: Show curiosity and continuous improvement\n5. Remote/Office: Be flexible, mention productivity strategies",
+      "codeExamples": [
+        {
+          "title": "Where Do You See Yourself in 5 Years?",
+          "code": "// BAD: \"I want to be a manager\" (may not align with role)\n// BAD: \"I don't know\" (shows no ambition)\n// BAD: \"At another company\" (obvious red flag)\n\n// GOOD (Technical Track):\n\"In 5 years, I see myself as a senior engineer who can\nown entire features end-to-end - from system design to\ndeployment. I want to be the person who mentors junior\ndevelopers and makes architectural decisions.\n\nSpecifically, I'm interested in deepening my expertise in\ndistributed systems and cloud architecture. I'd love to\nlead a small team technically, helping set standards and\nbest practices.\"\n\n// GOOD (Flexible):\n\"I want to grow into a role where I have both deep technical\nexpertise and the ability to influence product direction.\nWhether that's as a tech lead, staff engineer, or even\nproduct-minded developer depends on the opportunities.\nWhat matters to me is continuous growth and impact.\"",
+          "explanation": "Show ambition that aligns with the company. Express interest in growing within the company, not leaving it."
+        },
+        {
+          "title": "How Do You Stay Updated?",
+          "code": "// Show a SYSTEM, not just 'I read blogs'\n\n\"I have a structured approach to staying current:\n\n1. Daily: I follow engineering blogs on RSS\n   (Dan Abramov, Kent C. Dodds, Martin Fowler)\n\n2. Weekly: I build small side projects to try\n   new tools. Last month I explored Bun as a\n   Node.js alternative.\n\n3. Monthly: I attend local meetups and watch\n   conference talks (JSConf, React Summit).\n\n4. Quarterly: I take a course or read a technical\n   book. Currently reading 'Designing Data-Intensive\n   Applications' by Martin Kleppmann.\n\n5. I also contribute to open source - I've submitted\n   PRs to [library] which forces me to read and\n   understand production code.\"\n\n// The key: show SPECIFIC examples, not generic answers",
+          "explanation": "Interviewers want to see that you're self-motivated and have a habit of continuous learning. Specific examples are much more convincing than vague claims."
+        },
+        {
+          "title": "Salary Negotiation Tips",
+          "code": "// RESEARCH FIRST:\n// - Glassdoor, Levels.fyi, LinkedIn Salary\n// - Talk to people in similar roles\n// - Know the market range for your city + experience\n\n// WHEN ASKED EARLY: Deflect politely\n\"I'd like to learn more about the role and\nresponsibilities before discussing compensation.\nCould you share the budget range for this position?\"\n\n// WHEN YOU MUST ANSWER: Give a range\n\"Based on my research and experience, I'm looking\nat the range of ₹X to ₹Y for this role.\nBut I'm open to discussing the complete package\nincluding benefits, learning opportunities, and\ngrowth potential.\"\n\n// AFTER RECEIVING AN OFFER: Negotiate\n\"Thank you for the offer. I'm excited about the role.\nBased on my research and the scope of the position,\nI was expecting something closer to [amount].\nIs there flexibility in the base salary?\"\n\n// GOLDEN RULES:\n// 1. Never give a number first if possible\n// 2. If you must, give a range (not a single number)\n// 3. Always negotiate - the first offer is rarely the best\n// 4. Consider total compensation: salary + equity + benefits\n// 5. Be confident but not aggressive",
+          "explanation": "Salary negotiation is expected. Companies budget for it. Not negotiating leaves money on the table."
+        }
+      ],
+      "notes": [
+        "Be authentic - interviewers can spot rehearsed, fake answers",
+        "Research the company's culture before the interview",
+        "It's OK to ask the interviewer questions: 'What does career growth look like here?'",
+        "Your questions to the interviewer are also evaluated - prepare 3-5 thoughtful ones"
+      ],
+      "followUps": [
+        "What questions do you have for us? (Always have 3-5 ready)",
+        "How do you handle stress or pressure?",
+        "Describe your ideal work environment"
+      ],
+      "interviewTips": [
+        "Prepare questions FOR the interviewer - it shows genuine interest",
+        "Mirror the company's values in your answers (check their careers page)",
+        "Be honest about salary expectations - lying will backfire during verification"
+      ]
+    }
+  }
+]

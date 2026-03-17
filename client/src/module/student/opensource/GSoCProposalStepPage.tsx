@@ -101,8 +101,8 @@ export default function GSoCProposalStepPage() {
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
-        <div className="absolute -top-32 -right-32 w-150 h-150 bg-red-100 dark:bg-red-900/20 rounded-full blur-3xl opacity-40" />
-        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-orange-100 dark:bg-orange-900/20 rounded-full blur-3xl opacity-40" />
+        <div className="absolute -top-32 -right-32 w-150 h-150 bg-gray-100 dark:bg-gray-900/20 rounded-full blur-3xl opacity-40" />
+        <div className="absolute -bottom-32 -left-32 w-125 h-125 bg-gray-100 dark:bg-gray-900/20 rounded-full blur-3xl opacity-40" />
       </div>
 
       {/* Header */}
@@ -121,8 +121,8 @@ export default function GSoCProposalStepPage() {
         <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6">
           <div className="flex items-start justify-between gap-4 mb-3">
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-lg bg-red-100 dark:bg-red-900/30 flex items-center justify-center shrink-0">
-                <span className="text-xs font-bold text-red-600 dark:text-red-400">{step.step}</span>
+              <div className="w-8 h-8 rounded-lg bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
+                <span className="text-xs font-bold text-gray-600 dark:text-gray-400">{step.step}</span>
               </div>
               <h1 className="text-xl font-bold text-gray-950 dark:text-white">{step.title}</h1>
             </div>
@@ -175,13 +175,13 @@ export default function GSoCProposalStepPage() {
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1, duration: 0.5 }}
-            className="bg-red-50 dark:bg-red-950/20 border-l-4 border-red-400 dark:border-red-500 rounded-r-2xl p-6"
+            className="bg-gray-50 dark:bg-gray-800/50 border-l-4 border-gray-300 dark:border-gray-600 rounded-r-2xl p-6"
           >
             <div className="flex items-center gap-2 mb-3">
-              <MessageCircle className="w-4 h-4 text-red-500" />
-              <span className="text-xs font-bold text-red-700 dark:text-red-300 uppercase tracking-wider">From Your Mentor</span>
+              <MessageCircle className="w-4 h-4 text-gray-500 dark:text-gray-400" />
+              <span className="text-xs font-bold text-gray-700 dark:text-gray-300 uppercase tracking-wider">From Your Mentor</span>
             </div>
-            <p className="text-sm text-red-900 dark:text-red-200 leading-relaxed whitespace-pre-line">
+            <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed whitespace-pre-line">
               {step.mentor_guidance}
             </p>
           </motion.div>
@@ -202,7 +202,7 @@ export default function GSoCProposalStepPage() {
             <div className="space-y-4">
               {step.details.map((detail, i) => (
                 <div key={i} className="flex items-start gap-3">
-                  <div className="w-5 h-5 rounded-full bg-red-50 dark:bg-red-900/30 text-red-600 dark:text-red-400 text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">
+                  <div className="w-5 h-5 rounded-full bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-400 text-xs font-bold flex items-center justify-center shrink-0 mt-0.5">
                     {i + 1}
                   </div>
                   <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{detail}</p>
@@ -221,14 +221,14 @@ export default function GSoCProposalStepPage() {
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6"
           >
             <div className="flex items-center gap-2 mb-4">
-              <AlertTriangle className="w-4 h-4 text-red-500" />
+              <AlertTriangle className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Mistakes to Avoid</h2>
             </div>
             <div className="space-y-3">
               {step.mistakes.map((mistake, i) => (
-                <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-red-50 dark:bg-red-900/10 border border-red-100 dark:border-red-900/30">
-                  <AlertTriangle className="w-4 h-4 text-red-500 shrink-0 mt-0.5" />
-                  <p className="text-sm text-red-800 dark:text-red-300 leading-relaxed">{mistake}</p>
+                <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                  <AlertTriangle className="w-4 h-4 text-gray-500 dark:text-gray-400 shrink-0 mt-0.5" />
+                  <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{mistake}</p>
                 </div>
               ))}
             </div>
@@ -257,10 +257,10 @@ export default function GSoCProposalStepPage() {
                   className="flex items-center gap-3 px-4 py-3 rounded-xl bg-gray-50 dark:bg-gray-800 hover:bg-gray-100 dark:hover:bg-gray-700 no-underline group transition-all"
                 >
                   <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-red-600 dark:group-hover:text-red-400 transition-colors">{r.title}</p>
+                    <p className="text-sm font-medium text-gray-900 dark:text-white group-hover:text-gray-600 dark:group-hover:text-gray-300 transition-colors">{r.title}</p>
                     <p className="text-xs text-gray-400 dark:text-gray-500 capitalize mt-0.5">{r.type}</p>
                   </div>
-                  <ExternalLink className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-red-500 shrink-0" />
+                  <ExternalLink className="w-3.5 h-3.5 text-gray-300 dark:text-gray-600 group-hover:text-gray-500 shrink-0" />
                 </a>
               ))}
             </div>
@@ -276,13 +276,13 @@ export default function GSoCProposalStepPage() {
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 p-6"
           >
             <div className="flex items-center gap-2 mb-4">
-              <Lightbulb className="w-4 h-4 text-amber-500" />
+              <Lightbulb className="w-4 h-4 text-gray-500 dark:text-gray-400" />
               <h2 className="text-sm font-bold text-gray-900 dark:text-white uppercase tracking-wider">Pro Tips</h2>
             </div>
             <div className="space-y-3">
               {step.tips.map((tip, i) => (
-                <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-amber-50 dark:bg-amber-900/10 border border-amber-100 dark:border-amber-900/30">
-                  <Lightbulb className="w-4 h-4 text-amber-500 shrink-0 mt-0.5" />
+                <div key={i} className="flex items-start gap-3 p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700">
+                  <Lightbulb className="w-4 h-4 text-gray-500 dark:text-gray-400 shrink-0 mt-0.5" />
                   <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">{tip}</p>
                 </div>
               ))}
@@ -315,8 +315,8 @@ export default function GSoCProposalStepPage() {
               </div>
             </div>
 
-            <div className="p-4 rounded-xl bg-red-50 dark:bg-red-900/20 border border-red-100 dark:border-red-800 mb-3">
-              <p className="text-sm text-red-800 dark:text-red-300 leading-relaxed">
+            <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-800/50 border border-gray-200 dark:border-gray-700 mb-3">
+              <p className="text-sm text-gray-700 dark:text-gray-300 leading-relaxed">
                 <strong>How to use:</strong> Copy this template, paste it into Google Docs or your org's submission format, and fill in every section. Share the draft with your mentor before submitting.
               </p>
             </div>

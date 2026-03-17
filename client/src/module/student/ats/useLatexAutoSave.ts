@@ -9,8 +9,15 @@ export interface SupportingFile {
   content: string;
 }
 
-export function useLatexAutoSave(defaultTemplate: string) {
+export function useLatexAutoSave(
+  defaultTemplate: string,
+  initialOverride?: { code: string; files: SupportingFile[] } | null,
+) {
   const [code, setCodeInternal] = useState(() => {
+    if (initialOverride) {
+      try { localStorage.setItem(STORAGE_KEY, initialOverride.code); } catch { /* ignore */ }
+      return initialOverride.code;
+    }
     try {
       const saved = localStorage.getItem(STORAGE_KEY);
       return saved && saved.trim().length > 0 ? saved : defaultTemplate;
@@ -20,6 +27,10 @@ export function useLatexAutoSave(defaultTemplate: string) {
   });
 
   const [supportingFiles, setSupportingFilesInternal] = useState<SupportingFile[]>(() => {
+    if (initialOverride) {
+      try { localStorage.setItem(FILES_STORAGE_KEY, JSON.stringify(initialOverride.files)); } catch { /* ignore */ }
+      return initialOverride.files;
+    }
     try {
       const saved = localStorage.getItem(FILES_STORAGE_KEY);
       return saved ? (JSON.parse(saved) as SupportingFile[]) : [];
@@ -30,7 +41,7 @@ export function useLatexAutoSave(defaultTemplate: string) {
 
   const codeRef = useRef(code);
   const filesRef = useRef(supportingFiles);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout>>();
+  const timeoutRef = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const flush = useCallback(() => {
     try {

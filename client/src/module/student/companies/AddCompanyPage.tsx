@@ -119,7 +119,7 @@ export default function AddCompanyPage() {
               className="w-full px-4 py-2.5 border border-gray-200 dark:border-gray-600 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-black/10 dark:focus:ring-white/20 resize-none dark:bg-gray-800 dark:text-white" />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Industry *</label>
               <input type="text" value={form.industry} onChange={(e) => updateField("industry", e.target.value)} required
@@ -143,7 +143,7 @@ export default function AddCompanyPage() {
         {/* Location */}
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">Location</h2>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City *</label>
               <input type="text" value={form.city} onChange={(e) => updateField("city", e.target.value)} required
@@ -168,7 +168,7 @@ export default function AddCompanyPage() {
         <div className="bg-white dark:bg-gray-900 p-6 rounded-xl border border-gray-100 dark:border-gray-800 shadow-sm space-y-4">
           <h2 className="text-base font-semibold text-gray-900 dark:text-white">Additional Details</h2>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Website</label>
               <input type="url" value={form.website} onChange={(e) => updateField("website", e.target.value)}

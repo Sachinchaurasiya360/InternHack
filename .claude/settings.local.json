@@ -6,7 +6,7 @@
       "Bash(/c/Codes/internhack/server/src/module/recruiter/recruiter.service.ts:*)",
       "Bash(npx tsc:*)",
       "Bash(echo:*)",
-      "Bash(npx prisma db push:*)",
+      "Bash(npx prisma db push:*)", 
       "Bash(npx prisma generate:*)",
       "Bash(npm run dev:*)",
       "Bash(node -e:*)",

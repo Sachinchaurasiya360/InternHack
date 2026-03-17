@@ -161,8 +161,10 @@ export default function RecruiterProfilePage() {
           <div className="relative group">
             <div className="w-20 h-20 rounded-2xl bg-gray-100 dark:bg-gray-800 border-2 border-gray-200 dark:border-gray-700 text-gray-900 dark:text-white flex items-center justify-center text-2xl font-bold overflow-hidden">
               {form.profilePic ? (
-                <img src={form.profilePic} alt={form.name} className="w-20 h-20 rounded-2xl object-cover" />
-              ) : (form.name.charAt(0).toUpperCase() || "R")}
+                <img src={form.profilePic} alt={form.name} className="w-20 h-20 rounded-2xl object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
+              ) : (
+                <User className="w-8 h-8 text-gray-400 dark:text-gray-500" />
+              )}
             </div>
             <button type="button" onClick={() => picInputRef.current?.click()} disabled={uploadingPic}
               className="absolute inset-0 w-20 h-20 bg-black/40 rounded-2xl flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer">
@@ -247,10 +249,10 @@ export default function RecruiterProfilePage() {
       {/* Image Crop Modal */}
       {cropSrc && (
         <ImageCropModal
-          src={cropSrc}
+          imageSrc={cropSrc}
           aspect={1}
-          onComplete={handleCropComplete}
-          onCancel={() => setCropSrc(null)}
+          onCrop={handleCropComplete}
+          onClose={() => setCropSrc(null)}
         />
       )}
     </div>

@@ -14,7 +14,7 @@ export default function ReviewCard({ review }: { review: CompanyReview }) {
       <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
           {review.user?.profilePic ? (
-            <img src={review.user.profilePic} alt="" className="w-10 h-10 rounded-full object-cover" />
+            <img src={review.user.profilePic} alt="" className="w-10 h-10 rounded-full object-cover" onError={(e) => { e.currentTarget.style.display = "none"; }} />
           ) : (
             <div className="w-10 h-10 rounded-full bg-gray-100 dark:bg-gray-800 flex items-center justify-center">
               <User className="w-5 h-5 text-gray-400 dark:text-gray-500" />

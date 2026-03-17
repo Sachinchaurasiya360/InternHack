@@ -6,6 +6,7 @@ import cookieParser from "cookie-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 import helmet from "helmet";
+import morgan from "morgan";
 import rateLimit from "express-rate-limit";
 import { authRouter } from "./module/auth/auth.routes.js";
 import { jobRouter } from "./module/job/job.routes.js";
@@ -31,13 +32,34 @@ import { latexRouter } from "./module/latex/latex.routes.js";
 import { skillTestRouter } from "./module/skill-test/skill-test.routes.js";
 import { hackathonRouter } from "./module/hackathon/hackathon.routes.js";
 import { professorRouter } from "./module/professor/professor.routes.js";
+import { hrContactRouter } from "./module/hr-contact/hr-contact.routes.js";
+import { emailCampaignRouter } from "./module/email-campaign/email-campaign.routes.js";
 import { internshipRouter } from "./module/internship/internship.routes.js";
 import { campusDriveRouter } from "./module/campus-drive/campus-drive.routes.js";
 import { badgeRouter } from "./module/badge/badge.routes.js";
 import { leetcodeRouter } from "./module/leetcode/leetcode.routes.js";
+import { universityRouter } from "./module/university/university.routes.js";
+// ── HR Modules ──
+import { rbacRouter } from "./module/rbac/rbac.routes.js";
+import { departmentRouter } from "./module/department/department.routes.js";
+import { employeeRouter } from "./module/employee/employee.routes.js";
+import { leaveRouter } from "./module/leave/leave.routes.js";
+import { attendanceRouter } from "./module/attendance/attendance.routes.js";
+import { interviewRouter } from "./module/interview/interview.routes.js";
+import { hrTaskRouter } from "./module/hr-task/hr-task.routes.js";
+import { performanceRouter } from "./module/performance/performance.routes.js";
+import { payrollRouter } from "./module/payroll/payroll.routes.js";
+import { reimbursementRouter } from "./module/reimbursement/reimbursement.routes.js";
+import { onboardingRouter } from "./module/onboarding/onboarding.routes.js";
+import { complianceRouter } from "./module/compliance/compliance.routes.js";
+import { workflowRouter } from "./module/workflow/workflow.routes.js";
+import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 import { initServiceProviders } from "./lib/ai-provider-registry.js";
+import { startFollowUpCron } from "./cron/scheduled-emails.js";
+import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
+import { recoverActiveCampaigns } from "./module/email-campaign/email-campaign.worker.js";
 
 // ── Validate required environment variables ──
 const REQUIRED_ENV = ["DATABASE_URL", "JWT_SECRET"] as const;
@@ -94,6 +116,11 @@ app.use((req, res, next) => {
   next();
 });
 
+// ── Health check ──
+app.get("/api/health", (_req, res) => {
+  res.json({ status: "ok", uptime: process.uptime() });
+});
+
 // Raw body for Dodo Payments webhook (must be BEFORE express.json())
 app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
 
@@ -106,6 +133,11 @@ app.use((req, _res, next) => {
   req.headers["x-request-id"] ??= crypto.randomUUID();
   next();
 });
+
+// ── HTTP request logging (dev only) ──
+if (process.env["NODE_ENV"] !== "production") {
+  app.use(morgan("dev"));
+}
 
 // ── Rate limiters ──
 const globalLimiter = rateLimit({
@@ -156,13 +188,33 @@ app.use("/api/latex", latexRouter);
 app.use("/api/skill-tests", skillTestRouter);
 app.use("/api/hackathons", hackathonRouter);
 app.use("/api/professors", professorRouter);
+app.use("/api/hr-contacts", hrContactRouter);
+app.use("/api/email-campaigns", emailCampaignRouter);
 app.use("/api/internships", internshipRouter);
 app.use("/api/campus-drives", campusDriveRouter);
 app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
+app.use("/api/universities", universityRouter);
 
-// Public external jobs endpoint (no auth)
+// ── HR Routes ──
+app.use("/api/hr/rbac", rbacRouter);
+app.use("/api/hr/departments", departmentRouter);
+app.use("/api/hr/employees", employeeRouter);
+app.use("/api/hr/leave", leaveRouter);
+app.use("/api/hr/attendance", attendanceRouter);
+app.use("/api/hr/interviews", interviewRouter);
+app.use("/api/hr/tasks", hrTaskRouter);
+app.use("/api/hr/performance", performanceRouter);
+app.use("/api/hr/payroll", payrollRouter);
+app.use("/api/hr/reimbursements", reimbursementRouter);
+app.use("/api/hr/onboarding", onboardingRouter);
+app.use("/api/hr/compliance", complianceRouter);
+app.use("/api/hr/workflows", workflowRouter);
+app.use("/api/hr/analytics", hrAnalyticsRouter);
+
+// Public external jobs endpoints (no auth)
 const publicAdminController = new AdminController(new AdminService());
+app.get("/api/external-jobs/:slug", (req, res) => publicAdminController.getPublicExternalJobBySlug(req, res));
 app.get("/api/external-jobs", (req, res) => publicAdminController.getPublicExternalJobs(req, res));
 
 // ── Static files (public folder) ──
@@ -203,4 +255,13 @@ app.listen(PORT, async () => {
   // Start the job scraper cron (every 6 hours)
   const cronSchedule = process.env["SCRAPER_CRON"] || "0 */6 * * *";
   scraperController.getService().startCron(cronSchedule);
+
+  // Start the 10-day follow-up email cron (daily at 9 AM)
+  startFollowUpCron();
+
+  // Start subscription expiry cron (daily at midnight)
+  startSubscriptionExpiryCron();
+
+  // Resume any in-progress email campaigns
+  recoverActiveCampaigns().catch((err) => console.error("[EmailCampaign] Recovery failed:", err));
 });

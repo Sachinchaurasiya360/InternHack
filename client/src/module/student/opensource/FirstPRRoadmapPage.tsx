@@ -1,7 +1,7 @@
 import { useState, useCallback } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-  CheckCircle2, Circle, ArrowLeft, GitPullRequest, ArrowRight,
+  CheckCircle2, ArrowLeft, GitPullRequest, ArrowRight,
   Trophy,
 } from "lucide-react";
 import { Link } from "react-router";

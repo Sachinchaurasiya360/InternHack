@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Search, MapPin, DollarSign, Clock, X, Landmark, ChevronRight, ExternalLink } from "lucide-react";
+import { Search, MapPin, IndianRupee, Clock, X, Landmark, ChevronRight, ExternalLink } from "lucide-react";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import api from "../../../lib/axios";
@@ -21,8 +21,8 @@ interface ExternalJob {
 }
 
 const FILTER_TAGS = [
-  "Remote", "Internship", "Full-time", "Part-time",
-  "React", "Node.js", "Python", "Java", "DevOps", "AI/ML",
+  "React", "Node.js", "Python", "Java", "DevOps", "AI",
+  "Frontend", "Backend", "Full Stack", "Cloud", "Mobile", "Data Science",
 ] as const;
 
 export default function JobBrowsePage() {
@@ -184,6 +184,56 @@ export default function JobBrowsePage() {
           </div>
         </motion.div>
 
+        {/* External Jobs Section — shown first */}
+        {extData && extData.jobs.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-14">
+            <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-2">Latest Opportunities</h2>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Curated external listings updated daily</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {extData.jobs.map((job, i) => (
+                <motion.div key={job.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
+                  className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 flex flex-col">
+                  <div className="flex items-start mb-3">
+                    <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 mr-3 text-white dark:text-gray-950 text-sm font-bold">
+                      {job.company?.charAt(0) || "?"}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1">{job.role || "Open Role"}</h3>
+                      <span className="text-sm text-gray-500">{job.company || "Company"}</span>
+                    </div>
+                  </div>
+                  {job.description && <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{job.description}</p>}
+                  <div className="flex flex-wrap gap-3 text-xs text-gray-500 mb-4">
+                    {job.location && (
+                      <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><MapPin className="w-3 h-3 text-indigo-400" />{job.location}</span>
+                    )}
+                    {job.salary && (
+                      <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><IndianRupee className="w-3 h-3 text-emerald-400" />{job.salary}</span>
+                    )}
+                  </div>
+                  {job.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1.5 mb-4">
+                      {job.tags.slice(0, 3).map((tag) => (
+                        <span key={tag} className="px-2.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-medium">{tag}</span>
+                      ))}
+                    </div>
+                  )}
+                  <div className="mt-auto">
+                    {job.applyLink ? (
+                      <a href={job.applyLink} target="_blank" rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline">
+                        Apply <ExternalLink className="w-3.5 h-3.5" />
+                      </a>
+                    ) : (
+                      <span className="text-xs text-gray-400">No apply link</span>
+                    )}
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </motion.div>
+        )}
+
         {isLoading ? (
           <div className="text-center py-16 text-gray-500">Loading jobs...</div>
         ) : (data?.jobs ?? []).length === 0 ? (
@@ -216,7 +266,7 @@ export default function JobBrowsePage() {
                       <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{job.description}</p>
                       <div className="flex flex-wrap gap-3 text-xs text-gray-500">
                         <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><MapPin className="w-3 h-3 text-indigo-400" />{job.location}</span>
-                        <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><DollarSign className="w-3 h-3 text-emerald-400" />{job.salary}</span>
+                        <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><IndianRupee className="w-3 h-3 text-emerald-400" />{job.salary}</span>
                         {job.deadline && (
                           <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><Clock className="w-3 h-3 text-amber-400" />{new Date(job.deadline).toLocaleDateString()}</span>
                         )}
@@ -256,56 +306,6 @@ export default function JobBrowsePage() {
               </div>
             )}
           </>
-        )}
-
-        {/* External Jobs Section */}
-        {extData && extData.jobs.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }} className="mt-16">
-            <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-2">More Opportunities</h2>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">External listings from partnered companies</p>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {extData.jobs.map((job, i) => (
-                <motion.div key={job.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                  className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 flex flex-col">
-                  <div className="flex items-start mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 mr-3 text-white dark:text-gray-950 text-sm font-bold">
-                      {job.company?.charAt(0) || "?"}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1">{job.role || "Open Role"}</h3>
-                      <span className="text-sm text-gray-500">{job.company || "Company"}</span>
-                    </div>
-                  </div>
-                  {job.description && <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{job.description}</p>}
-                  <div className="flex flex-wrap gap-3 text-xs text-gray-500 mb-4">
-                    {job.location && (
-                      <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><MapPin className="w-3 h-3 text-indigo-400" />{job.location}</span>
-                    )}
-                    {job.salary && (
-                      <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><DollarSign className="w-3 h-3 text-emerald-400" />{job.salary}</span>
-                    )}
-                  </div>
-                  {job.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {job.tags.slice(0, 3).map((tag) => (
-                        <span key={tag} className="px-2.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-medium">{tag}</span>
-                      ))}
-                    </div>
-                  )}
-                  <div className="mt-auto">
-                    {job.applyLink ? (
-                      <a href={job.applyLink} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline">
-                        Apply <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    ) : (
-                      <span className="text-xs text-gray-400">No apply link</span>
-                    )}
-                  </div>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
         )}
       </div>
     </div>

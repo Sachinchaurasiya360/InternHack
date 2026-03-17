@@ -4,7 +4,6 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import {
   Search,
   BookOpen,
-  Wand2,
   ChevronLeft,
   ChevronRight,
   Star,

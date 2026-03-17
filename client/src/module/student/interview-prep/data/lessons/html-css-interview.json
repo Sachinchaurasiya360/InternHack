@@ -1,0 +1,1547 @@
+[
+  {
+    "id": "html-semantic",
+    "sectionId": "html-css-interview",
+    "orderIndex": 0,
+    "title": "Semantic HTML & Accessibility",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": [
+      "Semantic HTML",
+      "ARIA",
+      "Accessibility",
+      "SEO",
+      "Screen Readers"
+    ],
+    "content": {
+      "question": "What is semantic HTML? Why does it matter for accessibility and SEO?",
+      "answer": "Semantic HTML uses elements that describe their meaning (header, nav, main, article, section, footer) instead of generic divs. This helps:\n\n1. Accessibility: Screen readers understand the page structure\n2. SEO: Search engines understand content hierarchy and importance\n3. Maintainability: Code is self-documenting\n4. Browser features: Reader mode, outline view work correctly",
+      "codeExamples": [
+        {
+          "title": "Semantic vs Non-Semantic",
+          "code": "<!-- BAD: div soup - no meaning -->\n<div class=\"header\">\n  <div class=\"nav\">\n    <div class=\"nav-item\">Home</div>\n  </div>\n</div>\n<div class=\"content\">\n  <div class=\"article\">\n    <div class=\"title\">Blog Post</div>\n    <div class=\"text\">Content here...</div>\n  </div>\n</div>\n<div class=\"footer\">Copyright 2024</div>\n\n<!-- GOOD: semantic elements -->\n<header>\n  <nav>\n    <a href=\"/\">Home</a>\n  </nav>\n</header>\n<main>\n  <article>\n    <h1>Blog Post</h1>\n    <p>Content here...</p>\n  </article>\n</main>\n<footer>Copyright 2024</footer>",
+          "explanation": "Screen readers announce: 'navigation landmark', 'main content', 'article'. With divs, users hear nothing useful about the page structure."
+        },
+        {
+          "title": "ARIA Attributes When Needed",
+          "code": "<!-- Custom button (use native <button> instead when possible) -->\n<div role=\"button\" tabindex=\"0\" aria-label=\"Close dialog\"\n     onkeydown=\"if(event.key==='Enter') this.click()\">\n  X\n</div>\n\n<!-- Better: use native elements -->\n<button aria-label=\"Close dialog\">X</button>\n\n<!-- Live region for dynamic content -->\n<div aria-live=\"polite\" aria-atomic=\"true\">\n  3 items in cart\n</div>\n\n<!-- Form accessibility -->\n<label for=\"email\">Email Address</label>\n<input id=\"email\" type=\"email\"\n       aria-required=\"true\"\n       aria-describedby=\"email-hint\" />\n<span id=\"email-hint\">We'll never share your email</span>",
+          "explanation": "Rule: use native HTML elements first (they have built-in accessibility). Only add ARIA when native elements can't express the semantics you need."
+        },
+        {
+          "title": "Common Accessibility Checklist",
+          "code": "<!-- 1. All images have alt text -->\n<img src=\"chart.png\" alt=\"Sales chart showing 30% growth in Q4\" />\n<img src=\"decorative-line.png\" alt=\"\" />\n\n<!-- 2. Color is not the only indicator -->\n<input style=\"border-color: red\" aria-invalid=\"true\" />\n<span class=\"error\">Email is required</span>\n\n<!-- 3. Heading hierarchy is correct -->\n<h1>Page Title</h1>\n  <h2>Section</h2>\n    <h3>Subsection</h3>\n  <h2>Another Section</h2>\n\n<!-- 4. Skip navigation link -->\n<a href=\"#main\" class=\"sr-only focus:not-sr-only\">\n  Skip to main content\n</a>",
+          "explanation": "Accessibility isn't just about screen readers - it helps keyboard users, people with low vision, cognitive disabilities, and everyone on mobile."
+        }
+      ],
+      "notes": [
+        "ARIA first rule: don't use ARIA if a native HTML element can do the job",
+        "Test with keyboard-only navigation (Tab, Enter, Escape, Arrow keys)",
+        "Use Lighthouse in Chrome DevTools for accessibility auditing"
+      ],
+      "followUps": [
+        "What is the difference between aria-label and aria-labelledby?",
+        "How do you make a custom dropdown accessible?",
+        "What are WCAG guidelines and compliance levels (A, AA, AAA)?"
+      ],
+      "interviewTips": [
+        "Mentioning accessibility in any frontend interview is a strong signal",
+        "Know at least 5 semantic elements and when to use each",
+        "Show you've actually tested with screen readers or keyboard navigation"
+      ]
+    }
+  },
+  {
+    "id": "css-box-model",
+    "sectionId": "html-css-interview",
+    "orderIndex": 1,
+    "title": "CSS Box Model & Layout",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": [
+      "Box Model",
+      "content-box",
+      "border-box",
+      "Margin Collapsing",
+      "Layout"
+    ],
+    "content": {
+      "question": "Explain the CSS box model. What is the difference between content-box and border-box?",
+      "answer": "Every element is a rectangular box with:\n- Content: the actual content area\n- Padding: space between content and border\n- Border: the border around padding\n- Margin: space outside the border\n\nbox-sizing: content-box (default) - width/height only applies to content. Padding and border are added on top.\nbox-sizing: border-box - width/height includes content + padding + border. Much more predictable.\n\nMargin collapsing: adjacent vertical margins collapse into the larger value, not additive.",
+      "codeExamples": [
+        {
+          "title": "content-box vs border-box",
+          "code": "/* content-box (default) */\n.element {\n  width: 200px;\n  padding: 20px;\n  border: 5px solid black;\n  /* Actual rendered width: 200 + 40 + 10 = 250px */\n}\n\n/* border-box (recommended) */\n.element {\n  box-sizing: border-box;\n  width: 200px;\n  padding: 20px;\n  border: 5px solid black;\n  /* Actual rendered width: 200px */\n  /* Content area: 200 - 40 - 10 = 150px */\n}\n\n/* Global reset (best practice) */\n*, *::before, *::after {\n  box-sizing: border-box;\n}",
+          "explanation": "border-box makes sizing predictable. Always apply the global reset so every element uses border-box."
+        },
+        {
+          "title": "Margin Collapsing",
+          "code": "/* Vertical margins collapse */\n.box-a { margin-bottom: 20px; }\n.box-b { margin-top: 30px; }\n/* Gap between A and B = 30px (not 50px) */\n\n/* Margins do NOT collapse when: */\n/* 1. Horizontal margins */\n.inline { margin-left: 10px; margin-right: 10px; }\n\n/* 2. Parent has padding or border */\n.parent {\n  padding: 1px; /* prevents child margin from collapsing */\n}\n\n/* 3. Flex/Grid containers */\n.flex-parent {\n  display: flex;\n  flex-direction: column;\n  /* Child margins do NOT collapse here */\n}",
+          "explanation": "Margin collapsing only happens vertically between block elements. Flex and grid containers prevent it entirely."
+        },
+        {
+          "title": "Visualizing the Box Model",
+          "code": "<!-- Open DevTools > Elements > Computed tab\n     to see the box model diagram -->\n\n<div class=\"box\">Content</div>\n\n<style>\n.box {\n  /* Content */\n  width: 300px;\n  height: 100px;\n\n  /* Padding (inside border) */\n  padding: 16px 24px;\n\n  /* Border */\n  border: 2px solid #333;\n\n  /* Margin (outside border) */\n  margin: 20px auto; /* 20px top/bottom, centered */\n\n  /* With border-box, total width = 300px */\n  box-sizing: border-box;\n}\n</style>",
+          "explanation": "Use Chrome DevTools Computed tab to visualize the box model of any element. Hover over the diagram to highlight each layer on the page."
+        }
+      ],
+      "notes": [
+        "Always set *, *::before, *::after { box-sizing: border-box } globally",
+        "Margin collapsing is a common source of unexpected spacing bugs",
+        "Use padding for internal spacing, margin for external spacing between elements"
+      ],
+      "followUps": [
+        "When do margins NOT collapse?",
+        "What is the difference between padding and margin?",
+        "How does overflow affect the box model?"
+      ],
+      "interviewTips": [
+        "Draw the box model diagram - interviewers expect it",
+        "Always mention the border-box reset as a best practice",
+        "Know the margin collapsing rules - it trips up many candidates"
+      ]
+    }
+  },
+  {
+    "id": "css-responsive",
+    "sectionId": "html-css-interview",
+    "orderIndex": 2,
+    "title": "Responsive Design & Mobile First",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": [
+      "Media Queries",
+      "Mobile First",
+      "Viewport",
+      "Fluid Typography",
+      "Responsive Images"
+    ],
+    "content": {
+      "question": "How do you implement responsive design? What is mobile-first approach?",
+      "answer": "Responsive design adapts layouts to different screen sizes. Mobile-first means:\n\n1. Base styles target mobile (smallest screens)\n2. Use min-width media queries to add complexity for larger screens\n3. Progressive enhancement: start simple, add features\n\nKey techniques:\n- Fluid layouts with %, vw, fr units\n- clamp() for fluid typography\n- Media queries at breakpoints\n- Responsive images with srcset/picture\n- Container queries for component-level responsiveness",
+      "codeExamples": [
+        {
+          "title": "Mobile-First Responsive Layout",
+          "code": "/* Base: mobile styles */\n.container {\n  padding: 1rem;\n}\n.grid {\n  display: grid;\n  grid-template-columns: 1fr;\n  gap: 1rem;\n}\n\n/* Tablet: 768px+ */\n@media (min-width: 768px) {\n  .container { padding: 2rem; }\n  .grid {\n    grid-template-columns: repeat(2, 1fr);\n  }\n}\n\n/* Desktop: 1024px+ */\n@media (min-width: 1024px) {\n  .container {\n    max-width: 1200px;\n    margin: 0 auto;\n  }\n  .grid {\n    grid-template-columns: repeat(3, 1fr);\n  }\n}\n\n/* Fluid typography */\nh1 {\n  font-size: clamp(1.5rem, 4vw, 3rem);\n}",
+          "explanation": "Mobile-first uses min-width queries to progressively enhance. Desktop-first uses max-width to remove features. Mobile-first is the industry standard."
+        },
+        {
+          "title": "Responsive Images",
+          "code": "<!-- srcset: browser picks best image -->\n<img\n  src=\"photo-400.jpg\"\n  srcset=\"photo-400.jpg 400w,\n         photo-800.jpg 800w,\n         photo-1200.jpg 1200w\"\n  sizes=\"(min-width: 1024px) 33vw,\n         (min-width: 768px) 50vw,\n         100vw\"\n  alt=\"Responsive photo\"\n/>\n\n<!-- picture: art direction -->\n<picture>\n  <source media=\"(min-width: 1024px)\"\n          srcset=\"hero-wide.jpg\" />\n  <source media=\"(min-width: 768px)\"\n          srcset=\"hero-medium.jpg\" />\n  <img src=\"hero-mobile.jpg\"\n       alt=\"Hero banner\" />\n</picture>",
+          "explanation": "srcset lets the browser choose the optimal resolution. picture element gives you full art-direction control for different crops at different sizes."
+        },
+        {
+          "title": "Viewport Meta Tag",
+          "code": "<!-- Required in every responsive page -->\n<meta name=\"viewport\"\n      content=\"width=device-width, initial-scale=1\" />\n\n<!-- Without this, mobile browsers render at\n     ~980px width and scale down, making\n     media queries useless -->\n\n<style>\n/* Common responsive utilities */\n.visually-hidden {\n  position: absolute;\n  width: 1px;\n  height: 1px;\n  overflow: hidden;\n  clip: rect(0 0 0 0);\n}\n\n/* Hide on mobile, show on desktop */\n.desktop-only {\n  display: none;\n}\n@media (min-width: 1024px) {\n  .desktop-only { display: block; }\n}\n</style>",
+          "explanation": "The viewport meta tag is essential. Without it, mobile browsers assume a 980px viewport and media queries won't trigger correctly."
+        }
+      ],
+      "notes": [
+        "Always include the viewport meta tag in your HTML head",
+        "Use clamp() for fluid typography instead of multiple media queries",
+        "Test on real devices, not just browser DevTools resize"
+      ],
+      "followUps": [
+        "What is the difference between srcset and picture?",
+        "How do container queries differ from media queries?",
+        "What breakpoints do you typically use?"
+      ],
+      "interviewTips": [
+        "Know the mobile-first approach and explain WHY (progressive enhancement)",
+        "Mention clamp() for fluid typography - shows modern CSS knowledge",
+        "Be ready to code a responsive layout from scratch"
+      ]
+    }
+  },
+  {
+    "id": "html-document-structure",
+    "sectionId": "html-css-interview",
+    "orderIndex": 3,
+    "title": "HTML Document Structure",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": [
+      "DOCTYPE",
+      "HTML Head",
+      "Meta Tags",
+      "Script Loading",
+      "Document Flow"
+    ],
+    "content": {
+      "question": "Explain the structure of an HTML document. What goes in the head vs body?",
+      "answer": "An HTML document has a strict structure:\n\n1. <!DOCTYPE html> - tells browser to use standards mode\n2. <html lang=\"en\"> - root element with language\n3. <head> - metadata, not visible: title, meta, links, scripts\n4. <body> - visible content\n\nThe head contains:\n- <title> for browser tab/SEO\n- <meta> for charset, viewport, description\n- <link> for stylesheets, favicons\n- <script> for JS (prefer defer/async or at body end)\n\nThe body contains all visible page content.",
+      "codeExamples": [
+        {
+          "title": "Complete HTML5 Boilerplate",
+          "code": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n  <meta charset=\"UTF-8\" />\n  <meta name=\"viewport\"\n        content=\"width=device-width, initial-scale=1\" />\n  <meta name=\"description\"\n        content=\"Page description for SEO\" />\n  <title>Page Title</title>\n\n  <!-- Preconnect to external origins -->\n  <link rel=\"preconnect\" href=\"https://fonts.googleapis.com\" />\n\n  <!-- Stylesheets -->\n  <link rel=\"stylesheet\" href=\"/styles.css\" />\n\n  <!-- Favicon -->\n  <link rel=\"icon\" href=\"/favicon.ico\" />\n</head>\n<body>\n  <header>\n    <nav><!-- navigation --></nav>\n  </header>\n  <main>\n    <h1>Page Heading</h1>\n    <p>Content goes here.</p>\n  </main>\n  <footer><!-- footer --></footer>\n\n  <!-- Scripts at end or use defer -->\n  <script src=\"/app.js\"></script>\n</body>\n</html>",
+          "explanation": "This is the minimal production-ready HTML5 boilerplate. Every element has a purpose."
+        },
+        {
+          "title": "Script Loading Strategies",
+          "code": "<!-- 1. Default: blocks parsing -->\n<script src=\"app.js\"></script>\n<!-- Parser stops, downloads, executes, then continues -->\n\n<!-- 2. async: downloads parallel, executes ASAP -->\n<script async src=\"analytics.js\"></script>\n<!-- Good for independent scripts (analytics, ads) -->\n\n<!-- 3. defer: downloads parallel, executes after parse -->\n<script defer src=\"app.js\"></script>\n<!-- Best for app scripts that need the DOM -->\n\n<!-- 4. type=module: deferred by default -->\n<script type=\"module\" src=\"app.mjs\"></script>\n<!-- ES modules are always deferred -->\n\n<!-- Loading order with multiple scripts:\n  defer: preserves order (a.js then b.js)\n  async: no guaranteed order -->",
+          "explanation": "Use defer for your main app bundle. Use async for third-party scripts that don't depend on your code. Never block rendering with synchronous scripts in the head."
+        },
+        {
+          "title": "DOCTYPE and Quirks Mode",
+          "code": "<!-- Standards mode (always use this) -->\n<!DOCTYPE html>\n\n<!-- Without DOCTYPE, browser enters Quirks Mode:\n  - Box model behaves differently\n  - CSS is interpreted inconsistently\n  - Tables, images have different defaults\n  - Modern layout features may not work\n-->\n\n<!-- The lang attribute helps:\n  - Screen readers use correct pronunciation\n  - Browsers offer translation\n  - Search engines know the language\n-->\n<html lang=\"en\">\n<!-- For multilingual content: -->\n<p lang=\"fr\">Bonjour le monde</p>",
+          "explanation": "DOCTYPE html is the shortest valid doctype. It triggers standards mode in all browsers. Without it, browsers use quirks mode with unpredictable CSS behavior."
+        }
+      ],
+      "notes": [
+        "DOCTYPE must be the very first thing in the document, before <html>",
+        "charset meta tag should be within the first 1024 bytes of the document",
+        "Use defer for scripts, not async, when execution order matters"
+      ],
+      "followUps": [
+        "What is the difference between async and defer?",
+        "What happens if you omit the DOCTYPE?",
+        "Why is the lang attribute important?"
+      ],
+      "interviewTips": [
+        "Being able to write a boilerplate from memory shows solid fundamentals",
+        "Know the difference between async and defer - very common question",
+        "Mention preconnect/preload for performance bonus points"
+      ]
+    }
+  },
+  {
+    "id": "html-forms",
+    "sectionId": "html-css-interview",
+    "orderIndex": 4,
+    "title": "HTML Forms & Input Types",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": [
+      "Forms",
+      "Input Types",
+      "Validation",
+      "FormData",
+      "Accessibility"
+    ],
+    "content": {
+      "question": "How do HTML forms work? What input types are available and how do you validate them?",
+      "answer": "HTML forms collect user input and submit it to a server. Key concepts:\n\n1. <form> wraps all inputs with action (URL) and method (GET/POST)\n2. Input types: text, email, password, number, date, file, checkbox, radio, range, color, tel, url, search\n3. Built-in validation: required, pattern, min/max, minlength/maxlength\n4. Labels are required for accessibility\n5. FormData API for JavaScript form handling\n\nHTML5 added many input types that provide native validation and mobile-optimized keyboards.",
+      "codeExamples": [
+        {
+          "title": "Form with Various Input Types",
+          "code": "<form action=\"/api/register\" method=\"POST\">\n  <!-- Text with pattern validation -->\n  <label for=\"username\">Username</label>\n  <input id=\"username\" type=\"text\" name=\"username\"\n         required minlength=\"3\" maxlength=\"20\"\n         pattern=\"[a-zA-Z0-9_]+\"\n         placeholder=\"john_doe\" />\n\n  <!-- Email (validates format) -->\n  <label for=\"email\">Email</label>\n  <input id=\"email\" type=\"email\" name=\"email\"\n         required />\n\n  <!-- Password -->\n  <label for=\"password\">Password</label>\n  <input id=\"password\" type=\"password\" name=\"password\"\n         required minlength=\"8\" />\n\n  <!-- Number with range -->\n  <label for=\"age\">Age</label>\n  <input id=\"age\" type=\"number\" name=\"age\"\n         min=\"18\" max=\"120\" />\n\n  <!-- Date picker -->\n  <label for=\"dob\">Date of Birth</label>\n  <input id=\"dob\" type=\"date\" name=\"dob\" />\n\n  <button type=\"submit\">Register</button>\n</form>",
+          "explanation": "HTML5 input types give you free validation and mobile keyboards. type=email shows @ keyboard, type=number shows numeric pad, type=date shows date picker."
+        },
+        {
+          "title": "Radio, Checkbox, Select",
+          "code": "<form>\n  <!-- Radio: only one selection -->\n  <fieldset>\n    <legend>Plan</legend>\n    <label>\n      <input type=\"radio\" name=\"plan\" value=\"free\"\n             checked />\n      Free\n    </label>\n    <label>\n      <input type=\"radio\" name=\"plan\" value=\"pro\" />\n      Pro\n    </label>\n  </fieldset>\n\n  <!-- Checkbox: multiple selections -->\n  <fieldset>\n    <legend>Skills</legend>\n    <label>\n      <input type=\"checkbox\" name=\"skills\"\n             value=\"html\" />\n      HTML\n    </label>\n    <label>\n      <input type=\"checkbox\" name=\"skills\"\n             value=\"css\" />\n      CSS\n    </label>\n  </fieldset>\n\n  <!-- Select dropdown -->\n  <label for=\"country\">Country</label>\n  <select id=\"country\" name=\"country\">\n    <option value=\"\">Select...</option>\n    <option value=\"us\">United States</option>\n    <option value=\"in\">India</option>\n  </select>\n</form>",
+          "explanation": "Use fieldset/legend to group related inputs. Radio buttons with the same name are mutually exclusive. Checkboxes allow multiple selections."
+        },
+        {
+          "title": "FormData API in JavaScript",
+          "code": "<form id=\"myForm\">\n  <input name=\"title\" value=\"Hello\" />\n  <input type=\"file\" name=\"avatar\" />\n  <button type=\"submit\">Submit</button>\n</form>\n\n<script>\nconst form = document.getElementById('myForm');\nform.addEventListener('submit', async (e) => {\n  e.preventDefault();\n\n  const formData = new FormData(form);\n  // formData.get('title') => 'Hello'\n  // formData.get('avatar') => File object\n\n  // Add extra data\n  formData.append('timestamp', Date.now());\n\n  // Send with fetch\n  const res = await fetch('/api/upload', {\n    method: 'POST',\n    body: formData,\n    // Do NOT set Content-Type header\n    // Browser sets it with boundary automatically\n  });\n});\n</script>",
+          "explanation": "FormData handles file uploads and multipart data. Never manually set Content-Type when using FormData - the browser adds the correct multipart boundary."
+        }
+      ],
+      "notes": [
+        "Always use label elements - either wrapping the input or using for/id",
+        "Use fieldset and legend for grouping related radio/checkbox inputs",
+        "HTML validation is for UX only - always validate on the server too"
+      ],
+      "followUps": [
+        "How do you handle file uploads in HTML forms?",
+        "What is the difference between GET and POST form methods?",
+        "How do you create a custom-styled file input?"
+      ],
+      "interviewTips": [
+        "Know at least 8-10 input types from memory",
+        "Always mention server-side validation alongside client-side",
+        "Show you understand form accessibility (labels, fieldsets)"
+      ]
+    }
+  },
+  {
+    "id": "html-tables-lists",
+    "sectionId": "html-css-interview",
+    "orderIndex": 5,
+    "title": "HTML Tables & Lists",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": [
+      "Tables",
+      "Lists",
+      "Semantic Markup",
+      "Accessibility",
+      "Data Display"
+    ],
+    "content": {
+      "question": "When should you use tables vs other layout methods? What are the different list types?",
+      "answer": "Tables are ONLY for tabular data (rows and columns of related data). Never use tables for page layout.\n\nTable structure: table > thead/tbody/tfoot > tr > th/td\n- th for headers, td for data cells\n- caption for table title\n- scope attribute on th for accessibility\n\nList types:\n- <ul> unordered list (bullets)\n- <ol> ordered list (numbers)\n- <dl> description list (term/definition pairs)\n- Lists can be nested",
+      "codeExamples": [
+        {
+          "title": "Accessible Data Table",
+          "code": "<table>\n  <caption>Q4 Sales Report</caption>\n  <thead>\n    <tr>\n      <th scope=\"col\">Product</th>\n      <th scope=\"col\">Units</th>\n      <th scope=\"col\">Revenue</th>\n    </tr>\n  </thead>\n  <tbody>\n    <tr>\n      <th scope=\"row\">Widget A</th>\n      <td>1,200</td>\n      <td>$24,000</td>\n    </tr>\n    <tr>\n      <th scope=\"row\">Widget B</th>\n      <td>850</td>\n      <td>$17,000</td>\n    </tr>\n  </tbody>\n  <tfoot>\n    <tr>\n      <th scope=\"row\">Total</th>\n      <td>2,050</td>\n      <td>$41,000</td>\n    </tr>\n  </tfoot>\n</table>",
+          "explanation": "scope='col' and scope='row' help screen readers associate data cells with their headers. caption provides a title that screen readers announce."
+        },
+        {
+          "title": "List Types",
+          "code": "<!-- Unordered list -->\n<ul>\n  <li>HTML</li>\n  <li>CSS</li>\n  <li>JavaScript</li>\n</ul>\n\n<!-- Ordered list with start/type -->\n<ol start=\"3\" type=\"a\">\n  <li>Third item (renders as c.)</li>\n  <li>Fourth item (renders as d.)</li>\n</ol>\n\n<!-- Description list -->\n<dl>\n  <dt>HTML</dt>\n  <dd>HyperText Markup Language</dd>\n  <dt>CSS</dt>\n  <dd>Cascading Style Sheets</dd>\n  <dd>Used for styling web pages</dd>\n</dl>\n\n<!-- Nested lists -->\n<ul>\n  <li>Frontend\n    <ul>\n      <li>React</li>\n      <li>Vue</li>\n    </ul>\n  </li>\n  <li>Backend</li>\n</ul>",
+          "explanation": "Use ul for unordered items, ol when order matters, dl for key-value pairs like glossaries or metadata."
+        },
+        {
+          "title": "Styling Tables with CSS",
+          "code": "<style>\ntable {\n  width: 100%;\n  border-collapse: collapse;\n  /* collapse merges adjacent borders */\n}\n\nth, td {\n  padding: 0.75rem 1rem;\n  text-align: left;\n  border-bottom: 1px solid #e5e7eb;\n}\n\nthead th {\n  background: #f9fafb;\n  font-weight: 600;\n}\n\n/* Zebra stripes */\ntbody tr:nth-child(even) {\n  background: #f9fafb;\n}\n\n/* Hover effect */\ntbody tr:hover {\n  background: #eff6ff;\n}\n\n/* Responsive: horizontal scroll */\n.table-wrapper {\n  overflow-x: auto;\n  -webkit-overflow-scrolling: touch;\n}\n</style>\n\n<div class=\"table-wrapper\">\n  <table><!-- table content --></table>\n</div>",
+          "explanation": "border-collapse: collapse is essential for clean table borders. Wrap tables in a scrollable container for mobile responsiveness."
+        }
+      ],
+      "notes": [
+        "Never use tables for layout - only for actual tabular data",
+        "Use border-collapse: collapse for clean table styling",
+        "Description lists (dl/dt/dd) are underused but great for metadata"
+      ],
+      "followUps": [
+        "How do you make a responsive table on mobile?",
+        "What is the difference between border-collapse and border-spacing?",
+        "How do screen readers navigate tables?"
+      ],
+      "interviewTips": [
+        "Emphasize that tables are for data, not layout",
+        "Know the complete table structure: caption, thead, tbody, tfoot",
+        "Mention scope attribute for accessibility"
+      ]
+    }
+  },
+  {
+    "id": "html5-apis",
+    "sectionId": "html-css-interview",
+    "orderIndex": 6,
+    "title": "HTML5 APIs (Geolocation, Storage)",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "localStorage",
+      "sessionStorage",
+      "Geolocation",
+      "Web Workers",
+      "History API"
+    ],
+    "content": {
+      "question": "What are the key HTML5 APIs? Explain localStorage vs sessionStorage.",
+      "answer": "HTML5 introduced powerful browser APIs:\n\n1. Web Storage: localStorage (persists) vs sessionStorage (per tab)\n2. Geolocation: get user's location with permission\n3. Web Workers: background threads for heavy computation\n4. History API: manipulate browser history (SPA routing)\n5. Canvas/WebGL: 2D/3D graphics\n6. Drag and Drop: native drag/drop support\n\nlocalStorage vs sessionStorage:\n- localStorage: persists until manually cleared, shared across tabs\n- sessionStorage: cleared when tab closes, per-tab isolation\n- Both: ~5MB limit, synchronous, strings only",
+      "codeExamples": [
+        {
+          "title": "localStorage vs sessionStorage",
+          "code": "// localStorage: persists across sessions\nlocalStorage.setItem('theme', 'dark');\nlocalStorage.getItem('theme'); // 'dark'\nlocalStorage.removeItem('theme');\nlocalStorage.clear(); // remove all\n\n// Store objects (must serialize)\nconst user = { name: 'John', age: 25 };\nlocalStorage.setItem('user', JSON.stringify(user));\nconst stored = JSON.parse(\n  localStorage.getItem('user')\n);\n\n// sessionStorage: same API, per-tab lifetime\nsessionStorage.setItem('formDraft', '{...}');\n// Gone when tab closes\n\n// Listen for storage changes (cross-tab)\nwindow.addEventListener('storage', (e) => {\n  console.log(e.key, e.oldValue, e.newValue);\n  // Only fires in OTHER tabs\n});",
+          "explanation": "localStorage persists forever (until cleared). sessionStorage is isolated per tab. Both store strings only - use JSON.stringify/parse for objects."
+        },
+        {
+          "title": "Geolocation API",
+          "code": "// Check support\nif ('geolocation' in navigator) {\n  // One-time position\n  navigator.geolocation.getCurrentPosition(\n    (position) => {\n      const { latitude, longitude } = position.coords;\n      console.log(`Lat: ${latitude}, Lng: ${longitude}`);\n      console.log(`Accuracy: ${position.coords.accuracy}m`);\n    },\n    (error) => {\n      switch (error.code) {\n        case error.PERMISSION_DENIED:\n          console.log('User denied geolocation');\n          break;\n        case error.POSITION_UNAVAILABLE:\n          console.log('Location unavailable');\n          break;\n        case error.TIMEOUT:\n          console.log('Request timed out');\n          break;\n      }\n    },\n    { enableHighAccuracy: true, timeout: 10000 }\n  );\n\n  // Watch position (continuous)\n  const watchId = navigator.geolocation.watchPosition(\n    (pos) => console.log(pos.coords)\n  );\n  navigator.geolocation.clearWatch(watchId);\n}",
+          "explanation": "Geolocation requires user permission (HTTPS only in production). Always handle errors gracefully - the user may deny access."
+        },
+        {
+          "title": "History API for SPA Routing",
+          "code": "// Push new state (no page reload)\nhistory.pushState(\n  { page: 'about' },  // state object\n  '',                  // title (ignored by most browsers)\n  '/about'             // new URL\n);\n\n// Replace current state\nhistory.replaceState(\n  { page: 'home' }, '', '/'\n);\n\n// Listen for back/forward navigation\nwindow.addEventListener('popstate', (e) => {\n  console.log('Navigation:', e.state);\n  // Render the appropriate page\n  renderPage(e.state?.page || 'home');\n});\n\n// Go back/forward programmatically\nhistory.back();\nhistory.forward();\nhistory.go(-2); // go back 2 pages",
+          "explanation": "React Router, Vue Router, and other SPA routers are built on top of the History API. pushState changes the URL without a page reload."
+        }
+      ],
+      "notes": [
+        "localStorage is synchronous and blocks the main thread - don't store large data",
+        "Geolocation only works on HTTPS in production",
+        "Web Workers can't access the DOM - communicate via postMessage"
+      ],
+      "followUps": [
+        "What are cookies vs localStorage vs sessionStorage?",
+        "How do Web Workers communicate with the main thread?",
+        "What is IndexedDB and when would you use it over localStorage?"
+      ],
+      "interviewTips": [
+        "Know the storage limits: cookies ~4KB, localStorage ~5MB, IndexedDB ~unlimited",
+        "Mention security: localStorage is vulnerable to XSS attacks",
+        "Show awareness that these APIs require feature detection"
+      ]
+    }
+  },
+  {
+    "id": "html-meta-seo",
+    "sectionId": "html-css-interview",
+    "orderIndex": 7,
+    "title": "Meta Tags & SEO",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": [
+      "Meta Tags",
+      "SEO",
+      "Open Graph",
+      "Structured Data",
+      "Social Sharing"
+    ],
+    "content": {
+      "question": "What are meta tags? How do they affect SEO and social sharing?",
+      "answer": "Meta tags provide metadata about the HTML document. They don't display on the page but are read by browsers, search engines, and social platforms.\n\nKey meta tags:\n1. charset - character encoding (always UTF-8)\n2. viewport - mobile rendering control\n3. description - search result snippet (150-160 chars)\n4. robots - control indexing/following\n5. Open Graph (og:) - social media previews\n6. Twitter Card - Twitter-specific previews\n\nSEO best practices: unique title/description per page, proper heading hierarchy, semantic HTML, fast loading.",
+      "codeExamples": [
+        {
+          "title": "Essential Meta Tags",
+          "code": "<head>\n  <!-- Character encoding -->\n  <meta charset=\"UTF-8\" />\n\n  <!-- Viewport for mobile -->\n  <meta name=\"viewport\"\n        content=\"width=device-width, initial-scale=1\" />\n\n  <!-- SEO -->\n  <title>Best Coding Bootcamps 2025 | LearnCode</title>\n  <meta name=\"description\"\n        content=\"Compare top coding bootcamps.\n        Find the best program for your career goals.\" />\n\n  <!-- Robots -->\n  <meta name=\"robots\" content=\"index, follow\" />\n  <!-- noindex: don't show in search results -->\n  <!-- nofollow: don't follow links on this page -->\n\n  <!-- Canonical URL (avoid duplicate content) -->\n  <link rel=\"canonical\"\n        href=\"https://example.com/bootcamps\" />\n\n  <!-- Language alternatives -->\n  <link rel=\"alternate\" hreflang=\"es\"\n        href=\"https://example.com/es/bootcamps\" />\n</head>",
+          "explanation": "Every page needs charset, viewport, title, and description. Canonical URLs prevent duplicate content penalties when the same content has multiple URLs."
+        },
+        {
+          "title": "Open Graph & Twitter Cards",
+          "code": "<!-- Open Graph (Facebook, LinkedIn, etc.) -->\n<meta property=\"og:title\"\n      content=\"Best Coding Bootcamps 2025\" />\n<meta property=\"og:description\"\n      content=\"Compare top coding bootcamps.\" />\n<meta property=\"og:image\"\n      content=\"https://example.com/og-image.jpg\" />\n<meta property=\"og:url\"\n      content=\"https://example.com/bootcamps\" />\n<meta property=\"og:type\" content=\"article\" />\n<meta property=\"og:site_name\" content=\"LearnCode\" />\n\n<!-- Twitter Card -->\n<meta name=\"twitter:card\"\n      content=\"summary_large_image\" />\n<meta name=\"twitter:title\"\n      content=\"Best Coding Bootcamps 2025\" />\n<meta name=\"twitter:description\"\n      content=\"Compare top coding bootcamps.\" />\n<meta name=\"twitter:image\"\n      content=\"https://example.com/twitter-card.jpg\" />\n\n<!-- OG image should be 1200x630px\n     Twitter image should be 1200x600px -->",
+          "explanation": "Open Graph controls how your page appears when shared on social media. Without these tags, platforms guess from page content, often with poor results."
+        },
+        {
+          "title": "Structured Data (JSON-LD)",
+          "code": "<!-- JSON-LD structured data for rich snippets -->\n<script type=\"application/ld+json\">\n{\n  \"@context\": \"https://schema.org\",\n  \"@type\": \"Article\",\n  \"headline\": \"Best Coding Bootcamps 2025\",\n  \"author\": {\n    \"@type\": \"Person\",\n    \"name\": \"Jane Smith\"\n  },\n  \"datePublished\": \"2025-01-15\",\n  \"image\": \"https://example.com/article-image.jpg\",\n  \"publisher\": {\n    \"@type\": \"Organization\",\n    \"name\": \"LearnCode\",\n    \"logo\": {\n      \"@type\": \"ImageObject\",\n      \"url\": \"https://example.com/logo.png\"\n    }\n  }\n}\n</script>\n\n<!-- Other types: Product, FAQ, Event,\n     BreadcrumbList, JobPosting, etc. -->",
+          "explanation": "Structured data helps Google show rich snippets (stars, prices, FAQs) in search results. JSON-LD is the recommended format by Google."
+        }
+      ],
+      "notes": [
+        "Title should be 50-60 characters, description 150-160 characters",
+        "Each page should have a unique title and description",
+        "Test Open Graph tags with Facebook Sharing Debugger or Twitter Card Validator"
+      ],
+      "followUps": [
+        "What is the difference between meta name and meta property?",
+        "How do you prevent a page from being indexed?",
+        "What are rich snippets and how do you get them?"
+      ],
+      "interviewTips": [
+        "Know the essential meta tags from memory",
+        "Mention structured data/JSON-LD for bonus points",
+        "Show you understand that SEO is about content quality, not just meta tags"
+      ]
+    }
+  },
+  {
+    "id": "css-selectors",
+    "sectionId": "html-css-interview",
+    "orderIndex": 8,
+    "title": "CSS Selectors & Combinators",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": [
+      "CSS Selectors",
+      "Combinators",
+      "Attribute Selectors",
+      "Pseudo-classes",
+      "Specificity"
+    ],
+    "content": {
+      "question": "What are the different types of CSS selectors? Explain combinators.",
+      "answer": "CSS selectors target elements for styling:\n\n1. Simple: element (div), class (.nav), ID (#header), universal (*)\n2. Attribute: [type='text'], [href^='https'], [class~='active']\n3. Combinators:\n   - Descendant (space): div p (any p inside div)\n   - Child (>): div > p (direct child p only)\n   - Adjacent sibling (+): h2 + p (p immediately after h2)\n   - General sibling (~): h2 ~ p (all p siblings after h2)\n4. Pseudo-classes: :hover, :first-child, :nth-child()\n5. Pseudo-elements: ::before, ::after, ::placeholder",
+      "codeExamples": [
+        {
+          "title": "Selector Types",
+          "code": "/* Element selector */\np { color: #333; }\n\n/* Class selector */\n.highlight { background: yellow; }\n\n/* ID selector */\n#hero { height: 100vh; }\n\n/* Universal selector */\n* { margin: 0; padding: 0; }\n\n/* Attribute selectors */\n[type=\"email\"] { border-color: blue; }\n[href^=\"https\"] { color: green; }  /* starts with */\n[href$=\".pdf\"] { color: red; }     /* ends with */\n[class*=\"btn\"] { cursor: pointer; } /* contains */\n\n/* Grouping */\nh1, h2, h3 { font-family: serif; }\n\n/* Chaining (must match all) */\ninput.large[required] {\n  border: 2px solid red;\n}",
+          "explanation": "Attribute selectors are powerful for targeting elements without adding classes. ^= starts with, $= ends with, *= contains."
+        },
+        {
+          "title": "Combinators",
+          "code": "/* Descendant: any level deep */\n.card p { margin-bottom: 0.5rem; }\n/* Matches <div class='card'><div><p>this</p></div></div> */\n\n/* Child: direct children only */\n.card > p { font-weight: bold; }\n/* Only matches <div class='card'><p>this</p></div> */\n\n/* Adjacent sibling: immediately after */\nh2 + p { font-size: 1.2rem; }\n/* Only the first <p> right after <h2> */\n\n/* General sibling: all after */\nh2 ~ p { color: #666; }\n/* All <p> elements after <h2> at same level */\n\n/* Combining combinators */\n.sidebar > ul > li > a:hover {\n  color: blue;\n}",
+          "explanation": "Child (>) is stricter than descendant (space). Adjacent (+) targets one element, general sibling (~) targets all matching siblings."
+        },
+        {
+          "title": "Practical Selector Patterns",
+          "code": "/* Style links by type */\na[href^=\"http\"]:not([href*=\"mysite.com\"]) {\n  /* External links */\n  color: #e74c3c;\n}\na[href^=\"mailto:\"] {\n  /* Email links */\n  color: #3498db;\n}\n\n/* Style empty elements */\n.card:empty {\n  display: none;\n}\n\n/* First and last items */\n.nav-item:first-child { margin-left: 0; }\n.nav-item:last-child { margin-right: 0; }\n\n/* Every other row */\ntbody tr:nth-child(odd) {\n  background: #f8f9fa;\n}\n\n/* All except first */\n.list-item:not(:first-child) {\n  border-top: 1px solid #eee;\n}",
+          "explanation": "Combining selectors with :not() and attribute selectors can replace many JavaScript-based style toggles."
+        }
+      ],
+      "notes": [
+        "Prefer class selectors over element or ID selectors for maintainability",
+        "Avoid deeply nested selectors (more than 3 levels) for performance",
+        ":not() pseudo-class accepts simple selectors, not complex ones (in older CSS)"
+      ],
+      "followUps": [
+        "What is the difference between :nth-child and :nth-of-type?",
+        "How does the :not() pseudo-class work?",
+        "What are the performance implications of different selectors?"
+      ],
+      "interviewTips": [
+        "Know all four combinators and draw examples of what they match",
+        "Attribute selectors are rarely mentioned - showing knowledge of them impresses",
+        "Be able to write a selector for a specific element without changing the HTML"
+      ]
+    }
+  },
+  {
+    "id": "css-specificity",
+    "sectionId": "html-css-interview",
+    "orderIndex": 9,
+    "title": "CSS Specificity Deep Dive",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "Specificity",
+      "Cascade",
+      "Inheritance",
+      "!important",
+      "Specificity Calculation"
+    ],
+    "content": {
+      "question": "How does CSS specificity work? How do you calculate it?",
+      "answer": "Specificity determines which CSS rule wins when multiple rules target the same element.\n\nCalculation (A, B, C):\n- A: Number of ID selectors\n- B: Number of class selectors, attribute selectors, pseudo-classes\n- C: Number of element selectors, pseudo-elements\n\nCascade order (highest to lowest priority):\n1. !important declarations\n2. Inline styles (style attribute)\n3. ID selectors (#id)\n4. Class/attribute/pseudo-class selectors\n5. Element/pseudo-element selectors\n6. Universal selector (*) - zero specificity\n\nEqual specificity: last rule in source order wins.\nInheritance: some properties inherit (color, font), others don't (margin, padding).",
+      "codeExamples": [
+        {
+          "title": "Specificity Calculation Examples",
+          "code": "/* (0, 0, 1) - one element */\np { color: black; }\n\n/* (0, 1, 0) - one class */\n.text { color: blue; }\n\n/* (0, 1, 1) - one class + one element */\np.text { color: green; }\n\n/* (1, 0, 0) - one ID */\n#main { color: red; }\n\n/* (0, 2, 1) - two classes + one element */\n.container .text p { color: purple; }\n\n/* (1, 1, 1) - one ID + one class + one element */\n#main .text p { color: orange; }\n\n/* (0, 1, 0) - one pseudo-class */\n:hover { color: pink; }\n\n/* (0, 0, 2) - one element + one pseudo-element */\np::first-line { color: gray; }\n\n/* Winner for <p class=\"text\" id=\"main\">:\n   #main (1,0,0) beats .text (0,1,0)\n   beats p (0,0,1) */",
+          "explanation": "Compare specificity left to right: (1,0,0) always beats (0,99,99). IDs always beat classes, classes always beat elements."
+        },
+        {
+          "title": "Cascade and Inheritance",
+          "code": "/* Cascade: same specificity, last wins */\n.btn { color: red; }\n.btn { color: blue; } /* blue wins */\n\n/* Inheritance: some props inherit */\n.parent {\n  color: navy;       /* inherits to children */\n  font-family: sans-serif; /* inherits */\n  border: 1px solid; /* does NOT inherit */\n  padding: 1rem;     /* does NOT inherit */\n}\n\n/* Force inheritance */\n.child {\n  border: inherit; /* explicitly inherit */\n}\n\n/* Reset to default */\n.reset {\n  color: initial;  /* browser default */\n  color: unset;    /* inherit if inheritable, initial if not */\n  all: unset;      /* reset ALL properties */\n}\n\n/* Inherited properties:\n   color, font-*, text-*, line-height,\n   visibility, cursor, list-style\n\n   NOT inherited:\n   margin, padding, border, background,\n   width, height, display, position */",
+          "explanation": "Inheritance flows from parent to child for text-related properties. Layout properties like margin and padding never inherit."
+        },
+        {
+          "title": "Avoiding Specificity Wars",
+          "code": "/* BAD: specificity escalation */\n.nav .menu .item a { color: blue; }\n.nav .menu .item a.active { color: red; }\n/* Need even more specificity to override? */\n#nav .menu .item a.active { color: green; }\n/* This spirals out of control! */\n\n/* GOOD: flat, low specificity */\n.nav-link { color: blue; }\n.nav-link--active { color: red; }\n\n/* AVOID !important (hard to override) */\n.text { color: red !important; }\n/* Only way to override: */\n.text { color: blue !important; } /* specificity war */\n\n/* Acceptable uses of !important: */\n/* 1. Utility classes */\n.hidden { display: none !important; }\n/* 2. Overriding third-party CSS */\n.third-party-widget {\n  margin: 0 !important;\n}",
+          "explanation": "Keep specificity low and flat. BEM naming (.block__element--modifier) helps avoid nesting. Only use !important for utilities or third-party overrides."
+        }
+      ],
+      "notes": [
+        "Inline styles (1,0,0,0) beat any selector-based rule",
+        "!important trumps everything (even inline), but avoid it",
+        "The universal selector (*) has zero specificity"
+      ],
+      "followUps": [
+        "What is the difference between initial, inherit, and unset?",
+        "How do CSS layers (@layer) affect specificity?",
+        "How would you override a third-party stylesheet?"
+      ],
+      "interviewTips": [
+        "Be able to calculate specificity for any given selector on the spot",
+        "Know which properties inherit and which don't",
+        "Suggest BEM or CSS Modules as solutions to specificity issues"
+      ]
+    }
+  },
+  {
+    "id": "css-positioning",
+    "sectionId": "html-css-interview",
+    "orderIndex": 10,
+    "title": "CSS Positioning (static to sticky)",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": [
+      "Position",
+      "Static",
+      "Relative",
+      "Absolute",
+      "Fixed",
+      "Sticky",
+      "Z-Index"
+    ],
+    "content": {
+      "question": "Explain the different CSS position values. How does z-index work?",
+      "answer": "CSS position values:\n\n1. static (default): normal document flow, top/left/z-index ignored\n2. relative: stays in flow, offset from its normal position\n3. absolute: removed from flow, positioned relative to nearest positioned ancestor\n4. fixed: removed from flow, positioned relative to viewport\n5. sticky: hybrid - relative until scroll threshold, then fixed\n\nZ-index only works on positioned elements (not static). It creates stacking contexts.",
+      "codeExamples": [
+        {
+          "title": "Position Values Compared",
+          "code": "/* static: default, ignores top/left */\n.static { position: static; }\n\n/* relative: offset from normal position */\n.relative {\n  position: relative;\n  top: 10px;   /* pushed down 10px */\n  left: 20px;  /* pushed right 20px */\n  /* Original space is preserved */\n}\n\n/* absolute: relative to positioned parent */\n.parent {\n  position: relative; /* creates positioning context */\n}\n.absolute {\n  position: absolute;\n  top: 0;\n  right: 0;\n  /* Removed from flow, top-right of .parent */\n}\n\n/* fixed: relative to viewport */\n.fixed-header {\n  position: fixed;\n  top: 0;\n  left: 0;\n  width: 100%;\n  /* Stays at top when scrolling */\n}\n\n/* sticky: relative until scroll point */\n.sticky-nav {\n  position: sticky;\n  top: 0; /* becomes fixed at top: 0 */\n}",
+          "explanation": "Absolute needs a positioned ancestor (relative is most common). Without one, it positions relative to the document body."
+        },
+        {
+          "title": "Z-Index and Stacking Context",
+          "code": "/* z-index only works on positioned elements */\n.behind {\n  position: relative;\n  z-index: 1;\n}\n.in-front {\n  position: relative;\n  z-index: 10;\n}\n\n/* Stacking context: z-index is LOCAL */\n.parent-a {\n  position: relative;\n  z-index: 1;\n}\n.parent-a .child {\n  position: relative;\n  z-index: 9999; /* still behind parent-b! */\n}\n.parent-b {\n  position: relative;\n  z-index: 2; /* parent-b is above parent-a */\n}\n\n/* What creates a stacking context: */\n/* - position + z-index (not auto) */\n/* - opacity < 1 */\n/* - transform, filter, perspective */\n/* - isolation: isolate */",
+          "explanation": "Z-index is scoped to stacking contexts. A child can never appear above an element that is above its parent's stacking context."
+        },
+        {
+          "title": "Practical: Modal Overlay",
+          "code": "/* Modal overlay pattern */\n.overlay {\n  position: fixed;\n  inset: 0; /* shorthand for top/right/bottom/left: 0 */\n  background: rgb(0 0 0 / 0.5);\n  z-index: 100;\n  display: flex;\n  align-items: center;\n  justify-content: center;\n}\n\n.modal {\n  position: relative;\n  background: white;\n  padding: 2rem;\n  border-radius: 0.5rem;\n  max-width: 500px;\n  width: 90%;\n}\n\n/* Close button in top-right */\n.modal .close-btn {\n  position: absolute;\n  top: 0.5rem;\n  right: 0.5rem;\n}",
+          "explanation": "Fixed positioning with inset: 0 creates a full-screen overlay. The modal inside uses relative positioning to be the anchor for the absolute close button."
+        }
+      ],
+      "notes": [
+        "Sticky requires a top/bottom value to know when to 'stick'",
+        "Absolute elements are sized to their content unless given width/height",
+        "Use inset: 0 as shorthand for top: 0; right: 0; bottom: 0; left: 0"
+      ],
+      "followUps": [
+        "How does sticky positioning work inside a scrollable container?",
+        "What creates a new stacking context?",
+        "How do you center an absolute element?"
+      ],
+      "interviewTips": [
+        "Draw diagrams showing how each position value affects layout",
+        "Stacking context is a common gotcha - knowing it shows depth",
+        "Mention the inset shorthand to show modern CSS knowledge"
+      ]
+    }
+  },
+  {
+    "id": "css-float-clear",
+    "sectionId": "html-css-interview",
+    "orderIndex": 11,
+    "title": "CSS Float & Clear",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": [
+      "Float",
+      "Clear",
+      "Clearfix",
+      "Block Formatting Context",
+      "Legacy Layout"
+    ],
+    "content": {
+      "question": "How do CSS floats work? What is the clearfix hack?",
+      "answer": "Float was originally for text wrapping around images, later used for layouts (before Flexbox/Grid).\n\nfloat: left/right removes the element from normal flow and pushes it to the left/right. Following content wraps around it.\n\nProblems:\n- Parent collapses (no height) when all children float\n- Solution: clearfix hack or overflow: hidden on parent\n\nclear: left/right/both prevents an element from wrapping next to floated elements.\n\nModern CSS: Use Flexbox/Grid instead. Floats are still useful for text wrapping around images.",
+      "codeExamples": [
+        {
+          "title": "Float Basics and Clearing",
+          "code": "/* Float an image, text wraps around it */\n.article img {\n  float: left;\n  margin: 0 1rem 1rem 0;\n}\n\n/* Clear: stop wrapping */\n.article .section {\n  clear: both;\n  /* This element starts below any floats */\n}\n\n/* Problem: parent collapses */\n.parent {\n  border: 1px solid red;\n  /* If all children are floated,\n     parent has 0 height! */\n}\n.parent .child {\n  float: left;\n  width: 50%;\n}",
+          "explanation": "Floated elements are removed from normal flow. The parent doesn't know about them, so it collapses to zero height."
+        },
+        {
+          "title": "Clearfix Solutions",
+          "code": "/* Solution 1: Clearfix pseudo-element (classic) */\n.clearfix::after {\n  content: '';\n  display: table;\n  clear: both;\n}\n\n/* Solution 2: overflow on parent */\n.parent {\n  overflow: hidden;\n  /* or overflow: auto */\n  /* Creates a Block Formatting Context */\n}\n\n/* Solution 3: display: flow-root (modern) */\n.parent {\n  display: flow-root;\n  /* Best solution - explicitly creates a BFC\n     without side effects */\n}\n\n/* Using clearfix */\n<div class=\"clearfix\">\n  <div style=\"float: left;\">Left</div>\n  <div style=\"float: right;\">Right</div>\n</div>\n<!-- Parent now wraps floated children -->",
+          "explanation": "display: flow-root is the modern clearfix. It creates a Block Formatting Context (BFC) that contains floats without side effects like clipping overflow."
+        },
+        {
+          "title": "When Floats Are Still Useful",
+          "code": "/* Text wrapping around image - float's original purpose */\n.article {\n  max-width: 600px;\n}\n.article img {\n  float: left;\n  width: 200px;\n  margin: 0 1rem 0.5rem 0;\n  border-radius: 0.25rem;\n}\n.article p {\n  /* Text wraps around the image */\n}\n\n/* Drop cap effect */\n.article p:first-of-type::first-letter {\n  float: left;\n  font-size: 3rem;\n  line-height: 1;\n  padding-right: 0.5rem;\n  font-weight: bold;\n  color: #1a56db;\n}\n\n/* For layouts, use Flexbox or Grid instead */\n.layout {\n  display: flex; /* not float! */\n}",
+          "explanation": "Float is still the best solution for text wrapping around images and drop caps. For everything else, use Flexbox or Grid."
+        }
+      ],
+      "notes": [
+        "Floats are legacy for layouts - use Flexbox/Grid for modern layouts",
+        "display: flow-root is the cleanest clearfix solution",
+        "Block Formatting Context (BFC) contains floats and prevents margin collapse"
+      ],
+      "followUps": [
+        "What is a Block Formatting Context (BFC)?",
+        "Why did we stop using floats for layouts?",
+        "Can you achieve text wrapping with Flexbox?"
+      ],
+      "interviewTips": [
+        "Show you know floats are legacy but understand WHY they were used",
+        "Mention display: flow-root as the modern clearfix",
+        "Demonstrate you'd use Flexbox/Grid for layouts today"
+      ]
+    }
+  },
+  {
+    "id": "css-flexbox",
+    "sectionId": "html-css-interview",
+    "orderIndex": 12,
+    "title": "Flexbox Deep Dive",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": [
+      "Flexbox",
+      "Flex Container",
+      "Flex Items",
+      "Alignment",
+      "Wrapping",
+      "Ordering"
+    ],
+    "content": {
+      "question": "Explain Flexbox in depth. What are the container vs item properties?",
+      "answer": "Flexbox is a 1-dimensional layout system for arranging items in rows or columns.\n\nContainer properties (on parent):\n- display: flex\n- flex-direction: row | column | row-reverse | column-reverse\n- justify-content: main axis alignment\n- align-items: cross axis alignment\n- flex-wrap: wrap | nowrap\n- gap: spacing between items\n\nItem properties (on children):\n- flex-grow: how much to grow (0 = don't)\n- flex-shrink: how much to shrink (1 = default)\n- flex-basis: initial size before growing/shrinking\n- flex: shorthand (grow shrink basis)\n- align-self: override align-items for one item\n- order: change visual order",
+      "codeExamples": [
+        {
+          "title": "Container Properties",
+          "code": ".flex-container {\n  display: flex;\n\n  /* Direction */\n  flex-direction: row; /* default: left to right */\n  /* column: top to bottom */\n\n  /* Main axis (horizontal in row) */\n  justify-content: flex-start;\n  /* center, flex-end, space-between,\n     space-around, space-evenly */\n\n  /* Cross axis (vertical in row) */\n  align-items: stretch; /* default: fill height */\n  /* center, flex-start, flex-end, baseline */\n\n  /* Wrapping */\n  flex-wrap: wrap; /* items wrap to next line */\n\n  /* Multi-line cross axis */\n  align-content: center;\n  /* Only works with flex-wrap: wrap */\n\n  /* Gap between items */\n  gap: 1rem;\n  /* row-gap: 1rem; column-gap: 2rem; */\n}",
+          "explanation": "justify-content controls the main axis (direction of flex-direction). align-items controls the cross axis (perpendicular to direction)."
+        },
+        {
+          "title": "Item Properties and flex Shorthand",
+          "code": ".item {\n  /* flex shorthand: grow shrink basis */\n  flex: 0 1 auto; /* default */\n\n  flex: 1;       /* flex: 1 1 0% - grow equally */\n  flex: auto;    /* flex: 1 1 auto - grow from content size */\n  flex: none;    /* flex: 0 0 auto - no flex */\n  flex: 0 0 200px; /* fixed 200px, no grow/shrink */\n}\n\n/* Grow: distribute extra space */\n.sidebar { flex: 0 0 250px; } /* fixed 250px */\n.content { flex: 1; }         /* takes remaining space */\n.aside   { flex: 0 0 200px; } /* fixed 200px */\n\n/* Self alignment */\n.item-special {\n  align-self: center; /* override container's align-items */\n}\n\n/* Reorder visually (not in DOM) */\n.first-visually { order: -1; }\n.last-visually  { order: 99; }",
+          "explanation": "flex: 1 is the most common - items grow equally to fill space. flex: 0 0 <size> creates fixed-width items that don't flex."
+        },
+        {
+          "title": "Common Flexbox Patterns",
+          "code": "/* Center anything */\n.center {\n  display: flex;\n  justify-content: center;\n  align-items: center;\n}\n\n/* Navbar: logo left, links right */\n.navbar {\n  display: flex;\n  justify-content: space-between;\n  align-items: center;\n}\n\n/* Equal height cards */\n.card-row {\n  display: flex;\n  gap: 1rem;\n}\n.card {\n  flex: 1; /* equal width, equal height */\n}\n\n/* Footer at bottom of page */\n.page {\n  display: flex;\n  flex-direction: column;\n  min-height: 100vh;\n}\n.page main { flex: 1; } /* pushes footer down */\n\n/* Responsive cards with wrapping */\n.grid {\n  display: flex;\n  flex-wrap: wrap;\n  gap: 1rem;\n}\n.grid .card {\n  flex: 1 1 300px; /* min 300px, grow to fill */\n}",
+          "explanation": "These patterns cover 90% of Flexbox use cases. The sticky footer pattern with flex-direction: column and flex: 1 on main is extremely common."
+        }
+      ],
+      "notes": [
+        "flex: 1 means flex: 1 1 0% (grow, shrink, zero basis)",
+        "gap works in Flexbox (not just Grid) in all modern browsers",
+        "Flex items cannot use float or clear"
+      ],
+      "followUps": [
+        "What is the difference between flex-basis and width?",
+        "How does flex-shrink work when items overflow?",
+        "When would you use order vs changing DOM order?"
+      ],
+      "interviewTips": [
+        "Know the difference between justify-content and align-items cold",
+        "Be able to code the centering, navbar, and sticky footer patterns",
+        "Understand the flex shorthand values"
+      ]
+    }
+  },
+  {
+    "id": "css-grid",
+    "sectionId": "html-css-interview",
+    "orderIndex": 13,
+    "title": "CSS Grid Deep Dive",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": [
+      "CSS Grid",
+      "Grid Template",
+      "Grid Areas",
+      "Auto-fill",
+      "Subgrid",
+      "Alignment"
+    ],
+    "content": {
+      "question": "Explain CSS Grid in depth. When should you use Grid vs Flexbox?",
+      "answer": "CSS Grid is a 2-dimensional layout system controlling both rows and columns simultaneously.\n\nGrid vs Flexbox:\n- Grid: 2D (rows AND columns), good for page layouts and complex grids\n- Flexbox: 1D (row OR column), good for component layouts and alignment\n\nKey concepts:\n- Explicit grid: defined with grid-template-columns/rows\n- Implicit grid: auto-created for extra items\n- fr unit: fraction of available space\n- Grid lines: numbered lines between tracks\n- Grid areas: named regions for placement",
+      "codeExamples": [
+        {
+          "title": "Grid Template and Placement",
+          "code": "/* Define a grid */\n.layout {\n  display: grid;\n  grid-template-columns: 250px 1fr 1fr;\n  grid-template-rows: auto 1fr auto;\n  gap: 1rem;\n  min-height: 100vh;\n}\n\n/* Place items by line numbers */\n.header {\n  grid-column: 1 / -1; /* span all columns */\n  /* -1 means last line */\n}\n.sidebar {\n  grid-column: 1;\n  grid-row: 2;\n}\n.content {\n  grid-column: 2 / 4; /* columns 2-3 */\n  grid-row: 2;\n}\n.footer {\n  grid-column: 1 / -1;\n  grid-row: 3;\n}\n\n/* Shorthand: grid-area: row-start / col-start / row-end / col-end */\n.item {\n  grid-area: 2 / 2 / 3 / 4;\n}",
+          "explanation": "Grid lines are numbered starting at 1. Use -1 for the last line. grid-column: 1 / -1 spans the entire width."
+        },
+        {
+          "title": "Grid Template Areas",
+          "code": ".layout {\n  display: grid;\n  grid-template-columns: 250px 1fr 300px;\n  grid-template-rows: auto 1fr auto;\n  grid-template-areas:\n    \"header  header  header\"\n    \"sidebar content aside\"\n    \"footer  footer  footer\";\n  gap: 1rem;\n  min-height: 100vh;\n}\n\n.header  { grid-area: header; }\n.sidebar { grid-area: sidebar; }\n.content { grid-area: content; }\n.aside   { grid-area: aside; }\n.footer  { grid-area: footer; }\n\n/* Responsive: stack on mobile */\n@media (max-width: 768px) {\n  .layout {\n    grid-template-columns: 1fr;\n    grid-template-areas:\n      \"header\"\n      \"content\"\n      \"sidebar\"\n      \"aside\"\n      \"footer\";\n  }\n}",
+          "explanation": "Grid template areas are the most readable way to define layouts. Each string is a row, each word is a column. Repeat a name to span cells."
+        },
+        {
+          "title": "Auto-fill Responsive Grid",
+          "code": "/* Auto-fill: responsive without media queries */\n.card-grid {\n  display: grid;\n  grid-template-columns:\n    repeat(auto-fill, minmax(280px, 1fr));\n  gap: 1.5rem;\n}\n/* Cards are min 280px, grow to fill row */\n/* auto-fill creates empty tracks */\n/* auto-fit collapses empty tracks */\n\n/* Dense packing (fills gaps) */\n.masonry-like {\n  display: grid;\n  grid-template-columns: repeat(3, 1fr);\n  grid-auto-flow: dense;\n  gap: 1rem;\n}\n.wide { grid-column: span 2; }\n.tall { grid-row: span 2; }\n\n/* Alignment in grid */\n.grid {\n  /* Align all items */\n  justify-items: center; /* horizontal */\n  align-items: center;   /* vertical */\n\n  /* Align the grid itself */\n  justify-content: center;\n  align-content: center;\n}",
+          "explanation": "repeat(auto-fill, minmax(280px, 1fr)) is the most powerful one-liner in CSS Grid - a fully responsive card grid with no media queries."
+        }
+      ],
+      "notes": [
+        "auto-fill creates empty tracks, auto-fit collapses them - use auto-fill for consistent sizing",
+        "fr unit distributes free space AFTER fixed and min-content tracks are sized",
+        "Grid items can overlap - use z-index to control stacking"
+      ],
+      "followUps": [
+        "What is the difference between auto-fill and auto-fit?",
+        "How does the fr unit work?",
+        "What is CSS subgrid and when would you use it?"
+      ],
+      "interviewTips": [
+        "Know the auto-fill + minmax pattern by heart",
+        "Grid template areas are great for whiteboard interviews - very visual",
+        "Be clear about when to use Grid (2D) vs Flexbox (1D)"
+      ]
+    }
+  },
+  {
+    "id": "css-transitions",
+    "sectionId": "html-css-interview",
+    "orderIndex": 14,
+    "title": "CSS Transitions",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": [
+      "Transitions",
+      "Timing Functions",
+      "Performance",
+      "Hover Effects",
+      "Interactive States"
+    ],
+    "content": {
+      "question": "How do CSS transitions work? What properties can be transitioned?",
+      "answer": "CSS transitions animate property changes smoothly over a duration.\n\nSyntax: transition: property duration timing-function delay\n\nKey points:\n- Only numeric/color properties can transition (width, color, opacity, transform)\n- display and visibility cannot be smoothly transitioned\n- Timing functions: ease, linear, ease-in, ease-out, ease-in-out, cubic-bezier()\n- Performance: only transform and opacity are GPU-accelerated\n- Put transition on the base state, not the :hover state",
+      "codeExamples": [
+        {
+          "title": "Transition Basics",
+          "code": "/* Transition on base state */\n.button {\n  background: #3b82f6;\n  color: white;\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.375rem;\n  transition: background 0.2s ease,\n             transform 0.2s ease;\n}\n.button:hover {\n  background: #2563eb;\n  transform: translateY(-2px);\n}\n.button:active {\n  transform: translateY(0);\n}\n\n/* Transition all (use sparingly) */\n.card {\n  transition: all 0.3s ease;\n  /* Transitions ANY property that changes */\n  /* Can cause unexpected animations */\n}\n\n/* Different timing per property */\n.element {\n  transition:\n    opacity 0.3s ease,\n    transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);\n}",
+          "explanation": "Always put transition on the base state so it animates both on hover and off. Listing specific properties is better than 'all' for performance and predictability."
+        },
+        {
+          "title": "Timing Functions",
+          "code": "/* Built-in timing functions */\n.ease     { transition: transform 0.3s ease; }\n.linear   { transition: transform 0.3s linear; }\n.ease-in  { transition: transform 0.3s ease-in; }\n.ease-out { transition: transform 0.3s ease-out; }\n\n/* Custom cubic-bezier */\n.bouncy {\n  transition: transform 0.5s\n    cubic-bezier(0.68, -0.55, 0.265, 1.55);\n  /* Overshoots then settles */\n}\n\n/* Common custom curves */\n.smooth-out {\n  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);\n  /* Material Design standard easing */\n}\n\n/* Delay */\n.delayed {\n  transition: opacity 0.3s ease 0.1s;\n  /* 0.1s delay before animation starts */\n}\n\n/* Staggered children (with delay) */\n.list-item:nth-child(1) { transition-delay: 0.0s; }\n.list-item:nth-child(2) { transition-delay: 0.1s; }\n.list-item:nth-child(3) { transition-delay: 0.2s; }",
+          "explanation": "ease is the default and works for most cases. Use cubic-bezier for custom physics. Chrome DevTools has a visual curve editor."
+        },
+        {
+          "title": "Practical Transition Patterns",
+          "code": "/* Fade in/out with visibility */\n.tooltip {\n  opacity: 0;\n  visibility: hidden;\n  transition: opacity 0.2s ease,\n             visibility 0.2s ease;\n}\n.trigger:hover .tooltip {\n  opacity: 1;\n  visibility: visible;\n}\n\n/* Slide down menu */\n.menu {\n  max-height: 0;\n  overflow: hidden;\n  transition: max-height 0.3s ease-out;\n}\n.menu.open {\n  max-height: 500px;\n  /* Generous max-height, transition handles it */\n}\n\n/* Color theme transition */\n:root {\n  --bg: #fff;\n  --text: #111;\n}\n.dark {\n  --bg: #111;\n  --text: #fff;\n}\nbody {\n  background: var(--bg);\n  color: var(--text);\n  transition: background 0.3s ease, color 0.3s ease;\n}",
+          "explanation": "Use opacity + visibility for show/hide (visibility: hidden is accessible, display: none is not). max-height trick works for expand/collapse."
+        }
+      ],
+      "notes": [
+        "display: none cannot be transitioned - use opacity + visibility instead",
+        "Transitions on page load require JavaScript to add a class after load",
+        "Prefer transform and opacity for 60fps animations"
+      ],
+      "followUps": [
+        "What is the difference between transitions and animations?",
+        "How do you detect when a transition ends in JavaScript?",
+        "What properties should you avoid transitioning for performance?"
+      ],
+      "interviewTips": [
+        "Know that transform/opacity are GPU-accelerated (compositing only)",
+        "Mention the visibility trick for accessible show/hide",
+        "Be able to write a button hover effect from scratch"
+      ]
+    }
+  },
+  {
+    "id": "css-animations",
+    "sectionId": "html-css-interview",
+    "orderIndex": 15,
+    "title": "CSS Animations & Keyframes",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": [
+      "Keyframes",
+      "Animation Properties",
+      "Performance",
+      "Multi-step Animations",
+      "Accessibility"
+    ],
+    "content": {
+      "question": "How do CSS animations differ from transitions? Explain @keyframes.",
+      "answer": "CSS animations use @keyframes for multi-step, auto-playing animations.\n\nDifferences from transitions:\n- Transitions: triggered by state change (hover, class), 2 states only (A to B)\n- Animations: can auto-play, loop, have multiple steps, run independently\n\nAnimation properties:\n- animation-name: keyframe name\n- animation-duration: how long\n- animation-timing-function: easing\n- animation-delay: wait before start\n- animation-iteration-count: number or infinite\n- animation-direction: normal, reverse, alternate\n- animation-fill-mode: forwards (keep end state), backwards, both\n- animation-play-state: running, paused",
+      "codeExamples": [
+        {
+          "title": "Keyframes and Animation Properties",
+          "code": "/* Define keyframes */\n@keyframes fadeInUp {\n  from {\n    opacity: 0;\n    transform: translateY(20px);\n  }\n  to {\n    opacity: 1;\n    transform: translateY(0);\n  }\n}\n\n/* Apply animation */\n.card {\n  animation: fadeInUp 0.5s ease-out forwards;\n  /* forwards: keeps the final state */\n}\n\n/* Multi-step animation */\n@keyframes pulse {\n  0%   { transform: scale(1); }\n  50%  { transform: scale(1.05); }\n  100% { transform: scale(1); }\n}\n.badge {\n  animation: pulse 2s ease-in-out infinite;\n}\n\n/* Shorthand */\n.element {\n  animation: name 1s ease 0.5s 3 alternate forwards;\n  /* name duration timing delay count direction fill */\n}",
+          "explanation": "from/to is shorthand for 0%/100%. Use percentages for multi-step animations. forwards keeps the final keyframe state after the animation ends."
+        },
+        {
+          "title": "Practical Animation Examples",
+          "code": "/* Loading spinner */\n@keyframes spin {\n  to { transform: rotate(360deg); }\n}\n.spinner {\n  width: 2rem;\n  height: 2rem;\n  border: 3px solid #e5e7eb;\n  border-top-color: #3b82f6;\n  border-radius: 50%;\n  animation: spin 0.8s linear infinite;\n}\n\n/* Skeleton loading shimmer */\n@keyframes shimmer {\n  0%   { background-position: -200% 0; }\n  100% { background-position: 200% 0; }\n}\n.skeleton {\n  background: linear-gradient(\n    90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%\n  );\n  background-size: 200% 100%;\n  animation: shimmer 1.5s infinite;\n}\n\n/* Staggered entrance */\n.list-item {\n  animation: fadeInUp 0.4s ease-out forwards;\n  opacity: 0;\n}\n.list-item:nth-child(1) { animation-delay: 0.0s; }\n.list-item:nth-child(2) { animation-delay: 0.1s; }\n.list-item:nth-child(3) { animation-delay: 0.2s; }",
+          "explanation": "The spinner and skeleton shimmer are used in every modern web app. Staggered delays create a cascading entrance effect."
+        },
+        {
+          "title": "Animation Performance and Accessibility",
+          "code": "/* GOOD: animate only transform and opacity */\n@keyframes slideIn {\n  from {\n    transform: translateX(-100%);\n    opacity: 0;\n  }\n  to {\n    transform: translateX(0);\n    opacity: 1;\n  }\n}\n\n/* BAD: animating layout properties */\n@keyframes badSlide {\n  from { margin-left: -100%; } /* triggers layout */\n  to { margin-left: 0; }\n}\n\n/* Respect user preferences */\n@media (prefers-reduced-motion: reduce) {\n  *,\n  *::before,\n  *::after {\n    animation-duration: 0.01ms !important;\n    animation-iteration-count: 1 !important;\n    transition-duration: 0.01ms !important;\n  }\n}\n\n/* Pause on hover (for autoplaying animations) */\n.carousel {\n  animation: scroll 10s linear infinite;\n}\n.carousel:hover {\n  animation-play-state: paused;\n}",
+          "explanation": "Always include prefers-reduced-motion for users with motion sensitivity. Only animate transform and opacity for smooth 60fps performance."
+        }
+      ],
+      "notes": [
+        "animation-fill-mode: forwards is needed to keep the end state",
+        "Use prefers-reduced-motion to respect accessibility preferences",
+        "Multiple animations can be comma-separated on one element"
+      ],
+      "followUps": [
+        "How do you trigger an animation replay with JavaScript?",
+        "What is the Web Animations API?",
+        "How do animation-fill-mode values differ?"
+      ],
+      "interviewTips": [
+        "Know the spinner and skeleton shimmer patterns from memory",
+        "Always mention prefers-reduced-motion for accessibility",
+        "Understand when to use animations vs transitions"
+      ]
+    }
+  },
+  {
+    "id": "css-transform",
+    "sectionId": "html-css-interview",
+    "orderIndex": 16,
+    "title": "CSS Transform & 3D",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": [
+      "Transform",
+      "Translate",
+      "Rotate",
+      "Scale",
+      "Perspective",
+      "3D Transforms"
+    ],
+    "content": {
+      "question": "What CSS transform functions are available? How do 3D transforms work?",
+      "answer": "CSS transform applies 2D or 3D spatial modifications without affecting document flow.\n\n2D functions: translate(), rotate(), scale(), skew()\n3D functions: translate3d(), rotate3d(), perspective()\n\nKey points:\n- Transforms don't affect layout (other elements don't move)\n- GPU-accelerated for smooth performance\n- transform-origin changes the pivot point\n- perspective() creates depth for 3D effects\n- Transforms are composited (applied in order)\n- Multiple transforms on one line are applied right-to-left",
+      "codeExamples": [
+        {
+          "title": "2D Transform Functions",
+          "code": "/* Translate: move element */\n.move {\n  transform: translateX(50px);\n  transform: translateY(-20px);\n  transform: translate(50px, -20px);\n}\n\n/* Rotate: spin element */\n.rotate {\n  transform: rotate(45deg);\n  transform-origin: top left; /* pivot point */\n}\n\n/* Scale: resize element */\n.grow {\n  transform: scale(1.5);      /* 150% */\n  transform: scaleX(2);       /* stretch horizontal */\n}\n\n/* Skew: slant element */\n.skew {\n  transform: skew(10deg, 5deg);\n}\n\n/* Combining transforms (order matters!) */\n.combined {\n  transform: translate(100px, 0) rotate(45deg) scale(0.8);\n  /* Applied right-to-left:\n     1. scale, 2. rotate, 3. translate */\n}\n\n/* Center with transform */\n.center-absolute {\n  position: absolute;\n  top: 50%;\n  left: 50%;\n  transform: translate(-50%, -50%);\n}",
+          "explanation": "Transform order matters because each transform changes the coordinate system. translate then rotate gives different results than rotate then translate."
+        },
+        {
+          "title": "3D Transforms and Perspective",
+          "code": "/* Perspective on parent creates depth */\n.scene {\n  perspective: 1000px;\n  /* Lower value = more dramatic 3D effect */\n}\n\n/* 3D card flip */\n.card-container {\n  perspective: 800px;\n  width: 300px;\n  height: 200px;\n}\n.card {\n  width: 100%;\n  height: 100%;\n  position: relative;\n  transform-style: preserve-3d;\n  transition: transform 0.6s ease;\n}\n.card-container:hover .card {\n  transform: rotateY(180deg);\n}\n.card-front, .card-back {\n  position: absolute;\n  inset: 0;\n  backface-visibility: hidden;\n}\n.card-back {\n  transform: rotateY(180deg);\n}",
+          "explanation": "perspective on the parent creates 3D space. transform-style: preserve-3d keeps children in 3D. backface-visibility: hidden hides the back of flipped elements."
+        },
+        {
+          "title": "Practical Transform Effects",
+          "code": "/* Hover lift effect */\n.card {\n  transition: transform 0.2s ease, box-shadow 0.2s ease;\n}\n.card:hover {\n  transform: translateY(-4px);\n  box-shadow: 0 12px 24px rgb(0 0 0 / 0.15);\n}\n\n/* Image zoom on hover */\n.image-container {\n  overflow: hidden;\n  border-radius: 0.5rem;\n}\n.image-container img {\n  transition: transform 0.3s ease;\n}\n.image-container:hover img {\n  transform: scale(1.1);\n}\n\n/* Tilt effect with perspective */\n.tilt:hover {\n  transform: perspective(500px)\n    rotateX(5deg) rotateY(-5deg);\n}",
+          "explanation": "The hover lift and image zoom are the most common transform patterns in modern web design. Overflow: hidden on the container clips the scaled image."
+        }
+      ],
+      "notes": [
+        "Transforms are GPU-accelerated - prefer them over margin/top for animation",
+        "transform-origin defaults to center - change it for different pivot points",
+        "3D transforms need perspective on parent and preserve-3d for nested 3D"
+      ],
+      "followUps": [
+        "Why does transform order matter?",
+        "What is the difference between perspective() function and perspective property?",
+        "How does will-change affect transform performance?"
+      ],
+      "interviewTips": [
+        "Know the absolute centering trick with translate(-50%, -50%)",
+        "Be able to implement a card flip effect",
+        "Understand why transforms are preferred for animations (GPU compositing)"
+      ]
+    }
+  },
+  {
+    "id": "css-pseudo",
+    "sectionId": "html-css-interview",
+    "orderIndex": 17,
+    "title": "Pseudo-Classes & Pseudo-Elements",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": [
+      "Pseudo-classes",
+      "Pseudo-elements",
+      "::before",
+      "::after",
+      ":nth-child",
+      ":hover",
+      ":focus"
+    ],
+    "content": {
+      "question": "What is the difference between pseudo-classes and pseudo-elements?",
+      "answer": "Pseudo-classes select elements in a specific STATE (single colon :).\nPseudo-elements create virtual ELEMENTS (double colon ::).\n\nPseudo-classes:\n- User action: :hover, :focus, :active, :focus-visible\n- Structural: :first-child, :last-child, :nth-child(), :nth-of-type()\n- State: :checked, :disabled, :valid, :invalid, :empty\n- Negation: :not(), :is(), :where(), :has()\n\nPseudo-elements:\n- ::before, ::after - insert content before/after\n- ::first-line, ::first-letter - style text parts\n- ::placeholder - style input placeholder\n- ::selection - style highlighted text",
+      "codeExamples": [
+        {
+          "title": "Pseudo-Classes",
+          "code": "/* User action states */\n.link:hover { color: blue; }\n.link:active { color: red; }\n.input:focus { border-color: blue; }\n.input:focus-visible {\n  outline: 2px solid blue;\n  /* Only shows for keyboard focus, not mouse */\n}\n\n/* Structural */\nli:first-child { font-weight: bold; }\nli:last-child { border-bottom: none; }\nli:nth-child(odd) { background: #f9f9f9; }\nli:nth-child(3n) { color: red; } /* every 3rd */\nli:nth-child(n+4) { opacity: 0.7; } /* 4th onwards */\n\n/* Form states */\ninput:required { border-left: 3px solid red; }\ninput:valid { border-color: green; }\ninput:invalid { border-color: red; }\ninput:disabled { opacity: 0.5; }\ncheckbox:checked + label { font-weight: bold; }\n\n/* Empty state */\n.list:empty::after {\n  content: 'No items found';\n}",
+          "explanation": ":focus-visible is better than :focus for accessibility - it shows focus rings for keyboard users but not mouse users."
+        },
+        {
+          "title": "Pseudo-Elements",
+          "code": "/* ::before and ::after (must have content) */\n.quote::before {\n  content: '\"';\n  font-size: 2rem;\n  color: #3b82f6;\n}\n.required-field::after {\n  content: ' *';\n  color: red;\n}\n\n/* Decorative elements without extra HTML */\n.divider::after {\n  content: '';\n  display: block;\n  width: 50px;\n  height: 3px;\n  background: #3b82f6;\n  margin-top: 0.5rem;\n}\n\n/* Custom checkbox */\n.checkbox::before {\n  content: '';\n  width: 1.25rem;\n  height: 1.25rem;\n  border: 2px solid #ccc;\n  border-radius: 0.25rem;\n  display: inline-block;\n}\n.checkbox:checked::before {\n  background: #3b82f6;\n  border-color: #3b82f6;\n}\n\n/* Text styling */\np::first-letter {\n  font-size: 2rem;\n  font-weight: bold;\n  float: left;\n  margin-right: 0.25rem;\n}\n\n/* Selection color */\n::selection {\n  background: #3b82f6;\n  color: white;\n}",
+          "explanation": "::before and ::after require the content property (even if empty string). They're inline by default - set display: block or inline-block for sizing."
+        },
+        {
+          "title": "Modern Pseudo-Classes (:is, :where, :has)",
+          "code": "/* :is() - matches any selector in the list */\n:is(h1, h2, h3) {\n  font-family: serif;\n}\n/* Same as: h1, h2, h3 { font-family: serif; } */\n/* But :is() takes highest specificity in list */\n\n/* :where() - same as :is() but ZERO specificity */\n:where(h1, h2, h3) {\n  font-family: serif;\n  /* Easy to override */\n}\n\n/* :has() - parent selector (game changer!) */\n.card:has(img) {\n  /* Style card only if it contains an image */\n  grid-template-rows: 200px 1fr;\n}\n\n.form-group:has(input:invalid) {\n  /* Style parent when child input is invalid */\n  border-color: red;\n}\n\n/* :has() for conditional layout */\n.grid:has(> :nth-child(4)) {\n  /* If grid has 4+ children, use 2 columns */\n  grid-template-columns: 1fr 1fr;\n}",
+          "explanation": ":has() is the parent selector CSS never had. It styles a parent based on its children. :is() reduces repetition, :where() keeps zero specificity for easy overrides."
+        }
+      ],
+      "notes": [
+        "Pseudo-elements use :: (double colon), pseudo-classes use : (single colon)",
+        "::before and ::after don't work on void elements (img, input, br)",
+        ":has() is supported in all modern browsers as of 2023"
+      ],
+      "followUps": [
+        "What is the difference between :nth-child and :nth-of-type?",
+        "How does :focus-visible differ from :focus?",
+        "What are some creative uses of ::before and ::after?"
+      ],
+      "interviewTips": [
+        "Know the double vs single colon convention",
+        "Mention :has() to show you know cutting-edge CSS",
+        "Be able to create a custom checkbox or tooltip with pseudo-elements"
+      ]
+    }
+  },
+  {
+    "id": "css-variables",
+    "sectionId": "html-css-interview",
+    "orderIndex": 18,
+    "title": "CSS Variables (Custom Properties)",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": [
+      "Custom Properties",
+      "CSS Variables",
+      "Theming",
+      "Cascading",
+      "Dynamic Styles"
+    ],
+    "content": {
+      "question": "How do CSS custom properties work? How are they different from Sass variables?",
+      "answer": "CSS custom properties (variables) are declared with -- prefix and used with var() function.\n\nKey differences from Sass variables:\n1. CSS variables cascade and inherit through the DOM\n2. CSS variables can be changed at runtime with JavaScript\n3. CSS variables can be scoped to any selector (not just global)\n4. CSS variables work with media queries dynamically\n5. Sass variables are compiled away - they don't exist at runtime\n\nCSS variables enable:\n- Theming (dark mode, brand colors)\n- Component-scoped values\n- Runtime style changes without JavaScript\n- Responsive design without duplicating properties",
+      "codeExamples": [
+        {
+          "title": "Declaration and Usage",
+          "code": "/* Declare on :root for global scope */\n:root {\n  --color-primary: #3b82f6;\n  --color-text: #1f2937;\n  --spacing-sm: 0.5rem;\n  --spacing-md: 1rem;\n  --radius: 0.5rem;\n  --font-sans: 'Inter', system-ui, sans-serif;\n}\n\n/* Use with var() */\n.button {\n  background: var(--color-primary);\n  padding: var(--spacing-sm) var(--spacing-md);\n  border-radius: var(--radius);\n  font-family: var(--font-sans);\n}\n\n/* Fallback value */\n.card {\n  background: var(--card-bg, white);\n  /* Uses white if --card-bg is not defined */\n}\n\n/* Computed values */\n.element {\n  --size: 4;\n  width: calc(var(--size) * 1rem); /* 4rem */\n}",
+          "explanation": "Variables declared on :root are available everywhere. var() accepts a fallback value as second argument. Use calc() for computed values."
+        },
+        {
+          "title": "Theming with CSS Variables",
+          "code": "/* Light theme (default) */\n:root {\n  --bg: #ffffff;\n  --bg-surface: #f9fafb;\n  --text: #111827;\n  --text-muted: #6b7280;\n  --border: #e5e7eb;\n  --shadow: 0 1px 3px rgb(0 0 0 / 0.1);\n}\n\n/* Dark theme */\n.dark {\n  --bg: #111827;\n  --bg-surface: #1f2937;\n  --text: #f9fafb;\n  --text-muted: #9ca3af;\n  --border: #374151;\n  --shadow: 0 1px 3px rgb(0 0 0 / 0.4);\n}\n\n/* Components use variables */\nbody {\n  background: var(--bg);\n  color: var(--text);\n}\n.card {\n  background: var(--bg-surface);\n  border: 1px solid var(--border);\n  box-shadow: var(--shadow);\n}\n\n/* Toggle with JS */\n/* document.documentElement.classList.toggle('dark') */",
+          "explanation": "Toggle the dark class on the html element, and every component updates instantly. No need to change individual element styles."
+        },
+        {
+          "title": "Component-Scoped Variables",
+          "code": "/* Variables scoped to a component */\n.btn {\n  --btn-bg: #3b82f6;\n  --btn-color: white;\n  --btn-size: 0.875rem;\n\n  background: var(--btn-bg);\n  color: var(--btn-color);\n  font-size: var(--btn-size);\n  padding: 0.5em 1em;\n}\n\n/* Variants override scoped variables */\n.btn--danger {\n  --btn-bg: #ef4444;\n}\n.btn--outline {\n  --btn-bg: transparent;\n  --btn-color: #3b82f6;\n}\n.btn--lg {\n  --btn-size: 1.125rem;\n}\n\n/* Change variables via JavaScript */\n/* element.style.setProperty('--btn-bg', '#10b981') */\n\n/* Responsive variables */\n:root {\n  --container-padding: 1rem;\n}\n@media (min-width: 768px) {\n  :root {\n    --container-padding: 2rem;\n  }\n}",
+          "explanation": "Scoped variables make component variants clean - just override the variable instead of repeating all the properties."
+        }
+      ],
+      "notes": [
+        "CSS variables are inherited by default (like color and font)",
+        "Use JavaScript element.style.setProperty('--name', 'value') to change at runtime",
+        "CSS variables cannot be used in media query conditions (only inside rules)"
+      ],
+      "followUps": [
+        "Can CSS variables be animated/transitioned?",
+        "How do you access CSS variables in JavaScript?",
+        "What are the limitations of CSS variables?"
+      ],
+      "interviewTips": [
+        "Know the runtime vs compile-time difference with Sass variables",
+        "Show a dark mode implementation with CSS variables",
+        "Demonstrate component variant pattern with scoped variables"
+      ]
+    }
+  },
+  {
+    "id": "css-units",
+    "sectionId": "html-css-interview",
+    "orderIndex": 19,
+    "title": "CSS Units (rem, em, vw, vh, %)",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": [
+      "CSS Units",
+      "rem",
+      "em",
+      "Viewport Units",
+      "Percentage",
+      "Responsive Typography"
+    ],
+    "content": {
+      "question": "What are the different CSS units? When should you use each?",
+      "answer": "CSS units fall into two categories: absolute and relative.\n\nAbsolute: px (pixels) - fixed, doesn't scale\n\nRelative:\n- rem: relative to root font-size (html element, default 16px)\n- em: relative to parent's font-size\n- %: relative to parent's dimension\n- vw/vh: 1% of viewport width/height\n- vmin/vmax: 1% of smaller/larger viewport dimension\n- ch: width of '0' character\n- dvh: dynamic viewport height (accounts for mobile browser chrome)\n\nBest practices:\n- rem for font-size (respects user preferences)\n- rem or px for spacing/padding\n- % or vw for widths\n- vh or dvh for full-screen sections",
+      "codeExamples": [
+        {
+          "title": "rem vs em",
+          "code": "/* rem: relative to ROOT (html) font-size */\nhtml { font-size: 16px; } /* browser default */\n\nh1 { font-size: 2rem; }     /* 32px */\np  { font-size: 1rem; }     /* 16px */\n.small { font-size: 0.875rem; } /* 14px */\n\n/* em: relative to PARENT font-size */\n.parent { font-size: 20px; }\n.child  { font-size: 1.5em; }  /* 30px */\n.grandchild { font-size: 1.5em; } /* 45px! compounding */\n\n/* em for component-relative spacing */\n.button {\n  font-size: 1rem;\n  padding: 0.5em 1em;\n  /* Padding scales with font-size */\n  /* If font-size changes, padding adjusts */\n}\n.button--lg {\n  font-size: 1.25rem;\n  /* Padding automatically larger: 0.625rem 1.25rem */\n}\n\n/* Why rem > em for font-size: no compounding */",
+          "explanation": "rem is predictable because it always references the root. em compounds (each nested level multiplies), which can cause unexpected sizes."
+        },
+        {
+          "title": "Viewport Units",
+          "code": "/* vw/vh: percentage of viewport */\n.hero {\n  height: 100vh;  /* full viewport height */\n  width: 100vw;   /* full viewport width */\n}\n\n/* Problem: 100vh on mobile includes hidden browser chrome */\n/* Solution: dvh (dynamic viewport height) */\n.hero-mobile-safe {\n  height: 100dvh; /* adjusts when address bar shows/hides */\n}\n/* svh: smallest possible viewport */\n/* lvh: largest possible viewport */\n\n/* Fluid typography with vw */\nh1 {\n  font-size: 5vw;\n  /* Problem: too small on mobile, too big on desktop */\n}\n\n/* Better: clamp() */\nh1 {\n  font-size: clamp(1.5rem, 4vw, 3.5rem);\n  /* min: 1.5rem, preferred: 4vw, max: 3.5rem */\n}\n\n/* vmin/vmax for square elements */\n.square {\n  width: 50vmin;\n  height: 50vmin;\n  /* Always square, sized to smaller dimension */\n}",
+          "explanation": "dvh solves the notorious mobile 100vh bug where content hides behind the browser chrome. clamp() is the modern way to do fluid typography."
+        },
+        {
+          "title": "When to Use Each Unit",
+          "code": "/* FONT SIZE: use rem */\nbody { font-size: 1rem; }      /* 16px default */\nh1   { font-size: 2.25rem; }   /* 36px */\n\n/* SPACING/PADDING: use rem or px */\n.section { padding: 4rem 2rem; }\n.card { padding: 1.5rem; }\n.gap { gap: 1rem; }\n\n/* WIDTH: use %, max-width with px/rem */\n.container {\n  width: 100%;\n  max-width: 1200px;\n  margin: 0 auto;\n}\n\n/* HEIGHT: use vh/dvh for sections */\n.hero { min-height: 100dvh; }\n\n/* BORDERS/SHADOWS: use px (don't need to scale) */\n.card {\n  border: 1px solid #e5e7eb;\n  box-shadow: 0 4px 6px rgb(0 0 0 / 0.1);\n}\n\n/* MEDIA QUERIES: use em (best cross-browser) */\n@media (min-width: 48em) { /* 768px */ }\n@media (min-width: 64em) { /* 1024px */ }",
+          "explanation": "rem for font sizes respects user zoom settings. px for things that shouldn't scale (borders, shadows). em in media queries has the best cross-browser support."
+        }
+      ],
+      "notes": [
+        "Browser default font-size is 16px, so 1rem = 16px",
+        "Users can change their browser font-size - rem respects this, px doesn't",
+        "dvh/svh/lvh are newer units for mobile viewport - check browser support"
+      ],
+      "followUps": [
+        "Why use rem instead of px for font sizes?",
+        "What is the 62.5% font-size trick?",
+        "What is the difference between vw and %?"
+      ],
+      "interviewTips": [
+        "Know the difference between rem and em - most common unit question",
+        "Mention dvh for mobile - shows awareness of real-world mobile issues",
+        "clamp() for fluid typography is a strong modern CSS signal"
+      ]
+    }
+  },
+  {
+    "id": "css-media-queries",
+    "sectionId": "html-css-interview",
+    "orderIndex": 20,
+    "title": "Media Queries & Breakpoints",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": [
+      "Media Queries",
+      "Breakpoints",
+      "Feature Queries",
+      "Responsive Design",
+      "Print Styles"
+    ],
+    "content": {
+      "question": "How do CSS media queries work? What are common breakpoints?",
+      "answer": "Media queries apply styles conditionally based on device characteristics.\n\nSyntax: @media (condition) { rules }\n\nMedia types: screen, print, all\nMedia features: width, height, orientation, prefers-color-scheme, prefers-reduced-motion, hover, pointer\n\nCommon breakpoints:\n- 480px: small phones\n- 640px: large phones\n- 768px: tablets\n- 1024px: laptops\n- 1280px: desktops\n- 1536px: large screens\n\nMobile-first uses min-width, desktop-first uses max-width.",
+      "codeExamples": [
+        {
+          "title": "Mobile-First Breakpoints",
+          "code": "/* Base: mobile styles */\n.sidebar { display: none; }\n.content { padding: 1rem; }\n\n/* Small tablets: 640px+ */\n@media (min-width: 640px) {\n  .grid { grid-template-columns: repeat(2, 1fr); }\n}\n\n/* Tablets: 768px+ */\n@media (min-width: 768px) {\n  .sidebar { display: block; }\n  .layout {\n    display: grid;\n    grid-template-columns: 250px 1fr;\n  }\n}\n\n/* Laptops: 1024px+ */\n@media (min-width: 1024px) {\n  .grid { grid-template-columns: repeat(3, 1fr); }\n}\n\n/* Desktops: 1280px+ */\n@media (min-width: 1280px) {\n  .container {\n    max-width: 1200px;\n    margin: 0 auto;\n  }\n}\n\n/* Combining conditions */\n@media (min-width: 768px) and (max-width: 1023px) {\n  /* Tablet only */\n}",
+          "explanation": "Mobile-first breakpoints build up complexity. Each larger breakpoint adds layout features. This is progressive enhancement."
+        },
+        {
+          "title": "Feature Queries and Preferences",
+          "code": "/* Dark mode preference */\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #111827;\n    --text: #f9fafb;\n  }\n}\n\n/* Reduced motion preference */\n@media (prefers-reduced-motion: reduce) {\n  * { animation-duration: 0.01ms !important; }\n}\n\n/* High contrast preference */\n@media (prefers-contrast: high) {\n  .card { border: 2px solid currentColor; }\n}\n\n/* Hover capability (touchscreen detection) */\n@media (hover: hover) {\n  .card:hover { transform: translateY(-2px); }\n}\n@media (hover: none) {\n  /* Touchscreen - no hover effects */\n  .tooltip { display: none; }\n}\n\n/* Orientation */\n@media (orientation: landscape) {\n  .hero { height: 100dvh; }\n}\n\n/* Resolution (retina) */\n@media (min-resolution: 2dppx) {\n  .logo { background-image: url('logo@2x.png'); }\n}",
+          "explanation": "Feature queries let you adapt to user preferences and device capabilities, not just screen size. hover: none detects touchscreens."
+        },
+        {
+          "title": "@supports Feature Detection",
+          "code": "/* Check if browser supports a CSS feature */\n@supports (display: grid) {\n  .layout {\n    display: grid;\n    grid-template-columns: 1fr 1fr;\n  }\n}\n\n/* Fallback for older browsers */\n.layout {\n  display: flex; /* fallback */\n  flex-wrap: wrap;\n}\n@supports (display: grid) {\n  .layout {\n    display: grid; /* upgrade if supported */\n  }\n}\n\n/* Check for :has() support */\n@supports selector(:has(*)) {\n  .card:has(img) {\n    grid-template-rows: auto 1fr;\n  }\n}\n\n/* Negation */\n@supports not (backdrop-filter: blur(10px)) {\n  .modal-overlay {\n    background: rgb(0 0 0 / 0.8);\n    /* Solid fallback when blur isn't supported */\n  }\n}",
+          "explanation": "@supports is CSS feature detection (like Modernizr but native). Use it to provide fallbacks for newer CSS features."
+        }
+      ],
+      "notes": [
+        "Use em in media queries for best cross-browser zoom behavior",
+        "prefers-color-scheme and prefers-reduced-motion are accessibility essentials",
+        "@supports lets you use progressive enhancement natively in CSS"
+      ],
+      "followUps": [
+        "What is the difference between @media and @supports?",
+        "How do you handle high-DPI (retina) displays?",
+        "What is the difference between hover: hover and hover: none?"
+      ],
+      "interviewTips": [
+        "Know common breakpoints and the mobile-first philosophy",
+        "Mention user preference media queries for accessibility bonus points",
+        "@supports shows you think about progressive enhancement"
+      ]
+    }
+  },
+  {
+    "id": "css-bem",
+    "sectionId": "html-css-interview",
+    "orderIndex": 21,
+    "title": "BEM Methodology",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": [
+      "BEM",
+      "CSS Architecture",
+      "Naming Conventions",
+      "Maintainability",
+      "Scalability"
+    ],
+    "content": {
+      "question": "What is BEM methodology? Why is it useful for CSS architecture?",
+      "answer": "BEM stands for Block Element Modifier - a naming convention for CSS classes.\n\n- Block: standalone component (.card, .navbar, .form)\n- Element: part of a block, no meaning alone (.card__title, .card__image)\n- Modifier: variation or state (.card--featured, .card__title--large)\n\nBenefits:\n1. Low specificity (all single class selectors)\n2. Self-documenting (class name tells you the structure)\n3. No naming conflicts (block scopes everything)\n4. Easy to find in codebase (search for .card__)\n5. No nesting needed (flat selectors)\n\nAlternatives: SMACSS, OOCSS, Atomic CSS (Tailwind), CSS Modules, CSS-in-JS.",
+      "codeExamples": [
+        {
+          "title": "BEM Naming Convention",
+          "code": "<!-- Block: standalone component -->\n<div class=\"card\">\n  <!-- Elements: parts of the block -->\n  <img class=\"card__image\" src=\"photo.jpg\" alt=\"\" />\n  <div class=\"card__body\">\n    <h3 class=\"card__title\">Title</h3>\n    <p class=\"card__description\">Description</p>\n    <a class=\"card__link\" href=\"#\">Read more</a>\n  </div>\n</div>\n\n<!-- Modifier: variation -->\n<div class=\"card card--featured\">\n  <img class=\"card__image\" />\n  <h3 class=\"card__title card__title--large\">Featured</h3>\n</div>\n\n<!-- Another block -->\n<nav class=\"navbar\">\n  <a class=\"navbar__logo\" href=\"/\">Logo</a>\n  <ul class=\"navbar__menu\">\n    <li class=\"navbar__item navbar__item--active\">Home</li>\n    <li class=\"navbar__item\">About</li>\n  </ul>\n</nav>",
+          "explanation": "Block is the component name. Element uses __ (double underscore). Modifier uses -- (double dash). Never nest elements: card__body__title is wrong."
+        },
+        {
+          "title": "BEM CSS Rules",
+          "code": "/* Block */\n.card {\n  background: white;\n  border-radius: 0.5rem;\n  box-shadow: 0 1px 3px rgb(0 0 0 / 0.1);\n  overflow: hidden;\n}\n\n/* Elements - flat, not nested */\n.card__image {\n  width: 100%;\n  height: 200px;\n  object-fit: cover;\n}\n.card__body {\n  padding: 1.5rem;\n}\n.card__title {\n  font-size: 1.25rem;\n  font-weight: 600;\n  margin-bottom: 0.5rem;\n}\n.card__description {\n  color: #6b7280;\n  line-height: 1.6;\n}\n\n/* Modifiers - extend the base */\n.card--featured {\n  border: 2px solid #3b82f6;\n}\n.card--horizontal {\n  display: flex;\n}\n.card__title--large {\n  font-size: 1.5rem;\n}\n\n/* NO nesting needed! All specificity = (0,1,0) */",
+          "explanation": "Every BEM selector has the same specificity (0,1,0) because they're all single classes. No specificity wars, no nesting, no !important needed."
+        },
+        {
+          "title": "BEM with Sass/SCSS",
+          "code": "// Sass makes BEM easier with & parent selector\n.card {\n  background: white;\n  border-radius: 0.5rem;\n\n  &__image {\n    width: 100%;\n    object-fit: cover;\n  }\n\n  &__title {\n    font-size: 1.25rem;\n\n    &--large {\n      font-size: 1.5rem;\n    }\n  }\n\n  &__body {\n    padding: 1.5rem;\n  }\n\n  // Modifier\n  &--featured {\n    border: 2px solid #3b82f6;\n  }\n\n  &--horizontal {\n    display: flex;\n\n    // Modify element within modifier context\n    .card__image {\n      width: 200px;\n      height: auto;\n    }\n  }\n}\n\n// Compiles to flat CSS:\n// .card { }\n// .card__image { }\n// .card__title { }\n// .card--featured { }",
+          "explanation": "Sass & nesting generates flat BEM selectors. The source is organized hierarchically but the output is flat single-class selectors."
+        }
+      ],
+      "notes": [
+        "Never nest BEM elements: .card__body__title is wrong. Use .card__title instead",
+        "Elements belong to blocks, not other elements",
+        "BEM works best with Sass/SCSS for developer experience"
+      ],
+      "followUps": [
+        "How does BEM compare to CSS Modules?",
+        "What are the drawbacks of BEM?",
+        "How do you handle deeply nested components in BEM?"
+      ],
+      "interviewTips": [
+        "Know BEM syntax: block, block__element, block--modifier",
+        "Explain WHY: low specificity, self-documenting, scalable",
+        "Compare BEM to CSS Modules or utility-first (Tailwind) approaches"
+      ]
+    }
+  },
+  {
+    "id": "css-in-js",
+    "sectionId": "html-css-interview",
+    "orderIndex": 22,
+    "title": "CSS-in-JS vs CSS Modules",
+    "difficulty": "Intermediate",
+    "type": "Theory",
+    "concepts": [
+      "CSS-in-JS",
+      "CSS Modules",
+      "Styled Components",
+      "Scoping",
+      "Build-time vs Runtime"
+    ],
+    "content": {
+      "question": "What are CSS Modules and CSS-in-JS? What are the trade-offs?",
+      "answer": "Both solve CSS scoping (preventing style conflicts) in different ways.\n\nCSS Modules: Write regular CSS, build tool generates unique class names.\n- Scoped by default, no conflicts\n- Zero runtime cost (compiled at build time)\n- Regular CSS syntax, easy to learn\n- Works with any framework\n\nCSS-in-JS (styled-components, Emotion): Write CSS in JavaScript.\n- Dynamic styles based on props/state\n- Colocated with component code\n- Runtime cost (generates CSS at runtime)\n- Framework-specific (usually React)\n\nModern trend: Moving away from runtime CSS-in-JS toward zero-runtime solutions (CSS Modules, Tailwind, vanilla-extract, Panda CSS).",
+      "codeExamples": [
+        {
+          "title": "CSS Modules",
+          "code": "/* Button.module.css */\n.button {\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.375rem;\n  font-weight: 500;\n}\n.primary {\n  background: #3b82f6;\n  color: white;\n}\n.danger {\n  background: #ef4444;\n  color: white;\n}\n\n/* Button.tsx */\nimport styles from './Button.module.css';\n\nfunction Button({ variant = 'primary', children }) {\n  return (\n    <button className={`${styles.button} ${styles[variant]}`}>\n      {children}\n    </button>\n  );\n}\n// Rendered: <button class=\"Button_button_x3k2 Button_primary_a1b2\">\n// Unique class names = no conflicts",
+          "explanation": "CSS Modules add a unique hash to class names at build time. Zero runtime cost. Regular CSS syntax. Works with Vite, Webpack, etc."
+        },
+        {
+          "title": "CSS-in-JS (styled-components)",
+          "code": "import styled from 'styled-components';\n\n// Define styled component\nconst Button = styled.button`\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.375rem;\n  font-weight: 500;\n  background: ${props => props.variant === 'danger'\n    ? '#ef4444' : '#3b82f6'};\n  color: white;\n  opacity: ${props => props.disabled ? 0.5 : 1};\n\n  &:hover {\n    filter: brightness(1.1);\n  }\n`;\n\n// Usage\nfunction App() {\n  return (\n    <>\n      <Button>Primary</Button>\n      <Button variant=\"danger\">Delete</Button>\n      <Button disabled>Disabled</Button>\n    </>\n  );\n}\n// Styles are injected into <head> at runtime",
+          "explanation": "styled-components generates unique classes at runtime. Pros: dynamic styles with props, colocated code. Cons: runtime performance cost, larger bundle."
+        },
+        {
+          "title": "Comparison and Modern Alternatives",
+          "code": "/* 1. Plain CSS / BEM */\n.card { }           /* Global, manual scoping */\n\n/* 2. CSS Modules */\n.card { }           /* Auto-scoped, build-time */\n/* import s from './Card.module.css' */\n\n/* 3. Tailwind (utility-first) */\n/* <div class=\"p-6 bg-white rounded-lg shadow\"> */\n/* Zero-runtime, atomic classes */\n\n/* 4. styled-components / Emotion (runtime) */\n/* const Card = styled.div`padding: 1.5rem` */\n/* Runtime CSS injection */\n\n/* 5. vanilla-extract (zero-runtime CSS-in-TS) */\n/* export const card = style({ padding: '1.5rem' }) */\n/* Type-safe, build-time extraction */\n\n/* Trade-offs:\n   Runtime CSS-in-JS: dynamic + colocation - performance\n   CSS Modules: simple + performant - no dynamic props\n   Tailwind: fast + consistent - verbose HTML\n   vanilla-extract: type-safe + zero-runtime - setup\n*/",
+          "explanation": "The industry is moving toward zero-runtime solutions. Tailwind is currently the most popular. CSS Modules remain excellent for traditional CSS workflows."
+        }
+      ],
+      "notes": [
+        "Runtime CSS-in-JS (styled-components) adds ~12KB to bundle and has runtime cost",
+        "CSS Modules work out of the box with Vite and Next.js",
+        "Tailwind CSS has become the most popular styling approach in React ecosystem"
+      ],
+      "followUps": [
+        "What is the performance impact of runtime CSS-in-JS?",
+        "How does Tailwind CSS compare to CSS Modules?",
+        "What is vanilla-extract?"
+      ],
+      "interviewTips": [
+        "Know the trade-offs of each approach - there's no single right answer",
+        "Mention the industry trend away from runtime CSS-in-JS",
+        "Pick one approach and explain why you'd choose it for a given project"
+      ]
+    }
+  },
+  {
+    "id": "css-sass",
+    "sectionId": "html-css-interview",
+    "orderIndex": 23,
+    "title": "Sass/SCSS Basics",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": [
+      "Sass",
+      "SCSS",
+      "Variables",
+      "Mixins",
+      "Nesting",
+      "Partials",
+      "Functions"
+    ],
+    "content": {
+      "question": "What is Sass/SCSS? What features does it add to CSS?",
+      "answer": "Sass (Syntactically Awesome Style Sheets) is a CSS preprocessor that compiles to regular CSS.\n\nSCSS (Sassy CSS) uses CSS-like syntax with braces. Sass uses indentation-based syntax.\n\nKey features:\n1. Variables ($color-primary: blue)\n2. Nesting (reduces repetition)\n3. Mixins (reusable style blocks with parameters)\n4. Partials & imports (split CSS into files)\n5. Functions (compute values)\n6. Extend/inheritance (@extend .base-class)\n7. Operators (math in CSS)\n8. Control flow (@if, @for, @each)\n\nNote: Modern CSS now has variables, nesting, and :is(). Sass is less essential but still widely used.",
+      "codeExamples": [
+        {
+          "title": "Variables, Nesting, and Partials",
+          "code": "// _variables.scss (partial - starts with _)\n$color-primary: #3b82f6;\n$color-text: #1f2937;\n$radius: 0.5rem;\n$shadow: 0 1px 3px rgb(0 0 0 / 0.1);\n\n// _base.scss\n@use 'variables' as v;\n\nbody {\n  color: v.$color-text;\n  font-family: 'Inter', sans-serif;\n}\n\n// components/_card.scss\n@use '../variables' as v;\n\n.card {\n  border-radius: v.$radius;\n  box-shadow: v.$shadow;\n\n  // Nesting (compiles to .card__title)\n  &__title {\n    font-size: 1.25rem;\n    font-weight: 600;\n  }\n\n  &__body {\n    padding: 1.5rem;\n  }\n\n  // Modifier\n  &--featured {\n    border: 2px solid v.$color-primary;\n  }\n\n  // Pseudo-class nesting\n  &:hover {\n    box-shadow: 0 4px 12px rgb(0 0 0 / 0.15);\n  }\n}",
+          "explanation": "Partials (prefixed with _) don't generate separate CSS files. @use replaces @import (which is deprecated). & refers to the parent selector."
+        },
+        {
+          "title": "Mixins and Functions",
+          "code": "// Mixin: reusable block with parameters\n@mixin flex-center($direction: row) {\n  display: flex;\n  flex-direction: $direction;\n  justify-content: center;\n  align-items: center;\n}\n\n.hero {\n  @include flex-center(column);\n  min-height: 100vh;\n}\n\n// Mixin with content block\n@mixin responsive($breakpoint) {\n  @if $breakpoint == tablet {\n    @media (min-width: 768px) { @content; }\n  } @else if $breakpoint == desktop {\n    @media (min-width: 1024px) { @content; }\n  }\n}\n\n.grid {\n  grid-template-columns: 1fr;\n\n  @include responsive(tablet) {\n    grid-template-columns: repeat(2, 1fr);\n  }\n  @include responsive(desktop) {\n    grid-template-columns: repeat(3, 1fr);\n  }\n}\n\n// Function: returns a value\n@function rem($px) {\n  @return calc($px / 16) * 1rem;\n}\nh1 { font-size: rem(32); } // 2rem",
+          "explanation": "Mixins insert blocks of CSS (@include). Functions return values. Mixins with @content act as wrappers - perfect for media queries."
+        },
+        {
+          "title": "Extend, Loops, and Maps",
+          "code": "// @extend: share styles (use sparingly)\n%button-base {\n  padding: 0.75rem 1.5rem;\n  border-radius: 0.375rem;\n  font-weight: 500;\n  cursor: pointer;\n}\n.btn-primary {\n  @extend %button-base;\n  background: #3b82f6;\n  color: white;\n}\n.btn-danger {\n  @extend %button-base;\n  background: #ef4444;\n  color: white;\n}\n// % = placeholder selector (doesn't output on its own)\n\n// Maps (like JS objects)\n$colors: (\n  primary: #3b82f6,\n  success: #10b981,\n  danger: #ef4444,\n  warning: #f59e0b,\n);\n\n// Loop to generate utility classes\n@each $name, $color in $colors {\n  .text-#{$name} { color: $color; }\n  .bg-#{$name} { background: $color; }\n}\n// Generates: .text-primary, .bg-primary, etc.\n\n// For loop\n@for $i from 1 through 5 {\n  .mt-#{$i} { margin-top: $i * 0.25rem; }\n}",
+          "explanation": "% placeholder selectors only output when extended. @each loops generate repetitive classes (like Tailwind's utility classes). String interpolation uses #{$var}."
+        }
+      ],
+      "notes": [
+        "Use @use instead of @import (deprecated in modern Sass)",
+        "Don't over-nest - max 3 levels deep is a good rule",
+        "Modern CSS now has nesting and variables - evaluate if you still need Sass"
+      ],
+      "followUps": [
+        "What is the difference between @use and @import in Sass?",
+        "When would you choose Sass over plain CSS in a new project?",
+        "What is the difference between a mixin and @extend?"
+      ],
+      "interviewTips": [
+        "Know mixins, variables, and nesting at minimum",
+        "Mention that modern CSS is closing the gap with native nesting and variables",
+        "Show you understand build tools compile Sass to CSS"
+      ]
+    }
+  },
+  {
+    "id": "css-rendering",
+    "sectionId": "html-css-interview",
+    "orderIndex": 24,
+    "title": "Browser Rendering Pipeline",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": [
+      "Rendering Pipeline",
+      "CSSOM",
+      "Layout",
+      "Paint",
+      "Compositing",
+      "Reflow",
+      "Repaint"
+    ],
+    "content": {
+      "question": "Explain the browser rendering pipeline. What are reflow and repaint?",
+      "answer": "The browser rendering pipeline converts HTML/CSS/JS into pixels on screen:\n\n1. Parse HTML -> DOM tree\n2. Parse CSS -> CSSOM tree\n3. Combine -> Render tree (visible elements only)\n4. Layout (Reflow): calculate position and size of every element\n5. Paint: fill in pixels (colors, borders, shadows, text)\n6. Composite: combine layers and draw to screen\n\nReflow (Layout): triggered when geometry changes (width, height, position, font-size). Most expensive.\nRepaint: triggered when appearance changes without geometry (color, background, visibility).\nComposite-only: transform, opacity - cheapest, GPU-accelerated.\n\nPerformance tip: animate only transform and opacity for 60fps.",
+      "codeExamples": [
+        {
+          "title": "What Triggers Reflow, Repaint, Composite",
+          "code": "/* REFLOW (Layout) - most expensive */\n/* Changes that affect geometry */\n.expensive {\n  width: 200px;     /* reflow */\n  height: 100px;    /* reflow */\n  padding: 1rem;    /* reflow */\n  margin: 1rem;     /* reflow */\n  font-size: 1.2rem; /* reflow */\n  position: absolute; /* reflow */\n  display: flex;     /* reflow */\n}\n\n/* REPAINT - moderate cost */\n/* Visual changes without geometry */\n.moderate {\n  color: red;        /* repaint */\n  background: blue;  /* repaint */\n  border-color: red; /* repaint */\n  box-shadow: 0 2px 4px black; /* repaint */\n  visibility: hidden; /* repaint */\n}\n\n/* COMPOSITE ONLY - cheapest */\n/* GPU-accelerated, no layout/paint */\n.cheap {\n  transform: translateX(100px); /* composite */\n  opacity: 0.5;                 /* composite */\n}",
+          "explanation": "Every CSS property falls into one of these categories. The rendering pipeline runs in order: a reflow triggers repaint + composite. A repaint triggers composite. Composite-only skips everything."
+        },
+        {
+          "title": "Optimizing Rendering Performance",
+          "code": "/* Animate with transform instead of position */\n/* BAD */\n.slide-bad {\n  transition: left 0.3s;\n}\n.slide-bad.active {\n  left: 100px; /* triggers reflow every frame */\n}\n\n/* GOOD */\n.slide-good {\n  transition: transform 0.3s;\n}\n.slide-good.active {\n  transform: translateX(100px); /* composite only */\n}\n\n/* will-change: promote to own layer */\n.animated {\n  will-change: transform;\n  /* Creates a new composite layer */\n  /* Only use on elements that WILL animate */\n}\n\n/* contain: limit rendering scope */\n.widget {\n  contain: layout style paint;\n  /* Browser doesn't need to recalculate\n     rest of page when this changes */\n}\n\n/* content-visibility: skip offscreen rendering */\n.below-fold {\n  content-visibility: auto;\n  contain-intrinsic-size: 500px;\n  /* Browser skips rendering until visible */\n}",
+          "explanation": "will-change promotes an element to its own GPU layer. contain limits the scope of recalculations. content-visibility skips rendering offscreen content entirely."
+        },
+        {
+          "title": "Batching DOM Reads and Writes",
+          "code": "/* JavaScript: avoid layout thrashing */\n\n// BAD: read-write-read-write (forces multiple reflows)\nconst width1 = el1.offsetWidth;  // read (forces layout)\nel1.style.width = '100px';       // write (invalidates)\nconst width2 = el2.offsetWidth;  // read (forces layout AGAIN)\nel2.style.width = '200px';       // write\n\n// GOOD: batch reads, then batch writes\nconst width1 = el1.offsetWidth;  // read\nconst width2 = el2.offsetWidth;  // read (same layout)\nel1.style.width = '100px';       // write\nel2.style.width = '200px';       // write (one reflow)\n\n// BEST: use requestAnimationFrame\nrequestAnimationFrame(() => {\n  // All DOM writes here\n  // Browser batches into single reflow\n  el1.style.transform = `translateX(${x}px)`;\n  el2.style.opacity = progress;\n});\n\n/* CSS containment for component isolation */\n.card {\n  contain: layout style;\n  /* Changes inside don't reflow outside */\n}",
+          "explanation": "Layout thrashing happens when JS interleaves DOM reads and writes. Each read forces a synchronous layout. Batch reads first, writes second."
+        }
+      ],
+      "notes": [
+        "Chrome DevTools Performance tab shows reflows, repaints, and composite layers",
+        "Forced synchronous layout is the most common performance issue in JS-heavy pages",
+        "contain: content is a safe default for isolated components"
+      ],
+      "followUps": [
+        "What is the Critical Rendering Path?",
+        "How does CSS block rendering?",
+        "What is layout thrashing and how do you avoid it?"
+      ],
+      "interviewTips": [
+        "Knowing the rendering pipeline shows deep frontend understanding",
+        "Explain reflow vs repaint vs composite with concrete CSS properties",
+        "Mention Chrome DevTools Performance tab for profiling"
+      ]
+    }
+  },
+  {
+    "id": "css-web-vitals",
+    "sectionId": "html-css-interview",
+    "orderIndex": 25,
+    "title": "Web Vitals (CLS, LCP, FID)",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": [
+      "Core Web Vitals",
+      "CLS",
+      "LCP",
+      "FID",
+      "INP",
+      "Performance",
+      "SEO"
+    ],
+    "content": {
+      "question": "What are Core Web Vitals? How does CSS affect them?",
+      "answer": "Core Web Vitals are Google's key metrics for user experience (affect SEO ranking):\n\n1. LCP (Largest Contentful Paint): time for largest visible element to render. Target: < 2.5s\n2. CLS (Cumulative Layout Shift): visual stability (elements jumping around). Target: < 0.1\n3. INP (Interaction to Next Paint, replaced FID): responsiveness to user input. Target: < 200ms\n\nCSS impact on Web Vitals:\n- LCP: render-blocking CSS, large images, custom fonts\n- CLS: images without dimensions, dynamically injected content, web fonts causing FOIT/FOUT\n- INP: long-running CSS animations, expensive selectors",
+      "codeExamples": [
+        {
+          "title": "Preventing CLS (Layout Shifts)",
+          "code": "/* 1. Always set image dimensions */\n<img src=\"photo.jpg\" width=\"800\" height=\"600\"\n     alt=\"Photo\" />\n/* Or use aspect-ratio in CSS */\nimg {\n  aspect-ratio: 4 / 3;\n  width: 100%;\n  height: auto;\n}\n\n/* 2. Reserve space for dynamic content */\n.ad-slot {\n  min-height: 250px; /* reserve space before ad loads */\n}\n\n/* 3. Prevent font swap layout shift */\n@font-face {\n  font-family: 'Inter';\n  src: url('inter.woff2') format('woff2');\n  font-display: swap;\n  /* optional: prevents shift entirely but may flash */\n  /* swap: shows fallback then swaps (may shift) */\n}\n\n/* 4. Avoid inserting content above existing content */\n/* BAD: banner pushes everything down */\n.notification-bar {\n  /* If injected at top, shifts all content */\n}\n/* GOOD: use transform to slide in */\n.notification-bar {\n  transform: translateY(-100%);\n  transition: transform 0.3s;\n}\n.notification-bar.visible {\n  transform: translateY(0);\n}",
+          "explanation": "CLS is caused by elements that change size or position after initial render. Always reserve space for images, ads, and dynamic content."
+        },
+        {
+          "title": "Improving LCP",
+          "code": "<!-- 1. Preload critical resources -->\n<link rel=\"preload\" as=\"image\"\n      href=\"hero-image.jpg\" />\n<link rel=\"preload\" as=\"font\"\n      href=\"inter.woff2\"\n      type=\"font/woff2\" crossorigin />\n\n<!-- 2. Inline critical CSS -->\n<style>\n  /* Only above-the-fold styles */\n  .hero { min-height: 100vh; }\n  .nav { height: 64px; }\n</style>\n<link rel=\"stylesheet\" href=\"full.css\"\n      media=\"print\" onload=\"this.media='all'\" />\n<!-- Loads full CSS without blocking render -->\n\n<!-- 3. Optimize LCP image -->\n<img src=\"hero.jpg\"\n     srcset=\"hero-400.jpg 400w,\n            hero-800.jpg 800w,\n            hero-1200.jpg 1200w\"\n     sizes=\"100vw\"\n     loading=\"eager\"\n     fetchpriority=\"high\"\n     decoding=\"async\"\n     alt=\"Hero\" />\n\n<!-- 4. Avoid lazy loading above-the-fold images -->\n<!-- loading=\"lazy\" delays LCP for hero images -->",
+          "explanation": "LCP measures when the largest visible element renders. Preload critical resources, inline critical CSS, and never lazy-load above-the-fold images."
+        },
+        {
+          "title": "CSS Performance Best Practices",
+          "code": "/* 1. Minimize render-blocking CSS */\n/* Split CSS: critical inline + rest async */\n\n/* 2. Reduce unused CSS */\n/* Use PurgeCSS or Tailwind's built-in purging */\n\n/* 3. Avoid expensive selectors */\n/* BAD */\n*:not(.special) { } /* matches almost everything */\n.wrapper > div > ul > li > a { } /* deep nesting */\n\n/* GOOD */\n.nav-link { } /* single class, fast */\n\n/* 4. Use font-display */\n@font-face {\n  font-display: optional;\n  /* optional: uses fallback if font takes too long */\n  /* Best for CLS, may not show custom font */\n}\n\n/* 5. Use contain for component isolation */\n.card {\n  contain: content;\n  /* Isolates layout/paint calculations */\n}\n\n/* 6. Use content-visibility for long pages */\n.section {\n  content-visibility: auto;\n  contain-intrinsic-size: auto 500px;\n  /* Browser skips rendering until scrolled into view */\n}",
+          "explanation": "content-visibility: auto can dramatically improve initial page load by skipping rendering of offscreen content. contain: content isolates recalculation scope."
+        }
+      ],
+      "notes": [
+        "Core Web Vitals are a Google ranking factor since 2021",
+        "Measure with Lighthouse, PageSpeed Insights, or Chrome UX Report",
+        "FID was replaced by INP (Interaction to Next Paint) in March 2024"
+      ],
+      "followUps": [
+        "What is the Critical Rendering Path?",
+        "How do you measure Core Web Vitals in the field?",
+        "What is the difference between FCP, LCP, and TTFB?"
+      ],
+      "interviewTips": [
+        "Know all three Core Web Vitals and their target values",
+        "Be able to explain CSS-specific optimizations for each metric",
+        "Mention content-visibility and contain for advanced optimization knowledge"
+      ]
+    }
+  },
+  {
+    "id": "html-images",
+    "sectionId": "html-css-interview",
+    "orderIndex": 26,
+    "title": "Images & Responsive Media",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": [
+      "Images",
+      "Responsive Images",
+      "srcset",
+      "Picture Element",
+      "Lazy Loading",
+      "WebP/AVIF"
+    ],
+    "content": {
+      "question": "How do you implement responsive images? What are modern image formats?",
+      "answer": "Responsive images serve the right image size for the user's device/viewport.\n\nTechniques:\n1. srcset + sizes: browser picks the best resolution\n2. picture element: art direction (different crops/formats)\n3. CSS object-fit: control how images fill containers\n4. loading='lazy': defer offscreen images\n5. fetchpriority='high': prioritize above-fold images\n\nModern formats:\n- WebP: 25-35% smaller than JPEG, supports transparency\n- AVIF: 50% smaller than JPEG, excellent quality\n- SVG: vector graphics, infinite scaling\n- Use picture element for format fallbacks.",
+      "codeExamples": [
+        {
+          "title": "Responsive Images with srcset",
+          "code": "<!-- Resolution switching: same image, different sizes -->\n<img\n  src=\"photo-800.jpg\"\n  srcset=\"photo-400.jpg 400w,\n         photo-800.jpg 800w,\n         photo-1200.jpg 1200w,\n         photo-1600.jpg 1600w\"\n  sizes=\"(min-width: 1024px) 33vw,\n         (min-width: 768px) 50vw,\n         100vw\"\n  alt=\"Responsive photo\"\n  loading=\"lazy\"\n  decoding=\"async\"\n/>\n\n<!-- sizes tells browser how wide the image will display:\n  - On desktop (1024px+): 33% of viewport\n  - On tablet (768px+): 50% of viewport\n  - On mobile: 100% of viewport\n  Browser calculates: viewport * size * devicePixelRatio\n  and picks the best srcset image -->\n\n<!-- Retina display (density switching) -->\n<img\n  src=\"logo.png\"\n  srcset=\"logo.png 1x, logo@2x.png 2x, logo@3x.png 3x\"\n  alt=\"Logo\"\n/>",
+          "explanation": "The browser uses srcset + sizes to automatically pick the optimal image file. This saves bandwidth on mobile and looks sharp on retina displays."
+        },
+        {
+          "title": "Picture Element for Art Direction and Formats",
+          "code": "<!-- Art direction: different crops per breakpoint -->\n<picture>\n  <source media=\"(min-width: 1024px)\"\n          srcset=\"hero-wide.jpg\" />\n  <source media=\"(min-width: 768px)\"\n          srcset=\"hero-medium.jpg\" />\n  <img src=\"hero-mobile.jpg\" alt=\"Hero\" />\n</picture>\n\n<!-- Format fallback: modern -> legacy -->\n<picture>\n  <source type=\"image/avif\" srcset=\"photo.avif\" />\n  <source type=\"image/webp\" srcset=\"photo.webp\" />\n  <img src=\"photo.jpg\" alt=\"Photo\" />\n</picture>\n\n<!-- Combined: format + responsive -->\n<picture>\n  <source type=\"image/avif\"\n          srcset=\"photo-400.avif 400w,\n                 photo-800.avif 800w\"\n          sizes=\"100vw\" />\n  <source type=\"image/webp\"\n          srcset=\"photo-400.webp 400w,\n                 photo-800.webp 800w\"\n          sizes=\"100vw\" />\n  <img src=\"photo-800.jpg\"\n       alt=\"Photo\"\n       loading=\"lazy\" />\n</picture>",
+          "explanation": "picture element gives full control: serve AVIF to modern browsers, WebP as fallback, JPEG for legacy. Browser picks the first supported source."
+        },
+        {
+          "title": "CSS Object-Fit and Image Optimization",
+          "code": "/* object-fit: control how image fills container */\n.avatar {\n  width: 64px;\n  height: 64px;\n  border-radius: 50%;\n  object-fit: cover; /* crop to fill, keep ratio */\n}\n\n.thumbnail {\n  width: 100%;\n  height: 200px;\n  object-fit: cover;\n  object-position: center top; /* focus on top */\n}\n\n.contain-image {\n  object-fit: contain; /* fit inside, may letterbox */\n}\n\n/* Lazy loading */\nimg[loading=\"lazy\"] {\n  /* Placeholder while loading */\n  background: #f3f4f6;\n}\n\n/* Aspect ratio for CLS prevention */\n.image-wrapper {\n  aspect-ratio: 16 / 9;\n  overflow: hidden;\n}\n.image-wrapper img {\n  width: 100%;\n  height: 100%;\n  object-fit: cover;\n}\n\n/* Background image responsive */\n.hero {\n  background-image: url('hero-mobile.jpg');\n  background-size: cover;\n  background-position: center;\n}\n@media (min-width: 768px) {\n  .hero {\n    background-image: url('hero-desktop.jpg');\n  }\n}",
+          "explanation": "object-fit: cover is the most common - it fills the container while maintaining aspect ratio, cropping edges if needed. Like background-size: cover for img elements."
+        }
+      ],
+      "notes": [
+        "Always include width and height attributes on images to prevent CLS",
+        "Use loading='lazy' for below-the-fold images, loading='eager' for hero images",
+        "AVIF is 50% smaller than JPEG but has slower encoding - great for static sites"
+      ],
+      "followUps": [
+        "What is the difference between object-fit: cover and contain?",
+        "When would you use SVG vs PNG?",
+        "How do you optimize images for web performance?"
+      ],
+      "interviewTips": [
+        "Know srcset + sizes syntax - it comes up in performance interviews",
+        "Mention AVIF/WebP with picture fallback for modern optimization",
+        "Always mention CLS prevention (width/height/aspect-ratio)"
+      ]
+    }
+  },
+  {
+    "id": "css-container-queries",
+    "sectionId": "html-css-interview",
+    "orderIndex": 27,
+    "title": "CSS Container Queries",
+    "difficulty": "Advanced",
+    "type": "Coding",
+    "concepts": [
+      "Container Queries",
+      "Containment",
+      "Responsive Components",
+      "container-type",
+      "cqw units"
+    ],
+    "content": {
+      "question": "What are CSS container queries? How do they differ from media queries?",
+      "answer": "Container queries style elements based on their PARENT container's size, not the viewport.\n\nMedia queries: respond to viewport width (global)\nContainer queries: respond to container width (component-level)\n\nThis enables truly reusable responsive components that adapt to wherever they're placed - sidebar, main content, or full-width.\n\nSetup:\n1. Define a container: container-type: inline-size on parent\n2. Query it: @container (min-width: 400px) { }\n\nContainer query units: cqw, cqh, cqi, cqb (like vw/vh but for container).",
+      "codeExamples": [
+        {
+          "title": "Basic Container Query",
+          "code": "/* 1. Define a containment context */\n.card-container {\n  container-type: inline-size;\n  /* inline-size: query width only */\n  /* size: query width and height */\n  /* normal: no containment (default) */\n}\n\n/* 2. Optionally name it */\n.sidebar {\n  container-type: inline-size;\n  container-name: sidebar;\n}\n/* Shorthand */\n.sidebar {\n  container: sidebar / inline-size;\n}\n\n/* 3. Query the container */\n.card {\n  display: flex;\n  flex-direction: column;\n}\n\n@container (min-width: 400px) {\n  .card {\n    flex-direction: row;\n    /* Card goes horizontal when container is wide */\n  }\n}\n\n/* Named container query */\n@container sidebar (min-width: 300px) {\n  .widget { font-size: 1.125rem; }\n}",
+          "explanation": "The card layout changes based on its container width, not the viewport. The same card component works in a narrow sidebar and a wide main area."
+        },
+        {
+          "title": "Container Query Units",
+          "code": "/* Container query units */\n.card-container {\n  container-type: inline-size;\n}\n\n.card__title {\n  /* cqw: 1% of container's inline size (width) */\n  font-size: clamp(1rem, 4cqw, 2rem);\n}\n\n.card__image {\n  /* Responsive to container, not viewport */\n  height: 30cqw;\n  object-fit: cover;\n}\n\n/* Available units:\n  cqw - container query width (1%)\n  cqh - container query height (1%)\n  cqi - container query inline size\n  cqb - container query block size\n  cqmin - smaller of cqi/cqb\n  cqmax - larger of cqi/cqb\n*/\n\n/* Fluid spacing based on container */\n.card__body {\n  padding: clamp(0.75rem, 3cqw, 2rem);\n}",
+          "explanation": "Container query units are like viewport units (vw, vh) but relative to the container. They enable fluid sizing that adapts to the component's context."
+        },
+        {
+          "title": "Real-World: Adaptive Component",
+          "code": "/* A product card that adapts everywhere */\n.product-grid {\n  container-type: inline-size;\n}\n\n.product-card {\n  display: grid;\n  gap: 0.75rem;\n  padding: 1rem;\n}\n\n/* Small container: stack vertically */\n.product-card__image { aspect-ratio: 16/9; }\n.product-card__price { font-size: 1.25rem; }\n\n/* Medium container: side by side */\n@container (min-width: 350px) {\n  .product-card {\n    grid-template-columns: 120px 1fr;\n    align-items: start;\n  }\n  .product-card__image {\n    aspect-ratio: 1;\n  }\n}\n\n/* Large container: more details */\n@container (min-width: 600px) {\n  .product-card {\n    grid-template-columns: 200px 1fr auto;\n  }\n  .product-card__actions {\n    display: flex;\n    flex-direction: column;\n    gap: 0.5rem;\n  }\n}\n\n/* Works in sidebar (narrow),\n   main content (medium),\n   or full-width (large) */",
+          "explanation": "This product card adapts its layout based on how much space it has, regardless of viewport size. Drop it in any container and it just works."
+        }
+      ],
+      "notes": [
+        "container-type: inline-size is the most common (query width only)",
+        "Container queries have full browser support since Feb 2023",
+        "Container queries enable truly portable, context-aware components"
+      ],
+      "followUps": [
+        "Can you nest container queries?",
+        "What is the performance impact of container queries?",
+        "How do container queries work with CSS Grid?"
+      ],
+      "interviewTips": [
+        "Container queries are the biggest CSS advancement for component architecture",
+        "Compare them to media queries to show you understand the paradigm shift",
+        "Mention they're fully supported in all modern browsers"
+      ]
+    }
+  },
+  {
+    "id": "css-modern",
+    "sectionId": "html-css-interview",
+    "orderIndex": 28,
+    "title": "Modern CSS (:has, nesting, layers)",
+    "difficulty": "Advanced",
+    "type": "Coding",
+    "concepts": [
+      ":has()",
+      "CSS Nesting",
+      "@layer",
+      "Cascade Layers",
+      "Modern CSS Features"
+    ],
+    "content": {
+      "question": "What are the newest CSS features? Explain :has(), native nesting, and @layer.",
+      "answer": "Modern CSS (2023-2025) introduced game-changing features:\n\n1. :has() - parent selector: style parent based on children\n2. Native CSS Nesting - nest selectors like Sass (no preprocessor needed)\n3. @layer - cascade layers for controlling specificity order\n4. @scope - scope styles to a DOM subtree\n5. Subgrid - child grids inheriting parent grid tracks\n\nThese features reduce the need for preprocessors (Sass) and CSS-in-JS, making vanilla CSS much more powerful.",
+      "codeExamples": [
+        {
+          "title": ":has() - The Parent Selector",
+          "code": "/* Style parent based on child */\n.card:has(img) {\n  grid-template-rows: auto 1fr;\n}\n.card:has(img):not(:has(.badge)) {\n  /* Card with image but no badge */\n}\n\n/* Form validation styling */\n.field:has(input:invalid) {\n  border-color: red;\n}\n.field:has(input:valid) {\n  border-color: green;\n}\n.form:has(input:invalid) .submit-btn {\n  opacity: 0.5;\n  pointer-events: none;\n}\n\n/* Conditional layouts */\n.grid:has(> :nth-child(4)) {\n  grid-template-columns: repeat(2, 1fr);\n}\n.grid:has(> :nth-child(7)) {\n  grid-template-columns: repeat(3, 1fr);\n}\n\n/* Previous sibling selector (reverse + ) */\n.item:has(+ .item:hover) {\n  /* Style item BEFORE the hovered item */\n  transform: scale(0.95);\n}",
+          "explanation": ":has() is the most requested CSS feature ever. It lets you select parents and previous siblings, which was previously impossible without JavaScript."
+        },
+        {
+          "title": "Native CSS Nesting",
+          "code": "/* Native CSS nesting (no Sass needed!) */\n.card {\n  background: white;\n  border-radius: 0.5rem;\n\n  /* Nested selector */\n  & .title {\n    font-size: 1.25rem;\n    font-weight: 600;\n  }\n\n  /* & is optional for pseudo-classes */\n  &:hover {\n    box-shadow: 0 4px 12px rgb(0 0 0 / 0.1);\n  }\n\n  /* Nested media query */\n  @media (min-width: 768px) {\n    padding: 2rem;\n\n    & .title {\n      font-size: 1.5rem;\n    }\n  }\n\n  /* BEM with nesting */\n  &__body {\n    padding: 1.5rem;\n  }\n  &--featured {\n    border: 2px solid #3b82f6;\n  }\n}\n\n/* Compiles mentally to:\n   .card { }\n   .card .title { }\n   .card:hover { }\n   .card__body { }\n   .card--featured { } */",
+          "explanation": "Native CSS nesting works like Sass but in the browser with no build step. The & symbol references the parent selector. Supported in all modern browsers since 2023."
+        },
+        {
+          "title": "@layer - Cascade Layers",
+          "code": "/* Define layer order (lowest to highest priority) */\n@layer reset, base, components, utilities;\n\n/* Reset layer (lowest priority) */\n@layer reset {\n  * { margin: 0; padding: 0; box-sizing: border-box; }\n}\n\n/* Base layer */\n@layer base {\n  body { font-family: system-ui; line-height: 1.6; }\n  a { color: #3b82f6; }\n}\n\n/* Components layer */\n@layer components {\n  .btn {\n    padding: 0.75rem 1.5rem;\n    border-radius: 0.375rem;\n  }\n  .card {\n    background: white;\n    border-radius: 0.5rem;\n  }\n}\n\n/* Utilities layer (highest priority) */\n@layer utilities {\n  .hidden { display: none !important; }\n  .text-center { text-align: center; }\n}\n\n/* Utilities ALWAYS override components,\n   regardless of specificity!\n   .card has higher specificity than .hidden,\n   but utilities layer wins */\n\n/* Un-layered styles beat ALL layers */",
+          "explanation": "@layer controls the cascade independently from specificity. Later layers override earlier ones regardless of selector specificity. This solves specificity wars."
+        }
+      ],
+      "notes": [
+        ":has() is supported in all browsers since Dec 2023",
+        "Native nesting makes Sass less necessary for most projects",
+        "@layer is especially useful for managing third-party CSS conflicts"
+      ],
+      "followUps": [
+        "How does @layer interact with !important?",
+        "What is @scope and how does it differ from CSS Modules?",
+        "Can you use :has() for previous-sibling selection?"
+      ],
+      "interviewTips": [
+        "Knowing these features shows you stay current with CSS evolution",
+        ":has() is the most impressive modern CSS feature to demonstrate",
+        "Mention that native CSS now replaces many Sass features"
+      ]
+    }
+  },
+  {
+    "id": "css-print-dark",
+    "sectionId": "html-css-interview",
+    "orderIndex": 29,
+    "title": "Print Styles & Dark Mode",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": [
+      "Print Styles",
+      "Dark Mode",
+      "prefers-color-scheme",
+      "Color Scheme",
+      "Accessibility"
+    ],
+    "content": {
+      "question": "How do you implement print styles and dark mode in CSS?",
+      "answer": "Print styles optimize pages for printing. Dark mode adapts to user's OS theme preference.\n\nPrint styles:\n- Use @media print { } to add print-specific rules\n- Hide navigation, footers, ads\n- Use black text on white background\n- Set page margins with @page\n- Force background printing with print-color-adjust\n\nDark mode:\n- prefers-color-scheme: dark media query (OS preference)\n- Class-based toggle (.dark) for manual control\n- CSS custom properties for theme values\n- color-scheme meta tag for native form styling",
+      "codeExamples": [
+        {
+          "title": "Print Styles",
+          "code": "@media print {\n  /* Hide non-essential elements */\n  nav, footer, .sidebar, .ads,\n  .no-print, button {\n    display: none !important;\n  }\n\n  /* Reset colors for print */\n  body {\n    color: black;\n    background: white;\n    font-size: 12pt;\n    line-height: 1.5;\n  }\n\n  /* Show link URLs */\n  a[href]::after {\n    content: ' (' attr(href) ')';\n    font-size: 0.8em;\n    color: #666;\n  }\n  a[href^=\"#\"]::after,\n  a[href^=\"javascript:\"]::after {\n    content: ''; /* skip internal/JS links */\n  }\n\n  /* Page settings */\n  @page {\n    margin: 2cm;\n    size: A4;\n  }\n\n  /* Avoid breaking inside elements */\n  h2, h3, img, table {\n    break-inside: avoid;\n  }\n  h2, h3 {\n    break-after: avoid;\n  }\n\n  /* Force background printing */\n  .badge {\n    print-color-adjust: exact;\n    -webkit-print-color-adjust: exact;\n  }\n}",
+          "explanation": "Print styles remove UI elements, optimize for paper, and show link URLs. break-inside: avoid prevents awkward page breaks in the middle of elements."
+        },
+        {
+          "title": "Dark Mode with CSS Variables",
+          "code": "/* Define theme tokens */\n:root {\n  color-scheme: light dark;\n  /* Tells browser to style native controls */\n\n  --bg: #ffffff;\n  --bg-surface: #f9fafb;\n  --text: #111827;\n  --text-muted: #6b7280;\n  --border: #e5e7eb;\n  --shadow: 0 1px 3px rgb(0 0 0 / 0.1);\n}\n\n/* OS preference: auto dark mode */\n@media (prefers-color-scheme: dark) {\n  :root {\n    --bg: #0f172a;\n    --bg-surface: #1e293b;\n    --text: #f1f5f9;\n    --text-muted: #94a3b8;\n    --border: #334155;\n    --shadow: 0 1px 3px rgb(0 0 0 / 0.4);\n  }\n}\n\n/* Manual toggle: class on html element */\nhtml.dark {\n  --bg: #0f172a;\n  --bg-surface: #1e293b;\n  --text: #f1f5f9;\n  --text-muted: #94a3b8;\n  --border: #334155;\n  --shadow: 0 1px 3px rgb(0 0 0 / 0.4);\n}\n\n/* Apply tokens everywhere */\nbody {\n  background: var(--bg);\n  color: var(--text);\n}\n.card {\n  background: var(--bg-surface);\n  border: 1px solid var(--border);\n}",
+          "explanation": "CSS variables make dark mode trivial - change the variable values and every component updates. color-scheme tells the browser to style checkboxes, scrollbars, etc."
+        },
+        {
+          "title": "Dark Mode JavaScript Toggle",
+          "code": "<!-- Meta tag for native control styling -->\n<meta name=\"color-scheme\" content=\"light dark\" />\n\n<script>\n// Check stored preference, then OS preference\nfunction getTheme() {\n  const stored = localStorage.getItem('theme');\n  if (stored) return stored;\n  return window.matchMedia(\n    '(prefers-color-scheme: dark)'\n  ).matches ? 'dark' : 'light';\n}\n\n// Apply theme\nfunction setTheme(theme) {\n  document.documentElement.classList\n    .toggle('dark', theme === 'dark');\n  localStorage.setItem('theme', theme);\n}\n\n// Initialize\nsetTheme(getTheme());\n\n// Toggle button\ndocument.getElementById('themeToggle')\n  .addEventListener('click', () => {\n    const current = document.documentElement\n      .classList.contains('dark') ? 'light' : 'dark';\n    setTheme(current);\n  });\n\n// Listen for OS changes\nwindow.matchMedia('(prefers-color-scheme: dark)')\n  .addEventListener('change', (e) => {\n    if (!localStorage.getItem('theme')) {\n      setTheme(e.matches ? 'dark' : 'light');\n    }\n  });\n</script>\n\n<style>\n/* Smooth theme transition */\nhtml {\n  transition: background 0.3s ease, color 0.3s ease;\n}\n</style>",
+          "explanation": "The three-tier approach: 1) check localStorage for user preference, 2) fall back to OS preference, 3) default to light. Listen for OS changes too."
+        }
+      ],
+      "notes": [
+        "Always test print styles with browser Print Preview (Ctrl/Cmd + P)",
+        "color-scheme property styles native form controls for dark mode",
+        "Prevent flash of wrong theme by setting class before page renders"
+      ],
+      "followUps": [
+        "How do you prevent a flash of unstyled content (FOUC) with dark mode?",
+        "What is the difference between color-scheme and prefers-color-scheme?",
+        "How do you handle images in dark mode?"
+      ],
+      "interviewTips": [
+        "Print styles are rarely asked but impressive to know",
+        "Dark mode is very commonly asked - show the CSS variables approach",
+        "Mention the three-tier preference system (stored > OS > default)"
+      ]
+    }
+  }
+]

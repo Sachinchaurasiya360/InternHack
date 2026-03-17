@@ -1,11 +1,12 @@
-import { useState } from "react";
+import { useState, useCallback } from "react";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { Plus, Pencil, Trash2, ExternalLink, X, Loader2 } from "lucide-react";
+import { Plus, Pencil, Trash2, ExternalLink, X, Loader2, Link2, Braces } from "lucide-react";
 import api from "../../../lib/axios";
 import toast from "react-hot-toast";
 
 interface AdminJob {
   id: number;
+  slug: string | null;
   company: string | null;
   role: string | null;
   description: string | null;
@@ -29,6 +30,37 @@ export default function AdminExternalJobsPage() {
   const [showForm, setShowForm] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
   const [form, setForm] = useState(EMPTY_FORM);
+  const [jsonInput, setJsonInput] = useState("");
+  const [jsonError, setJsonError] = useState("");
+
+  const parseJsonInput = useCallback((raw: string) => {
+    setJsonInput(raw);
+    setJsonError("");
+    if (!raw.trim()) return;
+    try {
+      const obj = JSON.parse(raw);
+      if (typeof obj !== "object" || obj === null) {
+        setJsonError("Expected a JSON object");
+        return;
+      }
+      const str = (key: string) => (typeof obj[key] === "string" ? obj[key] : "");
+      const tags = Array.isArray(obj.tags)
+        ? obj.tags.join(", ")
+        : typeof obj.tags === "string" ? obj.tags : "";
+      setForm({
+        company: str("company"),
+        role: str("role") || str("title") || str("position"),
+        description: str("description") || str("desc") || str("about"),
+        salary: str("salary") || str("stipend") || str("compensation") || str("ctc"),
+        location: str("location") || str("city"),
+        applyLink: str("applyLink") || str("apply_link") || str("url") || str("link"),
+        tags,
+      });
+      toast.success("Fields populated from JSON");
+    } catch {
+      setJsonError("Invalid JSON, check syntax");
+    }
+  }, []);
 
   const { data, isLoading } = useQuery({
     queryKey: ["admin-external-jobs", page, search],
@@ -56,9 +88,18 @@ export default function AdminExternalJobsPage() {
       }
       return api.post("/admin/external-jobs", payload);
     },
-    onSuccess: () => {
-      toast.success(editingId ? "Job updated" : "Job created");
+    onSuccess: (res) => {
       queryClient.invalidateQueries({ queryKey: ["admin-external-jobs"] });
+      if (!editingId && res.data?.job?.slug) {
+        const link = `${window.location.origin}/jobs/ext/${res.data.job.slug}`;
+        navigator.clipboard.writeText(link).then(() => {
+          toast.success("Job created, link copied to clipboard!");
+        }).catch(() => {
+          toast.success("Job created!");
+        });
+      } else {
+        toast.success(editingId ? "Job updated" : "Job created");
+      }
       closeForm();
     },
     onError: () => toast.error("Failed to save job"),
@@ -77,6 +118,8 @@ export default function AdminExternalJobsPage() {
     setShowForm(false);
     setEditingId(null);
     setForm(EMPTY_FORM);
+    setJsonInput("");
+    setJsonError("");
   };
 
   const openEdit = (job: AdminJob) => {
@@ -121,11 +164,33 @@ export default function AdminExternalJobsPage() {
       {/* Form Modal */}
       {showForm && (
         <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={closeForm}>
-          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 w-full max-w-lg space-y-4" onClick={(e) => e.stopPropagation()}>
+          <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-200 dark:border-gray-700 p-6 w-full max-w-lg space-y-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
             <div className="flex items-center justify-between">
               <h2 className="text-lg font-bold dark:text-white">{editingId ? "Edit Job" : "Add External Job"}</h2>
               <button onClick={closeForm} className="text-gray-400 hover:text-gray-600"><X className="w-5 h-5" /></button>
             </div>
+            {/* JSON quick-fill */}
+            {!editingId && (
+              <div>
+                <label className="flex items-center gap-1.5 text-xs font-medium text-gray-500 dark:text-gray-400 mb-1">
+                  <Braces className="w-3.5 h-3.5" /> Paste JSON to auto-fill
+                </label>
+                <textarea
+                  value={jsonInput}
+                  onChange={(e) => parseJsonInput(e.target.value)}
+                  placeholder={'{\n  "company": "Google",\n  "role": "SDE Intern",\n  "description": "...",\n  "salary": "50k/month",\n  "location": "Bangalore",\n  "applyLink": "https://...",\n  "tags": ["React", "Remote"]\n}'}
+                  className={`w-full px-3 py-2 text-xs font-mono border rounded-lg dark:bg-gray-800 dark:text-white focus:outline-none focus:ring-2 ${
+                    jsonError
+                      ? "border-red-400 dark:border-red-500 focus:ring-red-300/30"
+                      : "border-gray-300 dark:border-gray-600 focus:ring-black/20 dark:focus:ring-white/20"
+                  }`}
+                  rows={4}
+                />
+                {jsonError && <p className="text-xs text-red-500 mt-1">{jsonError}</p>}
+                <div className="border-b border-gray-200 dark:border-gray-700 mt-3" />
+              </div>
+            )}
+
             <Input label="Company" value={form.company} onChange={(v) => setForm({ ...form, company: v })} placeholder="e.g. Google" />
             <Input label="Role" value={form.role} onChange={(v) => setForm({ ...form, role: v })} placeholder="e.g. Software Engineer Intern" />
             <div>
@@ -182,9 +247,9 @@ export default function AdminExternalJobsPage() {
                 const expired = isExpired(job.expiresAt);
                 return (
                   <tr key={job.id} className={`border-b border-gray-50 dark:border-gray-800 ${expired ? "opacity-50" : ""}`}>
-                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">{job.company || "—"}</td>
-                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{job.role || "—"}</td>
-                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{job.salary || "—"}</td>
+                    <td className="px-4 py-3 text-gray-900 dark:text-white font-medium">{job.company || "-"}</td>
+                    <td className="px-4 py-3 text-gray-700 dark:text-gray-300">{job.role || "-"}</td>
+                    <td className="px-4 py-3 text-gray-600 dark:text-gray-400">{job.salary || "-"}</td>
                     <td className="px-4 py-3 text-gray-500 dark:text-gray-400 text-xs">
                       {new Date(job.expiresAt).toLocaleDateString()}
                     </td>
@@ -199,6 +264,18 @@ export default function AdminExternalJobsPage() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex items-center justify-end gap-1">
+                        {job.slug && (
+                          <button
+                            onClick={() => {
+                              const link = `${window.location.origin}/jobs/ext/${job.slug}`;
+                              navigator.clipboard.writeText(link).then(() => toast.success("Link copied!"));
+                            }}
+                            className="p-1.5 text-gray-400 hover:text-indigo-600"
+                            title="Copy shareable link"
+                          >
+                            <Link2 className="w-4 h-4" />
+                          </button>
+                        )}
                         {job.applyLink && (
                           <a href={job.applyLink} target="_blank" rel="noopener noreferrer" className="p-1.5 text-gray-400 hover:text-blue-600">
                             <ExternalLink className="w-4 h-4" />

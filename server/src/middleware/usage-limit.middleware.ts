@@ -18,7 +18,7 @@ export function usageLimit(action: UsageAction) {
       const [user, used] = await Promise.all([
         prisma.user.findUnique({
           where: { id: req.user.id },
-          select: { subscriptionPlan: true, subscriptionStatus: true },
+          select: { subscriptionPlan: true, subscriptionStatus: true, subscriptionEndDate: true },
         }),
         prisma.usageLog.count({
           where: {
@@ -34,7 +34,7 @@ export function usageLimit(action: UsageAction) {
         return;
       }
 
-      const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus);
+      const tier = getPlanTier(user.subscriptionPlan, user.subscriptionStatus, user.subscriptionEndDate);
       const limit = DAILY_LIMITS[action][tier];
 
       if (used >= limit) {

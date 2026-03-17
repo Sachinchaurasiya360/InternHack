@@ -172,6 +172,7 @@ model user {
   linkedinUrl    String?
   githubUrl      String?
   portfolioUrl   String?
+  leetcodeUrl    String?
   location       String?
   jobStatus      String?
   projects       Json     @default("[]")
@@ -1237,6 +1238,7 @@ model aiRequestLog {
 
 model adminJob {
   id          Int       @id @default(autoincrement())
+  slug        String?   @unique
   company     String?
   role        String?
   description String?

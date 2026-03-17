@@ -1,0 +1,1437 @@
+[
+  {
+    "id": "python-decorators",
+    "sectionId": "python-interview",
+    "orderIndex": 0,
+    "title": "Decorators & Metaprogramming",
+    "difficulty": "Advanced",
+    "type": "Coding",
+    "concepts": ["Decorators", "Closures", "functools.wraps", "Class Decorators", "Decorator Factory"],
+    "content": {
+      "question": "Explain Python decorators. How do they work under the hood? Write a custom decorator.",
+      "answer": "A decorator is a function that takes another function and extends its behavior without modifying it. Under the hood, @decorator is syntactic sugar for: function = decorator(function).\n\nDecorators use closures - the inner wrapper function remembers and has access to the original function.\n\nCommon use cases: logging, timing, authentication, caching, rate limiting, retry logic.",
+      "codeExamples": [
+        {
+          "title": "Basic Decorator with Arguments",
+          "code": "import functools\nimport time\n\ndef timer(func):\n    @functools.wraps(func)  # preserves func name & docstring\n    def wrapper(*args, **kwargs):\n        start = time.perf_counter()\n        result = func(*args, **kwargs)\n        elapsed = time.perf_counter() - start\n        print(f\"{func.__name__} took {elapsed:.4f}s\")\n        return result\n    return wrapper\n\n@timer\ndef slow_function(n):\n    \"\"\"Simulates a slow operation.\"\"\"\n    time.sleep(n)\n    return f\"Done after {n}s\"\n\n# @timer is equivalent to:\n# slow_function = timer(slow_function)\nresult = slow_function(1)\nprint(result)\nprint(slow_function.__name__)  # 'slow_function' (thanks to @wraps)",
+          "output": "slow_function took 1.0012s\nDone after 1s\nslow_function",
+          "explanation": "The decorator wraps the original function. @functools.wraps preserves the original function's metadata (name, docstring)."
+        },
+        {
+          "title": "Decorator Factory (with parameters)",
+          "code": "def retry(max_attempts=3, delay=1):\n    def decorator(func):\n        @functools.wraps(func)\n        def wrapper(*args, **kwargs):\n            for attempt in range(1, max_attempts + 1):\n                try:\n                    return func(*args, **kwargs)\n                except Exception as e:\n                    if attempt == max_attempts:\n                        raise\n                    print(f\"Attempt {attempt} failed: {e}. Retrying...\")\n                    time.sleep(delay)\n        return wrapper\n    return decorator\n\n@retry(max_attempts=3, delay=0.5)\ndef fetch_data(url):\n    import random\n    if random.random() < 0.7:\n        raise ConnectionError(\"Server unavailable\")\n    return {\"data\": \"success\"}\n\n# Three levels of nesting:\n# retry(3, 0.5) returns decorator\n# decorator(fetch_data) returns wrapper\n# wrapper() is called when fetch_data() is called",
+          "explanation": "A decorator factory is a function that returns a decorator. This pattern allows passing configuration parameters to decorators."
+        },
+        {
+          "title": "Stacking Multiple Decorators",
+          "code": "def bold(func):\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n        return f\"<b>{func(*args, **kwargs)}</b>\"\n    return wrapper\n\ndef italic(func):\n    @functools.wraps(func)\n    def wrapper(*args, **kwargs):\n        return f\"<i>{func(*args, **kwargs)}</i>\"\n    return wrapper\n\n@bold\n@italic\ndef greet(name):\n    return f\"Hello, {name}\"\n\nprint(greet(\"Alice\"))\n# Equivalent to: bold(italic(greet))(\"Alice\")\n# Inner decorator applies first, outer wraps around it",
+          "output": "<b><i>Hello, Alice</i></b>",
+          "explanation": "Decorators stack bottom-up: @italic applies first, then @bold wraps the result. Read them inside-out."
+        }
+      ],
+      "notes": [
+        "Always use @functools.wraps to preserve the original function's metadata",
+        "Decorators can also be classes with __call__ method",
+        "Python's built-in decorators: @staticmethod, @classmethod, @property, @lru_cache"
+      ],
+      "followUps": [
+        "What happens without @functools.wraps?",
+        "How would you write a class-based decorator?",
+        "What is @property and how does it work?"
+      ],
+      "interviewTips": [
+        "Always mention @functools.wraps - forgetting it is a common mistake",
+        "Explain the three levels of a decorator factory clearly",
+        "Give a real-world example: authentication, caching, or rate limiting"
+      ]
+    }
+  },
+  {
+    "id": "python-generators",
+    "sectionId": "python-interview",
+    "orderIndex": 1,
+    "title": "Generators & Iterators",
+    "difficulty": "Advanced",
+    "type": "Coding",
+    "concepts": ["Generators", "yield", "Iterator Protocol", "__iter__", "__next__", "Generator Expression"],
+    "content": {
+      "question": "Explain generators in Python. How are they different from regular functions and lists?",
+      "answer": "Generators are functions that use 'yield' to produce a sequence of values lazily (one at a time) instead of computing all values at once and returning a list.\n\nKey differences from regular functions:\n- Use yield instead of return\n- Maintain their state between calls\n- Produce values on demand (lazy evaluation)\n- Memory efficient: generate items one at a time\n\nA generator function returns a generator object that implements the iterator protocol (__iter__ and __next__).",
+      "codeExamples": [
+        {
+          "title": "Generator vs List: Memory Comparison",
+          "code": "import sys\n\n# List: stores ALL values in memory\nnums_list = [x ** 2 for x in range(1_000_000)]\nprint(f\"List size: {sys.getsizeof(nums_list):,} bytes\")\n\n# Generator: computes values on demand\nnums_gen = (x ** 2 for x in range(1_000_000))\nprint(f\"Generator size: {sys.getsizeof(nums_gen):,} bytes\")\n\n# Generator function\ndef squares(n):\n    for i in range(n):\n        yield i ** 2  # pauses here, resumes on next()\n\nfor sq in squares(5):\n    print(sq, end=' ')",
+          "output": "List size: 8,448,728 bytes\nGenerator size: 200 bytes\n0 1 4 9 16",
+          "explanation": "The list stores 1M values in memory (~8MB). The generator object is only 200 bytes because it computes values one at a time."
+        },
+        {
+          "title": "yield: Pause and Resume",
+          "code": "def countdown(n):\n    print(\"Starting countdown\")\n    while n > 0:\n        yield n  # pause, return n\n        n -= 1\n    print(\"Done!\")\n\ngen = countdown(3)\nprint(next(gen))  # Starting countdown, then 3\nprint(next(gen))  # 2\nprint(next(gen))  # 1\n# next(gen) would print 'Done!' then raise StopIteration\n\n# Practical: Reading large files line by line\ndef read_large_file(filepath):\n    with open(filepath) as f:\n        for line in f:\n            yield line.strip()",
+          "explanation": "yield pauses the function and remembers its state. next() resumes from where it left off. This is perfect for processing data that doesn't fit in memory."
+        },
+        {
+          "title": "Generator Pipeline Pattern",
+          "code": "def read_lines(filepath):\n    with open(filepath) as f:\n        for line in f:\n            yield line.strip()\n\ndef filter_comments(lines):\n    for line in lines:\n        if not line.startswith('#'):\n            yield line\n\ndef parse_csv(lines):\n    for line in lines:\n        yield line.split(',')\n\ndef get_column(rows, col):\n    for row in rows:\n        yield row[col]\n\n# Compose the pipeline - nothing executes until iteration\npipeline = get_column(\n    parse_csv(\n        filter_comments(\n            read_lines('data.csv')\n        )\n    ),\n    col=0\n)\n\nfor value in pipeline:\n    print(value)",
+          "explanation": "Generator pipelines are composable and memory-efficient. Each stage processes one item at a time. The entire pipeline uses O(1) memory regardless of file size."
+        }
+      ],
+      "notes": [
+        "Generators can only be iterated once - after exhaustion they produce nothing",
+        "yield from delegates to a sub-generator (PEP 380)",
+        "Generator expressions: (x for x in range(10)) - like list comprehension but lazy"
+      ],
+      "followUps": [
+        "What is the iterator protocol? How do __iter__ and __next__ work?",
+        "What is 'yield from' and when would you use it?",
+        "How do generators relate to coroutines and async/await?"
+      ],
+      "interviewTips": [
+        "Emphasize the memory benefit with concrete numbers",
+        "The file processing example shows real-world value",
+        "Know that Python's range() is NOT a generator - it's a lazy sequence object"
+      ]
+    }
+  },
+  {
+    "id": "python-gil",
+    "sectionId": "python-interview",
+    "orderIndex": 2,
+    "title": "GIL & Concurrency",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["GIL", "Threading", "Multiprocessing", "asyncio", "Concurrency vs Parallelism"],
+    "content": {
+      "question": "What is the GIL? How do you achieve parallelism in Python?",
+      "answer": "The GIL (Global Interpreter Lock) is a mutex in CPython that allows only one thread to execute Python bytecode at a time. This means Python threads cannot achieve true parallelism for CPU-bound tasks.\n\nHowever:\n- I/O-bound tasks: threading works fine (GIL is released during I/O)\n- CPU-bound tasks: use multiprocessing (separate processes, each with its own GIL)\n- Async I/O: asyncio for thousands of concurrent I/O operations\n\nConcurrency vs Parallelism:\n- Concurrency: dealing with many things at once (structure)\n- Parallelism: doing many things at once (execution)",
+      "codeExamples": [
+        {
+          "title": "Threading vs Multiprocessing",
+          "code": "import threading\nimport multiprocessing\nimport time\n\ndef cpu_bound(n):\n    \"\"\"CPU-intensive: count to n\"\"\"\n    total = 0\n    for i in range(n):\n        total += i\n    return total\n\n# Single thread: ~4 seconds\nstart = time.time()\nfor _ in range(4):\n    cpu_bound(10_000_000)\nprint(f\"Single: {time.time() - start:.2f}s\")\n\n# Threading: ALSO ~4 seconds (GIL!)\nstart = time.time()\nthreads = [threading.Thread(target=cpu_bound, args=(10_000_000,)) for _ in range(4)]\nfor t in threads: t.start()\nfor t in threads: t.join()\nprint(f\"Threading: {time.time() - start:.2f}s\")\n\n# Multiprocessing: ~1 second (true parallelism)\nstart = time.time()\nwith multiprocessing.Pool(4) as pool:\n    pool.map(cpu_bound, [10_000_000] * 4)\nprint(f\"Multiprocessing: {time.time() - start:.2f}s\")",
+          "output": "Single: 4.12s\nThreading: 4.08s\nMultiprocessing: 1.15s",
+          "explanation": "Threading doesn't help CPU-bound tasks due to the GIL. Multiprocessing creates separate processes, each with its own Python interpreter and GIL."
+        },
+        {
+          "title": "asyncio for I/O-Bound Concurrency",
+          "code": "import asyncio\nimport aiohttp\n\nasync def fetch_async(urls):\n    async with aiohttp.ClientSession() as session:\n        tasks = [fetch_one(session, url) for url in urls]\n        return await asyncio.gather(*tasks)\n\nasync def fetch_one(session, url):\n    async with session.get(url) as response:\n        return response.status\n\n# asyncio.gather runs all requests concurrently\nurls = ['https://httpbin.org/delay/1'] * 10\nresults = asyncio.run(fetch_async(urls))\nprint(results)",
+          "explanation": "asyncio uses a single thread with cooperative multitasking. While one request waits for I/O, others can proceed. Perfect for high-concurrency I/O."
+        },
+        {
+          "title": "When to Use What",
+          "code": "import concurrent.futures\n\n# CPU-bound -> multiprocessing\n# I/O-bound (few connections) -> threading\n# I/O-bound (many connections) -> asyncio\n# Mix -> multiprocessing + asyncio per process\n\n# ThreadPoolExecutor for I/O\nwith concurrent.futures.ThreadPoolExecutor(max_workers=10) as executor:\n    futures = [executor.submit(fetch_url, url) for url in urls]\n    results = [f.result() for f in concurrent.futures.as_completed(futures)]\n\n# ProcessPoolExecutor for CPU\nwith concurrent.futures.ProcessPoolExecutor(max_workers=4) as executor:\n    futures = [executor.submit(process_image, img) for img in images]\n    results = [f.result() for f in concurrent.futures.as_completed(futures)]",
+          "explanation": "concurrent.futures provides a unified interface for both threading and multiprocessing. The decision depends on whether your workload is CPU-bound or I/O-bound."
+        }
+      ],
+      "notes": [
+        "The GIL only affects CPython - Jython, IronPython, and PyPy (in some modes) don't have it",
+        "NumPy, Pandas, and other C extensions release the GIL during computation",
+        "Python 3.13 introduces a free-threaded mode (experimental, no-GIL build)"
+      ],
+      "followUps": [
+        "Why does Python have the GIL?",
+        "How does asyncio differ from threading internally?",
+        "What is the free-threaded Python proposal?"
+      ],
+      "interviewTips": [
+        "Don't just say 'GIL is bad' - explain when it matters and when it doesn't",
+        "Show you know the practical workarounds (multiprocessing, C extensions, asyncio)",
+        "Mention that most web frameworks handle this for you (Django, FastAPI)"
+      ]
+    }
+  },
+  {
+    "id": "python-variables-types",
+    "sectionId": "python-interview",
+    "orderIndex": 3,
+    "title": "Variables & Data Types",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["Variables", "Data Types", "Type Casting", "Mutability", "id() and is"],
+    "content": {
+      "question": "What are Python's built-in data types? Explain mutability and how variables work internally.",
+      "answer": "Python's built-in data types include:\n- Numeric: int, float, complex\n- Sequence: str, list, tuple, range\n- Set: set, frozenset\n- Mapping: dict\n- Boolean: bool\n- Binary: bytes, bytearray, memoryview\n- None: NoneType\n\nVariables in Python are references (labels) pointing to objects in memory, not boxes holding values. Assignment binds a name to an object.\n\nMutable objects (list, dict, set) can be changed in place. Immutable objects (int, float, str, tuple, frozenset) cannot - operations create new objects.",
+      "codeExamples": [
+        {
+          "title": "Variables are References",
+          "code": "a = [1, 2, 3]\nb = a           # b points to the SAME list object\nb.append(4)\nprint(a)        # [1, 2, 3, 4] - a is affected!\nprint(a is b)   # True - same object in memory\nprint(id(a) == id(b))  # True\n\n# Compare with immutable types\nx = 10\ny = x\ny += 5\nprint(x)        # 10 - x is NOT affected\nprint(x is y)   # False - y now points to a new int object",
+          "output": "[1, 2, 3, 4]\nTrue\nTrue\n10\nFalse",
+          "explanation": "For mutable objects, assignment copies the reference, not the value. Both variables point to the same object. For immutables, operations create new objects."
+        },
+        {
+          "title": "Type Checking and Casting",
+          "code": "# Type checking\nprint(type(42))          # <class 'int'>\nprint(type(3.14))        # <class 'float'>\nprint(type(\"hello\"))     # <class 'str'>\nprint(type([1, 2]))      # <class 'list'>\nprint(isinstance(42, int))        # True\nprint(isinstance(True, int))      # True - bool is a subclass of int!\n\n# Type casting\nprint(int(\"42\"))         # 42\nprint(float(\"3.14\"))     # 3.14\nprint(str(42))           # '42'\nprint(list(\"abc\"))       # ['a', 'b', 'c']\nprint(tuple([1, 2, 3]))  # (1, 2, 3)\nprint(bool(0))           # False\nprint(bool(\"\"))          # False\nprint(bool([]))          # False",
+          "output": "<class 'int'>\n<class 'float'>\n<class 'str'>\n<class 'list'>\nTrue\nTrue\n42\n3.14\n'42'\n['a', 'b', 'c']\n(1, 2, 3)\nFalse\nFalse\nFalse",
+          "explanation": "isinstance() is preferred over type() for checking because it handles inheritance. Falsy values: 0, 0.0, '', [], {}, set(), None, False."
+        },
+        {
+          "title": "Mutable vs Immutable Deep Dive",
+          "code": "# Immutable: str, int, float, tuple, frozenset\ns = \"hello\"\n# s[0] = 'H'  # TypeError! Strings are immutable\ns = s.capitalize()  # Creates a NEW string\nprint(s)  # 'Hello'\n\n# Mutable: list, dict, set\nlst = [1, 2, 3]\nprint(id(lst))  # e.g., 140234567890\nlst.append(4)\nprint(id(lst))  # SAME id - modified in place\n\n# Gotcha: tuple with mutable elements\nt = ([1, 2], [3, 4])\n# t[0] = [5, 6]  # TypeError - can't reassign tuple element\nt[0].append(3)    # But CAN mutate the list inside!\nprint(t)           # ([1, 2, 3], [3, 4])",
+          "output": "Hello\n([1, 2, 3], [3, 4])",
+          "explanation": "Immutability means the object itself cannot change, but a tuple can contain mutable objects whose contents can still be modified."
+        }
+      ],
+      "notes": [
+        "Python caches small integers (-5 to 256) and short strings for performance (interning)",
+        "Use copy.deepcopy() to create fully independent copies of nested mutable objects",
+        "Everything in Python is an object - even functions, classes, and modules"
+      ],
+      "followUps": [
+        "What is the difference between == and 'is'?",
+        "How does Python's integer caching work?",
+        "What are falsy values in Python?"
+      ],
+      "interviewTips": [
+        "Demonstrate you understand that variables are references, not containers",
+        "The tuple-with-mutable-element gotcha is a classic interview question",
+        "Know the difference between shallow copy and deep copy"
+      ]
+    }
+  },
+  {
+    "id": "python-strings",
+    "sectionId": "python-interview",
+    "orderIndex": 4,
+    "title": "Strings & String Methods",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["Strings", "f-strings", "String Methods", "Slicing", "Immutability"],
+    "content": {
+      "question": "Explain Python strings, common string methods, and f-string formatting.",
+      "answer": "Strings in Python are immutable sequences of Unicode characters. They can be created with single quotes, double quotes, or triple quotes for multiline.\n\nKey characteristics:\n- Immutable: any operation creates a new string\n- Indexed and sliceable: s[0], s[1:4], s[::-1]\n- Rich set of built-in methods for searching, transforming, and validating\n- f-strings (Python 3.6+) provide the most readable string formatting",
+      "codeExamples": [
+        {
+          "title": "String Methods Cheat Sheet",
+          "code": "s = \"  Hello, World!  \"\n\n# Cleaning\nprint(s.strip())        # 'Hello, World!'\nprint(s.lstrip())       # 'Hello, World!  '\nprint(s.rstrip())       # '  Hello, World!'\n\n# Searching\nprint(s.find('World'))   # 9 (index of first match)\nprint(s.count('l'))      # 3\nprint('World' in s)      # True\n\n# Transforming\nprint(s.strip().upper())        # 'HELLO, WORLD!'\nprint(s.strip().lower())        # 'hello, world!'\nprint(s.strip().title())        # 'Hello, World!'\nprint(s.strip().replace('World', 'Python'))  # 'Hello, Python!'\n\n# Splitting and Joining\nwords = \"apple,banana,cherry\".split(',')\nprint(words)            # ['apple', 'banana', 'cherry']\nprint(' - '.join(words)) # 'apple - banana - cherry'\n\n# Validation\nprint(\"hello\".isalpha())   # True\nprint(\"12345\".isdigit())   # True\nprint(\"hello1\".isalnum())  # True",
+          "output": "Hello, World!\nHello, World!  \n  Hello, World!\n9\n3\nTrue\nHELLO, WORLD!\nhello, world!\nHello, World!\nHello, Python!\n['apple', 'banana', 'cherry']\napple - banana - cherry\nTrue\nTrue\nTrue",
+          "explanation": "String methods always return new strings since strings are immutable. The original string is never modified."
+        },
+        {
+          "title": "f-strings and Formatting",
+          "code": "name = \"Alice\"\nage = 30\nsalary = 75000.5\n\n# f-strings (Python 3.6+)\nprint(f\"Name: {name}, Age: {age}\")\nprint(f\"Salary: ${salary:,.2f}\")  # $75,000.50\nprint(f\"{'centered':^20}\")       # '      centered      '\nprint(f\"{'left':<20}\")           # 'left                '\nprint(f\"{'right':>20}\")          # '                right'\n\n# Expressions inside f-strings\nprint(f\"{name.upper() = }\")      # \"name.upper() = 'ALICE'\"\nprint(f\"{2 ** 10 = }\")           # '2 ** 10 = 1024'\n\n# Multiline f-strings\nmessage = (\n    f\"Dear {name},\\n\"\n    f\"You are {age} years old.\\n\"\n    f\"Retirement in {65 - age} years.\"\n)\nprint(message)",
+          "output": "Name: Alice, Age: 30\nSalary: $75,000.50\n      centered      \nleft                \n                right\nname.upper() = 'ALICE'\n2 ** 10 = 1024\nDear Alice,\nYou are 30 years old.\nRetirement in 35 years.",
+          "explanation": "f-strings support format specs after a colon: alignment (<, >, ^), width, precision for floats, and comma separators."
+        },
+        {
+          "title": "Slicing and Reversing",
+          "code": "s = \"Python Programming\"\n\n# Slicing: s[start:stop:step]\nprint(s[0:6])       # 'Python'\nprint(s[7:])        # 'Programming'\nprint(s[:6])        # 'Python'\nprint(s[-11:])      # 'Programming'\nprint(s[::2])       # 'Pto rgamn'\nprint(s[::-1])      # 'gnimmargorP nohtyP' (reversed)\n\n# Check palindrome\ndef is_palindrome(s):\n    cleaned = s.lower().replace(' ', '')\n    return cleaned == cleaned[::-1]\n\nprint(is_palindrome(\"racecar\"))    # True\nprint(is_palindrome(\"A man a plan a canal Panama\".replace(' ', '')))  # True",
+          "output": "Python\nProgramming\nPython\nProgramming\nPto rgamn\ngnimmargorP nohtyP\nTrue\nTrue",
+          "explanation": "Slicing creates new strings. The [::-1] idiom is the Pythonic way to reverse a string. Negative indices count from the end."
+        }
+      ],
+      "notes": [
+        "Strings are immutable - concatenation in a loop creates many temporary objects; use ''.join() instead",
+        "Raw strings (r'\\n') treat backslashes as literal characters, useful for regex and file paths",
+        "Python 3 strings are Unicode by default; use .encode()/.decode() for bytes conversion"
+      ],
+      "followUps": [
+        "Why is string concatenation in a loop inefficient?",
+        "What is the difference between str.format() and f-strings?",
+        "How do you handle Unicode and encoding in Python?"
+      ],
+      "interviewTips": [
+        "Show you know f-strings are the preferred formatting method in modern Python",
+        "Demonstrate slicing fluency - interviewers love the [::-1] reverse trick",
+        "Mention join() over += in loops for performance"
+      ]
+    }
+  },
+  {
+    "id": "python-lists-tuples-sets",
+    "sectionId": "python-interview",
+    "orderIndex": 5,
+    "title": "Lists, Tuples & Sets",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["Lists", "Tuples", "Sets", "Mutability", "Operations"],
+    "content": {
+      "question": "Compare lists, tuples, and sets. When would you use each?",
+      "answer": "Lists, tuples, and sets are all collection types but serve different purposes:\n\n- List: Ordered, mutable, allows duplicates. Use for collections that change.\n- Tuple: Ordered, immutable, allows duplicates. Use for fixed data, dict keys, function returns.\n- Set: Unordered, mutable, no duplicates. Use for membership testing, removing duplicates, set math.\n\nPerformance: Set membership check is O(1) vs list O(n). Tuples are slightly faster than lists and use less memory.",
+      "codeExamples": [
+        {
+          "title": "List Operations",
+          "code": "# Creating and modifying lists\nnums = [3, 1, 4, 1, 5, 9, 2, 6]\n\nnums.append(7)         # Add to end\nnums.insert(0, 0)      # Insert at index\nnums.extend([8, 10])   # Add multiple\nnums.remove(1)         # Remove first occurrence\npopped = nums.pop()   # Remove & return last\nprint(nums)\n\n# Sorting\nnums.sort()               # In-place sort\nprint(nums)\nprint(sorted(nums, reverse=True))  # Returns new sorted list\n\n# List as stack (LIFO)\nstack = []\nstack.append('a')\nstack.append('b')\nstack.append('c')\nprint(stack.pop())  # 'c'\nprint(stack)        # ['a', 'b']",
+          "output": "[0, 3, 4, 1, 5, 9, 2, 6, 7, 8]\n[0, 1, 2, 3, 4, 5, 6, 7, 8]\n[8, 7, 6, 5, 4, 3, 2, 1, 0]\nc\n['a', 'b']",
+          "explanation": "Lists are the workhorse collection. sort() modifies in-place (returns None), sorted() returns a new list."
+        },
+        {
+          "title": "Tuples: Immutable Records",
+          "code": "# Tuples as fixed records\npoint = (3, 4)\nrgb = (255, 128, 0)\nperson = (\"Alice\", 30, \"Engineer\")\n\n# Unpacking\nx, y = point\nname, age, role = person\nprint(f\"{name} is {age}, works as {role}\")\n\n# Swap without temp variable\na, b = 1, 2\na, b = b, a  # Tuple unpacking!\nprint(a, b)  # 2 1\n\n# Tuples as dict keys (lists can't be)\nlocations = {\n    (40.7, -74.0): \"New York\",\n    (51.5, -0.1): \"London\",\n}\nprint(locations[(40.7, -74.0)])  # 'New York'\n\n# Named tuples for clarity\nfrom collections import namedtuple\nPoint = namedtuple('Point', ['x', 'y'])\np = Point(3, 4)\nprint(p.x, p.y)  # 3 4",
+          "output": "Alice is 30, works as Engineer\n2 1\nNew York\n3 4",
+          "explanation": "Tuples are perfect for fixed collections of items. Their immutability makes them hashable, so they can be dictionary keys."
+        },
+        {
+          "title": "Sets: Unique Collections & Set Math",
+          "code": "# Remove duplicates\nnums = [1, 2, 2, 3, 3, 3, 4]\nunique = list(set(nums))\nprint(unique)  # [1, 2, 3, 4]\n\n# Set operations\nbackend = {'Python', 'Java', 'Go', 'Rust'}\nfrontend = {'JavaScript', 'TypeScript', 'Python'}\n\nprint(backend & frontend)   # Intersection: {'Python'}\nprint(backend | frontend)   # Union: all languages\nprint(backend - frontend)   # Difference: {'Java', 'Go', 'Rust'}\nprint(backend ^ frontend)   # Symmetric diff: in one but not both\n\n# O(1) membership testing\nbig_list = list(range(1_000_000))\nbig_set = set(range(1_000_000))\n\nimport time\nstart = time.time()\n999_999 in big_list  # O(n) - slow\nprint(f\"List: {time.time() - start:.6f}s\")\n\nstart = time.time()\n999_999 in big_set   # O(1) - fast\nprint(f\"Set: {time.time() - start:.6f}s\")",
+          "output": "[1, 2, 3, 4]\n{'Python'}\n{'Python', 'Java', 'Go', 'Rust', 'JavaScript', 'TypeScript'}\n{'Java', 'Go', 'Rust'}\n{'Java', 'Go', 'Rust', 'JavaScript', 'TypeScript'}\nList: 0.015000s\nSet: 0.000001s",
+          "explanation": "Sets use hash tables internally, giving O(1) average lookup time. This makes them ideal for membership testing and deduplication."
+        }
+      ],
+      "notes": [
+        "Use tuple for function return values: return (x, y) then unpack with a, b = func()",
+        "frozenset is an immutable set that can be used as a dict key or set element",
+        "List slicing creates a shallow copy: new_list = old_list[:] or old_list.copy()"
+      ],
+      "followUps": [
+        "What is the time complexity of common list/set/dict operations?",
+        "When would you use a frozenset?",
+        "How does list multiplication work with mutable objects? (e.g., [[]] * 3)"
+      ],
+      "interviewTips": [
+        "Emphasize O(1) set lookup vs O(n) list lookup - this shows algorithmic awareness",
+        "The [[]] * 3 gotcha (shared references) is a popular interview question",
+        "Know when to use each: list for ordered data, tuple for fixed records, set for uniqueness"
+      ]
+    }
+  },
+  {
+    "id": "python-dictionaries",
+    "sectionId": "python-interview",
+    "orderIndex": 6,
+    "title": "Dictionaries & Operations",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["Dictionaries", "Hash Maps", "dict Methods", "defaultdict", "OrderedDict"],
+    "content": {
+      "question": "Explain Python dictionaries. What are common operations and patterns?",
+      "answer": "Dictionaries are Python's built-in hash map implementation - unordered (insertion-ordered since 3.7) collections of key-value pairs.\n\nKey characteristics:\n- O(1) average lookup, insertion, deletion\n- Keys must be hashable (immutable): str, int, tuple, frozenset\n- Values can be anything\n- Since Python 3.7, dicts maintain insertion order (guaranteed)\n\nDictionaries are one of the most used data structures in Python and power many internal mechanisms (namespaces, class attributes).",
+      "codeExamples": [
+        {
+          "title": "Common Dict Operations",
+          "code": "user = {'name': 'Alice', 'age': 30, 'role': 'Engineer'}\n\n# Access\nprint(user['name'])           # 'Alice'\nprint(user.get('salary', 0))  # 0 (default if missing)\n\n# Modify\nuser['age'] = 31              # Update\nuser['salary'] = 80000        # Add new key\ndel user['role']               # Delete key\n\n# Iteration\nfor key, value in user.items():\n    print(f\"{key}: {value}\")\n\n# Merging (Python 3.9+)\ndefaults = {'theme': 'dark', 'lang': 'en'}\nprefs = {'theme': 'light', 'font': 14}\nmerged = defaults | prefs  # prefs overrides defaults\nprint(merged)\n\n# Dictionary unpacking\nmerged2 = {**defaults, **prefs}  # Same result, works in 3.5+\nprint(merged2)",
+          "output": "Alice\n0\nname: Alice\nage: 31\nsalary: 80000\n{'theme': 'light', 'lang': 'en', 'font': 14}\n{'theme': 'light', 'lang': 'en', 'font': 14}",
+          "explanation": "Use .get() with a default instead of [] to avoid KeyError. The | merge operator (3.9+) is cleaner than {**a, **b}."
+        },
+        {
+          "title": "Dict Comprehensions & Patterns",
+          "code": "# Dict comprehension\nsquares = {x: x**2 for x in range(6)}\nprint(squares)  # {0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25}\n\n# Invert a dictionary\noriginal = {'a': 1, 'b': 2, 'c': 3}\ninverted = {v: k for k, v in original.items()}\nprint(inverted)  # {1: 'a', 2: 'b', 3: 'c'}\n\n# Count word frequency\nwords = \"the cat sat on the mat the cat\".split()\nfreq = {}\nfor w in words:\n    freq[w] = freq.get(w, 0) + 1\nprint(freq)  # {'the': 3, 'cat': 2, 'sat': 1, 'on': 1, 'mat': 1}\n\n# setdefault: get or set if missing\ngraph = {}\ngraph.setdefault('A', []).append('B')\ngraph.setdefault('A', []).append('C')\nprint(graph)  # {'A': ['B', 'C']}",
+          "output": "{0: 0, 1: 1, 2: 4, 3: 9, 4: 16, 5: 25}\n{1: 'a', 2: 'b', 3: 'c'}\n{'the': 3, 'cat': 2, 'sat': 1, 'on': 1, 'mat': 1}\n{'A': ['B', 'C']}",
+          "explanation": "Dict comprehensions are concise for transformations. setdefault() combines get-or-create in one call, perfect for building adjacency lists."
+        },
+        {
+          "title": "defaultdict and Counter",
+          "code": "from collections import defaultdict, Counter\n\n# defaultdict: auto-creates missing keys\nword_groups = defaultdict(list)\nwords = [\"apple\", \"banana\", \"avocado\", \"blueberry\", \"cherry\"]\nfor word in words:\n    word_groups[word[0]].append(word)\nprint(dict(word_groups))\n\n# Counter: count occurrences\ntext = \"abracadabra\"\ncounts = Counter(text)\nprint(counts)              # Counter({'a': 5, 'b': 2, 'r': 2, 'c': 1, 'd': 1})\nprint(counts.most_common(2))  # [('a', 5), ('b', 2)]\n\n# Counter arithmetic\nc1 = Counter(a=3, b=1)\nc2 = Counter(a=1, b=2)\nprint(c1 + c2)  # Counter({'a': 4, 'b': 3})\nprint(c1 - c2)  # Counter({'a': 2})",
+          "output": "{'a': ['apple', 'avocado'], 'b': ['banana', 'blueberry'], 'c': ['cherry']}\nCounter({'a': 5, 'b': 2, 'r': 2, 'c': 1, 'd': 1})\n[('a', 5), ('b', 2)]\nCounter({'a': 4, 'b': 3})\nCounter({'a': 2})",
+          "explanation": "defaultdict eliminates the need for key-existence checks. Counter is a specialized dict for counting hashable objects."
+        }
+      ],
+      "notes": [
+        "Dicts use ~50-70% more memory than lists due to hash table overhead",
+        "Keys must be hashable: str, int, tuple are fine; list, dict, set are not",
+        "Since Python 3.7, dict insertion order is guaranteed (was implementation detail in 3.6)"
+      ],
+      "followUps": [
+        "How do hash collisions work in Python dicts?",
+        "What is the difference between defaultdict and setdefault?",
+        "How would you implement an LRU cache using OrderedDict?"
+      ],
+      "interviewTips": [
+        "Show you know Counter and defaultdict - they simplify many interview problems",
+        "Always use .get() with defaults instead of try/except KeyError",
+        "Mention that dicts maintain insertion order since 3.7"
+      ]
+    }
+  },
+  {
+    "id": "python-control-flow",
+    "sectionId": "python-interview",
+    "orderIndex": 7,
+    "title": "Control Flow & Loops",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["if/elif/else", "for loops", "while loops", "break/continue", "else clause on loops", "match/case"],
+    "content": {
+      "question": "Explain Python's control flow mechanisms including loops, conditionals, and the match statement.",
+      "answer": "Python's control flow includes:\n- if/elif/else: Conditional branching with truthiness checks\n- for loops: Iterate over any iterable (list, range, dict, string, file)\n- while loops: Loop while condition is true\n- break/continue/pass: Loop control\n- for/while...else: The else clause runs if the loop completes WITHOUT a break\n- match/case (Python 3.10+): Structural pattern matching\n\nPython has no switch statement (before 3.10), no do-while, and no traditional C-style for loop. Ternary: x = a if condition else b.",
+      "codeExamples": [
+        {
+          "title": "Loop Patterns and else Clause",
+          "code": "# for...else: else runs if no break\ndef find_prime_factor(n):\n    for i in range(2, n):\n        if n % i == 0:\n            print(f\"Smallest factor of {n}: {i}\")\n            break\n    else:\n        # Only runs if loop completed without break\n        print(f\"{n} is prime!\")\n\nfind_prime_factor(17)  # 17 is prime!\nfind_prime_factor(15)  # Smallest factor of 15: 3\n\n# enumerate for index + value\nfruits = ['apple', 'banana', 'cherry']\nfor i, fruit in enumerate(fruits, start=1):\n    print(f\"{i}. {fruit}\")\n\n# zip for parallel iteration\nnames = ['Alice', 'Bob']\nscores = [95, 87]\nfor name, score in zip(names, scores):\n    print(f\"{name}: {score}\")",
+          "output": "17 is prime!\nSmallest factor of 15: 3\n1. apple\n2. banana\n3. cherry\nAlice: 95\nBob: 87",
+          "explanation": "The for...else pattern is unique to Python. The else block runs only if the loop exits normally (no break). enumerate() and zip() are essential Pythonic patterns."
+        },
+        {
+          "title": "Ternary and Walrus Operator",
+          "code": "# Ternary expression\nage = 20\nstatus = \"adult\" if age >= 18 else \"minor\"\nprint(status)  # 'adult'\n\n# Chained comparisons\nx = 5\nprint(1 < x < 10)    # True (equivalent to 1 < x and x < 10)\nprint(1 < x > 3)     # True\n\n# Walrus operator := (Python 3.8+)\n# Assigns and returns value in one expression\nimport re\ntext = \"Hello World 42\"\nif (match := re.search(r'\\d+', text)):\n    print(f\"Found number: {match.group()}\")  # 'Found number: 42'\n\n# Walrus in while loop\nwhile (line := input(\"Enter (q to quit): \")) != 'q':\n    print(f\"You said: {line}\")\n\n# Walrus in list comprehension\nnums = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]\nresults = [y for x in nums if (y := x ** 2) > 20]\nprint(results)  # [25, 36, 49, 64, 81, 100]",
+          "output": "adult\nTrue\nTrue\nFound number: 42\n[25, 36, 49, 64, 81, 100]",
+          "explanation": "The walrus operator (:=) assigns a value inside an expression, reducing repetition. Chained comparisons are more readable than using 'and'."
+        },
+        {
+          "title": "match/case (Python 3.10+)",
+          "code": "# Structural pattern matching\ndef handle_command(command):\n    match command.split():\n        case [\"quit\"]:\n            return \"Goodbye!\"\n        case [\"hello\", name]:\n            return f\"Hello, {name}!\"\n        case [\"add\", *numbers]:\n            return sum(int(n) for n in numbers)\n        case _:\n            return \"Unknown command\"\n\nprint(handle_command(\"quit\"))         # 'Goodbye!'\nprint(handle_command(\"hello Alice\"))  # 'Hello, Alice!'\nprint(handle_command(\"add 1 2 3\"))   # 6\n\n# Pattern matching with guards\ndef classify(value):\n    match value:\n        case int(n) if n > 0:\n            return \"positive int\"\n        case int(n) if n < 0:\n            return \"negative int\"\n        case 0:\n            return \"zero\"\n        case str(s) if len(s) > 0:\n            return \"non-empty string\"\n        case _:\n            return \"other\"",
+          "output": "Goodbye!\nHello, Alice!\n6",
+          "explanation": "match/case goes beyond simple value matching - it can destructure sequences, match types, capture variables, and use guard conditions."
+        }
+      ],
+      "notes": [
+        "Python uses indentation (not braces) for blocks - convention is 4 spaces",
+        "pass is a no-op placeholder for empty blocks: if True: pass",
+        "match/case is NOT the same as switch/case - it does structural pattern matching"
+      ],
+      "followUps": [
+        "What is the difference between match/case and if/elif chains?",
+        "How does the walrus operator help avoid repeated computations?",
+        "What are the performance implications of different loop patterns?"
+      ],
+      "interviewTips": [
+        "Know enumerate() and zip() - using range(len()) is considered un-Pythonic",
+        "The for...else pattern is a great way to show Python depth",
+        "Mention the walrus operator for Python 3.8+ code"
+      ]
+    }
+  },
+  {
+    "id": "python-functions",
+    "sectionId": "python-interview",
+    "orderIndex": 8,
+    "title": "Functions & Arguments",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["Functions", "Arguments", "Default Values", "Scope", "First-Class Functions", "Closures"],
+    "content": {
+      "question": "Explain Python functions, argument types, scope rules, and first-class function concepts.",
+      "answer": "Functions in Python are first-class objects - they can be assigned to variables, passed as arguments, and returned from other functions.\n\nArgument types:\n- Positional: func(a, b)\n- Keyword: func(name='Alice')\n- Default: def func(x=10)\n- *args: variable positional arguments (tuple)\n- **kwargs: variable keyword arguments (dict)\n\nScope follows LEGB rule: Local -> Enclosing -> Global -> Built-in.\n\nMutable default argument is a common Python gotcha - default values are evaluated once at function definition, not at each call.",
+      "codeExamples": [
+        {
+          "title": "Argument Types and the Mutable Default Gotcha",
+          "code": "# All argument types in one function\ndef example(a, b, c=10, *args, **kwargs):\n    print(f\"a={a}, b={b}, c={c}\")\n    print(f\"args={args}\")\n    print(f\"kwargs={kwargs}\")\n\nexample(1, 2, 3, 4, 5, name='Alice', age=30)\n\n# GOTCHA: Mutable default argument\ndef append_to(element, target=[]):  # BUG!\n    target.append(element)\n    return target\n\nprint(append_to(1))  # [1]\nprint(append_to(2))  # [1, 2] - NOT [2]!\n\n# Fix: use None as default\ndef append_to_fixed(element, target=None):\n    if target is None:\n        target = []\n    target.append(element)\n    return target\n\nprint(append_to_fixed(1))  # [1]\nprint(append_to_fixed(2))  # [2] - correct!",
+          "output": "a=1, b=2, c=3\nargs=(4, 5)\nkwargs={'name': 'Alice', 'age': 30}\n[1]\n[1, 2]\n[1]\n[2]",
+          "explanation": "Default mutable arguments are shared across calls because they are created once at function definition time. Always use None as default for mutable types."
+        },
+        {
+          "title": "First-Class Functions",
+          "code": "# Functions as arguments\ndef apply(func, value):\n    return func(value)\n\nprint(apply(str.upper, 'hello'))  # 'HELLO'\nprint(apply(len, [1, 2, 3]))     # 3\n\n# Functions as return values (closure)\ndef multiplier(factor):\n    def multiply(x):\n        return x * factor  # 'factor' is captured\n    return multiply\n\ndouble = multiplier(2)\ntriple = multiplier(3)\nprint(double(5))   # 10\nprint(triple(5))   # 15\n\n# Storing functions in data structures\noperations = {\n    '+': lambda a, b: a + b,\n    '-': lambda a, b: a - b,\n    '*': lambda a, b: a * b,\n    '/': lambda a, b: a / b,\n}\nprint(operations['+'](10, 3))  # 13\nprint(operations['*'](10, 3))  # 30",
+          "output": "HELLO\n3\n10\n15\n13\n30",
+          "explanation": "Functions being first-class means they're just objects. Closures capture variables from the enclosing scope, enabling powerful patterns like factory functions."
+        },
+        {
+          "title": "LEGB Scope Rules",
+          "code": "x = 'global'\n\ndef outer():\n    x = 'enclosing'\n    \n    def inner():\n        x = 'local'\n        print(f\"inner: {x}\")   # local\n    \n    inner()\n    print(f\"outer: {x}\")      # enclosing\n\nouter()\nprint(f\"global: {x}\")         # global\n\n# Using global and nonlocal\ncounter = 0\ndef increment():\n    global counter\n    counter += 1\n\ndef make_counter():\n    count = 0\n    def increment():\n        nonlocal count  # Refers to enclosing scope variable\n        count += 1\n        return count\n    return increment\n\nc = make_counter()\nprint(c())  # 1\nprint(c())  # 2\nprint(c())  # 3",
+          "output": "inner: local\nouter: enclosing\nglobal: global\n1\n2\n3",
+          "explanation": "LEGB: Local, Enclosing, Global, Built-in. Use 'global' to modify module-level variables, 'nonlocal' to modify enclosing function variables."
+        }
+      ],
+      "notes": [
+        "Keyword-only arguments come after *: def func(*, name) forces func(name='x')",
+        "Positional-only arguments use /: def func(x, /, y) (Python 3.8+)",
+        "Avoid mutable default arguments - use None and create inside the function"
+      ],
+      "followUps": [
+        "What is the difference between global and nonlocal?",
+        "How do closures work internally?",
+        "What are keyword-only and positional-only arguments?"
+      ],
+      "interviewTips": [
+        "The mutable default argument gotcha is one of the most common interview questions",
+        "Show you understand LEGB scope - draw it out if needed",
+        "Mention first-class functions to show you understand Python's design philosophy"
+      ]
+    }
+  },
+  {
+    "id": "python-args-kwargs",
+    "sectionId": "python-interview",
+    "orderIndex": 9,
+    "title": "*args & **kwargs",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["*args", "**kwargs", "Unpacking", "Argument Forwarding", "Variadic Functions"],
+    "content": {
+      "question": "Explain *args and **kwargs. How and when do you use them?",
+      "answer": "*args collects extra positional arguments into a tuple. **kwargs collects extra keyword arguments into a dictionary.\n\nOrder in function signature: regular args, *args, keyword-only args, **kwargs.\n\nCommon use cases:\n- Writing flexible APIs that accept variable arguments\n- Forwarding arguments to another function (decorators, wrappers)\n- Creating functions that work with any number of inputs\n\nThe * and ** operators also work for unpacking in function calls and assignments.",
+      "codeExamples": [
+        {
+          "title": "*args and **kwargs Basics",
+          "code": "def flexible(*args, **kwargs):\n    print(f\"Positional: {args}\")   # tuple\n    print(f\"Keyword: {kwargs}\")     # dict\n\nflexible(1, 2, 3, name='Alice', age=30)\n\n# Real-world: logging wrapper\ndef log_call(func):\n    def wrapper(*args, **kwargs):\n        print(f\"Calling {func.__name__}({args}, {kwargs})\")\n        result = func(*args, **kwargs)\n        print(f\"Returned: {result}\")\n        return result\n    return wrapper\n\n@log_call\ndef add(a, b):\n    return a + b\n\nadd(3, 5)\nadd(a=10, b=20)",
+          "output": "Positional: (1, 2, 3)\nKeyword: {'name': 'Alice', 'age': 30}\nCalling add((3, 5), {})\nReturned: 8\nCalling add((), {'a': 10, 'b': 20})\nReturned: 30",
+          "explanation": "*args captures positional arguments as a tuple, **kwargs captures keyword arguments as a dict. Together they let you forward any arguments to the wrapped function."
+        },
+        {
+          "title": "Unpacking Operator (* and **)",
+          "code": "# * unpacking in function calls\ndef add(a, b, c):\n    return a + b + c\n\nnums = [1, 2, 3]\nprint(add(*nums))  # 6 - unpacks list into positional args\n\nconfig = {'a': 10, 'b': 20, 'c': 30}\nprint(add(**config))  # 60 - unpacks dict into keyword args\n\n# * unpacking in assignments (Python 3)\nfirst, *middle, last = [1, 2, 3, 4, 5]\nprint(first)    # 1\nprint(middle)   # [2, 3, 4]\nprint(last)     # 5\n\nhead, *tail = [1, 2, 3]\nprint(head)     # 1\nprint(tail)     # [2, 3]\n\n# * unpacking for merging\nlist1 = [1, 2, 3]\nlist2 = [4, 5, 6]\nmerged = [*list1, *list2, 7]\nprint(merged)  # [1, 2, 3, 4, 5, 6, 7]\n\ndict1 = {'a': 1}\ndict2 = {'b': 2}\nmerged = {**dict1, **dict2, 'c': 3}\nprint(merged)  # {'a': 1, 'b': 2, 'c': 3}",
+          "output": "6\n60\n1\n[2, 3, 4]\n5\n1\n[2, 3]\n[1, 2, 3, 4, 5, 6, 7]\n{'a': 1, 'b': 2, 'c': 3}",
+          "explanation": "The * and ** operators unpack iterables and dicts respectively. In assignments, *variable captures remaining items into a list."
+        },
+        {
+          "title": "Argument Order and Keyword-Only Args",
+          "code": "# Full argument order:\n# def func(positional, /, normal, *, keyword_only, **kwargs)\n\ndef api_call(url, /, method='GET', *, headers=None, timeout=30):\n    \"\"\"url is positional-only, headers and timeout are keyword-only.\"\"\"\n    print(f\"{method} {url}\")\n    print(f\"Headers: {headers}, Timeout: {timeout}\")\n\napi_call('https://api.example.com')  # OK\napi_call('https://api.example.com', 'POST', headers={'Auth': 'token'})\n# api_call(url='...')  # Error: url is positional-only\n# api_call('...', 'GET', {'Auth': 'token'})  # Error: headers is keyword-only\n\n# Forcing keyword-only with bare *\ndef safe_divide(a, b, *, raise_on_zero=False):\n    if b == 0:\n        if raise_on_zero:\n            raise ZeroDivisionError\n        return None\n    return a / b\n\nprint(safe_divide(10, 0))                      # None\nprint(safe_divide(10, 0, raise_on_zero=True))  # Raises error",
+          "output": "GET https://api.example.com\nHeaders: None, Timeout: 30\nPOST https://api.example.com\nHeaders: {'Auth': 'token'}, Timeout: 30\nNone",
+          "explanation": "Arguments after * are keyword-only: they must be passed by name. Arguments before / are positional-only. This creates clear, self-documenting APIs."
+        }
+      ],
+      "notes": [
+        "The names args and kwargs are conventions, not requirements - *x and **y work too",
+        "*args is a tuple (immutable), **kwargs is a dict",
+        "In Python 3.12+, you can use *args with type hints: def func(*args: int)"
+      ],
+      "followUps": [
+        "How would you use *args and **kwargs in a decorator?",
+        "What is the difference between positional-only (/) and keyword-only (*) parameters?",
+        "How do you type-hint *args and **kwargs?"
+      ],
+      "interviewTips": [
+        "Show the decorator/wrapper pattern - it is the most practical use of *args/**kwargs",
+        "Know the full argument order: positional-only, /, normal, *args, keyword-only, **kwargs",
+        "Demonstrate unpacking in assignments and merging - it shows Python fluency"
+      ]
+    }
+  },
+  {
+    "id": "python-list-comprehensions",
+    "sectionId": "python-interview",
+    "orderIndex": 10,
+    "title": "List Comprehensions",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["List Comprehension", "Dict Comprehension", "Set Comprehension", "Nested Comprehension", "Filtering"],
+    "content": {
+      "question": "Explain list comprehensions in Python. How do they compare to loops?",
+      "answer": "List comprehensions provide a concise way to create lists based on existing iterables. They are generally faster than equivalent for-loop constructions because they are optimized at the C level in CPython.\n\nSyntax: [expression for item in iterable if condition]\n\nTypes of comprehensions:\n- List: [x for x in range(10)]\n- Dict: {k: v for k, v in items}\n- Set: {x for x in range(10)}\n- Generator expression: (x for x in range(10)) - lazy evaluation\n\nComprehensions should be readable. If they get too complex (multiple conditions, deep nesting), use a regular loop instead.",
+      "codeExamples": [
+        {
+          "title": "Basic List Comprehensions",
+          "code": "# Simple transformation\nsquares = [x ** 2 for x in range(10)]\nprint(squares)  # [0, 1, 4, 9, 16, 25, 36, 49, 64, 81]\n\n# With filtering\nevens = [x for x in range(20) if x % 2 == 0]\nprint(evens)  # [0, 2, 4, 6, 8, 10, 12, 14, 16, 18]\n\n# Conditional expression (ternary in comprehension)\nlabels = ['even' if x % 2 == 0 else 'odd' for x in range(5)]\nprint(labels)  # ['even', 'odd', 'even', 'odd', 'even']\n\n# String processing\nwords = ['  Hello ', ' World  ', '  Python ']\ncleaned = [w.strip().lower() for w in words]\nprint(cleaned)  # ['hello', 'world', 'python']\n\n# Flattening with method calls\nsentences = ['hello world', 'foo bar baz']\nall_words = [word for sentence in sentences for word in sentence.split()]\nprint(all_words)  # ['hello', 'world', 'foo', 'bar', 'baz']",
+          "output": "[0, 1, 4, 9, 16, 25, 36, 49, 64, 81]\n[0, 2, 4, 6, 8, 10, 12, 14, 16, 18]\n['even', 'odd', 'even', 'odd', 'even']\n['hello', 'world', 'python']\n['hello', 'world', 'foo', 'bar', 'baz']",
+          "explanation": "The if clause filters items. Ternary expressions (x if cond else y) transform each item. Nested for clauses flatten nested structures."
+        },
+        {
+          "title": "Dict, Set, and Nested Comprehensions",
+          "code": "# Dict comprehension\nword_lengths = {word: len(word) for word in ['hello', 'world', 'python']}\nprint(word_lengths)  # {'hello': 5, 'world': 5, 'python': 6}\n\n# Set comprehension (auto-deduplicates)\nfirst_letters = {word[0] for word in ['apple', 'avocado', 'banana', 'blueberry']}\nprint(first_letters)  # {'a', 'b'}\n\n# Nested comprehension: 2D matrix\nmatrix = [[i * j for j in range(1, 4)] for i in range(1, 4)]\nprint(matrix)  # [[1, 2, 3], [2, 4, 6], [3, 6, 9]]\n\n# Flatten a matrix\nflat = [val for row in matrix for val in row]\nprint(flat)  # [1, 2, 3, 2, 4, 6, 3, 6, 9]\n\n# Transpose a matrix\ntransposed = [[row[i] for row in matrix] for i in range(3)]\nprint(transposed)  # [[1, 2, 3], [2, 4, 6], [3, 6, 9]]",
+          "output": "{'hello': 5, 'world': 5, 'python': 6}\n{'a', 'b'}\n[[1, 2, 3], [2, 4, 6], [3, 6, 9]]\n[1, 2, 3, 2, 4, 6, 3, 6, 9]\n[[1, 2, 3], [2, 4, 6], [3, 6, 9]]",
+          "explanation": "Comprehensions work for dicts and sets too. Nested comprehensions read left-to-right matching nested for-loop order."
+        },
+        {
+          "title": "Performance: Comprehension vs Loop",
+          "code": "import time\n\n# Loop approach\nstart = time.time()\nresult = []\nfor i in range(1_000_000):\n    result.append(i ** 2)\nloop_time = time.time() - start\n\n# Comprehension approach\nstart = time.time()\nresult = [i ** 2 for i in range(1_000_000)]\ncomp_time = time.time() - start\n\nprint(f\"Loop: {loop_time:.4f}s\")\nprint(f\"Comprehension: {comp_time:.4f}s\")\nprint(f\"Speedup: {loop_time / comp_time:.1f}x\")\n\n# When NOT to use comprehension\n# Bad: too complex, hard to read\n# result = [transform(x) for x in data if validate(x) for y in x.items() if check(y)]\n\n# Better: use a regular loop\nresult = []\nfor x in data:\n    if validate(x):\n        for y in x.items():\n            if check(y):\n                result.append(transform(x))",
+          "output": "Loop: 0.1850s\nComprehension: 0.1200s\nSpeedup: 1.5x",
+          "explanation": "Comprehensions are faster because they avoid the overhead of list.append() method lookup on each iteration. But readability matters more than micro-optimization."
+        }
+      ],
+      "notes": [
+        "List comprehensions create the entire list in memory; use generator expressions for large datasets",
+        "Avoid side effects in comprehensions - they should be pure transformations",
+        "The Zen of Python: 'Readability counts' - if a comprehension is hard to read, use a loop"
+      ],
+      "followUps": [
+        "When should you use a generator expression instead of a list comprehension?",
+        "How do nested comprehensions map to nested for loops?",
+        "What is the performance difference between map() and list comprehension?"
+      ],
+      "interviewTips": [
+        "Write a simple comprehension first, then show you can add filtering and nesting",
+        "Mention that readability trumps conciseness - know when to use a regular loop",
+        "Show dict and set comprehensions too - most candidates only know list comprehensions"
+      ]
+    }
+  },
+  {
+    "id": "python-lambda-map-filter",
+    "sectionId": "python-interview",
+    "orderIndex": 11,
+    "title": "Lambda, Map, Filter, Reduce",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Lambda", "map", "filter", "reduce", "Functional Programming"],
+    "content": {
+      "question": "Explain lambda functions and functional programming tools: map, filter, and reduce.",
+      "answer": "Lambda functions are anonymous, single-expression functions defined with the lambda keyword.\n\nSyntax: lambda arguments: expression\n\nFunctional programming tools:\n- map(func, iterable): Apply func to every item, returns iterator\n- filter(func, iterable): Keep items where func returns True\n- functools.reduce(func, iterable): Accumulate by applying func cumulatively\n\nIn modern Python, list comprehensions are generally preferred over map/filter for readability. reduce was moved to functools because Guido van Rossum felt it was overused.",
+      "codeExamples": [
+        {
+          "title": "Lambda Functions",
+          "code": "# Basic lambda\nsquare = lambda x: x ** 2\nprint(square(5))  # 25\n\n# Lambda with multiple arguments\nadd = lambda a, b: a + b\nprint(add(3, 7))  # 10\n\n# Lambda in sorting\nstudents = [('Alice', 85), ('Bob', 92), ('Charlie', 78)]\nstudents.sort(key=lambda s: s[1], reverse=True)\nprint(students)  # [('Bob', 92), ('Alice', 85), ('Charlie', 78)]\n\n# Lambda with max/min\npeople = [{'name': 'Alice', 'age': 30}, {'name': 'Bob', 'age': 25}]\noldest = max(people, key=lambda p: p['age'])\nprint(oldest)  # {'name': 'Alice', 'age': 30}\n\n# Immediately invoked lambda\nresult = (lambda x, y: x + y)(3, 4)\nprint(result)  # 7",
+          "output": "25\n10\n[('Bob', 92), ('Alice', 85), ('Charlie', 78)]\n{'name': 'Alice', 'age': 30}\n7",
+          "explanation": "Lambdas are best for short, throwaway functions - especially as key arguments for sort(), max(), min(). For anything complex, use a named function."
+        },
+        {
+          "title": "map and filter",
+          "code": "# map: apply function to each item\nnums = [1, 2, 3, 4, 5]\nsquared = list(map(lambda x: x ** 2, nums))\nprint(squared)  # [1, 4, 9, 16, 25]\n\n# Equivalent list comprehension (preferred)\nsquared2 = [x ** 2 for x in nums]\nprint(squared2)  # [1, 4, 9, 16, 25]\n\n# map with multiple iterables\nnames = ['alice', 'bob', 'charlie']\ngreetings = list(map(lambda n: f'Hello, {n.title()}!', names))\nprint(greetings)\n\n# filter: keep items where function returns True\nevens = list(filter(lambda x: x % 2 == 0, range(10)))\nprint(evens)  # [0, 2, 4, 6, 8]\n\n# Chaining map and filter\nresult = list(map(lambda x: x ** 2, filter(lambda x: x % 2 == 0, range(10))))\nprint(result)  # [0, 4, 16, 36, 64]\n\n# Comprehension equivalent (more readable)\nresult2 = [x ** 2 for x in range(10) if x % 2 == 0]\nprint(result2)  # [0, 4, 16, 36, 64]",
+          "output": "[1, 4, 9, 16, 25]\n[1, 4, 9, 16, 25]\n['Hello, Alice!', 'Hello, Bob!', 'Hello, Charlie!']\n[0, 2, 4, 6, 8]\n[0, 4, 16, 36, 64]\n[0, 4, 16, 36, 64]",
+          "explanation": "map() and filter() return iterators (lazy). List comprehensions are usually preferred in Python for readability, but map/filter are useful when passing existing functions."
+        },
+        {
+          "title": "functools.reduce",
+          "code": "from functools import reduce\n\n# Sum all numbers\ntotal = reduce(lambda a, b: a + b, [1, 2, 3, 4, 5])\nprint(total)  # 15\n# Steps: ((((1+2)+3)+4)+5)\n\n# Find maximum\nmax_val = reduce(lambda a, b: a if a > b else b, [3, 1, 4, 1, 5, 9])\nprint(max_val)  # 9\n\n# Flatten nested list\nnested = [[1, 2], [3, 4], [5, 6]]\nflat = reduce(lambda a, b: a + b, nested)\nprint(flat)  # [1, 2, 3, 4, 5, 6]\n\n# With initial value\nproduct = reduce(lambda a, b: a * b, [1, 2, 3, 4], 1)\nprint(product)  # 24\n\n# Better alternatives for common reduce patterns\nprint(sum([1, 2, 3, 4, 5]))     # 15 - use sum()\nprint(max([3, 1, 4, 1, 5, 9]))  # 9  - use max()\nimport math\nprint(math.prod([1, 2, 3, 4]))  # 24 - use math.prod()",
+          "output": "15\n9\n[1, 2, 3, 4, 5, 6]\n24\n15\n9\n24",
+          "explanation": "reduce() applies a function cumulatively from left to right. For common operations like sum, max, and product, use built-in functions instead."
+        }
+      ],
+      "notes": [
+        "Lambda is limited to a single expression - no statements, assignments, or multiple lines",
+        "map() and filter() return iterators in Python 3 (not lists like in Python 2)",
+        "Guido van Rossum wanted to remove lambda from Python 3 - it stayed due to community demand"
+      ],
+      "followUps": [
+        "When would you use map/filter instead of list comprehensions?",
+        "What is the difference between map and a generator expression?",
+        "Can you write a multi-line lambda? Why or why not?"
+      ],
+      "interviewTips": [
+        "Show you know both functional style and comprehension style - then state your preference",
+        "Lambda is most useful as a key function for sort/max/min - focus on practical uses",
+        "Mention that reduce was moved to functools as a signal to prefer explicit loops"
+      ]
+    }
+  },
+  {
+    "id": "python-oop",
+    "sectionId": "python-interview",
+    "orderIndex": 12,
+    "title": "OOP: Classes & Objects",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Classes", "Objects", "Encapsulation", "Class vs Instance", "__init__", "Properties"],
+    "content": {
+      "question": "Explain OOP in Python. How do classes, objects, and encapsulation work?",
+      "answer": "Python supports OOP with classes as blueprints and objects as instances.\n\nKey concepts:\n- Class: template defining attributes and methods\n- Object/Instance: concrete realization of a class\n- __init__: constructor method, called when creating an instance\n- self: reference to the current instance (explicit in Python)\n- Encapsulation: controlling access via naming conventions (_private, __mangled)\n\nPython uses naming conventions rather than access modifiers:\n- public: any_name (accessible from anywhere)\n- protected: _name (convention: internal use, still accessible)\n- private: __name (name mangling: _ClassName__name)",
+      "codeExamples": [
+        {
+          "title": "Classes and Instances",
+          "code": "class BankAccount:\n    # Class variable: shared by all instances\n    bank_name = \"Python Bank\"\n    _total_accounts = 0\n    \n    def __init__(self, owner, balance=0):\n        # Instance variables: unique to each instance\n        self.owner = owner\n        self._balance = balance  # protected by convention\n        self.__pin = 1234       # name-mangled (private)\n        BankAccount._total_accounts += 1\n    \n    def deposit(self, amount):\n        if amount > 0:\n            self._balance += amount\n            return f\"Deposited ${amount}. Balance: ${self._balance}\"\n        raise ValueError(\"Amount must be positive\")\n    \n    def __str__(self):\n        return f\"{self.owner}'s account: ${self._balance}\"\n    \n    @classmethod\n    def get_total_accounts(cls):\n        return cls._total_accounts\n    \n    @staticmethod\n    def validate_amount(amount):\n        return isinstance(amount, (int, float)) and amount > 0\n\nacc = BankAccount(\"Alice\", 1000)\nprint(acc)                          # Alice's account: $1000\nprint(acc.deposit(500))             # Deposited $500. Balance: $1500\nprint(BankAccount.get_total_accounts())  # 1\nprint(BankAccount.validate_amount(100))  # True",
+          "output": "Alice's account: $1000\nDeposited $500. Balance: $1500\n1\nTrue",
+          "explanation": "Class variables are shared across instances. Instance variables (set in __init__) are unique per object. @classmethod receives the class, @staticmethod receives nothing."
+        },
+        {
+          "title": "Properties and Encapsulation",
+          "code": "class Temperature:\n    def __init__(self, celsius=0):\n        self._celsius = celsius  # store internally\n    \n    @property\n    def celsius(self):\n        \"\"\"Getter: accessed like an attribute.\"\"\"\n        return self._celsius\n    \n    @celsius.setter\n    def celsius(self, value):\n        \"\"\"Setter: validates before setting.\"\"\"\n        if value < -273.15:\n            raise ValueError(\"Below absolute zero!\")\n        self._celsius = value\n    \n    @property\n    def fahrenheit(self):\n        \"\"\"Computed property: read-only.\"\"\"\n        return self._celsius * 9/5 + 32\n\nt = Temperature(25)\nprint(t.celsius)      # 25 (calls getter)\nprint(t.fahrenheit)   # 77.0 (computed)\nt.celsius = 100       # calls setter\nprint(t.fahrenheit)   # 212.0\n# t.celsius = -300    # ValueError: Below absolute zero!\n# t.fahrenheit = 50   # AttributeError: can't set (no setter)",
+          "output": "25\n77.0\n212.0",
+          "explanation": "@property lets you use methods like attributes, adding validation and computed values. This is Python's preferred encapsulation pattern over explicit getters/setters."
+        },
+        {
+          "title": "Name Mangling and Introspection",
+          "code": "class Secret:\n    def __init__(self):\n        self.public = \"visible\"\n        self._protected = \"convention only\"\n        self.__private = \"name-mangled\"\n\ns = Secret()\nprint(s.public)        # 'visible'\nprint(s._protected)    # 'convention only' (still accessible!)\n# print(s.__private)   # AttributeError!\nprint(s._Secret__private)  # 'name-mangled' (mangled name)\n\n# dir() shows all attributes\nprint([attr for attr in dir(s) if not attr.startswith('__')])\n# ['_Secret__private', '_protected', 'public']\n\n# isinstance and type checking\nprint(isinstance(s, Secret))  # True\nprint(type(s))               # <class '__main__.Secret'>\n\n# __dict__ shows instance attributes\nprint(s.__dict__)\n# {'public': 'visible', '_protected': 'convention only', '_Secret__private': 'name-mangled'}",
+          "output": "visible\nconvention only\nname-mangled\n['_Secret__private', '_protected', 'public']\nTrue\n<class '__main__.Secret'>\n{'public': 'visible', '_protected': 'convention only', '_Secret__private': 'name-mangled'}",
+          "explanation": "Python has no true private attributes. __name becomes _ClassName__name (name mangling). The convention is: _ means 'please don't touch', __ means 'really don't touch'."
+        }
+      ],
+      "notes": [
+        "Python has no true access modifiers - privacy is by convention, not enforcement",
+        "Use @property instead of explicit getters/setters for Pythonic encapsulation",
+        "dataclasses (Python 3.7+) reduce boilerplate for data-holding classes"
+      ],
+      "followUps": [
+        "What is the difference between @classmethod and @staticmethod?",
+        "How do dataclasses simplify class definitions?",
+        "What are slots and how do they affect memory usage?"
+      ],
+      "interviewTips": [
+        "Know the difference between class variables and instance variables",
+        "Demonstrate @property for encapsulation - it is the Pythonic way",
+        "Explain name mangling but note that Python trusts developers (we're all consenting adults)"
+      ]
+    }
+  },
+  {
+    "id": "python-inheritance-mro",
+    "sectionId": "python-interview",
+    "orderIndex": 13,
+    "title": "Inheritance & MRO",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["Inheritance", "Multiple Inheritance", "MRO", "super()", "Diamond Problem", "Mixins"],
+    "content": {
+      "question": "Explain inheritance in Python, including MRO and the diamond problem.",
+      "answer": "Python supports single and multiple inheritance. When a class inherits from another, it gets all its attributes and methods.\n\nMRO (Method Resolution Order) defines the order Python searches for methods in an inheritance hierarchy. Python uses C3 linearization to compute the MRO.\n\nThe Diamond Problem occurs when a class inherits from two classes that share a common ancestor. Python's MRO ensures each class in the hierarchy is called exactly once.\n\nsuper() delegates method calls following the MRO, not just to the parent class. This is crucial for cooperative multiple inheritance.",
+      "codeExamples": [
+        {
+          "title": "Basic Inheritance and super()",
+          "code": "class Animal:\n    def __init__(self, name, sound):\n        self.name = name\n        self.sound = sound\n    \n    def speak(self):\n        return f\"{self.name} says {self.sound}!\"\n    \n    def __repr__(self):\n        return f\"Animal('{self.name}')\"\n\nclass Dog(Animal):\n    def __init__(self, name, breed):\n        super().__init__(name, 'Woof')  # Call parent __init__\n        self.breed = breed\n    \n    def fetch(self, item):\n        return f\"{self.name} fetches the {item}\"\n\nclass ServiceDog(Dog):\n    def __init__(self, name, breed, task):\n        super().__init__(name, breed)\n        self.task = task\n    \n    def work(self):\n        return f\"{self.name} performs: {self.task}\"\n\ndog = ServiceDog(\"Rex\", \"Labrador\", \"Guide\")\nprint(dog.speak())   # From Animal\nprint(dog.fetch(\"ball\"))  # From Dog\nprint(dog.work())    # From ServiceDog\nprint(isinstance(dog, Animal))  # True\nprint(issubclass(ServiceDog, Animal))  # True",
+          "output": "Rex says Woof!\nRex fetches the ball\nRex performs: Guide\nTrue\nTrue",
+          "explanation": "super() calls the parent class method following the MRO. Each level of inheritance adds capabilities while reusing parent behavior."
+        },
+        {
+          "title": "Multiple Inheritance and Diamond Problem",
+          "code": "class A:\n    def greet(self):\n        return \"Hello from A\"\n\nclass B(A):\n    def greet(self):\n        return \"Hello from B\"\n\nclass C(A):\n    def greet(self):\n        return \"Hello from C\"\n\nclass D(B, C):  # Diamond: D -> B -> C -> A\n    pass\n\nd = D()\nprint(d.greet())       # 'Hello from B' (B comes first in MRO)\nprint(D.__mro__)        # D -> B -> C -> A -> object\n# or equivalently:\nprint(D.mro())\n\n# Cooperative multiple inheritance with super()\nclass Base:\n    def __init__(self, **kwargs):\n        print(f\"Base.__init__\")\n\nclass Left(Base):\n    def __init__(self, left_val=0, **kwargs):\n        print(f\"Left.__init__({left_val})\")\n        super().__init__(**kwargs)\n\nclass Right(Base):\n    def __init__(self, right_val=0, **kwargs):\n        print(f\"Right.__init__({right_val})\")\n        super().__init__(**kwargs)\n\nclass Child(Left, Right):\n    def __init__(self):\n        print(\"Child.__init__\")\n        super().__init__(left_val=1, right_val=2)\n\nc = Child()",
+          "output": "Hello from B\n(<class 'D'>, <class 'B'>, <class 'C'>, <class 'A'>, <class 'object'>)\n[<class 'D'>, <class 'B'>, <class 'C'>, <class 'A'>, <class 'object'>]\nChild.__init__\nLeft.__init__(1)\nRight.__init__(2)\nBase.__init__",
+          "explanation": "MRO uses C3 linearization: depth-first, left-to-right, each class appears once. super() follows MRO, so Left.super() calls Right, not Base."
+        },
+        {
+          "title": "Mixins: Composable Behavior",
+          "code": "# Mixins add behavior without being standalone classes\nclass JsonMixin:\n    def to_json(self):\n        import json\n        return json.dumps(self.__dict__, indent=2)\n\nclass LogMixin:\n    def log(self, message):\n        print(f\"[{self.__class__.__name__}] {message}\")\n\nclass ValidateMixin:\n    def validate(self):\n        for key, value in self.__dict__.items():\n            if value is None:\n                raise ValueError(f\"{key} cannot be None\")\n        return True\n\n# Compose behavior through mixins\nclass User(JsonMixin, LogMixin, ValidateMixin):\n    def __init__(self, name, email):\n        self.name = name\n        self.email = email\n\nuser = User(\"Alice\", \"alice@example.com\")\nprint(user.to_json())\nuser.log(\"Created successfully\")\nprint(user.validate())",
+          "output": "{\n  \"name\": \"Alice\",\n  \"email\": \"alice@example.com\"\n}\n[User] Created successfully\nTrue",
+          "explanation": "Mixins are small, focused classes that add specific capabilities. They follow the 'composition over inheritance' principle using multiple inheritance."
+        }
+      ],
+      "notes": [
+        "Python's MRO uses C3 linearization, which guarantees monotonic and consistent ordering",
+        "Use super() without arguments in Python 3 - it automatically finds the correct class",
+        "Mixins should be adjective-named (Serializable, Loggable) and not hold state"
+      ],
+      "followUps": [
+        "How does C3 linearization work?",
+        "What is the difference between composition and inheritance?",
+        "When should you use mixins vs regular inheritance?"
+      ],
+      "interviewTips": [
+        "Draw the diamond diagram and trace the MRO to show understanding",
+        "Explain that super() follows MRO, not just parent - this surprises many candidates",
+        "Mention that Python favors composition over deep inheritance hierarchies"
+      ]
+    }
+  },
+  {
+    "id": "python-dunder-methods",
+    "sectionId": "python-interview",
+    "orderIndex": 14,
+    "title": "Magic/Dunder Methods",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["__init__", "__str__", "__repr__", "__eq__", "__lt__", "__add__", "__len__", "__getitem__"],
+    "content": {
+      "question": "What are dunder (magic) methods? How do they enable operator overloading?",
+      "answer": "Dunder (double underscore) methods are special methods that Python calls implicitly to perform operations on objects. They enable operator overloading and protocol implementation.\n\nCommon categories:\n- Construction: __init__, __new__, __del__\n- String representation: __str__ (user-friendly), __repr__ (developer-friendly)\n- Comparison: __eq__, __lt__, __le__, __gt__, __ge__, __ne__\n- Arithmetic: __add__, __sub__, __mul__, __truediv__\n- Container: __len__, __getitem__, __setitem__, __contains__\n- Context: __enter__, __exit__\n- Callable: __call__",
+      "codeExamples": [
+        {
+          "title": "String Representation and Comparison",
+          "code": "from functools import total_ordering\n\n@total_ordering  # Generates __le__, __gt__, __ge__ from __eq__ and __lt__\nclass Money:\n    def __init__(self, amount, currency='USD'):\n        self.amount = amount\n        self.currency = currency\n    \n    def __repr__(self):\n        return f\"Money({self.amount}, '{self.currency}')\"\n    \n    def __str__(self):\n        return f\"${self.amount:.2f} {self.currency}\"\n    \n    def __eq__(self, other):\n        if not isinstance(other, Money):\n            return NotImplemented\n        return self.amount == other.amount and self.currency == other.currency\n    \n    def __lt__(self, other):\n        if not isinstance(other, Money):\n            return NotImplemented\n        if self.currency != other.currency:\n            raise ValueError(\"Cannot compare different currencies\")\n        return self.amount < other.amount\n    \n    def __hash__(self):\n        return hash((self.amount, self.currency))\n\nm1 = Money(10.50)\nm2 = Money(20.00)\nprint(str(m1))     # '$10.50 USD'\nprint(repr(m2))    # \"Money(20.0, 'USD')\"\nprint(m1 < m2)     # True\nprint(m1 >= m2)    # False (from @total_ordering)",
+          "output": "$10.50 USD\nMoney(20.0, 'USD')\nTrue\nFalse",
+          "explanation": "__str__ is for end users (print), __repr__ is for developers (debug). Return NotImplemented (not raise) to let Python try the reflected operation."
+        },
+        {
+          "title": "Arithmetic Operator Overloading",
+          "code": "class Vector:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n    \n    def __add__(self, other):\n        if isinstance(other, Vector):\n            return Vector(self.x + other.x, self.y + other.y)\n        return NotImplemented\n    \n    def __mul__(self, scalar):\n        if isinstance(scalar, (int, float)):\n            return Vector(self.x * scalar, self.y * scalar)\n        return NotImplemented\n    \n    def __rmul__(self, scalar):\n        return self.__mul__(scalar)  # 3 * v == v * 3\n    \n    def __abs__(self):\n        return (self.x ** 2 + self.y ** 2) ** 0.5\n    \n    def __bool__(self):\n        return self.x != 0 or self.y != 0\n    \n    def __repr__(self):\n        return f\"Vector({self.x}, {self.y})\"\n\nv1 = Vector(3, 4)\nv2 = Vector(1, 2)\nprint(v1 + v2)      # Vector(4, 6)\nprint(v1 * 3)       # Vector(9, 12)\nprint(3 * v1)       # Vector(9, 12) - uses __rmul__\nprint(abs(v1))      # 5.0\nprint(bool(Vector(0, 0)))  # False",
+          "output": "Vector(4, 6)\nVector(9, 12)\nVector(9, 12)\n5.0\nFalse",
+          "explanation": "__rmul__ handles the case where the left operand doesn't support the operation (3 * v). __abs__ is called by abs(), __bool__ by bool() and in if statements."
+        },
+        {
+          "title": "Container Protocol (__len__, __getitem__)",
+          "code": "class Playlist:\n    def __init__(self, name, songs=None):\n        self.name = name\n        self._songs = songs or []\n    \n    def __len__(self):\n        return len(self._songs)\n    \n    def __getitem__(self, index):\n        return self._songs[index]  # Supports indexing AND slicing\n    \n    def __setitem__(self, index, value):\n        self._songs[index] = value\n    \n    def __contains__(self, song):\n        return song in self._songs\n    \n    def __iter__(self):\n        return iter(self._songs)\n    \n    def __repr__(self):\n        return f\"Playlist('{self.name}', {len(self)} songs)\"\n\npl = Playlist(\"Road Trip\", [\"Song A\", \"Song B\", \"Song C\", \"Song D\"])\nprint(len(pl))           # 4\nprint(pl[0])             # 'Song A'\nprint(pl[-1])            # 'Song D'\nprint(pl[1:3])           # ['Song B', 'Song C']\nprint(\"Song B\" in pl)    # True\nfor song in pl:\n    print(song, end=', ')  # Song A, Song B, Song C, Song D,",
+          "output": "4\nSong A\nSong D\n['Song B', 'Song C']\nTrue\nSong A, Song B, Song C, Song D,",
+          "explanation": "Implementing __len__ and __getitem__ makes your class work with len(), indexing, slicing, and for loops. __contains__ enables the 'in' operator."
+        }
+      ],
+      "notes": [
+        "__repr__ should ideally return a string that could recreate the object: eval(repr(obj)) == obj",
+        "Return NotImplemented (not raise NotImplementedError) from binary operators to allow fallback",
+        "@functools.total_ordering reduces boilerplate: define __eq__ and one of __lt__/__gt__"
+      ],
+      "followUps": [
+        "What is the difference between __str__ and __repr__?",
+        "What is __new__ and when would you use it instead of __init__?",
+        "How does __call__ work and when is it useful?"
+      ],
+      "interviewTips": [
+        "Implement a simple class with __add__, __eq__, __repr__ to show fluency",
+        "Know the difference between NotImplemented (singleton) and NotImplementedError (exception)",
+        "Mention @total_ordering and @dataclass to show modern Python knowledge"
+      ]
+    }
+  },
+  {
+    "id": "python-abstract-classes",
+    "sectionId": "python-interview",
+    "orderIndex": 15,
+    "title": "Abstract Classes & Interfaces",
+    "difficulty": "Intermediate",
+    "type": "Concept",
+    "concepts": ["ABC", "Abstract Methods", "Interfaces", "Protocols", "Duck Typing"],
+    "content": {
+      "question": "How does Python handle abstract classes and interfaces? What are Protocols?",
+      "answer": "Python provides abstract classes through the abc module. Abstract classes cannot be instantiated and can define abstract methods that subclasses must implement.\n\nPython also embraces duck typing: 'If it walks like a duck and quacks like a duck, it's a duck.' You don't need explicit interfaces.\n\nProtocols (Python 3.8+, typing module) provide structural subtyping - a class satisfies a Protocol if it has the required methods, without explicit inheritance. This bridges the gap between duck typing and static type checking.",
+      "codeExamples": [
+        {
+          "title": "Abstract Base Classes (ABC)",
+          "code": "from abc import ABC, abstractmethod\n\nclass Shape(ABC):\n    @abstractmethod\n    def area(self):\n        \"\"\"Calculate the area of the shape.\"\"\"\n        pass\n    \n    @abstractmethod\n    def perimeter(self):\n        \"\"\"Calculate the perimeter of the shape.\"\"\"\n        pass\n    \n    def describe(self):\n        \"\"\"Non-abstract method: shared by all shapes.\"\"\"\n        return f\"{self.__class__.__name__}: area={self.area():.2f}, perimeter={self.perimeter():.2f}\"\n\nclass Circle(Shape):\n    def __init__(self, radius):\n        self.radius = radius\n    \n    def area(self):\n        return 3.14159 * self.radius ** 2\n    \n    def perimeter(self):\n        return 2 * 3.14159 * self.radius\n\nclass Rectangle(Shape):\n    def __init__(self, width, height):\n        self.width = width\n        self.height = height\n    \n    def area(self):\n        return self.width * self.height\n    \n    def perimeter(self):\n        return 2 * (self.width + self.height)\n\n# shape = Shape()  # TypeError: Can't instantiate abstract class\nc = Circle(5)\nr = Rectangle(3, 4)\nprint(c.describe())  # Circle: area=78.54, perimeter=31.42\nprint(r.describe())  # Rectangle: area=12.00, perimeter=14.00",
+          "output": "Circle: area=78.54, perimeter=31.42\nRectangle: area=12.00, perimeter=14.00",
+          "explanation": "Abstract classes enforce a contract: subclasses MUST implement all abstract methods. Non-abstract methods provide shared default behavior."
+        },
+        {
+          "title": "Protocols: Structural Subtyping",
+          "code": "from typing import Protocol, runtime_checkable\n\n@runtime_checkable\nclass Drawable(Protocol):\n    def draw(self) -> str:\n        ...\n\nclass Circle:\n    def draw(self) -> str:\n        return \"Drawing circle\"\n\nclass Square:\n    def draw(self) -> str:\n        return \"Drawing square\"\n\nclass Text:\n    def render(self) -> str:  # Different method name\n        return \"Rendering text\"\n\n# No explicit inheritance needed!\ndef render_all(items: list[Drawable]) -> None:\n    for item in items:\n        print(item.draw())\n\nshapes = [Circle(), Square()]\nrender_all(shapes)  # Works!\n\n# Runtime checking with @runtime_checkable\nprint(isinstance(Circle(), Drawable))  # True\nprint(isinstance(Text(), Drawable))    # False - no draw() method",
+          "output": "Drawing circle\nDrawing square\nTrue\nFalse",
+          "explanation": "Protocols define interfaces structurally: any class with matching methods satisfies the protocol, without inheriting from it. This is Python's answer to Go's interfaces."
+        },
+        {
+          "title": "Duck Typing in Practice",
+          "code": "# Duck typing: focus on behavior, not type\ndef get_length(obj):\n    \"\"\"Works with anything that has __len__.\"\"\"\n    return len(obj)\n\nprint(get_length([1, 2, 3]))     # 3 - list\nprint(get_length(\"hello\"))       # 5 - string\nprint(get_length({1, 2, 3}))     # 3 - set\nprint(get_length({'a': 1}))      # 1 - dict\n\n# EAFP: Easier to Ask Forgiveness than Permission\ndef safe_divide(a, b):\n    try:\n        return a / b\n    except ZeroDivisionError:\n        return None\n    except TypeError:\n        return None\n\n# vs LBYL (Look Before You Leap) - less Pythonic\ndef safe_divide_lbyl(a, b):\n    if isinstance(b, (int, float)) and b != 0:\n        return a / b\n    return None\n\n# ABC registration: make existing classes satisfy an ABC\nfrom abc import ABC, abstractmethod\n\nclass Printable(ABC):\n    @abstractmethod\n    def __str__(self):\n        pass\n\n# All objects have __str__, so register built-in types\nPrintable.register(int)\nPrintable.register(str)\nprint(isinstance(42, Printable))      # True\nprint(isinstance(\"hello\", Printable)) # True",
+          "output": "3\n5\n3\n1\nTrue\nTrue",
+          "explanation": "Python's EAFP style: try the operation and handle failure, rather than checking types first. ABC.register() retroactively makes classes satisfy an ABC."
+        }
+      ],
+      "notes": [
+        "ABCs enforce implementation at instantiation time, not at class definition time",
+        "Protocols (PEP 544) enable static duck typing - checked by mypy without runtime overhead",
+        "EAFP (try/except) is more Pythonic than LBYL (if/isinstance) for duck typing"
+      ],
+      "followUps": [
+        "What is the difference between ABC and Protocol?",
+        "When should you use an ABC vs duck typing?",
+        "What is ABC.register() used for?"
+      ],
+      "interviewTips": [
+        "Show you understand duck typing as Python's primary polymorphism mechanism",
+        "Mention Protocols as the modern way to define interfaces for type checkers",
+        "Know when ABCs are appropriate: framework design where enforcement matters"
+      ]
+    }
+  },
+  {
+    "id": "python-exceptions",
+    "sectionId": "python-interview",
+    "orderIndex": 16,
+    "title": "Exception Handling",
+    "difficulty": "Beginner",
+    "type": "Concept",
+    "concepts": ["try/except", "finally", "raise", "Custom Exceptions", "Exception Hierarchy"],
+    "content": {
+      "question": "Explain Python exception handling. How do you create custom exceptions?",
+      "answer": "Python uses try/except/else/finally for exception handling:\n- try: code that might raise an exception\n- except: handle specific exceptions\n- else: runs only if no exception occurred\n- finally: always runs (cleanup code)\n\nException hierarchy: BaseException -> Exception -> specific exceptions.\n\nBest practices:\n- Catch specific exceptions, not bare except\n- Use else clause for code that should only run on success\n- Use finally for cleanup (or better: use context managers)\n- Create custom exceptions by inheriting from Exception",
+      "codeExamples": [
+        {
+          "title": "try/except/else/finally",
+          "code": "def divide(a, b):\n    try:\n        result = a / b\n    except ZeroDivisionError:\n        print(\"Cannot divide by zero\")\n        return None\n    except TypeError as e:\n        print(f\"Type error: {e}\")\n        return None\n    else:\n        # Only runs if NO exception occurred\n        print(f\"Division successful: {result}\")\n        return result\n    finally:\n        # ALWAYS runs, even after return\n        print(\"Division operation complete\")\n\nprint(divide(10, 3))\nprint(\"---\")\nprint(divide(10, 0))\nprint(\"---\")\nprint(divide(\"10\", 3))",
+          "output": "Division successful: 3.3333333333333335\nDivision operation complete\n3.3333333333333335\n---\nCannot divide by zero\nDivision operation complete\nNone\n---\nType error: unsupported operand type(s) for /: 'str' and 'int'\nDivision operation complete\nNone",
+          "explanation": "The else block runs only on success - don't put success code in try (it might catch unrelated errors). finally always runs, even after return or exception."
+        },
+        {
+          "title": "Custom Exceptions",
+          "code": "# Custom exception hierarchy\nclass AppError(Exception):\n    \"\"\"Base exception for our application.\"\"\"\n    pass\n\nclass ValidationError(AppError):\n    def __init__(self, field, message):\n        self.field = field\n        self.message = message\n        super().__init__(f\"{field}: {message}\")\n\nclass NotFoundError(AppError):\n    def __init__(self, resource, resource_id):\n        self.resource = resource\n        self.resource_id = resource_id\n        super().__init__(f\"{resource} with id {resource_id} not found\")\n\nclass AuthenticationError(AppError):\n    pass\n\n# Usage\ndef get_user(user_id):\n    if not isinstance(user_id, int):\n        raise ValidationError('user_id', 'Must be an integer')\n    if user_id < 0:\n        raise ValidationError('user_id', 'Must be positive')\n    if user_id > 1000:\n        raise NotFoundError('User', user_id)\n    return {'id': user_id, 'name': 'Alice'}\n\ntry:\n    user = get_user(9999)\nexcept ValidationError as e:\n    print(f\"Validation: {e.field} - {e.message}\")\nexcept NotFoundError as e:\n    print(f\"Not found: {e.resource} #{e.resource_id}\")\nexcept AppError as e:\n    print(f\"App error: {e}\")",
+          "output": "Not found: User #9999",
+          "explanation": "Custom exceptions should form a hierarchy. Catch specific exceptions first, then broader ones. Include relevant context as attributes."
+        },
+        {
+          "title": "Exception Chaining and Best Practices",
+          "code": "# Exception chaining with 'from'\ndef parse_config(text):\n    try:\n        key, value = text.split('=')\n        return {key.strip(): int(value.strip())}\n    except ValueError as e:\n        raise ValueError(f\"Invalid config line: '{text}'\") from e\n\ntry:\n    parse_config(\"invalid line\")\nexcept ValueError as e:\n    print(f\"Error: {e}\")\n    print(f\"Caused by: {e.__cause__}\")\n\n# Anti-patterns to avoid\n# BAD: bare except catches everything including SystemExit, KeyboardInterrupt\n# try:\n#     ...\n# except:  # NEVER do this\n#     pass\n\n# BAD: catching too broad\n# try:\n#     ...\n# except Exception:  # catches everything - usually too broad\n#     pass\n\n# GOOD: specific exceptions\ntry:\n    value = int(\"not a number\")\nexcept ValueError:\n    value = 0  # sensible default\n\n# GOOD: re-raise with context\ntry:\n    data = process(raw_data)\nexcept ProcessingError:\n    logger.exception(\"Failed to process data\")  # logs traceback\n    raise  # re-raises the same exception",
+          "output": "Error: Invalid config line: 'invalid line'\nCaused by: not enough values to unpack (expected 2, got 1)",
+          "explanation": "'raise ... from e' chains exceptions, preserving the original cause. 'raise' alone re-raises the current exception. Never use bare except or catch-all-and-silence."
+        }
+      ],
+      "notes": [
+        "Never use bare except: - it catches SystemExit and KeyboardInterrupt too",
+        "Use logging.exception() in except blocks to log the full traceback",
+        "Context managers (with statement) are preferred over try/finally for cleanup"
+      ],
+      "followUps": [
+        "What is the difference between else and putting code in try?",
+        "When should you catch vs let exceptions propagate?",
+        "What is exception chaining and when is it useful?"
+      ],
+      "interviewTips": [
+        "Emphasize catching specific exceptions, not broad Exception",
+        "Show you know the else clause in try/except - many developers don't",
+        "Demonstrate custom exception hierarchies for application design"
+      ]
+    }
+  },
+  {
+    "id": "python-context-managers",
+    "sectionId": "python-interview",
+    "orderIndex": 17,
+    "title": "Context Managers (with)",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["with statement", "__enter__", "__exit__", "contextlib", "Resource Management"],
+    "content": {
+      "question": "What are context managers? How do you create custom ones?",
+      "answer": "Context managers ensure resources are properly acquired and released using the 'with' statement. They implement the context manager protocol: __enter__ and __exit__.\n\n__enter__: Called when entering the with block, returns the resource.\n__exit__: Called when exiting (even if an exception occurred), handles cleanup.\n\nCommon uses: file handling, database connections, locks, temporary changes, timing.\n\nTwo ways to create context managers:\n1. Class-based: implement __enter__ and __exit__\n2. Function-based: use @contextlib.contextmanager decorator with yield",
+      "codeExamples": [
+        {
+          "title": "Class-based Context Manager",
+          "code": "class Timer:\n    def __init__(self, label=\"Operation\"):\n        self.label = label\n    \n    def __enter__(self):\n        import time\n        self.start = time.perf_counter()\n        return self  # Value assigned to 'as' variable\n    \n    def __exit__(self, exc_type, exc_val, exc_tb):\n        import time\n        self.elapsed = time.perf_counter() - self.start\n        print(f\"{self.label} took {self.elapsed:.4f}s\")\n        return False  # Don't suppress exceptions\n\n# Usage\nwith Timer(\"Computation\") as t:\n    total = sum(range(1_000_000))\nprint(f\"Result: {total}, Time: {t.elapsed:.4f}s\")\n\n# Exception handling in __exit__\nclass SuppressErrors:\n    def __enter__(self):\n        return self\n    \n    def __exit__(self, exc_type, exc_val, exc_tb):\n        if exc_type is ValueError:\n            print(f\"Suppressed ValueError: {exc_val}\")\n            return True  # True = suppress the exception\n        return False     # False = re-raise\n\nwith SuppressErrors():\n    raise ValueError(\"test error\")  # Suppressed!\nprint(\"Continues after suppressed error\")",
+          "output": "Computation took 0.0312s\nResult: 499999500000, Time: 0.0312s\nSuppressed ValueError: test error\nContinues after suppressed error",
+          "explanation": "__exit__ receives exception info (or None if no exception). Returning True suppresses the exception, False (or None) re-raises it."
+        },
+        {
+          "title": "Function-based with @contextmanager",
+          "code": "from contextlib import contextmanager\n\n@contextmanager\ndef temp_directory():\n    import tempfile, shutil, os\n    dirpath = tempfile.mkdtemp()\n    print(f\"Created temp dir: {dirpath}\")\n    try:\n        yield dirpath  # This is what 'as' receives\n    finally:\n        shutil.rmtree(dirpath)\n        print(f\"Cleaned up temp dir\")\n\nwith temp_directory() as tmpdir:\n    print(f\"Working in: {tmpdir}\")\n    # Create files, do work...\n# Automatically cleaned up after the block\n\n@contextmanager\ndef database_transaction(db):\n    \"\"\"Commit on success, rollback on failure.\"\"\"\n    try:\n        yield db\n        db.commit()\n        print(\"Transaction committed\")\n    except Exception:\n        db.rollback()\n        print(\"Transaction rolled back\")\n        raise\n\n# Simulating\nclass FakeDB:\n    def commit(self): pass\n    def rollback(self): pass\n\nwith database_transaction(FakeDB()) as db:\n    print(\"Doing database work...\")",
+          "output": "Created temp dir: /tmp/tmpXXXXXX\nWorking in: /tmp/tmpXXXXXX\nCleaned up temp dir\nDoing database work...\nTransaction committed",
+          "explanation": "@contextmanager turns a generator function into a context manager. Code before yield is __enter__, code after yield is __exit__. The yield value is the 'as' target."
+        },
+        {
+          "title": "Built-in Context Managers",
+          "code": "# File handling (most common)\nwith open('example.txt', 'w') as f:\n    f.write('Hello, World!')\n# File is automatically closed, even if an exception occurs\n\n# Multiple context managers\nwith open('input.txt') as src, open('output.txt', 'w') as dst:\n    dst.write(src.read())\n\n# Threading lock\nimport threading\nlock = threading.Lock()\nwith lock:  # Acquires lock, releases on exit\n    print(\"Critical section\")\n\n# Suppress specific exceptions\nfrom contextlib import suppress\nwith suppress(FileNotFoundError):\n    import os\n    os.remove('nonexistent.txt')  # No error raised\nprint(\"Continues normally\")\n\n# Redirect stdout\nfrom contextlib import redirect_stdout\nimport io\nf = io.StringIO()\nwith redirect_stdout(f):\n    print(\"This goes to the buffer\")\ncaptured = f.getvalue()\nprint(f\"Captured: {captured.strip()}\")",
+          "output": "Critical section\nContinues normally\nCaptured: This goes to the buffer",
+          "explanation": "Python's standard library is full of context managers: files, locks, database connections, temporary directories, output redirection, and exception suppression."
+        }
+      ],
+      "notes": [
+        "Always use 'with' for file operations - it guarantees the file is closed even on exceptions",
+        "contextlib.suppress() is cleaner than try/except/pass for ignoring specific exceptions",
+        "contextlib.ExitStack() manages a dynamic number of context managers"
+      ],
+      "followUps": [
+        "What happens if an exception occurs inside a with block?",
+        "How does contextlib.ExitStack work?",
+        "Can you nest context managers? What about async context managers?"
+      ],
+      "interviewTips": [
+        "Show both class-based and @contextmanager approaches",
+        "File handling with 'with' is the most relatable example - start there",
+        "Mention database transactions as a real-world use case for context managers"
+      ]
+    }
+  },
+  {
+    "id": "python-file-io",
+    "sectionId": "python-interview",
+    "orderIndex": 18,
+    "title": "File I/O & CSV/JSON",
+    "difficulty": "Beginner",
+    "type": "Coding",
+    "concepts": ["File Reading", "File Writing", "CSV", "JSON", "pathlib"],
+    "content": {
+      "question": "How do you read and write files in Python? How do you handle CSV and JSON?",
+      "answer": "Python provides built-in functions for file I/O and modules for structured data formats.\n\nFile modes: 'r' (read), 'w' (write/overwrite), 'a' (append), 'x' (create/fail if exists), 'b' (binary).\n\nAlways use 'with' statement for file operations to ensure proper cleanup.\n\nFor structured data:\n- json module: serialize/deserialize JSON\n- csv module: read/write CSV files\n- pathlib: modern, object-oriented file path handling (preferred over os.path)",
+      "codeExamples": [
+        {
+          "title": "Reading and Writing Files",
+          "code": "# Writing a file\nwith open('example.txt', 'w') as f:\n    f.write('Line 1\\n')\n    f.write('Line 2\\n')\n    f.writelines(['Line 3\\n', 'Line 4\\n'])\n\n# Reading entire file\nwith open('example.txt', 'r') as f:\n    content = f.read()\n    print(content)\n\n# Reading line by line (memory efficient for large files)\nwith open('example.txt') as f:\n    for line in f:  # f is an iterator\n        print(line.strip())\n\n# Reading into a list\nwith open('example.txt') as f:\n    lines = f.readlines()  # List of lines\n    print(lines)\n\n# Using pathlib (modern approach)\nfrom pathlib import Path\n\np = Path('example.txt')\np.write_text('Hello from pathlib!')\ncontent = p.read_text()\nprint(content)\nprint(p.exists())       # True\nprint(p.suffix)         # '.txt'\nprint(p.stem)           # 'example'\nprint(p.parent)         # '.' (current dir)",
+          "output": "Line 1\nLine 2\nLine 3\nLine 4\n\nLine 1\nLine 2\nLine 3\nLine 4\n['Line 1\\n', 'Line 2\\n', 'Line 3\\n', 'Line 4\\n']\nHello from pathlib!\nTrue\n.txt\nexample\n.",
+          "explanation": "Iterating over a file object reads line by line without loading the entire file. pathlib provides a cleaner API than os.path for file operations."
+        },
+        {
+          "title": "JSON: Read, Write, and Transform",
+          "code": "import json\n\n# Python dict to JSON string\ndata = {\n    'name': 'Alice',\n    'age': 30,\n    'languages': ['Python', 'JavaScript'],\n    'active': True,\n    'address': None\n}\n\n# Serialize to JSON string\njson_str = json.dumps(data, indent=2)\nprint(json_str)\n\n# Deserialize from JSON string\nparsed = json.loads(json_str)\nprint(parsed['name'])  # 'Alice'\nprint(type(parsed))   # <class 'dict'>\n\n# Write to JSON file\nwith open('data.json', 'w') as f:\n    json.dump(data, f, indent=2)\n\n# Read from JSON file\nwith open('data.json') as f:\n    loaded = json.load(f)\n    print(loaded == data)  # True\n\n# Custom serialization\nfrom datetime import datetime\n\nclass DateEncoder(json.JSONEncoder):\n    def default(self, obj):\n        if isinstance(obj, datetime):\n            return obj.isoformat()\n        return super().default(obj)\n\nevent = {'name': 'Meeting', 'date': datetime.now()}\nprint(json.dumps(event, cls=DateEncoder, indent=2))",
+          "output": "{\n  \"name\": \"Alice\",\n  \"age\": 30,\n  \"languages\": [\n    \"Python\",\n    \"JavaScript\"\n  ],\n  \"active\": true,\n  \"address\": null\n}\nAlice\n<class 'dict'>\nTrue",
+          "explanation": "json.dumps/loads work with strings, json.dump/load work with files. Custom JSONEncoder handles non-serializable types like datetime."
+        },
+        {
+          "title": "CSV: Read and Write",
+          "code": "import csv\n\n# Write CSV\nheaders = ['name', 'age', 'city']\nrows = [\n    ['Alice', 30, 'New York'],\n    ['Bob', 25, 'London'],\n    ['Charlie', 35, 'Paris']\n]\n\nwith open('people.csv', 'w', newline='') as f:\n    writer = csv.writer(f)\n    writer.writerow(headers)\n    writer.writerows(rows)\n\n# Read CSV\nwith open('people.csv', newline='') as f:\n    reader = csv.reader(f)\n    header = next(reader)  # Skip header\n    for row in reader:\n        print(f\"{row[0]} is {row[1]} from {row[2]}\")\n\n# DictReader/DictWriter (more readable)\nwith open('people.csv', newline='') as f:\n    reader = csv.DictReader(f)\n    for row in reader:\n        print(f\"{row['name']}: {row['city']}\")\n\n# Write with DictWriter\nwith open('output.csv', 'w', newline='') as f:\n    writer = csv.DictWriter(f, fieldnames=['name', 'score'])\n    writer.writeheader()\n    writer.writerow({'name': 'Alice', 'score': 95})\n    writer.writerow({'name': 'Bob', 'score': 87})",
+          "output": "Alice is 30 from New York\nBob is 25 from London\nCharlie is 35 from Paris\nAlice: New York\nBob: London\nCharlie: Paris",
+          "explanation": "DictReader maps each row to a dict with column headers as keys. Always pass newline='' to open() when using the csv module to avoid blank lines."
+        }
+      ],
+      "notes": [
+        "Always use 'with' for file operations to ensure files are closed properly",
+        "Use pathlib instead of os.path for modern Python file handling",
+        "For large JSON files, consider ijson for streaming/incremental parsing"
+      ],
+      "followUps": [
+        "How do you handle encoding issues when reading files?",
+        "What is the difference between text mode and binary mode?",
+        "How would you process a very large CSV file that doesn't fit in memory?"
+      ],
+      "interviewTips": [
+        "Always show file handling with 'with' statement, never manual f.close()",
+        "Know the difference between json.dump/load (file) and json.dumps/loads (string)",
+        "Mention pathlib as the modern alternative to os.path"
+      ]
+    }
+  },
+  {
+    "id": "python-regex",
+    "sectionId": "python-interview",
+    "orderIndex": 19,
+    "title": "Regular Expressions",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["re module", "Pattern Matching", "Groups", "Substitution", "Compilation"],
+    "content": {
+      "question": "How do you use regular expressions in Python? Explain common patterns.",
+      "answer": "Python's re module provides regex support for pattern matching in strings.\n\nKey functions:\n- re.search(): Find first match anywhere in string\n- re.match(): Match only at the beginning\n- re.findall(): Find all matches, return as list\n- re.finditer(): Find all matches, return as iterator of Match objects\n- re.sub(): Replace matches\n- re.compile(): Pre-compile pattern for reuse\n\nCommon patterns: \\d (digit), \\w (word char), \\s (whitespace), . (any char), * (0+), + (1+), ? (0 or 1), {n,m} (n to m), [] (character class), () (group).",
+      "codeExamples": [
+        {
+          "title": "Basic Pattern Matching",
+          "code": "import re\n\ntext = \"Contact us at support@example.com or sales@company.org\"\n\n# search: first match\nmatch = re.search(r'\\w+@\\w+\\.\\w+', text)\nif match:\n    print(f\"Found: {match.group()}\")  # support@example.com\n    print(f\"Position: {match.start()}-{match.end()}\")\n\n# findall: all matches\nemails = re.findall(r'\\w+@\\w+\\.\\w+', text)\nprint(emails)  # ['support@example.com', 'sales@company.org']\n\n# match: only at beginning\nprint(re.match(r'Contact', text))  # Match object\nprint(re.match(r'support', text))  # None (not at start)\n\n# Common patterns\nphone = \"Call 123-456-7890 or (987) 654-3210\"\nphones = re.findall(r'\\(?\\d{3}\\)?[\\s-]?\\d{3}[\\s-]?\\d{4}', phone)\nprint(phones)  # ['123-456-7890', '(987) 654-3210']",
+          "output": "Found: support@example.com\nPosition: 14-34\n['support@example.com', 'sales@company.org']\n<re.Match object; span=(0, 7), match='Contact'>\nNone\n['123-456-7890', '(987) 654-3210']",
+          "explanation": "Use raw strings (r'...') for regex to avoid double-escaping backslashes. search() finds the first match; findall() finds all non-overlapping matches."
+        },
+        {
+          "title": "Groups and Named Groups",
+          "code": "import re\n\n# Capturing groups with ()\ndate_text = \"Today is 2024-03-15 and tomorrow is 2024-03-16\"\npattern = r'(\\d{4})-(\\d{2})-(\\d{2})'\n\nmatch = re.search(pattern, date_text)\nif match:\n    print(f\"Full match: {match.group(0)}\")  # 2024-03-15\n    print(f\"Year: {match.group(1)}\")        # 2024\n    print(f\"Month: {match.group(2)}\")       # 2024\n    print(f\"Day: {match.group(3)}\")         # 15\n\n# Named groups (?P<name>...)\npattern = r'(?P<year>\\d{4})-(?P<month>\\d{2})-(?P<day>\\d{2})'\nfor match in re.finditer(pattern, date_text):\n    print(f\"{match.group('year')}/{match.group('month')}/{match.group('day')}\")\n\n# findall with groups returns tuples\ndates = re.findall(pattern, date_text)\nprint(dates)  # [('2024', '03', '15'), ('2024', '03', '16')]\n\n# Non-capturing group (?:...)\nwords = re.findall(r'(?:Mr|Mrs|Ms)\\.\\s(\\w+)', \"Mr. Smith and Mrs. Jones\")\nprint(words)  # ['Smith', 'Jones'] - only captures the name",
+          "output": "Full match: 2024-03-15\nYear: 2024\nMonth: 03\nDay: 15\n2024/03/15\n2024/03/16\n[('2024', '03', '15'), ('2024', '03', '16')]\n['Smith', 'Jones']",
+          "explanation": "Groups capture parts of the match. Named groups (?P<name>...) make regex more readable. Non-capturing groups (?:...) group without capturing."
+        },
+        {
+          "title": "Substitution and Compilation",
+          "code": "import re\n\n# re.sub: find and replace\ntext = \"Hello World, Hello Python\"\nresult = re.sub(r'Hello', 'Hi', text)\nprint(result)  # 'Hi World, Hi Python'\n\n# Substitution with function\ndef censor(match):\n    word = match.group()\n    return word[0] + '*' * (len(word) - 1)\n\ntext = \"The password is secret123\"\nresult = re.sub(r'\\b\\w*\\d+\\w*\\b', censor, text)\nprint(result)  # 'The password is s*********'\n\n# Compile for reuse (better performance in loops)\nemail_pattern = re.compile(\n    r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$'\n)\n\nemails = ['user@example.com', 'bad@', 'test@site.org', 'invalid']\nfor email in emails:\n    if email_pattern.match(email):\n        print(f\"Valid: {email}\")\n    else:\n        print(f\"Invalid: {email}\")\n\n# Flags\ntext = \"Hello\\nhello\\nHELLO\"\nmatches = re.findall(r'hello', text, re.IGNORECASE)\nprint(matches)  # ['Hello', 'hello', 'HELLO']",
+          "output": "Hi World, Hi Python\nThe password is s*********\nValid: user@example.com\nInvalid: bad@\nValid: test@site.org\nInvalid: invalid\n['Hello', 'hello', 'HELLO']",
+          "explanation": "re.compile() pre-compiles the pattern for better performance when reused. re.sub() can take a function as replacement for dynamic substitution."
+        }
+      ],
+      "notes": [
+        "Always use raw strings (r'...') for regex patterns to avoid backslash confusion",
+        "re.compile() is worth it when reusing a pattern many times (e.g., in a loop)",
+        "For simple string operations, prefer str methods (startswith, endswith, in) over regex"
+      ],
+      "followUps": [
+        "What is the difference between greedy and lazy matching?",
+        "How do lookahead and lookbehind assertions work?",
+        "When should you use string methods instead of regex?"
+      ],
+      "interviewTips": [
+        "Start with the simplest pattern that works, then refine",
+        "Know the basics: \\d, \\w, \\s, ., *, +, ?, [], ()",
+        "For interviews, explain your regex step by step - regex can be hard to read"
+      ]
+    }
+  },
+  {
+    "id": "python-collections",
+    "sectionId": "python-interview",
+    "orderIndex": 20,
+    "title": "Collections Module",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Counter", "defaultdict", "deque", "namedtuple", "OrderedDict", "ChainMap"],
+    "content": {
+      "question": "What useful data structures does the collections module provide?",
+      "answer": "The collections module provides specialized container types that extend Python's built-in dict, list, set, and tuple.\n\nKey classes:\n- Counter: dict subclass for counting hashable objects\n- defaultdict: dict with a factory for missing keys\n- deque: double-ended queue with O(1) append/pop from both ends\n- namedtuple: tuple subclass with named fields\n- OrderedDict: dict that remembers insertion order (relevant pre-3.7)\n- ChainMap: groups multiple dicts into a single view\n\nThese are often the right answer to interview coding problems because they simplify common patterns.",
+      "codeExamples": [
+        {
+          "title": "deque: Double-Ended Queue",
+          "code": "from collections import deque\n\n# deque vs list for queue operations\nd = deque([1, 2, 3])\n\nd.append(4)       # Right end: [1, 2, 3, 4]\nd.appendleft(0)   # Left end: [0, 1, 2, 3, 4]\nd.pop()           # Right: 4, deque is [0, 1, 2, 3]\nd.popleft()       # Left: 0, deque is [1, 2, 3]\nprint(d)\n\n# Rotation\nd = deque([1, 2, 3, 4, 5])\nd.rotate(2)   # Rotate right by 2\nprint(d)      # deque([4, 5, 1, 2, 3])\nd.rotate(-2)  # Rotate left by 2\nprint(d)      # deque([1, 2, 3, 4, 5])\n\n# Fixed-size deque (sliding window)\nrecent = deque(maxlen=3)\nfor i in range(5):\n    recent.append(i)\n    print(f\"Added {i}: {list(recent)}\")\n\n# Performance: deque vs list\nimport time\nn = 100_000\n\nlst = []\nstart = time.time()\nfor i in range(n):\n    lst.insert(0, i)  # O(n) each time!\nprint(f\"List insert(0): {time.time() - start:.4f}s\")\n\nd = deque()\nstart = time.time()\nfor i in range(n):\n    d.appendleft(i)   # O(1) each time\nprint(f\"Deque appendleft: {time.time() - start:.4f}s\")",
+          "output": "deque([1, 2, 3])\ndeque([4, 5, 1, 2, 3])\ndeque([1, 2, 3, 4, 5])\nAdded 0: [0]\nAdded 1: [0, 1]\nAdded 2: [0, 1, 2]\nAdded 3: [1, 2, 3]\nAdded 4: [2, 3, 4]\nList insert(0): 2.1500s\nDeque appendleft: 0.0100s",
+          "explanation": "deque provides O(1) operations on both ends, while list.insert(0) is O(n). maxlen creates a sliding window that automatically drops old items."
+        },
+        {
+          "title": "Counter: Counting Made Easy",
+          "code": "from collections import Counter\n\n# Count anything hashable\nwords = 'the quick brown fox jumps over the lazy dog the fox'.split()\nword_count = Counter(words)\nprint(word_count)\nprint(word_count.most_common(3))  # Top 3\n\n# Counter arithmetic\ninventory_a = Counter(apples=3, oranges=2, bananas=5)\ninventory_b = Counter(apples=1, oranges=4, grapes=3)\n\nprint(inventory_a + inventory_b)  # Add counts\nprint(inventory_a - inventory_b)  # Subtract (drops zero/negative)\nprint(inventory_a & inventory_b)  # Minimum of each\nprint(inventory_a | inventory_b)  # Maximum of each\n\n# Practical: find most common character\ndef most_common_char(s):\n    counter = Counter(s.lower().replace(' ', ''))\n    return counter.most_common(1)[0]\n\nchar, count = most_common_char(\"Hello World\")\nprint(f\"Most common: '{char}' ({count} times)\")\n\n# Check if one is subset of another (anagram check)\ndef is_anagram(s1, s2):\n    return Counter(s1.lower().replace(' ', '')) == Counter(s2.lower().replace(' ', ''))\n\nprint(is_anagram('listen', 'silent'))  # True",
+          "output": "Counter({'the': 3, 'fox': 2, 'quick': 1, 'brown': 1, 'jumps': 1, 'over': 1, 'lazy': 1, 'dog': 1})\n[('the', 3), ('fox', 2), ('quick', 1)]\nCounter({'apples': 4, 'bananas': 5, 'oranges': 6, 'grapes': 3})\nCounter({'bananas': 5, 'apples': 2})\nCounter({'apples': 1, 'oranges': 2})\nCounter({'bananas': 5, 'oranges': 4, 'apples': 3, 'grapes': 3})\nMost common: 'l' (3 times)\nTrue",
+          "explanation": "Counter is invaluable for interview problems: frequency counting, anagram checking, top-k problems, and inventory management."
+        },
+        {
+          "title": "namedtuple and ChainMap",
+          "code": "from collections import namedtuple, ChainMap\n\n# namedtuple: lightweight, immutable class\nPoint = namedtuple('Point', ['x', 'y'])\np = Point(3, 4)\nprint(p.x, p.y)          # 3 4 (access by name)\nprint(p[0], p[1])        # 3 4 (access by index)\nx, y = p                 # Unpacking works\nprint(f\"({x}, {y})\")\n\n# Convert to dict\nprint(p._asdict())        # {'x': 3, 'y': 4}\n\n# Create from dict\ndata = {'x': 10, 'y': 20}\np2 = Point(**data)\nprint(p2)                 # Point(x=10, y=20)\n\n# namedtuple with defaults (Python 3.6.1+)\nConfig = namedtuple('Config', ['host', 'port', 'debug'], defaults=['localhost', 8080, False])\nprint(Config())           # Config(host='localhost', port=8080, debug=False)\nprint(Config('0.0.0.0'))  # Config(host='0.0.0.0', port=8080, debug=False)\n\n# ChainMap: layered dict lookup\ndefaults = {'color': 'blue', 'size': 'medium', 'font': 'Arial'}\nuser_prefs = {'color': 'red'}\nenv_overrides = {'size': 'large'}\n\nconfig = ChainMap(env_overrides, user_prefs, defaults)\nprint(config['color'])  # 'red' (from user_prefs)\nprint(config['size'])   # 'large' (from env_overrides)\nprint(config['font'])   # 'Arial' (from defaults)",
+          "output": "3 4\n3 4\n(3, 4)\n{'x': 3, 'y': 4}\nPoint(x=10, y=20)\nConfig(host='localhost', port=8080, debug=False)\nConfig(host='0.0.0.0', port=8080, debug=False)\nred\nlarge\nArial",
+          "explanation": "namedtuple creates readable, immutable records. ChainMap provides a layered lookup - first dict found wins. Both are used extensively in production code."
+        }
+      ],
+      "notes": [
+        "For Python 3.7+, consider typing.NamedTuple or @dataclass instead of namedtuple",
+        "deque is thread-safe for append/pop operations (uses GIL-protected C implementation)",
+        "Counter.elements() returns an iterator over elements, repeating each as many times as its count"
+      ],
+      "followUps": [
+        "When would you use deque over list?",
+        "How does ChainMap differ from merging dicts?",
+        "What is the difference between namedtuple and dataclass?"
+      ],
+      "interviewTips": [
+        "Counter solves many interview problems in one line - know it well",
+        "Mention deque's maxlen for sliding window problems",
+        "namedtuple shows you write clean, readable code"
+      ]
+    }
+  },
+  {
+    "id": "python-itertools-functools",
+    "sectionId": "python-interview",
+    "orderIndex": 21,
+    "title": "Itertools & Functools",
+    "difficulty": "Advanced",
+    "type": "Coding",
+    "concepts": ["itertools", "functools", "chain", "product", "lru_cache", "partial"],
+    "content": {
+      "question": "What are the key tools in itertools and functools? When do you use them?",
+      "answer": "itertools provides efficient iterator building blocks for looping patterns. All functions return iterators (lazy evaluation).\n\nKey itertools: chain, product, permutations, combinations, groupby, islice, count, cycle, repeat, accumulate, zip_longest.\n\nfunctools provides higher-order functions and operations on callable objects.\n\nKey functools: lru_cache (memoization), partial (fix some args), reduce, wraps, total_ordering, singledispatch.\n\nThese modules are essential for writing clean, efficient, Pythonic code.",
+      "codeExamples": [
+        {
+          "title": "itertools: Combinatoric Iterators",
+          "code": "from itertools import product, permutations, combinations, chain\n\n# product: Cartesian product\ncolors = ['red', 'blue']\nsizes = ['S', 'M', 'L']\nvariants = list(product(colors, sizes))\nprint(variants)\n\n# permutations: all orderings\nprint(list(permutations('ABC', 2)))  # All 2-length orderings\n\n# combinations: unique selections (no repeats, order doesn't matter)\nprint(list(combinations('ABCD', 2)))\n\n# chain: flatten multiple iterables\nlist1 = [1, 2, 3]\nlist2 = [4, 5, 6]\nlist3 = [7, 8, 9]\nflattened = list(chain(list1, list2, list3))\nprint(flattened)  # [1, 2, 3, 4, 5, 6, 7, 8, 9]\n\n# chain.from_iterable: flatten nested iterables\nnested = [[1, 2], [3, 4], [5, 6]]\nflat = list(chain.from_iterable(nested))\nprint(flat)  # [1, 2, 3, 4, 5, 6]",
+          "output": "[('red', 'S'), ('red', 'M'), ('red', 'L'), ('blue', 'S'), ('blue', 'M'), ('blue', 'L')]\n[('A', 'B'), ('A', 'C'), ('B', 'A'), ('B', 'C'), ('C', 'A'), ('C', 'B')]\n[('A', 'B'), ('A', 'C'), ('A', 'D'), ('B', 'C'), ('B', 'D'), ('C', 'D')]\n[1, 2, 3, 4, 5, 6, 7, 8, 9]\n[1, 2, 3, 4, 5, 6]",
+          "explanation": "product gives all combinations across iterables. permutations gives ordered arrangements. combinations gives unordered selections. chain flattens multiple iterables."
+        },
+        {
+          "title": "itertools: Grouping and Slicing",
+          "code": "from itertools import groupby, islice, accumulate, zip_longest\n\n# groupby: group consecutive items\ndata = sorted(['apple', 'avocado', 'banana', 'blueberry', 'cherry'])\nfor key, group in groupby(data, key=lambda x: x[0]):\n    print(f\"{key}: {list(group)}\")\n\n# islice: slice an iterator\nfrom itertools import count\ninfinite = count(10, 5)  # 10, 15, 20, 25, ...\nfirst_five = list(islice(infinite, 5))\nprint(first_five)  # [10, 15, 20, 25, 30]\n\n# accumulate: running totals\nnums = [1, 2, 3, 4, 5]\nrunning_sum = list(accumulate(nums))\nprint(running_sum)  # [1, 3, 6, 10, 15]\n\nimport operator\nrunning_product = list(accumulate(nums, operator.mul))\nprint(running_product)  # [1, 2, 6, 24, 120]\n\n# zip_longest: zip with fill value\nnames = ['Alice', 'Bob', 'Charlie']\nscores = [95, 87]\nresult = list(zip_longest(names, scores, fillvalue=0))\nprint(result)  # [('Alice', 95), ('Bob', 87), ('Charlie', 0)]",
+          "output": "a: ['apple', 'avocado']\nb: ['banana', 'blueberry']\nc: ['cherry']\n[10, 15, 20, 25, 30]\n[1, 3, 6, 10, 15]\n[1, 2, 6, 24, 120]\n[('Alice', 95), ('Bob', 87), ('Charlie', 0)]",
+          "explanation": "groupby requires sorted input for correct grouping. islice works with infinite iterators. accumulate computes running aggregations."
+        },
+        {
+          "title": "functools: Caching and Partials",
+          "code": "from functools import lru_cache, partial, reduce, singledispatch\n\n# lru_cache: memoization decorator\n@lru_cache(maxsize=128)\ndef fibonacci(n):\n    if n < 2:\n        return n\n    return fibonacci(n - 1) + fibonacci(n - 2)\n\nprint(fibonacci(50))  # 12586269025 (instant with cache)\nprint(fibonacci.cache_info())\n# CacheInfo(hits=48, misses=51, maxsize=128, currsize=51)\n\n# partial: fix some function arguments\ndef power(base, exponent):\n    return base ** exponent\n\nsquare = partial(power, exponent=2)\ncube = partial(power, exponent=3)\nprint(square(5))  # 25\nprint(cube(5))    # 125\n\n# singledispatch: function overloading by type\n@singledispatch\ndef process(data):\n    raise TypeError(f\"Unsupported type: {type(data)}\")\n\n@process.register(str)\ndef _(data):\n    return f\"String: {data.upper()}\"\n\n@process.register(list)\ndef _(data):\n    return f\"List with {len(data)} items\"\n\n@process.register(int)\ndef _(data):\n    return f\"Integer: {data * 2}\"\n\nprint(process(\"hello\"))    # 'String: HELLO'\nprint(process([1, 2, 3]))  # 'List with 3 items'\nprint(process(42))         # 'Integer: 84'",
+          "output": "12586269025\nCacheInfo(hits=48, misses=51, maxsize=128, currsize=51)\n25\n125\nString: HELLO\nList with 3 items\nInteger: 84",
+          "explanation": "lru_cache turns recursive fibonacci from O(2^n) to O(n). partial creates specialized functions. singledispatch enables function overloading by argument type."
+        }
+      ],
+      "notes": [
+        "lru_cache requires hashable arguments - won't work with lists or dicts as parameters",
+        "Use cache (Python 3.9+) instead of lru_cache(maxsize=None) for unlimited caching",
+        "groupby only groups CONSECUTIVE items - sort first if you want all items grouped"
+      ],
+      "followUps": [
+        "How does lru_cache work internally?",
+        "What is the difference between combinations and permutations?",
+        "How would you implement your own memoization decorator?"
+      ],
+      "interviewTips": [
+        "lru_cache on fibonacci is a classic example - know it by heart",
+        "Mention itertools for coding problems involving combinations/permutations",
+        "Show partial for creating specialized functions from generic ones"
+      ]
+    }
+  },
+  {
+    "id": "python-metaclasses",
+    "sectionId": "python-interview",
+    "orderIndex": 22,
+    "title": "Metaclasses",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Metaclasses", "type", "__new__", "__init_subclass__", "Class Creation"],
+    "content": {
+      "question": "What are metaclasses in Python? When would you use them?",
+      "answer": "A metaclass is the class of a class. Just as a class defines how instances behave, a metaclass defines how classes behave.\n\nIn Python, 'type' is the default metaclass. When you write 'class Foo:', Python calls type('Foo', bases, namespace) to create the class.\n\nMetaclass use cases:\n- Enforcing class contracts (required methods/attributes)\n- Automatic registration of subclasses\n- Modifying class creation (adding methods, changing attributes)\n- ORM field mapping (Django models, SQLAlchemy)\n- Singleton pattern\n\nModern alternatives: __init_subclass__ (Python 3.6+) and class decorators handle most metaclass use cases more simply.",
+      "codeExamples": [
+        {
+          "title": "Understanding type() as a Metaclass",
+          "code": "# Everything is an object, and every object has a type\nprint(type(42))          # <class 'int'>\nprint(type('hello'))     # <class 'str'>\nprint(type(int))         # <class 'type'>\nprint(type(type))        # <class 'type'> (type is its own metaclass)\n\n# Classes are instances of type\nclass MyClass:\n    x = 10\n    def greet(self):\n        return 'hello'\n\n# The above is equivalent to:\nMyClass2 = type('MyClass2', (), {'x': 10, 'greet': lambda self: 'hello'})\n\nprint(type(MyClass))     # <class 'type'>\nprint(MyClass.x)         # 10\nprint(MyClass2.x)        # 10\n\n# Inheritance\nclass Child(MyClass):\n    pass\n\nChild2 = type('Child2', (MyClass,), {})\nprint(Child2().greet())  # 'hello'",
+          "output": "<class 'int'>\n<class 'str'>\n<class 'type'>\n<class 'type'>\n<class 'type'>\n10\n10\nhello",
+          "explanation": "type() is both a function (returns type of object) and a class (the metaclass of all classes). All classes are instances of type."
+        },
+        {
+          "title": "Custom Metaclass",
+          "code": "# Metaclass that enforces required methods\nclass InterfaceMeta(type):\n    def __new__(mcs, name, bases, namespace):\n        cls = super().__new__(mcs, name, bases, namespace)\n        \n        # Skip check for the base class itself\n        if bases:  # Only check subclasses\n            required = getattr(cls, '_required_methods', [])\n            for method in required:\n                if method not in namespace:\n                    raise TypeError(\n                        f\"{name} must implement {method}()\"\n                    )\n        return cls\n\nclass Plugin(metaclass=InterfaceMeta):\n    _required_methods = ['execute', 'cleanup']\n\n# This works:\nclass GoodPlugin(Plugin):\n    def execute(self):\n        return 'executing'\n    def cleanup(self):\n        return 'cleaning'\n\nprint(GoodPlugin().execute())  # 'executing'\n\n# This raises TypeError at class definition time:\n# class BadPlugin(Plugin):\n#     def execute(self):\n#         return 'executing'\n#     # Missing cleanup()!\n# TypeError: BadPlugin must implement cleanup()",
+          "output": "executing",
+          "explanation": "The metaclass __new__ is called when the CLASS is created (not when instances are created). This allows validating the class definition itself."
+        },
+        {
+          "title": "__init_subclass__: Modern Alternative",
+          "code": "# __init_subclass__ (Python 3.6+) - simpler than metaclasses\nclass Plugin:\n    _registry = {}\n    \n    def __init_subclass__(cls, plugin_name=None, **kwargs):\n        super().__init_subclass__(**kwargs)\n        name = plugin_name or cls.__name__.lower()\n        Plugin._registry[name] = cls\n        print(f\"Registered plugin: {name}\")\n\nclass JsonPlugin(Plugin, plugin_name='json'):\n    def process(self):\n        return 'Processing JSON'\n\nclass CsvPlugin(Plugin, plugin_name='csv'):\n    def process(self):\n        return 'Processing CSV'\n\nclass XmlPlugin(Plugin):  # Uses class name as default\n    def process(self):\n        return 'Processing XML'\n\nprint(Plugin._registry)\n# {'json': <class 'JsonPlugin'>, 'csv': <class 'CsvPlugin'>, 'xmlplugin': <class 'XmlPlugin'>}\n\n# Factory pattern using registry\ndef get_plugin(name):\n    cls = Plugin._registry.get(name)\n    if cls:\n        return cls()\n    raise ValueError(f\"Unknown plugin: {name}\")\n\nplugin = get_plugin('json')\nprint(plugin.process())  # 'Processing JSON'",
+          "output": "Registered plugin: json\nRegistered plugin: csv\nRegistered plugin: xmlplugin\n{'json': <class '__main__.JsonPlugin'>, 'csv': <class '__main__.CsvPlugin'>, 'xmlplugin': <class '__main__.XmlPlugin'>}\nProcessing JSON",
+          "explanation": "__init_subclass__ is called every time a class is subclassed. It handles 90% of metaclass use cases (registration, validation) without the complexity."
+        }
+      ],
+      "notes": [
+        "Tim Peters: 'Metaclasses are deeper magic than 99% of users should ever worry about'",
+        "Prefer __init_subclass__ (3.6+) or class decorators over metaclasses in most cases",
+        "Django models and SQLAlchemy declarative base both use metaclasses internally"
+      ],
+      "followUps": [
+        "What is the difference between __new__ and __init__ in a metaclass?",
+        "How does Django's Model metaclass work?",
+        "When would you use a metaclass vs __init_subclass__ vs a class decorator?"
+      ],
+      "interviewTips": [
+        "Admit metaclasses are rarely needed - show you know when NOT to use them",
+        "Explain the type() duality (function and metaclass) clearly",
+        "Mention __init_subclass__ as the modern, simpler alternative"
+      ]
+    }
+  },
+  {
+    "id": "python-memory-gc",
+    "sectionId": "python-interview",
+    "orderIndex": 23,
+    "title": "Memory Management & GC",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Reference Counting", "Garbage Collection", "Memory Pools", "Weak References", "__slots__"],
+    "content": {
+      "question": "How does Python manage memory? Explain garbage collection.",
+      "answer": "Python uses a combination of reference counting and a cyclic garbage collector.\n\nReference counting: Each object tracks how many references point to it. When the count drops to zero, the object is immediately deallocated.\n\nCyclic GC: Handles circular references that reference counting cannot clean up. It periodically scans for reference cycles and breaks them.\n\nMemory pools: CPython uses a private heap with memory pools (arenas of 256KB, pools of 4KB) for small objects. The pymalloc allocator handles objects up to 512 bytes.\n\nKey tools: sys.getrefcount(), gc module, weakref module, __slots__ for reduced memory.",
+      "codeExamples": [
+        {
+          "title": "Reference Counting",
+          "code": "import sys\n\n# sys.getrefcount() returns count + 1 (the argument itself adds a reference)\na = [1, 2, 3]\nprint(sys.getrefcount(a))  # 2 (a + getrefcount arg)\n\nb = a  # Another reference\nprint(sys.getrefcount(a))  # 3\n\nc = [a, a]  # Two more references\nprint(sys.getrefcount(a))  # 5\n\ndel b  # Remove one reference\nprint(sys.getrefcount(a))  # 4\n\n# Circular reference problem\nclass Node:\n    def __init__(self, name):\n        self.name = name\n        self.next = None\n    def __del__(self):\n        print(f\"Deleting {self.name}\")\n\n# Create circular reference\na = Node('A')\nb = Node('B')\na.next = b\nb.next = a  # Circular! Reference count never reaches 0\n\n# Must rely on cyclic GC to clean this up\ndel a\ndel b\n# Objects are not immediately deleted - GC will handle it later\n\nimport gc\ngc.collect()  # Force garbage collection",
+          "output": "2\n3\n5\n4\nDeleting A\nDeleting B",
+          "explanation": "Reference counting provides immediate cleanup for most objects. Circular references require the cyclic garbage collector, which runs periodically or on demand with gc.collect()."
+        },
+        {
+          "title": "__slots__: Memory Optimization",
+          "code": "import sys\n\n# Regular class: uses __dict__ for instance attributes\nclass RegularPoint:\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\n# Slotted class: fixed attribute set, no __dict__\nclass SlottedPoint:\n    __slots__ = ('x', 'y')\n    def __init__(self, x, y):\n        self.x = x\n        self.y = y\n\nreg = RegularPoint(1, 2)\nslot = SlottedPoint(1, 2)\n\n# Memory comparison\nprint(f\"Regular: {sys.getsizeof(reg)} + {sys.getsizeof(reg.__dict__)} (dict) bytes\")\nprint(f\"Slotted: {sys.getsizeof(slot)} bytes (no __dict__)\")\n\n# slot.z = 3  # AttributeError: 'SlottedPoint' has no attribute 'z'\n# Cannot add attributes not in __slots__\n\n# For millions of objects, savings add up\nimport time\n\nstart = time.time()\nregular_list = [RegularPoint(i, i) for i in range(100_000)]\nprint(f\"Regular: {time.time() - start:.4f}s\")\n\nstart = time.time()\nslotted_list = [SlottedPoint(i, i) for i in range(100_000)]\nprint(f\"Slotted: {time.time() - start:.4f}s\")",
+          "output": "Regular: 48 + 104 (dict) bytes\nSlotted: 48 bytes (no __dict__)\nRegular: 0.0500s\nSlotted: 0.0300s",
+          "explanation": "__slots__ saves ~50% memory per instance by eliminating __dict__. Use it for classes with many instances (data points, tokens, etc.)."
+        },
+        {
+          "title": "Weak References and GC Control",
+          "code": "import weakref\nimport gc\n\n# Weak references don't prevent garbage collection\nclass ExpensiveObject:\n    def __init__(self, name):\n        self.name = name\n    def __repr__(self):\n        return f\"ExpensiveObject('{self.name}')\"\n\nobj = ExpensiveObject('heavy')\nweak_ref = weakref.ref(obj)\n\nprint(weak_ref())   # ExpensiveObject('heavy')\nprint(weak_ref() is obj)  # True\n\ndel obj\nprint(weak_ref())   # None (object was garbage collected)\n\n# WeakValueDictionary: cache that doesn't prevent GC\ncache = weakref.WeakValueDictionary()\n\ndef get_or_create(key):\n    obj = cache.get(key)\n    if obj is None:\n        obj = ExpensiveObject(key)\n        cache[key] = obj\n    return obj\n\n# GC control\nprint(f\"GC enabled: {gc.isenabled()}\")\nprint(f\"GC thresholds: {gc.get_threshold()}\")\nprint(f\"GC counts: {gc.get_count()}\")\n\n# Disable GC for performance-critical sections\ngc.disable()\n# ... do performance-critical work ...\ngc.enable()\ngc.collect()  # Manual collection",
+          "output": "ExpensiveObject('heavy')\nTrue\nNone\nGC enabled: True\nGC thresholds: (700, 10, 10)\nGC counts: (123, 4, 1)",
+          "explanation": "Weak references let you reference objects without preventing their garbage collection. WeakValueDictionary is perfect for caches. GC thresholds control collection frequency."
+        }
+      ],
+      "notes": [
+        "CPython uses reference counting + generational GC; other implementations may differ",
+        "The gc module has 3 generations: gen0 (young), gen1, gen2 (old) - collected at different frequencies",
+        "Memory fragmentation can be an issue for long-running processes - consider using object pools"
+      ],
+      "followUps": [
+        "What are the three generations in Python's GC?",
+        "How does memory management differ between CPython, PyPy, and Jython?",
+        "When would you manually call gc.collect()?"
+      ],
+      "interviewTips": [
+        "Explain reference counting first (simple), then cyclic GC (for edge cases)",
+        "Mention __slots__ as a practical optimization you'd use in real code",
+        "Know that most developers never need to interact with gc directly"
+      ]
+    }
+  },
+  {
+    "id": "python-venv-pip",
+    "sectionId": "python-interview",
+    "orderIndex": 24,
+    "title": "Virtual Environments & pip",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["venv", "pip", "requirements.txt", "pyproject.toml", "Dependency Management"],
+    "content": {
+      "question": "Why are virtual environments important? How do you manage Python dependencies?",
+      "answer": "Virtual environments create isolated Python installations with their own packages, preventing version conflicts between projects.\n\nWithout virtual environments:\n- Project A needs Django 4.0, Project B needs Django 3.2 - conflict!\n- System Python gets polluted with project-specific packages\n\nTools:\n- venv (built-in): creates lightweight virtual environments\n- pip: installs packages from PyPI\n- requirements.txt: lists pinned dependencies\n- pyproject.toml: modern project configuration (PEP 621)\n\nModern alternatives: Poetry, PDM, uv (fast Rust-based installer).",
+      "codeExamples": [
+        {
+          "title": "Creating and Using Virtual Environments",
+          "code": "# Create a virtual environment\n# python -m venv myproject_env\n\n# Activate it\n# Windows: myproject_env\\Scripts\\activate\n# macOS/Linux: source myproject_env/bin/activate\n\n# Now pip installs go to the venv, not system Python\n# pip install requests flask\n\n# Check where Python and packages live\nimport sys\nprint(f\"Python: {sys.executable}\")\nprint(f\"Path: {sys.prefix}\")\n\n# List installed packages\n# pip list\n# pip freeze > requirements.txt\n\n# Install from requirements\n# pip install -r requirements.txt\n\n# Deactivate\n# deactivate\n\n# Example requirements.txt\nrequirements = \"\"\"\nflask==3.0.0\nrequests>=2.28.0,<3.0.0\nnumpy~=1.24.0\npython-dotenv\n\"\"\"\nprint(requirements)\n\n# Version specifiers:\n# ==3.0.0  exact version\n# >=2.28   minimum version\n# <3.0.0   maximum version\n# ~=1.24   compatible release (>=1.24, <2.0)\n# !=1.5    exclude version",
+          "output": "Python: /path/to/myproject_env/bin/python\nPath: /path/to/myproject_env\n\nflask==3.0.0\nrequests>=2.28.0,<3.0.0\nnumpy~=1.24.0\npython-dotenv",
+          "explanation": "Virtual environments isolate dependencies per project. pip freeze captures exact versions for reproducibility. Always commit requirements.txt to version control."
+        },
+        {
+          "title": "Modern Project Setup with pyproject.toml",
+          "code": "# pyproject.toml (PEP 621) - modern Python project config\npyproject = \"\"\"\n[project]\nname = \"mypackage\"\nversion = \"1.0.0\"\ndescription = \"My awesome package\"\nrequires-python = \">=3.9\"\ndependencies = [\n    \"requests>=2.28\",\n    \"flask>=3.0\",\n]\n\n[project.optional-dependencies]\ndev = [\n    \"pytest>=7.0\",\n    \"black>=23.0\",\n    \"mypy>=1.0\",\n]\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n\n[tool.black]\nline-length = 88\n\n[tool.mypy]\nstrict = true\n\"\"\"\nprint(pyproject)\n\n# Install with optional dependencies:\n# pip install -e .           (just main deps)\n# pip install -e \".[dev]\"    (main + dev deps)\n\n# pip-tools for pinning:\n# pip-compile pyproject.toml -> requirements.txt\n# pip-sync requirements.txt",
+          "output": "[project]\nname = \"mypackage\"\nversion = \"1.0.0\"\ndescription = \"My awesome package\"\nrequires-python = \">=3.9\"\ndependencies = [\n    \"requests>=2.28\",\n    \"flask>=3.0\",\n]\n\n[project.optional-dependencies]\ndev = [\n    \"pytest>=7.0\",\n    \"black>=23.0\",\n    \"mypy>=1.0\",\n]\n\n[tool.pytest.ini_options]\ntestpaths = [\"tests\"]\n\n[tool.black]\nline-length = 88\n\n[tool.mypy]\nstrict = true",
+          "explanation": "pyproject.toml replaces setup.py/setup.cfg as the standard project configuration. It configures the project metadata, dependencies, and tool settings in one file."
+        },
+        {
+          "title": "Dependency Management Best Practices",
+          "code": "# 1. Always use virtual environments\n# python -m venv .venv\n# source .venv/bin/activate\n\n# 2. Pin dependencies for production\n# requirements.txt (pinned)\n# flask==3.0.0\n# requests==2.31.0\n# gunicorn==21.2.0\n\n# 3. Separate dev and prod dependencies\n# requirements.txt       -> production\n# requirements-dev.txt   -> development (includes testing, linting)\n\n# requirements-dev.txt\ndev_requirements = \"\"\"\n-r requirements.txt\npytest==7.4.0\nblack==23.7.0\nflake8==6.1.0\nmypy==1.5.0\n\"\"\"\nprint(dev_requirements)\n\n# 4. Check for vulnerabilities\n# pip audit\n# safety check\n\n# 5. Modern tools comparison\ntools = {\n    'pip + venv': 'Built-in, simple, manual pinning',\n    'Poetry': 'All-in-one: venv, deps, building, publishing',\n    'PDM': 'PEP 621 compliant, fast, modern',\n    'uv': 'Rust-based, extremely fast pip replacement',\n    'pip-tools': 'pip-compile + pip-sync for pinning',\n}\nfor tool, desc in tools.items():\n    print(f\"{tool:15} -> {desc}\")",
+          "output": "\n-r requirements.txt\npytest==7.4.0\nblack==23.7.0\nflake8==6.1.0\nmypy==1.5.0\n\npip + venv       -> Built-in, simple, manual pinning\nPoetry           -> All-in-one: venv, deps, building, publishing\nPDM              -> PEP 621 compliant, fast, modern\nuv               -> Rust-based, extremely fast pip replacement\npip-tools        -> pip-compile + pip-sync for pinning",
+          "explanation": "Pin exact versions for production reproducibility. Use pip-compile or Poetry lock files to generate pinned requirements from loose constraints."
+        }
+      ],
+      "notes": [
+        "Never install packages into system Python - always use a virtual environment",
+        "pip freeze captures ALL installed packages; pip-compile generates minimal pinned requirements",
+        "uv is a modern, Rust-based replacement for pip that is 10-100x faster"
+      ],
+      "followUps": [
+        "What is the difference between pip freeze and pip-compile?",
+        "How does Poetry differ from pip + venv?",
+        "What is a lock file and why is it important?"
+      ],
+      "interviewTips": [
+        "Show you understand why isolation matters - give the version conflict example",
+        "Mention pyproject.toml as the modern standard over setup.py",
+        "Knowing about pip audit and security scanning shows production awareness"
+      ]
+    }
+  },
+  {
+    "id": "python-type-hints",
+    "sectionId": "python-interview",
+    "orderIndex": 25,
+    "title": "Type Hints & mypy",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["Type Hints", "mypy", "typing module", "Generic Types", "TypeVar", "Protocol"],
+    "content": {
+      "question": "How do type hints work in Python? Why use them?",
+      "answer": "Type hints (PEP 484, Python 3.5+) add optional type annotations to Python code. They are NOT enforced at runtime - they are used by static type checkers (mypy, pyright), IDEs, and documentation.\n\nBenefits:\n- Catch type errors before runtime\n- Better IDE autocompletion and refactoring\n- Self-documenting code\n- Easier to maintain large codebases\n\nPython 3.10+ simplifies syntax: use X | Y instead of Union[X, Y], use list[int] instead of List[int].",
+      "codeExamples": [
+        {
+          "title": "Basic Type Hints",
+          "code": "# Variable annotations\nname: str = \"Alice\"\nage: int = 30\nscores: list[float] = [95.5, 87.0, 92.3]\nconfig: dict[str, int] = {'timeout': 30, 'retries': 3}\n\n# Function annotations\ndef greet(name: str, excited: bool = False) -> str:\n    if excited:\n        return f\"Hello, {name}!!!\"\n    return f\"Hello, {name}\"\n\n# Optional (can be None)\ndef find_user(user_id: int) -> dict | None:  # Python 3.10+\n    if user_id > 0:\n        return {'id': user_id, 'name': 'Alice'}\n    return None\n\n# Union types (pre-3.10: Union[int, str])\ndef process(value: int | str) -> str:\n    return str(value)\n\n# Collections\ndef average(numbers: list[float]) -> float:\n    return sum(numbers) / len(numbers)\n\ndef word_count(text: str) -> dict[str, int]:\n    words = text.lower().split()\n    return {w: words.count(w) for w in set(words)}\n\nprint(greet(\"Alice\", excited=True))\nprint(average([1.0, 2.0, 3.0]))\nprint(word_count(\"the cat sat on the mat\"))",
+          "output": "Hello, Alice!!!\n2.0\n{'the': 2, 'cat': 1, 'sat': 1, 'on': 1, 'mat': 1}",
+          "explanation": "Type hints make function signatures self-documenting. Python 3.10+ allows X | Y syntax. These are not enforced at runtime - they're for tools and humans."
+        },
+        {
+          "title": "Advanced Types: TypeVar, Generic, TypedDict",
+          "code": "from typing import TypeVar, Generic, TypedDict, Callable, Literal\n\n# TypeVar: generic type variable\nT = TypeVar('T')\n\ndef first(items: list[T]) -> T:\n    return items[0]\n\nprint(first([1, 2, 3]))       # int inferred\nprint(first(['a', 'b', 'c'])) # str inferred\n\n# Generic classes\nclass Stack(Generic[T]):\n    def __init__(self) -> None:\n        self._items: list[T] = []\n    \n    def push(self, item: T) -> None:\n        self._items.append(item)\n    \n    def pop(self) -> T:\n        return self._items.pop()\n    \n    def peek(self) -> T:\n        return self._items[-1]\n\nstack: Stack[int] = Stack()\nstack.push(1)\nstack.push(2)\nprint(stack.pop())  # 2\n\n# TypedDict: typed dictionary\nclass UserDict(TypedDict):\n    name: str\n    age: int\n    email: str\n\nuser: UserDict = {'name': 'Alice', 'age': 30, 'email': 'alice@example.com'}\nprint(user['name'])\n\n# Callable type\ndef apply_fn(func: Callable[[int, int], int], a: int, b: int) -> int:\n    return func(a, b)\n\nprint(apply_fn(lambda x, y: x + y, 3, 4))  # 7\n\n# Literal type\ndef set_mode(mode: Literal['read', 'write', 'append']) -> str:\n    return f\"Mode set to: {mode}\"",
+          "output": "1\na\n2\nAlice\n7",
+          "explanation": "TypeVar enables generic functions/classes. TypedDict types dictionary keys. Callable types function signatures. Literal restricts to specific values."
+        },
+        {
+          "title": "Type Narrowing and Runtime Checking",
+          "code": "from typing import TypeGuard, assert_type\n\n# isinstance for type narrowing\ndef process(value: int | str | list[int]) -> str:\n    if isinstance(value, int):\n        # mypy knows value is int here\n        return f\"Integer: {value * 2}\"\n    elif isinstance(value, str):\n        # mypy knows value is str here\n        return f\"String: {value.upper()}\"\n    else:\n        # mypy knows value is list[int] here\n        return f\"List sum: {sum(value)}\"\n\nprint(process(5))           # 'Integer: 10'\nprint(process('hello'))     # 'String: HELLO'\nprint(process([1, 2, 3]))   # 'List sum: 6'\n\n# TypeGuard for custom type narrowing\ndef is_string_list(val: list[object]) -> TypeGuard[list[str]]:\n    return all(isinstance(x, str) for x in val)\n\ndef process_strings(items: list[object]) -> str:\n    if is_string_list(items):\n        # mypy now knows items is list[str]\n        return ', '.join(items)\n    return 'Not all strings'\n\nprint(process_strings(['a', 'b', 'c']))  # 'a, b, c'\nprint(process_strings([1, 'b', 3]))      # 'Not all strings'\n\n# Runtime type checking with beartype or typeguard\n# from beartype import beartype\n# @beartype\n# def add(a: int, b: int) -> int:\n#     return a + b\n# add('x', 'y')  # Raises BeartypeCallHintParamViolation",
+          "output": "Integer: 10\nString: HELLO\nList sum: 6\na, b, c\nNot all strings",
+          "explanation": "isinstance() narrows types for mypy. TypeGuard enables custom type predicates. For runtime enforcement, use beartype or typeguard libraries."
+        }
+      ],
+      "notes": [
+        "Type hints are NOT enforced at runtime - they are metadata for tools",
+        "Python 3.10+ allows built-in types in hints: list[int] instead of typing.List[int]",
+        "Use TYPE_CHECKING to avoid circular imports: if TYPE_CHECKING: import ..."
+      ],
+      "followUps": [
+        "What is the difference between type hints and runtime type checking?",
+        "How do you handle circular import issues with type hints?",
+        "What is the difference between mypy and pyright?"
+      ],
+      "interviewTips": [
+        "Show you use type hints in your code - it demonstrates professionalism",
+        "Know the modern syntax (3.10+): X | Y, list[int] instead of Union, List",
+        "Mention that type hints improve IDE experience, not just correctness"
+      ]
+    }
+  },
+  {
+    "id": "python-testing",
+    "sectionId": "python-interview",
+    "orderIndex": 26,
+    "title": "Testing (pytest)",
+    "difficulty": "Intermediate",
+    "type": "Coding",
+    "concepts": ["pytest", "unittest", "Fixtures", "Mocking", "Parametrize", "Coverage"],
+    "content": {
+      "question": "How do you write tests in Python? Explain pytest and testing best practices.",
+      "answer": "Python has unittest (built-in) and pytest (third-party, preferred by most).\n\npytest advantages over unittest:\n- Simple assert statements (no self.assertEqual)\n- Powerful fixtures for setup/teardown\n- Parametrize for running tests with multiple inputs\n- Rich plugin ecosystem\n- Better output and error messages\n\nTesting best practices:\n- Test one thing per test function\n- Use descriptive test names\n- Arrange-Act-Assert pattern\n- Mock external dependencies\n- Aim for meaningful coverage, not 100%",
+      "codeExamples": [
+        {
+          "title": "Basic pytest Tests",
+          "code": "# test_calculator.py\ndef add(a, b):\n    return a + b\n\ndef divide(a, b):\n    if b == 0:\n        raise ValueError(\"Cannot divide by zero\")\n    return a / b\n\n# Simple assertions\ndef test_add():\n    assert add(2, 3) == 5\n    assert add(-1, 1) == 0\n    assert add(0, 0) == 0\n\ndef test_divide():\n    assert divide(10, 2) == 5.0\n    assert divide(7, 2) == 3.5\n\n# Testing exceptions\nimport pytest\n\ndef test_divide_by_zero():\n    with pytest.raises(ValueError, match=\"Cannot divide by zero\"):\n        divide(10, 0)\n\n# Approximate comparisons (for floats)\ndef test_float_comparison():\n    assert divide(1, 3) == pytest.approx(0.333, rel=1e-2)\n\n# Run with: pytest test_calculator.py -v\n# Output:\n# test_calculator.py::test_add PASSED\n# test_calculator.py::test_divide PASSED\n# test_calculator.py::test_divide_by_zero PASSED\n# test_calculator.py::test_float_comparison PASSED",
+          "output": "test_calculator.py::test_add PASSED\ntest_calculator.py::test_divide PASSED\ntest_calculator.py::test_divide_by_zero PASSED\ntest_calculator.py::test_float_comparison PASSED",
+          "explanation": "pytest uses plain assert statements with detailed failure messages. pytest.raises() tests that exceptions are raised. pytest.approx() handles floating point comparison."
+        },
+        {
+          "title": "Fixtures and Parametrize",
+          "code": "import pytest\n\n# Fixtures: setup and teardown\n@pytest.fixture\ndef sample_users():\n    \"\"\"Provides test data for user tests.\"\"\"\n    return [\n        {'name': 'Alice', 'age': 30},\n        {'name': 'Bob', 'age': 25},\n        {'name': 'Charlie', 'age': 35},\n    ]\n\ndef test_user_count(sample_users):\n    assert len(sample_users) == 3\n\ndef test_youngest_user(sample_users):\n    youngest = min(sample_users, key=lambda u: u['age'])\n    assert youngest['name'] == 'Bob'\n\n# Parametrize: run test with multiple inputs\n@pytest.mark.parametrize('input,expected', [\n    ('hello', 'HELLO'),\n    ('world', 'WORLD'),\n    ('Python', 'PYTHON'),\n    ('', ''),\n])\ndef test_uppercase(input, expected):\n    assert input.upper() == expected\n\n# Parametrize with IDs for better output\n@pytest.mark.parametrize('a,b,result', [\n    (2, 3, 5),\n    (-1, 1, 0),\n    (0, 0, 0),\n    (100, 200, 300),\n], ids=['positive', 'negative', 'zeros', 'large'])\ndef test_add_params(a, b, result):\n    assert add(a, b) == result\n\n# Fixture with teardown\n@pytest.fixture\ndef temp_file(tmp_path):\n    filepath = tmp_path / 'test.txt'\n    filepath.write_text('test data')\n    yield filepath  # Test runs here\n    # Cleanup happens automatically (tmp_path handles it)",
+          "output": "test_uppercase[hello-HELLO] PASSED\ntest_uppercase[world-WORLD] PASSED\ntest_uppercase[Python-PYTHON] PASSED\ntest_uppercase[-] PASSED\ntest_add_params[positive] PASSED\ntest_add_params[negative] PASSED\ntest_add_params[zeros] PASSED\ntest_add_params[large] PASSED",
+          "explanation": "Fixtures provide reusable test data and setup/teardown. @parametrize runs the same test with different inputs, reducing code duplication."
+        },
+        {
+          "title": "Mocking External Dependencies",
+          "code": "from unittest.mock import patch, MagicMock\nimport pytest\n\n# Code under test\nclass UserService:\n    def __init__(self, api_client):\n        self.api = api_client\n    \n    def get_user(self, user_id):\n        response = self.api.get(f'/users/{user_id}')\n        if response.status_code == 200:\n            return response.json()\n        return None\n    \n    def create_user(self, name, email):\n        response = self.api.post('/users', json={'name': name, 'email': email})\n        return response.status_code == 201\n\n# Test with MagicMock\ndef test_get_user_success():\n    mock_api = MagicMock()\n    mock_api.get.return_value.status_code = 200\n    mock_api.get.return_value.json.return_value = {'id': 1, 'name': 'Alice'}\n    \n    service = UserService(mock_api)\n    user = service.get_user(1)\n    \n    assert user == {'id': 1, 'name': 'Alice'}\n    mock_api.get.assert_called_once_with('/users/1')\n\ndef test_get_user_not_found():\n    mock_api = MagicMock()\n    mock_api.get.return_value.status_code = 404\n    \n    service = UserService(mock_api)\n    user = service.get_user(999)\n    \n    assert user is None\n\n# Patch decorator for module-level mocking\n@patch('builtins.open', create=True)\ndef test_read_config(mock_open):\n    mock_open.return_value.__enter__ = lambda s: s\n    mock_open.return_value.__exit__ = MagicMock(return_value=False)\n    mock_open.return_value.read.return_value = '{\"key\": \"value\"}'\n    \n    # Test code that reads a file...\n    mock_open.assert_called_once()",
+          "output": "test_get_user_success PASSED\ntest_get_user_not_found PASSED\ntest_read_config PASSED",
+          "explanation": "MagicMock creates flexible mock objects. patch replaces real objects with mocks during tests. assert_called_once_with verifies the mock was called correctly."
+        }
+      ],
+      "notes": [
+        "Name test files test_*.py and test functions test_* for auto-discovery",
+        "Use conftest.py for shared fixtures across multiple test files",
+        "Run with pytest --cov=src for coverage reports"
+      ],
+      "followUps": [
+        "What is the difference between unit tests and integration tests?",
+        "How do you test async code with pytest?",
+        "What is test-driven development (TDD)?"
+      ],
+      "interviewTips": [
+        "Show you write tests as part of development, not as an afterthought",
+        "Know the Arrange-Act-Assert pattern for structuring tests",
+        "Mention mocking for isolating external dependencies (APIs, databases)"
+      ]
+    }
+  },
+  {
+    "id": "python-asyncio",
+    "sectionId": "python-interview",
+    "orderIndex": 27,
+    "title": "Async/Await (asyncio)",
+    "difficulty": "Advanced",
+    "type": "Coding",
+    "concepts": ["asyncio", "async/await", "Coroutines", "Tasks", "Event Loop", "aiohttp"],
+    "content": {
+      "question": "Explain async/await in Python. How does asyncio work?",
+      "answer": "asyncio is Python's built-in library for writing concurrent code using async/await syntax.\n\nKey concepts:\n- Coroutine: a function defined with 'async def', returns a coroutine object\n- await: suspends execution until the awaited coroutine completes\n- Event loop: runs coroutines, handles I/O events, manages tasks\n- Task: a wrapper that schedules a coroutine to run concurrently\n- asyncio.gather(): run multiple coroutines concurrently\n\nasync/await is ideal for I/O-bound operations (HTTP requests, database queries, file I/O) where you spend most time waiting. It uses a single thread with cooperative multitasking.",
+      "codeExamples": [
+        {
+          "title": "Basic async/await",
+          "code": "import asyncio\n\nasync def greet(name, delay):\n    \"\"\"A coroutine that simulates async work.\"\"\"\n    print(f\"Starting greeting for {name}\")\n    await asyncio.sleep(delay)  # Non-blocking sleep\n    print(f\"Hello, {name}! (after {delay}s)\")\n    return f\"Greeted {name}\"\n\nasync def main():\n    # Sequential: 3 seconds total\n    print(\"=== Sequential ===\")\n    result1 = await greet(\"Alice\", 1)\n    result2 = await greet(\"Bob\", 2)\n    print(f\"Results: {result1}, {result2}\")\n    \n    # Concurrent: 2 seconds total (max of delays)\n    print(\"\\n=== Concurrent ===\")\n    results = await asyncio.gather(\n        greet(\"Charlie\", 1),\n        greet(\"Diana\", 2),\n        greet(\"Eve\", 1.5),\n    )\n    print(f\"Results: {results}\")\n\nasyncio.run(main())",
+          "output": "=== Sequential ===\nStarting greeting for Alice\nHello, Alice! (after 1s)\nStarting greeting for Bob\nHello, Bob! (after 2s)\nResults: Greeted Alice, Greeted Bob\n\n=== Concurrent ===\nStarting greeting for Charlie\nStarting greeting for Diana\nStarting greeting for Eve\nHello, Charlie! (after 1s)\nHello, Eve! (after 1.5s)\nHello, Diana! (after 2s)\nResults: ['Greeted Charlie', 'Greeted Diana', 'Greeted Eve']",
+          "explanation": "Sequential await blocks until each coroutine finishes. asyncio.gather() runs them concurrently - total time is the maximum, not the sum."
+        },
+        {
+          "title": "Tasks and Error Handling",
+          "code": "import asyncio\n\nasync def fetch_data(url, delay):\n    print(f\"Fetching {url}...\")\n    await asyncio.sleep(delay)\n    if 'error' in url:\n        raise ValueError(f\"Failed to fetch {url}\")\n    return f\"Data from {url}\"\n\nasync def main():\n    # Create tasks for concurrent execution\n    task1 = asyncio.create_task(fetch_data('api/users', 1))\n    task2 = asyncio.create_task(fetch_data('api/posts', 2))\n    \n    # Tasks start immediately, await collects results\n    result1 = await task1\n    result2 = await task2\n    print(f\"Got: {result1}, {result2}\")\n    \n    # Error handling with gather\n    results = await asyncio.gather(\n        fetch_data('api/ok', 1),\n        fetch_data('api/error', 1),\n        return_exceptions=True  # Don't raise, return exceptions\n    )\n    for r in results:\n        if isinstance(r, Exception):\n            print(f\"Error: {r}\")\n        else:\n            print(f\"Success: {r}\")\n    \n    # Timeout\n    try:\n        result = await asyncio.wait_for(\n            fetch_data('api/slow', 10),\n            timeout=2.0\n        )\n    except asyncio.TimeoutError:\n        print(\"Request timed out!\")\n\nasyncio.run(main())",
+          "output": "Fetching api/users...\nFetching api/posts...\nGot: Data from api/users, Data from api/posts\nFetching api/ok...\nFetching api/error...\nSuccess: Data from api/ok\nError: Failed to fetch api/error\nFetching api/slow...\nRequest timed out!",
+          "explanation": "create_task() starts a coroutine running immediately. return_exceptions=True in gather prevents one failure from canceling others. wait_for() adds timeouts."
+        },
+        {
+          "title": "Async Context Managers and Iterators",
+          "code": "import asyncio\n\n# Async context manager\nclass AsyncDatabase:\n    async def __aenter__(self):\n        print(\"Connecting to database...\")\n        await asyncio.sleep(0.5)  # Simulate connection\n        print(\"Connected!\")\n        return self\n    \n    async def __aexit__(self, exc_type, exc_val, exc_tb):\n        print(\"Closing connection...\")\n        await asyncio.sleep(0.1)\n        print(\"Connection closed.\")\n        return False\n    \n    async def query(self, sql):\n        await asyncio.sleep(0.2)\n        return f\"Results for: {sql}\"\n\n# Async iterator\nclass AsyncCounter:\n    def __init__(self, limit):\n        self.limit = limit\n        self.count = 0\n    \n    def __aiter__(self):\n        return self\n    \n    async def __anext__(self):\n        if self.count >= self.limit:\n            raise StopAsyncIteration\n        self.count += 1\n        await asyncio.sleep(0.1)\n        return self.count\n\nasync def main():\n    # Async with\n    async with AsyncDatabase() as db:\n        result = await db.query(\"SELECT * FROM users\")\n        print(result)\n    \n    # Async for\n    async for num in AsyncCounter(5):\n        print(f\"Count: {num}\", end=' ')\n    print()\n    \n    # Async comprehension\n    values = [num async for num in AsyncCounter(3)]\n    print(f\"Values: {values}\")\n\nasyncio.run(main())",
+          "output": "Connecting to database...\nConnected!\nResults for: SELECT * FROM users\nClosing connection...\nConnection closed.\nCount: 1 Count: 2 Count: 3 Count: 4 Count: 5 \nValues: [1, 2, 3]",
+          "explanation": "async with uses __aenter__/__aexit__ for async resource management. async for uses __aiter__/__anext__ for async iteration. Both are essential for async database and HTTP patterns."
+        }
+      ],
+      "notes": [
+        "You cannot call await outside an async function - it's a syntax error",
+        "asyncio.run() creates a new event loop - use it as the single entry point",
+        "Libraries like aiohttp, asyncpg, aiofiles provide async versions of common I/O operations"
+      ],
+      "followUps": [
+        "How does the event loop work internally?",
+        "What is the difference between asyncio.gather and asyncio.wait?",
+        "How do you run synchronous code from async code and vice versa?"
+      ],
+      "interviewTips": [
+        "Emphasize that async is for I/O-bound work, not CPU-bound",
+        "Show you know gather() for concurrent execution and wait_for() for timeouts",
+        "Mention real-world frameworks: FastAPI (async), aiohttp, asyncpg"
+      ]
+    }
+  },
+  {
+    "id": "python-design-patterns",
+    "sectionId": "python-interview",
+    "orderIndex": 28,
+    "title": "Python Design Patterns",
+    "difficulty": "Advanced",
+    "type": "Concept",
+    "concepts": ["Singleton", "Factory", "Observer", "Strategy", "Decorator Pattern", "Iterator Pattern"],
+    "content": {
+      "question": "What are common design patterns in Python? How do they differ from traditional OOP patterns?",
+      "answer": "Python's dynamic nature simplifies many traditional design patterns. Some patterns are built into the language (Iterator, Decorator, Observer via signals).\n\nKey patterns in Python:\n- Singleton: module-level variables or __new__ override\n- Factory: classmethod constructors or simple functions\n- Strategy: first-class functions replace strategy classes\n- Observer: callbacks, signals, or event systems\n- Decorator: built-in with @decorator syntax\n- Iterator: built-in with __iter__/__next__ or generators\n\nPython's philosophy: use the simplest approach. Many GoF patterns exist to work around limitations in Java/C++ that Python doesn't have.",
+      "codeExamples": [
+        {
+          "title": "Singleton and Factory Patterns",
+          "code": "# Singleton via module (Pythonic way)\n# config.py\n# settings = Settings()  # Module-level = singleton\n\n# Singleton via __new__\nclass Singleton:\n    _instance = None\n    \n    def __new__(cls):\n        if cls._instance is None:\n            cls._instance = super().__new__(cls)\n        return cls._instance\n\na = Singleton()\nb = Singleton()\nprint(a is b)  # True - same instance\n\n# Factory Method with classmethods\nclass Serializer:\n    def __init__(self, format_type):\n        self.format_type = format_type\n    \n    @classmethod\n    def json(cls):\n        return cls('json')\n    \n    @classmethod\n    def xml(cls):\n        return cls('xml')\n    \n    @classmethod\n    def csv(cls):\n        return cls('csv')\n\ns = Serializer.json()  # Factory method\nprint(s.format_type)   # 'json'\n\n# Simple factory function (most Pythonic)\ndef create_connection(db_type, **kwargs):\n    connections = {\n        'postgres': lambda: f\"PostgreSQL({kwargs})\",\n        'mysql': lambda: f\"MySQL({kwargs})\",\n        'sqlite': lambda: f\"SQLite({kwargs})\",\n    }\n    creator = connections.get(db_type)\n    if not creator:\n        raise ValueError(f\"Unknown db: {db_type}\")\n    return creator()\n\nprint(create_connection('postgres', host='localhost', port=5432))",
+          "output": "True\njson\nPostgreSQL({'host': 'localhost', 'port': 5432})",
+          "explanation": "In Python, modules are singletons naturally. Factory classmethods are cleaner than separate factory classes. A dict of callables replaces complex factory hierarchies."
+        },
+        {
+          "title": "Strategy Pattern with Functions",
+          "code": "# Traditional OOP: separate classes for each strategy\n# Pythonic: just use functions!\n\nfrom typing import Callable\n\n# Sorting strategies as functions\ndef sort_by_name(items):\n    return sorted(items, key=lambda x: x['name'])\n\ndef sort_by_price_asc(items):\n    return sorted(items, key=lambda x: x['price'])\n\ndef sort_by_price_desc(items):\n    return sorted(items, key=lambda x: x['price'], reverse=True)\n\ndef sort_by_rating(items):\n    return sorted(items, key=lambda x: x['rating'], reverse=True)\n\n# Context that uses the strategy\nclass ProductCatalog:\n    def __init__(self, products: list[dict]):\n        self.products = products\n    \n    def display(self, sort_strategy: Callable = sort_by_name):\n        sorted_products = sort_strategy(self.products)\n        for p in sorted_products:\n            print(f\"  {p['name']}: ${p['price']:.2f} ({p['rating']} stars)\")\n\nproducts = [\n    {'name': 'Widget', 'price': 29.99, 'rating': 4.5},\n    {'name': 'Gadget', 'price': 49.99, 'rating': 3.8},\n    {'name': 'Doohickey', 'price': 9.99, 'rating': 4.9},\n]\n\ncatalog = ProductCatalog(products)\nprint(\"By name:\")\ncatalog.display(sort_by_name)\nprint(\"By price (high to low):\")\ncatalog.display(sort_by_price_desc)\nprint(\"By rating:\")\ncatalog.display(sort_by_rating)",
+          "output": "By name:\n  Doohickey: $9.99 (4.9 stars)\n  Gadget: $49.99 (3.8 stars)\n  Widget: $29.99 (4.5 stars)\nBy price (high to low):\n  Gadget: $49.99 (3.8 stars)\n  Widget: $29.99 (4.5 stars)\n  Doohickey: $9.99 (4.9 stars)\nBy rating:\n  Doohickey: $9.99 (4.9 stars)\n  Widget: $29.99 (4.5 stars)\n  Gadget: $49.99 (3.8 stars)",
+          "explanation": "In Python, first-class functions eliminate the need for strategy classes. Pass the function directly instead of wrapping it in an object."
+        },
+        {
+          "title": "Observer Pattern",
+          "code": "# Observer with callbacks\nclass EventEmitter:\n    def __init__(self):\n        self._listeners: dict[str, list] = {}\n    \n    def on(self, event: str, callback):\n        self._listeners.setdefault(event, []).append(callback)\n        return self  # Allow chaining\n    \n    def off(self, event: str, callback):\n        if event in self._listeners:\n            self._listeners[event].remove(callback)\n    \n    def emit(self, event: str, *args, **kwargs):\n        for callback in self._listeners.get(event, []):\n            callback(*args, **kwargs)\n\n# Usage\nclass UserService(EventEmitter):\n    def register(self, name, email):\n        user = {'name': name, 'email': email}\n        print(f\"User registered: {name}\")\n        self.emit('user_registered', user)\n        return user\n\n# Observers (listeners)\ndef send_welcome_email(user):\n    print(f\"Sending welcome email to {user['email']}\")\n\ndef log_registration(user):\n    print(f\"LOG: New user {user['name']} registered\")\n\ndef update_analytics(user):\n    print(f\"Analytics: Registration count updated\")\n\nservice = UserService()\nservice.on('user_registered', send_welcome_email)\nservice.on('user_registered', log_registration)\nservice.on('user_registered', update_analytics)\n\nservice.register('Alice', 'alice@example.com')",
+          "output": "User registered: Alice\nSending welcome email to alice@example.com\nLOG: New user Alice registered\nAnalytics: Registration count updated",
+          "explanation": "The observer pattern decouples the event source from its handlers. Adding new behavior (analytics, logging) doesn't require modifying the UserService."
+        }
+      ],
+      "notes": [
+        "Peter Norvig found that 16 of 23 GoF patterns are simplified or invisible in dynamic languages",
+        "Python's most natural patterns: iterators, generators, decorators, context managers",
+        "Prefer simple functions over complex class hierarchies - 'Simple is better than complex'"
+      ],
+      "followUps": [
+        "Why are many GoF patterns unnecessary in Python?",
+        "How would you implement a plugin system in Python?",
+        "What is the difference between the Decorator design pattern and Python's @decorator?"
+      ],
+      "interviewTips": [
+        "Show that you choose the simplest approach - not everything needs a pattern",
+        "Mention that Python's first-class functions replace Strategy, Command, and Template Method",
+        "Know that modules are singletons and generators are iterators - patterns are built in"
+      ]
+    }
+  },
+  {
+    "id": "python-vs-others",
+    "sectionId": "python-interview",
+    "orderIndex": 29,
+    "title": "Python vs Other Languages",
+    "difficulty": "Beginner",
+    "type": "Theory",
+    "concepts": ["Python vs Java", "Python vs JavaScript", "Python vs C++", "Strengths", "Weaknesses", "Use Cases"],
+    "content": {
+      "question": "How does Python compare to other programming languages? What are its strengths and weaknesses?",
+      "answer": "Python is a high-level, dynamically typed, interpreted language designed for readability and developer productivity.\n\nStrengths:\n- Readable, concise syntax (less boilerplate)\n- Massive ecosystem (300,000+ PyPI packages)\n- Dominant in data science, ML/AI, automation, scripting\n- Rapid prototyping and development\n- Batteries included: rich standard library\n\nWeaknesses:\n- Slower execution than compiled languages (10-100x slower than C/C++)\n- GIL limits true multi-threading for CPU tasks\n- Dynamic typing can lead to runtime errors\n- Not ideal for mobile development\n- Higher memory usage than C/C++/Rust",
+      "codeExamples": [
+        {
+          "title": "Python vs Java: Syntax Comparison",
+          "code": "# Python: 5 lines\nclass Person:\n    def __init__(self, name, age):\n        self.name = name\n        self.age = age\n    \n    def greet(self):\n        return f\"Hi, I'm {self.name}, {self.age} years old\"\n\n# Equivalent Java: 20+ lines\njava_code = \"\"\"\npublic class Person {\n    private String name;\n    private int age;\n    \n    public Person(String name, int age) {\n        this.name = name;\n        this.age = age;\n    }\n    \n    public String greet() {\n        return \"Hi, I'm \" + name + \", \" + age + \" years old\";\n    }\n    \n    // Plus getters, setters, equals, hashCode, toString...\n}\n\"\"\"\n\n# Python with dataclass: 3 lines!\nfrom dataclasses import dataclass\n\n@dataclass\nclass PersonDC:\n    name: str\n    age: int\n    \n    def greet(self):\n        return f\"Hi, I'm {self.name}, {self.age} years old\"\n\np = PersonDC('Alice', 30)\nprint(p)            # PersonDC(name='Alice', age=30)\nprint(p.greet())    # Hi, I'm Alice, 30 years old\nprint(p == PersonDC('Alice', 30))  # True (auto __eq__)",
+          "output": "PersonDC(name='Alice', age=30)\nHi, I'm Alice, 30 years old\nTrue",
+          "explanation": "Python requires far less boilerplate. @dataclass auto-generates __init__, __repr__, __eq__, __hash__. Java needs explicit getters/setters and method overrides."
+        },
+        {
+          "title": "Python vs JavaScript: Key Differences",
+          "code": "# Truthiness differences\n# Python: 0, '', [], {}, set(), None, False are falsy\n# JavaScript: 0, '', null, undefined, NaN, false are falsy\n#   BUT: [] and {} are TRUTHY in JS!\n\nprint(bool([]))    # Python: False\nprint(bool({}))    # Python: False\n# In JS: Boolean([]) === true, Boolean({}) === true\n\n# Scope: Python has function scope (and block via :=)\n# JavaScript has function scope (var) and block scope (let/const)\n\n# Python: indentation-based blocks\ndef python_func():\n    if True:\n        x = 10\n    print(x)  # x is accessible (no block scope)\n\npython_func()  # prints 10\n\n# Async: both have async/await, similar syntax\n# Python: asyncio.run(), await asyncio.gather()\n# JS: Promise.all(), async IIFE\n\n# Type system comparison\npython_comparison = {\n    'Python': 'Dynamic typing, optional type hints (mypy)',\n    'JavaScript': 'Dynamic typing, TypeScript for static types',\n    'Java': 'Static typing, strict compile-time checks',\n    'C++': 'Static typing, templates for generics',\n    'Go': 'Static typing, structural interfaces',\n    'Rust': 'Static typing, ownership + borrow checker',\n}\nfor lang, desc in python_comparison.items():\n    print(f\"{lang:12} -> {desc}\")",
+          "output": "False\nFalse\n10\nPython       -> Dynamic typing, optional type hints (mypy)\nJavaScript   -> Dynamic typing, TypeScript for static types\nJava         -> Static typing, strict compile-time checks\nC++          -> Static typing, templates for generics\nGo           -> Static typing, structural interfaces\nRust         -> Static typing, ownership + borrow checker",
+          "explanation": "Python and JavaScript are both dynamic but differ in truthiness rules, scope, and ecosystem focus. Python dominates backend/data science; JavaScript dominates web."
+        },
+        {
+          "title": "When to Choose Python",
+          "code": "# Python excels at:\nuse_cases = {\n    'Data Science / ML': 'NumPy, Pandas, scikit-learn, PyTorch, TensorFlow',\n    'Web Backend': 'Django, FastAPI, Flask',\n    'Automation/Scripting': 'OS automation, file processing, web scraping',\n    'DevOps': 'Ansible, infrastructure scripts, CI/CD tooling',\n    'Prototyping': 'Rapid development, iterate quickly',\n    'Education': 'Clean syntax, easy to learn',\n    'Scientific Computing': 'SciPy, Matplotlib, Jupyter notebooks',\n}\n\nprint(\"Python Best Use Cases:\")\nfor use, tools in use_cases.items():\n    print(f\"  {use}: {tools}\")\n\n# When NOT to use Python:\nalternatives = {\n    'Mobile apps': 'Use Swift (iOS), Kotlin (Android), React Native, Flutter',\n    'High-performance systems': 'Use C++, Rust, Go',\n    'Real-time systems': 'Use C, C++, Rust (deterministic latency)',\n    'Browser frontend': 'Use JavaScript/TypeScript',\n    'Game engines': 'Use C++, C# (Unity), Rust',\n    'Embedded systems': 'Use C, C++, Rust (MicroPython exists but limited)',\n}\n\nprint(\"\\nConsider Alternatives For:\")\nfor use, alt in alternatives.items():\n    print(f\"  {use}: {alt}\")\n\n# Performance mitigation strategies\nprint(\"\\nPython Performance Strategies:\")\nstrategies = [\n    'Use C extensions (NumPy, Cython)',\n    'Use multiprocessing for CPU-bound work',\n    'Use asyncio for I/O-bound concurrency',\n    'Use PyPy for JIT compilation (2-10x faster)',\n    'Profile first: premature optimization is the root of all evil',\n]\nfor s in strategies:\n    print(f\"  - {s}\")",
+          "output": "Python Best Use Cases:\n  Data Science / ML: NumPy, Pandas, scikit-learn, PyTorch, TensorFlow\n  Web Backend: Django, FastAPI, Flask\n  Automation/Scripting: OS automation, file processing, web scraping\n  DevOps: Ansible, infrastructure scripts, CI/CD tooling\n  Prototyping: Rapid development, iterate quickly\n  Education: Clean syntax, easy to learn\n  Scientific Computing: SciPy, Matplotlib, Jupyter notebooks\n\nConsider Alternatives For:\n  Mobile apps: Use Swift (iOS), Kotlin (Android), React Native, Flutter\n  High-performance systems: Use C++, Rust, Go\n  Real-time systems: Use C, C++, Rust (deterministic latency)\n  Browser frontend: Use JavaScript/TypeScript\n  Game engines: Use C++, C# (Unity), Rust\n  Embedded systems: Use C, C++, Rust (MicroPython exists but limited)\n\nPython Performance Strategies:\n  - Use C extensions (NumPy, Cython)\n  - Use multiprocessing for CPU-bound work\n  - Use asyncio for I/O-bound concurrency\n  - Use PyPy for JIT compilation (2-10x faster)\n  - Profile first: premature optimization is the root of all evil",
+          "explanation": "Python optimizes for developer productivity over raw performance. For most applications, development speed matters more than execution speed."
+        }
+      ],
+      "notes": [
+        "Python is the most popular language for AI/ML due to its ecosystem, not its speed",
+        "Performance-critical Python code often calls C libraries (NumPy is 90% C)",
+        "Python 3.13+'s free-threaded mode may address the GIL limitation for CPU-bound tasks"
+      ],
+      "followUps": [
+        "When would you choose Go or Rust over Python?",
+        "How does PyPy improve Python performance?",
+        "What is Cython and when would you use it?"
+      ],
+      "interviewTips": [
+        "Be honest about Python's weaknesses - interviewers respect nuanced answers",
+        "Mention performance mitigation strategies to show you think practically",
+        "Know Python's strengths in the context of the company's domain (web, data, DevOps)"
+      ]
+    }
+  }
+]

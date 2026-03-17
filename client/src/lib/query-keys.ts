@@ -158,6 +158,19 @@ export const queryKeys = {
     my: () => ["campus-drives", "my"] as const,
   },
 
+  // HR Contacts
+  hrContacts: {
+    list: (params?: Record<string, string | number>) =>
+      ["hr-contacts", "list", params] as const,
+    stats: () => ["hr-contacts", "stats"] as const,
+  },
+
+  // Email Campaigns
+  emailCampaigns: {
+    list: () => ["email-campaigns", "list"] as const,
+    detail: (id: number) => ["email-campaigns", "detail", id] as const,
+  },
+
   // DSA Practice
   dsa: {
     topics: (filter?: string) => ["dsa", "topics", filter] as const,

@@ -93,6 +93,7 @@ export default function TalentCard({ student, index = 0 }: TalentCardProps) {
             src={student.profilePic}
             alt={student.name}
             className="w-11 h-11 rounded-xl object-cover shrink-0"
+            onError={(e) => { e.currentTarget.style.display = "none"; }}
           />
         ) : (
           <div className="w-11 h-11 rounded-xl bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">

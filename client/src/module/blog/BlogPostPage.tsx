@@ -211,6 +211,7 @@ export default function BlogPostPage() {
                       src={post.author.profilePic}
                       alt={post.author.name}
                       className="w-8 h-8 rounded-full object-cover"
+                      onError={(e) => { e.currentTarget.style.display = "none"; }}
                     />
                   ) : (
                     <div className="w-8 h-8 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">

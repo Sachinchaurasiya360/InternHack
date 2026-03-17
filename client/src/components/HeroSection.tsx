@@ -43,13 +43,13 @@ export function HeroSection() {
         }}
       />
 
-      <div className="relative z-10 max-w-6xl mx-auto px-6 pt-32 pb-20 text-center">
+      <div className="relative z-10 max-w-6xl mx-auto px-4 sm:px-6 pt-24 sm:pt-32 pb-16 sm:pb-20 text-center">
         <motion.h1
           custom={0}
           initial="hidden"
           animate="visible"
           variants={fadeInUp}
-          className="font-display text-5xl sm:text-7xl md:text-[5.5rem] font-bold leading-[1.05] tracking-tight text-gray-950 dark:text-white mb-6"
+          className="font-display text-3xl sm:text-5xl md:text-7xl font-bold leading-[1.05] tracking-tight text-gray-950 dark:text-white mb-6"
         >
           Your career starts
           <br />

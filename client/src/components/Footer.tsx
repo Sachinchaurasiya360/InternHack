@@ -40,7 +40,7 @@ export function Footer() {
     <footer className="bg-gray-950 text-white pt-16 pb-8 px-6">
       <div className="max-w-6xl mx-auto">
         {/* Newsletter Banner */}
-        <div className="relative rounded-2xl bg-white/5 border border-white/10 p-8 md:p-10 mb-14 overflow-hidden">
+        <div className="relative rounded-2xl bg-white/5 border border-white/10 p-5 sm:p-8 md:p-10 mb-14 overflow-hidden">
           <div className="absolute -top-20 -right-20 w-60 h-60 rounded-full bg-indigo-500/10 blur-3xl pointer-events-none" />
           <div className="relative z-10 flex flex-col md:flex-row items-center gap-6">
             <div className="flex-1">
@@ -69,7 +69,7 @@ export function Footer() {
                       onChange={(e) => { setEmail(e.target.value); setError(""); }}
                       placeholder="your@email.com"
                       required
-                      className="px-4 py-2.5 bg-white/10 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-colors w-60"
+                      className="px-4 py-2.5 bg-white/10 border border-white/10 rounded-xl text-sm text-white placeholder-gray-500 focus:outline-none focus:border-white/30 transition-colors w-full sm:w-60"
                     />
                     <button
                       type="submit"

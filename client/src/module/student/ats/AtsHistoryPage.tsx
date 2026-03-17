@@ -3,11 +3,8 @@ import { motion } from "framer-motion";
 import {
   Clock,
   ScanSearch,
-  PenTool,
-  Mail,
   ChevronRight,
   BarChart2,
-  Wand2,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { LoadingScreen } from "../../../components/LoadingScreen";
