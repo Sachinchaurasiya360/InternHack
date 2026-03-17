@@ -14,6 +14,7 @@ import {
   Info,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/open-source-guide.json";
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -98,7 +99,11 @@ export default function FirstPRSectionPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={`${step.title} - Open Source Guide`} noIndex />
+      <SEO
+        title={`${step.title} - First PR Guide`}
+        description={step.description || `Learn ${step.title} in our step-by-step first pull request guide.`}
+        canonicalUrl={canonicalUrl(`/student/opensource/first-pr/${sectionSlug}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

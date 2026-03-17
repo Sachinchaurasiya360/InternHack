@@ -22,6 +22,7 @@ import { Link } from "react-router";
 import { Navbar } from "../../components/Navbar";
 import { Footer } from "../../components/Footer";
 import { SEO } from "../../components/SEO";
+import { canonicalUrl } from "../../lib/seo.utils";
 
 const fadeInUp = {
   hidden: { opacity: 0, y: 40 },
@@ -176,6 +177,7 @@ export default function RecruiterLandingPage() {
         title="For Recruiters & HR Teams"
         description="Post jobs, manage employees, run payroll, track performance, and automate HR workflows. A complete HR platform built into InternHack."
         keywords="HR platform, recruiter dashboard, post jobs, hire students, employee management, payroll, attendance, performance reviews, HR analytics, hiring pipeline"
+        canonicalUrl={canonicalUrl("/for-recruiters")}
       />
       <Navbar />
 

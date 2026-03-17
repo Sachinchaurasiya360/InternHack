@@ -24,6 +24,7 @@ import type { ReactRunResult } from "./lib/react-engine";
 import ReactEditor from "./components/ReactEditor";
 import JsConsoleOutput from "../javascript/components/JsConsoleOutput";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 
 const FREE_LIMIT = 5;
@@ -321,7 +322,12 @@ export default function ReactLessonDetailPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={lesson.title} noIndex />
+      <SEO
+        title={`${lesson.title} - React`}
+        description={`Learn about ${lesson.title} in React. Covers key concepts with code examples and practice exercises.`}
+        keywords={`${lesson.title}, react, tutorial`}
+        canonicalUrl={canonicalUrl(`/learn/react/${sectionSlug}/${lessonId}`)}
+      />
 
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-32 -right-32 w-150 h-150 bg-rose-100 dark:bg-rose-900/20 rounded-full blur-3xl opacity-40" />

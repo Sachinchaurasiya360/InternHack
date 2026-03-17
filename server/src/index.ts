@@ -54,6 +54,8 @@ import { onboardingRouter } from "./module/onboarding/onboarding.routes.js";
 import { complianceRouter } from "./module/compliance/compliance.routes.js";
 import { workflowRouter } from "./module/workflow/workflow.routes.js";
 import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
+import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
+import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 import { initServiceProviders } from "./lib/ai-provider-registry.js";
@@ -82,10 +84,10 @@ app.use(
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
-        scriptSrc: ["'self'", "https://accounts.google.com", "https://apis.google.com"],
-        styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com"],
+        scriptSrc: ["'self'", "https://accounts.google.com", "https://apis.google.com", "https://www.googletagmanager.com", "https://www.google-analytics.com"],
+        styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com", "https://fonts.googleapis.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
-        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com"],
+        connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com", "https://www.google-analytics.com", "https://analytics.google.com"],
         frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com"],
         fontSrc: ["'self'", "https:", "data:"],
       },
@@ -216,6 +218,12 @@ app.use("/api/hr/analytics", hrAnalyticsRouter);
 const publicAdminController = new AdminController(new AdminService());
 app.get("/api/external-jobs/:slug", (req, res) => publicAdminController.getPublicExternalJobBySlug(req, res));
 app.get("/api/external-jobs", (req, res) => publicAdminController.getPublicExternalJobs(req, res));
+
+// ── Sitemap (served at root, not /api) ──
+app.use(sitemapRouter);
+
+// ── Bot SEO headers (Vary: User-Agent, X-Is-Bot for CDN routing) ──
+app.use(botSeoMiddleware);
 
 // ── Static files (public folder) ──
 app.use(express.static(path.join(__dirname, "../public"), { dotfiles: "deny", index: false }));

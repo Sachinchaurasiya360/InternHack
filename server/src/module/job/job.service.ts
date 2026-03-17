@@ -102,6 +102,74 @@ export class JobService {
     };
   }
 
+  /**
+   * Programmatic SEO: parse a slug like "frontend-remote" into tag + location
+   * and return matching jobs with auto-generated SEO meta.
+   */
+  async getLandingPageData(slug: string) {
+    // Split slug: last segment may be a known location, rest is the tag
+    const parts = slug.split("-");
+    const LOCATIONS = ["remote", "bangalore", "mumbai", "delhi", "hyderabad", "pune", "chennai", "kolkata", "india", "usa"];
+
+    let tag = slug;
+    let location: string | undefined;
+
+    // Check if the last part is a location
+    const lastPart = parts[parts.length - 1]!.toLowerCase();
+    if (LOCATIONS.includes(lastPart) && parts.length > 1) {
+      location = lastPart;
+      tag = parts.slice(0, -1).join("-");
+    }
+
+    const where: Prisma.jobWhereInput = {
+      status: "PUBLISHED",
+      OR: [
+        { tags: { hasSome: [tag, tag.replace(/-/g, " ")] } },
+        { title: { contains: tag.replace(/-/g, " "), mode: "insensitive" } },
+      ],
+    };
+
+    if (location && location !== "remote") {
+      where.location = { contains: location, mode: "insensitive" };
+    } else if (location === "remote") {
+      where.location = { contains: "remote", mode: "insensitive" };
+    }
+
+    const [jobs, total] = await Promise.all([
+      prisma.job.findMany({
+        where,
+        take: 20,
+        orderBy: { createdAt: "desc" },
+        include: {
+          recruiter: { select: { id: true, name: true, company: true } },
+          _count: { select: { applications: true } },
+        },
+      }),
+      prisma.job.count({ where }),
+    ]);
+
+    const displayTag = tag.replace(/-/g, " ").replace(/\b\w/g, (c) => c.toUpperCase());
+    const displayLocation = location
+      ? location.replace(/\b\w/g, (c) => c.toUpperCase())
+      : undefined;
+
+    const title = displayLocation
+      ? `${displayTag} ${displayLocation} Jobs`
+      : `${displayTag} Jobs`;
+
+    return {
+      jobs,
+      meta: {
+        title: `${title} - InternHack`,
+        description: `Browse ${total} ${displayTag.toLowerCase()} job${total !== 1 ? "s" : ""}${displayLocation ? ` in ${displayLocation}` : ""}. Apply directly on InternHack.`,
+        totalJobs: total,
+        tag: displayTag,
+        location: displayLocation,
+        slug,
+      },
+    };
+  }
+
   async getJobById(id: number) {
     return prisma.job.findUnique({
       where: { id },

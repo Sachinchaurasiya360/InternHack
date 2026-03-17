@@ -14,6 +14,7 @@ jobRouter.get("/recruiter/my-jobs", authMiddleware, requireRole("RECRUITER"), (r
 
 // Public routes
 jobRouter.get("/", (req, res) => jobController.getJobs(req, res));
+jobRouter.get("/landing/:slug", (req, res) => jobController.getLandingPage(req, res));
 jobRouter.get("/:id", (req, res) => jobController.getJobById(req, res));
 
 // Recruiter-only routes

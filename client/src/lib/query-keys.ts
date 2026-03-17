@@ -92,6 +92,8 @@ export const queryKeys = {
       ["blog", "list", params] as const,
     detail: (slug: string) => ["blog", "detail", slug] as const,
     featured: () => ["blog", "featured"] as const,
+    related: (slug: string) => ["blog", "related", slug] as const,
+    byTags: (tags: string) => ["blog", "by-tags", tags] as const,
     admin: (params?: Record<string, string | number>) =>
       ["blog", "admin", params] as const,
   },

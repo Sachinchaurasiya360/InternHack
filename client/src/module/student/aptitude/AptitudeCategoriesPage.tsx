@@ -8,6 +8,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeCategory, AptitudeProgress } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 
 const CATEGORY_COLORS: Record<string, { bg: string; text: string; icon: string }> = {
@@ -71,7 +72,12 @@ export default function AptitudeCategoriesPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Aptitude Practice" noIndex />
+      <SEO
+        title="Aptitude Practice - Quantitative, Logical & Verbal"
+        description="Practice aptitude questions for placement exams. Categories include quantitative aptitude, logical reasoning, verbal ability, and data interpretation."
+        keywords="aptitude practice, quantitative aptitude, logical reasoning, verbal ability, placement exam preparation"
+        canonicalUrl={canonicalUrl("/learn/aptitude")}
+      />
 
       <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-black dark:hover:text-white mb-4">
         <ArrowLeft className="w-4 h-4" /> Back

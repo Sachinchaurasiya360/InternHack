@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X, Sun, Moon } from "lucide-react";
+import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X, Sun, Moon, Lock } from "lucide-react";
 import { useAuthStore } from "../lib/auth.store";
 import { useThemeStore } from "../lib/theme.store";
 
@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { to: "/student/ats/score", icon: ScanSearch, label: "Resume" },
   { to: "/learn", icon: GraduationCap, label: "Learning Hub" },
   { to: "/student/skill-verification", icon: ShieldCheck, label: "Skill Tests" },
-  { to: "/student/mock-interview", icon: Video, label: "Mock Interview" },
+  { to: "/student/mock-interview", icon: Video, label: "Mock Interview", premium: true },
   { to: "/student/companies", icon: Building2, label: "Explore Companies" },
   { to: "/student/grants", icon: Award, label: "Grants" },
   { to: "/student/opensource", icon: Globe, label: "Open Source" },
@@ -141,26 +141,34 @@ export function useStudentSidebar() {
 
         {/* Nav */}
         <nav className={`flex-1 space-y-0.5 ${collapsed ? "px-2" : "px-3"} overflow-y-auto`}>
-          {navItems.map((item) => (
-            <NavLink
-              key={item.to}
-              to={item.to}
-              title={collapsed ? item.label : undefined}
-              onClick={() => setMobileOpen(false)}
-              className={({ isActive }) =>
-                `flex items-center gap-3 rounded-lg text-sm font-medium transition-colors ${
-                  collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
-                } ${
-                  isActive
-                    ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
-                    : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white"
-                }`
-              }
-            >
-              <item.icon className="w-4 h-4 shrink-0" />
-              {!collapsed && <span className="truncate">{item.label}</span>}
-            </NavLink>
-          ))}
+          {navItems.map((item) => {
+            const isLocked = item.premium && !isPremium;
+            return (
+              <NavLink
+                key={item.to}
+                to={isLocked ? "/student/checkout" : item.to}
+                title={collapsed ? (isLocked ? `${item.label} (Pro)` : item.label) : undefined}
+                onClick={() => setMobileOpen(false)}
+                className={({ isActive }) =>
+                  `flex items-center gap-3 rounded-lg text-sm font-medium transition-colors ${
+                    collapsed ? "justify-center px-2 py-2" : "px-3 py-2"
+                  } ${
+                    isActive && !isLocked
+                      ? "bg-gray-900 dark:bg-white text-white dark:text-gray-900"
+                      : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 hover:text-black dark:hover:text-white"
+                  }`
+                }
+              >
+                <item.icon className="w-4 h-4 shrink-0" />
+                {!collapsed && (
+                  <>
+                    <span className="truncate">{item.label}</span>
+                    {isLocked && <Lock className="w-3 h-3 ml-auto shrink-0 text-gray-400 dark:text-gray-500" />}
+                  </>
+                )}
+              </NavLink>
+            );
+          })}
         </nav>
 
         {/* Logout */}

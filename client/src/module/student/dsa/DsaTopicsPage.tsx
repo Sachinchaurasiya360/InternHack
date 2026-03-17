@@ -8,6 +8,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { DsaTopic, DsaProgress } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -93,7 +94,12 @@ export default function DsaTopicsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="DSA Practice" noIndex />
+      <SEO
+        title="DSA Practice - Data Structures & Algorithms"
+        description="Practice data structures and algorithms problems organized by topic. Track your progress across arrays, trees, graphs, dynamic programming, and more."
+        keywords="DSA practice, data structures, algorithms, leetcode, coding interview, arrays, trees, graphs, dynamic programming"
+        canonicalUrl={canonicalUrl("/learn/dsa")}
+      />
 
       <button onClick={() => navigate(-1)} className="flex items-center gap-2 text-sm text-gray-500 hover:text-black dark:hover:text-white mb-4">
         <ArrowLeft className="w-4 h-4" /> Back

@@ -35,6 +35,20 @@ export class JobController {
     }
   }
 
+  async getLandingPage(req: Request, res: Response) {
+    try {
+      const slug = String(req.params["slug"] || "");
+      if (!slug || slug.length > 100) {
+        return res.status(400).json({ message: "Invalid slug" });
+      }
+      const data = await this.jobService.getLandingPageData(slug);
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
   async getJobById(req: Request, res: Response) {
     try {
       const id = parseInt(String(req.params["id"]), 10);

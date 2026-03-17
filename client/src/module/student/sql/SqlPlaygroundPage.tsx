@@ -21,6 +21,7 @@ import { sqlEngine } from "./lib/sql-engine";
 import type { QueryResult, TableInfo } from "./lib/sql-engine";
 import { datasets } from "./data/datasets";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 
 const PRELOADED_DATASETS = ["world", "nobel", "football", "movie", "school"];
 
@@ -141,7 +142,12 @@ export default function SqlPlaygroundPage() {
 
   return (
     <div className="relative max-w-[1400px] mx-auto pb-8">
-      <SEO title="SQL Playground" noIndex />
+      <SEO
+        title="SQL Playground - Run SQL Queries Online"
+        description="Free online SQL playground. Write and execute SQL queries in your browser with instant results."
+        keywords="SQL playground, online SQL editor, run SQL queries, SQL sandbox"
+        canonicalUrl={canonicalUrl("/learn/sql/playground")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

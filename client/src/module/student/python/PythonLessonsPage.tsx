@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Star, Lock }
 import { sections, lessons } from "./data";
 import type { PythonProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 import { pythonEngine } from "./lib/python-engine";
@@ -79,7 +80,12 @@ export default function PythonLessonsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Python Lessons" noIndex />
+      <SEO
+        title="Learn Python - Free Interactive Tutorials"
+        description="Master Python with interactive lessons covering variables, functions, OOP, data structures, and interview preparation."
+        keywords="learn python, python tutorial, python lessons, OOP, data structures, functions"
+        canonicalUrl={canonicalUrl("/learn/python")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

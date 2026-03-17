@@ -293,4 +293,41 @@ export class BlogService {
 
     return prisma.blogPost.delete({ where: { id } });
   }
+
+  async getRelatedPosts(slug: string, limit = 3) {
+    const post = await prisma.blogPost.findFirst({
+      where: { slug, status: "PUBLISHED" },
+      select: { id: true, tags: true, category: true },
+    });
+
+    if (!post || post.tags.length === 0) return [];
+
+    return prisma.blogPost.findMany({
+      where: {
+        id: { not: post.id },
+        status: "PUBLISHED",
+        OR: [
+          { tags: { hasSome: post.tags } },
+          { category: post.category },
+        ],
+      },
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      include: { author: { select: authorSelect } },
+    });
+  }
+
+  async getPostsByTags(tags: string[], limit = 3) {
+    if (tags.length === 0) return [];
+
+    return prisma.blogPost.findMany({
+      where: {
+        status: "PUBLISHED",
+        tags: { hasSome: tags },
+      },
+      orderBy: { publishedAt: "desc" },
+      take: limit,
+      include: { author: { select: authorSelect } },
+    });
+  }
 }

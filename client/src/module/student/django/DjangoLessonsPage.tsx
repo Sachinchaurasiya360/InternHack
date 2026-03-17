@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Star, Lock }
 import { sections, lessons } from "./data";
 import type { DjangoProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -73,7 +74,12 @@ export default function DjangoLessonsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Django Lessons" noIndex />
+      <SEO
+        title="Learn Django - Free Tutorials"
+        description="Master Django with interactive lessons covering models, views, templates, ORM, REST framework, and interview preparation."
+        keywords="learn django, django tutorial, django lessons, models, views, templates, REST framework"
+        canonicalUrl={canonicalUrl("/learn/django")}
+      />
 
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-emerald-100 to-green-100 dark:from-emerald-900/20 dark:to-green-900/20 rounded-full blur-3xl opacity-40" />

@@ -10,6 +10,7 @@ import type { CssProgress, CodeExample, PracticeExercise } from "./data/types";
 import CssEditor from "./components/CssEditor";
 import { LivePreview } from "../shared/LivePreview";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 
 const FREE_LIMIT = 5;
@@ -270,7 +271,12 @@ export default function CssLessonDetailPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={lesson.title} noIndex />
+      <SEO
+        title={`${lesson.title} - CSS`}
+        description={`Learn about ${lesson.title} in CSS. Covers key concepts with code examples and practice exercises.`}
+        keywords={`${lesson.title}, css, tutorial`}
+        canonicalUrl={canonicalUrl(`/learn/css/${sectionSlug}/${lessonId}`)}
+      />
 
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-32 -right-32 w-150 h-150 bg-blue-100 dark:bg-blue-900/20 rounded-full blur-3xl opacity-40" />

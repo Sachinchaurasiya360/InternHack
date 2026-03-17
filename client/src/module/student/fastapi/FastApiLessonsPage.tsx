@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Star, Lock }
 import { sections, lessons } from "./data";
 import type { FastApiProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -73,7 +74,12 @@ export default function FastApiLessonsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="FastAPI Lessons" noIndex />
+      <SEO
+        title="Learn FastAPI - Free Tutorials"
+        description="Master FastAPI with interactive lessons covering async endpoints, Pydantic models, dependency injection, and interview preparation."
+        keywords="learn fastapi, fastapi tutorial, fastapi lessons, async, pydantic, REST API"
+        canonicalUrl={canonicalUrl("/learn/fastapi")}
+      />
 
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-green-100 to-emerald-100 dark:from-green-900/20 dark:to-emerald-900/20 rounded-full blur-3xl opacity-40" />

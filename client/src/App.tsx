@@ -29,6 +29,7 @@ const VerifyEmailPage = lazy(() => import("./module/auth/VerifyEmailPage"));
 const ForgotPasswordPage = lazy(() => import("./module/auth/ForgotPasswordPage"));
 const JobBrowsePage = lazy(() => import("./module/student/jobs/JobBrowsePage"));
 const JobDetailPage = lazy(() => import("./module/student/jobs/JobDetailPage"));
+const JobLandingPage = lazy(() => import("./module/student/jobs/JobLandingPage"));
 const ScrapedJobsPage = lazy(() => import("./module/scraped-jobs/ScrapedJobsPage"));
 const ScrapedJobDetailPage = lazy(() => import("./module/scraped-jobs/ScrapedJobDetailPage"));
 const CompanyListPage = lazy(() => import("./module/student/companies/CompanyListPage"));
@@ -231,6 +232,7 @@ function App() {
           <Route path="/verify-email" element={<VerifyEmailPage />} />
           <Route path="/forgot-password" element={<ForgotPasswordPage />} />
           <Route path="/jobs" element={<JobBrowsePage />} />
+          <Route path="/jobs/t/:slug" element={<JobLandingPage />} />
           <Route path="/jobs/:id" element={<JobDetailOrRedirect />} />
           <Route path="/jobs/ext/:slug" element={<ExternalJobDetailPage />} />
           <Route path="/internships" element={<GovInternshipsPage />} />

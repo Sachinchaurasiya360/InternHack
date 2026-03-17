@@ -13,6 +13,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { DsaTopicDetail } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 
 const DIFF_TEXT: Record<string, string> = {
@@ -185,7 +186,12 @@ export default function DsaTopicDetailPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={`${topic.name} - DSA Practice`} noIndex />
+      <SEO
+        title={`${topic.name} - DSA Practice`}
+        description={`Practice ${topic.name} problems with difficulty tracking, bookmarks, and notes.`}
+        keywords={`${topic.name}, DSA, data structures, algorithms, practice problems`}
+        canonicalUrl={canonicalUrl(`/learn/dsa/${slug}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

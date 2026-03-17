@@ -14,6 +14,7 @@ import {
   Users,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import api from "../../../lib/axios";
@@ -133,6 +134,7 @@ export default function YCCompanyDetailPage() {
         description={company.oneLiner || company.longDescription?.slice(0, 160) || `${company.name} is a Y Combinator company.`}
         keywords={`${company.name}, Y Combinator, YC, ${company.industry || ""}, ${company.tags?.join(", ") || ""}`}
         ogImage={company.smallLogoUrl || undefined}
+        canonicalUrl={canonicalUrl(`/yc/${company.slug}`)}
       />
 
       {/* Atmospheric background */}

@@ -5,6 +5,7 @@ import { ArrowLeft, CheckCircle2, ArrowRight, BookOpen, TrendingUp, Star } from 
 import { sections, lessons } from "./data";
 import type { DjangoProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 
 const FREE_LIMIT = 5;
@@ -58,7 +59,12 @@ export default function DjangoSectionPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={section.title} noIndex />
+      <SEO
+        title={`${section.title} - Django Tutorial`}
+        description={`Learn ${section.title} in Django. ${section.description}`}
+        keywords={`${section.title}, django, tutorial`}
+        canonicalUrl={canonicalUrl(`/learn/django/${sectionSlug}`)}
+      />
 
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-32 -right-32 w-150 h-150 bg-emerald-100 dark:bg-emerald-900/20 rounded-full blur-3xl opacity-40" />

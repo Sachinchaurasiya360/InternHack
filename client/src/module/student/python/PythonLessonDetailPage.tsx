@@ -24,6 +24,7 @@ import type { PyRunResult } from "./lib/python-engine";
 import PythonEditor from "./components/PythonEditor";
 import PythonConsoleOutput from "./components/PythonConsoleOutput";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 
 const FREE_LIMIT = 5;
@@ -342,7 +343,12 @@ export default function PythonLessonDetailPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={lesson.title} noIndex />
+      <SEO
+        title={`${lesson.title} - Python`}
+        description={`Learn about ${lesson.title} in Python. Covers key concepts with code examples and practice exercises.`}
+        keywords={`${lesson.title}, python, tutorial`}
+        canonicalUrl={canonicalUrl(`/learn/python/${sectionSlug}/${lessonId}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

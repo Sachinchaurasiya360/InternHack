@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Star, Lock }
 import { sections, lessons } from "./data";
 import type { BlockchainProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -73,7 +74,12 @@ export default function BlockchainLessonsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Blockchain Lessons - Learning Hub" noIndex />
+      <SEO
+        title="Learn Blockchain - Free Tutorials"
+        description="Master blockchain with interactive lessons covering smart contracts, Solidity, DApps, DeFi, and interview preparation."
+        keywords="learn blockchain, blockchain tutorial, blockchain lessons, smart contracts, solidity, DApps"
+        canonicalUrl={canonicalUrl("/learn/blockchain")}
+      />
 
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-orange-100 to-amber-100 dark:from-orange-900/20 dark:to-amber-900/20 rounded-full blur-3xl opacity-40" />

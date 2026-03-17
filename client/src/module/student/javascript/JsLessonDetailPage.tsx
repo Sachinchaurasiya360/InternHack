@@ -24,6 +24,7 @@ import type { JsRunResult } from "./lib/js-engine";
 import JsEditor from "./components/JsEditor";
 import JsConsoleOutput from "./components/JsConsoleOutput";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 
 const FREE_LIMIT = 5;
@@ -336,7 +337,12 @@ export default function JsLessonDetailPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={lesson.title} noIndex />
+      <SEO
+        title={`${lesson.title} - JavaScript`}
+        description={`Learn about ${lesson.title} in JavaScript. Covers key concepts with code examples and practice exercises.`}
+        keywords={`${lesson.title}, javascript, tutorial`}
+        canonicalUrl={canonicalUrl(`/learn/javascript/${sectionSlug}/${lessonId}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

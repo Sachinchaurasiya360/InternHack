@@ -5,6 +5,7 @@ import { ArrowLeft, CheckCircle2, ArrowRight, BookOpen, TrendingUp } from "lucid
 import { sections, questions } from "./data";
 import type { InterviewProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 
 const FREE_LIMIT = 5;
@@ -66,7 +67,12 @@ export default function InterviewSectionPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={section.title} noIndex />
+      <SEO
+        title={`${section.title} Interview Questions`}
+        description={`${sectionQuestions?.length || 30}+ ${section.title} interview questions with detailed answers, code examples, and tips.`}
+        keywords={`${section.title} interview questions, ${section.title} interview preparation`}
+        canonicalUrl={canonicalUrl(`/learn/interview/${sectionSlug}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

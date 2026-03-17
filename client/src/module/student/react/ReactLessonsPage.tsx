@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Star, Lock }
 import { sections, lessons } from "./data";
 import type { ReactProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -73,7 +74,12 @@ export default function ReactLessonsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="React Lessons" noIndex />
+      <SEO
+        title="Learn React - Free Interactive Tutorials"
+        description="Master React with interactive lessons covering components, hooks, state management, routing, and interview preparation."
+        keywords="learn react, react tutorial, react lessons, hooks, components, state management"
+        canonicalUrl={canonicalUrl("/learn/react")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

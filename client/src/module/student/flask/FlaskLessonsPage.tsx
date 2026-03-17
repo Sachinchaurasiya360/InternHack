@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Star, Lock }
 import { sections, lessons } from "./data";
 import type { FlaskProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -73,7 +74,12 @@ export default function FlaskLessonsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Flask Lessons" noIndex />
+      <SEO
+        title="Learn Flask - Free Tutorials"
+        description="Master Flask with interactive lessons covering routes, templates, REST APIs, blueprints, and interview preparation."
+        keywords="learn flask, flask tutorial, flask lessons, routes, templates, REST API"
+        canonicalUrl={canonicalUrl("/learn/flask")}
+      />
 
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
         <div className="absolute -top-32 -right-32 w-150 h-150 bg-linear-to-br from-teal-100 to-cyan-100 dark:from-teal-900/20 dark:to-cyan-900/20 rounded-full blur-3xl opacity-40" />

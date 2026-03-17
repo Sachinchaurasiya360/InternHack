@@ -8,6 +8,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeTopicDetail } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "react-hot-toast";
 
@@ -103,7 +104,12 @@ export default function AptitudeTopicPage() {
 
   return (
     <div className="relative max-w-4xl mx-auto pb-12">
-      <SEO title={`${topic.name} - Aptitude`} noIndex />
+      <SEO
+        title={`${topic.name} - Aptitude Practice`}
+        description={`Practice ${topic.name} aptitude questions with detailed explanations and solutions.`}
+        keywords={`${topic.name}, aptitude practice, placement preparation`}
+        canonicalUrl={canonicalUrl(`/learn/aptitude/${slug}/practice`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

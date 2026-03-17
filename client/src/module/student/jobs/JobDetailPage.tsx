@@ -1,9 +1,11 @@
 import { useParams, Link, useLocation } from "react-router";
 import { motion } from "framer-motion";
-import { ArrowLeft, MapPin, IndianRupee, Users, CheckCircle, ArrowRight, Send, Check, Building2, CalendarDays, Tag, Clock, Briefcase } from "lucide-react";
+import { ArrowLeft, MapPin, IndianRupee, Users, CheckCircle, ArrowRight, Send, Check, Building2, CalendarDays, Tag, Clock, Briefcase, BookOpen } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
+import { jobPostingSchema, breadcrumbSchema } from "../../../lib/structured-data";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import { useAuthStore } from "../../../lib/auth.store";
@@ -48,6 +50,14 @@ export default function JobDetailPage() {
     queryFn: () =>
       api.get("/jobs", { params: { tags: job!.tags.join(","), limit: 4 } })
         .then((res) => (res.data.jobs as Job[]).filter((j) => j.id !== Number(id))),
+    enabled: !!job && job.tags.length > 0,
+  });
+
+  const { data: relatedPosts = [] } = useQuery({
+    queryKey: queryKeys.blog.byTags(job?.tags?.join(",") || ""),
+    queryFn: () =>
+      api.get("/blog/by-tags", { params: { tags: job!.tags.join(",") } })
+        .then((res) => res.data.posts as { id: number; title: string; slug: string; excerpt: string; readingTime: number; featuredImage?: string }[]),
     enabled: !!job && job.tags.length > 0,
   });
 
@@ -349,6 +359,34 @@ export default function JobDetailPage() {
               </div>
             </motion.div>
           )}
+
+          {/* Related Blog Posts */}
+          {relatedPosts.length > 0 && (
+            <motion.div variants={fadeUp}>
+              <div className="flex items-center gap-3 mb-5">
+                <div className="w-9 h-9 rounded-xl bg-blue-50 dark:bg-blue-900/20 flex items-center justify-center">
+                  <BookOpen className="w-4.5 h-4.5 text-blue-600 dark:text-blue-400" />
+                </div>
+                <h2 className="text-base font-semibold text-gray-900 dark:text-white">Related Articles</h2>
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                {relatedPosts.slice(0, 3).map((rp) => (
+                  <Link key={rp.id} to={`/blog/${rp.slug}`} className="no-underline group">
+                    <div className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm p-5 hover:shadow-md transition-shadow h-full">
+                      {rp.featuredImage && (
+                        <img src={rp.featuredImage} alt={rp.title} className="w-full h-28 object-cover rounded-xl mb-3" />
+                      )}
+                      <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{rp.title}</h3>
+                      <p className="text-xs text-gray-500 mt-1.5 line-clamp-2">{rp.excerpt}</p>
+                      <span className="inline-flex items-center gap-1 text-xs text-gray-400 mt-2">
+                        <Clock className="w-3 h-3" />{rp.readingTime} min read
+                      </span>
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </motion.div>
+          )}
         </motion.div>
       </div>
     </div>
@@ -367,6 +405,23 @@ export default function JobDetailPage() {
         title={`${job.title} at ${job.company}`}
         description={`${job.title} position at ${job.company} in ${job.location}. ${job.description?.slice(0, 120)}...`}
         keywords={`${job.title}, ${job.company}, ${job.location}, ${job.tags.join(", ")}`}
+        canonicalUrl={canonicalUrl(`/jobs/${id}`)}
+        structuredData={[
+          jobPostingSchema({
+            title: job.title,
+            description: job.description,
+            company: job.company,
+            location: job.location,
+            salary: job.salary,
+            deadline: job.deadline,
+            createdAt: job.createdAt,
+            id: job.id,
+          }),
+          breadcrumbSchema([
+            { name: "Jobs", url: canonicalUrl("/jobs") },
+            { name: job.title, url: canonicalUrl(`/jobs/${id}`) },
+          ]),
+        ]}
       />
       <Navbar />
       {page}

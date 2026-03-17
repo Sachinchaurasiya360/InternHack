@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/gsoc-proposal-guide.json";
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -65,7 +66,12 @@ export default function GSoCProposalPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="How to Write a Winning GSoC Proposal" noIndex />
+      <SEO
+        title="GSoC Proposal Writing Guide - Step by Step"
+        description="Learn how to write a winning Google Summer of Code proposal. Covers project selection, timeline planning, and proposal structure."
+        keywords="GSoC proposal guide, Google Summer of Code, GSoC tips, open source proposal, GSoC application"
+        canonicalUrl={canonicalUrl("/student/opensource/gsoc-proposal")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

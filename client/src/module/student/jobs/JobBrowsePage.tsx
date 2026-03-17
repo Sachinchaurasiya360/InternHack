@@ -5,6 +5,7 @@ import { useQuery, keepPreviousData } from "@tanstack/react-query";
 import { Search, MapPin, IndianRupee, Clock, X, Landmark, ChevronRight, ExternalLink } from "lucide-react";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Job, Pagination } from "../../../lib/types";
@@ -90,9 +91,10 @@ export default function JobBrowsePage() {
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950 relative overflow-hidden">
       <SEO
-        title="Browse Jobs"
+        title="Browse Jobs & Internships"
         description="Find your next internship or job opportunity. Browse curated listings from top companies, filter by location and role, and apply directly."
         keywords="internship jobs, student jobs, browse jobs, job listings, job opportunities, apply jobs, campus hiring"
+        canonicalUrl={canonicalUrl("/jobs")}
       />
 
       {/* Background decorations */}

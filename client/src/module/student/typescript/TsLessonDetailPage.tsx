@@ -24,6 +24,7 @@ import type { TsRunResult } from "./lib/ts-engine";
 import TsEditor from "./components/TsEditor";
 import JsConsoleOutput from "../javascript/components/JsConsoleOutput";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 
 const FREE_LIMIT = 5;
@@ -334,7 +335,12 @@ export default function TsLessonDetailPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={lesson.title} noIndex />
+      <SEO
+        title={`${lesson.title} - TypeScript`}
+        description={`Learn about ${lesson.title} in TypeScript. Covers key concepts with code examples and practice exercises.`}
+        keywords={`${lesson.title}, typescript, tutorial`}
+        canonicalUrl={canonicalUrl(`/learn/typescript/${sectionSlug}/${lessonId}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

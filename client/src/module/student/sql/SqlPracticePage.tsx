@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { CheckCircle2, ArrowRight, Terminal, BookOpen, TrendingUp, Lock } from "lucide-react";
 import { sections, exercises } from "./data/exercises";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -84,7 +85,12 @@ export default function SqlPracticePage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="SQL Practice" noIndex />
+      <SEO
+        title="SQL Practice - Interactive SQL Exercises"
+        description="Practice SQL queries with interactive exercises. Learn SELECT, JOIN, GROUP BY, subqueries, and more with an in-browser SQL engine."
+        keywords="SQL practice, SQL exercises, learn SQL, SQL queries, SQL tutorial, interactive SQL"
+        canonicalUrl={canonicalUrl("/learn/sql")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

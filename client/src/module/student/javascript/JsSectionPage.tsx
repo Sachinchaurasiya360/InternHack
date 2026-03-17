@@ -5,6 +5,7 @@ import { ArrowLeft, CheckCircle2, ArrowRight, BookOpen, TrendingUp, Star } from 
 import { sections, lessons } from "./data";
 import type { JsProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 
 const FREE_LIMIT = 5;
@@ -59,7 +60,12 @@ export default function JsSectionPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={section.title} noIndex />
+      <SEO
+        title={`${section.title} - JavaScript Tutorial`}
+        description={`Learn ${section.title} in JavaScript. ${section.description}`}
+        keywords={`${section.title}, javascript, tutorial`}
+        canonicalUrl={canonicalUrl(`/learn/javascript/${sectionSlug}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

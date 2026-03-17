@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Star, Lock }
 import { sections, lessons } from "./data";
 import type { JsProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -73,7 +74,12 @@ export default function JsLessonsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="JavaScript Lessons" noIndex />
+      <SEO
+        title="Learn JavaScript - Free Interactive Tutorials"
+        description="Master JavaScript with interactive lessons covering closures, async/await, prototypes, DOM manipulation, and interview preparation."
+        keywords="learn javascript, javascript tutorial, javascript lessons, closures, async await, DOM manipulation"
+        canonicalUrl={canonicalUrl("/learn/javascript")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

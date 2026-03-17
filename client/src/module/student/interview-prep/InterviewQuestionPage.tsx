@@ -16,6 +16,7 @@ import {
 import { sections, questions } from "./data";
 import type { InterviewProgress, CodeExample } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 
 const FREE_LIMIT = 5;
@@ -138,7 +139,11 @@ export default function InterviewQuestionPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={question.title} noIndex />
+      <SEO
+        title={`${question.title} - Interview Question`}
+        description={content.answer?.slice(0, 160) || `Detailed answer for "${question.title}" interview question with code examples.`}
+        canonicalUrl={canonicalUrl(`/learn/interview/${sectionSlug}/${questionId}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

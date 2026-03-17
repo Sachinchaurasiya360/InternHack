@@ -52,6 +52,37 @@ export class BlogController {
     }
   }
 
+  async getRelatedPosts(req: Request, res: Response, next: NextFunction) {
+    try {
+      const slug = String(req.params["slug"] || "");
+      if (!slug) {
+        res.status(400).json({ message: "Slug is required" });
+        return;
+      }
+
+      const posts = await this.blogService.getRelatedPosts(slug);
+      res.json({ posts });
+    } catch (err) {
+      next(err);
+    }
+  }
+
+  async getPostsByTags(req: Request, res: Response, next: NextFunction) {
+    try {
+      const tagsParam = String(req.query["tags"] || "");
+      if (!tagsParam) {
+        res.json({ posts: [] });
+        return;
+      }
+
+      const tags = tagsParam.split(",").map((t) => t.trim()).filter(Boolean);
+      const posts = await this.blogService.getPostsByTags(tags);
+      res.json({ posts });
+    } catch (err) {
+      next(err);
+    }
+  }
+
   async listAll(req: Request, res: Response, next: NextFunction) {
     try {
       const result = listPostsQuerySchema.safeParse(req.query);

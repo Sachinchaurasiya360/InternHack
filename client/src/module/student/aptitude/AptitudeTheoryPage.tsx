@@ -22,6 +22,7 @@ import type { AptitudeTopicDetail } from "../../../lib/types";
 import { getTopicTheory } from "./data";
 import type { Formula, Method, SolvedExample } from "./data";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 
 function FormulaCard({ formula }: { formula: Formula }) {
@@ -182,7 +183,12 @@ export default function AptitudeTheoryPage() {
 
   return (
     <div className="relative max-w-4xl mx-auto pb-16">
-      <SEO title={`${topic?.name ?? slug} — Learn`} noIndex />
+      <SEO
+        title={`${topic?.name ?? slug} - Aptitude Theory & Formulas`}
+        description={`Learn ${topic?.name ?? slug} concepts, formulas, and shortcuts for aptitude exams.`}
+        keywords={`${topic?.name ?? slug}, aptitude theory, formulas, shortcuts`}
+        canonicalUrl={canonicalUrl(`/learn/aptitude/${slug}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

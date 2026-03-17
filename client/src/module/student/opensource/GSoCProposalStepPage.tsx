@@ -19,6 +19,7 @@ import {
   ChevronDown,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/gsoc-proposal-guide.json";
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -97,7 +98,11 @@ export default function GSoCProposalStepPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={`${step.title} - GSoC Proposal Guide`} noIndex />
+      <SEO
+        title={`${step.title} - GSoC Proposal Guide`}
+        description={step.description || `Learn about ${step.title} in our GSoC proposal writing guide.`}
+        canonicalUrl={canonicalUrl(`/student/opensource/gsoc-proposal/${sectionSlug}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

@@ -8,6 +8,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { DsaCompany, DsaCompanyProblem } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 
 const DIFF_TEXT: Record<string, string> = {
@@ -88,7 +89,12 @@ export default function DsaCompaniesPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Company-wise DSA Problems" noIndex />
+      <SEO
+        title="DSA by Company - Interview Questions"
+        description="Practice DSA problems asked by top tech companies like Google, Amazon, Meta, and Microsoft."
+        keywords="company interview questions, Google DSA, Amazon interview, tech interview problems"
+        canonicalUrl={canonicalUrl("/learn/dsa/companies")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

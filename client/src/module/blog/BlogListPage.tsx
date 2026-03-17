@@ -13,6 +13,7 @@ import api from "../../lib/axios";
 import { queryKeys } from "../../lib/query-keys";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
+import { canonicalUrl } from "../../lib/seo.utils";
 import BlogCard, { CATEGORY_LABELS } from "./components/BlogCard";
 import type { BlogPost, BlogCategory } from "./components/BlogCard";
 import type { Pagination } from "../../lib/types";
@@ -93,6 +94,7 @@ export default function BlogListPage() {
         title="Blog & Resources"
         description="Career tips, interview strategies, salary insights, and industry trends to help you land your dream role. Read expert articles on InternHack."
         keywords="career blog, interview tips, salary guide, resume tips, tech trends, career advice, industry insights"
+        canonicalUrl={canonicalUrl("/blog")}
       />
       <Navbar />
 

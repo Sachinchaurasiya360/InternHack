@@ -11,6 +11,8 @@ import api, { SERVER_URL } from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
+import { organizationSchema, breadcrumbSchema } from "../../../lib/structured-data";
 import { Footer } from "../../../components/Footer";
 import type { Company, CompanyReview } from "../../../lib/types";
 import StarRating from "./StarRating";
@@ -99,6 +101,21 @@ export default function CompanyDetailPage() {
         description={`${company.name} - ${company.industry || "Company"} in ${company.city}, ${company.state}. ${company.description?.slice(0, 120) || "Read reviews, see tech stack, and explore career opportunities."}`}
         keywords={`${company.name}, ${company.industry}, ${company.city}, company reviews, tech companies, ${company.technologies?.join(", ") || ""}`}
         ogImage={company.logo || undefined}
+        canonicalUrl={canonicalUrl(`/companies/${company.slug}`)}
+        structuredData={[
+          organizationSchema({
+            name: company.name,
+            description: company.description,
+            slug: company.slug,
+            website: company.website,
+            city: company.city,
+            industry: company.industry,
+          }),
+          breadcrumbSchema([
+            { name: "Companies", url: canonicalUrl("/companies") },
+            { name: company.name, url: canonicalUrl(`/companies/${company.slug}`) },
+          ]),
+        ]}
       />
       <Navbar />
 

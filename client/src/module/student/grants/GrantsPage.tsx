@@ -24,6 +24,7 @@ import {
 } from "lucide-react";
 import { grants, GRANT_CATEGORIES, type Grant, type GrantCategory } from "./grantsData";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { Link } from "react-router";
 
 const ICON_MAP: Record<string, React.ComponentType<{ className?: string }>> = {
@@ -128,7 +129,12 @@ export default function GrantsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Grants & Funding" noIndex />
+      <SEO
+        title="Grants & Funding for Students"
+        description="Discover grants, scholarships, and funding opportunities for students. Browse tech grants, research funding, and startup grants."
+        keywords="student grants, tech scholarships, research funding, startup grants, student funding"
+        canonicalUrl={canonicalUrl("/grants")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

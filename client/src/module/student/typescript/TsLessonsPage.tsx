@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Star, Lock }
 import { sections, lessons } from "./data";
 import type { TsProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -73,7 +74,12 @@ export default function TsLessonsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="TypeScript Lessons" noIndex />
+      <SEO
+        title="Learn TypeScript - Free Interactive Tutorials"
+        description="Master TypeScript with interactive lessons covering types, generics, interfaces, type guards, and interview preparation."
+        keywords="learn typescript, typescript tutorial, typescript lessons, types, generics, interfaces"
+        canonicalUrl={canonicalUrl("/learn/typescript")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

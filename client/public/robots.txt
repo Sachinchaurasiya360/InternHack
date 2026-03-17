@@ -3,5 +3,6 @@ Allow: /
 Disallow: /student/
 Disallow: /admin/
 Disallow: /recruiters/
+Disallow: /test/
 
-Sitemap: https://internhack.xyz/sitemap.xml
+Sitemap: https://www.internhack.xyz/sitemap.xml

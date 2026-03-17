@@ -26,6 +26,7 @@ export interface BlogPost {
   isFeatured: boolean;
   publishedAt?: string;
   createdAt: string;
+  updatedAt?: string;
 }
 
 const CATEGORY_LABELS: Record<BlogCategory, string> = {

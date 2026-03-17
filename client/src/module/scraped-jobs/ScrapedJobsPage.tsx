@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Search, MapPin, DollarSign, Building2, ExternalLink, Globe, Filter } from "lucide-react";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
+import { canonicalUrl } from "../../lib/seo.utils";
 import api from "../../lib/axios";
 import type { ScrapedJob, ScrapedJobSource, Pagination } from "../../lib/types";
 
@@ -60,6 +61,7 @@ export default function ScrapedJobsPage() {
         title="External Job Listings"
         description="Browse aggregated job listings from top job boards. Find remote and on-site opportunities from Remotive, Arbeitnow, Adzuna, and more."
         keywords="external jobs, remote jobs, job aggregator, job listings, Remotive, Arbeitnow, developer jobs"
+        canonicalUrl={canonicalUrl("/external-jobs")}
       />
       <Navbar />
       <div className="max-w-7xl mx-auto px-6 pt-24 pb-12">

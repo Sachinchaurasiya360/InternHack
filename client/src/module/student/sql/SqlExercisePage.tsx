@@ -27,6 +27,7 @@ import SqlResultTable from "./components/SqlResultTable";
 import SqlSchemaPanel from "./components/SqlSchemaPanel";
 import type { TableInfo } from "./lib/sql-engine";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
@@ -205,7 +206,11 @@ export default function SqlExercisePage() {
 
     return (
       <div className="relative pb-12">
-        <SEO title={section.title} noIndex />
+        <SEO
+          title={`${section.title} - SQL Exercises`}
+          description={`Practice ${section.title} SQL exercises with an interactive editor.`}
+          canonicalUrl={canonicalUrl(`/learn/sql/${sectionSlug}`)}
+        />
 
         {/* Atmospheric background */}
         <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -338,7 +343,11 @@ export default function SqlExercisePage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={exercise.title} noIndex />
+      <SEO
+        title={`${exercise.title} - SQL Exercise`}
+        description={`Solve the ${exercise.title} SQL exercise with instant feedback.`}
+        canonicalUrl={canonicalUrl(`/learn/sql/${sectionSlug}/${exerciseId}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

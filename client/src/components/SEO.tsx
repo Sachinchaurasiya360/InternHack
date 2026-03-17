@@ -8,6 +8,7 @@ interface SEOProps {
   ogImage?: string;
   ogType?: string;
   noIndex?: boolean;
+  structuredData?: Record<string, unknown> | Record<string, unknown>[];
 }
 
 const SITE_NAME = "InternHack";
@@ -25,6 +26,7 @@ export function SEO({
   ogImage = DEFAULT_OG_IMAGE,
   ogType = "website",
   noIndex = false,
+  structuredData,
 }: SEOProps) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} - AI-Powered Career Platform for Students`;
 
@@ -53,6 +55,20 @@ export function SEO({
 
       {/* Robots */}
       {noIndex && <meta name="robots" content="noindex,nofollow" />}
+
+      {/* Structured Data (JSON-LD) */}
+      {structuredData &&
+        (Array.isArray(structuredData)
+          ? structuredData.map((sd, i) => (
+              <script key={i} type="application/ld+json">
+                {JSON.stringify(sd)}
+              </script>
+            ))
+          : (
+            <script type="application/ld+json">
+              {JSON.stringify(structuredData)}
+            </script>
+          ))}
     </Helmet>
   );
 }

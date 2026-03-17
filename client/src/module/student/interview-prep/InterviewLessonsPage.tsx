@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Lock } from 
 import { sections, questions } from "./data";
 import type { InterviewProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -72,7 +73,12 @@ export default function InterviewLessonsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Interview Preparation" noIndex />
+      <SEO
+        title="Interview Preparation - 300+ Questions & Answers"
+        description="Prepare for tech interviews with 300+ questions covering JavaScript, React, Node.js, Python, SQL, System Design, Behavioral, and more."
+        keywords="interview preparation, tech interview questions, JavaScript interview, React interview, system design interview"
+        canonicalUrl={canonicalUrl("/learn/interview")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

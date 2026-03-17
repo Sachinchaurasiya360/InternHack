@@ -20,6 +20,7 @@ import { sections, lessons } from "./data";
 import type { NodeProgress, CodeExample, PracticeExercise } from "./data/types";
 import NodeEditor from "./components/NodeEditor";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 
 const FREE_LIMIT = 5;
@@ -304,7 +305,12 @@ export default function NodeLessonDetailPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title={lesson.title} noIndex />
+      <SEO
+        title={`${lesson.title} - Node.js`}
+        description={`Learn about ${lesson.title} in Node.js. Covers key concepts with code examples and practice exercises.`}
+        keywords={`${lesson.title}, nodejs, tutorial`}
+        canonicalUrl={canonicalUrl(`/learn/nodejs/${sectionSlug}/${lessonId}`)}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

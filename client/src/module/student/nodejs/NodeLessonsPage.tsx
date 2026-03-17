@@ -5,6 +5,7 @@ import { CheckCircle2, ArrowRight, ArrowLeft, BookOpen, TrendingUp, Star, Lock }
 import { sections, lessons } from "./data";
 import type { NodeProgress } from "./data/types";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { useAuthStore } from "../../../lib/auth.store";
 import { LoginGate } from "../../../components/LoginGate";
 
@@ -73,7 +74,12 @@ export default function NodeLessonsPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Node.js & Express Lessons" noIndex />
+      <SEO
+        title="Learn Node.js - Free Interactive Tutorials"
+        description="Master Node.js with interactive lessons covering the event loop, Express, REST APIs, middleware, and interview preparation."
+        keywords="learn nodejs, node.js tutorial, nodejs lessons, express, REST API, event loop"
+        canonicalUrl={canonicalUrl("/learn/nodejs")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

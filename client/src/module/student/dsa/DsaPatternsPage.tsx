@@ -7,6 +7,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { DsaPattern, DsaCompanyProblem } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 
 const DIFF_BADGE: Record<string, string> = {
   Easy: "bg-green-100 text-green-700 dark:bg-green-900/40 dark:text-green-400",
@@ -33,7 +34,12 @@ export default function DsaPatternsPage() {
 
   return (
     <div className="max-w-5xl mx-auto">
-      <SEO title="Pattern-based DSA Problems" noIndex />
+      <SEO
+        title="DSA Patterns - Algorithm Problem Patterns"
+        description="Browse DSA problems organized by algorithm patterns like sliding window, two pointers, BFS, DFS, and dynamic programming."
+        keywords="DSA patterns, algorithm patterns, sliding window, two pointers, BFS, DFS"
+        canonicalUrl={canonicalUrl("/learn/dsa/patterns")}
+      />
 
       <div className="mb-6">
         <Link to="/learn/dsa" className="inline-flex items-center gap-1.5 text-sm text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white mb-3">

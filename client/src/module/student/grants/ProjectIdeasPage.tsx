@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 
 // ─── Types ─────────────────────────────────────────────────────
 type Difficulty = "Beginner" | "Intermediate" | "Advanced";
@@ -1225,7 +1226,12 @@ export default function ProjectIdeasPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Blockchain Projects - Learning Hub" noIndex />
+      <SEO
+        title="Blockchain Project Ideas for Students"
+        description="Explore innovative blockchain and web3 project ideas for students. DeFi, NFT, DAO, and smart contract project inspiration."
+        keywords="blockchain projects, web3 project ideas, DeFi projects, smart contract projects, student projects"
+        canonicalUrl={canonicalUrl("/student/grants/projects")}
+      />
 
       {/* Header */}
       <motion.div

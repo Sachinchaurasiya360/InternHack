@@ -2,6 +2,7 @@ import { Link } from "react-router";
 import { motion } from "framer-motion";
 import { Code2, Database, ArrowRight, BookOpen, Brain, FileCode2, Palette, Zap, Coffee, Layers, Server, Terminal, Blocks, GraduationCap } from "lucide-react";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 
 const PRACTICE_TRACKS = [
   {
@@ -177,7 +178,12 @@ const LESSON_TRACKS = [
 export default function LearnHubPage() {
   return (
     <div className="relative pb-12">
-      <SEO title="Learning Hub" noIndex />
+      <SEO
+        title="Learning Hub - Free Programming Tutorials"
+        description="Learn programming for free with interactive tutorials in JavaScript, Python, React, HTML, CSS, TypeScript, Node.js, SQL, DSA, and more."
+        keywords="learn programming, free coding tutorials, JavaScript tutorial, Python tutorial, React tutorial, web development, DSA practice"
+        canonicalUrl={canonicalUrl("/learn")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

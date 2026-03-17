@@ -10,11 +10,14 @@ import {
   User,
   Tag,
   FileText,
+  BookOpen,
 } from "lucide-react";
 import api from "../../lib/axios";
 import { queryKeys } from "../../lib/query-keys";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
+import { canonicalUrl } from "../../lib/seo.utils";
+import { blogPostingSchema, breadcrumbSchema } from "../../lib/structured-data";
 import { CATEGORY_LABELS, CATEGORY_COLORS } from "./components/BlogCard";
 import type { BlogPost } from "./components/BlogCard";
 
@@ -124,6 +127,13 @@ export default function BlogPostPage() {
   const post = data?.post;
   const catColor = post ? CATEGORY_COLORS[post.category] : null;
 
+  const { data: relatedData } = useQuery<{ posts: BlogPost[] }>({
+    queryKey: queryKeys.blog.related(slug!),
+    queryFn: () => api.get(`/blog/${slug}/related`).then((res) => res.data),
+    enabled: !!slug && !!post,
+  });
+  const relatedPosts = relatedData?.posts ?? [];
+
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
       {post && (
@@ -132,6 +142,25 @@ export default function BlogPostPage() {
           description={post.excerpt || post.content.slice(0, 160)}
           keywords={post.tags.join(", ")}
           ogImage={post.featuredImage}
+          canonicalUrl={canonicalUrl(`/blog/${post.slug}`)}
+          ogType="article"
+          structuredData={[
+            blogPostingSchema({
+              title: post.title,
+              excerpt: post.excerpt,
+              content: post.content,
+              slug: post.slug,
+              authorName: post.author?.name || "InternHack",
+              publishedAt: post.publishedAt,
+              updatedAt: post.updatedAt,
+              featuredImage: post.featuredImage,
+              tags: post.tags,
+            }),
+            breadcrumbSchema([
+              { name: "Blog", url: canonicalUrl("/blog") },
+              { name: post.title, url: canonicalUrl(`/blog/${post.slug}`) },
+            ]),
+          ]}
         />
       )}
       <Navbar />
@@ -252,6 +281,33 @@ export default function BlogPostPage() {
                       >
                         {tag}
                       </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Related Posts */}
+              {relatedPosts.length > 0 && (
+                <div className="mt-12 pt-8 border-t border-gray-200 dark:border-gray-800">
+                  <div className="flex items-center gap-2 mb-6">
+                    <BookOpen className="w-5 h-5 text-gray-400 dark:text-gray-500" />
+                    <h2 className="text-lg font-semibold text-gray-900 dark:text-white">Related Articles</h2>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    {relatedPosts.map((rp) => (
+                      <Link key={rp.id} to={`/blog/${rp.slug}`} className="no-underline group">
+                        <div className="bg-white dark:bg-gray-900 rounded-xl border border-gray-100 dark:border-gray-800 p-4 hover:shadow-md transition-shadow h-full">
+                          {rp.featuredImage && (
+                            <img src={rp.featuredImage} alt={rp.title} className="w-full h-28 object-cover rounded-lg mb-3" />
+                          )}
+                          <h3 className="text-sm font-semibold text-gray-900 dark:text-white line-clamp-2 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">{rp.title}</h3>
+                          <p className="text-xs text-gray-500 mt-1.5 line-clamp-2">{rp.excerpt || rp.content.slice(0, 100)}</p>
+                          <div className="flex items-center gap-2 mt-2 text-xs text-gray-400">
+                            <Clock className="w-3 h-3" />
+                            <span>{rp.readingTime} min read</span>
+                          </div>
+                        </div>
+                      </Link>
                     ))}
                   </div>
                 </div>

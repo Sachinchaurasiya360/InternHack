@@ -8,6 +8,7 @@ import { queryKeys } from "../../../lib/query-keys";
 import type { AptitudeCompany, AptitudeCompanyQuestions } from "../../../lib/types";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { LoadingScreen } from "../../../components/LoadingScreen";
 import toast from "react-hot-toast";
 
@@ -140,7 +141,11 @@ export default function AptitudeCompaniesPage() {
 
     return (
       <div className="relative max-w-4xl mx-auto pb-12">
-        <SEO title={`${selectedCompany} - Aptitude`} noIndex />
+        <SEO
+          title={`${selectedCompany} Aptitude Questions`}
+          description={`Practice aptitude questions asked by ${selectedCompany} in placement tests.`}
+          keywords={`${selectedCompany} aptitude, ${selectedCompany} placement, aptitude practice`}
+        />
 
         {/* Atmospheric background */}
         <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
@@ -399,7 +404,12 @@ export default function AptitudeCompaniesPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Company Aptitude Questions" noIndex />
+      <SEO
+        title="Aptitude by Company - Placement Questions"
+        description="Practice aptitude questions asked by top companies in their placement tests."
+        keywords="company aptitude questions, placement test preparation, TCS aptitude, Infosys aptitude"
+        canonicalUrl={canonicalUrl("/learn/aptitude/companies")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

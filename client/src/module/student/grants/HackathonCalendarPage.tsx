@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import api from "../../../lib/axios";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { Link } from "react-router";
 
 type HackathonStatus = "upcoming" | "ongoing" | "past";
@@ -136,9 +137,10 @@ export default function HackathonCalendarPage() {
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950">
       <SEO
-        title="Hackathon Calendar"
-        description="Browse upcoming, ongoing, and past blockchain hackathons. Find hackathons from Ethereum, Solana, Polygon, and more ecosystems with prize pools worth millions."
-        keywords="blockchain hackathons, crypto hackathons, web3 hackathons, Ethereum hackathon, Solana hackathon, hackathon calendar, developer hackathons"
+        title="Hackathon Calendar 2026 - Upcoming Hackathons for Students"
+        description="Browse upcoming hackathons for students. Find virtual and in-person hackathons with prizes, tracks, and registration details."
+        keywords="hackathon calendar, upcoming hackathons, student hackathons, coding competitions, hackathon 2026"
+        canonicalUrl={canonicalUrl("/student/grants/hackathons")}
       />
 
       {/* Hero */}

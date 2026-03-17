@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { Link } from "react-router";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import guideData from "./data/open-source-guide.json";
 
 // ─── Types ─────────────────────────────────────────────────────
@@ -46,7 +47,12 @@ export default function FirstPRRoadmapPage() {
 
   return (
     <div className="relative pb-12">
-      <SEO title="Open Source Contribution Guide" noIndex />
+      <SEO
+        title="First Pull Request Guide - Open Source for Beginners"
+        description="Step-by-step roadmap to making your first pull request on GitHub. Learn git workflow, finding issues, and contributing to open source projects."
+        keywords="first pull request, open source contribution, GitHub beginner, git workflow, contribute to open source"
+        canonicalUrl={canonicalUrl("/student/opensource/first-pr")}
+      />
 
       {/* Atmospheric background */}
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">

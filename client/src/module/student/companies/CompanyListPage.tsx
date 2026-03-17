@@ -22,6 +22,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import { Navbar } from "../../../components/Navbar";
 import { Footer } from "../../../components/Footer";
 import EmailCampaignTab from "./EmailCampaignTab";
@@ -572,6 +573,7 @@ export default function CompanyListPage() {
           title="Explore Companies"
           description="Discover companies hiring on InternHack. Browse by industry, size, and location. Read reviews, see tech stacks, and find your ideal workplace."
           keywords="company explorer, companies hiring, company reviews, tech companies, startup jobs, company directory, workplace reviews"
+          canonicalUrl={canonicalUrl("/companies")}
         />
 
         {/* Hero Header */}

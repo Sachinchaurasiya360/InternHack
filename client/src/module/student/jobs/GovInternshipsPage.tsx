@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
+import { canonicalUrl } from "../../../lib/seo.utils";
 import api from "../../../lib/axios";
 import { queryKeys } from "../../../lib/query-keys";
 import type { Pagination } from "../../../lib/types";
@@ -140,6 +141,7 @@ export default function GovInternshipsPage() {
         title="Top 100 Internships in India 2026"
         description="Explore the top 100 internships across government, PSUs, IITs, tech companies, and global organizations. Find stipends, eligibility, and timelines."
         keywords="government internships, PSU internships, IIT internships, tech internships, India internships 2026"
+        canonicalUrl={canonicalUrl("/internships")}
       />
 
       <div className="fixed inset-0 pointer-events-none -z-10 overflow-hidden">
