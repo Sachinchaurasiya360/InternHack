@@ -1,5 +1,11 @@
 import { z } from "zod";
 
+export const PERSONAL_EMAIL_DOMAINS = [
+  "gmail.com", "yahoo.com", "yahoo.in", "hotmail.com", "outlook.com",
+  "live.com", "aol.com", "icloud.com", "mail.com", "protonmail.com",
+  "zoho.com", "yandex.com", "gmx.com", "rediffmail.com",
+];
+
 export const registerSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
@@ -8,6 +14,17 @@ export const registerSchema = z.object({
   company: z.string().optional(),
   designation: z.string().optional(),
   contactNo: z.string().optional(),
+}).superRefine((data, ctx) => {
+  if (data.role === "RECRUITER") {
+    const domain = data.email.split("@")[1]?.toLowerCase();
+    if (domain && PERSONAL_EMAIL_DOMAINS.includes(domain)) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "Please use your company email. Personal email addresses (Gmail, Yahoo, etc.) are not allowed for recruiter accounts.",
+        path: ["email"],
+      });
+    }
+  }
 });
 
 export const loginSchema = z.object({

@@ -36,6 +36,7 @@
     "cheerio": "^1.2.0",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
+    "dodopayments": "^2.23.2",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "express-rate-limit": "^8.3.0",
@@ -51,7 +52,6 @@
     "pdf-parse": "^2.4.5",
     "pg": "^8.18.0",
     "prisma": "^7.4.2",
-    "razorpay": "^2.9.6",
     "resend": "^6.9.3",
     "xlsx": "^0.18.5",
     "zod": "^4.3.6"

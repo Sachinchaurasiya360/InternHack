@@ -9,6 +9,7 @@ const badgeService = new BadgeService();
 import { sendEmail } from "../../utils/email.utils.js";
 import { welcomeEmailHtml, otpEmailHtml, resetPasswordEmailHtml } from "../../utils/email-templates.js";
 import type { UserRole } from "@prisma/client";
+import { PERSONAL_EMAIL_DOMAINS } from "./auth.validation.js";
 
 interface RegisterInput {
   name: string;
@@ -123,6 +124,14 @@ export class AuthService {
     }
 
     const { email, name, picture } = payload;
+
+    // Block personal emails for recruiter signups
+    if (data.role === "RECRUITER") {
+      const domain = email.split("@")[1]?.toLowerCase();
+      if (domain && PERSONAL_EMAIL_DOMAINS.includes(domain)) {
+        throw new Error("Please use your company email. Personal email addresses (Gmail, Yahoo, etc.) are not allowed for recruiter accounts.");
+      }
+    }
 
     // Check if user already exists
     let user = await prisma.user.findUnique({ where: { email } });

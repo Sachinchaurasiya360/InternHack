@@ -64,7 +64,7 @@ app.use(
         styleSrc: ["'self'", "'unsafe-inline'", "https://accounts.google.com"],
         imgSrc: ["'self'", "data:", "https:", "blob:"],
         connectSrc: ["'self'", "https://accounts.google.com", "https://generativelanguage.googleapis.com"],
-        frameSrc: ["https://accounts.google.com", "https://api.razorpay.com"],
+        frameSrc: ["https://accounts.google.com", "https://checkout.dodopayments.com"],
         fontSrc: ["'self'", "https:", "data:"],
       },
     },
@@ -93,6 +93,9 @@ app.use((req, res, next) => {
   }
   next();
 });
+
+// Raw body for Dodo Payments webhook (must be BEFORE express.json())
+app.use("/api/payments/webhook", express.raw({ type: "application/json" }));
 
 app.use(express.json());
 app.use(cookieParser());

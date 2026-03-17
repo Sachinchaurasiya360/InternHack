@@ -65,6 +65,7 @@ InternHack/
 | `seed-internships.ts` | Seeds government/public-sector internships |
 | `seed-professors.ts` | Seeds professor/mentor records (reads XLSX) |
 | `seed-yc.ts` | Fetches YC companies from yc-oss API, seeds via raw pg |
+| `seed-hr-contacts.ts` | Parses 1800+ IT HR contacts from PDF, seeds `itHrContact`, creates companies & contacts |
 
 ### Middleware — `src/middleware/`
 
@@ -114,6 +115,8 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `campus-drive` | `/api/campus-drives` | Campus placement drive management (recruiter CRUD, student browse) |
 | `sql` | `/api/sql` | SQL exercise progress persistence |
 | `professor` | `/api/professors` | Professor/mentor directory |
+| `hr-contact` | `/api/hr-contacts` | IT HR contact directory (1800+ contacts from PDF seed), stats, search |
+| `email-campaign` | `/api/email-campaigns` | Email outreach campaigns to HR contacts with templates & tracking |
 
 ### ATS Sub-Module Detail — `src/module/ats/`
 
@@ -201,7 +204,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | File | Purpose |
 |---|---|
 | `LoginPage.tsx` | Email/password + Google OAuth |
-| `RegisterPage.tsx` | Registration |
+| `RegisterPage.tsx` | Registration (role toggle, company email enforced for recruiters) |
 | `VerifyEmailPage.tsx` | Email verification with OTP/token |
 | `ForgotPasswordPage.tsx` | Password reset request |
 
@@ -223,6 +226,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `useLatexAutoSave.ts` | Hook: debounced localStorage autosave for LaTeX code + supporting files |
 | `PublicAtsPage.tsx` | Public-facing ATS wrapper |
 | `resume-builder/templates/` | 6 templates: Classic, Compact, Creative, Minimal, Modern, Professional |
+| `latex-templates.data.ts` | 14 LaTeX resume templates (Professional, Academic, Minimal, Two-Column, Deedy, Executive, Software Engineer, Modern Clean, Jake's, Sidebar, Classic Serif, Compact Tech, ATS Optimized, Bold Header) |
 
 **Learning Hub — `learn/`**
 | File | Purpose |
@@ -241,6 +245,16 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 - `django/` — Django lessons (data only)
 - `flask/` — Flask lessons (data only)
 - `fastapi/` — FastAPI lessons (data only)
+
+**Interview Preparation — `interview-prep/`**
+| File | Purpose |
+|---|---|
+| `InterviewLessonsPage.tsx` | 10 sections overview with progress tracking |
+| `InterviewSectionPage.tsx` | Question list per section with type/difficulty badges |
+| `InterviewQuestionPage.tsx` | Full question detail — answer, code examples, notes, tips |
+| `data/types.ts` | `InterviewQuestion`, `InterviewSection`, `InterviewProgress` types |
+| `data/sections.ts` | 10 sections: JS, React, Node, TS, Python, SQL, System Design, Behavioral, HTML/CSS, Git/DevOps |
+| `data/lessons/*.json` | 30 questions per section (300 total) with code examples, follow-ups, interview tips |
 
 **SQL Playground — `sql/`**
 | File | Purpose |
@@ -312,6 +326,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `profile/PublicProfilePage.tsx` | Public profile with skills + verified badges |
 | `profile/GitHubImportModal.tsx` | Import profile data from GitHub |
 | `badges/BadgesSection.tsx` | Earned badges display |
+| `companies/EmailCampaignTab.tsx` | Email outreach campaigns to HR contacts |
 
 #### Recruiter — `src/module/recruiter/`
 | File | Purpose |
@@ -378,7 +393,7 @@ Each module: `<name>.routes.ts` → `<name>.controller.ts` → `<name>.service.t
 | `/opensource` | PublicOpenSourcePage |
 | `/blog`, `/blog/:slug` | Blog |
 | `/for-recruiters` | RecruiterLandingPage |
-| `/learn/**` | Learning Hub (JS, HTML, CSS, TS, React, Python, Node, Django, Flask, FastAPI, SQL, DSA, Aptitude) |
+| `/learn/**` | Learning Hub (JS, HTML, CSS, TS, React, Python, Node, Django, Flask, FastAPI, SQL, DSA, Aptitude, Interview Prep) |
 | `/test/:testId` | Proctored skill test (student-only) |
 
 ### Student Routes (`/student/...`)
@@ -436,6 +451,8 @@ JWT in Authorization: Bearer <token>
 ```
 
 Token stored in localStorage via Zustand auth store. Axios auto-injects it. 401 triggers auto-logout.
+
+**Recruiter email enforcement:** Recruiters must use company email (Gmail, Yahoo, Outlook etc. blocked). Validated in Zod schema (`auth.validation.ts`), Google OAuth flow (`auth.service.ts`), and client-side (`RegisterPage.tsx`). Blocklist: `PERSONAL_EMAIL_DOMAINS` exported from `auth.validation.ts`.
 
 ---
 

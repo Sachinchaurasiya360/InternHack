@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { Navigate } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import {
@@ -25,35 +25,10 @@ import {
   GitPullRequest,
   Award,
 } from "lucide-react";
+import { DodoPayments } from "dodopayments-checkout";
 import api from "../../../lib/axios";
 import { useAuthStore } from "../../../lib/auth.store";
 import { SEO } from "../../../components/SEO";
-
-// ─── Razorpay type declaration ────────────────────────────────
-declare global {
-  interface Window {
-    Razorpay: new (options: Record<string, unknown>) => {
-      open: () => void;
-      on: (event: string, handler: (response: unknown) => void) => void;
-    };
-  }
-}
-
-// ─── Load Razorpay script ─────────────────────────────────────
-function loadRazorpayScript(): Promise<boolean> {
-  return new Promise((resolve) => {
-    if (document.getElementById("razorpay-script")) {
-      resolve(true);
-      return;
-    }
-    const script = document.createElement("script");
-    script.id = "razorpay-script";
-    script.src = "https://checkout.razorpay.com/v1/checkout.js";
-    script.onload = () => resolve(true);
-    script.onerror = () => resolve(false);
-    document.body.appendChild(script);
-  });
-}
 
 // ─── Plan Data ────────────────────────────────────────────────
 type PlanKey = "free" | "pro";
@@ -129,7 +104,7 @@ const testimonials = [
 const faqs = [
   { q: "Can I cancel anytime?", a: "Yes! You can cancel your subscription at any time. You'll retain access until the end of your billing period." },
   { q: "Is there a student discount?", a: "Our Pro plan is already priced for students at just ₹333/month. We also offer additional discounts for verified .edu email addresses." },
-  { q: "What payment methods do you accept?", a: "We accept all major credit/debit cards, UPI, net banking, and popular wallets through Razorpay." },
+  { q: "What payment methods do you accept?", a: "We accept all major credit/debit cards, UPI, net banking, and popular wallets through our secure payment partner." },
   { q: "Can I upgrade or downgrade later?", a: "Absolutely. You can switch plans at any time from your profile settings. Prorated adjustments apply automatically." },
 ];
 
@@ -142,8 +117,8 @@ const HOW_IT_WORKS = [
   },
   {
     step: "2",
-    title: "Pay securely via Razorpay",
-    desc: "UPI, cards, net banking - all options supported.",
+    title: "Pay securely",
+    desc: "Cards, UPI, net banking — all options supported.",
   },
   {
     step: "3",
@@ -165,6 +140,58 @@ export default function CheckoutPage() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [loading, setLoading] = useState<PlanKey | null>(null);
   const [paymentStatus, setPaymentStatus] = useState<"success" | "failed" | null>(null);
+  const dodoInitialized = useRef(false);
+
+  // Poll for subscription activation after checkout success
+  const pollSubscription = useCallback(async () => {
+    for (let i = 0; i < 10; i++) {
+      await new Promise((r) => setTimeout(r, 2000));
+      try {
+        const { data } = await api.get("/auth/me");
+        if (data.subscriptionStatus === "ACTIVE" && data.subscriptionPlan !== "FREE") {
+          if (user) {
+            setUser({
+              ...user,
+              subscriptionPlan: data.subscriptionPlan,
+              subscriptionStatus: data.subscriptionStatus,
+              subscriptionEndDate: data.subscriptionEndDate,
+            });
+          }
+          return;
+        }
+      } catch {
+        // ignore polling errors
+      }
+    }
+  }, [user, setUser]);
+
+  useEffect(() => {
+    if (dodoInitialized.current) return;
+    dodoInitialized.current = true;
+
+    const mode = import.meta.env.VITE_DODO_MODE === "live" ? "live" : "test";
+
+    DodoPayments.Initialize({
+      mode,
+      displayType: "overlay",
+      onEvent: (event) => {
+        if (event.event_type === "checkout.status") {
+          const status = (event.data?.message as { status?: string })?.status;
+          if (status === "succeeded") {
+            setPaymentStatus("success");
+            setLoading(null);
+            pollSubscription();
+          } else if (status === "failed") {
+            setPaymentStatus("failed");
+            setLoading(null);
+          }
+        }
+        if (event.event_type === "checkout.closed") {
+          setLoading(null);
+        }
+      },
+    });
+  }, [pollSubscription]);
 
   const handleSelectPlan = async (planKey: PlanKey) => {
     if (planKey === "free") return;
@@ -173,70 +200,20 @@ export default function CheckoutPage() {
     setPaymentStatus(null);
 
     try {
-      // 1. Load Razorpay script
-      const scriptLoaded = await loadRazorpayScript();
-      if (!scriptLoaded) {
-        throw new Error("Failed to load Razorpay. Check your internet connection.");
-      }
-
-      // 2. Create order on backend
-      const { data } = await api.post("/payments/create-order", {
+      // Create checkout session on backend
+      const { data } = await api.post("/payments/create-checkout", {
         plan: planKey,
         billing,
       });
 
-      // 3. Open Razorpay checkout
-      const options = {
-        key: data.keyId,
-        amount: data.amount,
-        currency: data.currency,
-        name: "InternHack",
-        description: `${planKey.charAt(0).toUpperCase() + planKey.slice(1)} Plan - ${billing}`,
-        order_id: data.orderId,
-        prefill: {
-          name: user?.name || "",
-          email: user?.email || "",
-        },
-        theme: {
-          color: "#111827",
-        },
-        handler: async (response: { razorpay_order_id: string; razorpay_payment_id: string; razorpay_signature: string }) => {
-          try {
-            // 4. Verify payment on backend
-            const { data: verifyData } = await api.post("/payments/verify", {
-              razorpay_order_id: response.razorpay_order_id,
-              razorpay_payment_id: response.razorpay_payment_id,
-              razorpay_signature: response.razorpay_signature,
-            });
-            // 5. Update auth store with new subscription info
-            if (verifyData.subscription && user) {
-              setUser({
-                ...user,
-                subscriptionPlan: verifyData.subscription.subscriptionPlan,
-                subscriptionStatus: verifyData.subscription.subscriptionStatus,
-                subscriptionEndDate: verifyData.subscription.subscriptionEndDate,
-              });
-            }
-            setPaymentStatus("success");
-          } catch {
-            setPaymentStatus("failed");
-          } finally {
-            setLoading(null);
-          }
-        },
-        modal: {
-          ondismiss: () => {
-            setLoading(null);
-          },
-        },
-      };
+      if (!data.checkoutUrl) {
+        throw new Error("No checkout URL returned");
+      }
 
-      const rzp = new window.Razorpay(options);
-      rzp.on("payment.failed", () => {
-        setPaymentStatus("failed");
-        setLoading(null);
+      // Open Dodo overlay checkout
+      DodoPayments.Checkout.open({
+        checkoutUrl: data.checkoutUrl,
       });
-      rzp.open();
     } catch {
       setPaymentStatus("failed");
       setLoading(null);
@@ -532,7 +509,7 @@ export default function CheckoutPage() {
         {[
           { icon: <Shield className="w-4 h-4" />, text: "SSL Encrypted" },
           { icon: <Lock className="w-4 h-4" />, text: "Secure Payments" },
-          { icon: <CreditCard className="w-4 h-4" />, text: "Razorpay Powered" },
+          { icon: <CreditCard className="w-4 h-4" />, text: "Dodo Payments" },
         ].map((badge) => (
           <div key={badge.text} className="flex items-center gap-2 text-xs text-gray-400 dark:text-gray-500 font-medium">
             {badge.icon}

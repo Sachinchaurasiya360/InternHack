@@ -24,6 +24,11 @@ const PublicOpenSourcePage = lazy(() => import("./module/student/opensource/Publ
 const BlogListPage = lazy(() => import("./module/blog/BlogListPage"));
 const BlogPostPage = lazy(() => import("./module/blog/BlogPostPage"));
 const RecruiterLandingPage = lazy(() => import("./module/recruiter/RecruiterLandingPage"));
+const TermsPage = lazy(() => import("./module/legal/TermsPage"));
+const PrivacyPage = lazy(() => import("./module/legal/PrivacyPage"));
+const ShippingPage = lazy(() => import("./module/legal/ShippingPage"));
+const ContactPage = lazy(() => import("./module/legal/ContactPage"));
+const RefundPage = lazy(() => import("./module/legal/RefundPage"));
 const AptitudeCategoriesPage = lazy(() => import("./module/student/aptitude/AptitudeCategoriesPage"));
 const AptitudeTopicPage = lazy(() => import("./module/student/aptitude/AptitudeTopicPage"));
 const AptitudeCompaniesPage = lazy(() => import("./module/student/aptitude/AptitudeCompaniesPage"));
@@ -193,6 +198,12 @@ function App() {
           <Route path="/opensource" element={<PublicOpenSourcePage />} />
           <Route path="/blog" element={<BlogListPage />} />
           <Route path="/blog/:slug" element={<BlogPostPage />} />
+          {/* Legal Pages */}
+          <Route path="/terms" element={<TermsPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/shipping" element={<ShippingPage />} />
+          <Route path="/contact" element={<ContactPage />} />
+          <Route path="/refund" element={<RefundPage />} />
           {/* Learning Hub - all learning content under /learn */}
           <Route path="/learn" element={<LearnLayout />}>
             <Route index element={<LearnHubPage />} />

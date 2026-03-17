@@ -8,6 +8,17 @@ import { useAuthStore } from "../../lib/auth.store";
 import { Navbar } from "../../components/Navbar";
 import { SEO } from "../../components/SEO";
 
+const PERSONAL_EMAIL_DOMAINS = [
+  "gmail.com", "yahoo.com", "yahoo.in", "hotmail.com", "outlook.com",
+  "live.com", "aol.com", "icloud.com", "mail.com", "protonmail.com",
+  "zoho.com", "yandex.com", "gmx.com", "rediffmail.com",
+];
+
+function isPersonalEmail(email: string) {
+  const domain = email.split("@")[1]?.toLowerCase();
+  return domain ? PERSONAL_EMAIL_DOMAINS.includes(domain) : false;
+}
+
 export default function RegisterPage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -54,6 +65,12 @@ export default function RegisterPage() {
     e.preventDefault();
     setError("");
     setLoading(true);
+
+    if (role === "RECRUITER" && isPersonalEmail(form.email)) {
+      setError("Please use your company email. Personal email addresses (Gmail, Yahoo, etc.) are not allowed for recruiter accounts.");
+      setLoading(false);
+      return;
+    }
 
     try {
       const payload: Record<string, string> = { name: form.name, email: form.email, password: form.password, role };
@@ -142,15 +159,22 @@ export default function RegisterPage() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+              {role === "RECRUITER" ? "Company Email" : "Email"}
+            </label>
             <input
               type="email"
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="w-full px-4 py-2.5 border border-gray-300 dark:border-gray-600 rounded-xl focus:outline-none focus:ring-2 focus:ring-black/20 dark:focus:ring-white/20 focus:border-black transition-colors bg-white dark:bg-gray-800 text-gray-900 dark:text-white placeholder-gray-400 dark:placeholder-gray-500"
-              placeholder="you@example.com"
+              placeholder={role === "RECRUITER" ? "you@company.com" : "you@example.com"}
               required
             />
+            {role === "RECRUITER" && (
+              <p className="mt-1 text-xs text-amber-600 dark:text-amber-400">
+                Use your company email — Gmail, Yahoo, Outlook etc. are not allowed.
+              </p>
+            )}
           </div>
 
           <div>
@@ -208,7 +232,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex flex-col items-center gap-2">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={() => setError("Google sign-up failed")}
@@ -218,6 +242,11 @@ export default function RegisterPage() {
               shape="rectangular"
               theme="outline"
             />
+            {role === "RECRUITER" && (
+              <p className="text-xs text-amber-600 dark:text-amber-400 text-center">
+                Only company Google Workspace accounts are accepted. Personal Gmail is not allowed.
+              </p>
+            )}
           </div>
 
           <p className="text-center text-sm text-gray-500 dark:text-gray-500">

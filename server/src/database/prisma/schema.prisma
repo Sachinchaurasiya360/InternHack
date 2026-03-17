@@ -579,23 +579,23 @@ enum PaymentStatus {
 // ============================================================
 
 model payment {
-  id                Int              @id @default(autoincrement())
-  userId            Int
-  user              user             @relation("UserPayments", fields: [userId], references: [id], onDelete: Cascade)
-  razorpayOrderId   String           @unique
-  razorpayPaymentId String?
-  razorpaySignature String?
-  amount            Int // amount in paise
-  currency          String           @default("INR")
-  plan              SubscriptionPlan
-  billing           String // "monthly" or "yearly"
-  status            PaymentStatus    @default(PENDING)
-  createdAt         DateTime         @default(now())
-  updatedAt         DateTime         @updatedAt
+  id                 Int              @id @default(autoincrement())
+  userId             Int
+  user               user             @relation("UserPayments", fields: [userId], references: [id], onDelete: Cascade)
+  dodoPaymentId      String?          @unique
+  dodoSubscriptionId String?
+  dodoCheckoutUrl    String?
+  amount             Int // amount in smallest currency unit
+  currency           String           @default("USD")
+  plan               SubscriptionPlan
+  billing            String // "monthly" or "yearly"
+  status             PaymentStatus    @default(PENDING)
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
 
   @@index([userId])
   @@index([status])
-  @@index([razorpayOrderId])
+  @@index([dodoPaymentId])
 }
 
 // ============================================================

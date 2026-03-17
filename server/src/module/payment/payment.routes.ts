@@ -9,7 +9,24 @@ const paymentController = new PaymentController(paymentService);
 
 export const paymentRouter = Router();
 
-paymentRouter.use(authMiddleware, requireRole("STUDENT"));
+// Authenticated student routes
+paymentRouter.post(
+  "/create-checkout",
+  authMiddleware,
+  requireRole("STUDENT"),
+  (req, res, next) => paymentController.createCheckout(req, res, next),
+);
 
-paymentRouter.post("/create-order", (req, res, next) => paymentController.createOrder(req, res, next));
-paymentRouter.post("/verify", (req, res, next) => paymentController.verifyPayment(req, res, next));
+paymentRouter.get(
+  "/checkout-status/:sessionId",
+  authMiddleware,
+  requireRole("STUDENT"),
+  (req, res, next) => paymentController.checkoutStatus(req, res, next),
+);
+
+// Webhook route — NO auth middleware (Dodo server calls this directly)
+// Raw body parsing is handled in index.ts
+paymentRouter.post(
+  "/webhook",
+  (req, res, next) => paymentController.webhook(req, res, next),
+);

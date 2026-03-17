@@ -180,16 +180,29 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/10 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <p className="text-xs text-gray-500">
-            &copy; {new Date().getFullYear()} InternHack. All rights reserved.
-          </p>
-          <div className="flex items-center gap-4">
-            <a href={SOCIAL_LINKS.email} className="text-xs text-gray-600 hover:text-gray-400 transition-colors no-underline">internhack.xyz@gmail.com</a>
+        <div className="border-t border-white/10 pt-8 space-y-4">
+          <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
+            <Link to="/terms" className="text-xs text-gray-500 hover:text-gray-300 transition-colors no-underline">Terms</Link>
             <span className="text-gray-800">·</span>
-            <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-600 hover:text-gray-400 transition-colors no-underline">Twitter</a>
+            <Link to="/privacy" className="text-xs text-gray-500 hover:text-gray-300 transition-colors no-underline">Privacy</Link>
             <span className="text-gray-800">·</span>
-            <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-600 hover:text-gray-400 transition-colors no-underline">LinkedIn</a>
+            <Link to="/refund" className="text-xs text-gray-500 hover:text-gray-300 transition-colors no-underline">Refunds</Link>
+            <span className="text-gray-800">·</span>
+            <Link to="/shipping" className="text-xs text-gray-500 hover:text-gray-300 transition-colors no-underline">Shipping</Link>
+            <span className="text-gray-800">·</span>
+            <Link to="/contact" className="text-xs text-gray-500 hover:text-gray-300 transition-colors no-underline">Contact</Link>
+          </div>
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <p className="text-xs text-gray-500">
+              &copy; {new Date().getFullYear()} InternHack. All rights reserved.
+            </p>
+            <div className="flex items-center gap-4">
+              <a href={SOCIAL_LINKS.email} className="text-xs text-gray-600 hover:text-gray-400 transition-colors no-underline">internhack.xyz@gmail.com</a>
+              <span className="text-gray-800">·</span>
+              <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-600 hover:text-gray-400 transition-colors no-underline">Twitter</a>
+              <span className="text-gray-800">·</span>
+              <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-600 hover:text-gray-400 transition-colors no-underline">LinkedIn</a>
+            </div>
           </div>
         </div>
       </div>
