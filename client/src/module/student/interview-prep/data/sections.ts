@@ -71,4 +71,11 @@ export const interviewSections: InterviewSection[] = [
     orderIndex: 9,
     level: "Intermediate",
   },
+  {
+    id: "fastapi-interview",
+    title: "FastAPI Interview",
+    description: "Path operations, Pydantic models, dependency injection, async routes, authentication, and OpenAPI docs.",
+    orderIndex: 10,
+    level: "Intermediate",
+  },
 ];

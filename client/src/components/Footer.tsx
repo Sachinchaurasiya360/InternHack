@@ -9,7 +9,7 @@ const linkClass =
   "text-sm text-gray-400 hover:text-gray-200 transition-colors no-underline";
 
 const SOCIAL_LINKS = {
-  email: "mailto:internhack.xyz@gmail.com",
+  email: "mailto:mrsachinchaurasiya@gmail.com",
   twitter: "https://x.com/internhack_xyz",
   linkedin: "https://www.linkedin.com/company/internhack",
 };
@@ -170,7 +170,7 @@ export function Footer() {
             {/* Request a Feature */}
             <div className="mt-6">
               <a
-                href="mailto:internhack.xyz@gmail.com?subject=Feature%20Request%20at%20InternHack"
+                href="mailto:mrsachinchaurasiya@gmail.com?subject=Feature%20Request%20at%20InternHack"
                 className="inline-flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm text-gray-300 hover:text-white hover:bg-white/10 hover:border-white/20 transition-all no-underline"
               >
                 <MessageSquarePlus className="w-4 h-4" />
@@ -197,9 +197,9 @@ export function Footer() {
               &copy; {new Date().getFullYear()} InternHack. All rights reserved.
             </p>
             <div className="flex items-center gap-4">
-              <a href={SOCIAL_LINKS.email} className="text-xs text-gray-600 hover:text-gray-400 transition-colors no-underline">internhack.xyz@gmail.com</a>
+              <a href={SOCIAL_LINKS.email} className="text-xs text-gray-600 hover:text-gray-400 transition-colors no-underline">mrsachinchaurasiya@gmail.com</a>
               <span className="text-gray-800">·</span>
-              <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-600 hover:text-gray-400 transition-colors no-underline">Twitter</a>
+              <a href={SOCIAL_LINKS.twitter} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-600 hover:text-gray-400 transition-colors no-underline">X</a>
               <span className="text-gray-800">·</span>
               <a href={SOCIAL_LINKS.linkedin} target="_blank" rel="noopener noreferrer" className="text-xs text-gray-600 hover:text-gray-400 transition-colors no-underline">LinkedIn</a>
             </div>

@@ -118,8 +118,8 @@ export default function TermsPage() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">12. Contact</h2>
             <p>
               If you have questions about these Terms, contact us at{" "}
-              <a href="mailto:internhack.xyz@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-                internhack.xyz@gmail.com
+              <a href="mailto:mrsachinchaurasiya@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                mrsachinchaurasiya@gmail.com
               </a>.
             </p>
           </section>

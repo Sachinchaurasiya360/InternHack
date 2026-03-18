@@ -19,11 +19,11 @@ export default function ContactPage() {
           <section>
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Email</h2>
             <a
-              href="mailto:internhack.xyz@gmail.com"
+              href="mailto:mrsachinchaurasiya@gmail.com"
               className="inline-flex items-center gap-2 px-5 py-3 bg-gray-50 dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-xl text-indigo-600 dark:text-indigo-400 hover:border-indigo-300 dark:hover:border-indigo-700 transition-colors"
             >
               <Mail className="w-4 h-4" />
-              internhack.xyz@gmail.com
+              mrsachinchaurasiya@gmail.com
             </a>
             <p className="mt-3">
               For general enquiries, support requests, feature suggestions, or business partnerships — drop us an
@@ -69,8 +69,8 @@ export default function ContactPage() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Report an Issue</h2>
             <p>
               Found a bug or security vulnerability? Please email us at{" "}
-              <a href="mailto:internhack.xyz@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-                internhack.xyz@gmail.com
+              <a href="mailto:mrsachinchaurasiya@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                mrsachinchaurasiya@gmail.com
               </a>{" "}
               with details and steps to reproduce. We take all reports seriously and will investigate promptly.
             </p>

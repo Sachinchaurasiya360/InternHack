@@ -57,8 +57,8 @@ export default function RefundPage() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">How to Request a Refund</h2>
             <p>
               To request a refund, email us at{" "}
-              <a href="mailto:internhack.xyz@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-                internhack.xyz@gmail.com
+              <a href="mailto:mrsachinchaurasiya@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                mrsachinchaurasiya@gmail.com
               </a>{" "}
               with the following details:
             </p>
@@ -82,8 +82,8 @@ export default function RefundPage() {
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white mb-3">Contact</h2>
             <p>
               For any questions regarding cancellations or refunds, reach out to{" "}
-              <a href="mailto:internhack.xyz@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-                internhack.xyz@gmail.com
+              <a href="mailto:mrsachinchaurasiya@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                mrsachinchaurasiya@gmail.com
               </a>.
             </p>
           </section>

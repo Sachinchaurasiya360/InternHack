@@ -47,8 +47,8 @@ export default function ShippingPage() {
             <p>
               If your premium features are not activated within 10 minutes of a successful payment, please contact
               us at{" "}
-              <a href="mailto:internhack.xyz@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
-                internhack.xyz@gmail.com
+              <a href="mailto:mrsachinchaurasiya@gmail.com" className="text-indigo-600 dark:text-indigo-400 hover:underline">
+                mrsachinchaurasiya@gmail.com
               </a>{" "}
               with your payment receipt or transaction ID. We will resolve the issue within 24 hours.
             </p>

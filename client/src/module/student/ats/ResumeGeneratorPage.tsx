@@ -222,7 +222,7 @@ export default function ResumeGeneratorPage() {
   };
 
   return (
-    <div className="relative max-w-360 mx-auto pb-12">
+    <div className="relative max-w-360 mx-auto pb-12 px-4 sm:px-6">
       <SEO title="AI Resume Generator - InternHack" description="Generate a professional LaTeX resume with AI" />
 
       {/* Atmospheric background */}
@@ -243,7 +243,7 @@ export default function ResumeGeneratorPage() {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1] }}
-        className="text-center mb-8 px-4"
+        className="text-center mb-8"
       >
         <h1 className="font-display text-4xl sm:text-5xl font-bold tracking-tight text-gray-950 dark:text-white mb-3">
           AI <span className="text-gradient-accent">Resume Generator</span>
@@ -264,7 +264,6 @@ export default function ResumeGeneratorPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.5, delay: 0.2 }}
-            className="px-4 sm:px-6"
           >
             <div className="grid md:grid-cols-5 gap-6 max-w-6xl mx-auto">
               {/* Left - Input Form */}
@@ -597,7 +596,6 @@ export default function ResumeGeneratorPage() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.5 }}
-            className="px-4 sm:px-6"
           >
             {/* Toolbar */}
             <div className="mb-5">

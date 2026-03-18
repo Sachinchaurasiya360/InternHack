@@ -102,12 +102,12 @@ export default function LoginPage() {
           )}
 
           {/* Google Sign-In — prominent, top position */}
-          <div className="[&>div]:w-full [&_iframe]:w-full! [&>div>div]:w-full">
+          <div className="[&>div]:w-full [&_iframe]:w-full! [&>div>div]:w-full overflow-hidden">
             <GoogleLogin
               onSuccess={handleGoogleSuccess}
               onError={() => setError("Google sign-in failed")}
               size="large"
-              width={380}
+              width="100%"
               text="signin_with"
               shape="pill"
               theme="outline"

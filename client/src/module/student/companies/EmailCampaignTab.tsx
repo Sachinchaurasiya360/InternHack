@@ -362,7 +362,7 @@ export default function EmailCampaignTab() {
               </a>
             ) : !isPremium ? (
               <a
-                href="/pricing"
+                href="/student/checkout"
                 className="flex items-center justify-center gap-2 w-full px-4 py-2.5 bg-gray-100 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-xl text-sm text-gray-500 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
               >
                 <Lock className="w-4 h-4" />

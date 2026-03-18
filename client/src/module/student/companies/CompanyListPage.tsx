@@ -844,7 +844,7 @@ export default function CompanyListPage() {
                       </p>
                     </div>
                     <Link
-                      to="/pricing"
+                      to="/student/checkout"
                       className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors no-underline"
                     >
                       Upgrade
@@ -1206,7 +1206,7 @@ export default function CompanyListPage() {
                       </p>
                     </div>
                     <Link
-                      to="/pricing"
+                      to="/student/checkout"
                       className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors no-underline"
                     >
                       Upgrade
@@ -1343,7 +1343,7 @@ export default function CompanyListPage() {
                       </p>
                     </div>
                     <Link
-                      to="/pricing"
+                      to="/student/checkout"
                       className="shrink-0 px-4 py-2 bg-amber-600 hover:bg-amber-700 text-white text-sm font-medium rounded-lg transition-colors no-underline"
                     >
                       Upgrade
