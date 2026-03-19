@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { NavLink, Outlet } from "react-router";
-import { LayoutDashboard, Users, Briefcase, ScrollText, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, BookOpen, Code2, Brain, BadgeCheck, Trophy, Award, Cpu, ExternalLink, Menu, X } from "lucide-react";
+import { LayoutDashboard, Users, Briefcase, AlertTriangle, Shield, LogOut, Building2, MessageSquare, GitPullRequest, Mail, BookOpen, Code2, Brain, BadgeCheck, Trophy, Award, Cpu, ExternalLink, Menu, X } from "lucide-react";
 import { useAuthStore } from "../../lib/auth.store";
 import { useNavigate } from "react-router";
 import { SEO } from "../../components/SEO";
@@ -51,9 +51,9 @@ export default function AdminLayout() {
           <Briefcase className="w-4 h-4" />
           Jobs
         </NavLink>
-        <NavLink to="/admin/activity" className={linkClass} onClick={() => setSidebarOpen(false)}>
-          <ScrollText className="w-4 h-4" />
-          Activity Logs
+        <NavLink to="/admin/errors" className={linkClass} onClick={() => setSidebarOpen(false)}>
+          <AlertTriangle className="w-4 h-4" />
+          Error Logs
         </NavLink>
         <NavLink to="/admin/companies" className={linkClass} onClick={() => setSidebarOpen(false)}>
           <Building2 className="w-4 h-4" />

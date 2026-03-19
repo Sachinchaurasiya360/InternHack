@@ -262,15 +262,46 @@ export class AdminService {
         email: true,
         role: true,
         isActive: true,
+        isProfilePublic: true,
+        isVerified: true,
         contactNo: true,
         profilePic: true,
+        coverImage: true,
         resumes: true,
         company: true,
         designation: true,
+        // Subscription
+        subscriptionPlan: true,
+        subscriptionStatus: true,
+        subscriptionStartDate: true,
+        subscriptionEndDate: true,
+        // Student profile
+        bio: true,
+        college: true,
+        graduationYear: true,
+        skills: true,
+        location: true,
+        jobStatus: true,
+        linkedinUrl: true,
+        githubUrl: true,
+        portfolioUrl: true,
+        leetcodeUrl: true,
+        projects: true,
+        achievements: true,
         createdAt: true,
         updatedAt: true,
         _count: {
-          select: { applications: true, postedJobs: true, atsScores: true },
+          select: {
+            applications: true,
+            postedJobs: true,
+            atsScores: true,
+            companyReviews: true,
+            contributions: true,
+            usageLogs: true,
+            studentBadges: true,
+            skillTestAttempts: true,
+            verifiedSkills: true,
+          },
         },
         adminProfile: { select: { tier: true, isActive: true } },
       },
@@ -484,6 +515,43 @@ export class AdminService {
         },
       }),
       prisma.adminActivityLog.count({ where }),
+    ]);
+
+    return {
+      logs,
+      pagination: {
+        page: query.page,
+        limit: query.limit,
+        total,
+        totalPages: Math.ceil(total / query.limit),
+      },
+    };
+  }
+
+  async getErrorLogs(query: {
+    page: number;
+    limit: number;
+    statusGroup?: "4xx" | "5xx" | undefined;
+    method?: string | undefined;
+    path?: string | undefined;
+  }) {
+    const where: Prisma.errorLogWhereInput = {};
+
+    if (query.statusGroup === "4xx") where.statusCode = { gte: 400, lt: 500 };
+    else if (query.statusGroup === "5xx") where.statusCode = { gte: 500, lt: 600 };
+    if (query.method) where.method = query.method;
+    if (query.path) where.path = { contains: query.path, mode: "insensitive" };
+
+    const skip = (query.page - 1) * query.limit;
+
+    const [logs, total] = await Promise.all([
+      prisma.errorLog.findMany({
+        where,
+        skip,
+        take: query.limit,
+        orderBy: { createdAt: "desc" },
+      }),
+      prisma.errorLog.count({ where }),
     ]);
 
     return {

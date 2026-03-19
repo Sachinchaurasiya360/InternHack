@@ -1,11 +1,12 @@
 import { useState } from "react";
 import { NavLink, Link, useNavigate } from "react-router";
-import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X, Sun, Moon, Lock } from "lucide-react";
+import { Briefcase, FileText, LogOut, ScanSearch, Building2, ChevronsLeft, ChevronsRight, UserCircle, Award, Globe, Crown, ShieldCheck, Video, GraduationCap, User, Menu, X, Sun, Moon, Lock, BrainCircuit } from "lucide-react";
 import { useAuthStore } from "../lib/auth.store";
 import { useThemeStore } from "../lib/theme.store";
 
 const NAV_ITEMS = [
   { to: "/student/jobs", icon: Briefcase, label: "Browse Jobs" },
+  { to: "/student/ai-agent", icon: BrainCircuit, label: "InternHack AI" },
   { to: "/student/applications", icon: FileText, label: "My Applications" },
   { to: "/student/ats/score", icon: ScanSearch, label: "Resume" },
   { to: "/learn", icon: GraduationCap, label: "Learning Hub" },

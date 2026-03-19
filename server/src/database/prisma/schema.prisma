@@ -218,6 +218,11 @@ model user {
   campusDrives        campusDrive[]              @relation("RecruiterCampusDrives")
   campusRegistrations campusDriveRegistration[]  @relation("StudentCampusRegistrations")
 
+  // ── InternHack AI ──
+  jobPreference         userJobPreference?        @relation("UserJobPreferences")
+  jobMatches            jobMatch[]                 @relation("UserJobMatches")
+  agentConversations    jobAgentConversation[]     @relation("UserAgentConversations")
+
   @@index([role])
   @@index([role, isActive])
   @@index([createdAt])
@@ -254,6 +259,26 @@ model adminActivityLog {
 
   @@index([adminId])
   @@index([targetType, targetId])
+  @@index([createdAt])
+}
+
+// ============================================================
+// ERROR LOG
+// ============================================================
+
+model errorLog {
+  id          Int      @id @default(autoincrement())
+  method      String
+  path        String
+  statusCode  Int
+  message     String
+  userId      Int?
+  ipAddress   String?
+  userAgent   String?
+  requestBody Json?
+  createdAt   DateTime @default(now())
+
+  @@index([statusCode])
   @@index([createdAt])
 }
 
@@ -1009,6 +1034,7 @@ enum UsageAction {
   GENERATE_RESUME
   JOB_APPLICATION
   MOCK_INTERVIEW
+  AI_JOB_CHAT
 }
 
 model usageLog {
@@ -1252,4 +1278,125 @@ model adminJob {
   updatedAt   DateTime  @updatedAt
 
   @@index([isActive, expiresAt])
+}
+
+// ============================================================
+// INTERNHACK AI — JOB INDEX & MATCHING
+// ============================================================
+
+enum JobSourceType {
+  INTERNAL
+  SCRAPED
+  ADMIN
+}
+
+model jobIndex {
+  id              Int            @id @default(autoincrement())
+
+  // ── Source tracking ──
+  sourceType      JobSourceType
+  sourceId        Int
+
+  // ── Normalized fields ──
+  title           String
+  company         String
+  location        String
+  salary          String?
+  salaryMin       Int?
+  salaryMax       Int?
+  description     String
+  tags            String[]       @default([])
+  skills          String[]       @default([])
+  experienceLevel String?
+  workMode        String?
+  domain          String?
+  applicationUrl  String?
+  deadline        DateTime?
+  isActive        Boolean        @default(true)
+
+  // ── Enrichment tracking ──
+  isEnriched      Boolean        @default(false)
+  hasEmbedding    Boolean        @default(false)
+  lastEnrichedAt  DateTime?
+
+  // ── Relations ──
+  matches         jobMatch[]
+
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  @@unique([sourceType, sourceId])
+  @@index([isActive])
+  @@index([isActive, createdAt])
+  @@index([workMode])
+  @@index([experienceLevel])
+  @@index([domain])
+  @@index([isEnriched])
+  @@index([hasEmbedding])
+}
+
+model userJobPreference {
+  id               Int      @id @default(autoincrement())
+  userId           Int      @unique
+  user             user     @relation("UserJobPreferences", fields: [userId], references: [id], onDelete: Cascade)
+
+  desiredRoles     String[] @default([])
+  desiredSkills    String[] @default([])
+  desiredLocations String[] @default([])
+  minSalary        Int?
+  workMode         String[] @default([])
+  experienceLevel  String[] @default([])
+  domains          String[] @default([])
+
+  profileSkills    String[] @default([])
+  profileSummary   String?
+
+  viewedJobIds     Int[]    @default([])
+  appliedJobIds    Int[]    @default([])
+  dismissedJobIds  Int[]    @default([])
+  savedJobIds      Int[]    @default([])
+
+  hasEmbedding     Boolean  @default(false)
+
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+}
+
+model jobMatch {
+  id            Int      @id @default(autoincrement())
+  userId        Int
+  user          user     @relation("UserJobMatches", fields: [userId], references: [id], onDelete: Cascade)
+  jobIndexId    Int
+  jobIndex      jobIndex @relation(fields: [jobIndexId], references: [id], onDelete: Cascade)
+
+  score         Float
+  skillMatch    Float    @default(0)
+  locationMatch Float    @default(0)
+  salaryMatch   Float    @default(0)
+  vectorScore   Float    @default(0)
+
+  seen          Boolean  @default(false)
+  dismissed     Boolean  @default(false)
+  saved         Boolean  @default(false)
+  applied       Boolean  @default(false)
+
+  createdAt     DateTime @default(now())
+
+  @@unique([userId, jobIndexId])
+  @@index([userId, score])
+  @@index([userId, seen, dismissed])
+  @@index([createdAt])
+}
+
+model jobAgentConversation {
+  id        Int      @id @default(autoincrement())
+  userId    Int
+  user      user     @relation("UserAgentConversations", fields: [userId], references: [id], onDelete: Cascade)
+  messages  Json     @default("[]")
+  context   Json     @default("{}")
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, isActive])
 }

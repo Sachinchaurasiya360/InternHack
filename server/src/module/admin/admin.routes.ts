@@ -32,6 +32,9 @@ adminRouter.delete("/jobs/:id", (req, res) => adminController.deleteAdminJob(req
 // Activity logs
 adminRouter.get("/activity-logs", (req, res) => adminController.getActivityLogs(req, res));
 
+// Error logs
+adminRouter.get("/error-logs", (req, res) => adminController.getErrorLogs(req, res));
+
 // Admin creation (SUPER_ADMIN only - enforced in service)
 adminRouter.post("/admins", (req, res) => adminController.createNewAdmin(req, res));
 

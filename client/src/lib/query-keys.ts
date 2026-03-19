@@ -44,6 +44,8 @@ export const queryKeys = {
     subscribers: () => ["admin", "subscribers"] as const,
     aiConfig: () => ["admin", "ai-config"] as const,
     aiStats: (range: string) => ["admin", "ai-stats", range] as const,
+    errorLogs: (params?: Record<string, string | number>) =>
+      ["admin", "error-logs", params] as const,
   },
 
   // Profile
@@ -171,6 +173,17 @@ export const queryKeys = {
   emailCampaigns: {
     list: () => ["email-campaigns", "list"] as const,
     detail: (id: number) => ["email-campaigns", "detail", id] as const,
+  },
+
+  // Job Feed (InternHack AI)
+  jobFeed: {
+    feed: (page: number) => ["job-feed", "feed", page] as const,
+    preferences: () => ["job-feed", "preferences"] as const,
+    saved: () => ["job-feed", "saved"] as const,
+    stats: () => ["job-feed", "stats"] as const,
+  },
+  jobAgent: {
+    conversation: () => ["job-agent", "conversation"] as const,
   },
 
   // DSA Practice
