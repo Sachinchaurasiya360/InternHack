@@ -3,7 +3,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { X } from "lucide-react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import api from "../../../lib/axios";
-import { queryKeys } from "../../../lib/query-keys";
+
 import type { JobPreferences } from "../../../lib/types";
 
 interface Props {

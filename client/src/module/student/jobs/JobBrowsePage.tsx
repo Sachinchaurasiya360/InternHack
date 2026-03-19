@@ -2,7 +2,7 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router";
 import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Search, MapPin, IndianRupee, Clock, X, Landmark, ChevronRight, ExternalLink } from "lucide-react";
+import { Search, MapPin, IndianRupee, Clock, X, Landmark, ChevronRight } from "lucide-react";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
