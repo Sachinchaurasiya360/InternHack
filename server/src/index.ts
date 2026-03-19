@@ -55,11 +55,14 @@ import { complianceRouter } from "./module/compliance/compliance.routes.js";
 import { workflowRouter } from "./module/workflow/workflow.routes.js";
 import { hrAnalyticsRouter } from "./module/hr-analytics/hr-analytics.routes.js";
 import { sitemapRouter } from "./module/sitemap/sitemap.routes.js";
+import { jobFeedRouter } from "./module/job-feed/job-feed.routes.js";
+import { jobAgentRouter } from "./module/job-agent/job-agent.routes.js";
 import { botSeoMiddleware } from "./middleware/bot-seo.middleware.js";
 import { errorMiddleware } from "./middleware/error.middleware.js";
 import { prisma } from "./database/db.js";
 import { initServiceProviders } from "./lib/ai-provider-registry.js";
 import { startFollowUpCron } from "./cron/scheduled-emails.js";
+import { startAIPipelineCrons } from "./cron/internhack-ai.cron.js";
 import { startSubscriptionExpiryCron } from "./cron/subscription-expiry.js";
 import { recoverActiveCampaigns } from "./module/email-campaign/email-campaign.worker.js";
 
@@ -198,6 +201,10 @@ app.use("/api/badges", badgeRouter);
 app.use("/api/leetcode", leetcodeRouter);
 app.use("/api/universities", universityRouter);
 
+// ── InternHack AI Routes ──
+app.use("/api/job-feed", jobFeedRouter);
+app.use("/api/job-agent", jobAgentRouter);
+
 // ── HR Routes ──
 app.use("/api/hr/rbac", rbacRouter);
 app.use("/api/hr/departments", departmentRouter);
@@ -272,4 +279,7 @@ app.listen(PORT, async () => {
 
   // Resume any in-progress email campaigns
   recoverActiveCampaigns().catch((err) => console.error("[EmailCampaign] Recovery failed:", err));
+
+  // Start InternHack AI pipeline crons
+  startAIPipelineCrons();
 });

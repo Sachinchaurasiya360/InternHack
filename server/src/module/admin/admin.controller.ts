@@ -38,6 +38,7 @@ import {
   createHackathonSchema,
   updateHackathonSchema,
   switchAIProviderSchema,
+  errorLogQuerySchema,
   createAdminJobSchema,
   updateAdminJobSchema,
   adminExternalJobQuerySchema,
@@ -220,6 +221,19 @@ export class AdminController {
     try {
       const query = activityLogQuerySchema.parse(req.query);
       const data = await this.adminService.getActivityLogs(query);
+      return res.status(200).json(data);
+    } catch (error) {
+      console.error(error);
+      return res.status(500).json({ message: "Internal Server Error" });
+    }
+  }
+
+  // ==================== ERROR LOGS ====================
+
+  async getErrorLogs(req: Request, res: Response) {
+    try {
+      const query = errorLogQuerySchema.parse(req.query);
+      const data = await this.adminService.getErrorLogs(query);
       return res.status(200).json(data);
     } catch (error) {
       console.error(error);

@@ -395,6 +395,19 @@ export interface ActivityLog {
   createdAt: string;
 }
 
+export interface ErrorLog {
+  id: number;
+  method: string;
+  path: string;
+  statusCode: number;
+  message: string;
+  userId: number | null;
+  ipAddress: string | null;
+  userAgent: string | null;
+  requestBody: Record<string, unknown> | null;
+  createdAt: string;
+}
+
 // Talent Search
 export interface TalentSearchResult {
   id: number;
@@ -1034,5 +1047,59 @@ export interface EmailCampaignDetail extends EmailCampaign {
 export interface ChatMessage {
   role: "user" | "assistant";
   content: string;
+}
+
+// ── InternHack AI Types ──
+
+export interface JobFeedMatch {
+  matchId: number;
+  score: number;
+  skillMatch: number;
+  locationMatch: number;
+  salaryMatch: number;
+  saved: boolean;
+  seen: boolean;
+  job: {
+    id: number;
+    title: string;
+    company: string;
+    location: string;
+    salary: string | null;
+    skills: string[];
+    workMode: string | null;
+    experienceLevel: string | null;
+    applicationUrl: string | null;
+    tags: string[];
+    createdAt: string;
+  };
+}
+
+export interface JobPreferences {
+  desiredRoles: string[];
+  desiredSkills: string[];
+  desiredLocations: string[];
+  minSalary: number | null;
+  workMode: string[];
+  experienceLevel: string[];
+  domains: string[];
+}
+
+export interface JobAgentMessage {
+  role: "user" | "assistant";
+  content: string;
+  timestamp: string;
+  jobCount?: number;
+}
+
+export interface JobAgentResponse {
+  reply: string;
+  jobs: JobFeedMatch["job"][];
+  preferencesUpdated: boolean;
+}
+
+export interface JobFeedStats {
+  total: number;
+  unseen: number;
+  saved: number;
 }
 

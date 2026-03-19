@@ -5,6 +5,7 @@ import {
   CheckCircle, Upload, Trash2, Camera, ExternalLink, MapPin, GraduationCap,
   Linkedin, Github, Globe, X, Plus, AlignLeft, Shield, Calendar, Crown,
   ChevronDown, ShieldCheck, FolderGit2, Trophy, Pencil, Search as SearchIcon,
+  Crosshair,
 } from "lucide-react";
 import { Link } from "react-router";
 import type { VerifiedSkill, ProjectItem, AchievementItem } from "../../../lib/types";
@@ -108,8 +109,16 @@ export default function StudentProfilePage() {
   const [deletingResume, setDeletingResume] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string[]>>({});
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
-    basic: true, education: true, skills: true, projects: true, achievements: true, links: false, email: false, resumes: true,
+    basic: true, education: true, skills: true, jobPrefs: false, projects: true, achievements: true, links: false, email: false, resumes: true,
   });
+  const [jobPrefRoles, setJobPrefRoles] = useState("");
+  const [jobPrefSkills, setJobPrefSkills] = useState("");
+  const [jobPrefLocations, setJobPrefLocations] = useState("");
+  const [jobPrefSalary, setJobPrefSalary] = useState("");
+  const [jobPrefWorkMode, setJobPrefWorkMode] = useState<string[]>([]);
+  const [jobPrefExpLevel, setJobPrefExpLevel] = useState<string[]>([]);
+  const [jobPrefDomains, setJobPrefDomains] = useState<string[]>([]);
+  const [savingJobPrefs, setSavingJobPrefs] = useState(false);
   const [cropSrc, setCropSrc] = useState<string | null>(null);
   const [cropType, setCropType] = useState<"profile" | "cover" | null>(null);
   const [showGitHubImport, setShowGitHubImport] = useState(false);
@@ -165,6 +174,22 @@ export default function StudentProfilePage() {
     api.get("/skill-tests/my-verified")
       .then((res) => setVerifiedSkills(res.data.verified ?? []))
       .catch((err) => console.error("Failed to fetch verified skills:", err));
+
+    // Fetch job preferences
+    api.get("/job-feed/preferences")
+      .then((res) => {
+        if (res.data) {
+          const p = res.data;
+          setJobPrefRoles(p.desiredRoles?.join(", ") || "");
+          setJobPrefSkills(p.desiredSkills?.join(", ") || "");
+          setJobPrefLocations(p.desiredLocations?.join(", ") || "");
+          setJobPrefSalary(p.minSalary ? String(p.minSalary / 100000) : "");
+          setJobPrefWorkMode(p.workMode || []);
+          setJobPrefExpLevel(p.experienceLevel || []);
+          setJobPrefDomains(p.domains || []);
+        }
+      })
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -882,8 +907,130 @@ export default function StudentProfilePage() {
             )}
           </motion.div>
 
-          {/* Projects */}
+          {/* Job Preferences */}
           <motion.div custom={3} variants={fadeInUp} initial="hidden" animate="visible"
+            className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
+            <button type="button" onClick={() => toggleSection("jobPrefs")}
+              className="w-full flex items-center justify-between px-6 py-4 text-left">
+              <h3 className="text-sm font-semibold text-gray-950 dark:text-white flex items-center gap-2">
+                <div className="w-8 h-8 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center">
+                  <Crosshair className="w-4 h-4 text-white dark:text-gray-900" />
+                </div>
+                Job Preferences
+                <span className="text-xs font-normal text-gray-400 ml-1">AI matching</span>
+              </h3>
+              <ChevronDown className={`w-4 h-4 text-gray-400 transition-transform duration-200 ${openSections.jobPrefs ? "rotate-180" : ""}`} />
+            </button>
+            {openSections.jobPrefs && (
+              <div className="px-6 pb-6 space-y-4 border-t border-gray-50 dark:border-gray-800 pt-4">
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  These preferences help InternHack AI find the best jobs for you.
+                </p>
+                <div>
+                  <label className={labelClass}><Briefcase className="w-4 h-4 text-gray-400" /> Desired Roles</label>
+                  <input type="text" value={jobPrefRoles} onChange={(e) => setJobPrefRoles(e.target.value)}
+                    className={inputClass} placeholder="e.g. Frontend Developer, React Engineer" />
+                  <p className="text-xs text-gray-400 mt-1">Separate with commas</p>
+                </div>
+                <div>
+                  <label className={labelClass}><CheckCircle className="w-4 h-4 text-gray-400" /> Preferred Skills</label>
+                  <input type="text" value={jobPrefSkills} onChange={(e) => setJobPrefSkills(e.target.value)}
+                    className={inputClass} placeholder="e.g. React, TypeScript, Node.js" />
+                  <p className="text-xs text-gray-400 mt-1">Separate with commas</p>
+                </div>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}><MapPin className="w-4 h-4 text-gray-400" /> Preferred Locations</label>
+                    <input type="text" value={jobPrefLocations} onChange={(e) => setJobPrefLocations(e.target.value)}
+                      className={inputClass} placeholder="e.g. Bangalore, Remote" />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Min Salary (LPA)</label>
+                    <input type="number" value={jobPrefSalary} onChange={(e) => setJobPrefSalary(e.target.value)}
+                      className={inputClass} placeholder="e.g. 6" />
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Work Mode</label>
+                  <div className="flex flex-wrap gap-2">
+                    {["REMOTE", "HYBRID", "ONSITE"].map((m) => (
+                      <button key={m} type="button"
+                        onClick={() => setJobPrefWorkMode((prev) => prev.includes(m) ? prev.filter((v) => v !== m) : [...prev, m])}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                          jobPrefWorkMode.includes(m)
+                            ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
+                            : "bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                        }`}>
+                        {m.charAt(0) + m.slice(1).toLowerCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Experience Level</label>
+                  <div className="flex flex-wrap gap-2">
+                    {["INTERN", "ENTRY", "MID", "SENIOR"].map((l) => (
+                      <button key={l} type="button"
+                        onClick={() => setJobPrefExpLevel((prev) => prev.includes(l) ? prev.filter((v) => v !== l) : [...prev, l])}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                          jobPrefExpLevel.includes(l)
+                            ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
+                            : "bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                        }`}>
+                        {l.charAt(0) + l.slice(1).toLowerCase()}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Domain</label>
+                  <div className="flex flex-wrap gap-2">
+                    {["frontend", "backend", "fullstack", "devops", "data", "ml", "mobile"].map((d) => (
+                      <button key={d} type="button"
+                        onClick={() => setJobPrefDomains((prev) => prev.includes(d) ? prev.filter((v) => v !== d) : [...prev, d])}
+                        className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
+                          jobPrefDomains.includes(d)
+                            ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
+                            : "bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-700 hover:border-gray-300"
+                        }`}>
+                        {d.charAt(0).toUpperCase() + d.slice(1)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  disabled={savingJobPrefs}
+                  onClick={async () => {
+                    const split = (s: string) => s.split(",").map((v) => v.trim()).filter(Boolean);
+                    setSavingJobPrefs(true);
+                    try {
+                      await api.put("/job-feed/preferences", {
+                        desiredRoles: split(jobPrefRoles),
+                        desiredSkills: split(jobPrefSkills),
+                        desiredLocations: split(jobPrefLocations),
+                        minSalary: jobPrefSalary ? Number(jobPrefSalary) * 100000 : null,
+                        workMode: jobPrefWorkMode,
+                        experienceLevel: jobPrefExpLevel,
+                        domains: jobPrefDomains,
+                      });
+                      toast.success("Job preferences saved!");
+                    } catch {
+                      toast.error("Failed to save preferences");
+                    } finally {
+                      setSavingJobPrefs(false);
+                    }
+                  }}
+                  className="w-full py-2.5 bg-indigo-600 text-white text-sm font-semibold rounded-xl hover:bg-indigo-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  {savingJobPrefs ? <><Loader2 className="w-4 h-4 animate-spin" /> Saving...</> : "Save Preferences"}
+                </button>
+              </div>
+            )}
+          </motion.div>
+
+          {/* Projects */}
+          <motion.div custom={4} variants={fadeInUp} initial="hidden" animate="visible"
             className="bg-white dark:bg-gray-900 rounded-2xl border border-gray-100 dark:border-gray-800 overflow-hidden hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 transition-all duration-300">
             <div className="flex items-center justify-between px-6 py-4">
               <button type="button" onClick={() => toggleSection("projects")}

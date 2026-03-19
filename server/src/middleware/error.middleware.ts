@@ -1,22 +1,53 @@
 import type { Request, Response, NextFunction } from "express";
 import { Prisma } from "@prisma/client";
+import { prisma } from "../database/db.js";
 
-export function errorMiddleware(err: Error, _req: Request, res: Response, _next: NextFunction): void {
+const SENSITIVE_KEYS = new Set([
+  "password", "newPassword", "confirmPassword", "currentPassword",
+  "token", "otp", "secret", "creditCard", "cardNumber", "cvv",
+]);
+
+function sanitizeBody(body: unknown): Prisma.InputJsonValue | null {
+  if (!body || typeof body !== "object") return null;
+  const sanitized: Record<string, unknown> = {};
+  for (const [key, value] of Object.entries(body as Record<string, unknown>)) {
+    sanitized[key] = SENSITIVE_KEYS.has(key) ? "[REDACTED]" : value;
+  }
+  return sanitized as Prisma.InputJsonValue;
+}
+
+function logErrorToDb(req: Request, statusCode: number, message: string): void {
+  prisma.errorLog.create({
+    data: {
+      method: req.method,
+      path: req.originalUrl || req.url,
+      statusCode,
+      message,
+      userId: (req as unknown as { user?: { id: number } }).user?.id ?? null,
+      ipAddress: (req.headers["x-forwarded-for"] as string)?.split(",")[0]?.trim() || req.ip || null,
+      userAgent: req.headers["user-agent"] || null,
+      requestBody: sanitizeBody(req.body),
+    },
+  }).catch((err) => {
+    console.error("[ErrorLog] Failed to write:", err);
+  });
+}
+
+function respond(req: Request, res: Response, statusCode: number, message: string): void {
+  logErrorToDb(req, statusCode, message);
+  res.status(statusCode).json({ message });
+}
+
+export function errorMiddleware(err: Error, req: Request, res: Response, _next: NextFunction): void {
   // Prisma known request errors → proper HTTP status codes
   if (err instanceof Prisma.PrismaClientKnownRequestError) {
     switch (err.code) {
-      case "P2002":
-        res.status(409).json({ message: "A record with this value already exists" });
-        return;
-      case "P2025":
-        res.status(404).json({ message: "Resource not found" });
-        return;
-      case "P2003":
-        res.status(400).json({ message: "Related resource not found" });
-        return;
+      case "P2002": respond(req, res, 409, "A record with this value already exists"); return;
+      case "P2025": respond(req, res, 404, "Resource not found"); return;
+      case "P2003": respond(req, res, 400, "Related resource not found"); return;
       default:
         console.error("Prisma error:", err.code, err.message);
-        res.status(500).json({ message: "Database error" });
+        respond(req, res, 500, "Database error");
         return;
     }
   }
@@ -24,7 +55,7 @@ export function errorMiddleware(err: Error, _req: Request, res: Response, _next:
   // Prisma validation errors
   if (err instanceof Prisma.PrismaClientValidationError) {
     console.error("Prisma validation error:", err.message);
-    res.status(400).json({ message: "Invalid data provided" });
+    respond(req, res, 400, "Invalid data provided");
     return;
   }
 
@@ -32,7 +63,7 @@ export function errorMiddleware(err: Error, _req: Request, res: Response, _next:
   if (err.message === "File type not allowed" ||
       err.message === "Only PDF and Word documents are allowed" ||
       err.message === "Only JPEG, PNG, and WebP images are allowed") {
-    res.status(400).json({ message: err.message });
+    respond(req, res, 400, err.message);
     return;
   }
 
@@ -58,12 +89,12 @@ export function errorMiddleware(err: Error, _req: Request, res: Response, _next:
 
   const status = clientErrors[err.message];
   if (status) {
-    res.status(status).json({ message: err.message });
+    respond(req, res, status, err.message);
     return;
   }
 
   // Unknown errors - don't leak details in production
   const isDev = process.env["NODE_ENV"] === "development";
   console.error("Unhandled error:", isDev ? err.stack : err.message);
-  res.status(500).json({ message: isDev ? err.message : "Internal Server Error" });
+  respond(req, res, 500, isDev ? err.message : "Internal Server Error");
 }

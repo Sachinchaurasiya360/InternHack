@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { useQuery, keepPreviousData } from "@tanstack/react-query";
-import { Search, MapPin, IndianRupee, Clock, X, Landmark, ChevronRight, ExternalLink } from "lucide-react";
+import { Search, MapPin, IndianRupee, Clock, X, Landmark, ChevronRight } from "lucide-react";
 import { Navbar } from "../../../components/Navbar";
 import { SEO } from "../../../components/SEO";
 import { canonicalUrl } from "../../../lib/seo.utils";
@@ -12,6 +12,7 @@ import type { Job, Pagination } from "../../../lib/types";
 
 interface ExternalJob {
   id: number;
+  slug: string | null;
   company: string | null;
   role: string | null;
   description: string | null;
@@ -22,8 +23,8 @@ interface ExternalJob {
 }
 
 const FILTER_TAGS = [
-  "React", "Node.js", "Python", "Java", "DevOps", "AI",
-  "Frontend", "Backend", "Full Stack", "Cloud", "Mobile", "Data Science",
+  "Frontend", "Backend", "Full Stack", "Python", "Java", "DevOps",
+  "AI", "Cloud", "Data Science",
 ] as const;
 
 export default function JobBrowsePage() {
@@ -87,6 +88,13 @@ export default function JobBrowsePage() {
   };
 
   const hasFilters = search || locationFilter || selectedTags.length > 0;
+
+  // Client-side filter for external jobs: match selected tags against role, description, and tags
+  const filteredExtJobs = (extData?.jobs ?? []).filter((job) => {
+    if (selectedTags.length === 0) return true;
+    const haystack = `${job.role ?? ""} ${job.description ?? ""} ${job.tags.join(" ")}`.toLowerCase();
+    return selectedTags.some((tag) => haystack.includes(tag.toLowerCase()));
+  });
 
   return (
     <div className="min-h-screen bg-[#fafafa] dark:bg-gray-950 relative overflow-hidden">
@@ -167,69 +175,81 @@ export default function JobBrowsePage() {
 
           {/* Filter chips */}
           <div className="flex items-center gap-2 flex-wrap">
-            {FILTER_TAGS.map((tag) => (
-              <button key={tag} onClick={() => toggleTag(tag)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-all ${
+            {FILTER_TAGS.map((tag, i) => (
+              <motion.button
+                key={tag}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.03, duration: 0.25 }}
+                whileTap={{ scale: 0.95 }}
+                onClick={() => toggleTag(tag)}
+                className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap transition-colors duration-200 ${
                   selectedTags.includes(tag)
-                    ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950"
+                    ? "bg-gray-950 dark:bg-white text-white dark:text-gray-950 shadow-md"
                     : "bg-white dark:bg-gray-900 text-gray-500 dark:text-gray-400 border border-gray-200 dark:border-gray-800 hover:border-gray-300 dark:hover:border-gray-700"
                 }`}>
                 {tag}
-              </button>
+              </motion.button>
             ))}
-            {hasFilters && (
-              <button onClick={clearAll}
-                className="px-3 py-1.5 rounded-lg text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1">
-                <X className="w-3 h-3" /> Clear
-              </button>
-            )}
+            <AnimatePresence>
+              {hasFilters && (
+                <motion.button
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.8 }}
+                  transition={{ duration: 0.2 }}
+                  onClick={clearAll}
+                  className="px-3 py-1.5 rounded-lg text-xs font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors flex items-center gap-1">
+                  <X className="w-3 h-3" /> Clear
+                </motion.button>
+              )}
+            </AnimatePresence>
           </div>
         </motion.div>
 
         {/* External Jobs Section — shown first */}
-        {extData && extData.jobs.length > 0 && (
+        {filteredExtJobs.length > 0 && (
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="mb-14">
             <h2 className="text-2xl font-bold text-gray-950 dark:text-white mb-2">Latest Opportunities</h2>
             <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">Curated external listings updated daily</p>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
-              {extData.jobs.map((job, i) => (
-                <motion.div key={job.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}
-                  className="bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 flex flex-col">
-                  <div className="flex items-start mb-3">
-                    <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 mr-3 text-white dark:text-gray-950 text-sm font-bold">
-                      {job.company?.charAt(0) || "?"}
+              {filteredExtJobs.map((job, i) => (
+                <motion.div key={job.id} initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.04 }}>
+                  <Link
+                    to={job.slug ? `/jobs/ext/${job.slug}` : "#"}
+                    className="group flex flex-col bg-white dark:bg-gray-900 p-6 rounded-2xl border border-gray-100 dark:border-gray-800 shadow-sm hover:shadow-xl hover:shadow-gray-200/50 dark:hover:shadow-gray-900/50 hover:border-gray-200 dark:hover:border-gray-700 transition-all duration-300 h-full no-underline"
+                  >
+                    <div className="flex items-start mb-3">
+                      <div className="w-10 h-10 rounded-xl bg-gray-950 dark:bg-white flex items-center justify-center shrink-0 mr-3 text-white dark:text-gray-950 text-sm font-bold">
+                        {job.company?.charAt(0) || "?"}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">{job.role || "Open Role"}</h3>
+                        <span className="text-sm text-gray-500">{job.company || "Company"}</span>
+                      </div>
                     </div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="text-base font-semibold text-gray-900 dark:text-white line-clamp-1">{job.role || "Open Role"}</h3>
-                      <span className="text-sm text-gray-500">{job.company || "Company"}</span>
+                    {job.description && <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{job.description}</p>}
+                    <div className="flex flex-wrap gap-3 text-xs text-gray-500 mb-4">
+                      {job.location && (
+                        <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><MapPin className="w-3 h-3 text-indigo-400" />{job.location}</span>
+                      )}
+                      {job.salary && (
+                        <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><IndianRupee className="w-3 h-3 text-emerald-400" />{job.salary}</span>
+                      )}
                     </div>
-                  </div>
-                  {job.description && <p className="text-sm text-gray-500 line-clamp-2 mb-4 leading-relaxed">{job.description}</p>}
-                  <div className="flex flex-wrap gap-3 text-xs text-gray-500 mb-4">
-                    {job.location && (
-                      <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><MapPin className="w-3 h-3 text-indigo-400" />{job.location}</span>
+                    {job.tags.length > 0 && (
+                      <div className="flex flex-wrap gap-1.5 mb-4">
+                        {job.tags.slice(0, 3).map((tag) => (
+                          <span key={tag} className="px-2.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-medium">{tag}</span>
+                        ))}
+                      </div>
                     )}
-                    {job.salary && (
-                      <span className="flex items-center gap-1 bg-gray-50 dark:bg-gray-800 px-2.5 py-1 rounded-lg"><IndianRupee className="w-3 h-3 text-emerald-400" />{job.salary}</span>
-                    )}
-                  </div>
-                  {job.tags.length > 0 && (
-                    <div className="flex flex-wrap gap-1.5 mb-4">
-                      {job.tags.slice(0, 3).map((tag) => (
-                        <span key={tag} className="px-2.5 py-0.5 bg-indigo-50 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400 rounded-lg text-xs font-medium">{tag}</span>
-                      ))}
+                    <div className="mt-auto">
+                      <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-medium rounded-lg group-hover:bg-gray-800 dark:group-hover:bg-gray-200 transition-colors">
+                        View Details <ChevronRight className="w-3.5 h-3.5" />
+                      </span>
                     </div>
-                  )}
-                  <div className="mt-auto">
-                    {job.applyLink ? (
-                      <a href={job.applyLink} target="_blank" rel="noopener noreferrer"
-                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-gray-950 dark:bg-white text-white dark:text-gray-950 text-sm font-medium rounded-lg hover:bg-gray-800 dark:hover:bg-gray-200 transition-colors no-underline">
-                        Apply <ExternalLink className="w-3.5 h-3.5" />
-                      </a>
-                    ) : (
-                      <span className="text-xs text-gray-400">No apply link</span>
-                    )}
-                  </div>
+                  </Link>
                 </motion.div>
               ))}
             </div>

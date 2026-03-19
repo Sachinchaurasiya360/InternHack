@@ -73,6 +73,9 @@ model user {
   usageLogs             usageLog[]                @relation("UserUsageLogs")
   customRoles           userCustomRole[]          @relation("UserCustomRoles")
   verifiedSkills        verifiedSkill[]           @relation("StudentVerifiedSkills")
+  jobPreference         userJobPreference?        @relation("UserJobPreferences")
+  jobMatches            jobMatch[]                @relation("UserJobMatches")
+  agentConversations    jobAgentConversation[]    @relation("UserAgentConversations")
 
   @@index([role])
   @@index([role, isActive])
@@ -1142,6 +1145,7 @@ enum UsageAction {
   GENERATE_RESUME
   JOB_APPLICATION
   MOCK_INTERVIEW
+  AI_JOB_CHAT
 }
 
 enum EmailCampaignStatus {

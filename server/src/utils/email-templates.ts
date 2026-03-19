@@ -116,11 +116,7 @@ export function welcomeEmailHtml(name: string): string {
     <tr>
       <td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
         <p style="margin:0 0 6px;font-size:12px;">
-          <a href="https://twitter.com/internhack" style="color:#18181b;text-decoration:none;margin:0 6px;">Twitter</a>
-          <span style="color:#d4d4d8;">|</span>
           <a href="https://linkedin.com/company/internhack" style="color:#18181b;text-decoration:none;margin:0 6px;">LinkedIn</a>
-          <span style="color:#d4d4d8;">|</span>
-          <a href="https://github.com/internhack" style="color:#18181b;text-decoration:none;margin:0 6px;">GitHub</a>
         </p>
         <p style="margin:0;font-size:11px;color:#a1a1aa;">
           &copy; ${new Date().getFullYear()} InternHack. All rights reserved.
@@ -246,11 +242,7 @@ export function followUpEmailHtml(name: string): string {
     <tr>
       <td style="padding:20px 24px;border-top:1px solid #e4e4e7;text-align:center;">
         <p style="margin:0 0 6px;font-size:12px;">
-          <a href="https://twitter.com/internhack" style="color:#18181b;text-decoration:none;margin:0 6px;">Twitter</a>
-          <span style="color:#d4d4d8;">|</span>
           <a href="https://linkedin.com/company/internhack" style="color:#18181b;text-decoration:none;margin:0 6px;">LinkedIn</a>
-          <span style="color:#d4d4d8;">|</span>
-          <a href="https://github.com/internhack" style="color:#18181b;text-decoration:none;margin:0 6px;">GitHub</a>
         </p>
         <p style="margin:0;font-size:11px;color:#a1a1aa;">
           &copy; ${new Date().getFullYear()} InternHack. All rights reserved.

@@ -171,6 +171,9 @@ const CompliancePage = lazyWithRetry(() => import("./module/recruiter/hr/Complia
 const WorkflowsPage = lazyWithRetry(() => import("./module/recruiter/hr/WorkflowsPage"));
 const RolesPage = lazyWithRetry(() => import("./module/recruiter/hr/RolesPage"));
 
+// InternHack AI pages
+const JobAgentPage = lazyWithRetry(() => import("./module/student/job-agent/JobAgentPage"));
+
 // Student new feature pages
 const CampusDrivesPage = lazyWithRetry(() => import("./module/student/campus/CampusDrivesPage"));
 const CampusDriveDetailPage = lazyWithRetry(() => import("./module/student/campus/CampusDriveDetailPage"));
@@ -182,7 +185,7 @@ const AdminDashboard = lazyWithRetry(() => import("./module/admin/AdminDashboard
 const UsersListPage = lazyWithRetry(() => import("./module/admin/users/UsersListPage"));
 const UserDetailPage = lazyWithRetry(() => import("./module/admin/users/UserDetailPage"));
 const AdminJobsListPage = lazyWithRetry(() => import("./module/admin/jobs/AdminJobsListPage"));
-const ActivityLogsPage = lazyWithRetry(() => import("./module/admin/activity/ActivityLogsPage"));
+const ErrorLogsPage = lazyWithRetry(() => import("./module/admin/activity/ActivityLogsPage"));
 const AdminCompaniesPage = lazyWithRetry(() => import("./module/admin/companies/AdminCompaniesPage"));
 const AdminReviewsPage = lazyWithRetry(() => import("./module/admin/reviews/AdminReviewsPage"));
 const AdminContributionsPage = lazyWithRetry(() => import("./module/admin/contributions/AdminContributionsPage"));
@@ -372,7 +375,8 @@ function App() {
             <Route path="opensource/gsoc-proposal" element={<GSoCProposalPage />} />
             <Route path="opensource/gsoc-proposal/:sectionSlug" element={<GSoCProposalStepPage />} />
             <Route path="opensource/analytics" element={<OpenSourceAnalyticsPage />} />
-<Route path="campus-drives" element={<CampusDrivesPage />} />
+            <Route path="ai-agent" element={<JobAgentPage />} />
+            <Route path="campus-drives" element={<CampusDrivesPage />} />
             <Route path="campus-drives/:id" element={<CampusDriveDetailPage />} />
             <Route path="checkout" element={<CheckoutPage />} />
             <Route path="profile" element={<StudentProfilePage />} />
@@ -425,7 +429,7 @@ function App() {
             <Route path="users" element={<UsersListPage />} />
             <Route path="users/:id" element={<UserDetailPage />} />
             <Route path="jobs" element={<AdminJobsListPage />} />
-            <Route path="activity" element={<ActivityLogsPage />} />
+            <Route path="errors" element={<ErrorLogsPage />} />
             <Route path="companies" element={<AdminCompaniesPage />} />
             <Route path="reviews" element={<AdminReviewsPage />} />
             <Route path="contributions" element={<AdminContributionsPage />} />

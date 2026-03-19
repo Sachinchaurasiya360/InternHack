@@ -51,6 +51,14 @@ export const activityLogQuerySchema = z.object({
   targetType: z.string().optional(),
 });
 
+export const errorLogQuerySchema = z.object({
+  page: z.coerce.number().int().positive().default(1),
+  limit: z.coerce.number().int().positive().max(100).default(20),
+  statusGroup: z.enum(["4xx", "5xx"]).optional(),
+  method: z.enum(["GET", "POST", "PUT", "PATCH", "DELETE"]).optional(),
+  path: z.string().optional(),
+});
+
 // ==================== COMPANY MANAGEMENT ====================
 
 export const createCompanySchema = z.object({
